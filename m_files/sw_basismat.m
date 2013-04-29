@@ -1,5 +1,5 @@
-function M = sw_basismat(S, r)
-% M = SW_BASISMAT(S, r) determines the allowed matrix elements compatible
+function M = sw_basismat(S, r, tol)
+% M = SW_BASISMAT(S, r, {tol}) determines the allowed matrix elements compatible
 % with a given point group symmetry. The matrix can describe exchange
 % interaction or single ion anisotropy.
 %
@@ -8,6 +8,7 @@ function M = sw_basismat(S, r)
 %           [3 3 nSym]. Each S(:,:,ii) matrix defines a rotation.
 % r         Distance vector between the two interacting atoms. For
 %           anisotropy r=0, dimensions are [1 3].
+% {tol}     Tolerance, optional. Default value is 1e-5.
 %
 % Output:
 %
@@ -16,6 +17,13 @@ function M = sw_basismat(S, r)
 %           allowed that can be expressed as a linear combination of the
 %           symmetry allowed matrices.
 %
+
+if nargin == 0
+    help sw_basismat;
+    return;
+elseif nargin == 2
+    tol = 1e-5;
+end
 
 nSym = size(S,3);
 
@@ -28,34 +36,33 @@ end
 for ii = 1:nSym
     % selected rotation operator
     R = S(:,:,ii);
-    % order of the rotation operator
-    ordR = 1;
     if norm(r)>0
         % find the number of rotation that overlay the two interacting atoms
         % (for anisotropy the 'interacting' atoms are identical)
-        while (abs(abs(r'*(R^ordR)*r)-1)>1e-5) && (ordR<7)
+        ordR = 1;
+        while (abs(abs(r'*(R^ordR)*r)-1) > tol) && (ordR<10)
             ordR = ordR + 1;
         end
+        % select the proper order that overlays the two atoms
+        R = R^ordR;
+        % parity of R in respect of the two interacting atoms
+        parR = sign(r'*R*r);
+        
     else
-        while (norm(R^ordR-eye(3))>1e-5) && (ordR<7)
-            ordR = ordR + 1;
-        end
+        % check that the rotation operator is valid
+        ordR = sw_rotorder(R);
+        parR = 1;
     end
-    if ordR == 4
+    if ordR == 10
         error('sw:sw_basismat:WrongOp','Not a valid point group generator!');
     end
-    % select the proper order that overlays the two atoms
-    R = R^ordR;
-    % parity of R in respect of the two interacting atoms
-    parR = sign(r'*(R^ordR)*r);
     % solve the R*M-M*R=0 matrix equation valid for symmetric matrices
     [~, D, MS] = svd(kron(R,R)-eye(9));
-    MS = MS(:,abs(diag(D))<1e-5);
-    M.S = reshape(MS,3,3,[]);
-    if parR==-1
+    M.S = reshape(MS(:,abs(diag(D)) < tol),3,3,[]);
+    if parR == -1
         % solve the equation for antisymmetric matrices
         [~, D, MA] = svd(kron(R,R)+eye(9));
-        MA = MA(:,abs(diag(D))<1e-5);
+        MA = MA(:,abs(diag(D)) < tol);
         M.A = reshape(MA,3,3,[]);
         M.A = M.A-permute(M.A,[2 1 3]);
     else
@@ -66,7 +73,7 @@ for ii = 1:nSym
     M.V = cat(3,M.S,M.A);
     % remove zero vectors
     for jj = 1:size(M.V,3)
-        if norm(M.V(:,:,jj))<1e-5
+        if norm(M.V(:,:,jj)) < tol
             idx = [idx jj]; %#ok<AGROW>
         end
     end
@@ -83,7 +90,7 @@ for ii = 1:nSym
     end
 end
 
-% make nice form 6 symmetric + 3 assymetric
+% make nice form 6 symmetric + 3 asymetric
 %V0 = eye(9);
 V0 = zeros(9);
 % symmetric

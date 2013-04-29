@@ -1,12 +1,18 @@
 function atomList = atom(obj)
 % generates all atomic positions in the unit cell
 %
-% atom.r    Positions of the atoms in lattice units, dimensions are
-%           [3 nAtom].
-% atom.idx  Pointer to the atom in the unit_cell field, dimensions are
-%           [nAtom 1].
-% atom.mag  Logical variable, whether the spin of the atom is non-zero,
-%           dimensions are [nAtom 1].
+% atomList = ATOM(obj)
+%
+% Output:
+% atomList is a structure with the following fields:
+%
+% r     Positions of the atoms in lattice units, dimensions are [3 nAtom].
+% idx   Pointer to the atom in the unit_cell field, dimensions are 
+%       [nAtom 1].
+% mag   Logical variable, whether the spin of the atom is non-zero,
+%       dimensions are [nAtom 1].
+%
+% See also SW.MATOM.
 %
 
 % Defines the number of independent atoms.

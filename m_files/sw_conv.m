@@ -240,7 +240,11 @@ end
 % sum up twin spectra if requested
 if param.sumtwin
     % normalised volume fractions of the twins
-    vol = spectra.obj.twin.vol/sum(spectra.obj.twin.vol);
+    if isfield(spectra,'obj')
+        vol = spectra.obj.twin.vol/sum(spectra.obj.twin.vol);
+    else
+        vol = 1;
+    end
     swConvT = cell(nConv,1);
     DSFT    = cell(nConv,1);
     for ii = 1:nConv

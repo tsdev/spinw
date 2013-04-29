@@ -1,9 +1,11 @@
 function mAtomList = matom(obj, varargin)
 % generates all magnetic atoms in the unit cell
 %
-% Same as .atom, but only lists the magnetic atoms, which has non-zero
+% Same as sw.atom, but only lists the magnetic atoms, which has non-zero
 % spin. For speedup, call obj.matom(true), then it reads saved atomic
 % positions from obj.
+%
+% See also SW.ATOM.
 %
 
 if (nargin>1) && ~isempty(obj.matomstore)
@@ -11,7 +13,7 @@ if (nargin>1) && ~isempty(obj.matomstore)
     mAtomList = obj.matomstore;
 else
     
-    atomList = obj.atom;
+    atomList      = obj.atom;
     
     mAtomList.r   = atomList.r(:,atomList.mag==1);
     mAtomList.idx = atomList.idx(:,atomList.mag==1);

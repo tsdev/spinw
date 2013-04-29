@@ -216,9 +216,6 @@ for ii = 1:nHkl
 end
 
 if param.fitmode
-    % With eigenshuffle
-    [V,D] = eigenshuffle(gham);
-else
     % Without eigenshuffle
     V = zeros(2*nMagExt,2*nMagExt,nHkl);
     D = zeros(2*nMagExt,nHkl);
@@ -227,6 +224,9 @@ else
         [V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
         D(:,ii)     = diag(Dtemp);
     end
+else
+    % With eigenshuffle
+    [V,D] = eigenshuffle(gham);
 end
 
 for ii = 1:nHkl

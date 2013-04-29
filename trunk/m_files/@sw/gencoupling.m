@@ -11,6 +11,9 @@ function obj = gencoupling(obj, varargin)
 %
 % Options:
 %
+% sym           If true, simmetry equivalent pairs of atoms are calculated.
+%               If false, equivalent pairs will be identified based on
+%               distance. Default is false.
 % nUnitCell     Edge length of the parallelepiped withing the
 %               algorithm searches for neares neighbours in lattice
 %               units. Default is 3.
@@ -23,9 +26,9 @@ function obj = gencoupling(obj, varargin)
 % See also SW.
 %
 
-inpForm.fname  = {'nUnitCell' 'maxDistance' 'tolDistance'};
-inpForm.defval = {3           6             1e-5         };
-inpForm.size   = {[1 1]       [1 1]         [1 1]        };
+inpForm.fname  = {'sym' 'nUnitCell' 'maxDistance' 'tolDistance'};
+inpForm.defval = {false 3           6             1e-5         };
+inpForm.size   = {[1 1] [1 1]       [1 1]         [1 1]        };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -145,7 +148,15 @@ if nMagAtom > 0
     end
     
     aniso = int32(zeros(1,nMagAtom));
-    
+    % symmetry equivalent couplings
+    if param.sym
+        sortM = double([coupling.idx; mAtom.idx(coupling.atom1); mAtom.idx(coupling.atom2)]');
+        sortM(:,2:3) = sort(sortM(:,2:3),2);
+        sortM = sortrows(sortM,1:3);
+        sortM = sum(bsxfun(@times,sortM, [1e6 1e3 1]),2);
+        sortM = [1; cumsum(sortM(2:end)~=sortM(1:end-1))+1];
+        coupling.idx = int32(sortM');
+    end
 else
     % If there is no magnetic atom the coupling and anisotropy are empty.
     coupling.dist    = [];

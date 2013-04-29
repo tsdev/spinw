@@ -1,6 +1,6 @@
 classdef sw < class_handlelight
-    % SW class stores information for calculating magnetic properties of
-    % crystals.
+    % SW class defines data structure and methods to calculate spin wave
+    % dispersion in magnetic crystals.
     %
     % SW(obj) constructs new sw class object. If obj is sw class, it only
     % checks its data integrity. If obj is struct type, it creates new sw
@@ -12,12 +12,20 @@ classdef sw < class_handlelight
     % example the lattice parameters:
     %   abc = sw.unit_cell.lat_const;
     %
-    % sw is a handle class, that means that only the handle of the object
+    % sw is a handle class, it means that only the handle of the object
     % is copied in a swobj1 = swobj2 command. To create a copy (clone) of
     % an sw object use:
     %    swobj1 = swobj2.copy;
     % See also:
     % <a href='/Applications/MATLAB_R2012b.app/help/matlab/matlab_oop/comparing-handle-and-value-classes.html'>Comparing handle and value classes</a>
+    %
+    % Documentation can be found here:
+    % <a href='https://wiki.helmholtz-berlin.de/spinw'>https://wiki.helmholtz-berlin.de/spinw</a>
+    % Forum for questions:
+    % <a href='https://groups.google.com/forum/#!forum/spinwforum'>https://groups.google.com/forum/#!forum/spinwforum</a>
+    % Lates version and bug reports/feature requests:
+    % <a href='http://code.google.com/p/spinw/'>http://code.google.com/p/spinw/</a>
+    %
     %
     
     properties
@@ -93,9 +101,11 @@ classdef sw < class_handlelight
             abc = [obj.lattice.lat_const obj.lattice.angle*180/pi];
         end
         function nMagExt = nmagext(obj)
+            % gives the number of magnetic atoms in the extended unit cell
             nMagExt = size(obj.mag_str.S,2);
         end
         function nTwin = ntwin(obj)
+            % gives the number of twins
             nTwin = size(obj.twin.vol,2);
         end
     end

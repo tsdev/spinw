@@ -53,19 +53,6 @@ if nargin==0
     return;
 end
 
-
-if isfield(spectra,'omega') && iscell(spectra.omega)
-    nTwin = numel(spectra.omega);
-else
-    nTwin = 1;
-end
-if iscell(spectra.swConv)
-    % number of convoluted spectras to plot
-    nTwinS = numel(spectra.swConv);
-else
-    nTwinS = 1;
-end
-
 inpForm.fname  = {'mode' 'mapplot' 'imag' 'aHandle' 'colorbar' 'dashed' };
 inpForm.defval = {4      false     true   0         true       false    };
 inpForm.size   = {[1 1]  [1 1]     [1 1]  [1 1]     [1 1]      [1 1]    };
@@ -74,16 +61,42 @@ inpForm.fname  = [inpForm.fname  {'convE' 'fontSize' 'colormap' 'axLim'}];
 inpForm.defval = [inpForm.defval {0       14         'auto'     'auto' }];
 inpForm.size   = [inpForm.size   {[1 1]   [1 1]      [-1 -2]    [1 -3] }];
 
-inpForm.fname  = [inpForm.fname  {'legend' 'title' 'nCol' 'twin' }];
-inpForm.defval = [inpForm.defval {true     true    500    1:nTwin}];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 1]  [1 -4] }];
+inpForm.fname  = [inpForm.fname  {'legend' 'title' 'nCol' 'twin'     }];
+inpForm.defval = [inpForm.defval {true     true    500    zeros(1,0) }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 1]  [1 -4]     }];
 
 param = sw_readparam(inpForm, varargin{:});
 
-% vector selects twins to plot
-if max(param.twin)>nTwin
-    warning('sw:sw_plotspec:WrongInput','Number of twins is wrong, plotting all twins!');
-    param.twin = 1:nTwin;
+% select twins for omega plot
+param.twin = round(param.twin);
+if isfield(spectra,'omega') && iscell(spectra.omega)
+    nTwin      = numel(spectra.omega);
+    if isempty(param.twin)
+        param.twin = 1:nTwin;
+    end
+    param.twin = param.twin((param.twin<=nTwin) & (param.twin>0));
+    if isempty(param.twin)
+        warning('sw:sw_plotspec:WrongInput','Number of twins is wrong, plotting all twins!');
+        param.twin = 1:nTwin;
+    end
+    nTwin      = numel(param.twin);
+else
+    nTwin = 1;
+end
+
+% select twins for convoluted plots
+if iscell(spectra.swConv)
+    % number of convoluted spectras to plot
+    nTwinS      = size(spectra.swConv,2);
+    param.twinS = param.twin((param.twin<=nTwinS) & (param.twin>0));
+    if isempty(param.twinS) && (nTwinS>1)
+        warning('sw:sw_plotspec:WrongInput','Number of twins is wrong, plotting all twins!');
+        param.twinS = 1:nTwinS;
+    end
+    nTwinS      = numel(param.twinS);
+else
+    nTwinS      = 1;
+    param.twinS = 1;
 end
 
 if param.mode == 4
@@ -141,8 +154,8 @@ if ~powmode
         swConv = {spectra.swConv};
         convmode = {spectra.convmode};
     else
-        swInt    = spectra.swInt;
-        swConv   = spectra.swConv;
+        swInt    = spectra.swInt(:,param.twinS);
+        swConv   = spectra.swConv(:,param.twinS);
         convmode = spectra.convmode;
     end
     
@@ -150,7 +163,7 @@ if ~powmode
     if ~iscell(spectra.omega)
         omega = {spectra.omega};
     else
-        omega = spectra.omega;
+        omega = spectra.omega(:,param.twin);
     end
     
     nMode   = size(omega{1},1);
@@ -199,7 +212,7 @@ switch param.mode
         axis0 = [xAxis(1) xAxis(end) yAxis(1) yAxis(end)];
         titleStr0 = 'Spin wave dispersion: \omega(Q)';
         % loop over the twins
-        for tt = param.twin
+        for tt = 1:nTwin
             plotr = real(omega{1,tt});
             ploti = imag(omega{1,tt});
             % loop over all spin wave modes
@@ -220,7 +233,7 @@ switch param.mode
         yLabel = 'Intensity (arb. u.)';
         titleStr0 = 'Intensity of the spin-spin correlation function: ';
         % loop over the twins
-        for tt = param.twinS
+        for tt = 1:nTwinS
             for jj = 1:nConv
                 plotr = real(swInt{jj,tt});
                 for ii = 1:nMode

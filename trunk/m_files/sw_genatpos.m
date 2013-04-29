@@ -10,15 +10,15 @@ function [rSave, symName] = sw_genatpos(sym, r, varargin)
 %               symmetry operators.
 % r             Atomic position in lattice units, dimensions are [1 3] or 
 %               [3 1].
-% {print}       Optional input, if defined, the result will be plotted on
-%               the command window.
+% {print}       Optional input, if true, the result will be plotted on the
+%               command window.
 %
 % Output:
 %
 % rSave         Generated atomic positions, dimensions are [3 nAtom].
 % symName       String, the name of  the space group.
 %
-% See also SW, SW_GENCOUPLING.
+% See also SW, SW.ATOM, SW.MATOM, SW_GENCOUPLING.
 %
 
 [transf, transl, symName] = sw_gensym(sym);
@@ -50,7 +50,7 @@ while Counter<=size(rSave,2)
     Counter = Counter+1;
 end
 
-if nargin>2
+if (nargin>2) && varargin{3}
     fprintf('Symmetry: %s\n',symName);
     fprintf('Atomic coordinates generated for: (%5.3f %5.3f %5.3f)\n',r);
     for ii = 1:size(rSave,2)

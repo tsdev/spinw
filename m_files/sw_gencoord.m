@@ -55,7 +55,7 @@ for ii = 1:nGen
     % take the least common multiplier
     P(ii) = lcm(M(ii),N(ii));
     for jj = 1:(P(ii)-1)
-        R = genOp(:,:,ii)^jj;clc
+        R = genOp(:,:,ii)^jj;
         
         nSym = size(symOp,3);
         for kk = 1:nSym

@@ -28,7 +28,14 @@ hButton  = get(hToolbar,'children');
 delete(hButton([1:(end-3) end-1 end]));
 
 % Loads the icon variable, that contains all the used icons.
-load([sw_rootdir 'icons.mat'],'icon');
+iconPath = [sw_rootdir 'dat_files' filesep 'icons.mat'];
+try
+    load(iconPath,'icon');
+catch err
+    error('spinw:sw_structfigure:FileNotFound',['Icon definition file not found: '...
+        regexprep(iconPath,'\' , '\\\') '!']);
+end
+
 
 % Change button backgrounds to the toolbar background color using
 % undocumented features
@@ -38,7 +45,7 @@ try
     jToolbar = get(get(hToolbar,'JavaContainer'),'ComponentPeer');
     jColor   = jToolbar.getParent.getParent.getBackground();
     bkgColor = [get(jColor,'Red') get(jColor,'Green') get(jColor,'Blue')];
-    fNames   = fieldnames(icon);
+    fNames   = fieldnames(icon); %#ok<NODEF>
     for ii = 1:length(fNames)
         matSel = icon.(fNames{ii})*255;
         matSelR = matSel(:,:,1);
@@ -51,6 +58,8 @@ try
         matSel = cat(3,matSelR,matSelB,matSelG);
         icon.(fNames{ii}) = matSel/255;
     end
+catch %#ok<CTCH>
+    warning('sw:sw_structfigure:JavaSupport','Some functionality wont work, due to Java incompatibility');
 end
 
 button.aAxis = uipushtool(hToolbar,'CData',icon.aAxis,'TooltipString','View direction: a axis',...

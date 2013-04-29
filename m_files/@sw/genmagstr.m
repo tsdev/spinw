@@ -95,6 +95,8 @@ function obj = genmagstr(obj, varargin)
 %           use @gm_planar.
 % x0        Input parameters for param.func function, dimensions are 
 %           [1 nx].
+% norm      Set the length of the generated magnetic moments to be equal to
+%           the spin of the magnetic atoms. Default is true.
 %
 % See also SW, SW.ANNEAL, SW.OPTMAGSTR, GM_SPHERICAL3D, GM_PLANAR.
 %
@@ -105,10 +107,10 @@ inpForm.defval = {'extend' obj.mag_str.N_ext obj.mag_str.k [0 0 1]  obj.mag_str.
 inpForm.size   = {[1 -1]   [1 3]             [1 3]         [1 3]   [3 -2]        [1 1] [1 1]    };
 inpForm.soft   = {false    false             false         false   false         false false    };
 
-inpForm.fname  = [inpForm.fname  {'func'          'x0'  }];
-inpForm.defval = [inpForm.defval {@gm_spherical3d []    }];
-inpForm.size   = [inpForm.size   {[1 1]           [1 -3]}];
-inpForm.soft   = [inpForm.soft   {false           true  }];
+inpForm.fname  = [inpForm.fname  {'func'          'x0'   'norm'}];
+inpForm.defval = [inpForm.defval {@gm_spherical3d []     true  }];
+inpForm.size   = [inpForm.size   {[1 1]           [1 -3] [1 1] }];
+inpForm.soft   = [inpForm.soft   {false           true   false }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -228,6 +230,11 @@ switch param.mode
         
     otherwise
         error('sw:genmagstr:WrongMode','Wrong param.mode value!');
+end
+
+% normalize the magnetic moments
+if param.norm
+    S = bsxfun(@rdivide,S,sqrt(sum(S.^2,1))./repmat(mAtom.S,[1 prod(nExt)]));
 end
 
 mag_str.N_ext = int32(nExt(:))';

@@ -23,10 +23,11 @@ function [formFactVal, coeff, flag] = sw_mff(atomName, Q)
 formFact = struct;
 
 % Open the form factor definition file.
-fid = fopen([sw_rootdir 'formfactor.dat']);
+ffPath = [sw_rootdir 'dat_files' filesep 'formfactor.dat'];
+fid = fopen(ffPath);
 if fid == -1
     error('sw:sw_mff:FileNotFound',['Form factor definition file not found: '...
-        regexprep(sw_rootdir,'\' , '\\\') 'formfactor.dat!']);
+        regexprep(ffPath,'\' , '\\\') '!']);
 end
 
 % Read all line from file

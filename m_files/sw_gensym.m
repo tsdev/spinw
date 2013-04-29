@@ -21,11 +21,12 @@ function [transf, transl, symName, symOp] = sw_gensym(varargin)
 
 if (nargin == 0) || (~ischar(varargin{1}))
     % Open the symmetry definition file.
-    fid = fopen([sw_rootdir 'symmetry.dat']);
+    symPath = [sw_rootdir 'dat_files' filesep 'symmetry.dat'];
+    fid = fopen(symPath);
     if fid == -1
         
         error('spinw:sw_gensym:FileNotFound',['Symmetry definition file not found: '...
-            regexprep(sw_rootdir,'\' , '\\\') 'symmetry.dat!']);
+            regexprep(symPath,'\' , '\\\') '!']);
     end
 end
 

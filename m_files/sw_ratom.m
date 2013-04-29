@@ -10,11 +10,11 @@ function radius = sw_ratom(atomSymb)
 %
 
 % Open the atomic radius definition file.
-fid = fopen([sw_rootdir 'atomradius.dat']);
+rPath = [sw_rootdir 'dat_files' filesep 'atomradius.dat'];
+fid = fopen(rPath);
 if fid == -1
-    
     error('spinw:sw_ratom:FileNotFound',['Atomic radius definition file not found: '...
-        regexprep(sw_rootdir,'\' , '\\\') 'atomradius.dat!']);
+        regexprep(rPath,'\' , '\\\') '!']);
 end
 
 atom = struct;

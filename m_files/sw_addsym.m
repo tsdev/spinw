@@ -1,17 +1,22 @@
 function sym = sw_addsym(symStr, symName)
-% sym = SW_ADDSYM(symStr, {symName}) saves the symmetry generators in 
-% symStr into the symmetry.dat file and returns the number of the space 
+% sym = SW_ADDSYM(symStr, {symName}) saves the symmetry generators in
+% symStr into the symmetry.dat file and returns the number of the space
 % group.
 %
 % See also SW_GENSYM.
 %
 
-symPath = [sw_rootdir 'symmetry.dat'];
+symPath = [sw_rootdir 'dat_files' filesep 'symmetry.dat'];
 % Count the number of lines
 fid = fopen(symPath);
+if fid == -1
+    error('spinw:sw_gensym:FileNotFound',['Symmetry definition file not found: '...
+        regexprep(symPath,'\' , '\\\') '!']);
+end
+
 nLines = 0;
 while (fgets(fid) ~= -1)
-  nLines = nLines+1;
+    nLines = nLines+1;
 end
 fclose(fid);
 

@@ -59,7 +59,8 @@ function spectra = sw_conv(spectra, varargin)
 %           depending on the Boltzmann constant (sw.unit.kB). Default is
 %           zero (no Bose factor).
 % sumtwin   If true, the spectra of the different twins will be summed
-%           together. Default is true.
+%           together weighted with the normalized volume fractions. Default
+%           is true.
 %
 % The Blume-Maleev coordinate system is a cartesian coordinate system
 % with (xBM, yBM and zBM) basis vectors as follows:
@@ -81,8 +82,8 @@ function spectra = sw_conv(spectra, varargin)
 % dimensions of the cell are [nConv nTwin].
 %
 % T         Input temperature.
-% convmode  Input convolution mode.
-% Evect     Input energy bin.
+% convmode  Cell that contains the input convolution mode strings.
+% Evect     Input energy bin vector.
 %
 % See also SW.SPINWAVE, SW.SWINC, SW_NEUTRON.
 %
@@ -124,7 +125,7 @@ if iscell(spectra.omega)
     Pab   = spectra.Pab;
     Mab   = spectra.Mab;
     Sperp = spectra.Sperp;
-
+    
 else
     nTwin = 1;
     omega = {spectra.omega};
@@ -238,14 +239,20 @@ end
 
 % sum up twin spectra if requested
 if param.sumtwin
-    for tt = 1:nTwin
-        for ii = 1:nConv
-            swConv{ii,1} = swConv{ii,1} + swConv{ii,tt};
-            DSF{ii,1}    = DSF{ii,1} + DSF{ii,tt};
+    % normalised volume fractions of the twins
+    vol = spectra.obj.twin.vol/sum(spectra.obj.twin.vol);
+    swConvT = cell(nConv,1);
+    DSFT    = cell(nConv,1);
+    for ii = 1:nConv
+        swConvT{ii} = swConv{ii,1}*vol(1);
+        DSFT{ii}    = DSF{ii,1}*vol(1);
+        for tt = 2:nTwin
+            swConvT{ii} = swConvT{ii} + swConv{ii,tt}*vol(tt);
+            DSFT{ii}    = DSFT{ii} + DSF{ii,tt}*vol(tt);
         end
     end
-    swConv = swConv(:,1);
-    DSF    = DSF(:,1);
+    swConv = swConvT;
+    DSF    = DSFT;
 end
 
 

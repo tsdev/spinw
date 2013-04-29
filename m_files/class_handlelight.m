@@ -1,4 +1,4 @@
-classdef class_handle_light < handle
+classdef class_handlelight < handle
     methods(Hidden)
         function lh = addlistener(varargin)
             lh = addlistener@handle(varargin{:});

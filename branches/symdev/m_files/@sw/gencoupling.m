@@ -20,15 +20,15 @@ function obj = gencoupling(obj, varargin)
 % maxDistance   Maximum inter-ion distance that will be stored in the
 %               obj.coupling property in units of Angstrom. Default
 %               is 6.
-% tolDistance   Tolerance of distance, within two couplings are regarded
+% tol           Tolerance of distance, within two couplings are regarded
 %               equivalent, default is 1e-5.
 %
 % See also SW.
 %
 
-inpForm.fname  = {'sym' 'nUnitCell' 'maxDistance' 'tolDistance'};
-inpForm.defval = {false 3           6             1e-5         };
-inpForm.size   = {[1 1] [1 1]       [1 1]         [1 1]        };
+inpForm.fname  = {'sym' 'nUnitCell' 'maxDistance' 'tol' };
+inpForm.defval = {false 3           6             1e-5  };
+inpForm.size   = {[1 1] [1 1]       [1 1]         [1 1] };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -140,7 +140,7 @@ if nMagAtom > 0
     
     index = 1;
     for ii=1:nDist
-        if abs(coupling.dist(ii)-runVal)>param.tolDistance
+        if abs(coupling.dist(ii)-runVal)>param.tol
             index = index+1;
             runVal = coupling.dist(ii);
         end
@@ -150,12 +150,37 @@ if nMagAtom > 0
     aniso = int32(zeros(1,nMagAtom));
     % symmetry equivalent couplings
     if param.sym
+        % sort couplings according to atom pair type
         sortM = double([coupling.idx; mAtom.idx(coupling.atom1); mAtom.idx(coupling.atom2)]');
         sortM(:,2:3) = sort(sortM(:,2:3),2);
         sortM = sortrows(sortM,1:3);
         sortM = sum(bsxfun(@times,sortM, [1e6 1e3 1]),2);
         sortM = [1; cumsum(sortM(2:end)~=sortM(1:end-1))+1];
         coupling.idx = int32(sortM');
+        % further sorting according the symmetry equivalent center points
+        % take the first column for every coupling type and generate the
+        % equivalent center points and compare it with the other equivalent
+        % couplings
+        % center point of the couplings
+        cPoint = mAtom.r(:,coupling.atom1) + coupling.dist/2;
+        % get the symmetry operators
+        [symOp, symTr] = sw_gencoord(obj.lattice.sym);
+        % loop over the coupling types
+        for ii = 1:max(coupling.idx)
+            cSel = coupling.idx == ii;
+            % loop over inequivalent center points
+            while any(cSel)
+                % center points of the selected couplings
+                cPointSel = cPoint(:,cSel);
+                idx = find(cSel,1,'first');
+                % symmetry equivalent center points generated from the
+                % first
+                cGen = sw_genatpos({symOp symTr},cPoint(:,1));
+                [~, iUni] = uniquetol([cGen cPoint(:,2:end)],tol,'rows','first');
+                % TODO
+                
+            end
+        end
     end
 else
     % If there is no magnetic atom the coupling and anisotropy are empty.

@@ -7,7 +7,8 @@ function [rSym, aIdx, isMoved, symName] = sw_genatpos(sym, r, fid, tol)
 % Input:
 %
 % sym           Line index in the symmetry.dat file or string of the
-%               symmetry operators.
+%               symmetry operators or a cell containing the output of
+%               sw_gencoord().
 % r             Atomic position in lattice units, dimensions are [3 nAtom].
 % {fid}         Optional input, the file identifier to print the result.
 %               To print onto the Command Window, use fid = 1; default is
@@ -43,7 +44,12 @@ if nargin < 4
     tol = 1e-5;
 end
 
-[symOp, symTr, symName] = sw_gencoord(sym, fid);
+if ~iscell(sym)
+    [symOp, symTr, symName] = sw_gencoord(sym, fid);
+else
+    symOp = sym{1};
+    symTr = sym{2};
+end
 
 nAtom = size(r,2);
 nSym  = size(symOp,3);

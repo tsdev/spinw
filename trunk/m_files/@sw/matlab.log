@@ -1,0 +1,1732 @@
+sw_genatpos2(1,[0;0;0])
+<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m',39,1)">39  </a>end
+rTemp
+
+rTemp =
+
+     0
+     0
+     0
+
+if system_dependent('IsDebugMode')==1, dbquit; end
+rTemp
+{Undefined function or variable 'rTemp'.
+} 
+sw_genatpos2(1,[0;0;0])
+
+ans =
+
+     0
+     0
+     0
+
+sw_genatpos2(2,[0.123;0.312;0.231])
+
+ans =
+
+   1.2300e-01   8.7700e-01
+   3.1200e-01   6.8800e-01
+   2.3100e-01   7.6900e-01
+
+format short
+sw_genatpos2(2,[0.123;0.312;0.231])
+
+ans =
+
+    0.1230    0.8770
+    0.3120    0.6880
+    0.2310    0.7690
+
+sw_genatpos2(100,[0.123;0.312;0.231])
+
+ans =
+
+    0.1230    0.8770    0.8770    0.1230    0.6230    0.3770    0.6230    0.3770
+    0.3120    0.6880    0.3120    0.6880    0.1880    0.8120    0.8120    0.1880
+    0.2310    0.2310    0.2310    0.2310    0.2310    0.2310    0.2310    0.2310
+
+sw_genatpos2(100,[0.5;0.5;0.5])
+
+ans =
+
+    0.5000    0.5000    0.5000    0.5000         0         0         0         0
+    0.5000    0.5000    0.5000    0.5000         0         0         0         0
+    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000
+
+rsym=sw_genatpos2(100,[0.5;0.5;0.5])
+
+rsym =
+
+    0.5000    0.5000    0.5000    0.5000         0         0         0         0
+    0.5000    0.5000    0.5000    0.5000         0         0         0         0
+    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000
+
+rsym-rsym(:,1)
+{Error using <a href="matlab:helpUtils.errorDocCallback('minus')" style="font-weight:bold"> - </a>
+Matrix dimensions must agree.
+} 
+rsym-repmat(rsym(:,1),[1 8])
+
+ans =
+
+         0         0         0         0   -0.5000   -0.5000   -0.5000   -0.5000
+         0         0         0         0   -0.5000   -0.5000   -0.5000   -0.5000
+         0         0         0         0         0         0         0         0
+
+format long
+rsym-repmat(rsym(:,1),[1 8])
+
+ans =
+
+  Columns 1 through 7
+
+                   0                   0                   0                   0  -0.500000000000000  -0.500000000000000  -0.500000000000000
+                   0                   0                   0                   0  -0.500000000000000  -0.500000000000000  -0.500000000000000
+                   0                   0                   0                   0                   0                   0                   0
+
+  Column 8
+
+  -0.500000000000000
+  -0.500000000000000
+                   0
+
+clc
+rsym-repmat(rsym(:,1),[1 8])
+
+ans =
+
+  Columns 1 through 7
+
+                   0                   0                   0                   0  -0.500000000000000  -0.500000000000000  -0.500000000000000
+                   0                   0                   0                   0  -0.500000000000000  -0.500000000000000  -0.500000000000000
+                   0                   0                   0                   0                   0                   0                   0
+
+  Column 8
+
+  -0.500000000000000
+  -0.500000000000000
+                   0
+
+clc
+rsym=sw_genatpos2(100,[0.5;0.5;0.5])
+
+rsym =
+
+  Columns 1 through 7
+
+   0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000                   0                   0                   0
+   0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000                   0                   0                   0
+   0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000
+
+  Column 8
+
+                   0
+                   0
+   0.500000000000000
+
+format short
+unique(rsym)
+
+ans =
+
+         0
+    0.5000
+
+unique(rsym,'row')
+{Error using <a href="matlab:helpUtils.errorDocCallback('unique', '/Applications/MATLAB_R2012b.app/toolbox/matlab/ops/unique.m', 111)" style="font-weight:bold">unique</a> (<a href="matlab: opentoline('/Applications/MATLAB_R2012b.app/toolbox/matlab/ops/unique.m',111,0)">line 111</a>)
+Unrecognized flag 'row'. Valid flags are 'rows', 'first', 'last', 'stable', 'sorted', 'legacy', 'R2012a'.
+} 
+unique(rsym,'rows')
+
+ans =
+
+    0.5000    0.5000    0.5000    0.5000         0         0         0         0
+    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000
+
+unique(rsym','rows')
+
+ans =
+
+         0         0    0.5000
+    0.5000    0.5000    0.5000
+
+rsym
+
+rsym =
+
+    0.5000    0.5000    0.5000    0.5000         0         0         0         0
+    0.5000    0.5000    0.5000    0.5000         0         0         0         0
+    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000
+
+unique(rsym','rows')'
+
+ans =
+
+         0    0.5000
+         0    0.5000
+    0.5000    0.5000
+
+rsym
+
+rsym =
+
+    0.5000    0.5000    0.5000    0.5000         0         0         0         0
+    0.5000    0.5000    0.5000    0.5000         0         0         0         0
+    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000    0.5000
+
+rsym=sw_genatpos2(100,[0.5;0.5;0.5])
+
+rsym =
+
+         0    0.5000
+         0    0.5000
+    0.5000    0.5000
+
+rsym=sw_genatpos2(100,[0.5;0.5;0.5],1)
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+
+Atomic coordinates generated for: (0.500 0.500 0.500)
+r1 (0.000 0.000 0.500)
+r2 (0.000 0.000 0.500)
+
+
+rsym =
+
+         0    0.5000
+         0    0.5000
+    0.5000    0.5000
+
+rsym=sw_genatpos2(100,[0.5;0.5;0.5],1);
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+
+Atomic coordinates generated for: (0.500 0.500 0.500)
+r1 (0.000 0.000 0.500)
+r2 (0.000 0.000 0.500)
+
+rsym=sw_genatpos2(100,[0.5 0;0.5 0;0.5 0],1);
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+
+Atomic coordinates generated for: (0.500 0.500 0.500)
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+r1 (0.000 0.000 0.500)
+r2 (0.000 0.000 0.500)
+
+Atomic coordinates generated for: (0.500 0.500 0.500)
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+r1 (0.500 0.500 0.000)
+r2 (0.500 0.500 0.000)
+
+rsym=sw_genatpos2(100,[0;0;0],1);
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+r1 (0.000 0.000 0.000)
+r2 (0.000 0.000 0.000)
+
+rsym=sw_genatpos2(100,[0;0;0],1);
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m',51,1)">51  </a>if fid
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+rSym{ii}
+
+ans =
+
+         0    0.5000
+         0    0.5000
+         0         0
+
+size(rSym{ii},2)
+
+ans =
+
+     2
+
+rsym=sw_genatpos2(100,[0;0;0],1);
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+r1 (0.000 0.000 0.000)
+r2 (0.500 0.500 0.000)
+
+rsym=sw_genatpos2(100,[0;0;0],1)
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+r1 (0.000 0.000 0.000)
+r2 (0.500 0.500 0.000)
+
+
+rsym =
+
+         0    0.5000
+         0    0.5000
+         0         0
+
+rsym=sw_genatpos2(100,[0;0;0],1);
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+r1 (0.000 0.000 0.000)
+r2 (0.500 0.500 0.000)
+
+rsym=sw_genatpos2(100,[0 1/2;0 1/2;0 1/2],1);
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+
+Atomic coordinates generated for: (0.500 0.500 0.500)
+r1 (0.000 0.000 0.000)
+r2 (0.500 0.500 0.000)
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+
+Atomic coordinates generated for: (0.500 0.500 0.500)
+r1 (0.000 0.000 0.500)
+r2 (0.500 0.500 0.500)
+
+clc
+clc
+rsym=sw_genatpos2(100,[0 1/2;0 1/2;0 1/2],1);
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+
+Atomic coordinates generated for: (0.500 0.500 0.500)
+r1 (0.000 0.000 0.000)
+r2 (0.500 0.500 0.000)
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+
+Atomic coordinates generated for: (0.500 0.500 0.500)
+r1 (0.000 0.000 0.500)
+r2 (0.500 0.500 0.500)
+
+clc
+rsym=sw_genatpos2(100,[0 1/2;0 1/2;0 1/2],1);
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+r1 (0.000 0.000 0.000)
+r2 (0.500 0.500 0.000)
+
+Atomic coordinates generated for: (0.500 0.500 0.500)
+r1 (0.000 0.000 0.500)
+r2 (0.500 0.500 0.500)
+
+rsym=sw_genatpos2(100,[0 1/2;0 1/2;0 1/2],1)
+General coordinates of space group: P 4 b m    
+(1) x,y,z
+(2) -x,-y,z
+(3) -y,x,z
+(4) y,-x,z
+(5) x+1/2,-y+1/2,z
+(6) -x+1/2,y+1/2,z
+(7) y+1/2,x+1/2,z
+(8) -y+1/2,-x+1/2,z
+
+Atomic coordinates generated for: (0.000 0.000 0.000)
+r1 (0.000 0.000 0.000)
+r2 (0.500 0.500 0.000)
+
+Atomic coordinates generated for: (0.500 0.500 0.500)
+r1 (0.000 0.000 0.500)
+r2 (0.500 0.500 0.500)
+
+
+rsym = 
+
+    [3x2 double]    [3x2 double]
+
+clc
+Elapsed time is 1.405607 seconds.
+Elapsed time is 3.762216 seconds.
+nargin(@sin(x)
+ nargin(@sin(x)
+           |
+{Error: Unbalanced or unexpected parenthesis or bracket.
+} 
+nargin(@sin(x))
+ nargin(@sin(x))
+           |
+{Error: Unbalanced or unexpected parenthesis or bracket.
+} 
+nargin(@sin)
+
+ans =
+
+     1
+
+nargin(@sw.horace)
+{Error using <a href="matlab:helpUtils.errorDocCallback('nargin')" style="font-weight:bold">nargin</a>
+Function sw.horace does not exist.
+} 
+nargin(@horace)
+
+ans =
+
+    -1
+
+nargin(@mngeo.horace)
+
+ans =
+
+    -1
+
+nargin(@(x)mngeo.horace(x))
+
+ans =
+
+     1
+
+nargin(@(h,k,l,p)mngeo.horace(x))
+
+ans =
+
+     4
+
+nargout(@(h,k,l,p)mngeo.horace(x))
+
+ans =
+
+    -1
+
+Elapsed time is 7.062786 seconds.
+{Subscripted assignment dimension mismatch.
+
+Error in <a href="matlab:helpUtils.errorDocCallback('sw_genatpos', '/Users/sandortoth/sw_svn/trunk/m_files/sw_genatpos.m', 30)" style="font-weight:bold">sw_genatpos</a> (<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/m_files/sw_genatpos.m',30,0)">line 30</a>)
+rSave(:,1) = mod(r,1);
+} 
+{Error using <a href="matlab:helpUtils.errorDocCallback('times')" style="font-weight:bold"> .* </a>
+Matrix dimensions must agree.
+
+Error in <a href="matlab:helpUtils.errorDocCallback('sw_genatpos2', '/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m', 46)" style="font-weight:bold">sw_genatpos2</a> (<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m',46,0)">line 46</a>)
+    rTemp = mod(permute(sum(repmat(r(:,ii),[1 3 nSym]).*symOp,2),[1 3 2])+symTr,1);
+} 
+{Error using <a href="matlab:helpUtils.errorDocCallback('times')" style="font-weight:bold"> .* </a>
+Matrix dimensions must agree.
+
+Error in <a href="matlab:helpUtils.errorDocCallback('sw_genatpos2', '/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m', 46)" style="font-weight:bold">sw_genatpos2</a> (<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m',46,0)">line 46</a>)
+    rTemp = mod(permute(sum(repmat(r(:,ii),[1 3 nSym]).*symOp,2),[1 3 2])+symTr,1);
+} 
+clc
+tic
+for ii = 1:230
+    sw_genatpos(ii, r);
+end
+{Subscripted assignment dimension mismatch.
+
+Error in <a href="matlab:helpUtils.errorDocCallback('sw_genatpos', '/Users/sandortoth/sw_svn/trunk/m_files/sw_genatpos.m', 30)" style="font-weight:bold">sw_genatpos</a> (<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/m_files/sw_genatpos.m',30,0)">line 30</a>)
+rSave(:,1) = mod(r,1);
+} 
+tic
+for ii = 1:230
+    sw_genatpos(ii, r);
+end
+{Subscripted assignment dimension mismatch.
+
+Error in <a href="matlab:helpUtils.errorDocCallback('sw_genatpos', '/Users/sandortoth/sw_svn/trunk/m_files/sw_genatpos.m', 30)" style="font-weight:bold">sw_genatpos</a> (<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/m_files/sw_genatpos.m',30,0)">line 30</a>)
+rSave(:,1) = mod(r,1);
+} 
+Elapsed time is 26.299222 seconds.
+Elapsed time is 1.659827 seconds.
+rsym=sw_genatpos2(186,[0 0 0.44; 0.171 0.828 0.687]',1)
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.000 0.000 0.440)
+r1 (0.000 0.000 0.440)
+r2 (0.000 0.000 0.940)
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.000 0.172 0.187)
+r2 (0.000 0.172 0.687)
+r3 (0.000 0.828 0.187)
+r4 (0.000 0.828 0.687)
+r5 (0.171 0.000 0.187)
+r6 (0.171 0.000 0.687)
+r7 (0.171 0.828 0.187)
+r8 (0.171 0.828 0.687)
+r9 (0.829 0.000 0.187)
+r10 (0.829 0.000 0.687)
+r11 (0.829 0.172 0.187)
+r12 (0.829 0.172 0.687)
+
+
+rsym = 
+
+    [3x2 double]    [3x12 double]
+
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.000 0.000 0.440)
+r1 (0.000 0.000 0.440)
+r2 (0.000 0.000 0.940)
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.000 0.172 0.187)
+r2 (0.000 0.172 0.687)
+r3 (0.000 0.828 0.187)
+r4 (0.000 0.828 0.687)
+r5 (0.171 0.000 0.187)
+r6 (0.171 0.000 0.687)
+r7 (0.171 0.828 0.187)
+r8 (0.171 0.828 0.687)
+r9 (0.829 0.000 0.187)
+r10 (0.829 0.000 0.687)
+r11 (0.829 0.172 0.187)
+r12 (0.829 0.172 0.687)
+
+{Index exceeds matrix dimensions.
+
+Error in <a href="matlab:helpUtils.errorDocCallback('sw_genatpos', '/Users/sandortoth/sw_svn/trunk/m_files/sw_genatpos.m', 53)" style="font-weight:bold">sw_genatpos</a> (<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/m_files/sw_genatpos.m',53,0)">line 53</a>)
+if (nargin>2) && varargin{3}
+} 
+r
+
+r =
+
+         0    0.1710
+         0    0.8280
+    0.4400    0.6870
+
+rsym=sw_genatpos(186,r(:,1),1);
+{Index exceeds matrix dimensions.
+
+Error in <a href="matlab:helpUtils.errorDocCallback('sw_genatpos', '/Users/sandortoth/sw_svn/trunk/m_files/sw_genatpos.m', 53)" style="font-weight:bold">sw_genatpos</a> (<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/m_files/sw_genatpos.m',53,0)">line 53</a>)
+if (nargin>2) && varargin{3}
+} 
+rsym=sw_genatpos(186,r(:,1),1);
+Symmetry: P 63 m c   
+Atomic coordinates generated for: (0.000 0.000 0.440)
+r1 (0.000 0.000 0.440)
+r2 (0.000 0.000 0.940)
+rsym=sw_genatpos(186,r(:,2),1);
+Symmetry: P 63 m c   
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.828 0.687)
+r2 (0.172 0.343 0.687)
+r3 (0.829 0.172 0.187)
+r4 (0.657 0.829 0.687)
+r5 (0.828 0.657 0.187)
+r6 (0.343 0.171 0.187)
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.000 0.172 0.187)
+r2 (0.000 0.172 0.687)
+r3 (0.000 0.828 0.187)
+r4 (0.000 0.828 0.687)
+r5 (0.171 0.000 0.187)
+r6 (0.171 0.000 0.687)
+r7 (0.171 0.828 0.187)
+r8 (0.171 0.828 0.687)
+r9 (0.829 0.000 0.187)
+r10 (0.829 0.000 0.687)
+r11 (0.829 0.172 0.187)
+r12 (0.829 0.172 0.687)
+
+Symmetry: P 63 m c   
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.828 0.687)
+r2 (0.172 0.343 0.687)
+r3 (0.829 0.172 0.187)
+r4 (0.657 0.829 0.687)
+r5 (0.828 0.657 0.187)
+r6 (0.343 0.171 0.187)
+rsym=sw_genatpos2(186,r(:,2),1);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m',39,1)">39  </a>nAtom = size(r,2);
+symOp
+
+symOp(:,:,1) =
+
+     1     0     0
+     0     1     0
+     0     0     1
+
+
+symOp(:,:,2) =
+
+     0    -1     0
+     1    -1     0
+     0     0     1
+
+
+symOp(:,:,3) =
+
+    -1     1     0
+    -1     0     0
+     0     0     1
+
+
+symOp(:,:,4) =
+
+    -1     0     0
+     0    -1     0
+     0     0     1
+
+
+symOp(:,:,5) =
+
+     0     1     0
+    -1     1     0
+     0     0     1
+
+
+symOp(:,:,6) =
+
+     1    -1     0
+     1     0     0
+     0     0     1
+
+
+symOp(:,:,7) =
+
+     0    -1     0
+    -1     0     0
+     0     0     1
+
+
+symOp(:,:,8) =
+
+     1     0     0
+     1    -1     0
+     0     0     1
+
+
+symOp(:,:,9) =
+
+    -1     1     0
+     0     1     0
+     0     0     1
+
+
+symOp(:,:,10) =
+
+     0     1     0
+     1     0     0
+     0     0     1
+
+
+symOp(:,:,11) =
+
+    -1     0     0
+    -1     1     0
+     0     0     1
+
+
+symOp(:,:,12) =
+
+     1    -1     0
+     0    -1     0
+     0     0     1
+
+symTr
+
+symTr =
+
+         0         0         0         0         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0         0         0         0         0
+         0         0         0    0.5000    0.5000    0.5000         0         0         0    0.5000    0.5000    0.5000
+
+symName
+
+symName =
+
+P 63 m c   
+
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+rTemp
+
+rTemp =
+
+    0.1710    0.8290         0    0.8290    0.1710         0    0.8290    0.1710         0    0.1710    0.8290         0
+    0.8280         0    0.1720    0.1720         0    0.8280    0.1720         0    0.8280    0.8280         0    0.1720
+    0.6870    0.6870    0.6870    0.1870    0.1870    0.1870    0.6870    0.6870    0.6870    0.1870    0.1870    0.1870
+
+if system_dependent('IsDebugMode')==1, dbquit; end
+r = [0 0 0.44; 0.171 0.829 0.687]';
+rsym=sw_genatpos2(186,r(:,2),1);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.829 0.687)
+r1 (0.000 0.171 0.187)
+r2 (0.000 0.171 0.687)
+r3 (0.000 0.829 0.187)
+r4 (0.000 0.829 0.687)
+r5 (0.171 0.000 0.187)
+r6 (0.171 0.000 0.687)
+r7 (0.171 0.829 0.187)
+r8 (0.171 0.829 0.687)
+r9 (0.829 0.000 0.187)
+r10 (0.829 0.000 0.687)
+r11 (0.829 0.171 0.187)
+r12 (0.829 0.171 0.687)
+
+r = [0 0 0.44; 0.171 0.829 0.687]';
+rsym=sw_genatpos2(186,r(:,2),1);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m',48,1)">48  </a>    rSym{ii} = unique(rTemp','rows')';
+rTemp
+
+rTemp =
+
+    0.1710    0.8290         0    0.8290    0.1710         0    0.8290    0.1710         0    0.1710    0.8290         0
+    0.8290         0    0.1710    0.1710         0    0.8290    0.1710         0    0.8290    0.8290         0    0.1710
+    0.6870    0.6870    0.6870    0.1870    0.1870    0.1870    0.6870    0.6870    0.6870    0.1870    0.1870    0.1870
+
+if system_dependent('IsDebugMode')==1, dbquit; end
+r = [0 0 0.44; 0.171 -0.171 0.687]';
+rsym=sw_genatpos2(186,r(:,2),1);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m',48,1)">48  </a>    rSym{ii} = unique(rTemp','rows')';
+rTemp
+
+rTemp =
+
+    0.1710    0.8290         0    0.8290    0.1710         0    0.8290    0.1710         0    0.1710    0.8290         0
+    0.8290         0    0.1710    0.1710         0    0.8290    0.1710         0    0.8290    0.8290         0    0.1710
+    0.6870    0.6870    0.6870    0.1870    0.1870    0.1870    0.6870    0.6870    0.6870    0.1870    0.1870    0.1870
+
+r = [0 0 0.44; 0.171 -0.171 0.687]';
+rsym=sw_genatpos2(186,r(:,2),1);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 -0.171 0.687)
+r1 (0.171 0.342 0.687)
+r2 (0.171 0.829 0.687)
+r3 (0.342 0.171 0.187)
+r4 (0.658 0.829 0.687)
+r5 (0.829 0.171 0.187)
+r6 (0.829 0.658 0.187)
+
+r = [0 0 0.44; 0.171 0.828 0.687]';
+rsym=sw_genatpos2(186,r(:,2),1);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.343 0.172 0.187)
+r7 (0.657 0.828 0.687)
+r8 (0.657 0.829 0.687)
+r9 (0.828 0.171 0.187)
+r10 (0.828 0.657 0.187)
+r11 (0.829 0.172 0.187)
+r12 (0.829 0.657 0.187)
+
+edit unique
+clc
+load('mngeo_fit96runs.mat')
+clear all
+clc
+load('mngeo_fit96runs.mat')
+mngeo = fitResC{1}.obj;
+xSave = zeros(0,8);
+for ii = 1:96
+    xSave(ii,:) = [fitResC{ii}.x fitResC{ii}.R];
+end
+
+xSave = sortrows(xSave,8);
+xSave
+
+xSave =
+
+   1.0e+03 *
+
+    0.0002   -0.0001    0.0002    0.0003    0.0003   -0.0001   -0.0000    0.0273
+    0.0005   -0.0001    0.0002    0.0002    0.0004   -0.0001   -0.0000    0.0275
+    0.0005   -0.0001    0.0002    0.0002    0.0004   -0.0001   -0.0000    0.0280
+    0.0001   -0.0001    0.0003    0.0001    0.0003   -0.0001   -0.0000    0.0282
+    0.0003   -0.0001    0.0001    0.0003    0.0004   -0.0001   -0.0001    0.0285
+    0.0005   -0.0001    0.0003    0.0001    0.0003   -0.0001   -0.0000    0.0285
+    0.0002   -0.0001    0.0003    0.0002    0.0003   -0.0001   -0.0000    0.0290
+    0.0001   -0.0001    0.0003    0.0002    0.0003   -0.0001   -0.0000    0.0292
+    0.0005   -0.0001    0.0003    0.0002    0.0003   -0.0001   -0.0000    0.0301
+    0.0002   -0.0001    0.0002    0.0002    0.0004   -0.0001   -0.0000    0.0317
+    0.0003   -0.0000    0.0001    0.0003    0.0004   -0.0001   -0.0000    0.0320
+    0.0003   -0.0000    0.0003    0.0001    0.0004   -0.0001   -0.0001    0.0320
+    0.0001   -0.0001    0.0002    0.0002    0.0004   -0.0001   -0.0001    0.0321
+    0.0001   -0.0001    0.0002    0.0001    0.0003   -0.0001   -0.0001    0.0323
+    0.0004   -0.0001    0.0004    0.0002    0.0003   -0.0001   -0.0000    0.0326
+    0.0001   -0.0001    0.0002    0.0003    0.0003   -0.0001   -0.0001    0.0327
+    0.0004   -0.0001    0.0001    0.0002    0.0004   -0.0001   -0.0001    0.0328
+    0.0004   -0.0001    0.0004    0.0002    0.0003   -0.0001   -0.0000    0.0330
+    0.0003   -0.0001    0.0002    0.0002    0.0003   -0.0001   -0.0001    0.0330
+    0.0002   -0.0001    0.0002    0.0002    0.0004   -0.0001   -0.0001    0.0331
+    0.0004   -0.0001    0.0003    0.0001    0.0003   -0.0001   -0.0001    0.0335
+    0.0005   -0.0001    0.0002    0.0002    0.0004   -0.0001   -0.0000    0.0336
+    0.0003   -0.0001    0.0003    0.0001    0.0003   -0.0001   -0.0001    0.0338
+    0.0002   -0.0001    0.0002    0.0002    0.0003   -0.0001   -0.0001    0.0341
+    0.0003   -0.0001    0.0002    0.0002    0.0003   -0.0001   -0.0002    0.0347
+    0.0004   -0.0000    0.0003    0.0001    0.0004   -0.0001   -0.0000    0.0347
+    0.0003   -0.0000    0.0003    0.0001    0.0004   -0.0001   -0.0001    0.0347
+    0.0002   -0.0001    0.0001    0.0004    0.0002   -0.0001   -0.0000    0.0349
+    0.0005   -0.0000    0.0001    0.0004    0.0004   -0.0001   -0.0000    0.0350
+    0.0004   -0.0001    0.0002    0.0003    0.0002   -0.0001   -0.0000    0.0351
+    0.0001   -0.0002    0.0002    0.0002    0.0003   -0.0001   -0.0000    0.0355
+    0.0002   -0.0001    0.0002    0.0002    0.0003   -0.0001   -0.0002    0.0356
+    0.0001   -0.0001    0.0001    0.0004    0.0003   -0.0001   -0.0000    0.0360
+    0.0003   -0.0000    0.0001    0.0003    0.0003   -0.0001   -0.0001    0.0364
+    0.0003   -0.0000    0.0002    0.0001    0.0004   -0.0002   -0.0002    0.0365
+    0.0004   -0.0001    0.0003    0.0001    0.0003   -0.0001   -0.0000    0.0370
+    0.0005   -0.0001    0.0002    0.0002    0.0003   -0.0001   -0.0002    0.0371
+    0.0003   -0.0002    0.0001    0.0002    0.0003   -0.0001   -0.0001    0.0372
+    0.0001   -0.0000    0.0002    0.0002    0.0004   -0.0001   -0.0001    0.0372
+    0.0005   -0.0001    0.0001    0.0003    0.0003   -0.0001   -0.0001    0.0382
+    0.0001   -0.0001    0.0001    0.0003    0.0002   -0.0001   -0.0002    0.0382
+    0.0003   -0.0000    0.0002    0.0002    0.0004   -0.0001   -0.0001    0.0383
+    0.0004   -0.0000    0.0003    0.0001    0.0003   -0.0001   -0.0002    0.0386
+    0.0004   -0.0001    0.0003    0.0001    0.0003   -0.0001   -0.0002    0.0387
+    0.0001   -0.0001    0.0001    0.0002    0.0003   -0.0002   -0.0002    0.0392
+    0.0002   -0.0000    0.0003    0.0002    0.0004   -0.0001   -0.0001    0.0395
+    0.0004   -0.0000    0.0001    0.0003    0.0004   -0.0001   -0.0001    0.0396
+    0.0003   -0.0000    0.0003    0.0002    0.0004   -0.0001   -0.0001    0.0397
+    0.0002   -0.0001    0.0002    0.0003    0.0002   -0.0001   -0.0001    0.0400
+    0.0002   -0.0002    0.0001    0.0002    0.0003   -0.0001   -0.0000    0.0402
+    0.0002   -0.0002    0.0004    0.0002    0.0002   -0.0001   -0.0000    0.0409
+    0.0005   -0.0001    0.0003    0.0001    0.0002   -0.0001   -0.0001    0.0410
+    0.0001   -0.0002    0.0002    0.0001    0.0003   -0.0001   -0.0000    0.0410
+    0.0002   -0.0001    0.0002    0.0003    0.0003   -0.0000   -0.0000    0.0411
+    0.0001   -0.0000    0.0002    0.0003    0.0004   -0.0002   -0.0000    0.0414
+    0.0004   -0.0000    0.0001    0.0002    0.0004   -0.0002   -0.0002    0.0414
+    0.0003   -0.0001    0.0001    0.0004    0.0002   -0.0001   -0.0001    0.0414
+    0.0005   -0.0000    0.0001    0.0003    0.0005   -0.0002   -0.0000    0.0415
+    0.0005   -0.0001    0.0002    0.0002    0.0002   -0.0000   -0.0001    0.0421
+    0.0005   -0.0000    0.0002    0.0002    0.0004   -0.0002   -0.0001    0.0423
+    0.0003   -0.0001    0.0003    0.0001    0.0002   -0.0000   -0.0002    0.0424
+    0.0003   -0.0002    0.0002    0.0002    0.0002   -0.0001   -0.0001    0.0425
+    0.0002   -0.0001    0.0003    0.0001    0.0002   -0.0001   -0.0001    0.0430
+    0.0002   -0.0000    0.0001    0.0003    0.0004   -0.0001   -0.0001    0.0430
+    0.0002   -0.0002    0.0004    0.0002    0.0001   -0.0000   -0.0001    0.0432
+    0.0003   -0.0000    0.0001    0.0002    0.0005   -0.0002   -0.0000    0.0435
+    0.0002   -0.0002    0.0001    0.0005    0.0001   -0.0001   -0.0001    0.0439
+    0.0005   -0.0001    0.0003    0.0001    0.0003   -0.0000   -0.0000    0.0442
+    0.0004   -0.0002    0.0001    0.0004    0.0002   -0.0000   -0.0001    0.0443
+    0.0001   -0.0001    0.0002    0.0002    0.0003   -0.0000   -0.0002    0.0443
+    0.0004   -0.0000    0.0002    0.0002    0.0004   -0.0002   -0.0001    0.0446
+    0.0003   -0.0001    0.0003    0.0003    0.0002   -0.0000   -0.0000    0.0465
+    0.0002   -0.0001    0.0001    0.0005    0.0001   -0.0001   -0.0001    0.0470
+    0.0003   -0.0002    0.0004    0.0002    0.0001   -0.0000   -0.0002    0.0470
+    0.0002   -0.0002    0.0002    0.0004    0.0001   -0.0000   -0.0000    0.0470
+    0.0002   -0.0002    0.0003    0.0003    0.0001   -0.0000   -0.0001    0.0473
+    0.0004   -0.0001    0.0003    0.0004    0.0003   -0.0001   -0.0000    0.0476
+    0.0002   -0.0001    0.0003    0.0004    0.0001   -0.0000   -0.0001    0.0499
+    0.0004   -0.0001    0.0002    0.0002    0.0004   -0.0001   -0.0000    0.0499
+    0.0004   -0.0001    0.0002    0.0005    0.0002   -0.0001   -0.0000    0.0514
+    0.0004   -0.0002    0.0003    0.0004    0.0001   -0.0000   -0.0001    0.0531
+    0.0003   -0.0000    0.0004    0.0001    0.0003   -0.0000   -0.0001    0.0540
+    0.0005   -0.0001    0.0005    0.0001    0.0002   -0.0000   -0.0001    0.0616
+    0.0001   -0.0001    0.0005    0.0005    0.0001   -0.0000   -0.0000    0.0671
+    0.0002   -0.0000    0.0001    0.0005    0.0003   -0.0000   -0.0001    0.0692
+    0.0003   -0.0001    0.0005    0.0001    0.0002   -0.0000   -0.0001    0.0697
+    0.0002   -0.0000    0.0003    0.0002    0.0003   -0.0000   -0.0000    0.0699
+    0.0001   -0.0001    0.0005    0.0004    0.0001   -0.0001   -0.0000    0.0821
+    0.0003   -0.0000    0.0005    0.0001    0.0002   -0.0001   -0.0002    0.0876
+    0.0005   -0.0001    0.0003    0.0005    0.0001   -0.0002   -0.0000    0.1518
+    0.0001   -0.0000    0.0004    0.0005    0.0002   -0.0002   -0.0000    0.1905
+    0.0001   -0.0001    0.0002    0.0001    0.0002   -0.0002   -0.0002    0.1973
+    0.0001   -0.0002    0.0002    0.0005    0.0001   -0.0002   -0.0001    0.2259
+    0.0001   -0.0001    0.0005    0.0005    0.0001   -0.0001   -0.0001    0.2283
+    0.0001   -0.0001    0.0005    0.0005    0.0001   -0.0002   -0.0001    0.2483
+    0.0003   -0.0002    0.0003    0.0005    0.0005   -0.0000   -0.0000    1.1005
+
+std(xSave(1:10,:))
+
+ans =
+
+    0.1572    0.0169    0.0672    0.0554    0.0171    0.0159    0.0159    1.2971
+
+mean(xSave(1:10,:))
+
+ans =
+
+    0.2987   -0.0942    0.2344    0.2059    0.3468   -0.1129   -0.0215   28.8128
+
+{Error using <a href="matlab:helpUtils.errorDocCallback('get_global_var', '/Applications/MATLAB_R2012b.app/toolbox/local/mprogs/Herbert/utilities/global_var/get_global_var.m', 62)" style="font-weight:bold">get_global_var</a> (<a href="matlab: opentoline('/Applications/MATLAB_R2012b.app/toolbox/local/mprogs/Herbert/utilities/global_var/get_global_var.m',62,0)">line 62</a>)
+Either the variable set, or at least of the variables, does not exist
+
+Error in <a href="matlab:helpUtils.errorDocCallback('sqw/sliceomatic', '/Users/sandortoth/Horace_svn/trunk/herbert/@sqw/sliceomatic.m', 39)" style="font-weight:bold">sqw/sliceomatic</a> (<a href="matlab: opentoline('/Users/sandortoth/Horace_svn/trunk/herbert/@sqw/sliceomatic.m',39,0)">line 39</a>)
+name_sliceomatic =  get_global_var('horace_plot','name_sliceomatic');
+
+Error in <a href="matlab:helpUtils.errorDocCallback('d3d/plot', '/Users/sandortoth/Horace_svn/trunk/herbert/@d3d/plot.m', 23)" style="font-weight:bold">d3d/plot</a> (<a href="matlab: opentoline('/Users/sandortoth/Horace_svn/trunk/herbert/@d3d/plot.m',23,0)">line 23</a>)
+[figureHandle_, axesHandle_, plotHandle_] = sliceomatic(sqw(w),varargin{:});
+} 
+horace_on
+! =================================================================!
+!         ISIS utilities for visualisation and analysis            !
+!              of neutron spectroscopy data                        !
+!------------------------------------------------------------------!
+!==================================================================!
+!                      HORACE                                      !
+!------------------------------------------------------------------!
+!  Visualisation of multi-dimensional neutron spectroscopy data    !
+!                                                                  !
+!  T.G.Perring, J van Duijn, R.A.Ewings         November 2008      !
+!------------------------------------------------------------------!
+! Matlab  code: $Revision:: 558  $ ($Date:: 2011-07-19 11:06:05 $) !
+! Mex code:    Disabled  or not supported on this platform         !
+!------------------------------------------------------------------!
+
+ans =
+
+/Users/sandortoth/Horace_svn/trunk
+
+mngeod3d = d3d(mngeo.abc,[0 1 0 0],[-0.5,0.01,0.5],[0 0 1 0],[-0.5,0.01,0.5],[0 0 0 1],[0,0.1,8]);
+mngeod3d = disp2sqw_eval(mngeod3d,@mngeo.horace,[],0.1);
+plot(mngeod3d);
+mngeo.abc
+
+ans =
+
+   10.7300    6.3000    5.0600   90.0000   90.0000   90.0000
+
+! =================================================================!
+!         ISIS utilities for visualisation and analysis            !
+!              of neutron spectroscopy data                        !
+!------------------------------------------------------------------!
+!==================================================================!
+!                      HORACE                                      !
+!------------------------------------------------------------------!
+!  Visualisation of multi-dimensional neutron spectroscopy data    !
+!                                                                  !
+!  T.G.Perring, J van Duijn, R.A.Ewings         November 2008      !
+!------------------------------------------------------------------!
+! Matlab  code: $Revision:: 558  $ ($Date:: 2011-07-19 11:06:05 $) !
+! Mex code:    Disabled  or not supported on this platform         !
+!------------------------------------------------------------------!
+! =================================================================!
+!         ISIS utilities for visualisation and analysis            !
+!              of neutron spectroscopy data                        !
+!------------------------------------------------------------------!
+!==================================================================!
+!                      HORACE                                      !
+!------------------------------------------------------------------!
+!  Visualisation of multi-dimensional neutron spectroscopy data    !
+!                                                                  !
+!  T.G.Perring, J van Duijn, R.A.Ewings         November 2008      !
+!------------------------------------------------------------------!
+! Matlab  code: $Revision:: 558  $ ($Date:: 2011-07-19 11:06:05 $) !
+! Mex code:    Disabled  or not supported on this platform         !
+!------------------------------------------------------------------!
+! =================================================================!
+!         ISIS utilities for visualisation and analysis            !
+!              of neutron spectroscopy data                        !
+!------------------------------------------------------------------!
+!==================================================================!
+!                      HORACE                                      !
+!------------------------------------------------------------------!
+!  Visualisation of multi-dimensional neutron spectroscopy data    !
+!                                                                  !
+!  T.G.Perring, J van Duijn, R.A.Ewings         November 2008      !
+!------------------------------------------------------------------!
+! Matlab  code: $Revision:: 558  $ ($Date:: 2011-07-19 11:06:05 $) !
+! Mex code:    Disabled  or not supported on this platform         !
+!------------------------------------------------------------------!
+plot(mngeod3d);
+r = [0 0 0.44; 0.171 0.828 0.687]';
+rsym=sw_genatpos2(186,r(:,2),1);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+{Operands to the || and && operators must be convertible to logical scalar values.
+
+Error in <a href="matlab:helpUtils.errorDocCallback('uniquetol', '/Users/sandortoth/sw_svn/trunk/external/uniquetol.m', 19)" style="font-weight:bold">uniquetol</a> (<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/external/uniquetol.m',19,0)">line 19</a>)
+if nargin < 2 || isempty(tol) || tol == 0
+
+Error in <a href="matlab:helpUtils.errorDocCallback('sw_genatpos2', '/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m', 53)" style="font-weight:bold">sw_genatpos2</a> (<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m',53,0)">line 53</a>)
+    rSym{ii} = uniquetol(rTemp','rows',tol)';
+} 
+r = [0 0 0.44; 0.171 0.828 0.687]';
+rsym=sw_genatpos2(186,r(:,2),1);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.343 0.172 0.187)
+r7 (0.657 0.828 0.687)
+r8 (0.657 0.829 0.687)
+r9 (0.828 0.171 0.187)
+r10 (0.828 0.657 0.187)
+r11 (0.829 0.172 0.187)
+r12 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,1e-3);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.343 0.172 0.187)
+r7 (0.657 0.828 0.687)
+r8 (0.657 0.829 0.687)
+r9 (0.828 0.171 0.187)
+r10 (0.828 0.657 0.187)
+r11 (0.829 0.172 0.187)
+r12 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,1e-2);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.657 0.828 0.687)
+r7 (0.828 0.171 0.187)
+r8 (0.828 0.657 0.187)
+r9 (0.829 0.172 0.187)
+r10 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,1e-1);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.657 0.828 0.687)
+r7 (0.828 0.171 0.187)
+r8 (0.828 0.657 0.187)
+r9 (0.829 0.172 0.187)
+r10 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,1);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.343 0.171 0.187)
+r3 (0.657 0.828 0.687)
+r4 (0.828 0.171 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.5);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.343 0.171 0.187)
+r3 (0.657 0.828 0.687)
+r4 (0.828 0.171 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.6);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.343 0.171 0.187)
+r3 (0.657 0.828 0.687)
+r4 (0.828 0.171 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.8);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.343 0.171 0.187)
+r3 (0.657 0.828 0.687)
+r4 (0.828 0.171 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.4);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.657 0.828 0.687)
+r7 (0.828 0.171 0.187)
+r8 (0.828 0.657 0.187)
+r9 (0.829 0.172 0.187)
+r10 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.5);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.343 0.171 0.187)
+r3 (0.657 0.828 0.687)
+r4 (0.828 0.171 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.45);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.657 0.828 0.687)
+r7 (0.828 0.171 0.187)
+r8 (0.828 0.657 0.187)
+r9 (0.829 0.172 0.187)
+r10 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.44);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.657 0.828 0.687)
+r7 (0.828 0.171 0.187)
+r8 (0.828 0.657 0.187)
+r9 (0.829 0.172 0.187)
+r10 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.42);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.657 0.828 0.687)
+r7 (0.828 0.171 0.187)
+r8 (0.828 0.657 0.187)
+r9 (0.829 0.172 0.187)
+r10 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.41);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.657 0.828 0.687)
+r7 (0.828 0.171 0.187)
+r8 (0.828 0.657 0.187)
+r9 (0.829 0.172 0.187)
+r10 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.4);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.657 0.828 0.687)
+r7 (0.828 0.171 0.187)
+r8 (0.828 0.657 0.187)
+r9 (0.829 0.172 0.187)
+r10 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.45);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.657 0.828 0.687)
+r7 (0.828 0.171 0.187)
+r8 (0.828 0.657 0.187)
+r9 (0.829 0.172 0.187)
+r10 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.48);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.657 0.828 0.687)
+r7 (0.828 0.171 0.187)
+r8 (0.828 0.657 0.187)
+r9 (0.829 0.172 0.187)
+r10 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,0.49);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.343 0.171 0.187)
+r3 (0.657 0.828 0.687)
+r4 (0.828 0.171 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,1e-5);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+
+Atomic coordinates generated for: (0.171 0.828 0.687)
+r1 (0.171 0.343 0.687)
+r2 (0.171 0.828 0.687)
+r3 (0.172 0.343 0.687)
+r4 (0.172 0.829 0.687)
+r5 (0.343 0.171 0.187)
+r6 (0.343 0.172 0.187)
+r7 (0.657 0.828 0.687)
+r8 (0.657 0.829 0.687)
+r9 (0.828 0.171 0.187)
+r10 (0.828 0.657 0.187)
+r11 (0.829 0.172 0.187)
+r12 (0.829 0.657 0.187)
+
+rsym=sw_genatpos2(186,r(:,2),1,1e-5);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m',53,1)">53  </a>    rSym{ii} = uniquetol(rTemp',tol,'rows')';
+rTemp
+
+rTemp =
+
+    0.1710    0.1720    0.6570    0.8290    0.8280    0.3430    0.1720    0.1710    0.6570    0.8280    0.8290    0.3430
+    0.8280    0.3430    0.8290    0.1720    0.6570    0.1710    0.8290    0.3430    0.8280    0.1710    0.6570    0.1720
+    0.6870    0.6870    0.6870    0.1870    0.1870    0.1870    0.6870    0.6870    0.6870    0.1870    0.1870    0.1870
+
+if system_dependent('IsDebugMode')==1, dbquit; end
+rTemp
+{Undefined function or variable 'rTemp'.
+} 
+rsym=sw_genatpos2(186,r(:,2),1,1e-5);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+<a href="matlab: opentoline('/Users/sandortoth/sw_svn/trunk/test/sw_genatpos2.m',53,1)">53  </a>    rSym{ii} = uniquetol(rTemp',tol,'rows')';
+if system_dependent('IsDebugMode')==1, dbcont; end
+x
+
+x =
+
+    0.1710    0.8280    0.6870
+    0.1720    0.3430    0.6870
+    0.6570    0.8290    0.6870
+    0.8290    0.1720    0.1870
+    0.8280    0.6570    0.1870
+    0.3430    0.1710    0.1870
+    0.1720    0.8290    0.6870
+    0.1710    0.3430    0.6870
+    0.6570    0.8280    0.6870
+    0.8280    0.1710    0.1870
+    0.8290    0.6570    0.1870
+    0.3430    0.1720    0.1870
+
+if system_dependent('IsDebugMode')==1, dbstep; end
+y
+
+y =
+
+    0.1710    0.3430    0.6870
+    0.1710    0.8280    0.6870
+    0.1720    0.3430    0.6870
+    0.1720    0.8290    0.6870
+    0.3430    0.1710    0.1870
+    0.3430    0.1720    0.1870
+    0.6570    0.8280    0.6870
+    0.6570    0.8290    0.6870
+    0.8280    0.1710    0.1870
+    0.8280    0.6570    0.1870
+    0.8290    0.1720    0.1870
+    0.8290    0.6570    0.1870
+
+if system_dependent('IsDebugMode')==1, dbquit; end
+rsym=sw_genatpos2(186,r(:,2),1,1e-3);
+General coordinates of space group: P 63 m c   
+(1) x,y,z
+(2) -y,x-y,z
+(3) -x+y,-x,z
+(4) -x,-y,z+1/2
+(5) y,-x+y,z+1/2
+(6) x-y,x,z+1/2
+(7) -y,-x,z
+(8) x,x-y,z
+(9) -x+y,y,z
+(10) y,x,z+1/2
+(11) -x,-x+y,z+1/2
+(12) x-y,-y,z+1/2
+{Error using <a href="matlab:helpUtils.errorDocCallback('sortrows', '/Applications/MATLAB_R2012b.app/toolbox/matlab/datafun/sortrows.m', 63)" style="font-weight:bold">sortrows</a> (<a href="matlab: opentoline('/Applications/MATLAB_R201

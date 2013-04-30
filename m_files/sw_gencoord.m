@@ -18,7 +18,7 @@ function [symOp, symTr, symName] = sw_gencoord(sym, fid, tol)
 %               are [3 nSym].
 % symName       String, the name of  the space group.
 %
-% See also SW, SW.ATOM, SW.MATOM, SW_GENCOUPLING.
+% See also SW, SW.ATOM, SW.MATOM, SW_GENCOUPLING, SW_POINTSYM, SW_GENATPOS.
 %
 
 if nargin == 0

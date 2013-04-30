@@ -7,7 +7,7 @@ function M = sw_basismat(S, r, tol)
 % S         Generators of the point group symmetry, dimensions are
 %           [3 3 nSym]. Each S(:,:,ii) matrix defines a rotation.
 % r         Distance vector between the two interacting atoms. For
-%           anisotropy r=0, dimensions are [1 3].
+%           anisotropy r=0, dimensions are [3 1].
 % {tol}     Tolerance, optional. Default value is 1e-5.
 %
 % Output:

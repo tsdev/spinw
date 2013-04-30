@@ -6,6 +6,11 @@ function sym = sw_addsym(symStr, symName)
 % See also SW_GENSYM.
 %
 
+if nargin == 0
+    help sw_addsym;
+    return;
+end
+
 symPath = [sw_rootdir 'dat_files' filesep 'symmetry.dat'];
 % Count the number of lines
 fid = fopen(symPath);

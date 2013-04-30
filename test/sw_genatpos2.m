@@ -1,4 +1,4 @@
-function [rSym, symName] = sw_genatpos(sym, r, fid, tol)
+function [rSym, symName] = sw_genatpos2(sym, r, fid, tol)
 % [rSym, symName] = SW_GENATPOS(sym, r, {fid}, {tol}) generates all symmetry
 % equivalent atomic positions from a given symmetry number and coordinates
 % of the input atoms. If print is defined, the result is printed onto
@@ -21,7 +21,7 @@ function [rSym, symName] = sw_genatpos(sym, r, fid, tol)
 %               dimensions of [1 nAtom]. Every element of the cell contains
 %               a matrix with the symmetry equivalent positions.
 % symName       String, the name of  the space group.
-% tol           Tolerance, distance within two atoms are considere, default is 0.05.
+% tol           Tolerance, for the atomic overlap, default is 1e-5.
 %
 % See also SW, SW.ATOM, SW.MATOM, SW_GENCOUPLING, SW_GENCOORD, SW_GENSYM.
 %
@@ -50,6 +50,7 @@ for ii = 1:nAtom
     % generate all equivalent atomic positions, some might overlap
     rTemp = mod(permute(sum(repmat(r(:,ii)',[3 1 nSym]).*symOp,2),[1 3 2])+symTr,1);
     % take out the overlapping positions
+    %rSym{ii} = uniquetol(rTemp,tol);
     rSym{ii} = consolidator(rTemp',[],[],tol)';
 end
 

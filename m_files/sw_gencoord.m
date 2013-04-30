@@ -1,4 +1,4 @@
-function [symOp, symTr] = sw_gencoord(sym, fid, tol)
+function [symOp, symTr, symName] = sw_gencoord(sym, fid, tol)
 % [symOp, symTr] = SW_GENCOORD(sym, {fid}, {tol}) calculates the general
 % coordinates for a given space group.
 %
@@ -16,6 +16,7 @@ function [symOp, symTr] = sw_gencoord(sym, fid, tol)
 %               are [3 3 nSym]. 
 % symTr       	The translation part of the symmetry operators, dimensions
 %               are [3 nSym].
+% symName       String, the name of  the space group.
 %
 % See also SW, SW.ATOM, SW.MATOM, SW_GENCOUPLING.
 %

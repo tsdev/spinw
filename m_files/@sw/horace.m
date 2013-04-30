@@ -15,6 +15,17 @@ function [w, s] = horace(obj, qh, qk, ql, p, varargin) %#ok<INUSL>
 % swfunc        Which function to evaluate for spin wave calculation.
 %               Default is @spinwave.
 %
+% Example:
+%
+% horace_on;
+% d3dobj = d3d(cryst.abc,[0 1 0 0],[0,0.01,1],[0 0 1 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
+% d3dobj = disp2sqw_eval(d3dobj,cryst.horace,[],0.1);
+% plot(d3dobj);
+%
+% This example creates a d3d object, a square in (h,k,0) plane and in
+% energy between 0 and 10 meV. Then calculates the neutron scattering
+% intensity of the spin wave in this volume and plots it using sliceomatic.
+%
 % See also SW, SW.SWINC, SW.SPINWAVE.
 %
 
@@ -27,18 +38,18 @@ inpForm.fname  = {'swfunc'  };
 inpForm.defval = {@spinwave };
 inpForm.size   = {[1 1]     };
 
-param  = sw_readparam(inpForm,varargin{:});
+param   = sw_readparam(inpForm,varargin{:});
 
-spec   = param.swfunc(obj,[qh(:) qk(:) ql(:)]',param);
-spec   = sw_neutron(spec,'pol',false);
+spectra = param.swfunc(obj,[qh(:) qk(:) ql(:)]',param);
+spectra = sw_neutron(spectra,'pol',false);
 
-nModes = size(spec.omega,1);
-nHkl   = size(spec.omega,2);
+nModes = size(spectra.omega,1);
+nHkl   = size(spectra.omega,2);
 
 % dispersion in cell
-w     = mat2cell(omega',nHkl,ones(nModes,1));
+w     = mat2cell(spectra.omega',nHkl,ones(nModes,1));
 
 % intensity in cell
-s     = mat2cell(spec.Sperp' ,nHkl,ones(nModes,1));
+s     = mat2cell(spectra.Sperp' ,nHkl,ones(nModes,1));
 
 end

@@ -61,9 +61,9 @@ if ischar(varargin{1})
     
 else
     symNumber = varargin{1};
-    if symNumber<0
+    if symNumber<=0
         fclose(fid);
-        error('spinw:sw_gensym:WrongInput','Positive integer expected!');
+        error('spinw:sw_gensym:WrongInput','Symmetry number has to be positive integer!');
     end
     ii = 1;
     while (ii<=symNumber) && ~feof(fid)

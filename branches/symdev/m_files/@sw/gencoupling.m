@@ -162,7 +162,7 @@ if nMagAtom > 0
         % equivalent center points and compare it with the other equivalent
         % couplings
         % center point of the couplings
-        cPoint = mAtom.r(:,coupling.atom1) + coupling.dist/2;
+        cPoint = (mAtom.r(:,coupling.atom1)+mAtom.r(:,coupling.atom2)+coupling.dist)/2;
         % get the symmetry operators
         [symOp, symTr] = sw_gencoord(obj.lattice.sym);
         % loop over the coupling types
@@ -177,6 +177,10 @@ if nMagAtom > 0
                 % first
                 cGen = sw_genatpos({symOp symTr},cPoint(:,1));
                 [~, iUni] = uniquetol([cGen cPoint(:,2:end)],tol,'rows','first');
+                % center point vector in uniquetol: [A generated B C D ... ]
+                iUni = [0 (iUni(size(cGen,2)+1):end)];
+                % move the non-unique couplings (symmetry equivalent ones)
+                ~iUni
                 % TODO
                 
             end

@@ -22,7 +22,7 @@ if nargin < 3
     fid = 0;
 end
 
-iSel(obj.coupling.idx == cIdx);
+iSel = obj.coupling.idx == cIdx;
 
 mAtom = obj.matom;
 % indices of atoms in selected couplings
@@ -32,11 +32,11 @@ atom2  = obj.coupling.atom2(iSel);
 r1     = mAtom.r(:,atom1);
 r2     = mAtom.r(:,atom2);
 % lattice translation vector between interacting atoms
-dl     = obj.coupling.atom1(:,iSel);
+dl     = double(obj.coupling.dl(:,iSel));
 % vector pointing from atom1 to atom2
 dr     = r2 + dl - r1;
 % centers of the selected couplings
-center = (r1+r2+dl)/2;
+center = mod((r1+r2+dl)/2,1);
 % get the point group symmetry operators of the center of the first
 % coupling
 pOp = sw_pointsym(obj.lattice.sym,center(:,1));
@@ -46,7 +46,7 @@ aMat = sw_basismat(pOp,dr(:,1));
 
 if fid
     % print output
-    npOp = size(pOp,3);
+    naMat = size(aMat,3);
     
     % strings for each element in the matrix
     eStr = cell(3);
@@ -54,20 +54,35 @@ if fid
     for jj = 1:3
         for kk = 1:3
             first = true;
-            for ii = 1:npOp
-                if abs(pOp(jj,kk,ii)) > tol
-                    sP = sign(pOp(jj,kk,ii));
-                    if (sP > 0) && ~first
-                        eStr{jj,kk} = '+'; %#ok<*AGROW>
-                        first = false;
+            firstN = true;
+            for ii = 1:naMat
+                if abs(aMat(jj,kk,ii)) > tol
+                    if firstN && (aMat(jj,kk,ii) > 0)
+                        eStr{jj,kk} = ' ';
+                        firstN = false;
+                    elseif firstN
+                        firstN = false;
                     else
                         eStr{jj,kk} = '';
                     end
-                    eStr{jj,kk} = [eStr{jj,kk} num2str(pOp(jj,kk,ii)) char(64+ii)];
+                    if (aMat(jj,kk,ii) > 0) && ~first
+                        eStr{jj,kk} = [eStr{jj,kk} '+']; %#ok<*AGROW>
+                        first = false;
+                    end
+                    if abs(aMat(jj,kk,ii)+1) < tol
+                        % -1
+                        eStr{jj,kk} = [eStr{jj,kk} '-' char(64+ii)];
+                    elseif abs(aMat(jj,kk,ii)-1) < tol
+                        % +1
+                        eStr{jj,kk} = [eStr{jj,kk} char(64+ii)];
+                    else
+                        % other number
+                        eStr{jj,kk} = [eStr{jj,kk} num2str(aMat(jj,kk,ii)) char(64+ii)];
+                    end
                 end
             end
             if isempty(eStr{jj,kk})
-                eStr{jj,kk} = '0';
+                eStr{jj,kk} = ' 0';
             end
             lStr(jj,kk) = length(eStr{jj,kk});
         end

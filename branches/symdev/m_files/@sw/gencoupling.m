@@ -3,17 +3,16 @@ function obj = gencoupling(obj, varargin)
 %
 % obj = GENCOUPLING(obj, 'option1', value, ...)
 %
-% It calculates the shortest distances between magnetic ions and sort them
-% according to increasing distance. Two couplings are regarded to be
-% equivalent if the interion distances are equal within a defined
-% tolerance. This function should be called after the lattice and atomic
-% positions are defined.
+% It calculates the symmetry equivalent couplings between magnetic atoms
+% and sorts them according to the atom-atom distance. If option 'sym' is
+% false, the crystal symmetry is not considered.
 %
 % Options:
 %
 % sym           If true, simmetry equivalent pairs of atoms are calculated.
 %               If false, equivalent pairs will be identified based on
-%               distance. Default is false.
+%               distance. If the crystal has space group symmetry > 1, the
+%               default is true, otherwise false.
 % nUnitCell     Edge length of the parallelepiped withing the
 %               algorithm searches for neares neighbours in lattice
 %               units. Default is 3.
@@ -26,11 +25,14 @@ function obj = gencoupling(obj, varargin)
 % See also SW.
 %
 
+isSym = obj.lattice.sym > 1;
+
 inpForm.fname  = {'sym' 'nUnitCell' 'maxDistance' 'tol' };
-inpForm.defval = {false 3           6             1e-5  };
+inpForm.defval = {isSym 3           6             1e-5  };
 inpForm.size   = {[1 1] [1 1]       [1 1]         [1 1] };
 
 param = sw_readparam(inpForm, varargin{:});
+tol   = param.tol;
 
 % Number of unit cells along any direction to find nearest neighbours.
 nUnitCell = param.nUnitCell;
@@ -132,59 +134,66 @@ if nMagAtom > 0
     coupling.idx     = int32(coupling.idx(index));
     coupling.mat_idx = int32(coupling.mat_idx(:,index));
     
-    % New number of couplings.
-    nDist = size(coupling.dist,2);
-    
-    % Finds the equivalent distances.
-    runVal = coupling.dist(1);
-    
-    index = 1;
-    for ii=1:nDist
-        if abs(coupling.dist(ii)-runVal)>param.tol
-            index = index+1;
-            runVal = coupling.dist(ii);
-        end
-        coupling.idx(ii) = index;
-    end
+    % Finds the equivalent distances and index them in coupling.idx
+    coupling.idx = int32(cumsum([1 (coupling.dist(2:end)-coupling.dist(1:(end-1))) > tol]));
     
     aniso = int32(zeros(1,nMagAtom));
     % symmetry equivalent couplings
     if param.sym
-        % sort couplings according to atom pair type
-        sortM = double([coupling.idx; mAtom.idx(coupling.atom1); mAtom.idx(coupling.atom2)]');
-        sortM(:,2:3) = sort(sortM(:,2:3),2);
-        sortM = sortrows(sortM,1:3);
-        sortM = sum(bsxfun(@times,sortM, [1e6 1e3 1]),2);
-        sortM = [1; cumsum(sortM(2:end)~=sortM(1:end-1))+1];
-        coupling.idx = int32(sortM');
+        % sort couplings according to symmetry
+        % sortM matrix, rows:
+        % [dlx,dly,dlz,matom1,matom2,idx,atom1,atom2,cx,cy,cz]
+        sortM = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx; mAtom.idx(coupling.atom1); mAtom.idx(coupling.atom2);]);
         % further sorting according the symmetry equivalent center points
         % take the first column for every coupling type and generate the
         % equivalent center points and compare it with the other equivalent
         % couplings
         % center point of the couplings
-        cPoint = (mAtom.r(:,coupling.atom1)+mAtom.r(:,coupling.atom2)+coupling.dist)/2;
+        sortM(9:11,:) = mod((mAtom.r(:,sortM(4,:))+mAtom.r(:,sortM(5,:))+sortM(1:3,:))/2,1);
+        % sort the indices of the atoms (atom1,atom2) for every coupling
+        sortM(7:8,:) = sort(sortM(7:8,:),1);
+        % sort the couplings hyerarchically: idx, atom1, atom2
+        sortM = sortrows(sortM',6:8)';
+        % new idx values based on the old idx and atom1 and atom2 indices
+        sortM(6,:) = sum(bsxfun(@times,sortM(6:8,:),[1e8 1e4 1]'),1);
+        sortM(6,:) = [1 cumsum(sortM(6,2:end)~=sortM(6,1:end-1))+1];
+        % sort again based on the center of the couplings
         % get the symmetry operators
         [symOp, symTr] = sw_gencoord(obj.lattice.sym);
+        % store the final sorted couoplings in newM
+        newM = zeros(6,0);
+        % final index
+        idx = 1;
         % loop over the coupling types
-        for ii = 1:max(coupling.idx)
-            cSel = coupling.idx == ii;
+        finish = false;
+        while (ii < max(sortM(6,:))) && ~finish
+            % select columns from sorM with a certain idx value
+            sortMs = sortM(:,sortM(6,:) == ii);
             % loop over inequivalent center points
-            while any(cSel)
-                % center points of the selected couplings
-                cPointSel = cPoint(:,cSel);
-                idx = find(cSel,1,'first');
+            while (size(sortMs,2)>0) && ~finish
                 % symmetry equivalent center points generated from the
-                % first
-                cGen = sw_genatpos({symOp symTr},cPoint(:,1));
-                [~, iUni] = uniquetol([cGen cPoint(:,2:end)],tol,'rows','first');
-                % center point vector in uniquetol: [A generated B C D ... ]
-                iUni = [0 (iUni(size(cGen,2)+1):end)];
-                % move the non-unique couplings (symmetry equivalent ones)
-                ~iUni
-                % TODO
+                % first coupling
+                cGen = sw_genatpos({symOp symTr},sortMs(9:11,1));
+                % if not all symmetry equivalent coupling is generated
+                % finish the job
+                % check which vectors are independent
+                [iNew, symIdx, finish] = isnew(cGen, sortMs(9:11,:),tol);
+                % move the non-unique (not new) couplings (symmetry equivalent ones)
+                %newM = [newM [sortMs(1:5,~iNew);ones(1,sum(~iNew))*idx]]; %#ok<AGROW>
+                newM = [newM [sortMs(1:5,symIdx);ones(1,sum(~iNew))*idx]]; %#ok<AGROW>
+                idx  = idx + 1;
+                % remove the symmetry equivalent couplings
+                sortMs = sortMs(:,iNew);
                 
             end
+            ii = ii + 1;
         end
+        % save back newM into coupling
+        coupling.dl    = int32(newM(1:3,:));
+        coupling.atom1 = int32(newM(4,:));
+        coupling.atom2 = int32(newM(5,:));
+        coupling.idx   = int32(newM(6,:));
+        coupling.mat_idx = int32(zeros(3,size(coupling.idx,2)));
     end
 else
     % If there is no magnetic atom the coupling and anisotropy are empty.
@@ -204,5 +213,27 @@ obj.coupling         = coupling;
 obj.single_ion.aniso = aniso;
 
 validate(obj);
+
+end
+
+function [isnew, symIdx, finish] = isnew(A,B, tol)
+% selects the new vectors from B. Dimensions of A and B have to be [3 nA]
+% and [3 nB] respectively.
+% A vector in B is considered new, if d(mod(vA-vB,1))<tol.
+%
+% symIdx    Indices to re
+
+nA = size(A,2);
+nB = size(B,2);
+
+notequal = sum(mod(abs(repmat(permute(A,[2 3 1]),[1 nB 1]) - repmat(permute(B,[3 2 1]),[nA 1 1])),1).^2,3)>tol.^2;
+[symIdx, ~] = find(~notequal');
+isnew = all(notequal,1);
+
+if numel(symIdx)>nA
+    finish = true;
+else
+    finish = false;
+end
 
 end

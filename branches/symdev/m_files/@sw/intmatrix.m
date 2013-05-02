@@ -1,5 +1,5 @@
 function [SS, SI, RR] = intmatrix(obj, varargin)
-% creates the interactions matrices (connectors)
+% creates the interactions matrices (connectors and values)
 %
 % [SS, SI, RR] = INTMATRIX(obj)
 %
@@ -49,6 +49,13 @@ JJ.idx = [coupling.mat_idx(1,Col1) coupling.mat_idx(2,Col2) coupling.mat_idx(3,C
 SS.all = SS.all(:,[Col1 Col2 Col3]);
 
 JJ.mat  = obj.matrix.mat(:,:,JJ.idx);
+
+% For non P1 symmetry, calculate the interaction matrices
+
+
+
+
+
 
 % don't calculate these for speedup in case of fitting
 if (nargin==1) || (nargin>1 && ~varargin{1})

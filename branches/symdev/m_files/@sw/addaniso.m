@@ -15,7 +15,10 @@ function obj = addaniso(obj, matrixIdx, varargin)
 %                   anisotropy is assigned to all magnetic atoms.
 % {atomIdx}         It selects atoms from the symmetry equivalent ones.
 %                   Maximum value is the number of symmetry equivalent
-%                   atoms generated.
+%                   atoms generated. If crystal symmetry is not P1, atomIdx
+%                   is not allowed, since the anisotropy matrix for
+%                   equivalent atoms will be calculated using the symmetry
+%                   operators of the space group.
 %
 
 mAtom    = obj.matom;
@@ -38,6 +41,10 @@ end
 
 if nargin > 3
     atomIdx = varargin{2};
+    if obj.lattice.sym > 1
+        error('sw:addaniso:SymmetryProblem','atomIdx is not allowed when crystal symmetry is not P1!');
+    end
+
 end
 
 addField = obj.single_ion;

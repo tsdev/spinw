@@ -13,7 +13,10 @@ function obj = addcoupling(obj, matrixLabel, couplingIdx, varargin)
 %               distances.
 % {bondIdx}     Selects the indices of bonds within coupling.idx to
 %               differentiate between equal length bonds. If bondIdx
-%               defined, couplingIdx has to be scalar. Optional.
+%               defined, couplingIdx has to be scalar. Optional. If the
+%               crystal symmetry is not P1, bondIdx is not allowed, since
+%               each equivalent coupling matrix will be calculated using
+%               the symmetry operators of the space group.
 %
 
 if isnumeric(matrixLabel)
@@ -30,6 +33,9 @@ if nargin>3
     bondIdx = varargin{1};
     if numel(couplingIdx) > 1
         warning('sw:addcoupling:CouplingSize','couplingIdx is non-scalar but bondIdx is defined!');
+    end
+    if obj.lattice.sym > 1
+        error('sw:addcoupling:SymmetryProblem','bondIdx is not allowed when crystal symmetry is not P1!');
     end
 end
 

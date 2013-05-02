@@ -1,7 +1,7 @@
-function M = sw_basismat(S, r, tol)
-% M = SW_BASISMAT(S, r, {tol}) determines the allowed matrix elements compatible
-% with a given point group symmetry. The matrix can describe exchange
-% interaction or single ion anisotropy.
+function [M, asym] = sw_basismat(S, r, tol)
+% [M, asym] = SW_BASISMAT(S, r, {tol}) determines the allowed matrix
+% elements compatible with a given point group symmetry. The matrix can
+% describe exchange interaction or single ion anisotropy.
 %
 % Input:
 % S         Generators of the point group symmetry, dimensions are
@@ -16,6 +16,8 @@ function M = sw_basismat(S, r, tol)
 %           allowed matrices, dimensions are [3 3 nM]. Any matrix is
 %           allowed that can be expressed as a linear combination of the
 %           symmetry allowed matrices.
+% asym      Logical vector, for each 3x3 matrix in M, tells whether is is
+%           antisymmetry, dimensions are [1 nM].
 %
 
 if nargin == 0
@@ -113,5 +115,11 @@ M = reshape(M0.V,3,3,[]);
 % normalize the maximum elements to one
 nM  = arrayfun(@(idx)norm(M(:,:,idx)),1:size(M,3));
 M = bsxfun(@rdivide,M,permute(nM,[1 3 2]));
+
+% selects the symmetric and antisymmetric matrices
+asym = true(1,size(M,3));
+for ii = 1:size(M,3)
+    asym(ii) = sum(sum((M(:,:,ii)-M(:,:,ii)').^2)) > tol^2*9;
+end
 
 end

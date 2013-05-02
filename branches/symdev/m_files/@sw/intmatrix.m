@@ -51,7 +51,7 @@ SS.all = SS.all(:,[Col1 Col2 Col3]);
 JJ.mat  = obj.matrix.mat(:,:,JJ.idx);
 
 % For non P1 symmetry, calculate the interaction matrices
-
+% TODO
 
 
 

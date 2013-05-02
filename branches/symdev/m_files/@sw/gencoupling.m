@@ -83,14 +83,8 @@ if nMagAtom > 0
     
     % Number of elements in the neighbour list.
     nDist = size(atIndex,2)*nMagAtom + nMagAtom*(nMagAtom-1)/2;
-    
-    coupling.dist    = zeros(1,nDist);
-    coupling.dl      = zeros(3,nDist);
-    coupling.atom1   = zeros(1,nDist);
-    coupling.atom2   = zeros(1,nDist);
-    coupling.mat_idx = zeros(3,nDist);
-    coupling.idx     = zeros(1,nDist);
-    
+    % matrix stores [dlx dly dlz matom1 matom2 idx atom1 atom2 cx cy cz dist]
+    sortM = zeros(12,nDist);
     
     % Atomic position [Angstrom] of the magnetic atoms.
     atcoords       = obj.basisvector*atPos;
@@ -100,10 +94,10 @@ if nMagAtom > 0
     index=1;
     for ii=1:nMagAtom
         for jj=1:nHalfCube
-            coupling.dist(index)  = norm(basis_atcoords(:,ii)-atcoords(:,jj));
-            coupling.dl(:,index)  = atTr(:,jj);
-            coupling.atom1(index) = ii;
-            coupling.atom2(index) = atIndex(jj);
+            sortM(12,index)  = norm(basis_atcoords(:,ii)-atcoords(:,jj));
+            sortM(1:3,index) = atTr(:,jj);
+            sortM(4,index)   = ii;
+            sortM(5,index)   = atIndex(jj);
             index = index+1;
         end
     end
@@ -111,31 +105,18 @@ if nMagAtom > 0
     % Couplings inside origin unit cell.
     for ii=1:(nMagAtom-1)
         for jj=(ii+1):nMagAtom
-            coupling.dist(index)  = norm(basis_atcoords(:,ii)-basis_atcoords(:,jj));
-            coupling.dl(:,index)  = [0 0 0];
-            coupling.atom1(index) = ii;
-            coupling.atom2(index) = jj;
+            sortM(12,index)   = norm(basis_atcoords(:,ii)-basis_atcoords(:,jj));
+            sortM(1:3,index) = [0 0 0];
+            sortM(4,index)   = ii;
+            sortM(5,index)   = jj;
             index = index+1;
         end
     end
-    
-    [~, newindex]  = sort(coupling.dist);
-    coupling.dist  = coupling.dist(newindex);
-    coupling.dl    = coupling.dl(:,newindex);
-    coupling.atom1 = coupling.atom1(newindex);
-    coupling.atom2 = coupling.atom2(newindex);
-    
-    % Clear couplings larger than maxDistance [Angstrom].
-    index = coupling.dist<param.maxDistance;
-    coupling.dist    = coupling.dist(index);
-    coupling.dl      = int32(coupling.dl(:,index));
-    coupling.atom1   = int32(coupling.atom1(index));
-    coupling.atom2   = int32(coupling.atom2(index));
-    coupling.idx     = int32(coupling.idx(index));
-    coupling.mat_idx = int32(coupling.mat_idx(:,index));
+    % sort according to distance and cut away large distances
+    sortM = sortrows(sortM(:,sortM(12,:)<param.maxDistance)',12)';
     
     % Finds the equivalent distances and index them in coupling.idx
-    coupling.idx = int32(cumsum([1 (coupling.dist(2:end)-coupling.dist(1:(end-1))) > tol]));
+    sortM(6,:) = cumsum([1 (sortM(12,2:end)-sortM(12,1:(end-1))) > tol]);
     
     aniso = int32(zeros(1,nMagAtom));
     % symmetry equivalent couplings
@@ -143,7 +124,7 @@ if nMagAtom > 0
         % sort couplings according to symmetry
         % sortM matrix, rows:
         % [dlx,dly,dlz,matom1,matom2,idx,atom1,atom2,cx,cy,cz]
-        sortM = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx; mAtom.idx(coupling.atom1); mAtom.idx(coupling.atom2);]);
+        sortM(7:8,:) = [mAtom.idx(sortM(4,:)); mAtom.idx(sortM(5,:))];
         % further sorting according the symmetry equivalent center points
         % take the first column for every coupling type and generate the
         % equivalent center points and compare it with the other equivalent
@@ -164,6 +145,7 @@ if nMagAtom > 0
         newM = zeros(6,0);
         % final index
         idx = 1;
+        ii  = 1;
         % loop over the coupling types
         finish = false;
         while (ii < max(sortM(6,:))) && ~finish
@@ -188,27 +170,20 @@ if nMagAtom > 0
             end
             ii = ii + 1;
         end
-        % save back newM into coupling
-        coupling.dl    = int32(newM(1:3,:));
-        coupling.atom1 = int32(newM(4,:));
-        coupling.atom2 = int32(newM(5,:));
-        coupling.idx   = int32(newM(6,:));
-        coupling.mat_idx = int32(zeros(3,size(coupling.idx,2)));
     end
 else
     % If there is no magnetic atom the coupling and anisotropy are empty.
-    coupling.dist    = [];
-    coupling.dl      = int32(zeros(3,0));
-    coupling.atom1   = int32(zeros(1,0));
-    coupling.atom2   = int32(zeros(1,0));
-    coupling.mat_idx = int32(zeros(3,0));
-    coupling.idx     = int32(zeros(1,0));
-    
-    aniso            = int32(zeros(1,0));
+    newM  = zeros(12,0);
+    aniso = int32(zeros(1,0));
     
 end
 
-coupling             = rmfield(coupling,'dist');
+coupling.dl      = int32(newM(1:3,:));
+coupling.atom1   = int32(newM(4,:));
+coupling.atom2   = int32(newM(5,:));
+coupling.idx     = int32(newM(6,:));
+coupling.mat_idx = int32(zeros(3,size(coupling.idx,2)));
+
 obj.coupling         = coupling;
 obj.single_ion.aniso = aniso;
 

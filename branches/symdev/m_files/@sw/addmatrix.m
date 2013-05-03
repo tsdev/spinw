@@ -1,7 +1,7 @@
-function obj = addmatrix(obj, varargin)
+function addmatrix(obj, varargin)
 % adds new matrix that can be assigned to spins in the Hamiltonian
 %
-% obj = ADDMATRIX(obj, 'Option1, Value1,...)
+% ADDMATRIX(obj, 'Option1, Value1,...)
 %
 % Options:
 %

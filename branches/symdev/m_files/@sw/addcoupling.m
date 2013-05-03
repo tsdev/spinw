@@ -1,4 +1,4 @@
-function obj = addcoupling(obj, matrixLabel, couplingIdx, varargin)
+function addcoupling(obj, matrixLabel, couplingIdx, varargin)
 % assign a predefined matrix to pairs of magnetic atoms as interaction
 %
 % ADDCOUPLING(obj, matrixLabel, couplingIdx, {bondIdx})

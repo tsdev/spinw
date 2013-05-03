@@ -27,35 +27,51 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 % RR            Positions of the atoms in lattice units, dimensions are
 %               [3 nMAgExt].
 %
-% For speedup (if atomic positions does not change) call 
+% For speedup (if atomic positions does not change) call
 % obj.intmatrix(true).
 %
 
 % Create parameters of magnetic atoms in the unit cell.
-mAtom     = obj.matom(varargin{:});
-nMagAtom  = size(mAtom.r,2);
+mAtom    = obj.matom(varargin{:});
+nMagAtom = size(mAtom.r,2);
+mat      = obj.matrix.mat;
+nMat     = size(mat,3);
+mat      = cat(3,mat,zeros(3));
 
-coupling  = obj.coupling;
+coupling = obj.coupling;
 
-SS.all = double([coupling.dl; coupling.atom1; coupling.atom2]);
+SS.all = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx]);
 
-% Remove elements of coupling where mat_idx == 0.
-Col1 = find(coupling.mat_idx(1,:) ~= 0);
-Col2 = find(coupling.mat_idx(2,:) ~= 0);
-Col3 = find(coupling.mat_idx(3,:) ~= 0);
+% Remove couplings where all mat_idx == 0.
+colSel = any(coupling.mat_idx ~= 0,1);
 
-JJ.idx = [coupling.mat_idx(1,Col1) coupling.mat_idx(2,Col2) coupling.mat_idx(3,Col3)];
+JJ.idx = coupling.mat_idx(:,colSel);
+JJ.idx(JJ.idx ==0) = nMat + 1;
+SS.all = SS.all(:,colSel);
 
-SS.all = SS.all(:,[Col1 Col2 Col3]);
-
-JJ.mat  = obj.matrix.mat(:,:,JJ.idx);
+% sum the interactions on the same coupling
+JJ.mat  = mat(:,:,JJ.idx(1,:)) + mat(:,:,JJ.idx(2,:)) + mat(:,:,JJ.idx(3,:));
 
 % For non P1 symmetry, calculate the interaction matrices
-% TODO
+if obj.lattice.sym > 1
+    % first positions of the couplings with identical idx values used to
+    % generate the coupling matrices for the rest
+    firstC = SS.all(1:5,[true logical(diff(SS.all(6,:)))]);
+    
+    % center positions of the first element of couplings with identical idx
+    % values
+    cPos = (mAtom.r(:,firstC(4,:)) + mAtom.r(:,firstC(5,:)) + firstC(1:3,:))/2;
+    % operators that rotate the coupling matrices
+    [~,~,~,rotOp] = sw_genatpos(obj.lattice.sym,cPos);
+    
+    % rotate the matrices: R*M*R'
+    for ii = 1:size(rotOp,3)
+        JJ.mat(:,:,ii) = rotOp(:,:,ii)*JJ.mat(:,:,ii)*rotOp(:,:,ii)';
+    end
+    
+end
 
-
-
-
+SS.all = SS.all(1:5,:);
 
 % don't calculate these for speedup in case of fitting
 if (nargin==1) || (nargin>1 && ~varargin{1})

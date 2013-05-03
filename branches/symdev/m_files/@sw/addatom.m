@@ -1,7 +1,7 @@
-function obj = addatom(obj, varargin)
+function addatom(obj, varargin)
 % adds new atom to an sw object
 %
-% obj = ADDATOM(obj,'Option1',Value1,...)
+% ADDATOM(obj,'Option1',Value1,...)
 %
 % Options:
 %

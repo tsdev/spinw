@@ -5,7 +5,8 @@ function pOp = sw_pointsym(sym, r)
 % Input:
 %
 % sym           Line index in the symmetry.dat file or string of the
-%               symmetry operators.
+%               symmetry operators or a cell containing the output of
+%               sw_gencoord().
 % r             Position in the unit cell, dimensions are [3 1].
 %
 % Output:
@@ -20,9 +21,14 @@ if nargin == 0
     return;
 end
 
-[symOp, ~] = sw_gencoord(sym);
+if ~iscell(sym)
+    [symOp, symTr] = sw_gencoord(sym);
+else
+    symOp = sym{1};
+    symTr = sym{2};
+end
 
-[~, ~, isMoved] = sw_genatpos(sym, r);
+[~, ~, isMoved] = sw_genatpos({symOp symTr}, r);
 
 % point group operators are the ones that does NOT move the atom
 pOp = symOp(:,:,~isMoved{1});

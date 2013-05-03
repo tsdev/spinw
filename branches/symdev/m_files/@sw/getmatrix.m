@@ -196,7 +196,7 @@ if fid
     fprintf(fid,' center of bond (lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
     fprintf(fid,' allowed elements in the symmetric exchange matrix:\n');
     fprintf(fid,'  S = %s\n',smatStr);
-    fprintf(fid,' allowed components of the Dzyaloshi-Moriya vector:\n');
+    fprintf(fid,' allowed components of the Dzyaloshinskii-Moriya vector:\n');
     fprintf(fid,'  D = %s\n\n',amatStr);
 end
 

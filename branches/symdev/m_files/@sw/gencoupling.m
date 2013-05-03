@@ -1,7 +1,7 @@
-function obj = gencoupling(obj, varargin)
+function gencoupling(obj, varargin)
 % generates the COUPLING property of sw object
 %
-% obj = GENCOUPLING(obj, 'option1', value, ...)
+% GENCOUPLING(obj, 'option1', value, ...)
 %
 % It calculates the symmetry equivalent couplings between magnetic atoms
 % and sorts them according to the atom-atom distance. If option 'sym' is
@@ -161,7 +161,6 @@ if nMagAtom > 0
                 % check which vectors are independent
                 [iNew, symIdx, finish] = isnew(cGen, sortMs(9:11,:),tol);
                 % move the non-unique (not new) couplings (symmetry equivalent ones)
-                %newM = [newM [sortMs(1:5,~iNew);ones(1,sum(~iNew))*idx]]; %#ok<AGROW>
                 newM = [newM [sortMs(1:5,symIdx);ones(1,sum(~iNew))*idx]]; %#ok<AGROW>
                 idx  = idx + 1;
                 % remove the symmetry equivalent couplings

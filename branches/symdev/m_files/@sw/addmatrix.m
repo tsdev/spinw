@@ -5,9 +5,11 @@ function addmatrix(obj, varargin)
 %
 % Options:
 %
-% mat       The value matrix, dimensions are  [3 3 nJ].
-% label     Label for plotting, strings in a cell, dimensions are [1 nJ].
-% color     Color for plotting, dimensions are  [3 nJ].
+% mat       The value matrix, dimensions are  [3 3 nJ], default is eye(3).
+% label     Label for plotting, strings in a cell, dimensions are [1 nJ],
+%           default is 'matI', where I is the index of the matrix.
+% color     Color for plotting, dimensions are  [3 nJ], default is 
+%           [255;0;0] for all couplings.
 %
 % Example:
 % ADDMATRIX(obj,'mat',eye(3))
@@ -15,18 +17,28 @@ function addmatrix(obj, varargin)
 %
 
 if nargin < 2
-    error('sw:addmatrix:WrongNumberOfInput','Wrong number of input!');
+    help sw.addmatrix;
+    return;
 end
 
 if nargin>2
     inpForm.fname  = {'mat'    'label' 'color' };
     inpForm.defval = {[]       {}      []      };
     inpForm.size   = {[3 3 -1] [-2 -3] [-4 -5] };
-    inpForm.soft   = {false    true    true    };
+    inpForm.soft   = {true    true    true    };
     
     newMat = sw_readparam(inpForm, varargin{:});
 else
     newMat = varargin{1};
+end
+
+if isempty(newMat.mat)
+    nJ = max(size(newMat.label,2),size(newMat.color,2));
+    if nJ == 0
+        error('sw:addmatrix:WrongInput','Define some matrix property!');
+    else
+        newMat.mat = repmat(eye(3),[1 1 nJ]);
+    end
 end
 
 if isa(newMat,'cell')

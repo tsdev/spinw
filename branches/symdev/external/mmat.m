@@ -11,7 +11,7 @@ function C = mmat(A,B,dim)
 % The necessary condition that the multiplication can be performed:
 %   size(A,dim(2)) = size(B,dim(1))
 %
-% Singleton dimensions in any of the matrices are supported.
+% Singleton dimensions in both A and B matrices are supported.
 %
 % The default value for dim is dim = [1 2].
 %

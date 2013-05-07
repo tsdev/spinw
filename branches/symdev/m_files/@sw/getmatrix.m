@@ -1,7 +1,7 @@
-function aMat = getmatrix(obj, cIdx, varargin)
+function aMat = getmatrix(obj, idx, varargin)
 % gives the symmetry allowed matrices for a given coupling
 %
-% aMat = GETMTRIX(obj, cIdx, 'Option1', Value1, ...)
+% aMat = GETMATRIX(obj, idx, 'Option1', Value1, ...)
 %
 % Input:
 %
@@ -22,7 +22,7 @@ function aMat = getmatrix(obj, cIdx, varargin)
 %
 % Output:
 % aMat      If no prefactors are defined, aMat contains all symmetry
-%           allowed elements of the coupling matrix, dimensions are 
+%           allowed elements of the coupling matrix, dimensions are
 %           [3 3 nSymMat]. If prefactor is defined, it is a single 3x3
 %           matrix.
 %
@@ -40,7 +40,7 @@ if nargin == 1
     return;
 end
 
-iSel = obj.coupling.idx == cIdx;
+iSel = obj.coupling.idx == idx;
 
 mAtom = obj.matom;
 % indices of atoms in selected couplings

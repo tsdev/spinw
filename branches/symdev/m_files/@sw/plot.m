@@ -13,7 +13,7 @@ function varargout = plot(obj, varargin)
 %   plotDM          If non-zero, Dzyaloshinskii-Moriya vectors are plotted
 %                   onto the middle of the bond. plotDM value is used to
 %                   scale the length of the vector. Standard bond is
-%                   plotted if plotDM is zero. Default is zero.
+%                   plotted if plotDM is zero. Default is 1.
 %   plotZeroC       Plot couplings with zero value, default is true.
 %   legend          Whether to plot legend, default is true.
 %   plotCell        Whether to plot unit cell at the origin, defult is true.
@@ -118,7 +118,7 @@ material dull;
 %% input parameters
 
 inpForm.fname  = {'range'                      'plotSpin' 'colorAxis' 'plotCell' 'plotDM' };
-inpForm.defval = {[-0.1 1.1;-0.1 1.1;-0.1 1.1] true       [0 0 0]     true       0        };
+inpForm.defval = {[-0.1 1.1;-0.1 1.1;-0.1 1.1] true       [0 0 0]     true       1        };
 inpForm.size   = {[3 2]                        [1 1]      [1 3]       [1 1]      [1 1]    };
 
 inpForm.fname  = [inpForm.fname  {'plotMultCell' 'plotAxis' 'surfRes' 'couplingR' 'scaleS' 'radiusS'}];

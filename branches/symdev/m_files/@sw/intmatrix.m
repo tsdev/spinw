@@ -145,7 +145,7 @@ SS.all = SS.all(:,sum(SS.all(6:end,:).^2,1) > 1e-10);
 if param.plotmode
     % Saves all coupling matrix indices in SS.all in case of non-fitting mode
     % in the bottom row
-    SS.all = [SS.all; double(JJ.idx); idxTemp];
+    SS.all = [SS.all; double(JJ.idx'); idxTemp];
 end
 
 % Anisotropy matrix.

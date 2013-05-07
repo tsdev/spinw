@@ -101,7 +101,7 @@ end
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
 if param.fitmode
-    [SS, SI, RR] = obj.intmatrix(true);
+    [SS, SI, RR] = obj.intmatrix('fitmode',2);
 else
     [SS, SI, RR] = obj.intmatrix;
 end

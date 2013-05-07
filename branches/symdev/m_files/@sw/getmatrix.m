@@ -59,6 +59,10 @@ center = mod((r1+r2+dl)/2,1);
 % coupling
 pOp = sw_pointsym(obj.lattice.sym,center(:,1));
 
+% convert the matrices to the xyz Cartesian coordinate system
+A   = obj.basisvector;
+pOp = mmat(A,mmat(pOp,inv(A)));
+
 % determine the allowed matrix elements for the first coupling
 [aMat, asym] = sw_basismat(pOp,dr(:,1));
 

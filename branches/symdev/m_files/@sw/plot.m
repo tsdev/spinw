@@ -269,34 +269,39 @@ matrix   = obj.matrix;
 coupling = obj.coupling;
 nExt     = double(obj.mag_str.N_ext);
 
-cIdx = any(coupling.mat_idx,1);
-coupling.dl      = coupling.dl(:,cIdx);
-coupling.atom1   = coupling.atom1(cIdx);
-coupling.atom2   = coupling.atom2(cIdx);
-coupling.mat_idx = coupling.mat_idx(:,cIdx);
-coupling.idx   = coupling.idx(cIdx);
+SS = intmatrix(obj,'plotmode',true);
+
+% cIdx = any(coupling.mat_idx,1);
+coupling.dl      = SS.all(1:3,:);
+coupling.atom1   = SS.all(4,:);
+coupling.atom2   = SS.all(5,:);
+coupling.mat_idx = SS.all(15,:);
+coupling.idx     = SS.all(16,:);
+coupling.mat     = reshape(SS.all(6:14,:),3,3,[]);
+coupling.DM      = (coupling.mat-permute(coupling.mat,[2 1 3]))/2;
+coupling.DM      = cat(2,coupling.DM(2,3,:),coupling.DM(3,1,:),coupling.DM(1,2,:));
 
 nCoupling     = size(coupling.idx,2);
 
-% Create the actual indexing and type in coupling
-coupling.idxJ = zeros(3,nCoupling);
-coupling.type = zeros(3,nCoupling);
-
-for ii = 1: nCoupling
-    for jj = 1:3
-        idxJ = coupling.mat_idx(jj,ii);
-        if any(idxJ)
-            % save zero valued couplings if plotZeroC is true
-            if param.plotZeroC || any(any(matrix.mat(:,:,idxJ)))
-                coupling.idxJ(jj,ii) = idxJ;
-                coupling.type(jj,ii) = sw_mattype(matrix.mat(:,:,idxJ));
-            end
-            
-        end
-    end
-end
-
-
+% % Create the actual indexing and type in coupling
+% coupling.idxJ = zeros(3,nCoupling);
+% coupling.type = zeros(3,nCoupling);
+% 
+% for ii = 1: nCoupling
+%     for jj = 1:3
+%         idxJ = coupling.mat_idx(jj,ii);
+%         if any(idxJ)
+%             % save zero valued couplings if plotZeroC is true
+%             if param.plotZeroC || any(any(matrix.mat(:,:,idxJ)))
+%                 coupling.idxJ(jj,ii) = idxJ;
+%                 coupling.type(jj,ii) = sw_mattype(matrix.mat(:,:,idxJ));
+%             end
+%             
+%         end
+%     end
+% end
+% 
+% 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -485,52 +490,49 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
 end
 
 % Plots cylinder for couplings between amgnetic atoms.
-
 for ii = floor(param.range(1,1)):floor(param.range(1,2))
     for jj = floor(param.range(2,1)):floor(param.range(2,2))
         for kk = floor(param.range(3,1)):floor(param.range(3,2))
             dCell = [ii;jj;kk];
             for ll = 1:nCoupling
-                for mm = 1:3
-                    if coupling.idxJ(mm,ll)
+                    if coupling.mat_idx(ll)
                         rLat1 = mAtom.r(:,coupling.atom1(ll)) + dCell;
                         rLat2 = mAtom.r(:,coupling.atom2(ll)) + double(coupling.dl(:,ll)) + dCell;
                         
                         if all((rLat1<param.range(:,2))&(rLat1>param.range(:,1))&(rLat2<param.range(:,2))&(rLat2>param.range(:,1)))
                             rPlot1    = basisVector*rLat1;
                             rPlot2    = basisVector*rLat2;
-                            cColor    = double(matrix.color(:,coupling.idxJ(mm,ll)))/255;
+                            cColor    = double(matrix.color(:,coupling.mat_idx(ll)))/255;
                             
                             % plot normal cylinder
                             if param.plotC
                                 cCylinder = sw_cylinder(rPlot1,rPlot2,param.couplingR,param.surfRes);
                                 handle.coupling(coupling.idx(ll),end+1) = cCylinder;
                                 set(cCylinder,'FaceColor',cColor);
-                                set(cCylinder,'Tag',['coupling_' matrix.label{coupling.idxJ(mm,ll)}]);
+                                set(cCylinder,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
                                 
-                                tooltip(cCylinder,[matrix.label{coupling.idxJ(mm,ll)} ' coupling\nValue:\n' strmat(matrix.mat(:,:,coupling.idxJ(mm,ll)))]);
+                                tooltip(cCylinder,[matrix.label{coupling.mat_idx(ll)} ' coupling\nValue:\n' strmat(matrix.mat(:,:,coupling.mat_idx(ll)))]);
                             end
                             % plot DM vector
-                            if param.plotDM>0 && (coupling.type(mm,ll)==3)
+                            if param.plotDM>0 && (norm(coupling.DM(1,:,ll))>1e-5)
                                 rCent = (rPlot1+rPlot2)/2;
-                                mDM   = obj.matrix.mat(:,:,coupling.idxJ(mm,ll));
-                                vDM   = [mDM(2,3); mDM(3,1); mDM(1,2)]*param.plotDM;
+                                vDM   = coupling.DM(1,:,ll)'*param.plotDM;
                                 hDM   = sw_arrow(rCent,rCent+vDM,param.radiusS,param.headAngleS,param.headLengthS,param.surfRes);
                                 handle.DMcoupling(coupling.idx(ll),end+(1:4)) = hDM;
                                 set(hDM,'FaceColor',cColor);
-                                set(hDM,'Tag',['coupling_' matrix.label{coupling.idxJ(mm,ll)}]);
+                                set(hDM,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
                                 
-                                tooltip(hDM,[matrix.label{coupling.idxJ(mm,ll)} ' DM coupling\nValue:\n' strmat(vDM')]);
+                                tooltip(hDM,[matrix.label{coupling.mat_idx(ll)} ' DM coupling\nValue:\n' strmat(vDM')]);
                                 if ~param.plotC
                                     rPlot = [rPlot1 rPlot2];
                                     hLine = line(rPlot(1,:),rPlot(2,:),rPlot(3,:),'LineStyle','--','LineWidth',2,'Color',[0 0 0]);
-                                    set(hLine,'Tag',['coupling_' matrix.label{coupling.idxJ(mm,ll)}]);
+                                    set(hLine,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
                                     handle.DMcoupling(coupling.idx(ll),end+1) = hLine;
                                 end
                             end
                         end
                     end
-                end
+
             end
         end
     end

@@ -1,7 +1,7 @@
 function [unique, firstIdx] = sw_uniquetol(M,tol)
 % returns the unique column vectors within tolerance
 %
-% unique = SW_UNIQUETOL(M,tol)
+% [unique, firstIdx] = SW_UNIQUETOL(M,tol)
 %
 % Two column vectors are considered unequal, if the distance between them
 % is larger than the tolerance.

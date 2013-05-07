@@ -169,6 +169,8 @@ if nMagAtom > 0
             end
             ii = ii + 1;
         end
+    else
+        newM = sortM;
     end
 else
     % If there is no magnetic atom the coupling and anisotropy are empty.

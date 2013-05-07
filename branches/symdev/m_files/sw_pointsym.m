@@ -11,7 +11,13 @@ function pOp = sw_pointsym(sym, r)
 %
 % Output:
 %
-% pOp           Point group operators, dimensions are [3 3 npOp].
+% pOp           Point group operators, dimensions are [3 3 npOp], these
+%               operators act on the relative atomic positions (they are in
+%               the lattice coordinate system). To convert them to
+%               Cartesian coordinate system, use:
+%                   R = A*pOp(:,:,ii)*inv(A)
+%               Where A is a 3x3 matrix, containing the basis vectors of
+%               the lattice as column vectors.
 %
 % See also SW_GENATPOS, SW_GENCOORD, SW_GENSYM, SW_BASISMAT.
 %

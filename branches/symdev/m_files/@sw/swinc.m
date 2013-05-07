@@ -89,7 +89,7 @@ nHkl      = size(hkl,2);
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
 if param.fitmode
-    [SS, SI, RR] = obj.intmatrix(false);
+    [SS, SI, RR] = obj.intmatrix('fitmode',1);
 else
     [SS, SI, RR] = obj.intmatrix;
 end

@@ -8,7 +8,7 @@ function mAtomList = matom(obj, varargin)
 % See also SW.ATOM.
 %
 
-if (nargin>1) && ~isempty(obj.matomstore)
+if (nargin>1) && (varargin{1}>0) && ~isempty(obj.matomstore)
     
     mAtomList = obj.matomstore;
 else

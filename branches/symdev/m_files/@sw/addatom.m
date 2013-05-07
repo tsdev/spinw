@@ -1,41 +1,48 @@
 function addatom(obj, varargin)
 % adds new atom to an sw object
 %
-% ADDATOM(obj,'Option1',Value1,...)
+% ADDATOM(obj,'Option1', Value1, ...)
 %
 % Options:
 %
-%   r       Atomic positions, dimensions are [3 nAtom].
+%   r       Atomic positions, dimensions are [3 nAtom]. No default value!
 %   S       Spin of the atoms, dimensions are [1 nAtom], for non-magnetic
-%           atoms set S to zero.
-%   {label} Names of the atoms for plotting and form factor
+%           atoms set S to zero. Default is 1.
+%   label   Names of the atoms for plotting and form factor
 %           calculations (see formfactor.dat), it is a cell, optional.
 %           Example:
 %           {'atom1' 'atom2' 'atom3'}
-%   {color} Colors of the atoms for plotting, dimensions are [3 nAtom],
+%           Default value is 'atomI', where I is the atom index.
+%   color   Colors of the atoms for plotting, dimensions are [3 nAtom],
 %           where each column describes an RGB color. Each value is between
-%           0 and 255, optional.
+%           0 and 255, optional. Default value is [255;165;0] for each
+%           atom.
 %
-% obj = ADDATOM(obj,atom)
+% ADDATOM(obj,atom)
 %
-% Atom is a cell, it has 4 elements, {r S label color}, where the members
+% Input:
+%
+% atom is a cell, it has 4 elements, {r S label color}, where the members
 % of the cell are matrices, as above.
 %
+%
 % Example:
-% ADDATOM(obj,'r',[0 1/2; 0 0; 0 0],'S',[1 0])
-% adds a magnetic atom at position (0,0,0) and a non-magnetic one at
+%
+% addatom(crystal,'r',[0 1/2; 0 0; 0 0],'S',[1 0])
+% Adds a magnetic atom (S=1) at position (0,0,0) and a non-magnetic one at
 % (1/2 0 0).
 %
 
 if nargin < 2
-    error('sw:addatom:WrongNumberOfInput','Wrong number of input!');
+    help sw.addatom;
+    return;
 end
 
 if nargin>2
     inpForm.fname  = {'r'     'S'      'label' 'color' };
     inpForm.defval = {[]      []       {}      []      };
     inpForm.size   = {[-1 -2] [-3 -4]  [-5 -6] [-7 -8] };
-    inpForm.soft   = {false   false    true    true    };
+    inpForm.soft   = {false   true     true    true    };
     
     newAtom = sw_readparam(inpForm, varargin{:});
 else
@@ -50,28 +57,37 @@ if isa(newAtom,'cell')
     newAtom = newObj;
 end
 
-if ~isfield(newAtom,'label') || isempty([newAtom.label])
-    idx = 1;
-    for ii = 1:numel(newAtom)
-        newAtom(ii).label = {};
-        for jj = 1:numel(newAtom(ii).r)/3
-            newAtom(ii).label = [newAtom(ii).label {['atom' num2str(idx)]}];
-            idx = idx + 1;
+if isa(newAtom,'struct')
+    
+    % Generate atom labels.
+    if ~isfield(newAtom,'label') || isempty([newAtom.label])
+        idx = 1;
+        for ii = 1:numel(newAtom)
+            newAtom(ii).label = {};
+            for jj = 1:numel(newAtom(ii).r)/3
+                newAtom(ii).label = [newAtom(ii).label {['atom' num2str(idx)]}];
+                idx = idx + 1;
+            end
         end
     end
-end
-
-if ~isfield(newAtom,'color') || isempty([newAtom.color])
-    for ii = 1:numel(newAtom)
-        newAtom(ii).color = repmat([255;165;0],1,numel(newAtom(ii).r)/3);
+    
+    % Generate atom colors.
+    if ~isfield(newAtom,'color') || isempty([newAtom.color])
+        for ii = 1:numel(newAtom)
+            newAtom(ii).color = repmat([255;165;0],1,numel(newAtom(ii).r)/3);
+        end
     end
-end
-
-if isa(newAtom,'struct')
+    
     for ii = 1:numel(newAtom)
         if ~any(size(newAtom(ii).r)-[1 3])
             newAtom(ii).r = newAtom(ii).r';
         end
+        
+        % Generate spins, default is 1.
+        if isempty(newAtom(ii).S)
+            newAtom(ii).S = ones(1,size(newAtom.r,2));
+        end
+        
         if ~any(size(newAtom(ii).color)-[1 3])
             newAtom(ii).color = newAtom(ii).color';
         end

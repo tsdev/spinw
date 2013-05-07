@@ -1,4 +1,4 @@
-function [transf, transl, symName, symOp] = sw_gensym(varargin)
+function [transf, transl, symName, symOp, symNumber] = sw_gensym(varargin)
 % [transf, transl, symName, symOp] = SW_GENSYM({sym}) gives the symmetry elements
 % based on the space group number or given list of symmetry operators.
 % Without arguments, returns the name of all space groups stored in
@@ -15,19 +15,23 @@ function [transf, transl, symName, symOp] = sw_gensym(varargin)
 % tranl         Translation vectors, dimensions are [3 nOp].
 % symName       Name of the space group, stored in cells.
 % symOp         The string of the symmetry operations.
+% symNumber     The index of the symmetry in the symmetry.dat file.
 %
-% See also SW_ADDSYM, SW, SW_GENCOUPLING.
+% See also SW_ADDSYM, SW, SW.GENCOUPLING.
 %
 
-if (nargin == 0) || (~ischar(varargin{1}))
-    % Open the symmetry definition file.
-    symPath = [sw_rootdir 'dat_files' filesep 'symmetry.dat'];
-    fid = fopen(symPath);
-    if fid == -1
-        
-        error('spinw:sw_gensym:FileNotFound',['Symmetry definition file not found: '...
-            regexprep(symPath,'\' , '\\\') '!']);
-    end
+if nargin == 0
+    help sw_gensym;
+    return;
+end
+
+% Open the symmetry definition file.
+symPath = [sw_rootdir 'dat_files' filesep 'symmetry.dat'];
+fid = fopen(symPath);
+if fid == -1
+    
+    error('spinw:sw_gensym:FileNotFound',['Symmetry definition file not found: '...
+        regexprep(symPath,'\' , '\\\') '!']);
 end
 
 % Just returns the name of all space groups.
@@ -55,8 +59,23 @@ if ischar(varargin{1})
         symOp = 'x,y,z';
         symName = 'P 1';
     else
-        symOp = varargin{1};
-        symName = 'user defined';
+        % find symmetry label
+        symName = varargin{1};
+        symName(end+1:11) = 32;
+        symIdx = 0;
+        ii     = 1;
+        while (symIdx == 0) && ~feof(fid)
+            textLine    = fgetl(fid);
+            if strfind(symName,textLine(7:17))
+                symIdx = ii;
+            end
+            ii = ii+1;
+        end
+        if symIdx == 0
+            error('sw:sw_gensym:WrongInput','Symmetry name does not exists (case insensitive)!');
+        end
+        symNumber = symIdx;
+        symOp     = textLine(20:end);
     end
     
 else
@@ -120,5 +139,8 @@ end
 transf(nNew,:,nOp) = vNew;
 transf = transf(:,:,1:nOp);
 transl = transl(:,1:nOp);
+
+% cut trailing spaces from symName
+symName = symName(1:find(diff([symName '  ']==32),1,'last'));
 
 end

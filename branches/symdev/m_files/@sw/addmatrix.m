@@ -8,7 +8,7 @@ function addmatrix(obj, varargin)
 % mat       The value matrix, dimensions are  [3 3 nJ], default is eye(3).
 % label     Label for plotting, strings in a cell, dimensions are [1 nJ],
 %           default is 'matI', where I is the index of the matrix.
-% color     Color for plotting, dimensions are  [3 nJ], default is 
+% color     Color for plotting, dimensions are  [3 nJ], default is
 %           [255;0;0] for all couplings.
 %
 % Example:
@@ -32,15 +32,6 @@ else
     newMat = varargin{1};
 end
 
-if isempty(newMat.mat)
-    nJ = max(size(newMat.label,2),size(newMat.color,2));
-    if nJ == 0
-        error('sw:addmatrix:WrongInput','Define some matrix property!');
-    else
-        newMat.mat = repmat(eye(3),[1 1 nJ]);
-    end
-end
-
 if isa(newMat,'cell')
     newObj.mat   = newMat{1};
     newObj.label = reshape(newMat{2},1,[]);
@@ -49,6 +40,17 @@ if isa(newMat,'cell')
 end
 
 if isa(newMat,'struct')
+    
+    % Defult Heisenberg matrix.
+    if isempty(newMat.mat)
+        nJ = max(size(newMat.label,2),size(newMat.color,2));
+        if nJ == 0
+            error('sw:addmatrix:WrongInput','Define some matrix property!');
+        else
+            newMat.mat = repmat(eye(3),[1 1 nJ]);
+        end
+    end
+    
     if ~isfield(newMat,'label') || isempty([newMat.label])
         idx = size(obj.matrix.mat,3)+1;
         for ii = 1:numel(newMat)

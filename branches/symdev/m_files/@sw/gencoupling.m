@@ -83,7 +83,7 @@ if nMagAtom > 0
     
     % Number of elements in the neighbour list.
     nDist = size(atIndex,2)*nMagAtom + nMagAtom*(nMagAtom-1)/2;
-    % matrix stores [dlx dly dlz matom1 matom2 idx atom1 atom2 cx cy cz dist]
+    % matrix stores [dlx dly dlz matom1 matom2 idx atom1 atom2 cx cy cz dist dx dy dz]
     sortM = zeros(12,nDist);
     
     % Atomic position [Angstrom] of the magnetic atoms.
@@ -121,51 +121,36 @@ if nMagAtom > 0
     aniso = int32(zeros(1,nMagAtom));
     % symmetry equivalent couplings
     if param.sym
-        % sort couplings according to symmetry
-        % sortM matrix, rows:
-        % [dlx,dly,dlz,matom1,matom2,idx,atom1,atom2,cx,cy,cz]
-        sortM(7:8,:) = [mAtom.idx(sortM(4,:)); mAtom.idx(sortM(5,:))];
-        % further sorting according the symmetry equivalent center points
-        % take the first column for every coupling type and generate the
-        % equivalent center points and compare it with the other equivalent
-        % couplings
-        % center point of the couplings
-        sortM(9:11,:) = mod((mAtom.r(:,sortM(4,:))+mAtom.r(:,sortM(5,:))+sortM(1:3,:))/2,1);
-        % sort the indices of the atoms (atom1,atom2) for every coupling
-        sortM(7:8,:) = sort(sortM(7:8,:),1);
-        % sort the couplings hyerarchically: idx, atom1, atom2
-        sortM = sortrows(sortM',6:8)';
-        % new idx values based on the old idx and atom1 and atom2 indices
-        sortM(6,:) = sum(bsxfun(@times,sortM(6:8,:),[1e8 1e4 1]'),1);
-        sortM(6,:) = [1 cumsum(sortM(6,2:end)~=sortM(6,1:end-1))+1];
-        % sort again based on the center of the couplings
         % get the symmetry operators
-        [symOp, symTr] = sw_gencoord(obj.lattice.sym);
+        [symOp, ~] = sw_gencoord(obj.lattice.sym);
         % store the final sorted couoplings in newM
         newM = zeros(6,0);
-        % final index
-        idx = 1;
         ii  = 1;
-        % loop over the coupling types
-        finish = false;
-        while (ii < max(sortM(6,:))) && ~finish
+        idx = 1;
+        while (ii < max(sortM(6,:)))
             % select columns from sorM with a certain idx value
             sortMs = sortM(:,sortM(6,:) == ii);
-            % loop over inequivalent center points
-            while (size(sortMs,2)>0) && ~finish
-                % symmetry equivalent center points generated from the
-                % first coupling
-                cGen = sw_genatpos({symOp symTr},sortMs(9:11,1));
-                % if not all symmetry equivalent coupling is generated
-                % finish the job
-                % check which vectors are independent
-                [iNew, symIdx, finish] = isnew(cGen, sortMs(9:11,:),tol);
+            while (size(sortMs,2)>0)
+                % atom positions and translation vector of the first atom
+                r1 = mAtom.r(:,sortMs(4,1));
+                r2 = mAtom.r(:,sortMs(5,1));
+                dl = sortMs(1:3,1);
+                % generate new atomic positions and translation vectors
+                r1new = permute(mmat(symOp,r1),[1 3 2]);
+                r2new = permute(mmat(symOp,r2),[1 3 2]);
+                dlnew = permute(mmat(symOp,dl),[1 3 2]);
+                % determine the new indices in mAtom
+                [~, atom1] = isnew(mAtom.r,r1new,param.tol);
+                [~, atom2] = isnew(mAtom.r,r2new,param.tol);
+                % generate coupling columns
+                genC = [[dlnew; atom1;atom2] [-dlnew;atom2;atom1]];
+                % detemine the independent couplings
+                symIdx = isnew2(genC,sortMs(1:5,:),param.tol);
                 % move the non-unique (not new) couplings (symmetry equivalent ones)
-                newM = [newM [sortMs(1:5,symIdx);ones(1,sum(~iNew))*idx]]; %#ok<AGROW>
+                newM = [newM [sortMs(1:5,symIdx);ones(1,numel(symIdx))*idx]]; %#ok<AGROW>
                 idx  = idx + 1;
                 % remove the symmetry equivalent couplings
-                sortMs = sortMs(:,iNew);
-                
+                sortMs(:,symIdx) = [];
             end
             ii = ii + 1;
         end
@@ -192,7 +177,7 @@ validate(obj);
 
 end
 
-function [isnew, symIdx, finish] = isnew(A,B, tol)
+function [isnew, symIdx] = isnew(A,B, tol)
 % selects the new vectors from B. Dimensions of A and B have to be [3 nA]
 % and [3 nB] respectively.
 % A vector in B is considered new, if d(mod(vA-vB,1))<tol.
@@ -203,13 +188,32 @@ nA = size(A,2);
 nB = size(B,2);
 
 notequal = sum(mod(abs(repmat(permute(A,[2 3 1]),[1 nB 1]) - repmat(permute(B,[3 2 1]),[nA 1 1])),1).^2,3)>tol.^2;
-[symIdx, ~] = find(~notequal');
+
 isnew = all(notequal,1);
 
-if numel(symIdx)>nA
-    finish = true;
-else
-    finish = false;
-end
+idx = 1:nB;
+
+symIdx = arrayfun(@(idx)find(~notequal(:,idx),1,'first'),idx(~isnew));
 
 end
+
+function symIdx = isnew2(A,B, tol)
+% selects the new vectors from B. Dimensions of A and B have to be [3 nA]
+% and [3 nB] respectively.
+% A vector in B is considered new, if d(mod(vA-vB,1))<tol.
+%
+% symIdx    Indices to re
+
+nA = size(A,2);
+nB = size(B,2);
+
+notequal = sum(abs(repmat(permute(A,[2 3 1]),[1 nB 1]) - repmat(permute(B,[3 2 1]),[nA 1 1])).^2,3)>tol.^2;
+
+isnew = all(notequal,2);
+
+idx = 1:nA;
+
+symIdx = arrayfun(@(idx)find(~notequal(idx,:),1,'first'),idx(~isnew));
+
+end
+

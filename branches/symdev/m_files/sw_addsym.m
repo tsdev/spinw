@@ -3,6 +3,8 @@ function sym = sw_addsym(symStr, symName)
 % symStr into the symmetry.dat file and returns the number of the space
 % group.
 %
+% Input:
+% symStr        Name for the 
 % See also SW_GENSYM.
 %
 

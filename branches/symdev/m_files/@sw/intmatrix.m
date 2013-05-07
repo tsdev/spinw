@@ -59,6 +59,7 @@ coupling = obj.coupling;
 
 SS.all = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx]);
 
+
 if param.fitmode > 0
     % sum up couplings on the same bond
     
@@ -90,7 +91,7 @@ else
 end
 
 % For non P1 symmetry, calculate the interaction matrices
-if obj.lattice.sym > 1
+if (obj.lattice.sym > 1) && (numel(SS.all) > 0)
     % first positions of the couplings with identical idx values used to
     % generate the coupling matrices for the rest
     firstC = SS.all(1:5,[true logical(diff(SS.all(6,:)+100*SS.all(7,:)))]);

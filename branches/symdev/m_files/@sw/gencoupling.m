@@ -142,6 +142,9 @@ if nMagAtom > 0
                 % determine the new indices in mAtom
                 [~, atom1] = isnew(mAtom.r,r1new,param.tol);
                 [~, atom2] = isnew(mAtom.r,r2new,param.tol);
+                % remove identical couplings
+                
+                
                 % generate coupling columns
                 genC = [[dlnew; atom1;atom2] [-dlnew;atom2;atom1]];
                 % detemine the independent couplings

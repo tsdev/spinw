@@ -28,8 +28,9 @@ function aMat = getmatrix(obj, idx, varargin)
 %
 
 inpForm.fname  = {'fid' 'tol' 'pref'};
-inpForm.defval = {0     1e-5  0     };
+inpForm.defval = {0     1e-5  []    };
 inpForm.size   = {[1 1] [1 1] [1 -1]};
+inpForm.soft   = {false false true  };
 
 param = sw_readparam(inpForm, varargin{:});
 tol = param.tol;
@@ -71,7 +72,7 @@ aMatA = aMat(:,:, asym);
 dVect = permute([aMatA(2,3,:) aMatA(3,1,:) aMatA(1,2,:)],[2 3 1]);
 
 % calculate interaction matrix using the prefactors
-if any(param.pref)
+if ~isempty(param.pref)
     if numel(param.pref)~=size(aMat,3)
         error('sw:getmatrix:WrongInput','Wrong number of elements in pref option!');
     end

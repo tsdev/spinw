@@ -11,6 +11,8 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %               2   as mode == 1, moreover only SS.all is calculated.
 % plotmode      If true, additional rows are added to SS.all, to identify
 %               the couplings for plotting.
+% zeroC         Whether to give couplings with assigned matrices that are
+%               zero. Default is false.
 %
 % Output:
 %
@@ -43,9 +45,9 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %               [3 nMAgExt].
 %
 
-inpForm.fname  = {'fitmode' 'plotmode'};
-inpForm.defval = {0          false    };
-inpForm.size   = {[1 1]      [1 1]    };
+inpForm.fname  = {'fitmode' 'plotmode' 'zeroC'};
+inpForm.defval = {0          false     false  };
+inpForm.size   = {[1 1]      [1 1]     [1 1]  };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -80,7 +82,7 @@ else
     mat_idx = coupling.mat_idx';
     JJ.idx  = mat_idx(mat_idx(:) ~= 0);
     
-    colSel  = [find(coupling.mat_idx(1,:)~=0)' find(coupling.mat_idx(2,:)~=0)' find(coupling.mat_idx(3,:)~=0)'];
+    colSel  = [find(coupling.mat_idx(1,:)~=0) find(coupling.mat_idx(2,:)~=0) find(coupling.mat_idx(3,:)~=0)];
     SS.all = SS.all(:,colSel(:));
     
     SS.all = [SS.all; double(JJ.idx')];
@@ -141,7 +143,15 @@ end
 
 % Saves the whole interaction matrices into SS.all
 SS.all = [SS.all; shiftdim(reshape(JJ.mat,1,9,size(JJ.mat,3)),1)];
-SS.all = SS.all(:,sum(SS.all(6:end,:).^2,1) > 1e-10);
+
+% Cut out zero valued interactions
+if ~param.zeroC
+    nzeroJ  = sum(SS.all(6:end,:).^2,1) > 1e-10;
+    SS.all  = SS.all(:,nzeroJ);
+    JJ.idx  = JJ.idx(nzeroJ);
+    JJ.mat  = JJ.mat(:,:,nzeroJ);
+    idxTemp = idxTemp(nzeroJ);
+end
 
 if param.plotmode
     % Saves all coupling matrix indices in SS.all in case of non-fitting mode

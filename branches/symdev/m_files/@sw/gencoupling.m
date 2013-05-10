@@ -115,21 +115,21 @@ if nMagAtom > 0
     % sort according to distance and cut away large distances
     sortM = sortrows(sortM(:,sortM(12,:)<param.maxDistance)',12)';
     
-    % sort properly the atom1-atom2 pairs:
-    % first dlx>0, dly>0, dlz>0
-    % change sign of dl and exchange atom1 and atom2
-    multL = fliplr(cumprod([1 [1 1]*(param.nUnitCell+1)]));
-    flip0 = find(sum(bsxfun(@times,sortM(1:3,:),multL'),1) < 0);
-    % sort interacting atoms within the 1st unit cell
-    firstCell = find(sum(abs(sortM(1:3,:)),1) == 0);
-    if ~isempty(firstCell)
-        multA = [4 2 1]';
-        flip = find(sum(bsxfun(@times,sign(mAtom.r(:,sortM(4,firstCell))-mAtom.r(:,sortM(5,firstCell))),multA),1) < 0);
-        flip = [flip0 firstCell(flip)]; %#ok<FNDSB>
-    end
-    % flip the selected couplings
-    sortM(1:3,flip)   = -sortM(1:3,flip);
-    sortM([4 5],flip) =  sortM([5 4],flip);
+%     % sort properly the atom1-atom2 pairs:
+%     % first dlx>0, dly>0, dlz>0
+%     % change sign of dl and exchange atom1 and atom2
+%     multL = fliplr(cumprod([1 [1 1]*(param.nUnitCell+1)]));
+%     flip0 = find(sum(bsxfun(@times,sortM(1:3,:),multL'),1) < 0);
+%     % sort interacting atoms within the 1st unit cell
+%     firstCell = find(sum(abs(sortM(1:3,:)),1) == 0);
+%     if ~isempty(firstCell)
+%         multA = [4 2 1]';
+%         flip = find(sum(bsxfun(@times,sign(mAtom.r(:,sortM(4,firstCell))-mAtom.r(:,sortM(5,firstCell))),multA),1) < 0);
+%         flip = [flip0 firstCell(flip)]; %#ok<FNDSB>
+%     end
+%     % flip the selected couplings
+%     sortM(1:3,flip)   = -sortM(1:3,flip);
+%     sortM([4 5],flip) =  sortM([5 4],flip);
     
     % Finds the equivalent distances and index them in coupling.idx
     sortM(6,:) = cumsum([1 (sortM(12,2:end)-sortM(12,1:(end-1))) > tol]);
@@ -170,6 +170,9 @@ if nMagAtom > 0
                 end
                 dist = sqrt(sum((obj.basisvector*(mAtom.r(:,atom2)-mAtom.r(:,atom1)+dlnew)).^2,1));
                 rightDist = abs(dist-sortMs(12,1)) < tol;
+                if ~all(rightDist)
+                    warning('sym coupling dropped ii=%d idx=%d!',ii,idx);
+                end
                 atom1 = atom1(:,rightDist);
                 atom2 = atom2(:,rightDist);
                 dlnew = dlnew(:,rightDist);
@@ -178,7 +181,8 @@ if nMagAtom > 0
                 % remove from sortMs the identical couplings
                 iNew = isnew(genC,sortMs(1:5,:),tol);
                 sortMs(:,~iNew) = [];
-                % remove identical couplings
+                % remove identical couplings from the symmetry generated
+                % list
                 genC = [dlnew; atom1; atom2];
                 unC = uniquec(genC);
                 genC(:,~unC) = [];

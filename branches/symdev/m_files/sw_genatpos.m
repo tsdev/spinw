@@ -63,12 +63,12 @@ opMove = zeros(3,3,0);
 % loop over all input atoms
 for ii = 1:nAtom
     % generate all equivalent atomic positions, some might overlap
-    rTemp = mod(permute(sum(repmat(r(:,ii)',[3 1 nSym]).*symOp,2),[1 3 2])+symTr,1);
-    % take out the overlapping positions
-    isMoved{ii} = sum(bsxfun(@minus,rTemp,r(:,ii)).^2,1) > tol^2;
+    rTemp  = mod(permute(sum(repmat(r(:,ii)',[3 1 nSym]).*symOp,2),[1 3 2])+symTr,1);
+    % take out the overlapping positions, using modulo with tolerance
+    isMoved{ii} = sum(bsxfun(@minus,sw_cmod(rTemp,tol),sw_cmod(r(:,ii),tol)).^2,1) > tol^2;
     if numel(rTemp) > 3
         % select unique atomic positions and the indices
-        [rTemp, idxF] = sw_uniquetol(rTemp,tol);
+        [rTemp, idxF] = sw_uniquetol(sw_cmod(rTemp,tol),tol);
     else
         idxF = 1;
     end

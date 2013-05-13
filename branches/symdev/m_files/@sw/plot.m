@@ -7,19 +7,24 @@ function varargout = plot(obj, varargin)
 %
 % Options:
 %
-%   range           Plotting range of the lattice parameters, size: (3,2)
+%   range           Plotting range of the lattice parameters in lattice
+%                   units, dimensions are [3 2]. For example to plot the
+%                   first unit cell, use: [0 1;0 1;0 1]. Also the number
+%                   unit cells can be given along the a, b and c
+%                   directions: [2 1 2], that is equivalent to
+%                   [-0.1 2.1;-0.1 1.1; -0.1 2.1].
 %
 %   Axis & labels =========================================================
 %
 %   legend          Whether to plot legend, default is true.
-%   plotCell        Whether to plot unit cell at the origin, defult is true.
-%   plotMultCell    Whether to plot multiple unit cells, default is false.
-%   plotAxis        Whether to plot (a,b,c) axis, default is true.
-%   atomLabel       Whether to plot labels for atoms, default is true.
+%   pCell           Whether to plot unit cell at the origin, defult is true.
+%   pMultCell       Whether to plot multiple unit cells, default is false.
+%   pAxis           Whether to plot (a,b,c) axis, default is true.
+%   labelAtom       Whether to plot labels for atoms, default is true.
 %   tooltip         Whether to write tooltip information for graphical
 %                   objects. Default is true.
-%   colorCell       Color of the unit cell, default is black ([0 0 0]).
-%   colorAxis       Color of the (a,b,c) axis, [R G B], default is
+%   cCell           Color of the unit cell, default is black ([0 0 0]).
+%   cAxis           Color of the (a,b,c) axis, [R G B], default is
 %                   black ([0 0 0]).
 %   lineStyleCell   Line style of the unit cell, default is '--'.
 %   dAxis           Distance of coordinate system arrows origin from
@@ -32,28 +37,29 @@ function varargout = plot(obj, varargin)
 %
 %   rAtom           The default atom radius, default is 0.3
 %                   Angstrom.
+%   pNonMagAtom     Whether to plot non-magnetic atoms, default is true.
 %   rAtomData       The source of atomic radius data:
 %                    false: use rAtom for all atoms (default)
 %                    true:  use radius data from database based on atom
 %                           label multiplied by rAtom value.
-%   colorA          Color of the atoms. Default is 'auto', when all atom
+%   cAtom           Color of the atoms. Default is 'auto', when all atom
 %                   gets the color stored in obj.unit_cell. To fix the
 %                   color of all atoms to a single color, give [R G B]
 %                   vector as option, containing the RGB code of the color.
 %
 %   Magnetic structure ====================================================
 %
-%   plotSpin        Whether to plot magnetic structure, default is true.
-%   colorS          Color of the magnetic moment vectors, default is
+%   pSpin           Whether to plot magnetic structure, default is true.
+%   cSpin           Color of the magnetic moment vectors, default is
 %                   green ([0 255 0]).
-%   scaleS          Scaling factor for the lenght of the spins, default is
+%   sSpin           Scaling factor for the lenght of the spins, default is
 %                   1.
-%   radiusS         Radius of the cylinder of the spins, default is 0.06.
-%   headAngleS      Angle of the spin arrow head, default is 15 deg.
-%   headLengthS     Length of the spin arrow head, default is 0.5
+%   rSpin           Radius of the cylinder of the spins, default is 0.06.
+%   angHeadSpin     Angle of the spin arrow head, default is 15 deg.
+%   lHeadSpin       Length of the spin arrow head, default is 0.5
 %                   Angstrom.
-%   alphaPlaneS     Transparency of the circle, representing rotation
-%                   plane of the moments, default is 0.07.
+%   aPlaneSpin      Transparency (alpha value) of the circle, representing
+%                   rotation plane of the moments, default is 0.07.
 %   coplanar        Decides the limits for plotting the plane of the
 %                   magnetic moments.
 %                    0    No plane is plotted.
@@ -67,27 +73,26 @@ function varargout = plot(obj, varargin)
 %                    0:   No ellipsoid is drawn.
 %                    R:   The maximum radius of the ellipsoid.
 %                   Default value is 0.
-%   alphaAniso      Transparency of the anisotropy sphere, default is 0.3.
-%   ellEpsilon      Multiplicator for the small axes of the anisotropy
-%                   ellipsoid. Default is 0.1.
+%   aAniso          Transparency (alpha value) of the anisotropy sphere,
+%                   default is 0.3.
 %
 %   Couplings =============================================================
 %
-%   plotC           Plot couplings. Default is true.
-%   plotZeroC       Plot couplings with zero value, default is true.
-%   plotDM          If non-zero, Dzyaloshinskii-Moriya vectors are plotted
-%                   onto the middle of the bond. plotDM value is used to
+%   pCoupling       Plot couplings. Default is true.
+%   pZeroCoupling   Plot couplings with zero value, default is true.
+%   pDM             If non-zero, Dzyaloshinskii-Moriya vectors are plotted
+%                   onto the middle of the bond. pDM value is used to
 %                   scale the length of the vector. Standard bond is
-%                   plotted if plotDM is zero. Default is 1.
-%   colorC          Colors of different couplings. Default is 'auto', when
+%                   plotted if pDM is zero. Default is 1.
+%   cCoupling       cSpin of different couplings. Default is 'auto', when
 %                   they are set to the color stored in the corresponding
 %                   obj.matrix. [R G B] will fix the color of all couplings
 %                   to a uniform one.
-%   colorDM         Colors of different DM vectors. Default is 'auto', when
+%   cDM             cSpin of different DM vectors. Default is 'auto', when
 %                   they are set to the color stored in the corresponding
 %                   obj.matrix. [R G B] will fix the color of all DM
 %                   vectors to a uniform one.
-%   couplingR       Radius of the cylinder of the couplings, default is
+%   rCoupling       Radius of the cylinder of the couplings, default is
 %                   0.05 Angstrom.
 %
 % Other options ===========================================================
@@ -150,19 +155,19 @@ material dull;
 %% input parameters
 
 range0 = [-0.1 1.1;-0.1 1.1;-0.1 1.1];
-inpForm.fname  = {'range' 'plotSpin' 'colorAxis' 'plotCell' 'plotDM' };
-inpForm.defval = {range0  true       [0 0 0]     true       1        };
-inpForm.size   = {[3 2]   [1 1]      [1 3]       [1 1]      [1 1]    };
+inpForm.fname  = {'range' 'pSpin'    'cAxis'    'pCell'     'pDM' };
+inpForm.defval = {range0  true       [0 0 0]     true       1     };
+inpForm.size   = {[-5 -6] [1 1]      [1 3]       [1 1]      [1 1] };
 
-inpForm.fname  = [inpForm.fname  {'plotMultCell' 'plotAxis' 'surfRes' 'couplingR' 'scaleS' 'radiusS'}];
-inpForm.defval = [inpForm.defval {false          true       30        0.05        1        0.06     }];
-inpForm.size   = [inpForm.size   {[1 1]          [1 1]      [1 1]     [1 1]       [1 1]    [1 1]    }];
+inpForm.fname  = [inpForm.fname  {'pMultCell'    'pAxis'   'surfRes' 'rCoupling' 'sSpin'  'rSpin'}];
+inpForm.defval = [inpForm.defval {false          true       30        0.05        1        0.06  }];
+inpForm.size   = [inpForm.size   {[1 1]          [1 1]      [1 1]     [1 1]       [1 1]    [1 1] }];
 
-inpForm.fname  = [inpForm.fname  {'headAngleS' 'headLengthS' 'alphaPlaneS'}];
-inpForm.defval = [inpForm.defval {15           0.5           0.07         }];
-inpForm.size   = [inpForm.size   {[1 1]        [1 1]         [1 1]        }];
+inpForm.fname  = [inpForm.fname  {'angHeadSpin' 'lHeadSpin'     'aPlaneSpin'}];
+inpForm.defval = [inpForm.defval {15             0.5           0.07         }];
+inpForm.size   = [inpForm.size   {[1 1]          [1 1]         [1 1]        }];
 
-inpForm.fname  = [inpForm.fname  {'atomLabel'  'colorM' 'colorCell' 'plotC' 'legend'}];
+inpForm.fname  = [inpForm.fname  {'labelAtom'  'colorM' 'cCell' 'pCoupling' 'legend'}];
 inpForm.defval = [inpForm.defval {true         'auto'    [0 0 0]    true    true    }];
 inpForm.size   = [inpForm.size   {[1 1]        [1 -4]    [1 3]       [1 1]   [1 1]  }];
 
@@ -170,23 +175,31 @@ inpForm.fname  = [inpForm.fname  {'lineStyleCell' 'dAxis'       'dText' 'wSpace'
 inpForm.defval = [inpForm.defval {'--'            [0.5;1.5;2.0] 0.2     10       false      }];
 inpForm.size   = [inpForm.size   {[1 -1]          [3 1]         [1 1]   [1 1]    [1 1]      }];
 
-inpForm.fname  = [inpForm.fname  {'rAtom' 'alphaAniso' 'coplanar' 'fontSize'}];
-inpForm.defval = [inpForm.defval {0.3     0.3          0.1        12        }];
-inpForm.size   = [inpForm.size   {[1 1]   [1 1]        [1 1]      [1 1]     }];
+inpForm.fname  = [inpForm.fname  {'rAtom' 'aAniso' 'coplanar' 'fontSize' 'pNonMagAtom'}];
+inpForm.defval = [inpForm.defval {0.3     0.3          0.1        12     true         }];
+inpForm.size   = [inpForm.size   {[1 1]   [1 1]        [1 1]      [1 1]  [1 1]        }];
 
-inpForm.fname  = [inpForm.fname  {'ellAniso' 'ellEpsilon' 'plotZeroC' 'tooltip' 'colorC' 'colorDM' 'colorA'}];
-inpForm.defval = [inpForm.defval {0          0.1          true        true      'auto'    'auto'   'auto'  }];
-inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]       [1 1]     [1 -1]    [1 -2]   [1 -3]  }];
+inpForm.fname  = [inpForm.fname  {'ellAniso' 'ellEpsilon' 'pZeroCoupling' 'tooltip' 'cCoupling' 'cDM'    'cAtom'}];
+inpForm.defval = [inpForm.defval {0          0.1          true             true      'auto'     'auto'   'auto' }];
+inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]            [1 1]     [1 -1]     [1 -2]   [1 -3] }];
 
 param = sw_readparam(inpForm, varargin{:});
+
+% change range, if the number of unit cells are given
+if numel(param.range) == 3
+    nCell       = round(param.range(:));
+    param.range = [-0.1*[1 1 1]' nCell+0.1];
+elseif numel(param.range) ~=6
+    error('sw:plot:WrongInput','The plotting range is wrong, see help sw.plot!');
+end
 
 %shift of the plot
 param.wShift = -sum(basisVector * sum(param.range,2)/2,2);
 param.wShift = repmat(param.wShift,[1 2]);
 param.wShift = reshape(param.wShift',1,[]);
 
-% Plot spins if spin variables exist and param.plotSpin is true.
-param.plotSpin = param.plotSpin && ~isempty(obj.mag_str.S);
+% Plot spins if spin variables exist and param.pSpin is true.
+param.pSpin = param.pSpin && ~isempty(obj.mag_str.S);
 
 %% figure data
 
@@ -215,11 +228,11 @@ zoom(10);
 
 handle.unitCell = [];
 
-if param.plotCell
+if param.pCell
     
     path=[v0 v1 v1+v2 v2 v0 v3 v3+v1 v1 v3+v1 v3+v1+v2 v1+v2 v3+v1+v2 v3+v2 v2 v3+v2 v3];
     
-    if param.plotMultCell
+    if param.pMultCell
         for ii = ceil(param.range(1,1)):floor(param.range(1,2)-1)
             for jj = ceil(param.range(2,1)):floor(param.range(2,2)-1)
                 for kk = ceil(param.range(3,1)):floor(param.range(3,2)-1)
@@ -233,22 +246,22 @@ if param.plotCell
         handle.unitCell = plot3(path(1,:),path(2,:),path(3,:));
     end
     
-    set(handle.unitCell,'Color',param.colorCell,'LineStyle',param.lineStyleCell);
+    set(handle.unitCell,'Color',param.cCell,'LineStyle',param.lineStyleCell);
     set(handle.unitCell,'Tag','unitCell');
     tooltip(handle.unitCell,['Unit cell \na=' sprintf('%5.3f',lattice.lat_const(1)) ' \nb=' sprintf('%5.3f',lattice.lat_const(2)) ' \nc=' sprintf('%5.3f',lattice.lat_const(3))])
 end
 
 %% Plot the coordinate system.
-if param.plotAxis
+if param.pAxis
     
     r = -ones(3,1).*param.dAxis + v1*param.range(1,1) + v2*param.range(2,1) + v3*param.range(3,1);
     handle.arrow = zeros(12,1);
     
-    [handle.arrow(1:4)]  = sw_arrow(r,(r+v1),param.radiusS,param.headAngleS,param.headLengthS,param.surfRes);
-    [handle.arrow(5:8)]  = sw_arrow(r,(r+v2),param.radiusS,param.headAngleS,param.headLengthS,param.surfRes);
-    [handle.arrow(9:12)] = sw_arrow(r,(r+v3),param.radiusS,param.headAngleS,param.headLengthS,param.surfRes);
+    [handle.arrow(1:4)]  = sw_arrow(r,(r+v1),param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
+    [handle.arrow(5:8)]  = sw_arrow(r,(r+v2),param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
+    [handle.arrow(9:12)] = sw_arrow(r,(r+v3),param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
     
-    set(handle.arrow,'Facecolor',param.colorAxis);
+    set(handle.arrow,'Facecolor',param.cAxis);
     set(handle.arrow,'Tag','arrow');
     
     v1n = v1/norm(v1)*param.dText;
@@ -302,7 +315,7 @@ matrix   = obj.matrix;
 coupling = obj.coupling;
 nExt     = double(obj.mag_str.N_ext);
 
-SS = intmatrix(obj,'plotmode',true,'zeroC',param.plotZeroC);
+SS = intmatrix(obj,'plotmode',true,'zeroC',param.pZeroCoupling);
 
 % cIdx = any(coupling.mat_idx,1);
 coupling.dl      = SS.all(1:3,:);
@@ -324,8 +337,8 @@ nCoupling     = size(coupling.idx,2);
 %     for jj = 1:3
 %         idxJ = coupling.mat_idx(jj,ii);
 %         if any(idxJ)
-%             % save zero valued couplings if plotZeroC is true
-%             if param.plotZeroC || any(any(matrix.mat(:,:,idxJ)))
+%             % save zero valued couplings if pZeroCoupling is true
+%             if param.pZeroCoupling || any(any(matrix.mat(:,:,idxJ)))
 %                 coupling.idxJ(jj,ii) = idxJ;
 %                 coupling.type(jj,ii) = sw_mattype(matrix.mat(:,:,idxJ));
 %             end
@@ -407,10 +420,10 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
             llMagAtom = 1;
             for ll = 1:nAtom
                 % color of the atoms
-                if strcmpi(param.colorA,'auto')
+                if strcmpi(param.cAtom,'auto')
                     AColor = atom.color(:,ll);
                 else
-                    AColor = param.colorA/255;
+                    AColor = param.cAtom/255;
                 end
                 if strcmpi(param.colorM,'auto')
                     MColor = atom.color(:,ll);
@@ -443,7 +456,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             
                             handle.aniso(atom.idx(ll),end+1) = sAniso;
                             set(sAniso,'LineStyle','none');
-                            set(sAniso,'FaceAlpha',param.alphaAniso);
+                            set(sAniso,'FaceAlpha',param.aAniso);
                             set(sAniso,'FaceColor',double(obj.matrix.color(:,aIdx))/255);
                             set(sAniso,'Tag',['aniso_' atom.name{ll}]);
                             
@@ -451,31 +464,33 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         end
                     end
                     
-                    % Plot the label of the atom.
-                    if (~any(dCell)) && param.atomLabel
+                    if atom.mag(ll) || param.pNonMagAtom
+                        % Plot the label of the atom.
+                        if (~any(dCell)) && param.labelAtom
+                            
+                            handle.atomText(atom.idx(ll),end+1) = text(...
+                                'Position',             rPlot+param.dText+atom.rad(ll)/sqrt(3),...
+                                'String',               sprintf('%s(%d)_%d',atom.name{ll},atom.idx(ll),ll),...
+                                'VerticalAlignment',    'bottom',...
+                                'Tag',                  ['atomText_' atom.name{ll} ' '],...
+                                'fontSize',             param.fontSize);
+                            tooltip(handle.atomText(atom.idx(ll),end),[atom.name{ll} ' atom \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
+                        end
                         
-                        handle.atomText(atom.idx(ll),end+1) = text(...
-                            'Position',             rPlot+param.dText+atom.rad(ll)/sqrt(3),...
-                            'String',               sprintf('%s(%d)_%d',atom.name{ll},atom.idx(ll),ll),...
-                            'VerticalAlignment',    'bottom',...
-                            'Tag',                  ['atomText_' atom.name{ll} ' '],...
-                            'fontSize',             param.fontSize);
-                        tooltip(handle.atomText(atom.idx(ll),end),[atom.name{ll} ' atom \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
+                        % Creates the sphere of the atom.
+                        aSphere = surf(sp.x*atom.rad(ll)+rPlot(1), sp.y*atom.rad(ll)+rPlot(2), sp.z*atom.rad(ll)+rPlot(3));
+                        set(aSphere,'Tag',['atom_' atom.name{ll}]);
+                        handle.atom(atom.idx(ll),end+1) = aSphere;
+                        set(aSphere,'LineStyle','none');
+                        set(aSphere,'FaceColor',AColor);
+                        
+                        tooltip(aSphere,[atom.name{ll} ' atom \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
                     end
                     
-                    % Creates the sphere of the atom.
-                    aSphere = surf(sp.x*atom.rad(ll)+rPlot(1), sp.y*atom.rad(ll)+rPlot(2), sp.z*atom.rad(ll)+rPlot(3));
-                    set(aSphere,'Tag',['atom_' atom.name{ll}]);
-                    handle.atom(atom.idx(ll),end+1) = aSphere;
-                    set(aSphere,'LineStyle','none');
-                    set(aSphere,'FaceColor',AColor);
-                    
-                    tooltip(aSphere,[atom.name{ll} ' atom \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
-                    
                     % Plots magnetic moments.
-                    if param.plotSpin && atom.mag(ll)
+                    if param.pSpin && atom.mag(ll)
                         
-                        plotS   = param.scaleS*obj.mag_str.S(:,llMagAtom+llSpin);
+                        plotS   = param.sSpin*obj.mag_str.S(:,llMagAtom+llSpin);
                         lengthS = norm(obj.mag_str.S(:,llMagAtom+llSpin));
                         
                         if param.coplanar
@@ -491,7 +506,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             C2 = sw_circlesurf(rPlot,nSpin,norm(plotS),param.surfRes);
                             handle.spinCircle2(atom.idx(ll),end+1) = C2;
                             set(C2,'LineStyle','none');
-                            set(C2,'FaceAlpha',param.alphaPlaneS);
+                            set(C2,'FaceAlpha',param.aPlaneSpin);
                             set(C2,'FaceColor',MColor);
                             tooltip(C2,['Plane of the ordered moment: \n' sprintf('[%6.3f, %6.3f, %6.3f]',nSpin)]);
                         end
@@ -509,7 +524,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         end
                         
                         
-                        hArrow  = sw_arrow(rPlot-plotS,rPlot+plotS,param.radiusS,param.headAngleS,param.headLengthS,param.surfRes);
+                        hArrow  = sw_arrow(rPlot-plotS,rPlot+plotS,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
                         set(hArrow,'Tag','spinArrow');
                         handle.spinArrow(atom.idx(ll),end+(1:4)) = hArrow;
                         set(hArrow,'FaceColor',MColor);
@@ -547,20 +562,20 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                     if all((rLat1<param.range(:,2))&(rLat1>param.range(:,1))&(rLat2<param.range(:,2))&(rLat2>param.range(:,1)))
                         rPlot1    = basisVector*rLat1;
                         rPlot2    = basisVector*rLat2;
-                        if strcmpi(param.colorC,'auto')
+                        if strcmpi(param.cCoupling,'auto')
                             cColor    = double(matrix.color(:,coupling.mat_idx(ll)))/255;
                         else
-                            cColor    = param.colorC/255;
+                            cColor    = param.cCoupling/255;
                         end
-                        if strcmpi(param.colorDM,'auto')
+                        if strcmpi(param.cDM,'auto')
                             DMColor    = double(matrix.color(:,coupling.mat_idx(ll)))/255;
                         else
-                            DMColor    = param.colorDM/255;
+                            DMColor    = param.cDM/255;
                         end
                         
                         % plot normal cylinder
-                        if param.plotC
-                            cCylinder = sw_cylinder(rPlot1,rPlot2,param.couplingR,param.surfRes);
+                        if param.pCoupling
+                            cCylinder = sw_cylinder(rPlot1,rPlot2,param.rCoupling,param.surfRes);
                             handle.coupling(coupling.idx(ll),end+1) = cCylinder;
                             set(cCylinder,'FaceColor',cColor);
                             set(cCylinder,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
@@ -568,16 +583,16 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             tooltip(cCylinder,[matrix.label{coupling.mat_idx(ll)} ' coupling\nValue:\n' strmat(matrix.mat(:,:,coupling.mat_idx(ll)))]);
                         end
                         % plot DM vector
-                        if param.plotDM>0 && (norm(coupling.DM(1,:,ll))>1e-5)
+                        if param.pDM>0 && (norm(coupling.DM(1,:,ll))>1e-5)
                             rCent = (rPlot1+rPlot2)/2;
-                            vDM   = coupling.DM(1,:,ll)'*param.plotDM;
-                            hDM   = sw_arrow(rCent,rCent+vDM,param.radiusS,param.headAngleS,param.headLengthS,param.surfRes);
+                            vDM   = coupling.DM(1,:,ll)'*param.pDM;
+                            hDM   = sw_arrow(rCent,rCent+vDM,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
                             handle.DMcoupling(coupling.idx(ll),end+(1:4)) = hDM;
                             set(hDM,'FaceColor',DMColor);
                             set(hDM,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
                             
                             tooltip(hDM,[matrix.label{coupling.mat_idx(ll)} ' DM coupling\nValue:\n' strmat(vDM')]);
-                            if ~param.plotC
+                            if ~param.pCoupling
                                 rPlot = [rPlot1 rPlot2];
                                 hLine = line(rPlot(1,:),rPlot(2,:),rPlot(3,:),'LineStyle','--','LineWidth',2,'Color',[0 0 0]);
                                 set(hLine,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);

@@ -57,15 +57,20 @@ for ii = 1:nGen
     P(ii) = lcm(M(ii),N(ii));
     for jj = 1:(P(ii)-1)
         R = genOp(:,:,ii)^jj;
+        T = transl(:,ii)*jj;
         
         nSym = size(symOp,3);
         for kk = 1:nSym
             RS = symOp(:,:,kk)*R;
-            idx = permute(sum(sum(abs(bsxfun(@minus,symOp,RS)),1),2),[3 1 2]) > tol;
+            TS = mod(symTr(:,kk) + T,1);
+            
+            idxR = permute(sum(sum(abs(bsxfun(@minus,symOp,RS)),1),2),[3 1 2]) > tol;
+            idxT = sum(abs(bsxfun(@minus,symTr,TS)),1)' > tol;
+            
             % adds new operator to the list if it differs from all
-            if all(idx)
+            if all(idxR | idxT)
                 symOp = cat(3,symOp,RS);
-                symTr = [symTr mod(transl(:,ii)*jj+symTr(:,kk),1)]; %#ok<AGROW>
+                symTr = [symTr TS]; %#ok<AGROW>
             end
             
         end

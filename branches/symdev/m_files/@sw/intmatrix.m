@@ -97,6 +97,13 @@ if (obj.lattice.sym > 1) && (numel(SS.all) > 0)
     % first positions of the couplings with identical idx values used to
     % generate the coupling matrices for the rest
     firstC = SS.all(1:5,[true logical(diff(SS.all(6,:)+100*SS.all(7,:)))]);
+
+    % select rotation matrices for each generated coupling
+    for ii = 1:size(firstC,2)
+        [~, rotIdx] = sw_gensymcoupling(obj, firstC(:,ii), {symOp, symTr}, 1e-5, true);
+    end
+    
+    
     
     % center positions of the first element of couplings with identical idx
     % values
@@ -109,7 +116,8 @@ if (obj.lattice.sym > 1) && (numel(SS.all) > 0)
     rotOp = mmat(A,mmat(rotOp,inv(A)));
     
     % rotate the matrices: R*M*R'
-    JJ.mat = mmat(rotOp,mmat(JJ.mat,permute(rotOp,[2 1 3])));
+    % TODO
+    %JJ.mat = mmat(rotOp,mmat(JJ.mat,permute(rotOp,[2 1 3])));
     
 end
 

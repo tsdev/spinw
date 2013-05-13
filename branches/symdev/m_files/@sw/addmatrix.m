@@ -42,7 +42,7 @@ end
 if isa(newMat,'struct')
     
     % Defult Heisenberg matrix.
-    if isempty(newMat.mat)
+    if isempty([newMat.mat])
         nJ = max(size(newMat.label,2),size(newMat.color,2));
         if nJ == 0
             error('sw:addmatrix:WrongInput','Define some matrix property!');
@@ -50,7 +50,7 @@ if isa(newMat,'struct')
             newMat.mat = repmat(eye(3),[1 1 nJ]);
         end
     end
-    
+
     if ~isfield(newMat,'label') || isempty([newMat.label])
         idx = size(obj.matrix.mat,3)+1;
         for ii = 1:numel(newMat)

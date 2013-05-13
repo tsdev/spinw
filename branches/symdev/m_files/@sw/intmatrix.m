@@ -97,27 +97,20 @@ if (obj.lattice.sym > 1) && (numel(SS.all) > 0)
     % first positions of the couplings with identical idx values used to
     % generate the coupling matrices for the rest
     firstC = SS.all(1:5,[true logical(diff(SS.all(6,:)+100*SS.all(7,:)))]);
-
+    % produce the space group symmetry operators
+    [symOp, symTr] = sw_gencoord(obj.lattice.sym);
+    rotOp = zeros(3,3,0);
     % select rotation matrices for each generated coupling
     for ii = 1:size(firstC,2)
         [~, rotIdx] = sw_gensymcoupling(obj, firstC(:,ii), {symOp, symTr}, 1e-5, true);
+        rotOp = cat(3,rotOp,symOp(:,:,rotIdx));
     end
-    
-    
-    
-    % center positions of the first element of couplings with identical idx
-    % values
-    cPos = (mAtom.r(:,firstC(4,:)) + mAtom.r(:,firstC(5,:)) + firstC(1:3,:))/2;
-    % operators that rotate the coupling matrices
-    [~,~,~,rotOp] = sw_genatpos(obj.lattice.sym,cPos);
-    
     % convert rotation operators to xyz Cartesian coordinate system
     A = obj.basisvector;
     rotOp = mmat(A,mmat(rotOp,inv(A)));
     
     % rotate the matrices: R*M*R'
-    % TODO
-    %JJ.mat = mmat(rotOp,mmat(JJ.mat,permute(rotOp,[2 1 3])));
+    JJ.mat = mmat(rotOp,mmat(JJ.mat,permute(rotOp,[2 1 3])));
     
 end
 
@@ -165,6 +158,25 @@ if param.plotmode
     % Saves all coupling matrix indices in SS.all in case of non-fitting mode
     % in the bottom row
     SS.all = [SS.all; double(JJ.idx'); idxTemp];
+    
+    % sort properly the atom1-atom2 pairs for the DM interaction
+    % first dlx>0, dly>0, dlz>0
+    % change sign of dl and exchange atom1 and atom2
+    multL = fliplr(cumprod([1 [1 1]*(max(max(SS.all(1:3,:)))+1)]));
+    flip = find(sum(bsxfun(@times,SS.all(1:3,:),multL'),1) < 0);
+    % sort interacting atoms within the 1st unit cell
+    firstCell = find(sum(abs(SS.all(1:3,:)),1) == 0);
+    if ~isempty(firstCell)
+        multA = [4 2 1]';
+        flip1 = find(sum(bsxfun(@times,sign(mAtom.r(:,SS.all(4,firstCell))-mAtom.r(:,SS.all(5,firstCell))),multA),1) < 0);
+        flip = [flip firstCell(flip1)]; %#ok<FNDSB>
+    end
+    % flip the selected couplings
+    SS.all(1:3,flip)   = -SS.all(1:3,flip);
+    SS.all([4 5],flip) =  SS.all([5 4],flip);
+    % change the sign of the DM interaction
+    SS.all(6:14,flip)  = SS.all([1 4 7 2 5 8 3 6 9]+5,flip);
+    
 end
 
 % Anisotropy matrix.

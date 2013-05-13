@@ -66,7 +66,7 @@ if ~all(rightDist)
     warning('Symmetry generated couplings are dropped!');
 end
 
-genCp = [atom1; atom2; dlnew];
+genCp = [dlnew; atom1; atom2];
 genCp = genCp(:,rightDist);
 
 if nargout > 1

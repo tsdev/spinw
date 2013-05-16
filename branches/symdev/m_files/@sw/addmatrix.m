@@ -42,7 +42,7 @@ end
 if isa(newMat,'struct')
     
     % Defult Heisenberg matrix.
-    if isempty([newMat.mat])
+    if isempty(newMat(1).mat)
         nJ = max(size(newMat.label,2),size(newMat.color,2));
         if nJ == 0
             error('sw:addmatrix:WrongInput','Define some matrix property!');

@@ -82,6 +82,7 @@ if isfield(spectra,'omega') && iscell(spectra.omega)
     nTwin      = numel(param.twin);
 else
     nTwin = 1;
+    param.twin = 1;
 end
 
 % select twins for convoluted plots
@@ -102,7 +103,7 @@ end
 if param.mode == 4
     % PLOT EASY PEASY
     
-    Eres = (spectra.Evect(end) - spectra.Evect(1))/25;
+    Eres = (spectra.Evect(end) - spectra.Evect(1))/50;
     [fHandle, pHandle1] = sw_plotspec(spectra,'ahandle',gca,'mode',3,'conve',Eres,...
         'dashed',true,'colorbar',false,'axLim',param.axLim);
     hold on
@@ -144,10 +145,6 @@ else
 end
 
 if ~powmode
-    % number of different convoluted cross sections
-    nConv = size(spectra.convmode,1);
-    % number of convoluted plots
-    nPlot  = nTwinS * nConv;
     % Convert the convoluted intensities into cell array.
     if ~iscell(spectra.convmode)
         swInt = {spectra.swInt};
@@ -158,6 +155,10 @@ if ~powmode
         swConv   = spectra.swConv(:,param.twinS);
         convmode = spectra.convmode;
     end
+    % number of different convoluted cross sections
+    nConv = numel(convmode);
+    % number of convoluted plots
+    nPlot  = nTwinS * nConv;
     
     % package all fields into cells for easy looping over twins
     if ~iscell(spectra.omega)

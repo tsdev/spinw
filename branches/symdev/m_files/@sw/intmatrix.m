@@ -10,7 +10,14 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %                   coupling matrices are summed up
 %               2   as mode == 1, moreover only SS.all is calculated.
 % plotmode      If true, additional rows are added to SS.all, to identify
-%               the couplings for plotting.
+%               the couplings for plotting and each coupling is sorted for
+%               consistent plotting of the DM interaction. Sorting is based
+%               on the dr distance vector, pointing from atom1 to atom2.
+%               Its components should fulfill the following rules in
+%               hierarchical order:
+%                   1. dr(x) > 0
+%                   2. dr(y) > 0
+%                   3. dr(z) > 0.
 % zeroC         Whether to give couplings with assigned matrices that are
 %               zero. Default is false.
 %
@@ -159,24 +166,23 @@ if param.plotmode
     % in the bottom row
     SS.all = [SS.all; double(JJ.idx'); idxTemp];
     
-    % sort properly the atom1-atom2 pairs for the DM interaction
-    % first dlx>0, dly>0, dlz>0
-    % change sign of dl and exchange atom1 and atom2
-    multL = fliplr(cumprod([1 [1 1]*(max(max(SS.all(1:3,:)))+1)]));
-    flip = find(sum(bsxfun(@times,SS.all(1:3,:),multL'),1) < 0);
-    % sort interacting atoms within the 1st unit cell
-    firstCell = find(sum(abs(SS.all(1:3,:)),1) == 0);
-    if ~isempty(firstCell)
-        multA = [4 2 1]';
-        flip1 = find(sum(bsxfun(@times,sign(mAtom.r(:,SS.all(4,firstCell))-mAtom.r(:,SS.all(5,firstCell))),multA),1) < 0);
-        flip = [flip firstCell(flip1)]; %#ok<FNDSB>
+    if ~isempty(SS.all)
+        % sort properly the atom1-atom2 pairs for the DM interaction
+        % based on the vector pointing from atom1 to atom2
+        % rv = r_atom2 + dl - r_atom1
+        rv = mAtom.r(:,SS.all(5,:)) + SS.all(1:3,:) - mAtom.r(:,SS.all(4,:));
+        rmax = max(max(rv));
+        
+        multL = ceil(fliplr(cumprod([1 [1 1]*(rmax+1)])));
+        
+        % find the couplings that have to be flipped
+        flip = find(sum(bsxfun(@times,rv,multL'),1) < 0);
+        % flip the selected couplings
+        SS.all(1:3,flip)   = -SS.all(1:3,flip);
+        SS.all([4 5],flip) =  SS.all([5 4],flip);
+        % change the sign of the DM interaction (transpose J matrices)
+        SS.all(6:14,flip)  = SS.all([1 4 7 2 5 8 3 6 9]+5,flip);
     end
-    % flip the selected couplings
-    SS.all(1:3,flip)   = -SS.all(1:3,flip);
-    SS.all([4 5],flip) =  SS.all([5 4],flip);
-    % change the sign of the DM interaction
-    SS.all(6:14,flip)  = SS.all([1 4 7 2 5 8 3 6 9]+5,flip);
-    
 end
 
 % Anisotropy matrix.

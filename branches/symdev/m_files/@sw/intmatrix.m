@@ -71,7 +71,7 @@ mat = cat(3,mat,zeros(3));
 if size(obj.single_ion.aniso,2) == nMagAtom
     idx = obj.single_ion.aniso;
     % the non-assigned atoms get a pointer to the last zero energy matrix
-    idx(idx == 0) = nMagAtom + 1;
+    idx(idx == 0) = nMat + 1;
     SI.aniso = mat(:,:,idx);
     % keeping only the symmetric part of the anisotropy
     SI.aniso = (SI.aniso + permute(SI.aniso,[2 1 3]))/2;
@@ -122,7 +122,7 @@ if (obj.lattice.sym > 1)
     
     % Generate anisotropy matrice using the space group symmetry
     if any(SI.aniso(:))
-        [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.atom(:,obj.unit_cell.S>0));
+        [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
         % convert rotation operators to xyz Cartesian coordinate system
         rotOp = mmat(A,mmat(rotOp,inv(A)));
         % rotate the matrices: R*M*R'

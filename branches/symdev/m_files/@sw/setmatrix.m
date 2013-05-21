@@ -5,6 +5,21 @@ function setmatrix(obj, varargin)
 %
 % Options:
 %
+% One of the below options has to be given:
+%
+% label         Label of the matrix that is already assigned to either as
+%               anisotropy or coupling only once.
+% mat_idx       Index of the matrix, stored in obj.matrix. Alternative to
+%               the 'label' option.
+% coupling_idx  Value of the obj.coupling.idx, that defines the coupling,
+%               for which the symmetry allowed matrices has to be
+%               determined.
+% aniso_idx     Value of the obj.matom.idx, that selects a magnetic atoms,
+%               for which the symmetry allowed anisotropy matrices has to
+%               be determined.
+%
+% Optional inputs:
+%
 % pref      Defines prefactors as a vector for the symmetry allowed
 %           components, dimensions are [1 nSymMat]. Alternatively, if only
 %           a few of the symmetry allowed matrices have non-zero
@@ -25,15 +40,7 @@ function setmatrix(obj, varargin)
 %           of the  DM interaction in the xyz coordinate system. Be
 %           carefull with the sign of the DM interaction, it depends on the
 %           order of the two interacting atoms! Default value is {1}.
-% label     String, selects one of the matrices stored in sw object. Defult
-%           is '', in this case, mat_idx has to be defined.
-% mat_idx   Index of the matrix, stored in sw object. Alternative to the
-%           label string, default is 0.
-% idx       Coupling idx value, identifies the coupling, same as the index
-%           used in addcoupling(). If set to 'auto', the program tries to
-%           identify the couplings, to which the selected matrix is
-%           assigned - only works if the selected matrix is assigned to a
-%           single coupling. Default is 'auto'.
+%           For anisotropy matrices antisymmetric matrices are not allowed.
 %
 % Example:
 %
@@ -45,84 +52,25 @@ function setmatrix(obj, varargin)
 % This will set 'J2' to antiferromagnetic Heisenberg exchange, with value
 % of 1.25 meV.
 %
+% See also SW.GETMATRIX.
+%
 
 if nargin == 1
     help sw.setmatrix;
     return;
 end
 
-inpForm.fname  = {'pref' 'label' 'mat_idx' 'idx'  'tol' };
-inpForm.defval = {{1}    ''      0         'auto' 1e-5  };
-inpForm.size   = {[1 -1] [1 -2]  [1 1]     [1 -2] [1 1] };
+[aMat, param] = obj.getmatrix(varargin{:});
 
-param = sw_readparam(inpForm, varargin{:});
-
-% Identify the matrix
-if isempty(param.label) && (param.mat_idx<1)
-    error('sw:setmatrix:WrongInput','Either label or mat_idx has to be defined!');
-end
-if ~isempty(param.label)
-    mat_idx = find(strcmp(obj.matrix.label, param.label));
-    if isempty(mat_idx)
-        error('sw:setmatrix:WrongInput','Matrix label cannot be found (case sensitive)!');
-    elseif numel(mat_idx) > 1
-        error('sw:setmatrix:WrongInput','Multiple identical matrix labels exist!');
-    else
-        param.mat_idx = mat_idx;
-    end
+if isempty(param.pref)
+    % Heisenberg coupling is always allowed by symmetry!
+    aMat = eye(3);
 end
 
-% Identify the coupling
-if strcmpi(param.idx,'auto')
-    % search for the proper coupling idx value
-    coupling = obj.coupling;
-    [~, selIdx] = find(coupling.mat_idx == param.mat_idx);
-    idx = unique(coupling.idx(selIdx));
-    if isempty(idx)
-        error('sw:setmatrix:WrongInput','Matrix is not assigned to any coupling, define idx!');
-    elseif numel(idx) > 1
-        error('sw:setmatrix:WrongInput','Matrix is assigned to multiple coupling idx, define idx!');
-    else
-        param.idx = idx;
-    end
-end
-
-% generate the symmetry allowed matrices
-symMat = obj.getmatrix(param.idx);
-nSymMat = size(symMat,3);
-
-% Create the prefactors
-if iscell(param.pref)
-    pref = zeros(1,nSymMat);
-    if mod(numel(param.pref{1}),2) == 0
-        % create the proper prefactor vector
-        pref(param.pref{1}(1:2:end)) = param.pref{1}(2:2:end);
-    elseif numel(param.pref{1}) == 1
-        % create Heisenberg coupling
-        pref = param.pref{1};
-    elseif numel(param.pref{1}) == 3
-        % use prefactors for the antisymmtric matrices only
-        % select antisymmetric matrices
-        aSym = find(permute(sum(sum((symMat-permute(symMat,[2 1 3])).^2,1),2),[1 3 2]) > param.tol^2);
-        if numel(aSym) == 0
-            error('sw:setmatrix:NoAsym','No asymmmetric matrix is allowed by symmetry!');
-        elseif numel(aSym) > 3
-            error('sw:setmatrix:SymError','Error of point group symmetry!');
-        elseif numel(aSym) < 3
-            warning('sw:setmatrix:Asym','Less than 3 assymetric matrices are allowed by symmetry!');
-        end
-        pref(aSym) = param.pref{1}(1:numel(aSym));
-    else
-        error('sw:setmatrix:WrongInput','Wrong value of pref, see help!');
-    end
-    param.pref = pref;
-end
-
-if numel(param.pref) > 1
-    obj.matrix.mat(:,:,param.mat_idx) = obj.getmatrix(param.idx,'pref',param.pref);
+if param.mat_idx > 0
+    obj.matrix.mat(:,:,param.mat_idx) = aMat;
 else
-    % Heisenberg coupling (always allowed by symmetry!)
-    obj.matrix.mat(:,:,param.mat_idx) = eye(3) * param.pref;
+    error('sw:setmatrix:WrongInput','It is not possible to unambiguously select a matrix from the input options!')
 end
 
 end

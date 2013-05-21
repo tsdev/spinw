@@ -307,14 +307,27 @@ for ll = 1:nAtom
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MAGNETIC MOMENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if param.coplanar>0
+    [nSpin, param.coplanar] = coplanar([[0;0;0] obj.mag_str.S],param.coplanar);
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GENERATE HAMILTONIAN USING SYMMETRY 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+[SS, SI] = intmatrix(obj,'plotmode',true,'zeroC',param.pZeroCoupling);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % COUPLINGS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 matrix   = obj.matrix;
 coupling = obj.coupling;
 nExt     = double(obj.mag_str.N_ext);
-
-SS = intmatrix(obj,'plotmode',true,'zeroC',param.pZeroCoupling);
 
 coupling.dl      = SS.all(1:3,:);
 coupling.atom1   = SS.all(4,:);
@@ -328,19 +341,12 @@ coupling.DM      = cat(2,coupling.DM(2,3,:),coupling.DM(3,1,:),coupling.DM(1,2,:
 nCoupling        = size(coupling.idx,2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% MAGNETIC MOMENTS
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-if param.coplanar>0
-    [nSpin, param.coplanar] = coplanar([[0;0;0] obj.mag_str.S],param.coplanar);
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ANISOTROPY ELLIPSOIDS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 single_ion  = obj.single_ion;
-aniso.mat   = zeros(3,3,nMagAtom);
+%aniso.mat   = zeros(3,3,nMagAtom);
+aniso.mat   = SI.aniso;
 aniso.ell   = zeros(3,3,nMagAtom);
 aniso.label = cell(1,nMagAtom);
 
@@ -348,45 +354,46 @@ propAniso = true;
 
 if param.ellAniso>0
     % Creates the anisotropy ellipsoids.
-    if length(single_ion.aniso) ~= nMagAtom
-        single_ion.aniso = zeros(1,nMagAtom);
-    else
-        for ll = 1:nMagAtom
-            % Selects the anisotropy matrix
-            cIdx = single_ion.aniso(ll);
-            if any(cIdx)
-                aniso.mat(:,:,ll) = matrix.mat(:,:,cIdx);
-                
-                
-                % Calculates the main radiuses of the ellipsoid.
-                [V, R] = eig(aniso.mat(:,:,ll));
-                if norm(aniso.mat(:,:,ll)-aniso.mat(:,:,ll)') > 1e-8
-                    propAniso = false;
-                end
-                % Creates positive definite matrix by adding constant to all
-                % eigenvalues.
-                R0      = diag(R);
-                epsilon = sqrt(sum(R0.^2))*param.ellEpsilon;
-                dR      = 1./(R0-min(R0)+epsilon);
-                dR0     = max(dR);
-                if dR0 ~= 0
-                    dR = dR/dR0;
-                else
-                    dR = [1 1 1];
-                end
-                
-                R = diag(dR)*param.ellAniso;
-                
-                aniso.ell(:,:,ll) = V*R;
-                aniso.label{ll}   = matrix.label{cIdx};
+    %     if length(single_ion.aniso) ~= nMagAtom
+    %         single_ion.aniso = zeros(1,nMagAtom);
+    %     else
+    for ll = 1:nMagAtom
+        % Selects the anisotropy matrix
+        cIdx = single_ion.aniso(ll);
+        if any(cIdx)
+        %if any(any(aniso.mat(:,:,ll)))
+            %aniso.mat(:,:,ll) = matrix.mat(:,:,cIdx);
+            
+            
+            % Calculates the main radiuses of the ellipsoid.
+            [V, R] = eig(aniso.mat(:,:,ll));
+%             if norm(aniso.mat(:,:,ll)-aniso.mat(:,:,ll)') > 1e-8
+%                 propAniso = false;
+%             end
+            % Creates positive definite matrix by adding constant to all
+            % eigenvalues.
+            R0      = diag(R);
+            epsilon = sqrt(sum(R0.^2))*param.ellEpsilon;
+            dR      = 1./(R0-min(R0)+epsilon);
+            dR0     = max(dR);
+            if dR0 ~= 0
+                dR = dR/dR0;
+            else
+                dR = [1 1 1];
             end
+            
+            R = diag(dR)*param.ellAniso;
+            
+            aniso.ell(:,:,ll) = V*R;
+            aniso.label{ll}   = matrix.label{cIdx};
         end
     end
+    %     end
 end
 
-if ~propAniso
-    warning('sw:plot:WrongAnisotropy','Anisotropy matrix is asymmetric, cannot plot ellipsoid!');
-end
+% if ~propAniso
+%     warning('sw:plot:WrongAnisotropy','Anisotropy matrix is asymmetric, cannot plot ellipsoid!');
+% end
 
 
 %% Plot all atoms and couplings in selected range.

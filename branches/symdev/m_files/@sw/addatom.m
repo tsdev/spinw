@@ -61,7 +61,7 @@ if isa(newAtom,'struct')
     
     % Generate atom labels.
     if ~isfield(newAtom,'label') || isempty([newAtom.label])
-        idx = 1;
+        idx = size(obj.unit_cell.r,2)+1;
         for ii = 1:numel(newAtom)
             newAtom(ii).label = {};
             for jj = 1:numel(newAtom(ii).r)/3

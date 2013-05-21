@@ -7,6 +7,11 @@ function hFigure = sw_getfighandle(tagLabel)
 % See also SW_ANNEALFIGURE.
 %
 
+if nargin == 0
+    help sw_getfighandle;
+    return
+end
+
 % List of figures that have tagLabel tag.
 hList   = findobj('Tag',tagLabel);
 

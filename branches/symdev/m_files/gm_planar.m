@@ -31,6 +31,12 @@ function [M, k, n, name, pname, limit] = gm_planar(M0, x)
 % See also GM_SPHERICAL3D.
 %
 
+if nargin == 0
+    help gm_planar;
+    return
+end
+
+
 if nargout <= 3
     
     nMagExt = (length(x)-5);

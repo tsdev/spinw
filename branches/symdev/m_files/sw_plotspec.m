@@ -175,7 +175,7 @@ if ~powmode
     % Plotting styles for incommensurate structures.
     plotStyle = {'-' 'o-' '--'};
     
-    modeList = 2*nMagExt/nMode;
+    modeList = nMode/(2*nMagExt);
     if modeList == 1
         if param.imag
             lLabel = {'Real' 'Imaginary'};
@@ -395,7 +395,12 @@ if param.mode == 3
         end
         set(gca,'YDir','normal');
     end
-    caxis([0 cMax]);
+    if numel(cMax) == 1
+        caxis([0 cMax]);
+    elseif numel(cMax)==2
+        caxis([cMax(1) cMax(2)]);
+    end
+    
     
     if param.colorbar && (nPlot == 1)
         cHandle = colorbar;

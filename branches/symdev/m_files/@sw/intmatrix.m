@@ -64,15 +64,29 @@ nMagAtom = size(mAtom.r,2);
 mat      = obj.matrix.mat;
 nMat     = size(mat,3);
 
-coupling = obj.coupling;
+% Add extra zero matrix to the end of the matrix list
+mat = cat(3,mat,zeros(3));
 
+% Anisotropy matrix.
+if size(obj.single_ion.aniso,2) == nMagAtom
+    idx = obj.single_ion.aniso;
+    % the non-assigned atoms get a pointer to the last zero energy matrix
+    idx(idx == 0) = nMagAtom + 1;
+    SI.aniso = mat(:,:,idx);
+    % keeping only the symmetric part of the anisotropy
+    SI.aniso = (SI.aniso + permute(SI.aniso,[2 1 3]))/2;
+else
+    SI.aniso = zeros(3,3,nMagAtom);
+end
+
+% Couplings
+coupling = obj.coupling;
 SS.all = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx]);
 
 
 if param.fitmode > 0
     % sum up couplings on the same bond
     
-    mat = cat(3,mat,zeros(3));
     % Remove couplings where all mat_idx == 0.
     colSel = any(coupling.mat_idx ~= 0,1);
     
@@ -99,33 +113,48 @@ else
     
 end
 
-% For non P1 symmetry, calculate the interaction matrices
-if (obj.lattice.sym > 1) && (numel(SS.all) > 0)
-    % first positions of the couplings with identical idx values used to
-    % generate the coupling matrices for the rest
-    firstC = SS.all(1:5,[true logical(diff(SS.all(6,:)+100*SS.all(7,:)))]);
-    % produce the space group symmetry operators
-    [symOp, symTr] = sw_gencoord(obj.lattice.sym);
-    rotOp = zeros(3,3,0);
-    % select rotation matrices for each generated coupling
-    for ii = 1:size(firstC,2)
-        [~, rotIdx] = sw_gensymcoupling(obj, firstC(:,ii), {symOp, symTr}, 1e-5, true);
-        rotOp = cat(3,rotOp,symOp(:,:,rotIdx));
-    end
-    % convert rotation operators to xyz Cartesian coordinate system
+% For non P1 symmetry, generate the Hamiltonian using the symmetry
+% operators
+if (obj.lattice.sym > 1)
+    % Generate the transformation matrix between lattice units and xyz
+    % coordinate system
     A = obj.basisvector;
-    rotOp = mmat(A,mmat(rotOp,inv(A)));
     
-    % rotate the matrices: R*M*R'
-    JJ.mat = mmat(rotOp,mmat(JJ.mat,permute(rotOp,[2 1 3])));
+    % Generate anisotropy matrice using the space group symmetry
+    if any(SI.aniso(:))
+        [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.atom(:,obj.unit_cell.S>0));
+        % convert rotation operators to xyz Cartesian coordinate system
+        rotOp = mmat(A,mmat(rotOp,inv(A)));
+        % rotate the matrices: R*M*R'
+        SI.aniso = mmat(rotOp,mmat(SI.aniso,permute(rotOp,[2 1 3])));
+    end
     
+    % Generate interaction matrices using the space group symetry
+    if numel(SS.all) > 0
+        % first positions of the couplings with identical idx values used to
+        % generate the coupling matrices for the rest
+        firstC = SS.all(1:5,[true logical(diff(SS.all(6,:)+100*SS.all(7,:)))]);
+        % produce the space group symmetry operators
+        [symOp, symTr] = sw_gencoord(obj.lattice.sym);
+        rotOp = zeros(3,3,0);
+        % select rotation matrices for each generated coupling
+        for ii = 1:size(firstC,2)
+            [~, rotIdx] = sw_gensymcoupling(obj, firstC(:,ii), {symOp, symTr}, 1e-5, true);
+            rotOp = cat(3,rotOp,symOp(:,:,rotIdx));
+        end
+        % convert rotation operators to xyz Cartesian coordinate system
+        rotOp = mmat(A,mmat(rotOp,inv(A)));
+        
+        % rotate the matrices: R*M*R'
+        JJ.mat = mmat(rotOp,mmat(JJ.mat,permute(rotOp,[2 1 3])));
+    end
 end
 
 idxTemp = SS.all(6,:);
 SS.all  = SS.all(1:5,:);
 
 % don't calculate these for speedup in case of fitting
-if param.fitmode > 1
+if param.fitmode < 2
     JJ.type = sw_mattype(JJ.mat);
     
     % Select only the isotropic exchange. Remove zero value elements.
@@ -185,26 +214,16 @@ if param.plotmode
     end
 end
 
-% Anisotropy matrix.
-SI.aniso = zeros(3,3,nMagAtom);
-
-if size(obj.single_ion.aniso,2) == nMagAtom
-    for ii = 1:nMagAtom
-        idx = obj.single_ion.aniso(ii);
-        if any(idx)
-            SI.aniso(:,:,ii) = obj.matrix.mat(:,:,idx);
-            SI.aniso(:,:,ii) = (SI.aniso(:,:,ii)+SI.aniso(:,:,ii)')/2;
-        end
-    end
+% Extend the lattice for magnetic interactions
+if ~param.plotmode
+    [mAtom, SI.aniso, SS] = sw_extendlattice(double(obj.mag_str.N_ext), mAtom, SI.aniso, SS);
+    % Save the position of all atoms
+    RR = mAtom.RRext;
+else
+    RR = mAtom.r;
 end
-
-% Extend the lattice.
-[mAtom, SI.aniso, SS] = sw_extendlattice(double(obj.mag_str.N_ext), mAtom, SI.aniso, SS);
 
 % Save external field.
 SI.field = obj.single_ion.field;
-
-% Save the position of all atoms
-RR = mAtom.RRext;
 
 end

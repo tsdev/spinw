@@ -8,6 +8,11 @@ function qOut = sw_qscan(qLim)
 % qLim = {[0 1 0] [0 0 0] 50}
 %
 
+if nargin == 0
+    help sw_qscan;
+    return;
+end
+
 if numel(qLim{end}) == 1
     nQ = qLim{end};
     qLim = qLim(1:end-1);

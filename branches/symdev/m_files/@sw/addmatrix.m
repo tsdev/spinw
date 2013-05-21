@@ -43,7 +43,12 @@ if isa(newMat,'struct')
     
     % Defult Heisenberg matrix.
     if isempty(newMat(1).mat)
-        nJ = max(size(newMat.label,2),size(newMat.color,2));
+        if ~iscell(newMat.label)
+            nLabel = 1;
+        else
+            nLabel = size(newMat.label,2);
+        end
+        nJ = max(nLabel,size(newMat.color,2));
         if nJ == 0
             error('sw:addmatrix:WrongInput','Define some matrix property!');
         else
@@ -79,6 +84,10 @@ if isa(newMat,'struct')
         if ~any(size(newJVect(ii).color)-[1 3])
             newJVect(ii).color = newJVect(ii).color';
         end
+        if ~iscell(newJVect(ii).label)
+            newJVect(ii).label = {newJVect(ii).label};
+        end
+        
         newMat.mat   = cat(3,newMat.mat,newJVect(ii).mat);
         newMat.label = [newMat.label newJVect(ii).label];
         newMat.color = [newMat.color newJVect(ii).color];

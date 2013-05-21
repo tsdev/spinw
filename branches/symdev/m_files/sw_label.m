@@ -3,6 +3,11 @@ function [xLabel, xAxis] = sw_label(spectra)
 % the x-axis for momentum transfer scans linear in reciprocal space.
 %
 
+if nargin == 0
+    help sw_label;
+    return;
+end
+
 hkl = spectra.hkl';
 hklA = spectra.hklA';
 

@@ -1,4 +1,4 @@
-function sw_initialize(varargin)
+function sw_initialize()
 % SW_INITIALIZE initializes sw library and creates help files in the Matlab
 % documentation.
 %

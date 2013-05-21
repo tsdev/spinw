@@ -20,6 +20,11 @@ function [formFactVal, coeff, flag] = sw_mff(atomName, Q)
 % flag          True if the atomName is found in formfactor.dat file.
 %
 
+if nargin == 0
+    help sw_mff;
+    return;
+end
+
 formFact = struct;
 
 % Open the form factor definition file.

@@ -41,6 +41,11 @@ function parOut = sw_fstat(state, parIn, T, E, M, ~)
 % See also SW, SW.ANNEAL.
 %
 
+if nargin == 0
+    help sw_fstat;
+    return
+end
+
 switch state
     case 2
         % Save parameter statistics.

@@ -18,7 +18,7 @@ function gencoupling(obj, varargin)
 %               units. Default is 3.
 % maxDistance   Maximum inter-ion distance that will be stored in the
 %               obj.coupling property in units of Angstrom. Default
-%               is 6.
+%               is 8.
 % tol           Tolerance of distance, within two couplings are regarded
 %               equivalent, default is 1e-5.
 %
@@ -28,7 +28,7 @@ function gencoupling(obj, varargin)
 isSym = obj.lattice.sym > 1;
 
 inpForm.fname  = {'sym' 'nUnitCell' 'maxDistance' 'tol' };
-inpForm.defval = {isSym 3           6             1e-5  };
+inpForm.defval = {isSym 3           8             1e-5  };
 inpForm.size   = {[1 1] [1 1]       [1 1]         [1 1] };
 
 param = sw_readparam(inpForm, varargin{:});

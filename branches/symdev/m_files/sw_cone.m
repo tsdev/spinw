@@ -12,6 +12,11 @@ function [handle] = sw_cone(rBase, rTop, R, N)
 % See also SW_CIRCLE, SW_CIRCLESURF, SW_CYLINDER.
 %
 
+if nargin == 0
+    help sw_cone;
+    return
+end
+
 n = rTop - rBase;
 
 if any(cross(n,[0; 0; 1]))

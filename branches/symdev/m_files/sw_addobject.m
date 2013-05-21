@@ -10,12 +10,16 @@ function sw_addobject(hFigure, hAdd)
 % See also SW.PLOT.
 %
 
-cva   = get(gca,'CameraViewAngle');
-uData = get(hFigure,'UserData');
-h     = uData.h;
+if nargin == 0
+    help sw_addobject;
+    return
+end
 
-if isfield(uData,'handle')
-    handle = uData.handle;
+cva = get(gca,'CameraViewAngle');
+h   = getappdata(hFigure,'h');
+
+if isappdata(hFigure,'handle')
+    handle = getappdata(hFigure,'handle');
 else
     handle = struct;
 end
@@ -63,16 +67,21 @@ set(gca,'CameraViewAngle',cva);
 handle.light = camlight('right');
 
 % Shift the origin to center the plot.
-if isfield(uData,'param') && isfield(uData.param,'range') && isfield(uData,'obj')
-    range       = uData.param.range;
-    basisVector = uData.obj.basisvector;
+if isappdata(hFigure,'param')
+    param = getappdata(hFigure,'param');
+else
+    param = struct;
+end
+
+if isfield(param,'range') && isappdata(hFigure,'obj')
+    range       = param.range;
+    basisVector = getappdata(hFigure,'obj').basisvector;
     T           = makehgtform('translate',-sum(basisVector * sum(range,2)/2,2)');
     set(h2,'Matrix',T);
 end
 
 % Saves the object handles into the figure UserData property.
-uData.handle = handle;
-uData.h      = h;
-set(hFigure,'UserData',uData);
+setappdata(hFigure,'handle',handle);
+setappdata(hFigure,'h',h);
 
 end

@@ -1,8 +1,10 @@
-function display(swobj)
+function display(obj, fid)
 %  prints the sw data structure in readable format onto the Command Window
 %
 
-fid = 1;
+if nargin == 1
+    fid = 1;
+end
 
 Datastruct = datastruct;
 fprintf(fid, 'sw object\n');
@@ -19,7 +21,7 @@ for ii = 1:length(Datastruct.mainfield)
         fprintf(fid, '[');
         
         for jj = 1:length(sizefield)-1
-            objSize = [size(swobj.(Datastruct.mainfield{ii}).(Datastruct.subfield{ii,index})) 1 1 1];
+            objSize = [size(obj.(Datastruct.mainfield{ii}).(Datastruct.subfield{ii,index})) 1 1 1];
             if ischar(sizefield{jj})
                 if plotSize
                     %fprintf(fid, '%s=%dx', sizefield{jj},objSize(jj));

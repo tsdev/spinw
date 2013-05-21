@@ -118,7 +118,7 @@ if nargout(param.func) == 6
     % limits
     param.xmin = max(param.xmin,limit(1,:));
     param.xmax = min(param.xmax,limit(2,:));
-
+    
 else
     if isempty(param.xmin) || isempty(param.xmax) || (numel(param.xmin) ~= numel(param.xmax))
         error('sw:optmagtr:WrongInput','Missing limits on the x fitting parameters (use xmin and xmax options)!');
@@ -179,14 +179,16 @@ obj.mag_str.n = n;
 validate(obj);
 
 % Create output struct
-optm.obj      = copy(obj);
-optm.x        = minX;
-optm.e        = minE;
-optm.exitflag = exitflag;
-optm.output   = output;
-optm.param    = param;
-optm.fname    = fname;
-optm.xname    = pname;
+if nargout > 0
+    optm.obj      = copy(obj);
+    optm.x        = minX;
+    optm.e        = minE;
+    optm.exitflag = exitflag;
+    optm.output   = output;
+    optm.param    = param;
+    optm.fname    = fname;
+    optm.xname    = pname;
+end
 
 end
 

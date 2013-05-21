@@ -1,7 +1,7 @@
-function obj = genmagstr(obj, varargin)
+function genmagstr(obj, varargin)
 % generates magnetic structure
 %
-% obj = GENMAGSTR(obj, 'option1', value1 ...)
+% GENMAGSTR(obj, 'option1', value1 ...)
 %
 % There are several ways to generate magnetic structure. The method depends
 % on the 'mode' option, see below. The magnetic structure is stored in the

@@ -1,5 +1,5 @@
 function [rSym, aIdx, isMoved, opMove, symName] = sw_genatpos(sym, r, fid, tol)
-% [rSym, aIdx, isMoved, opMove, symName] = SW_GENATPOS(sym, r, {fid}, {tol})
+% [rSym, aIdx, isMoved, opMove, symName] = SW_GENATPOS(sym, r, fid, tol)
 % generates all symmetry equivalent atomic positions from a given symmetry
 % number and coordinates of the input atoms. If print is defined, the
 % result is printed onto the command window.
@@ -10,11 +10,14 @@ function [rSym, aIdx, isMoved, opMove, symName] = sw_genatpos(sym, r, fid, tol)
 %               symmetry operators or a cell containing the output of
 %               sw_gencoord().
 % r             Atomic position in lattice units, dimensions are [3 nAtom].
-% {fid}         Optional input, the file identifier to print the result.
-%               To print onto the Command Window, use fid = 1; default is
-%               fid = 0, no print.
+% fid           Optional input, the file identifier to print the result.
+%                   0   No output printed (Default)
+%                   1   Output printed onto the screen (Command Window)
+%                   fid Use with the following command: fid = fopen(path)
 % tol           Tolerance, distance within two atoms are considered
-%               identical, default is 0.05.
+%               identical, default is 0.05 Angstrom. Necessary for badly
+%               defines atomic positions (when atoms are not exactly on the
+%               symmetry element) and to avoid numerical errors.
 %
 % Output:
 %
@@ -79,7 +82,7 @@ end
 
 nGenAtom = numel(aIdx);
 
-if fid
+if fid ~= 0
     idx = 1;
     for ii = 1:nAtom
         fprintf(fid,'\nAtomic coordinates generated for: (%5.3f %5.3f %5.3f)\n',r(:,ii));

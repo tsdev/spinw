@@ -11,6 +11,11 @@ function [handle] = sw_cylinder(r1,r2,R,N)
 % See also SW_CIRCLE, SW_CONE, SW_CIRCLESURF.
 %
 
+if nargin == 0
+    help sw_cylinder;
+    return
+end
+
 c1 = sw_circle(r1, r2-r1, R, N);
 c2 = sw_circle(r2, r2-r1, R, N);
 

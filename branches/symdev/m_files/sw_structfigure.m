@@ -90,12 +90,10 @@ h = hgtransform;
 mousestatus = 'buttonup';
 START = [0,0,0];
 M_previous = get( h, 'Matrix' );
-uData.h = h;
 
-%uData.param.cMap = 1;
-%uData.param.range = [0 1;0 1;0 1;];
-uData.button = button;
-set(hFigure,'UserData',uData);
+% save data to figure
+setappdata(hFigure,'button',button);
+setappdata(hFigure,'h',h);
 set(hFigure,'Visible','on');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,7 +108,7 @@ set(hFigure,'Visible','on');
         % retrieve the current point
         P = get(gcf,'CurrentPoint');
         % retrieve window geometry
-        HGEOM = get( src, 'Position');
+        HGEOM = get(src, 'Position');
         % transform in sphere coordinates (3,4) = (WIDTH, HEIGHT)
         P = point_on_sphere( P, HGEOM(3), HGEOM(4) );
         
@@ -205,9 +203,9 @@ objFigure = get(get(obj,'Parent'),'Parent');
 
 if size(multip,2)>1
     
-    uData = get(objFigure,'UserData');
-    h     = uData.h;
-    basisVector = uData.obj.basisvector;
+    h   = getappdata(objFigure,'h');
+    obj = getappdata(objFigure,'obj');
+    basisVector = obj.basisvector;
     v1 = basisVector(:,1);
     v2 = basisVector(:,2);
     v3 = basisVector(:,3);
@@ -254,7 +252,7 @@ end
 function setrange(~, ~, hFigure)
 % setrange() changes the plotting range
 
-uData     = get(hFigure, 'UserData');
+param     = getappdata(hFigure,'param');
 parentPos = get(hFigure,'Position');
 fWidth    = 195;
 fHeight   = 240;
@@ -372,7 +370,7 @@ handles.edit_range(1,2) = uicontrol(handles.panel(3),...
 
 for ii=1:3
     for jj=1:2
-        set(handles.edit_range(ii,jj),'String',sprintf('%.3f',uData.param.range(ii,jj)));
+        set(handles.edit_range(ii,jj),'String',sprintf('%.3f',param.range(ii,jj)));
     end
 end
 
@@ -387,44 +385,45 @@ handles.text(7) = uicontrol(handles.panel(3),...
     'Units',           'pixel',...
     'Position',        [110 77 50 15]);
 
-set(objMod,'UserData',handles);
+setappdata(objMod,'handles',handles);
 
     function Callback_Range(~, ~, hFigure, objMod , isclose)
         
-        uData      = get(hFigure,'UserData');
-        modHandles = get(objMod,'UserData');
+        param   = getappdata(hFigure,'param');
+        obj     = getappdata(hFigure,'obj');
+        handles = getappdata(objMod,'handles');
         
         
         for iii=1:3
             for jjj=1:2
-                uData.param.range(iii,jjj) = str2double(get(handles.edit_range(iii,jjj),'String'));
+                param.range(iii,jjj) = str2double(get(handles.edit_range(iii,jjj),'String'));
             end
         end
         
-        if all((uData.param.range(:,1)-uData.param.range(:,2)) < 0)
-            plot(uData.obj, uData.param);
+        if all((param.range(:,1) - param.range(:,2)) < 0)
+            plot(obj, param);
             figure(objMod);
         end
         
         
         if isclose
-            delete(modHandles.objMod);
+            delete(handles.objMod);
         end
     end
 
     function Callback_Single(~, ~, objMod)
         
-        modHandles = get(objMod,'UserData');
+        handles = getappdata(objMod,'handles');
         for iii=1:3
-            set(modHandles.edit_range(iii,1),'String', '0.000');
-            set(modHandles.edit_range(iii,2),'String', '1.000');
+            set(handles.edit_range(iii,1),'String', '0.000');
+            set(handles.edit_range(iii,2),'String', '1.000');
         end
     end
 
     function Callback_Scale(~, ~, hFigure, ~, expand)
         
-        uData   = get(hFigure,'UserData');
-        lattice = uData.obj.lattice;
+        obj     = getappdata(hFigure,'obj');
+        lattice = obj.lattice;
         abc     = lattice.lat_const;
         d       = 0.1 * min(abc)./abc;
         

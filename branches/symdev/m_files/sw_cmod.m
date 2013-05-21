@@ -3,6 +3,11 @@ function r = sw_cmod(r, tol)
 % converted to -epsilon.
 %
 
+if nargin == 0
+    help sw_cmod;
+    return
+end
+
 r = mod(r,1);
 
 r(r > 1-tol) = r(r > 1-tol)-1;

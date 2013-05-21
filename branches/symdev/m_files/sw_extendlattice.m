@@ -1,5 +1,5 @@
 function [mAtom, AAext, SSext] = sw_extendlattice(nExt, mAtom, varargin)
-% [mAtom AAext SSext] = SW_EXTENDLATTICE(nExt, mAtom, {AA}, {SS}): produce
+% [mAtom AAext SSext] = SW_EXTENDLATTICE(nExt, mAtom, {AA}, {SS}) produces
 % the extended lattice and interactions by tiling the unit cell.
 %
 % Input:
@@ -30,6 +30,11 @@ function [mAtom, AAext, SSext] = sw_extendlattice(nExt, mAtom, varargin)
 %
 % See also SW.INTMATRIX.
 %
+
+if nargin == 0
+    help sw_extendlattice;
+    return
+end
 
 RR       = mAtom.r;
 S        = mAtom.S;

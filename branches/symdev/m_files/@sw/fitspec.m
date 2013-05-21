@@ -20,6 +20,8 @@ function fitsp = fitspec(obj, varargin)
 % xmax      Maximum limit of the optimisation parameters, optional.
 % x0        Starting value of the optimisation parameters. If empty
 %           or undefined, then random values are used.
+% nRun      Number of consecutive fitting runs, each result is saved in the
+%           output fitsp.x and R arrays. Default is 1.
 %
 % Optimisation options:
 %
@@ -32,10 +34,14 @@ function fitsp = fitspec(obj, varargin)
 %
 % Output:
 %
-% Output is struct type with the following fields:
-% obj       Copy of the input sw class object, with the fitted Hamiltonian.
-% x         Final values of the fitted parameters.
-% R         R-value, goodness of the fit.
+% Output fitsp is struct type with the following fields:
+% obj       Copy of the input sw class object, with the best fitted
+%           Hamiltonian.
+% x         Final values of the fitted parameters, dimensions are 
+%           [nRun nPar]. The rows of x are sorted according to increasing R
+%           values.
+% R         R-value, goodness of the fit, dimensions are [nRun 1], sorted
+%           in increasing order. 
 % exitflag  Exit flag of the fminsearch command.
 % output    Output of the fminsearch command.
 %
@@ -51,15 +57,16 @@ inpForm.defval = {1e-5      ' '        []       []      []      []     true  };
 inpForm.size   = {[1 1]     [1 -1]     [1 -3]   [1 -4]  [1 -5]  [1 1]  [1 1] };
 inpForm.soft   = {1         0          1        1       1       0      0     };
 
-inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'Evect'}];
-inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           []     }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 -6] }];
-inpForm.soft   = [inpForm.soft   {0      0        0             0      }];
+inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'Evect' 'nRun'}];
+inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           []      1     }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 -6]  [1 1] }];
+inpForm.soft   = [inpForm.soft   {0      0        0             0       0     }];
 
 param = sw_readparam(inpForm, varargin{:});
 
 % number of parameters (length of x)
 nPar = max(max(length(param.xmin),length(param.xmax)),length(param.x0));
+nRun = param.nRun;
 
 % Initial parameters are random if param.x0 is undefined.
 if ~isempty(param.x0)
@@ -80,19 +87,33 @@ data = sw_readspec(param.datapath);
 param0      = param;
 param0.plot = false;
 
+x = zeros(nRun,nPar);
+R = zeros(nRun,1);
+exitflag = struct;
+output   = struct;
 
-[x, ~, exitflag, output] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0,param.xmin,param.xmax,...
-    optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
+sw_status(0,1);
+for ii = 1:nRun
+    [x(ii,:), R(ii), exitflag(ii), output(ii)] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0,param.xmin,param.xmax,...
+        optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
+    sw_status(ii/nRun*100);
+end
+sw_status(100,2);
+
+% Sort results
+[R, sortIdx] = sort(R);
+x = x(sortIdx,:);
 
 % Draw plot of the final result if requested
 if param.plot
     figure;
     param0.plot = true;
+    % plot the best result if requested
+    sw_fitfun(obj, data, param.func, x(1,:), param0);
 end
 
-R = sw_fitfun(obj, data, param.func, x, param0);
-
-obj = param.func(obj,x);
+% set the best fit to the sw object
+obj = param.func(obj,x(1,:));
 
 % Store all output in a struct variable.
 fitsp.obj      = copy(obj);

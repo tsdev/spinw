@@ -9,6 +9,11 @@ function radius = sw_ratom(atomSymb)
 % See also SW_MFF.
 %
 
+if nargin == 0
+    help sw_ratom;
+    return;
+end
+
 % Open the atomic radius definition file.
 rPath = [sw_rootdir 'dat_files' filesep 'atomradius.dat'];
 fid = fopen(rPath);

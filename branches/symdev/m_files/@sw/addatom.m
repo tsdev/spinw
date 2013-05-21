@@ -79,6 +79,10 @@ if isa(newAtom,'struct')
     end
     
     for ii = 1:numel(newAtom)
+        if  ~iscell(newAtom(ii).label)
+            newAtom(ii).label = {newAtom(ii).label};
+        end
+        
         if ~any(size(newAtom(ii).r)-[1 3])
             newAtom(ii).r = newAtom(ii).r';
         end

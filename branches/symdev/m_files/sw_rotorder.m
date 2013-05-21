@@ -14,6 +14,11 @@ function N = sw_rotorder(R, tol)
 % See also SW_GENATPOS, SW_BASISMAT.
 %
 
+if nargin == 0
+    help sw_rotorder;
+    return;
+end
+
 if nargin == 1
     tol = 1e-5;
 end

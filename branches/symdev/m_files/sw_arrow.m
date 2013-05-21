@@ -11,6 +11,11 @@ function [handle] = sw_arrow(rStart, rEnd, R, alpha, lHead, N)
 % N       Number of the points of the surface mesh.
 %
 
+if nargin == 0
+    help sw_arrow;
+    return
+end
+
 rStart = rStart(:);
 rEnd   = rEnd(:);
 

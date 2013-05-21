@@ -27,6 +27,12 @@ function [Qtwin, rotQout] = twinq(obj, Q0)
 % See also SW.ADDTWIN.
 %
 
+if nargin == 1
+    help sw.twinq;
+    return
+end
+
+
 % basis vectors
 bv = obj.basisvector;
 

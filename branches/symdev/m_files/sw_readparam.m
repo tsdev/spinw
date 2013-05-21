@@ -16,6 +16,11 @@ function input = sw_readparam(format, varargin)
 %           value, defval is used without error message.
 %
 
+if nargin == 0
+    help sw_readparam;
+    return;
+end
+
 if (nargin>2) && (mod(nargin,2) == 1)
     nPar = nargin-1;
     raw = struct;

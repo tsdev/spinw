@@ -5,6 +5,11 @@ function [u, v] = sw_cartesian(n)
 % n         3 element vector, either row or column.
 %
 
+if nargin == 0
+    help sw_cartesian;
+    return
+end
+
 % Shape of original vector.
 nShape = size(n);
 

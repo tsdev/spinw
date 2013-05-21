@@ -20,4 +20,4 @@ function atomList = atom(obj)
 
 atomList.mag = obj.unit_cell.S(atomList.idx)>0;
 
-end % .atom
+end

@@ -31,13 +31,17 @@ function polyDat = sw_drawpoly(varargin)
 % See also SW, SW_T2G, SW_ORBITAL, SW_ADDOBJECT.
 %
 
+if nargin == 0
+    help sw_drawpoly;
+    return
+end
+
 hFigure   = sw_getfighandle('sw_crystal');
 if isempty(hFigure)
     error('sw:sw_drawpoly:NoFigure','No active crystal structure figure!');
 end
 
-userData    = get(hFigure,'UserData');
-obj         = userData.obj;
+obj         = getappdata(hFigure,'obj');
 unit_cell   = obj.unit_cell;
 basisVector = obj.basisvector;
 

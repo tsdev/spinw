@@ -17,7 +17,8 @@ function varargout = plot(obj, varargin)
 %   Axis & labels =========================================================
 %
 %   legend          Whether to plot legend, default is true.
-%   pCell           Whether to plot unit cell at the origin, defult is true.
+%   pCell           Whether to plot unit cell at the origin, defult is 
+%                   true.
 %   pMultCell       Whether to plot multiple unit cells, default is false.
 %   pAxis           Whether to plot (a,b,c) axis, default is true.
 %   labelAtom       Whether to plot labels for atoms, default is true.
@@ -65,14 +66,14 @@ function varargout = plot(obj, varargin)
 %                    0    No plane is plotted.
 %                    x    Plane of the moment is plotted if the best
 %                         fitting plane is better than x.
-%                   Default value is 0.1.
+%                   Default value is 0.
 %
 %   Anisotropy ============================================================
 %
 %   ellAniso        Whether to draw the ellipsoid giving the anisotropy.
 %                    0:   No ellipsoid is drawn.
 %                    R:   The maximum radius of the ellipsoid.
-%                   Default value is 0.
+%                   Default value is 1.
 %   aAniso          Transparency (alpha value) of the anisotropy sphere,
 %                   default is 0.3.
 %
@@ -108,8 +109,8 @@ function varargout = plot(obj, varargin)
 %
 % To access the graphical objects, use the function:
 %   handleList = sw_getobject(tagName,fHandle)
-% This command returns all objects with tagName string in their 'Tag' field,
-% in figure with fHandle.
+% This command returns all objects with tagName string in their 'Tag'
+% field, in figure with fHandle.
 %
 % List of Tag values:
 % unitCell         Unit cell.
@@ -136,7 +137,7 @@ if isempty(hFigure)
     hFigure = sw_structfigure;
 end
 
-tooltip(hFigure,'<< Click again on any object! >>')
+tooltip(hFigure,'<< Click on any object to get information! >>')
 
 cva = get(gca,'CameraViewAngle');
 [az, el] = view();
@@ -176,12 +177,12 @@ inpForm.defval = [inpForm.defval {'--'            [0.5;1.5;2.0] 0.2     10      
 inpForm.size   = [inpForm.size   {[1 -1]          [3 1]         [1 1]   [1 1]    [1 1]      }];
 
 inpForm.fname  = [inpForm.fname  {'rAtom' 'aAniso' 'coplanar' 'fontSize' 'pNonMagAtom'}];
-inpForm.defval = [inpForm.defval {0.3     0.3          0.1        12     true         }];
+inpForm.defval = [inpForm.defval {0.3     0.3          0          12     true         }];
 inpForm.size   = [inpForm.size   {[1 1]   [1 1]        [1 1]      [1 1]  [1 1]        }];
 
 inpForm.fname  = [inpForm.fname  {'ellAniso' 'ellEpsilon' 'pZeroCoupling' 'tooltip' 'cCoupling' 'cDM'    'cAtom'}];
-inpForm.defval = [inpForm.defval {0          0.1          true             true      'auto'     'auto'   'auto' }];
-inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]            [1 1]     [1 -1]     [1 -2]   [1 -3] }];
+inpForm.defval = [inpForm.defval {1          0.1          true             true      'auto'     'auto'   'auto' }];
+inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]            [1 1]     [1 -7]     [1 -2]   [1 -3] }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -201,12 +202,10 @@ param.wShift = reshape(param.wShift',1,[]);
 % Plot spins if spin variables exist and param.pSpin is true.
 param.pSpin = param.pSpin && ~isempty(obj.mag_str.S);
 
-%% figure data
+%% save data to figure
 
-uData = get(hFigure,'UserData');
-
-uData.obj   = copy(obj);
-uData.param = param;
+setappdata(hFigure,'obj',copy(obj));
+setappdata(hFigure,'param',param);
 
 %% Calculated parameters
 
@@ -317,7 +316,6 @@ nExt     = double(obj.mag_str.N_ext);
 
 SS = intmatrix(obj,'plotmode',true,'zeroC',param.pZeroCoupling);
 
-% cIdx = any(coupling.mat_idx,1);
 coupling.dl      = SS.all(1:3,:);
 coupling.atom1   = SS.all(4,:);
 coupling.atom2   = SS.all(5,:);
@@ -327,28 +325,7 @@ coupling.mat     = reshape(SS.all(6:14,:),3,3,[]);
 coupling.DM      = (coupling.mat-permute(coupling.mat,[2 1 3]))/2;
 coupling.DM      = cat(2,coupling.DM(2,3,:),coupling.DM(3,1,:),coupling.DM(1,2,:));
 
-nCoupling     = size(coupling.idx,2);
-
-% % Create the actual indexing and type in coupling
-% coupling.idxJ = zeros(3,nCoupling);
-% coupling.type = zeros(3,nCoupling);
-%
-% for ii = 1: nCoupling
-%     for jj = 1:3
-%         idxJ = coupling.mat_idx(jj,ii);
-%         if any(idxJ)
-%             % save zero valued couplings if pZeroCoupling is true
-%             if param.pZeroCoupling || any(any(matrix.mat(:,:,idxJ)))
-%                 coupling.idxJ(jj,ii) = idxJ;
-%                 coupling.type(jj,ii) = sw_mattype(matrix.mat(:,:,idxJ));
-%             end
-%
-%         end
-%     end
-% end
-%
-%
-
+nCoupling        = size(coupling.idx,2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MAGNETIC MOMENTS
@@ -372,36 +349,37 @@ propAniso = true;
 if param.ellAniso>0
     % Creates the anisotropy ellipsoids.
     if length(single_ion.aniso) ~= nMagAtom
-        error('sw:plot:AnisotropyMissing','sw.single_ion field is not initialized, use: sw.gencoupling!');
-    end
-    for ll = 1:nMagAtom
-        % Selects the anisotropy matrix
-        cIdx = single_ion.aniso(ll);
-        if any(cIdx)
-            aniso.mat(:,:,ll) = matrix.mat(:,:,cIdx);
-            
-            
-            % Calculates the main radiuses of the ellipsoid.
-            [V, R] = eig(aniso.mat(:,:,ll));
-            if norm(aniso.mat(:,:,ll)-aniso.mat(:,:,ll)') > 1e-8
-                propAniso = false;
+        single_ion.aniso = zeros(1,nMagAtom);
+    else
+        for ll = 1:nMagAtom
+            % Selects the anisotropy matrix
+            cIdx = single_ion.aniso(ll);
+            if any(cIdx)
+                aniso.mat(:,:,ll) = matrix.mat(:,:,cIdx);
+                
+                
+                % Calculates the main radiuses of the ellipsoid.
+                [V, R] = eig(aniso.mat(:,:,ll));
+                if norm(aniso.mat(:,:,ll)-aniso.mat(:,:,ll)') > 1e-8
+                    propAniso = false;
+                end
+                % Creates positive definite matrix by adding constant to all
+                % eigenvalues.
+                R0      = diag(R);
+                epsilon = sqrt(sum(R0.^2))*param.ellEpsilon;
+                dR      = 1./(R0-min(R0)+epsilon);
+                dR0     = max(dR);
+                if dR0 ~= 0
+                    dR = dR/dR0;
+                else
+                    dR = [1 1 1];
+                end
+                
+                R = diag(dR)*param.ellAniso;
+                
+                aniso.ell(:,:,ll) = V*R;
+                aniso.label{ll}   = matrix.label{cIdx};
             end
-            % Creates positive definite matrix by adding constant to all
-            % eigenvalues.
-            R0      = diag(R);
-            epsilon = sqrt(sum(R0.^2))*param.ellEpsilon;
-            dR      = 1./(R0-min(R0)+epsilon);
-            dR0     = max(dR);
-            if dR0 ~= 0
-                dR = dR/dR0;
-            else
-                dR = [1 1 1];
-            end
-            
-            R = diag(dR)*param.ellAniso;
-            
-            aniso.ell(:,:,ll) = V*R;
-            aniso.label{ll}   = matrix.label{cIdx};
         end
     end
 end
@@ -443,7 +421,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                     
                     % Draw anisotropy semi-transparent ellipsoid.
                     if atom.mag(ll) && param.ellAniso>0 && propAniso
-                        aIdx = obj.single_ion.aniso(llMagAtom);
+                        aIdx = single_ion.aniso(llMagAtom);
                         if any(aIdx) && (norm(obj.matrix.mat(:,:,aIdx))>0)
                             
                             ell.xyz = aniso.ell(:,:,llMagAtom)*[sp.x(:) sp.y(:) sp.z(:)]';
@@ -613,8 +591,8 @@ end
 view([az el]);
 hold off
 
-if isfield(uData,'handle')
-    oldHandle = uData.handle;
+if isappdata(hFigure,'handle')
+    oldHandle = getappdata(hFigure,'handle');
     hName = fieldnames(oldHandle);
     
     for ii = 1:length(hName)
@@ -625,7 +603,8 @@ if isfield(uData,'handle')
     end
 end
 
-h2 = hgtransform('Parent',uData.h);
+h  = getappdata(hFigure,'h');
+h2 = hgtransform('Parent',h);
 hName = fieldnames(handle);
 
 for ii = 1:length(hName)
@@ -688,9 +667,7 @@ axes(cAxis); %#ok<MAXES>
 
 %% Stuff...
 
-uData.handle = handle;
-
-set(hFigure,'UserData',uData);
+setappdata(hFigure,'handle',handle);
 
 if get(gca,'CameraViewAngle') == 0.6
     camva('auto');

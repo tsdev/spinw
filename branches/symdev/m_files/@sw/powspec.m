@@ -58,7 +58,6 @@ powSpec = zeros(nE,nQ);
 fprintf('Calculating powder spectra:\n');
 sw_status(0,1);
 for ii = 1:nQ
-    sw_status(ii/nQ*100);
     rQ  = randn(3,param.nRand);
     Q   = bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2)))*hklA(ii);
     hkl = (Q'*obj.basisvector)'/2/pi;
@@ -67,6 +66,7 @@ for ii = 1:nQ
     specQ = sw_neutron(specQ,'pol',false);
     specQ = sw_conv(specQ,'Evect',param.Evect,'T',param.T);
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
+    sw_status(ii/nQ*100);
 end
 sw_status(100,2);
 

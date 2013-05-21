@@ -3,6 +3,11 @@ function sw_annealplot(T, E, rate, param)
 % procedure.
 %
 
+if nargin == 0
+    help sw_annealplot;
+    return
+end
+
 if  (param.verbosity > 0) && ~any(any(E))
     tic;
     dateStr = date;

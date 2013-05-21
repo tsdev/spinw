@@ -217,6 +217,8 @@ Snn = zeros(2*nMagExt,nHkl);
 
 % Incommensurate structures have Suv type correlations at wave vectors
 % shifted by +/-k_m.
+% TODO
+% Su + Sv can give zero intensity !!!
 Suv = zeros(2*nMagExt,nHkl,2);
 for n=1:nHkl
     Suv(:,n,1) = (Su+Sv)/2*V(:,:,n,1).*conj((Su+Sv)/2*V(:,:,n,1));

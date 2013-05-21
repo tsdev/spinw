@@ -30,6 +30,11 @@ function [M, k, n, name, pname, limit] = gm_spherical3d(M0, x)
 % See also GM_PLANAR.
 %
 
+if nargin == 0
+    help gm_spherical3d;
+    return
+end
+
 if nargout <= 3
     nMagExt = (length(x)-5)/2;
     x       = x(:)';

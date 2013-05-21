@@ -1,19 +1,20 @@
-function [symOp, symTr, symName] = sw_gencoord(sym, fid, tol)
-% [symOp, symTr] = SW_GENCOORD(sym, {fid}, {tol}) calculates the general
-% coordinates for a given space group.
+function [symOp, symTr, symName] = sw_gencoord(sym, fid)
+% [symOp, symTr, symName] = SW_GENCOORD(sym, fid) calculates the
+% general coordinates for a given space group.
 %
 % Input:
 %
 % sym           Line index in the symmetry.dat file or string of the
 %               symmetry operators.
-% {fid}         For printing the symmetry operators:
-% {print}       Optional input, if true, the result will be plotted on the
-%               command window.
+% fid           For printing the symmetry operators:
+%                   0   no printed output (Default)
+%                   1   standard output (Command Line)
+%                   fid text file opened before with the fid = fopen(path)
 %
 % Output:
 %
 % symOp         The rotational part of the symmetry operators, dimensions
-%               are [3 3 nSym]. 
+%               are [3 3 nSym].
 % symTr       	The translation part of the symmetry operators, dimensions
 %               are [3 nSym].
 % symName       String, the name of  the space group.
@@ -26,9 +27,9 @@ if nargin == 0
     return;
 end
 
-if nargin < 3
-    tol = 1e-5;
-end
+% tolerance for numerical error
+tol = 1e-5;
+
 if nargin < 2
     fid = 0;
 end

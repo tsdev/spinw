@@ -16,6 +16,11 @@ function oHandle = sw_getobject(tagName, fHandle)
 % See also SW, SW_GETFIGHANDLE, SW.PLOT.
 %
 
+if nargin == 0
+    help sw_getobject;
+    return
+end
+
 oHandle = findobj('-regexp','Tag',tagName);
 
 

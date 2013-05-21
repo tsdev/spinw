@@ -5,8 +5,14 @@ function hFigure = sw_annealfigure
 % See also SW.ANNEAL.
 %
 
+if nargin == 0
+    help sw_annealfigure;
+    return
+end
+
 % Position of the new figure window.
-posFig = [300 100 400 400];
+posFig = get(0,'DefaultFigurePosition');
+posFig = [posFig(1:2) 400 400];
 
 % Create new figure.
 hFigure = figure;
@@ -20,8 +26,5 @@ set(hFigure,...
     'PaperType',     'A4',...
     'Tag',           'sw_anneal',...
     'Toolbar',       'figure');
-
-uData = [];
-set(hFigure,'UserData',uData);
 
 end

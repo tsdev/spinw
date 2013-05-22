@@ -105,18 +105,9 @@ rM = (rM==rank(M0.V));
 Vnice = V0(:,rM);
 
 % add rest of the vectors that cannot be expressed nicely :)
-for ii = 1:size(M0.V,2)
-    addV = indep(Vnice,M0.V(:,ii));
-    if ~isempty(addV)
-        addV = addV - bsxfun(@times,sum(bsxfun(@times,addV,Vnice),1),Vnice);
-        Vnice = [Vnice addV]; %#ok<AGROW>
-    end
-end
+M0.V = orth([Vnice M0.V]);
 
-%M0.V = orth([Vnice M0.V]);
-%M = M0.V;
-M = Vnice;
-
+M = M0.V;
 % normalize the largest absolute value element to one
 divM  = arrayfun(@(idx)M(find(abs(M(:,idx))==max(abs(M(:,idx))),1,'first'),idx),1:size(M,2));
 M = bsxfun(@rdivide,M,divM);
@@ -125,7 +116,7 @@ M = bsxfun(@rdivide,M,divM);
 M = reshape(M,3,3,[]);
 
 % selects the symmetric and antisymmetric matrices
-asym = false(1,size(M,3));
+asym = true(1,size(M,3));
 for ii = 1:size(M,3)
     asym(ii) = sum(sum((M(:,:,ii)-M(:,:,ii)').^2)) > tol^2*9;
 end
@@ -133,23 +124,9 @@ end
 end
 
 function v = dep(M,v)
-% returns column vectors of v that can be produced from the column vectors
-% of M
-%
 
 rv = arrayfun(@(idx)rank([M v(:,idx)]),1:size(v,2));
 rv = rv == rank(M);
-v = v(:,rv);
-
-end
-
-function v = indep(M,v)
-% returns column vectors of v that cannot be produced from the column
-% vectors of M
-%
-
-rv = arrayfun(@(idx)rank([M v(:,idx)]),1:size(v,2));
-rv = rv > rank(M);
 v = v(:,rv);
 
 end

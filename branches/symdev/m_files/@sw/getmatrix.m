@@ -197,7 +197,7 @@ if iscell(param.pref)
         elseif sum(aSym) < 3
             warning('sw:setmatrix:Asym','Less than 3 assymetric matrices are allowed by symmetry!');
         end
-        pref(aSym) = param.pref{1}(1:numel(aSym));
+        pref(aSym) = param.pref{1}(1:sum(aSym));
     else
         error('sw:setmatrix:WrongInput','Wrong value of pref, see help!');
     end

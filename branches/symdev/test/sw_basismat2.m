@@ -72,11 +72,12 @@ for ii = 1:nSym
     % solve the R*M-M*R=0 matrix equation valid for symmetric matrices
     [~, D, MS] = svd(kron(R,R)-eye(9));
     M.S = reshape(MS(:,abs(diag(D)) < tol),3,3,[]);
-    
+
     if parR == -1
         % solve the equation for antisymmetric matrices
         [~, D, MA] = svd(kron(R,R)+eye(9));
-        M.A = reshape(MA(:,abs(diag(D)) < tol),3,3,[]);
+        MA = MA(:,abs(diag(D)) < tol);
+        M.A = reshape(MA,3,3,[]);
         M.A = M.A-permute(M.A,[2 1 3]);
     else
         M.A = M.S-permute(M.S,[2 1 3]);
@@ -84,20 +85,12 @@ for ii = 1:nSym
     M.S = M.S+permute(M.S,[2 1 3]);
     M.V = reshape(cat(3,M.S,M.A),9,[]);
     
-    M0.V = [dep(M0.V,M.V) dep(M.V,M0.V)];
-    % remove small matrices
-    normM = arrayfun(@(idx)norm(M0.V(:,idx)),1:size(M0.V,2));
-    M0.V(:,normM < tol) = [];
-    
+    M0.V = orth([dep(M0.V,M.V) dep(M.V,M0.V)]);
 end
 
 % separate symmetric and antisymmetric components
 M0.V = reshape(M0.V,3,3,[]);
-M0.V = reshape(cat(3,M0.V-permute(M0.V,[2 1 3]),M0.V+permute(M0.V,[2 1 3])),9,[]);
-
-% remove small matrices
-normM = arrayfun(@(idx)norm(M0.V(:,idx)),1:size(M0.V,2));
-M0.V(:,normM < tol) = [];
+M0.V = orth(reshape(cat(3,M0.V-permute(M0.V,[2 1 3]),M0.V+permute(M0.V,[2 1 3])),9,[]));
 
 rM = arrayfun(@(idx)rank([M0.V V0(:,idx)]),1:9);
 % the nice part
@@ -105,18 +98,9 @@ rM = (rM==rank(M0.V));
 Vnice = V0(:,rM);
 
 % add rest of the vectors that cannot be expressed nicely :)
-for ii = 1:size(M0.V,2)
-    addV = indep(Vnice,M0.V(:,ii));
-    if ~isempty(addV)
-        addV = addV - bsxfun(@times,sum(bsxfun(@times,addV,Vnice),1),Vnice);
-        Vnice = [Vnice addV]; %#ok<AGROW>
-    end
-end
+M0.V = orth([Vnice M0.V]);
 
-%M0.V = orth([Vnice M0.V]);
-%M = M0.V;
-M = Vnice;
-
+M = M0.V;
 % normalize the largest absolute value element to one
 divM  = arrayfun(@(idx)M(find(abs(M(:,idx))==max(abs(M(:,idx))),1,'first'),idx),1:size(M,2));
 M = bsxfun(@rdivide,M,divM);
@@ -125,7 +109,7 @@ M = bsxfun(@rdivide,M,divM);
 M = reshape(M,3,3,[]);
 
 % selects the symmetric and antisymmetric matrices
-asym = false(1,size(M,3));
+asym = true(1,size(M,3));
 for ii = 1:size(M,3)
     asym(ii) = sum(sum((M(:,:,ii)-M(:,:,ii)').^2)) > tol^2*9;
 end
@@ -133,23 +117,9 @@ end
 end
 
 function v = dep(M,v)
-% returns column vectors of v that can be produced from the column vectors
-% of M
-%
 
 rv = arrayfun(@(idx)rank([M v(:,idx)]),1:size(v,2));
 rv = rv == rank(M);
-v = v(:,rv);
-
-end
-
-function v = indep(M,v)
-% returns column vectors of v that cannot be produced from the column
-% vectors of M
-%
-
-rv = arrayfun(@(idx)rank([M v(:,idx)]),1:size(v,2));
-rv = rv > rank(M);
 v = v(:,rv);
 
 end

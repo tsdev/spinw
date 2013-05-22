@@ -1,4 +1,4 @@
-function res = sw_test_sym()
+function res = sw_test_sym1()
 % test symmetry on tetragonal structure
 % 4-fold axis along z
 

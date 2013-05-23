@@ -1,10 +1,6 @@
 function [Res, errMsg] = sw_test_sym1(tol)
 % test symmetry on different simple cyclic space groups
 
-if nargin == 0
-    tol = 1e-5;
-end
-
 % no error
 Res = 0;
 errMsg = [];
@@ -39,6 +35,7 @@ catch errMsg
     
     % code throws error
     Res = 1;
+    return;
 end
 
 % test whether the results are right
@@ -55,14 +52,21 @@ try
     end
     
     cMat = tetra.getmatrix('coupling_idx',1);
-    if size(aMat,3) ~= 2
-        error('sw_test_sym1:WrongMat','Wrong number of allowed anisotropy matrix!');
+    if size(cMat,3) ~= 3
+        error('sw_test_sym1:WrongMat','Wrong number of allowed coupling matrix!');
     end
-    rightMat = cat(3,diag([0 0 1]),diag([1 1 0]));
-    errMat1 = (aMat - rightMat).^2;
-    errMat2 = (aMat - rightMat(:,:,[2 1])).^2;
-    if (sum(errMat1(:))>tol) && (sum(errMat2(:)) > 1e-5)
-        error('sw_test_sym1:WrongMat','Wrong values in the allowed anisotropy matrix!');
+    rightMat = cat(3,diag([0 0 1]),diag([1 1 0]),[0 -1 0;1 0 0;0 0 0]);
+    for ii = 1:3
+        right = false;
+        for jj = 1:3
+            errMat = (cMat(:,:,ii) - rightMat(:,:,jj)).^2;
+            if sum(errMat(:)) < tol
+                right = true;
+            end
+        end
+        if ~right
+            error('sw_test_sym1:WrongMat','Wrong values in the allowed coupling matrix!');
+        end
     end
     
 catch errMsg

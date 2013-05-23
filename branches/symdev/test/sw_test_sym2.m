@@ -1,4 +1,4 @@
-function [Res, errMsg] = sw_test_sym2()
+function [Res, errMsg] = sw_test_sym2(tol)
 
 % no error
 Res = 0;
@@ -33,6 +33,7 @@ try
 catch errMsg
     % code throws error
     Res = 1;
+    return;
 end
 
 end

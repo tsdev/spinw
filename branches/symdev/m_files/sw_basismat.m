@@ -1,4 +1,4 @@
-function [M, asym] = sw_basismat2(symOp, r, tol)
+function [M, asym] = sw_basismat(symOp, r, tol)
 % [M, asym] = SW_BASISMAT(symOp, r, tol) determines the allowed matrix
 % elements compatible with a given point group symmetry. The matrix can
 % describe exchange interaction or single ion anisotropy.
@@ -132,6 +132,11 @@ end
 
 % sort assimetric matrices to the end
 M = cat(3,M(:,:,~asym),M(:,:,asym));
+
+% round M to the 12th digit for better plotting (slightly larger than the numerical error)
+M = round(M*1e12)/1e12;
+
+asym = [asym(~asym) asym(asym)];
 
 end
 

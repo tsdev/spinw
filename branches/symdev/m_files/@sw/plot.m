@@ -17,7 +17,7 @@ function varargout = plot(obj, varargin)
 %   Axis & labels =========================================================
 %
 %   legend          Whether to plot legend, default is true.
-%   pCell           Whether to plot unit cell at the origin, defult is 
+%   pCell           Whether to plot unit cell at the origin, defult is
 %                   true.
 %   pMultCell       Whether to plot multiple unit cells, default is false.
 %   pAxis           Whether to plot (a,b,c) axis, default is true.
@@ -316,7 +316,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% GENERATE HAMILTONIAN USING SYMMETRY 
+% GENERATE HAMILTONIAN USING SYMMETRY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [SS, SI] = intmatrix(obj,'plotmode',true,'zeroC',param.pZeroCoupling);
@@ -345,6 +345,10 @@ nCoupling        = size(coupling.idx,2);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 single_ion  = obj.single_ion;
+if numel(single_ion.aniso) ~= nMagAtom
+    single_ion.aniso = zeros(1,nMagAtom);
+end
+
 %aniso.mat   = zeros(3,3,nMagAtom);
 aniso.mat   = SI.aniso;
 aniso.ell   = zeros(3,3,nMagAtom);
@@ -354,22 +358,19 @@ propAniso = true;
 
 if param.ellAniso>0
     % Creates the anisotropy ellipsoids.
-    %     if length(single_ion.aniso) ~= nMagAtom
-    %         single_ion.aniso = zeros(1,nMagAtom);
-    %     else
     for ll = 1:nMagAtom
         % Selects the anisotropy matrix
         cIdx = single_ion.aniso(ll);
         if any(cIdx)
-        %if any(any(aniso.mat(:,:,ll)))
+            %if any(any(aniso.mat(:,:,ll)))
             %aniso.mat(:,:,ll) = matrix.mat(:,:,cIdx);
             
             
             % Calculates the main radiuses of the ellipsoid.
             [V, R] = eig(aniso.mat(:,:,ll));
-%             if norm(aniso.mat(:,:,ll)-aniso.mat(:,:,ll)') > 1e-8
-%                 propAniso = false;
-%             end
+            %             if norm(aniso.mat(:,:,ll)-aniso.mat(:,:,ll)') > 1e-8
+            %                 propAniso = false;
+            %             end
             % Creates positive definite matrix by adding constant to all
             % eigenvalues.
             R0      = diag(R);

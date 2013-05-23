@@ -41,7 +41,6 @@ classdef sw < class_handlelight
     
     properties (Access = private)
         matomstore = [];
-        matstore   = [];
         Elabel = 'meV';
         Qlabel = 'Angstrom^{-1}';
         Rlabel = 'Angstrom';

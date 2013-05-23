@@ -108,7 +108,7 @@ Vnice = V0(:,rM);
 for ii = 1:size(M0.V,2)
     addV = indep(Vnice,M0.V(:,ii));
     if ~isempty(addV)
-        addV = addV - bsxfun(@times,sum(bsxfun(@times,addV,Vnice),1),Vnice);
+        addV = addV - sum(bsxfun(@times,sum(bsxfun(@times,addV,Vnice),1),Vnice),2);
         Vnice = [Vnice addV]; %#ok<AGROW>
     end
 end
@@ -129,6 +129,9 @@ asym = false(1,size(M,3));
 for ii = 1:size(M,3)
     asym(ii) = sum(sum((M(:,:,ii)-M(:,:,ii)').^2)) > tol^2*9;
 end
+
+% sort assimetric matrices to the end
+M = cat(3,M(:,:,~asym),M(:,:,asym));
 
 end
 

@@ -120,6 +120,9 @@ end
 if param.coupling_idx
     % Coupling is defined
     iSel = obj.coupling.idx == param.coupling_idx;
+    if ~any(iSel)
+        error('sw:getmatrix:WrongInput','The given obj.coupling.idx does not existst, check your input!');
+    end
     
     mAtom = obj.matom;
     % indices of atoms in selected couplings
@@ -144,6 +147,9 @@ else
     dr     = 0;
     
     mat_idx = obj.single_ion.aniso(obj.matom.idx == param.aniso_idx);
+    if isempty(mat_idx)
+        error('sw:getmatrix:WrongInput','The given obj.matom.idx does not existst, check your input!');
+    end
     if mat_idx(1) > 0
         param.mat_idx = mat_idx(1);
     end
@@ -290,13 +296,13 @@ if fid
             end
             if abs(dVect(ii,jj)+1) < tol
                 % -1
-                eStr{ii} = [eStr{ii} '-D' char(119+jj)];
+                eStr{ii} = [eStr{ii} '-D' char(48+jj)];
             elseif abs(dVect(ii,jj)-1) < tol
                 % +1
-                eStr{ii} = [eStr{ii} 'D' char(119+jj)];
+                eStr{ii} = [eStr{ii} 'D' char(48+jj)];
             else
                 % other number
-                eStr{ii} = [eStr{ii} num2str(dVect(ii,jj)) 'D' char(119+jj)];
+                eStr{ii} = [eStr{ii} num2str(dVect(ii,jj)) 'D' char(48+jj)];
             end
         end
     end

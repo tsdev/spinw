@@ -51,8 +51,9 @@ function varargout = plot(obj, varargin)
 %   Magnetic structure ====================================================
 %
 %   pSpin           Whether to plot magnetic structure, default is true.
-%   cSpin           Color of the magnetic moment vectors, default is
-%                   green ([0 255 0]).
+%   cSpin           Color of the magnetic moment vectors, default is 'auto'
+%                   when each spin vector has the color of the magnetic
+%                   atom it belongs to.
 %   sSpin           Scaling factor for the lenght of the spins, default is
 %                   1.
 %   rSpin           Radius of the cylinder of the spins, default is 0.06.
@@ -168,7 +169,7 @@ inpForm.fname  = [inpForm.fname  {'angHeadSpin' 'lHeadSpin'     'aPlaneSpin'}];
 inpForm.defval = [inpForm.defval {15             0.5           0.07         }];
 inpForm.size   = [inpForm.size   {[1 1]          [1 1]         [1 1]        }];
 
-inpForm.fname  = [inpForm.fname  {'labelAtom'  'colorM' 'cCell' 'pCoupling' 'legend'}];
+inpForm.fname  = [inpForm.fname  {'labelAtom'  'cSpin' 'cCell' 'pCoupling' 'legend'}];
 inpForm.defval = [inpForm.defval {true         'auto'    [0 0 0]    true    true    }];
 inpForm.size   = [inpForm.size   {[1 1]        [1 -4]    [1 3]       [1 1]   [1 1]  }];
 
@@ -411,10 +412,10 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                 else
                     AColor = param.cAtom/255;
                 end
-                if strcmpi(param.colorM,'auto')
+                if strcmpi(param.cSpin,'auto')
                     MColor = atom.color(:,ll);
                 else
-                    MColor = param.colorM/255;
+                    MColor = param.cSpin/255;
                 end
                 
                 % Index of spin in the extended unit cell

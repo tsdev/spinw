@@ -31,6 +31,13 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           standard colormaps, like @jet. To overplot multiple spectras
 %           'colormap' option will be a matrix, with dimensions [3 nConv],
 %           where every column defines a color for the maximum intensity.
+%           It is also used for plotting dispersion curves. In case a
+%           single color all dispersion curves have the same color (e.g.
+%           [255 0 0] for red), or as many colors as dispersion curves
+%           (dimensions are [3 nMode]), or any colormap can be given, like
+%           @jet. In this case evry mode will have different colors, the
+%           color is determined from the index of the mode. Default is
+%           'auto'.
 % axLim     Upper limit for y axis (mode 1,2) or z axis (mode 3), default
 %           is 'auto'. For color plot of multiple cross section the c axis
 %           cannot be changed after the plot.
@@ -100,15 +107,23 @@ else
     param.twinS = 1;
 end
 
+% Determine powder mode
+powmode = false;
+if numel(spectra.hklA)==length(spectra.hklA)
+    powmode = true;
+end
+
 if param.mode == 4
     % PLOT EASY PEASY
     
     Eres = (spectra.Evect(end) - spectra.Evect(1))/50;
     [fHandle, pHandle1] = sw_plotspec(spectra,'ahandle',gca,'mode',3,'conve',Eres,...
         'dashed',true,'colorbar',false,'axLim',param.axLim);
-    hold on
-    [~, pHandle2] = sw_plotspec(spectra,'mode',1,'ahandle',gca,'colorbar',false,...
-        'dashed',false,'title',false,'legend',false,'imag',false);
+    if ~powmode
+        hold on
+        [~, pHandle2] = sw_plotspec(spectra,'mode',1,'ahandle',gca,'colorbar',false,...
+            'dashed',false,'title',false,'legend',false,'imag',false);
+    end
     
     if nargout >0
         fHandle0 = fHandle;
@@ -120,14 +135,12 @@ if param.mode == 4
 end
 
 % Label of the x-axis
-if numel(spectra.hklA)==length(spectra.hklA)
+if powmode
     % powder mode
     xLabel  = 'Momentum transfer (A^-1)';
     xAxis   = spectra.hklA;
-    powmode = true;
 else
     [xLabel, xAxis] = sw_label(spectra);
-    powmode = false;
 end
 
 yAxis  = spectra.Evect;
@@ -170,7 +183,25 @@ if ~powmode
     nMode   = size(omega{1},1);
     nMagExt = spectra.obj.nmagext;
     % Defines colors for plotting modes.
-    colors  = flipud(fireprint(nMode+2));
+    %colors  = flipud(fireprint(nMode+2));
+    if isa(param.colormap,'function_handle')
+        colors = flipud(param.colormap(nMode+2));
+    else
+        if strcmpi(param.colormap,'auto')
+            colors = flipud(fireprint(nMode+2));
+        else
+            if numel(param.colormap) == 3
+                param.colormap = param.colormap(:);
+                colors = repmat(param.colormap',nMode+2,1)/255;
+            elseif (size(param.colormap,1) == nMode) && (size(param.colormap,2)==3)
+                colors = [0 0 0; param.colormap; 0 0 0]/255;
+            elseif (size(param.colormap,2) == nMode) && (size(param.colormap,1)==3)
+                colors = [0 0 0; param.colormap'; 0 0 0]/255;
+            else
+                error('sw:sw_plotspec:ColormapError','The dimensions of the colormap should be [3 nMode]');
+            end
+        end
+    end
     colors  = colors(2:(end-1),:);
     % Plotting styles for incommensurate structures.
     plotStyle = {'-' 'o-' '--'};
@@ -308,7 +339,7 @@ if param.mode == 3
             end
             tHandle = cell(1,nPlot);
             for ii = 1:nPlot
-                tHandle{ii} = @(numSteps)makecolormap(param.colormap(:,ii)',[1 1 1],numSteps);
+                tHandle{ii} = @(numSteps)makecolormap(param.colormap(:,ii)'/255,[1 1 1],numSteps);
             end
             param.colormap = tHandle;
         end

@@ -133,9 +133,11 @@ end
 % sort assimetric matrices to the end
 M = cat(3,M(:,:,~asym),M(:,:,asym));
 
-% round M to the 12th digit for better plotting (slightly larger than the numerical error)
+% round M to the first 12th digit for better plotting 
+% (slightly larger than the numerical error)
 M = round(M*1e12)/1e12;
 
+% cumprod(2*ones(1,9))
 asym = [asym(~asym) asym(asym)];
 
 end

@@ -278,7 +278,7 @@ switch param.mode
             if param.imag
                 
                 for jj = 1:nConv
-                    ploti = imag(spectra.swInt{jj,tt});
+                    ploti = imag(swInt{jj,tt});
                     for ii = 1:nMode
                         hPlot(end+1) = plot3(xAxis,abs(ploti(ii,:)),xAxis*0+2e5,'ro-');
                         hLegend(nConv+1) = hPlot(end);

@@ -85,6 +85,8 @@ function spectra = sw_conv(spectra, varargin)
 % convmode  Cell that contains the input convolution mode strings.
 % Evect     Input energy bin vector.
 %
+% param     All the other input parameters.
+%
 % See also SW.SPINWAVE, SW.SWINC, SW_NEUTRON.
 %
 
@@ -272,5 +274,7 @@ else
     spectra.swInt    = DSF;
     spectra.convmode = param.convmode;
 end
+
+spectra.param.sumtwin = param.sumtwin;
 
 end

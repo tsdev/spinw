@@ -2,7 +2,7 @@ function [Res, errMsg] = sw_test_sw1(tol)
 % check spin wave calculation (spinwave routine)
 
 Res = 0;
-errMsg = {};
+errMsg = [];
 
 try
     
@@ -192,7 +192,7 @@ try
     
     hklA = linspace(0.2,1.5,30);
     
-    specHpow = nairo.powspec(hklA,'evect',linspace(0,8,100),'nRand',1e3);
+    specHpow = nairo.powspec(hklA,'evect',linspace(0,8,100),'nRand',1e2);
     
     hFig = figure;
     sw_plotspec(specHpow)

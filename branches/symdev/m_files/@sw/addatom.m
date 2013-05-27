@@ -106,6 +106,19 @@ if isa(newAtom,'struct')
         newObj.unit_cell = newAtom(ii);
         validate(newObj,'unit_cell');
         
+        % check whether atom exists already
+        occupied = false;
+        for jj = 1:size(newObj.unit_cell.r,2)
+            if any(sum(abs(bsxfun(@minus,obj.unit_cell.r,newObj.unit_cell.r(:,jj))),1) < 1e-2)
+                occupied = true;
+            end
+        end
+        
+        if occupied
+            warning('sw:addatom:AtomExists','Atomic position is already occupied, new atoms skipped!');
+            return;
+        end
+        
         obj.unit_cell.r     = [obj.unit_cell.r     newObj.unit_cell.r];
         obj.unit_cell.S     = [obj.unit_cell.S     newObj.unit_cell.S];
         obj.unit_cell.label = [obj.unit_cell.label newObj.unit_cell.label];

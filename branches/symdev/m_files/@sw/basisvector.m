@@ -6,6 +6,14 @@ function basisVector = basisvector(obj)
 % basisVector   Stores the three basis vectors in columns, dimensions are
 %               [3 3].
 %
+% To change coordinate system:
+%
+% relative atomic positions --> xyz
+%   r_xyz = basisvector * [ra; rb; rc];
+%
+% reciprocal lattice units --> Angstrom^-1 (xyz coordinate system)
+%   Q_xyz =  [h k l] * 2*pi*inv(basisvector);
+%
 
 alpha = obj.lattice.angle(1);
 beta  = obj.lattice.angle(2);

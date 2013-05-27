@@ -10,6 +10,9 @@ function spectra = sw_neutron(spectra, varargin)
 %
 % Options:
 %
+% uv        Cell, that contains two vectors, that define the scattering 
+%           plane in r.l.u. For example: {[1 0 0] [0 1 0]} for the hk
+%           plane.
 % n         Normal vector to the scattering plane, in real space (xyz
 %           coordinate system), dimensions are [1 3]. Default is [0 0 1].
 % pol       Whether to calculate cross sections in the Blume-Maleev
@@ -19,6 +22,8 @@ function spectra = sw_neutron(spectra, varargin)
 % Output:
 %
 % the spectra output has the following additional fields:
+% param     Input parameters.
+%
 % Sperp     Sperp(mode,Q) unpolarised neutron scattering cross section,
 %           dimensions are [nMode nHkl].
 % intP      intP(Pi,mode,Q) polarised scattering cross section, dimensions
@@ -51,13 +56,29 @@ if nargin == 0
     return;
 end
 
-inpForm.fname  = {'n'     'pol'};
-inpForm.defval = {[0 0 1] true };
-inpForm.size   = {[1 3]   [1 1]};
+inpForm.fname  = {'n'     'pol' 'uv'  };
+inpForm.defval = {[0 0 1] true  {}    };
+inpForm.size   = {[1 3]   [1 1] [1 2] };
+inpForm.soft   = {false   false true  };
 
 param = sw_readparam(inpForm,varargin{:});
 
-n = param.n;
+% normal to the scattering plane in xyz coordinate system
+if numel(param.uv) == 0
+    n = param.n;
+else
+    bv = spectra.obj.basisvector;
+    u = param.uv{1};
+    v = param.uv{2};
+    if (numel(u)~=3) || (numel(v)~=3)
+        error('sw_neutron:WrongInput','The u and v vectors of the scattering plane are wrong!');
+    end
+    n = cross(u*2*pi*inv(bv),v*2*pi*inv(bv)); %#ok<MINV>
+    n = round(n*1e12)/1e12;
+    n = n/norm(n);
+end
+
+
 
 % input paramters extracted from spectra
 % swSpec.Sab   3 x 3 x nMode x nHkl
@@ -197,6 +218,10 @@ if nTwin == 1
     spectra.Sab   = spectra.Sab{1};
     spectra.Sperp = spectra.Sperp{1};
 end
+
+spectra.param.n   = n;
+spectra.param.uv  = param.uv;
+spectra.param.pol = param.pol;
 
 end
 

@@ -1,6 +1,6 @@
 function [V, rotM] = sw_rot(rotAxis, rotAngle, V)
 % [V, rotM] = SW_ROT(rotAxis, rotAngle, {V}) rotates vectors in V around
-% rotAxis by rotAngle radian.
+% rotAxis by rotAngle radian (positive angle is the right-hand direction).
 %
 % rotAxis   Axis of rotation, dimensions are [1 3].
 % rotAngle  Angle of rotation in radian.
@@ -35,7 +35,7 @@ nx  = [0 -rotAxis(3) rotAxis(2); rotAxis(3) 0 -rotAxis(1); -rotAxis(2) rotAxis(1
 rotM = eye(3)*cos(rotAngle) + sin(rotAngle)*nx + (1-cos(rotAngle))*(rotAxis')*rotAxis;
 
 if nargin > 2
-    V = (V'*rotM)';
+    V = rotM*V;
 else
     V = [];
 end

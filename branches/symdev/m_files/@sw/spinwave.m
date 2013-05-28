@@ -31,19 +31,17 @@ function spectra = spinwave(obj, hkl, varargin)
 %               found in the formfactor.dat file, no form factor will be
 %               included, see sw_mff('atomname'). Default is false (no form
 %               factor).
-% fitmode       Speedup (for fitting mode only), default is false. In
-%               fitmode the eigenvalue sorting is skipped, see
-%               <a href="matlab:doc eigenshuffle">eigenshuffle</a>.
+% fitmode       Speedup (for fitting mode only), default is false.
 % notwin        If true, the spectra of the twins won't be calculated.
 %               Default is false.
 %
 % Output:
 %
-% spectra is a structure, with the following fields: 
-% omega         Calculated spin wave dispersion, dimensins are 
+% spectra is a structure, with the following fields:
+% omega         Calculated spin wave dispersion, dimensins are
 %               [2*nMagExt nHkl], where nMagExt is the number of magnetic
 %               atoms in the extended unit cell.
-% Sab           Dynamical structure factor, dimensins are 
+% Sab           Dynamical structure factor, dimensins are
 %               [3 3 2*nMagExt nHkl]. Each (:,:,i,j) submatrix contains the
 %               9 correlation functions: Sxx, Sxy, Sxz, etc.
 %
@@ -54,11 +52,11 @@ function spectra = spinwave(obj, hkl, varargin)
 % hklA          Same Q values, but in reciproc Angstrom units in the
 %               lab coordinate system, dimensins are [3 nHkl].
 % formfact      Magnetic form factor for all magnetic ions calculated
-%               for hklA momentum transfer values, dimensions are 
+%               for hklA momentum transfer values, dimensions are
 %               [nMagExt nHkl].
 % obj           The copy of the input obj.
 %
-% See also SW, SW_NEUTRON, SW.SWINC, SW_POL, SW.POWSPEC, SW.OPTMAGSTR, 
+% See also SW, SW_NEUTRON, SW.SWINC, SW_POL, SW.POWSPEC, SW.OPTMAGSTR,
 % SW_MFF.
 %
 
@@ -74,9 +72,9 @@ if iscell(hkl)
     hkl = sw_qscan(hkl);
 end
 
-inpForm.fname  = {'fitmode' 'notwin' 'formfact'};
-inpForm.defval = {false     false    false     };
-inpForm.size   = {[1 1]     [1 1]    [1 1]     };
+inpForm.fname  = {'fitmode' 'notwin' 'formfact' 'modesort'};
+inpForm.defval = {false     false    false      false     };
+inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]     };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -214,23 +212,13 @@ omega = zeros(2*nMagExt,nHkl);
 % All the matrix calculations are according to White's paper
 
 gham = mmat(g,ham);
-% gham = 0*ham;
-% for ii = 1:nHkl
-%     gham(:,:,ii) = g*ham(:,:,ii);
-% end
 
-if param.fitmode
-    % Without eigenshuffle
-    V = zeros(2*nMagExt,2*nMagExt,nHkl);
-    D = zeros(2*nMagExt,nHkl);
-    
-    for ii = 1:nHkl
-        [V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
-        D(:,ii)     = diag(Dtemp);
-    end
-else
-    % With eigenshuffle
-    [V,D] = eigenshuffle(gham);
+V = zeros(2*nMagExt,2*nMagExt,nHkl);
+D = zeros(2*nMagExt,nHkl);
+
+for ii = 1:nHkl
+    [V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
+    D(:,ii)     = diag(Dtemp);
 end
 
 for ii = 1:nHkl
@@ -287,6 +275,7 @@ end
 % Creates output structure with the calculated values.
 spectra.omega  = omega;
 spectra.Sab    = Sab;
+%spectra.hkl    = hkl(:,1:nHkl0);
 spectra.hkl    = hkl(:,1:nHkl0);
 spectra.hklA   = hklA;
 

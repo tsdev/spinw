@@ -19,7 +19,7 @@ function [w, s] = horace(obj, qh, qk, ql, p, varargin) %#ok<INUSL>
 %
 % horace_on;
 % d3dobj = d3d(cryst.abc,[0 1 0 0],[0,0.01,1],[0 0 1 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
-% d3dobj = disp2sqw_eval(d3dobj,cryst.horace,[],0.1);
+% d3dobj = disp2sqw_eval(d3dobj,@cryst.horace,[],0.1);
 % plot(d3dobj);
 %
 % This example creates a d3d object, a square in (h,k,0) plane and in

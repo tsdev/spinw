@@ -157,7 +157,7 @@ for i = 1:n
   % initial ordering is purely in decreasing order.
   % If any are complex, the sort is in terms of the
   % real part.
-  [junk,tags] = sort(real(D),1,'descend');
+  [~,tags] = sort(real(D),1,'descend');
   
   Dseq(:,i) = D(tags);
   Vseq(:,:,i) = V(:,tags);
@@ -189,11 +189,7 @@ for i = 2:n
   
   Vseq(:,:,i) = Vseq(:,reorder,i);
   Dseq(:,i) = Dseq(reorder,i);
-  
-  % also ensure the signs of each eigenvector pair
-  % were consistent if possible
-  S = squeeze(real(sum(Vseq(:,:,i-1).*Vseq(:,:,i),1))) < 0;
-  Vseq(:,S,i) = -Vseq(:,S,i);
+
 end
 
 % =================

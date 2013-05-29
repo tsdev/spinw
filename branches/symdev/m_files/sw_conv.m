@@ -61,6 +61,18 @@ function spectra = sw_conv(spectra, varargin)
 % sumtwin   If true, the spectra of the different twins will be summed
 %           together weighted with the normalized volume fractions. Default
 %           is true.
+% formfact  Whether to include the magnetic form factor in the
+%           convoluted spectra. If true the form factor based on the name
+%           of the magnetic atoms are used to read form factor coefficients
+%           from the formfactor.dat file, see sw_mff('atomname'). Other
+%           options:
+%           true        The magnetic form factor determined from the name
+%                       of the magnetic ion in the crystal, only works if a
+%                       single type of magnetic atom is present (for naming
+%                       convention, see help of sw_mff).
+%           false       No magnetic form factor is included. (default)
+%           'name'      Name of the magnetic ion.
+%           [A a B b C c D] coefficients used to calculate the form factor.
 %
 % The Blume-Maleev coordinate system is a cartesian coordinate system
 % with (xBM, yBM and zBM) basis vectors as follows:
@@ -87,7 +99,7 @@ function spectra = sw_conv(spectra, varargin)
 %
 % param     All the other input parameters.
 %
-% See also SW.SPINWAVE, SW.SWINC, SW_NEUTRON.
+% See also SW.SPINWAVE, SW.SWINC, SW_NEUTRON, SW_MFF.
 %
 
 if nargin == 0
@@ -95,9 +107,9 @@ if nargin == 0
     return;
 end
 
-inpForm.fname  = {'Evect'           'T'   'convmode' 'sumtwin'};
-inpForm.defval = {linspace(0,1,100) 0     'Sperp'    true     };
-inpForm.size   = {[1 -1]            [1 1] [1 -2]     [1 1]    };
+inpForm.fname  = {'Evect'           'T'   'convmode' 'sumtwin' 'formfact'};
+inpForm.defval = {linspace(0,1,100) 0     'Sperp'    true      false     };
+inpForm.size   = {[1 -1]            [1 1] [1 -2]     [1 1]     [1 -3]    };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -167,6 +179,36 @@ for tt = 1:nTwin
         end
     end
 end
+
+% Include magnetic form factor
+if numel(param.formfact == 1) && param.formfact
+    % abolute value of Q in Angstrom^-1
+    QA = sqrt(sum(spectra.hklA.^2,1));
+    
+    if ischar(param.formfact)
+        % name of magnetic atom is given
+        formfact = sw_mff(param.formfact,QA);
+    elseif numel(param.formfact) == 1
+        % get magnetic atom's names from the crystal
+        aLabel = spectra.obj.unit_cell.label(spectra.obj.unit_cell.S>0);
+        if all(strcmp(aLabel,aLabel{1}))
+            formfact = sw_mff(aLabel{1},QA);
+        else
+            formfact = [];
+        end
+    else
+        % prefactors are directly given
+        formfact = sw_mff(param.formfact,QA);
+    end
+    if isempty(formfact)
+        error('sw_conv:FormFactorError','Form factor is wrong!')
+    end
+    
+    for ii = 1:numel(DSF)
+        DSF{ii} = bsxfun(@times,DSF{ii},formfact.^2);
+    end
+end
+
 
 % Create vector for energy values, and put extra value below minimum and
 % above maximum for easy indexing swConv.
@@ -275,6 +317,7 @@ else
     spectra.convmode = param.convmode;
 end
 
-spectra.param.sumtwin = param.sumtwin;
+spectra.param.sumtwin  = param.sumtwin;
+spectra.param.formfact = param.formfact;
 
 end

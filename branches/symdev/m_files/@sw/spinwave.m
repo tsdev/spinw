@@ -24,16 +24,15 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % Options:
 %
-% formfact      Whether to include the magnetic form factor in the swConv
-%               convoluted spectra. If true the form factor based on the
-%               name of the magnetic atoms are used to read form factor
-%               data from formfactor.dat file. If the atom name cannot be
-%               found in the formfactor.dat file, no form factor will be
-%               included, see sw_mff('atomname'). Default is false (no form
-%               factor).
 % fitmode       Speedup (for fitting mode only), default is false.
 % notwin        If true, the spectra of the twins won't be calculated.
 %               Default is false.
+% optmem        Optimise memory usage, default is true.
+% fid           For text output of the calculation:
+%               0   No text output.
+%               1   Output written onto the Command Window. (default)
+%               fid Output written into a text file opened with the
+%                   fid = fopen(path) command.
 %
 % Output:
 %
@@ -56,8 +55,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %               [nMagExt nHkl].
 % obj           The copy of the input obj.
 %
-% See also SW, SW_NEUTRON, SW.SWINC, SW_POL, SW.POWSPEC, SW.OPTMAGSTR,
-% SW_MFF.
+% See also SW, SW_NEUTRON, SW.SWINC, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
 %
 
 % help when executed without argument
@@ -72,11 +70,13 @@ if iscell(hkl)
     hkl = sw_qscan(hkl);
 end
 
-inpForm.fname  = {'fitmode' 'notwin' 'formfact' 'modesort'};
-inpForm.defval = {false     false    false      false     };
-inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]     };
+inpForm.fname  = {'fitmode' 'notwin' 'modesort' 'optmem' 'fid'};
+inpForm.defval = {false     false    false      true     1    };
+inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1]};
 
 param = sw_readparam(inpForm, varargin{:});
+
+fid = param.fid;
 
 nExt    = double(obj.mag_str.N_ext);
 spectra = struct;
@@ -127,6 +127,8 @@ M0  = obj.mag_str.S;
 S0  = sqrt(sum(M0.^2,1));
 nMagExt = size(M0,2);
 
+fprintf(fid,'Calculating spin wave spectra (nMagExt = %d, nHkl = %d, nTwin = %d)...\n',nMagExt, nHkl0, nTwin);
+
 % Local (e1,e2,e3) coordinate system fixed to the moments.
 % e3 || Si
 e3 = bsxfun(@rdivide,M0,S0);
@@ -173,79 +175,131 @@ idxD1 = idxA1+nMagExt;
 idxD2 = [atom2'+nMagExt atom2'+nMagExt ];
 idxMF = [(1:2*nMagExt)' (1:2*nMagExt)' ];
 
-% Creates the matrix of exponential factors nCoupling x nHkl size.
-% Extends dR into 3 x 3 x nCoupling x nHkl
-ExpF = exp(1i*permute(sum(repmat(dR,[1 1 nHkl]).*repmat(permute(hklExt,[1 3 2]),[1 nCoupling 1]),1),[2 3 1]))';
 
-% Creates the matrix elements containing zed.
-A1 = bsxfun(@times,     AD0 ,ExpF);
-B  = bsxfun(@times,     BC0 ,ExpF);
-C  = bsxfun(@times,conj(BC0),ExpF);
-D1 = bsxfun(@times,conj(AD0),ExpF);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MEMORY MANAGEMENT LOOP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Store all indices
-idxAll = [idxA1; idxB; idxC; idxD1];
-% Store all matrix elements
-ABCD   = [A1     B     C     D1   ];
+if param.optmem
+    nSlice = ceil(nMagExt^2*nHkl*6912/sw_freemem*2);
+    if nHkl < nSlice
+        fprintf(fid,'Memory allocation is not optimal, nMagExt is too large compared to the free memory!\n');
+        nSlice = nHkl;
+    elseif nSlice > 1
+        fprintf(fid,'To optimise memory allocation, Q is cut into %d pieces!\n',nSlice);
+    end
+else
+    nSlice = 1;
+end
+hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 
-% Stores the matrix elements in ham.
-idx3   = repmat(1:nHkl,[4*nCoupling 1]);
-idxAll = [repmat(idxAll,[nHkl 1]) idx3(:)];
-idxAll = idxAll(:,[2 1 3]);
+% Empty omega dispersion of all spin wave modes, size: 2*nMagExt x nHkl.
+omega = zeros(2*nMagExt,0);
 
-ABCD   = ABCD';
+% empty Sab
+Sab = zeros(3,3,2*nMagExt,0);
 
-ham = accumarray(idxAll,ABCD(:),[2*nMagExt 2*nMagExt nHkl]);
-
-ham = ham + repmat(accumarray([idxA2; idxD2],2*[A20 D20],[1 1]*2*nMagExt),[1 1 nHkl]);
-
-if any(SI.field)
-    ham = ham + repmat(accumarray(idxMF,MF,[1 1]*2*nMagExt),[1 1 nHkl]);
+if (nSlice > 1) && (fid == 1)
+    sw_status(0,1);
 end
 
-ham = (ham + conj(permute(ham,[2 1 3])))/2;
+for jj = 1:nSlice
+    
+    hklExtMEM = hklExt(:,hklIdx(jj):(hklIdx(jj+1)-1));
+    nHklMEM = size(hklExtMEM,2);
+    
+    % Creates the matrix of exponential factors nCoupling x nHkl size.
+    % Extends dR into 3 x 3 x nCoupling x nHkl
+    ExpF = exp(1i*permute(sum(repmat(dR,[1 1 nHklMEM]).*repmat(permute(hklExtMEM,[1 3 2]),[1 nCoupling 1]),1),[2 3 1]))';
+    
+    % Creates the matrix elements containing zed.
+    A1 = bsxfun(@times,     AD0 ,ExpF);
+    B  = bsxfun(@times,     BC0 ,ExpF);
+    C  = bsxfun(@times,conj(BC0),ExpF);
+    D1 = bsxfun(@times,conj(AD0),ExpF);
+    
+    % Store all indices
+    idxAll = [idxA1; idxB; idxC; idxD1];
+    % Store all matrix elements
+    ABCD   = [A1     B     C     D1   ];
+    
+    % Stores the matrix elements in ham.
+    idx3   = repmat(1:nHklMEM,[4*nCoupling 1]);
+    idxAll = [repmat(idxAll,[nHklMEM 1]) idx3(:)];
+    idxAll = idxAll(:,[2 1 3]);
+    
+    ABCD   = ABCD';
+    
+    ham = accumarray(idxAll,ABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
+    
+    ham = ham + repmat(accumarray([idxA2; idxD2],2*[A20 D20],[1 1]*2*nMagExt),[1 1 nHklMEM]);
+    
+    if any(SI.field)
+        ham = ham + repmat(accumarray(idxMF,MF,[1 1]*2*nMagExt),[1 1 nHklMEM]);
+    end
+    
+    ham = (ham + conj(permute(ham,[2 1 3])))/2;
+    
+    g = diag([ones(nMagExt,1); -ones(nMagExt,1)]);
+    
+    % All the matrix calculations are according to White's paper
+    
+    gham = 0*ham;
+    for ii = 1:nHklMEM
+        gham(:,:,ii) = g*ham(:,:,ii);
+    end
+    
+    
+    V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
+    D = zeros(2*nMagExt,nHklMEM);
+    
+    for ii = 1:nHklMEM
+        [V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
+        D(:,ii)     = diag(Dtemp);
+    end
+    
+    for ii = 1:nHklMEM
+        omega(:,end+1) = diag(g).*D(:,ii); %#ok<AGROW>
+        M           = diag(g*V(:,:,ii)'*g*V(:,:,ii));
+        V(:,:,ii)   = V(:,:,ii)*diag(sqrt(1./M));
+    end
+    
+    % Calculates correlation functions.
+    VExtR = repmat(permute(V      ,[4 5 1 2 3]),[3 3 1 1 1]);
+    VExtL = repmat(permute(conj(V),[4 5 2 1 3]),[3 3 1 1 1]);
+    
+    % Introduces the exp(-ikR) exponential factor.
+    ExpF =  exp(-1i*sum(repmat(permute(hklExtMEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
+    % Includes the sqrt(Si/2) prefactor.
+    ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHklMEM]);
+    
+    ExpFL = repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt 2]);
+    ExpFR = conj(repmat(permute(ExpF,[1 4 2 5 3]),[3 3 2 2*nMagExt]));
+    
+    zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1         nHklMEM]);
+    zedb = repmat(permute([conj(zed) zed],[3 1 2])  ,[3 1 1         2*nMagExt nHklMEM]);
+    
+    % Dynamical for factor from S^alpha^beta(k) correlation function.
+    % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
+    % Normalizes the intensity to single unit cell.
+    Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
+    
+    if (nSlice > 1) && (fid == 1)
+        sw_status(jj/nSlice*100);
+    end
 
-g = diag([ones(nMagExt,1); -ones(nMagExt,1)]);
-% Dispersion of all spin wave modes, size: 2*nMagExt x nHkl.
-omega = zeros(2*nMagExt,nHkl);
-
-% All the matrix calculations are according to White's paper
-
-gham = mmat(g,ham);
-
-V = zeros(2*nMagExt,2*nMagExt,nHkl);
-D = zeros(2*nMagExt,nHkl);
-
-for ii = 1:nHkl
-    [V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
-    D(:,ii)     = diag(Dtemp);
 end
 
-for ii = 1:nHkl
-    omega(:,ii) = diag(g).*D(:,ii);
-    M           = diag(g*V(:,:,ii)'*g*V(:,:,ii));
-    V(:,:,ii)   = V(:,:,ii)*diag(sqrt(1./M));
+if (nSlice > 1) && (fid == 1)
+    sw_status(100,2);
+else
+    fprintf(fid,'Calculation finished.\n');
 end
 
-% Calculates correlation functions.
-VExtR = repmat(permute(V      ,[4 5 1 2 3]),[3 3 1 1 1]);
-VExtL = repmat(permute(conj(V),[4 5 2 1 3]),[3 3 1 1 1]);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END MEMORY MANAGEMENT LOOP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Introduces the exp(-ikR) exponential factor.
-ExpF =  exp(-1i*sum(repmat(permute(hklExt,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHkl]),1));
-% Includes the sqrt(Si/2) prefactor.
-ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHkl]);
-
-ExpFL = repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt 2]);
-ExpFR = conj(repmat(permute(ExpF,[1 4 2 5 3]),[3 3 2 2*nMagExt]));
-
-zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1         nHkl]);
-zedb = repmat(permute([conj(zed) zed],[3 1 2])  ,[3 1 1         2*nMagExt nHkl]);
-
-% Dynamical for factor from S^alpha^beta(k) correlation function.
-% Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
-% Normalizes the intensity to single unit cell.
-Sab = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
 
 if nTwin>1
     % Rotate the calculated correlation function into the twin coordinate
@@ -275,7 +329,6 @@ end
 % Creates output structure with the calculated values.
 spectra.omega  = omega;
 spectra.Sab    = Sab;
-%spectra.hkl    = hkl(:,1:nHkl0);
 spectra.hkl    = hkl(:,1:nHkl0);
 spectra.hklA   = hklA;
 
@@ -283,5 +336,6 @@ if ~param.fitmode
     spectra.ff  = ones(nMagExt,nHkl0);
     spectra.obj = copy(obj);
 end
+
 
 end

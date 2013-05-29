@@ -5,7 +5,8 @@ function [formFactVal, coeff, flag] = sw_mff(atomName, Q)
 % Input:
 %
 % atomName      String, contains the name of the magnetic ion in FullProf
-%               notation (e.g. Cr^3+ --> 'MCR3' or 'Cr3').
+%               notation (e.g. Cr^3+ --> 'MCR3' or 'Cr3'). It can be also a
+%               vector of the 7 coefficients, see below.
 % Q             Momentum transfer in Angstrom^-1 units, optional.
 %
 % Output:
@@ -27,40 +28,48 @@ end
 
 formFact = struct;
 
-% Open the form factor definition file.
-ffPath = [sw_rootdir 'dat_files' filesep 'formfactor.dat'];
-fid = fopen(ffPath);
-if fid == -1
-    error('sw:sw_mff:FileNotFound',['Form factor definition file not found: '...
-        regexprep(ffPath,'\' , '\\\') '!']);
-end
-
-% Read all line from file
-idx = 1;
-while ~feof(fid)
-    fLine = fgets(fid);
-    [formFact.name{idx,1}, ~, ~, nextIdx] = sscanf(fLine,'%s',1);
-    formFact.coeff(idx,1:7) = sscanf(fLine(nextIdx:end),'%f,',7);
-    idx = idx + 1;
-end
-fclose(fid);
-
-flag = 0;
-
-% Looks for the name of the atom.
-for ii = 1:length(formFact.name)
-    selected = formFact.name{ii};
-    if ~isempty(strfind(upper(atomName),upper(selected))) || ~isempty(strfind(upper(atomName),upper(selected(2:end))))
-        idx = ii;
-        flag = 1;
+if ischar(atomName)
+    % Open the form factor definition file.
+    ffPath = [sw_rootdir 'dat_files' filesep 'formfactor.dat'];
+    fid = fopen(ffPath);
+    if fid == -1
+        error('sw:sw_mff:FileNotFound',['Form factor definition file not found: '...
+            regexprep(ffPath,'\' , '\\\') '!']);
     end
+    
+    % Read all line from file
+    idx = 1;
+    while ~feof(fid)
+        fLine = fgets(fid);
+        [formFact.name{idx,1}, ~, ~, nextIdx] = sscanf(fLine,'%s',1);
+        formFact.coeff(idx,1:7) = sscanf(fLine(nextIdx:end),'%f,',7);
+        idx = idx + 1;
+    end
+    fclose(fid);
+    
+    flag = false;
+    
+    % Looks for the name of the atom.
+    for ii = 1:length(formFact.name)
+        selected = formFact.name{ii};
+        if ~isempty(strfind(upper(atomName),upper(selected))) || ~isempty(strfind(upper(atomName),upper(selected(2:end))))
+            idx = ii;
+            flag = true;
+        end
+    end
+    
+    if flag
+        coeff = formFact.coeff(idx,:);
+    else
+        coeff = [zeros(1,6) 1];
+    end
+    
+else
+    flag = true;
+    coeff = atomName;
 end
 
-if flag
-    coeff = formFact.coeff(idx,:);
-else
-    coeff = [zeros(1,6) 1];
-end
+
 
 if nargin > 1
     Qs = Q/(4*pi);

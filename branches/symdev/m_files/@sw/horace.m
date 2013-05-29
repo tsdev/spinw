@@ -19,7 +19,7 @@ function [w, s] = horace(obj, qh, qk, ql, p, varargin) %#ok<INUSL>
 %
 % horace_on;
 % d3dobj = d3d(cryst.abc,[0 1 0 0],[0,0.01,1],[0 0 1 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
-% d3dobj = disp2sqw_eval(d3dobj,cryst.horace,[],0.1);
+% d3dobj = disp2sqw_eval(d3dobj,@cryst.horace,[],0.1);
 % plot(d3dobj);
 %
 % This example creates a d3d object, a square in (h,k,0) plane and in
@@ -40,16 +40,15 @@ inpForm.size   = {[1 1]     };
 
 param   = sw_readparam(inpForm,varargin{:});
 
-spectra = param.swfunc(obj,[qh(:) qk(:) ql(:)]',param);
+spectra = param.swfunc(obj,[qh(:) qk(:) ql(:)]',varargin{:});
 spectra = sw_neutron(spectra,'pol',false);
 
 nModes = size(spectra.omega,1);
 nHkl   = size(spectra.omega,2);
 
 % dispersion in cell
-w     = mat2cell(spectra.omega',nHkl,ones(nModes,1));
-
+w = mat2cell(spectra.omega',nHkl,ones(nModes,1));
 % intensity in cell
-s     = mat2cell(spectra.Sperp' ,nHkl,ones(nModes,1));
+s = mat2cell(spectra.Sperp' ,nHkl,ones(nModes,1));
 
 end

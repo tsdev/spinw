@@ -182,17 +182,12 @@ for Smode = 1:3
         gHAM(:,:,n,Smode) = g * HAM(:,:,n,Smode);
     end
     
-    % Eigenshuffle sorts the eigenvalues and eigenvectors.
-    if param.sort
-        [Vtemp,Dtemp] = eigenshuffle(gHAM(:,:,:,Smode));
-    else
-        Vtemp = zeros(2*nMagExt,2*nMagExt,nHkl);
-        Dtemp = zeros(2*nMagExt,nHkl);
-        
-        for ii = 1:nHkl
-            [Vtemp(:,:,ii), D] = eig(gHAM(:,:,ii,Smode));
-            Dtemp(:,ii)        = diag(D);
-        end
+    Vtemp = zeros(2*nMagExt,2*nMagExt,nHkl);
+    Dtemp = zeros(2*nMagExt,nHkl);
+    
+    for ii = 1:nHkl
+        [Vtemp(:,:,ii), D] = eig(gHAM(:,:,ii,Smode));
+        Dtemp(:,ii)        = diag(D);
     end
     
     V(:,:,:,Smode)     = Vtemp;

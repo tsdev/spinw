@@ -13,7 +13,8 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % mapplot   Whether to plot convoluted spectra using spec1d mapplot.
 %           Default is false.
 % imag      Whether to plot the imaginary values of the dispersion
-%           and the correlation functions. Default is true.
+%           and the correlation functions. For convoluted spectra, if true,
+%           the imaginary part is plotted. Default is false.
 % aHandle   Handle of the axis object for plotting, if undefined the
 %           previous plot sw_plotspec plot window is used.
 % colorbar  Plot colorbar for dispersion and intensity, default is true.
@@ -46,6 +47,9 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % title     Whether to plot figure title, default is true.
 % twin      Select which twins to plot for omega plots, default plots all
 %           twins, dimensions are [1 nTwinToPlot].
+% lineStyle Line style for line plots (dispersion and intensity), default
+%           is {'-' 'o-' '--'}. For example '--' gives dashed lines.
+% lineWidth Line width of line plots, default is 0.5 point.
 %
 % Output:
 %
@@ -61,7 +65,7 @@ if nargin==0
 end
 
 inpForm.fname  = {'mode' 'mapplot' 'imag' 'aHandle' 'colorbar' 'dashed' };
-inpForm.defval = {4      false     true   0         true       false    };
+inpForm.defval = {4      false     false   0         true       false    };
 inpForm.size   = {[1 1]  [1 1]     [1 1]  [1 1]     [1 1]      [1 1]    };
 
 inpForm.fname  = [inpForm.fname  {'convE' 'fontSize' 'colormap' 'axLim'}];
@@ -72,6 +76,9 @@ inpForm.fname  = [inpForm.fname  {'legend' 'title' 'nCol' 'twin'     }];
 inpForm.defval = [inpForm.defval {true     true    500    zeros(1,0) }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 1]  [1 -4]     }];
 
+inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth'}];
+inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5        }];
+inpForm.size   = [inpForm.size   {[1 -5]          [1 1]      }];
 param = sw_readparam(inpForm, varargin{:});
 
 % select twins for omega plot
@@ -157,11 +164,21 @@ else
     end
 end
 
+% Plotting styles for commensurate/incommensurate structures.
+if iscell(param.lineStyle)
+    if numel(param.lineStyle) ~= 3
+        param.lineStyle = repmat(param.lineStyle(1),[1 3]);
+    end
+else
+    param.lineStyle = repmat({param.lineStyle},[1 3]);
+end
+
+
 if ~powmode
     % Convert the convoluted intensities into cell array.
     if ~iscell(spectra.convmode)
-        swInt = {spectra.swInt};
-        swConv = {spectra.swConv};
+        swInt    = {spectra.swInt};
+        swConv   = {spectra.swConv};
         convmode = {spectra.convmode};
     else
         swInt    = spectra.swInt(:,param.twinS);
@@ -203,8 +220,6 @@ if ~powmode
         end
     end
     colors  = colors(2:(end-1),:);
-    % Plotting styles for incommensurate structures.
-    plotStyle = {'-' 'o-' '--'};
     
     modeList = nMode/(2*nMagExt);
     if modeList == 1
@@ -245,12 +260,13 @@ switch param.mode
         titleStr0 = 'Spin wave dispersion: \omega(Q)';
         % loop over the twins
         for tt = 1:nTwin
-            plotr = real(omega{1,tt});
-            ploti = imag(omega{1,tt});
+            plotr = sort(real(omega{1,tt}),1);
+            ploti = sort(imag(omega{1,tt}),1);
             % loop over all spin wave modes
             for ii = 1:nMode
                 incIdx = ceil(ii/2/nMagExt);
-                hPlot(end+1)    = plot3(xAxis,abs(plotr(ii,:)),xAxis*0+1e5,plotStyle{incIdx},'Color', colors(ii,:)); %#ok<*AGROW>
+                hPlot(end+1)    = plot3(xAxis,abs(plotr(ii,:)),xAxis*0+1e5,param.lineStyle{incIdx},...
+                    'Color', colors(ii,:),'LineWidth',param.lineWidth); %#ok<*AGROW>
                 hLegend(incIdx) = hPlot(end);
                 if param.imag
                     hPlot(end+1)        = plot(xAxis,abs(ploti(ii,:)),'ro-');
@@ -263,13 +279,22 @@ switch param.mode
         % Line plot of cross sections but only the first cell array element
         axis0 = [xAxis(1) xAxis(end) 0 1];
         yLabel = 'Intensity (arb. u.)';
-        titleStr0 = 'Intensity of the spin-spin correlation function: ';
+        if param.imag
+            titleStr0 = 'Intensity of the spin-spin correlation function: Im ';
+        else
+            titleStr0 = 'Intensity of the spin-spin correlation function: Re ';
+        end
         % loop over the twins
         for tt = 1:nTwinS
             for jj = 1:nConv
-                plotr = real(swInt{jj,tt});
+                if param.imag
+                    plotr = imag(swInt{jj,tt});
+                else
+                    plotr = real(swInt{jj,tt});
+                end
                 for ii = 1:nMode
-                    hPlot(end+1) = plot3(xAxis,abs(plotr(ii,:)),xAxis*0+1e5,plotStyle{mod(jj-1,3)+1},'Color', colors(ii,:)); %#ok<*AGROW>
+                    hPlot(end+1) = plot3(xAxis,abs(plotr(ii,:)),xAxis*0+1e5,param.lineStyle{mod(jj-1,3)+1},...
+                        'Color', colors(ii,:),'LineWidth',param.lineWidth); %#ok<*AGROW>
                     if ii == nMode
                         hLegend(jj) = hPlot(end);
                     end
@@ -316,7 +341,11 @@ if param.mode == 3
     
     % filter out imaginary, inf and NaN values
     for ii = 1:nPlot
-        swConv{ii} = real(swConv{ii});
+        if param.imag
+            swConv{ii} = imag(swConv{ii});
+        else
+            swConv{ii} = real(swConv{ii});
+        end
         swConv{ii}(isnan(swConv{ii})) = 0;
         swConv{ii}(isinf(swConv{ii})) = 0;
     end
@@ -364,21 +393,40 @@ if param.mode == 3
     % c axis limit
     if strcmpi(param.axLim,'auto')
         % determine maximum intensity automatically
-        zi = reshape(real(cell2mat(swConv)),1,[]);
-        zi(isnan(zi)) = [];
-        zi(zi<=0) = [];
-        maxsort  = sort(zi,'descend');
-        maxsortS = maxsort(ceil(end*8e-3));
-        magni    = 10^(floor(log10(maxsortS)));
-        cMax     = ceil(maxsortS/magni)*magni;
-        cMaxMax  = maxsort(1);
+        zi = reshape(cell2mat(swConv),1,[]);
         
-        if cMax <= 0
-            cMax = 1;
+        zi(isnan(zi)) = [];
+        posLim = sort([zi(zi>0) 0],'descend');
+        negLim = sort([zi(zi<0) 0],'ascend');
+        axLim  = [negLim(ceil(end*8e-3)) posLim(ceil(end*8e-3))];
+        axMagn = 10.^(floor(log10(abs(axLim))));
+        axLim  = ceil(axLim./axMagn).*axMagn;
+        axLim(isnan(axLim)) = 0;
+        cMaxMax = max(abs(zi));
+        if axLim(2)-axLim(1) == 0
+            axLim = [0 1];
         end
+        
+        if axLim(1) < 0
+            axLim = [-max(abs(axLim)) max(abs(axLim))];
+        end
+%         zi(zi<=0) = [];
+%         maxsort  = sort(zi,'descend');
+%         maxsortS = maxsort(ceil(end*8e-3));
+%         magni    = 10^(floor(log10(maxsortS)));
+%         cMax     = ceil(maxsortS/magni)*magni;
+%         cMaxMax  = maxsort(1);
+%         
+%         if cMax <= 0
+%             cMax = 1;
+%         end
     else
-        cMax = param.axLim;
-        cMaxMax = cMax;
+        axLim   = param.axLim;
+        cMaxMax = max(abs(axLim));
+        
+        if numel(axLim) == 1
+            axLim = [0 axLim];
+        end
     end
     
     % convolute spectra with Gaussian to simulate finite energy resolution
@@ -396,7 +444,7 @@ if param.mode == 3
         [X, Y] = meshgrid(xAxis,yAxis);
         if cMaxMax <1e-6
             hSurf = surf(X,Y,imageDisp'*0);
-            cMax = 1;
+            axLim = [0 1];
         else
             hSurf = surf(X,Y,imageDisp');
         end
@@ -410,7 +458,7 @@ if param.mode == 3
         for ii = 1:nPlot
             vMat(:,:,ii) = swConv{ii};
         end
-        cMat = sw_multicolor(vMat, param.colormap, [0 cMax], param.nCol,true);
+        cMat = sw_multicolor(vMat, param.colormap, axLim, param.nCol,true);
         % plot image piece-by-pice for the different Q directions
         if iscell(xLabel)
             xCut  = xLabel{end};
@@ -426,13 +474,9 @@ if param.mode == 3
         end
         set(gca,'YDir','normal');
     end
-    if numel(cMax) == 1
-        caxis([0 cMax]);
-    elseif numel(cMax)==2
-        caxis([cMax(1) cMax(2)]);
-    end
     
-    
+    caxis(axLim);
+        
     if param.colorbar && (nPlot == 1)
         cHandle = colorbar;
         set(get(cHandle,'ylabel'),'String', 'Intensity (arb. u.)');
@@ -447,11 +491,11 @@ if param.mode == 3
     
     grid off
     set(gca,'Layer','top')
-    if ~powmode
-        titleStr0 = 'Convoluted spectra (Re): ';
-    else
-        titleStr0 = 'Convoluted powder spectra: ';
+    titleStr0 = 'Convoluted ';
+    if powmode
+        titleStr0 = [titleStr0 'powder '];
     end
+    titleStr0 = [titleStr0 'spectra: '];
 end
 
 ylabel(yLabel);
@@ -460,6 +504,11 @@ if param.mode > 1
     titleStr = cell(1,nConv);
     for ii = 1:nConv
         titleStr{ii} = sw_titlestr(convmode{ii});
+        if param.imag
+            titleStr{ii} = ['Im ' titleStr{ii}];
+        else
+            titleStr{ii} = ['Re ' titleStr{ii}];
+        end
     end
     
     for ii = 1:nConv-1

@@ -48,53 +48,59 @@ if nargin == 0
     symOp  = [];
     fclose(fid);
     return
-end
 
-if iscell(varargin{1})
-    varargin{1} = varargin{1}{1};
-end
-
-if ischar(varargin{1})
-    if isempty(varargin{1})
-        symOp = 'x,y,z';
-        symName = 'P 1';
-    else
-        % find symmetry label
-        symName = varargin{1};
-        symName(end+1:11) = 32;
-        symIdx = 0;
-        ii     = 1;
-        while (symIdx == 0) && ~feof(fid)
-            textLine    = fgetl(fid);
-            if strfind(symName,textLine(7:17))
-                symIdx = ii;
-            end
-            ii = ii+1;
-        end
-        if symIdx == 0
-            error('sw:sw_gensym:WrongInput','Symmetry name does not exists (case insensitive)!');
-        end
-        symNumber = symIdx;
-        symOp     = textLine(20:end);
+elseif nargin == 1
+    
+    if iscell(varargin{1})
+        varargin{1} = varargin{1}{1};
     end
     
-else
-    symNumber = varargin{1};
-    if symNumber<=0
+    if ischar(varargin{1})
+        if isempty(varargin{1})
+            symOp = 'x,y,z';
+            symName = 'P 1';
+        else
+            % find symmetry label
+            symName = varargin{1};
+            symName(end+1:11) = 32;
+            symIdx = 0;
+            ii     = 1;
+            while (symIdx == 0) && ~feof(fid)
+                textLine    = fgetl(fid);
+                if strfind(symName,textLine(7:17))
+                    symIdx = ii;
+                end
+                ii = ii+1;
+            end
+            if symIdx == 0
+                error('sw:sw_gensym:WrongInput','Symmetry name does not exists (case insensitive)!');
+            end
+            symNumber = symIdx;
+            symOp     = textLine(20:end);
+        end
+        
+    else
+        symNumber = varargin{1};
+        if symNumber<=0
+            fclose(fid);
+            error('spinw:sw_gensym:WrongInput','Symmetry number has to be positive integer!');
+        end
+        ii = 1;
+        while (ii<=symNumber) && ~feof(fid)
+            textLine = fgetl(fid);
+            ii = ii+1;
+        end
         fclose(fid);
-        error('spinw:sw_gensym:WrongInput','Symmetry number has to be positive integer!');
+        if ii <= symNumber
+            error('spinw:sw_gensym:WrongInput','Symmetry number not found!')
+        end
+        symOp   = textLine(20:end);
+        symName = textLine(7:17);
     end
-    ii = 1;
-    while (ii<=symNumber) && ~feof(fid)
-        textLine = fgetl(fid);
-        ii = ii+1;
-    end
-    fclose(fid);
-    if ii <= symNumber
-        error('spinw:sw_gensym:WrongInput','Symmetry number not found!')
-    end
-    symOp   = textLine(20:end);
-    symName = textLine(7:17);
+elseif nargin >= 2
+    symName = varargin{1};
+    symOp   = varargin{2};
+
 end
 
 transf = zeros(3,3,10);

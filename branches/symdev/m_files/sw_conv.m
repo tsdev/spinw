@@ -64,7 +64,7 @@ function spectra = sw_conv(spectra, varargin)
 % formfact  Whether to include the magnetic form factor in the
 %           convoluted spectra. If true the form factor based on the name
 %           of the magnetic atoms are used to read form factor coefficients
-%           from the formfactor.dat file, see sw_mff('atomname'). Other
+%           from the ion.dat file, see sw_mff('atomname'). Other
 %           options:
 %           true        The magnetic form factor determined from the name
 %                       of the magnetic ion in the crystal, only works if a

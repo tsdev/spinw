@@ -9,7 +9,7 @@ function addatom(obj, varargin)
 %   S       Spin of the atoms, dimensions are [1 nAtom], for non-magnetic
 %           atoms set S to zero. Default is 1.
 %   label   Names of the atoms for plotting and form factor
-%           calculations (see formfactor.dat), it is a cell, optional.
+%           calculations (see ion.dat), it is a cell, optional.
 %           Example:
 %           {'atom1' 'atom2' 'atom3'}
 %           Default value is 'atomI', where I is the atom index.
@@ -74,7 +74,10 @@ if isa(newAtom,'struct')
     % Generate atom colors.
     if ~isfield(newAtom,'color') || isempty([newAtom.color])
         for ii = 1:numel(newAtom)
-            newAtom(ii).color = repmat([255;165;0],1,numel(newAtom(ii).r)/3);
+            for jj = 1:numel(newAtom(ii).r)/3
+                %newAtom(ii).color(jj) = repmat([255;165;0],1,numel(newAtom(ii).r)/3);
+                newAtom(ii).color(:,jj) = sw_atomdata(newAtom(ii).label,'color');
+            end
         end
     end
     

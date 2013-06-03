@@ -194,7 +194,7 @@ for ii = 1:nTwin
         
         % Convert Sab from (x,y,z) coordinates to (xBM,yBM,zBM) coordinates
         % invPf * Sab * invPf'
-        invPfM = repmat(permute(invPf,[1 2 4 3]),[1 1 42 1]);
+        invPfM = repmat(permute(invPf,[1 2 4 3]),[1 1 nMode 1]);
         Mab    = mmat(mmat(invPfM,Sab),permute(invPfM,[2 1 3 4]));
 
         invPf = repmat(permute(invPf,[1 2 4 5 3]),[1 1 3 nMode 1]);

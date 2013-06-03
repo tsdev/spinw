@@ -1,5 +1,5 @@
-function [formFactVal, coeff, flag] = sw_mff(atomName, Q)
-% [formFactVal, coeff, flag] = SW_MFF(atomName, {Q}) returns the magnetic
+function [formFactVal, coeff, S] = sw_mff(atomName, Q)
+% [formFactVal, coeff, S] = SW_MFF(atomName, {Q}) returns the magnetic
 %  form factor values and the coefficients.
 %
 % Input:
@@ -18,8 +18,10 @@ function [formFactVal, coeff, flag] = sw_mff(atomName, Q)
 %               <j0(Qs)> = A*exp(-a*Qs^2) + B*exp(-b*Qs^2) + C*exp(-c*Qs^2) + D,
 %               where Qs = Q/(4*pi) and A, a, B, ... are the coefficients.
 %
-% flag          True if the atomName is found in formfactor.dat file.
+% S             Value of the spin quantum number (last column in ion.dat).
 %
+
+S = 0;
 
 if nargin == 0
     help sw_mff;
@@ -29,8 +31,10 @@ end
 formFact = struct;
 
 if ischar(atomName)
+    % remove +/- symbols
+    atomName = atomName(atomName>45);
     % Open the form factor definition file.
-    ffPath = [sw_rootdir 'dat_files' filesep 'formfactor.dat'];
+    ffPath = [sw_rootdir 'dat_files' filesep 'ion.dat'];
     fid = fopen(ffPath);
     if fid == -1
         error('sw:sw_mff:FileNotFound',['Form factor definition file not found: '...
@@ -42,7 +46,8 @@ if ischar(atomName)
     while ~feof(fid)
         fLine = fgets(fid);
         [formFact.name{idx,1}, ~, ~, nextIdx] = sscanf(fLine,'%s',1);
-        formFact.coeff(idx,1:7) = sscanf(fLine(nextIdx:end),'%f,',7);
+        [formFact.coeff(idx,1:7), ~, ~, nextIdx2] = sscanf(fLine(nextIdx:end),'%f,',7);
+        formFact.S(idx) = sscanf(fLine(nextIdx+nextIdx2:end),'%f,',1);
         idx = idx + 1;
     end
     fclose(fid);
@@ -60,12 +65,13 @@ if ischar(atomName)
     
     if flag
         coeff = formFact.coeff(idx,:);
+        S     = formFact.S(idx);
     else
         coeff = [zeros(1,6) 1];
     end
     
 else
-    flag = true;
+    %flag = true;
     coeff = atomName;
 end
 

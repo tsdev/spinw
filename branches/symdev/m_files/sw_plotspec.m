@@ -39,6 +39,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           @jet. In this case evry mode will have different colors, the
 %           color is determined from the index of the mode. Default is
 %           'auto'.
+% sortMode  Sorting the modes before plotting. Default is false.
 % axLim     Upper limit for y axis (mode 1,2) or z axis (mode 3), default
 %           is 'auto'. For color plot of multiple cross section the c axis
 %           cannot be changed after the plot.
@@ -76,9 +77,9 @@ inpForm.fname  = [inpForm.fname  {'legend' 'title' 'nCol' 'twin'     }];
 inpForm.defval = [inpForm.defval {true     true    500    zeros(1,0) }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 1]  [1 -4]     }];
 
-inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth'}];
-inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5        }];
-inpForm.size   = [inpForm.size   {[1 -5]          [1 1]      }];
+inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
+inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
+inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
 param = sw_readparam(inpForm, varargin{:});
 
 % select twins for omega plot
@@ -260,8 +261,12 @@ switch param.mode
         titleStr0 = 'Spin wave dispersion: \omega(Q)';
         % loop over the twins
         for tt = 1:nTwin
-            plotr = sort(real(omega{1,tt}),1);
-            ploti = sort(imag(omega{1,tt}),1);
+            plotr = real(omega{1,tt});
+            ploti = imag(omega{1,tt});
+            if param.sortMode
+                plotr = sort(plotr,1);
+                ploti = sort(ploti,1);
+            end
             % loop over all spin wave modes
             for ii = 1:nMode
                 incIdx = ceil(ii/2/nMagExt);
@@ -319,7 +324,7 @@ if param.mode < 3
         autAxis = axis;
         axis([sort(axis0(1:2)) autAxis(3:4)]);
     else
-        axis([sort(axis0(1:2)) 0 param.axLim]);
+        axis([sort(axis0(1:2)) param.axLim]);
     end
     box on
 end

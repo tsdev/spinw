@@ -67,7 +67,7 @@ classdef sw < class_handlelight
                 return;
             end
             
-            if isa(firstArg, 'struct')
+            if isstruct(firstArg)
                 objS = initfield(firstArg);
                 
                 % change lattice object
@@ -85,6 +85,56 @@ classdef sw < class_handlelight
                 end
                 return;
             end
+            if ischar(firstArg)
+                % import data from cif file
+                fprintf(1,'Crystal structure is imported from the given .cif file.\n');
+                objS = initfield(struct);
+                
+                cif0 = cif(firstArg);
+                abc0 = [cif0.cell_length_a cif0.cell_length_b cif0.cell_length_c];
+                ang0 = [cif0.cell_angle_alpha cif0.cell_angle_beta cif0.cell_angle_gamma];
+                sym0 = cif0.('symmetry_space_group_name_H-M');
+                %symi0 = cif0.symmetry_Int_Tables_number;
+                xyz0 = cif0.symmetry_equiv_pos_as_xyz; xyz0 = sprintf('%s; ',xyz0{:}); xyz0 = xyz0(1:end-2);
+                name0 = cif0.atom_site_type_symbol';
+                r0 = [cif0.atom_site_fract_x cif0.atom_site_fract_y cif0.atom_site_fract_z]';
+                
+                if numel(abc0)==3
+                    objS.lattice.lat_const = abc0;
+                end
+                if numel(ang0) == 3
+                    objS.lattice.angle = ang0*pi/180;
+                end
+                if numel(xyz0) > 3
+                    symIdx = sw_addsym(xyz0,sym0);
+                    objS.lattice.sym = int32(symIdx);
+                    
+                end
+                if size(name0,2) == size(r0,2)
+                    nAtom = numel(name0);
+                    
+                    objS.unit_cell.r = r0;
+                    objS.unit_cell.label = name0;
+                    
+                    col = zeros(3,nAtom);
+                    for ii = 1:nAtom
+                        col0 = sw_atomdata(name0{ii}(name0{ii}>57),'color')';
+                        col(:,ii) = col0;
+                        [~, ~, objS.unit_cell.S(ii)] = sw_mff(name0{ii});
+                    end
+                    objS.unit_cell.color = int32(col);
+                    %objS.unit_cell.S = zeros(1,nAtom);
+                end
+                
+                fNames = fieldnames(objS);
+                for ii = 1:length(fNames)
+                    obj.(fNames{ii}) = objS.(fNames{ii});
+                end
+
+                
+                
+            end
+            
             
         end % .sw
         

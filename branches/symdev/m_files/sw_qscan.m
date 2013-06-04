@@ -26,7 +26,11 @@ if iscell(qLim) && length(qLim)>1
         q1 = reshape(qLim{ii-1},[],1);
         q2 = reshape(qLim{ii},  [],1);
         
-        qOut = [qOut bsxfun(@plus,bsxfun(@times,q2-q1,linspace(0,1,nQ)),q1)]; %#ok<AGROW>
+        if nQ > 1
+            qOut = [qOut bsxfun(@plus,bsxfun(@times,q2-q1,linspace(0,1,nQ)),q1)]; %#ok<AGROW>
+        else
+            qOut = (q2+q1)/2;
+        end
         if ii<length(qLim)
             qOut = qOut(:,1:end-1);
         end

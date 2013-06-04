@@ -254,8 +254,11 @@ for jj = 1:nSlice
     D = zeros(2*nMagExt,nHklMEM);
     
     for ii = 1:nHklMEM
-        [V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
-        D(:,ii)     = diag(Dtemp);
+        % TODO
+        %[V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
+        % condeig(V(:,:,ii))
+        %D(:,ii)     = diag(Dtemp);
+        [V(:,:,ii), D(:,ii)] = eigorth(gham(:,:,ii));
     end
     
     for ii = 1:nHklMEM

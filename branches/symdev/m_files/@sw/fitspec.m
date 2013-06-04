@@ -45,11 +45,9 @@ function fitsp = fitspec(obj, varargin)
 % exitflag  Exit flag of the fminsearch command.
 % output    Output of the fminsearch command.
 %
-% All other options be used that SPINWAVE or SWINC functions accept. For
-% the calculation of the spectra the SPINWAVE function is called, unless
-% the magnetic ordering wave vector is incommensurate.
+% All other options used by SPINWAVE function are accepted.
 %
-% See also SW.SWINC, SW.SPINWAVE, SW_CONV, SW_NEUTRON, SW_READSPEC, FMINSEARCH.
+% See also SW.SPINWAVE, SW_CONV, SW_NEUTRON, SW_READSPEC, FMINSEARCH.
 %
 
 inpForm.fname  = {'epsilon' 'datapath' 'xmin'   'xmax'  'x0'    'func' 'plot'};
@@ -132,9 +130,7 @@ function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param)
 %               Hamiltonian for the spin wave calculation.
 % data          Structure contains the experimental data, read by
 %               sw_readspec.
-% param         Paramters for the spin wave calculation (sw_swinc or
-%               sw_spinwave depending on whether the structure commensurate
-%               or incommensurate).
+% param         Paramters for the spinwave function.
 % swfunc        Function to change the Hamiltonian in obj, has the
 %               following form:
 %                   obj = swfunc(obj,x);
@@ -149,14 +145,6 @@ obj = parfunc(obj,x);
 
 nExt = double(obj.mag_str.N_ext);
 
-% Choose spin wave calculation code based on the ordering wave vector.
-kExt = obj.mag_str.k.*nExt;
-if any(abs(kExt-round(kExt))>param.epsilon)
-    swfunc = @obj.swinc;
-else
-    swfunc = @obj.spinwave;
-end
-
 % Number of different correlation functions measured.
 nConv = numel(dataCell);
 R  = 0;
@@ -169,7 +157,7 @@ for ii = 1:nConv
     data = dataCell{ii};
     
     % calculate spin-spin correlation function
-    spec = swfunc(data.Q,'fitmode',true);
+    spec = obj.spinwave(data.Q,'fitmode',true);
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy

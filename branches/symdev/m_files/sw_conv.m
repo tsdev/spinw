@@ -99,7 +99,7 @@ function spectra = sw_conv(spectra, varargin)
 %
 % param     All the other input parameters.
 %
-% See also SW.SPINWAVE, SW.SWINC, SW_NEUTRON, SW_MFF.
+% See also SW.SPINWAVE, SW_NEUTRON, SW_MFF.
 %
 
 if nargin == 0

@@ -57,7 +57,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % fHandle   Handle of the plot figure.
 % pHandle   Handle of the graphics objects on the figure.
 %
-% See also SW.PLOT, SW.SPINWAVE, SW.SWINC.
+% See also SW.PLOT, SW.SPINWAVE.
 %
 
 if nargin==0

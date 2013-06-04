@@ -8,8 +8,6 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % Options:
 %
-% swfunc    Function for the spin wave calculation. Default is
-%           <a href="matlab: doc sw.spinwave">@spinwave</a>.
 % nRand     Number of random orientations per Q value, default is 100.
 % Evect     Vector, defined the energy transfer values for the
 %           convoluted output in units of meV, dimensions are [1 nE].
@@ -41,7 +39,7 @@ function spectra = powspec(obj, hklA, varargin)
 % param     Contains all the input parameters.
 % obj       The input sw object.
 %
-% See also SW, SW.SWINC, SW.SPINWAVE, SW.OPTMAGSTR, SW_MFF.
+% See also SW, SW.SPINWAVE, SW.OPTMAGSTR, SW_MFF.
 %
 
 % help when executed without argument
@@ -52,9 +50,9 @@ end
 
 hklA = hklA(:)';
 
-inpForm.fname  = {'swfunc'  'nRand' 'Evect'           'T'   'formfact'};
-inpForm.defval = {@spinwave 100     linspace(0,1,100) 0     false     };
-inpForm.size   = {[1 1]     [1 1]   [1 -1]            [1 1] [1 -2]    };
+inpForm.fname  = {'nRand' 'Evect'           'T'   'formfact'};
+inpForm.defval = {100     linspace(0,1,100) 0     false     };
+inpForm.size   = {[1 1]   [1 -1]            [1 1] [1 -2]    };
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -69,7 +67,7 @@ for ii = 1:nQ
     Q   = bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2)))*hklA(ii);
     hkl = (Q'*obj.basisvector)'/2/pi;
     
-    specQ = param.swfunc(obj,hkl,'fitmode',false,'notwin',true);
+    specQ = obj.spinwave(hkl,'fitmode',false,'notwin',true);
     specQ = sw_neutron(specQ,'pol',false);
     specQ = sw_conv(specQ,'Evect',param.Evect,'T',param.T,'formfact',param.formfact);
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;

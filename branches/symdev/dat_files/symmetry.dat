@@ -236,3 +236,9 @@
  236  P 3 2 1    : x-y, -y, -z; -x, -x+y, -z; y, x, -z; -x+y, -x, z; -y, x-y, z; x, y, z
  237  P 3 2 1    : x-y, -y, -z; -x, -x+y, -z; y, x, -z; -x+y, -x, z; -y, x-y, z; x, y, z
  238  P m m n    : x,y,z; 1/2-x,1/2-y,-z; -x,-y,z; 1/2+x,1/2-y,-z; x,-y,z; 1/2-x,1/2+y,-z; -x,y,z; 1/2+x,1/2+y,-z
+ 239  P b n m    : x+1/2,-y+1/2,-z; -x,-y,z+1/2; -x,-y,-z
+ 240  P b n m    : x+1/2,-y+1/2,-z; -x,-y,z+1/2; -x,-y,-z
+ 241  P b n m    : x+1/2,-y+1/2,-z; -x,-y,z+1/2; -x,-y,-z
+ 242  P b n m    : x+1/2,-y+1/2,-z; -x,-y,z+1/2; -x,-y,-z
+ 243  P b n m    : x+1/2,-y+1/2,-z; -x,-y,z+1/2; -x,-y,-z
+ 244  P b n m    : x+1/2,-y+1/2,-z; -x,-y,z+1/2; -x,-y,-z

@@ -67,7 +67,7 @@ for ii = 1:nQ
     Q   = bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2)))*hklA(ii);
     hkl = (Q'*obj.basisvector)'/2/pi;
     
-    specQ = obj.spinwave(hkl,'fitmode',false,'notwin',true);
+    specQ = obj.spinwave(hkl,'fitmode',true,'notwin',true,'fid',0);
     specQ = sw_neutron(specQ,'pol',false);
     specQ = sw_conv(specQ,'Evect',param.Evect,'T',param.T,'formfact',param.formfact);
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
@@ -78,7 +78,6 @@ sw_status(100,2);
 spectra.swConv   = powSpec;
 spectra.hklA     = hklA;
 spectra.Evect    = param.Evect;
-spectra.swfunc   = param.swfunc;
 spectra.convmode = 'Sperp';
 spectra.nRand    = param.nRand;
 spectra.T        = param.T;

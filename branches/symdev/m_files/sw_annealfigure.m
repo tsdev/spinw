@@ -5,11 +5,6 @@ function hFigure = sw_annealfigure
 % See also SW.ANNEAL.
 %
 
-if nargin == 0
-    help sw_annealfigure;
-    return
-end
-
 % Position of the new figure window.
 posFig = get(0,'DefaultFigurePosition');
 posFig = [posFig(1:2) 400 400];

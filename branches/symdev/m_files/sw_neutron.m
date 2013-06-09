@@ -111,6 +111,16 @@ for ii = 1:nTwin
     % Normalized scattering wavevector in xyz coordinate system.
     hklAN = bsxfun(@rdivide,hklA,sqrt(sum(hklA.^2,1)));
     
+    % avoid NaN for Q=0
+    NaNidx = find(any(isnan(hklAN)));
+    for jj = 1:numel(NaNidx)
+        if NaNidx(jj) < size(hklAN,2)
+            hklAN(:,NaNidx(jj)) = hklAN(:,NaNidx(jj)+1);
+        else
+            hklAN(:,NaNidx(jj)) = [1;0;0];
+        end
+    end
+    
     hkla = repmat(permute(hklAN,[1 3 2]),[1 3 1]);
     hklb = repmat(permute(hklAN,[3 1 2]),[3 1 1]);
     

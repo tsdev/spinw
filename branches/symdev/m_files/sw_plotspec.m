@@ -10,8 +10,6 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %               3   convoluted spectra.
 %               4   FANCY PLOT MODE, only axLim parameter can be defined.
 %                   (default)
-% mapplot   Whether to plot convoluted spectra using spec1d mapplot.
-%           Default is false.
 % imag      Whether to plot the imaginary values of the dispersion
 %           and the correlation functions. For convoluted spectra, if true,
 %           the imaginary part is plotted. Default is false.
@@ -21,7 +19,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % nCol      Number of colors in the colormap, default is 500.
 % dashed    Whether to plot dashed vertical line between multiple linear
 %           scans. Defult is false.
-% convE     FWHM value of convoluted Gaussian in energy to simulate finite
+% dE        FWHM value of convoluted Gaussian in energy to simulate finite
 %           energy resolution. Only works for mode=3. If zero, no
 %           convolution performed. Default is 0.
 % fontSize  Font size on the plot, default is 14 pt.
@@ -65,13 +63,13 @@ if nargin==0
     return;
 end
 
-inpForm.fname  = {'mode' 'mapplot' 'imag' 'aHandle' 'colorbar' 'dashed' };
-inpForm.defval = {4      false     false   0         true       false    };
-inpForm.size   = {[1 1]  [1 1]     [1 1]  [1 1]     [1 1]      [1 1]    };
+inpForm.fname  = {'mode' 'imag' 'aHandle' 'colorbar' 'dashed' };
+inpForm.defval = {4      false   0         true       false    };
+inpForm.size   = {[1 1]  [1 1]  [1 1]     [1 1]      [1 1]    };
 
-inpForm.fname  = [inpForm.fname  {'convE' 'fontSize' 'colormap' 'axLim'}];
-inpForm.defval = [inpForm.defval {0       14         'auto'     'auto' }];
-inpForm.size   = [inpForm.size   {[1 1]   [1 1]      [-1 -2]    [1 -3] }];
+inpForm.fname  = [inpForm.fname  {'dE'  'fontSize' 'colormap' 'axLim'}];
+inpForm.defval = [inpForm.defval {0     14         'auto'     'auto' }];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]      [-1 -2]    [1 -3] }];
 
 inpForm.fname  = [inpForm.fname  {'legend' 'title' 'nCol' 'twin'     }];
 inpForm.defval = [inpForm.defval {true     true    500    zeros(1,0) }];
@@ -125,12 +123,12 @@ if param.mode == 4
     % PLOT EASY PEASY
     
     Eres = (spectra.Evect(end) - spectra.Evect(1))/50;
-    [fHandle, pHandle1] = sw_plotspec(spectra,'ahandle',gca,'mode',3,'conve',Eres,...
-        'dashed',true,'colorbar',false,'axLim',param.axLim);
+    [fHandle, pHandle1] = sw_plotspec(spectra,'ahandle',gca,'mode',3,'dE',Eres,...
+        'dashed',true,'colorbar',false,'axLim',param.axLim,'lineStyle',param.lineStyle);
     if ~powmode
         hold on
         [~, pHandle2] = sw_plotspec(spectra,'mode',1,'ahandle',gca,'colorbar',false,...
-            'dashed',false,'title',false,'legend',false,'imag',false);
+            'dashed',false,'title',false,'legend',false,'imag',false,'lineStyle',param.lineStyle);
     end
     
     if nargout >0
@@ -176,7 +174,7 @@ end
 
 
 if ~powmode
-    % Convert the convoluted intensities into cell array.
+    % dErt the convoluted intensities into cell array.
     if ~iscell(spectra.convmode)
         swInt    = {spectra.swInt};
         swConv   = {spectra.swConv};
@@ -261,8 +259,8 @@ switch param.mode
         titleStr0 = 'Spin wave dispersion: \omega(Q)';
         % loop over the twins
         for tt = 1:nTwin
-            plotr = real(omega{1,tt});
-            ploti = imag(omega{1,tt});
+            plotr = abs(real(omega{1,tt}));
+            ploti = abs(imag(omega{1,tt}));
             if param.sortMode
                 plotr = sort(plotr,1);
                 ploti = sort(ploti,1);
@@ -270,11 +268,11 @@ switch param.mode
             % loop over all spin wave modes
             for ii = 1:nMode
                 incIdx = ceil(ii/2/nMagExt);
-                hPlot(end+1)    = plot3(xAxis,abs(plotr(ii,:)),xAxis*0+1e5,param.lineStyle{incIdx},...
+                hPlot(end+1)    = plot3(xAxis,plotr(ii,:),xAxis*0+1e5,param.lineStyle{incIdx},...
                     'Color', colors(ii,:),'LineWidth',param.lineWidth); %#ok<*AGROW>
                 hLegend(incIdx) = hPlot(end);
                 if param.imag
-                    hPlot(end+1)        = plot(xAxis,abs(ploti(ii,:)),'ro-');
+                    hPlot(end+1)        = plot(xAxis,ploti(ii,:),'ro-');
                     hLegend(modeList+1) = hPlot(end);
                 end
             end
@@ -362,7 +360,7 @@ if param.mode == 3
             % for 'auto' mode an equally space hue values are created for
             % use with multiple sectra plot
             if nPlot>1
-                param.colormap = hsv2rgb([(1:nPlot)'/nPlot ones(nPlot,2)])';
+                param.colormap = hsv2rgb([(1:nPlot)'/nPlot ones(nPlot,2)])'*255;
             else
                 param.colormap = {@fireprint};
             end
@@ -382,8 +380,8 @@ if param.mode == 3
     end
     
     % Gaussian energy convolution kern
-    if param.convE>0
-        sG = param.convE/2.35482;
+    if param.dE>0
+        sG = param.dE/2.35482;
         x0 = spectra.Evect;
         dx = (x0(end)-x0(1))/(length(x0)-1);
         nG = ceil(3*sG/dx);
@@ -501,6 +499,7 @@ if param.mode == 3
         titleStr0 = [titleStr0 'powder '];
     end
     titleStr0 = [titleStr0 'spectra: '];
+    box on
 end
 
 ylabel(yLabel);

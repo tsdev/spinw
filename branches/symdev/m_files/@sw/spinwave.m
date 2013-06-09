@@ -28,7 +28,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % tol           Tolerance of the incommensurability of the magnetic
 %               ordering wavevector. Deviations from integer values of the
 %               ordering wavevector smaller than the tolerance are
-%               considered to be commensurate. Default value is 1e-5.
+%               considered to be commensurate. Default value is 1e-4.
 %
 % Options:
 %
@@ -61,6 +61,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % formfact      Magnetic form factor for all magnetic ions calculated
 %               for hklA momentum transfer values, dimensions are
 %               [nMagExt nHkl].
+% incomm        Whether the spectra calculated is incommensurate or not.
 % obj           The copy of the input obj.
 %
 % See also SW, SW_NEUTRON, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
@@ -79,7 +80,7 @@ if iscell(hkl)
 end
 
 inpForm.fname  = {'fitmode' 'notwin' 'modesort' 'optmem' 'fid' 'tol' };
-inpForm.defval = {false     false    false      true     1     1e-5  };
+inpForm.defval = {false     false    false      true     1     1e-4  };
 inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1] };
 
 param = sw_readparam(inpForm, varargin{:});
@@ -157,10 +158,12 @@ S0 = sqrt(sum(M0.^2,1));
 n  = obj.mag_str.n;
 nMagExt = size(M0,2);
 
-if incomm
-    fprintf(fid,'Calculating INCOMMENSURATE spin wave spectra (nMagExt = %d, nHkl = %d, nTwin = %d)...\n',nMagExt, nHkl0, nTwin);
-else
-    fprintf(fid,'Calculating COMMENSURATE spin wave spectra (nMagExt = %d, nHkl = %d, nTwin = %d)...\n',nMagExt, nHkl0, nTwin);
+if fid ~= 0
+    if incomm
+        fprintf(fid,'Calculating INCOMMENSURATE spin wave spectra (nMagExt = %d, nHkl = %d, nTwin = %d)...\n',nMagExt, nHkl0, nTwin);
+    else
+        fprintf(fid,'Calculating COMMENSURATE spin wave spectra (nMagExt = %d, nHkl = %d, nTwin = %d)...\n',nMagExt, nHkl0, nTwin);
+    end
 end
 
 % Local (e1,e2,e3) coordinate system fixed to the moments.
@@ -226,10 +229,14 @@ idxMF = [(1:2*nMagExt)' (1:2*nMagExt)' ];
 if param.optmem
     nSlice = ceil(nMagExt^2*nHkl*6912/sw_freemem*2);
     if nHkl < nSlice
-        fprintf(fid,'Memory allocation is not optimal, nMagExt is too large compared to the free memory!\n');
+        if fid ~= 0
+            fprintf(fid,'Memory allocation is not optimal, nMagExt is too large compared to the free memory!\n');
+        end
         nSlice = nHkl;
     elseif nSlice > 1
-        fprintf(fid,'To optimise memory allocation, Q is cut into %d pieces!\n',nSlice);
+        if fid ~= 0
+            fprintf(fid,'To optimise memory allocation, Q is cut into %d pieces!\n',nSlice);
+        end
     end
 else
     nSlice = 1;
@@ -338,7 +345,9 @@ end
 if fid == 1
     sw_status(100,2);
 else
-    fprintf(fid,'Calculation finished.\n');
+    if fid ~= 0
+        fprintf(fid,'Calculation finished.\n');
+    end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -400,6 +409,7 @@ spectra.omega  = omega;
 spectra.Sab    = Sab;
 spectra.hkl    = hkl(:,1:nHkl0);
 spectra.hklA   = hklA;
+spectra.incomm = incomm;
 
 if ~param.fitmode
     spectra.ff  = ones(nMagExt,nHkl0);

@@ -87,10 +87,11 @@ classdef sw < class_handlelight
             end
             if ischar(firstArg)
                 % import data from cif file
-                fprintf(1,'Crystal structure is imported from the given .cif file.\n');
+                
                 objS = initfield(struct);
                 
                 cif0 = cif(firstArg);
+                fprintf(1,'Crystal structure is imported from %s.\n',firstArg);
                 abc0 = [cif0.cell_length_a cif0.cell_length_b cif0.cell_length_c];
                 ang0 = [cif0.cell_angle_alpha cif0.cell_angle_beta cif0.cell_angle_gamma];
                 sym0 = cif0.('symmetry_space_group_name_H-M');

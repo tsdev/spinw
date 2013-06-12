@@ -24,9 +24,9 @@ function genlattice(obj, varargin)
 % See also SW, SW_ADDSYM, SW_GENSYM.
 %
 
-inpForm.fname  = {'angle'      'lat_const' 'sym'  };
-inpForm.defval = {[1 1 1]*pi/2 [3 3 3]     1      };
-inpForm.size   = {[1 3]        [1 3]       [1 -1] };
+inpForm.fname  = {'angle'           'lat_const'           'sym'            };
+inpForm.defval = {obj.lattice.angle obj.lattice.lat_const obj.lattice.sym };
+inpForm.size   = {[1 3]             [1 3]                 [1 -1]          };
 
 param = sw_readparam(inpForm, varargin{:});
 

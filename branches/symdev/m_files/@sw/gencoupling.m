@@ -34,6 +34,9 @@ inpForm.size   = {[1 1] [1 1]       [1 1]         [1 1] };
 param = sw_readparam(inpForm, varargin{:});
 tol   = param.tol;
 
+% save the sym/nosym method into obj
+obj.issym = isSym;
+
 % Number of unit cells along any direction to find nearest neighbours.
 nUnitCell = param.nUnitCell;
 

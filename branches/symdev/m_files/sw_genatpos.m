@@ -15,7 +15,7 @@ function [rSym, aIdx, isMoved, opMove, symName] = sw_genatpos(sym, r, fid, tol)
 %                   1   Output printed onto the screen (Command Window)
 %                   fid Use with the following command: fid = fopen(path)
 % tol           Tolerance, distance within two atoms are considered
-%               identical, default is 0.05 Angstrom. Necessary for badly
+%               identical, default is 0.001 Angstrom. Necessary for badly
 %               defines atomic positions (when atoms are not exactly on the
 %               symmetry element) and to avoid numerical errors.
 %
@@ -46,7 +46,7 @@ if nargin == 2
 end
 
 if nargin < 4
-    tol = 0.05;
+    tol = 0.001;
 end
 
 if ~iscell(sym)

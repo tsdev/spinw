@@ -75,7 +75,8 @@ end
 
 if isfield(param,'range') && isappdata(hFigure,'obj')
     range       = param.range;
-    basisVector = getappdata(hFigure,'obj').basisvector;
+    basisVector = getappdata(hFigure,'obj');
+    basisVector = basisVector.basisvector;
     T           = makehgtform('translate',-sum(basisVector * sum(range,2)/2,2)');
     set(h2,'Matrix',T);
 end

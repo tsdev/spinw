@@ -41,6 +41,7 @@ classdef sw < class_handlelight
     
     properties (Access = private)
         matomstore = [];
+        issym  = true;  % stores whether the couplings are generated under symmetr constraints
         Elabel = 'meV';
         Qlabel = 'Angstrom^{-1}';
         Rlabel = 'Angstrom';

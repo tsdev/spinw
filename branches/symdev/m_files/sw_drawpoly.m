@@ -44,9 +44,10 @@ end
 obj         = getappdata(hFigure,'obj');
 unit_cell   = obj.unit_cell;
 basisVector = obj.basisvector;
+param = getappdata(hFigure,'param');
 
 inpForm.fname  = {'cAtom' 'pAtom' 'range'              'limits' 'edge' 'alpha'};
-inpForm.defval = {1       2       userData.param.range 6        true   0.5    };
+inpForm.defval = {1       2       param.range 6        true   0.5    };
 inpForm.size   = {[1 -1]  [1 -2]  [3 2]                [1 -3]   [1 1]  [1 1]  };
 
 param  = sw_readparam(inpForm, varargin{:});

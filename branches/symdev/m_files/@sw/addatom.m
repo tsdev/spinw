@@ -122,7 +122,7 @@ if isa(newAtom,'struct')
             return;
         end
         
-        obj.unit_cell.r     = [obj.unit_cell.r     newObj.unit_cell.r];
+        obj.unit_cell.r     = [obj.unit_cell.r     mod(newObj.unit_cell.r,1)];
         obj.unit_cell.S     = [obj.unit_cell.S     newObj.unit_cell.S];
         obj.unit_cell.label = [obj.unit_cell.label newObj.unit_cell.label];
         obj.unit_cell.color = [obj.unit_cell.color newObj.unit_cell.color];

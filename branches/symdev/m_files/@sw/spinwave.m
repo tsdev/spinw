@@ -29,6 +29,8 @@ function spectra = spinwave(obj, hkl, varargin)
 %               ordering wavevector. Deviations from integer values of the
 %               ordering wavevector smaller than the tolerance are
 %               considered to be commensurate. Default value is 1e-4.
+% omega_tol     Tolerance on the energy difference of degenerate modes when
+%               diagonalising the quadratic form, default is 1e-5.
 %
 % Options:
 %
@@ -79,9 +81,9 @@ if iscell(hkl)
     hkl = sw_qscan(hkl);
 end
 
-inpForm.fname  = {'fitmode' 'notwin' 'modesort' 'optmem' 'fid' 'tol' };
-inpForm.defval = {false     false    false      true     1     1e-4  };
-inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1] };
+inpForm.fname  = {'fitmode' 'notwin' 'modesort' 'optmem' 'fid' 'tol' 'omega_tol'};
+inpForm.defval = {false     false    false      true     1     1e-4   1e-5      };
+inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]  [1 1]     };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -306,8 +308,9 @@ for jj = 1:nSlice
     D = zeros(2*nMagExt,nHklMEM);
     
     for ii = 1:nHklMEM
-        [V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
-        D(:,ii)     = diag(Dtemp);
+        %[V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
+        %D(:,ii)     = diag(Dtemp);
+        [V(:,:,ii), D(:,ii)] = eigorth(gham(:,:,ii),omega_tol);
     end
     
     for ii = 1:nHklMEM

@@ -66,7 +66,7 @@ pp = [zeros(3,1) Tn_o Tn_o(:,1)+Tn_o(:,3) Tn_o(:,2)+Tn_o(:,3) Tn_o(:,1)+Tn_o(:,2
 
 % number of cells needed for the extension
 nExt  = ceil(max(pp,[],2) - min(pp,[],2))'+2;
-obj.mag_str.N_ext = int32(nExt);
+%obj.mag_str.N_ext = int32(nExt);
 
 % generated atoms
 atomList = obj.atom;

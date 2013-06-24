@@ -129,7 +129,7 @@ if obj.issym
         SI.aniso = mmat(rotOp,mmat(SI.aniso,permute(rotOp,[2 1 3])));
     end
     
-    % Generate interaction matrices using the space group symetry
+    % Generate interaction matrices using the space group symmetry
     if numel(SS.all) > 0
         % first positions of the couplings with identical idx values used to
         % generate the coupling matrices for the rest

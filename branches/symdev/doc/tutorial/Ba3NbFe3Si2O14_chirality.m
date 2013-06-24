@@ -71,7 +71,7 @@ banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
 banbSpec = sw_conv(banbSpec,'convmode','Sperp','Evect',linspace(0,6,500));
 
 figure
-sw_plotspec(banbSpec,'mode',3,'convE',0.25,'ahandle',gca);
+sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca);
 caxis([0 1])
 title('\epsilon_T = -1','fontsize',16)
 colormap(jet)
@@ -84,7 +84,7 @@ banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
 
 figure
 subplot(2,1,1)
-sw_plotspec(banbSpec,'mode',3,'convE',0.25,'ahandle',gca,'imag',true);
+sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca,'imag',true);
 caxis([-1 1])
 colormap(makecolormap([0 1 0],[1 1 1],[0 0 1],1000));
 title('\epsilon_T = -1 (\epsilon_H = +1, \epsilon_\Delta = -1)','fontsize',16)
@@ -100,7 +100,7 @@ banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
 banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
 
 subplot(2,1,2)
-sw_plotspec(banbSpec,'mode',3,'convE',0.25,'ahandle',gca,'imag',true);
+sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca,'imag',true);
 caxis([-1 1])
 colormap(makecolormap([0 1 0],[1 1 1],[0 0 1],1000));
 title('\epsilon_T = -1 (\epsilon_H = -1, \epsilon_\Delta = +1)','fontsize',16)
@@ -125,7 +125,7 @@ banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
 banbSpec = sw_conv(banbSpec,'convmode','Sperp','Evect',linspace(0,6,500));
 
 figure
-sw_plotspec(banbSpec,'mode',3,'convE',0.25,'ahandle',gca);
+sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca);
 caxis([0 1])
 title('\epsilon_T = -1','fontsize',16)
 colormap(jet)
@@ -138,7 +138,7 @@ banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
 
 figure
 subplot(2,1,1)
-sw_plotspec(banbSpec,'mode',3,'convE',0.25,'ahandle',gca,'imag',true);
+sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca,'imag',true);
 caxis([-1 1])
 colormap(makecolormap([0 1 0],[1 1 1],[0 0 1],1000));
 title('\epsilon_T = -1 (\epsilon_H = +1, \epsilon_\Delta = -1)','fontsize',16)
@@ -154,7 +154,7 @@ banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
 banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
 
 subplot(2,1,2)
-sw_plotspec(banbSpec,'mode',3,'convE',0.25,'ahandle',gca,'imag',true);
+sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca,'imag',true);
 caxis([-1 1])
 colormap(makecolormap([0 1 0],[1 1 1],[0 0 1],1000));
 title('\epsilon_T = -1 (\epsilon_H = -1, \epsilon_\Delta = +1)','fontsize',16)
@@ -182,6 +182,13 @@ plot(d3dobj);
 % change the chirality of the crystal
 banb.setmatrix('label','J3','pref',{J3})
 banb.setmatrix('label','J5','pref',{J5})
+
+
+
+
+
+
+
 
 %% spin waves -- epsilon_T = -1 crystal structure
 

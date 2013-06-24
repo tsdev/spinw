@@ -310,7 +310,7 @@ for jj = 1:nSlice
     for ii = 1:nHklMEM
         %[V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
         %D(:,ii)     = diag(Dtemp);
-        [V(:,:,ii), D(:,ii)] = eigorth(gham(:,:,ii),omega_tol);
+        [V(:,:,ii), D(:,ii)] = eigorth(gham(:,:,ii),param.omega_tol);
     end
     
     for ii = 1:nHklMEM

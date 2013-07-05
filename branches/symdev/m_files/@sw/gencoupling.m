@@ -121,7 +121,6 @@ if nMagAtom > 0
     % Finds the equivalent distances and index them in coupling.idx
     sortM(6,:) = cumsum([1 (sortM(7,2:end)-sortM(7,1:(end-1))) > tol]);
     
-    aniso = int32(zeros(1,nMagAtom));
     % symmetry equivalent couplings
     if param.sym
         % get the symmetry operators
@@ -154,10 +153,16 @@ if nMagAtom > 0
     else
         newM = sortM;
     end
+    
+    % default anisotropy and g-tensor values
+    aniso = int32(zeros(1,nMagAtom));
+    g     = int32(zeros(1,nMagAtom));
+    
 else
     % If there is no magnetic atom the coupling and anisotropy are empty.
     newM  = zeros(7,0);
     aniso = int32(zeros(1,0));
+    g     = int32(zeros(1,0));
     
 end
 
@@ -169,6 +174,7 @@ coupling.mat_idx = int32(zeros(3,size(coupling.idx,2)));
 
 obj.coupling         = coupling;
 obj.single_ion.aniso = aniso;
+obj.single_ion.g     = g;
 
 validate(obj);
 

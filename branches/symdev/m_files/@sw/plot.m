@@ -37,7 +37,7 @@ function varargout = plot(obj, varargin)
 %   Atom ==================================================================
 %
 %   rAtom           The default atom radius, default is 0.3
-%                   Angstrom.
+%                   Angstrom. If zero, no atoms are drawn.
 %   pNonMagAtom     Whether to plot non-magnetic atoms, default is true.
 %   rAtomData       The source of atomic radius data:
 %                    false: use rAtom for all atoms (default)
@@ -54,8 +54,8 @@ function varargout = plot(obj, varargin)
 %   cSpin           Color of the magnetic moment vectors, default is 'auto'
 %                   when each spin vector has the color of the magnetic
 %                   atom it belongs to.
-%   sSpin           Scaling factor for the lenght of the spins, default is
-%                   1.
+%   sSpin           Scaling factor for the lenght of the magnetic moments,
+%                   default is 1.
 %   rSpin           Radius of the cylinder of the spins, default is 0.06.
 %   angHeadSpin     Angle of the spin arrow head, default is 15 deg.
 %   lHeadSpin       Length of the spin arrow head, default is 0.5
@@ -69,14 +69,24 @@ function varargout = plot(obj, varargin)
 %                         fitting plane is better than x.
 %                   Default value is 0.
 %
-%   Anisotropy ============================================================
+%   Anisotropy and g-tensor ===============================================
 %
-%   ellAniso        Whether to draw the ellipsoid giving the anisotropy.
+%   sEll            Select, whether to plot ellipsoid for anisotropy or
+%                   g-tensor:
+%                    0:     no ellipsoid is drawn
+%                    1:     anisotropy (default)
+%                    2:     g-tensor.
+%   rEll            Whether to draw the ellipsoid giving the anisotropy or
+%                   g-tensor:
 %                    0:   No ellipsoid is drawn.
 %                    R:   The maximum radius of the ellipsoid.
 %                   Default value is 1.
-%   aAniso          Transparency (alpha value) of the anisotropy sphere,
-%                   default is 0.3.
+%   aEll            Transparency (alpha value) of the ellipsoid, default is
+%                   0.3.
+%   eEll            Minimum radius of the principal axes of the ellipse.
+%   lwEll           Line width of the main circles surrounding the
+%                   ellipsoid, if zero no circles are drawn. Default is 1.
+%
 %
 %   Couplings =============================================================
 %
@@ -107,6 +117,12 @@ function varargout = plot(obj, varargin)
 %
 % handle            Stores the handles for all graphical object in a
 %                   struct.
+%
+% The labels on the atom has the following meaning:
+%
+% AtomLabel(idx1)_idx2:
+%   idx1    The index of the atom in obj.unit_cell
+%   idx2    The index of the atom in obj.atom
 %
 % To access the graphical objects, use the function:
 %   handleList = sw_getobject(tagName,fHandle)
@@ -177,20 +193,23 @@ inpForm.fname  = [inpForm.fname  {'lineStyleCell' 'dAxis'       'dText' 'wSpace'
 inpForm.defval = [inpForm.defval {'--'            [0.5;1.5;2.0] 0.2     10       false      }];
 inpForm.size   = [inpForm.size   {[1 -1]          [3 1]         [1 1]   [1 1]    [1 1]      }];
 
-inpForm.fname  = [inpForm.fname  {'rAtom' 'aAniso' 'coplanar' 'fontSize' 'pNonMagAtom'}];
+inpForm.fname  = [inpForm.fname  {'rAtom' 'aEll' 'coplanar' 'fontSize' 'pNonMagAtom'}];
 inpForm.defval = [inpForm.defval {0.3     0.3          0          12     true         }];
 inpForm.size   = [inpForm.size   {[1 1]   [1 1]        [1 1]      [1 1]  [1 1]        }];
 
-inpForm.fname  = [inpForm.fname  {'ellAniso' 'ellEpsilon' 'pZeroCoupling' 'tooltip' 'cCoupling' 'cDM'    'cAtom'}];
+inpForm.fname  = [inpForm.fname  {'rEll' 'eEll' 'pZeroCoupling' 'tooltip' 'cCoupling' 'cDM'    'cAtom'}];
 inpForm.defval = [inpForm.defval {1          0.1          true             true      'auto'     'auto'   'auto' }];
 inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]            [1 1]     [1 -7]     [1 -2]   [1 -3] }];
+
+inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' }];
+inpForm.defval = [inpForm.defval {1      1       1      }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
 % change range, if the number of unit cells are given
 if numel(param.range) == 3
-    nCell       = round(param.range(:));
-    param.range = [-0.1*[1 1 1]' nCell+0.1];
+    param.range = [-0.1*[1 1 1]' param.range(:)+0.1];
 elseif numel(param.range) ~=6
     error('sw:plot:WrongInput','The plotting range is wrong, see help sw.plot!');
 end
@@ -223,6 +242,10 @@ zoom(10);
 
 %sphare surface for atoms
 [sp.x, sp.y, sp.z] = sphere(param.surfRes);
+% circles for the ellipsoid
+cr{1} = sw_circle([0 0 0]',[1 0 0]',1.01,param.surfRes);
+cr{2} = sw_circle([0 0 0]',[0 1 0]',1.01,param.surfRes);
+cr{3} = sw_circle([0 0 0]',[0 0 1]',1.01,param.surfRes);
 
 %% Plot the unit cell.
 
@@ -341,41 +364,58 @@ coupling.DM      = cat(2,coupling.DM(2,3,:),coupling.DM(3,1,:),coupling.DM(1,2,:
 
 nCoupling        = size(coupling.idx,2);
 
+% dashes
+dashList = zeros(1,numel(matrix.label));
+for ii = 1:numel(matrix.label)
+    dashList(ii) = matrix.label{ii}(end);
+    if strcmp(char(dashList(ii)),'-')
+        dashList(ii) = true;
+    else
+        dashList(ii) = false;
+    end
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ANISOTROPY ELLIPSOIDS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-single_ion  = obj.single_ion;
+single_ion = obj.single_ion;
 if numel(single_ion.aniso) ~= nMagAtom
     single_ion.aniso = zeros(1,nMagAtom);
 end
+if numel(single_ion.g) ~= nMagAtom
+    single_ion.g = zeros(1,nMagAtom);
+end
 
-%aniso.mat   = zeros(3,3,nMagAtom);
-aniso.mat   = SI.aniso;
-aniso.ell   = zeros(3,3,nMagAtom);
-aniso.label = cell(1,nMagAtom);
+% select anisotropy matrices or g-tensor
+switch param.sEll
+    case 1
+        single_ion.mat = SI.aniso;
+        single_ion.idx = single_ion.aniso;
+    case 2
+        single_ion.mat = SI.g;
+        single_ion.idx = single_ion.g;
+    otherwise
+        error('sw:plot:WrongParameter','The sEll parameter has to be 0,1 or 2!');
+end
 
-propAniso = true;
+single_ion.ell   = zeros(3,3,nMagAtom);
+single_ion.label = cell(1,nMagAtom);
 
-if param.ellAniso>0
-    % Creates the anisotropy ellipsoids.
+if param.sEll>0
+    % Creates the anisotropy/g-tensor ellipsoids.
     for ll = 1:nMagAtom
-        % Selects the anisotropy matrix
-        cIdx = single_ion.aniso(ll);
+        % Selects the matrix index to plot
+        cIdx = single_ion.idx(ll);
+        
         if any(cIdx)
-            %if any(any(aniso.mat(:,:,ll)))
-            %aniso.mat(:,:,ll) = matrix.mat(:,:,cIdx);
-            
             
             % Calculates the main radiuses of the ellipsoid.
-            [V, R] = eig(aniso.mat(:,:,ll));
-            %             if norm(aniso.mat(:,:,ll)-aniso.mat(:,:,ll)') > 1e-8
-            %                 propAniso = false;
-            %             end
+            [V, R] = eig(single_ion.mat(:,:,ll));
             % Creates positive definite matrix by adding constant to all
             % eigenvalues.
             R0      = diag(R);
-            epsilon = sqrt(sum(R0.^2))*param.ellEpsilon;
+            epsilon = sqrt(sum(R0.^2))*param.eEll;
             dR      = 1./(R0-min(R0)+epsilon);
             dR0     = max(dR);
             if dR0 ~= 0
@@ -384,19 +424,13 @@ if param.ellAniso>0
                 dR = [1 1 1];
             end
             
-            R = diag(dR)*param.ellAniso;
+            R = diag(dR)*param.rEll;
             
-            aniso.ell(:,:,ll) = V*R;
-            aniso.label{ll}   = matrix.label{cIdx};
+            single_ion.ell(:,:,ll) = V*R;
+            single_ion.label{ll}   = matrix.label{cIdx};
         end
     end
-    %     end
 end
-
-% if ~propAniso
-%     warning('sw:plot:WrongAnisotropy','Anisotropy matrix is asymmetric, cannot plot ellipsoid!');
-% end
-
 
 %% Plot all atoms and couplings in selected range.
 for ii = floor(param.range(1,1)):floor(param.range(1,2))
@@ -429,11 +463,11 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                     rPlot = basisVector*rLat;
                     
                     % Draw anisotropy semi-transparent ellipsoid.
-                    if atom.mag(ll) && param.ellAniso>0 && propAniso
-                        aIdx = single_ion.aniso(llMagAtom);
+                    if atom.mag(ll) && param.sEll>0
+                        aIdx = single_ion.idx(llMagAtom);
                         if any(aIdx) && (norm(obj.matrix.mat(:,:,aIdx))>0)
                             
-                            ell.xyz = aniso.ell(:,:,llMagAtom)*[sp.x(:) sp.y(:) sp.z(:)]';
+                            ell.xyz = single_ion.ell(:,:,llMagAtom)*[sp.x(:) sp.y(:) sp.z(:)]';
                             
                             ell.x = reshape(ell.xyz(1,:),[1 1]*param.surfRes+1);
                             ell.y = reshape(ell.xyz(2,:),[1 1]*param.surfRes+1);
@@ -443,15 +477,30 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             
                             handle.aniso(atom.idx(ll),end+1) = sAniso;
                             set(sAniso,'LineStyle','none');
-                            set(sAniso,'FaceAlpha',param.aAniso);
+                            set(sAniso,'FaceAlpha',param.aEll);
                             set(sAniso,'FaceColor',double(obj.matrix.color(:,aIdx))/255);
                             set(sAniso,'Tag',['aniso_' atom.name{ll}]);
                             
-                            tooltip(sAniso,[aniso.label{llMagAtom} ' anisotropy\n' strmat(aniso.mat(:,:,llMagAtom))]);
+                            tooltip(sAniso,[single_ion.label{llMagAtom} ' anisotropy\n' strmat(single_ion.mat(:,:,llMagAtom))]);
+                            
+                            if param.lwEll > 0
+                                % draw the main circles of the ellipsoids
+                                ell.c1 = single_ion.ell(:,:,llMagAtom)*cr{1};
+                                ell.c2 = single_ion.ell(:,:,llMagAtom)*cr{2};
+                                ell.c3 = single_ion.ell(:,:,llMagAtom)*cr{3};
+                                
+                                sC(1) = plot3(ell.c1(1,:)+rPlot(1),ell.c1(2,:)+rPlot(2),ell.c1(3,:)+rPlot(3));
+                                sC(2) = plot3(ell.c2(1,:)+rPlot(1),ell.c2(2,:)+rPlot(2),ell.c2(3,:)+rPlot(3));
+                                sC(3) = plot3(ell.c3(1,:)+rPlot(1),ell.c3(2,:)+rPlot(2),ell.c3(3,:)+rPlot(3));
+                                set(sC,'LineWidth',param.lwEll);
+                                set(sC,'Color',[0 0 0]);
+                                set(sC,'Tag',['aniso_circle_' atom.name{ll}]);
+                                handle.aniso(atom.idx(ll),end+(1:3)) = sC;
+                            end
                         end
                     end
                     
-                    if atom.mag(ll) || param.pNonMagAtom
+                    if (atom.mag(ll) || param.pNonMagAtom) && (param.rAtom>0)
                         % Plot the label of the atom.
                         if (~any(dCell)) && param.labelAtom
                             
@@ -562,8 +611,13 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         
                         % plot normal cylinder
                         if param.pCoupling
-                            cCylinder = sw_cylinder(rPlot1,rPlot2,param.rCoupling,param.surfRes);
-                            handle.coupling(coupling.idx(ll),end+1) = cCylinder;
+                            dashS = (param.dash*dashList(coupling.mat_idx(ll)));
+                            if dashS>0
+                                cCylinder = sw_cylinder(rPlot1,rPlot2,param.rCoupling*1.2,param.surfRes,dashS);
+                            else
+                                cCylinder = sw_cylinder(rPlot1,rPlot2,param.rCoupling,param.surfRes,0);
+                            end
+                            handle.coupling(coupling.idx(ll),end+(1:numel(cCylinder))) = cCylinder;
                             set(cCylinder,'FaceColor',cColor);
                             set(cCylinder,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
                             
@@ -626,6 +680,7 @@ end
 
 set(gca,'CameraViewAngle',cva);
 handle.light = camlight('right');
+set(handle.light,'Tag','light');
 
 T = makehgtform('translate',-sum(basisVector * sum(param.range,2)/2,2)');
 set(h2,'Matrix',T);
@@ -645,9 +700,22 @@ if (param.legend) && size(matrix.mat,3)>0
     handle.legend = rectangle('Position',[1 1 lWidth-2 lHeight-2],'FaceColor','w');
     set(handle.legend,'Tag','legend');
     hold on
+    handle.lRect = [];
     for ii = 1:length(matrix.label)
-        handle.lRect(ii) = rectangle('Position',[5 lHeight-20*ii+6 sRadius*2 sRadius]);
-        set(handle.lRect(ii),'FaceColor',double(matrix.color(:,ii))/255);
+        handle.lRect(end+1) = rectangle('Position',[5 lHeight-20*ii+6 sRadius*2 sRadius]);
+        if dashList(ii)
+            % legend for dashed matrices
+            handle.lRect(end+1) = rectangle('Position',[6 lHeight-20*ii+7 sRadius*2/3-1 sRadius-2]);
+            set(handle.lRect(end),'FaceColor',double(matrix.color(:,ii))/255);
+            set(handle.lRect(end),'EdgeColor',double(matrix.color(:,ii))/255);
+            
+            handle.lRect(end+1) = rectangle('Position',[5+sRadius*2/3*2 lHeight-20*ii+7 sRadius*2/3-1 sRadius-2]);
+            set(handle.lRect(end),'FaceColor',double(matrix.color(:,ii))/255);
+            set(handle.lRect(end),'EdgeColor',double(matrix.color(:,ii))/255);
+        else
+            set(handle.lRect(end),'FaceColor',double(matrix.color(:,ii))/255);
+        end
+        
         handle.lText(ii) = text(30,(lHeight-20*ii+10),matrix.label{ii},...
             'fontSize',param.fontSize);
     end

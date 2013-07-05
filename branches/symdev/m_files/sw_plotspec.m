@@ -322,6 +322,9 @@ if param.mode < 3
         autAxis = axis;
         axis([sort(axis0(1:2)) autAxis(3:4)]);
     else
+        if numel(param.axLim) == 1
+            param.axLim = [0 param.axLim];
+        end
         axis([sort(axis0(1:2)) param.axLim]);
     end
     box on
@@ -401,7 +404,7 @@ if param.mode == 3
         zi(isnan(zi)) = [];
         posLim = sort([zi(zi>0) 0],'descend');
         negLim = sort([zi(zi<0) 0],'ascend');
-        axLim  = [negLim(ceil(end*8e-3)) posLim(ceil(end*8e-3))];
+        axLim  = [negLim(ceil(end*8e-2)) posLim(ceil(end*8e-2))];
         axMagn = 10.^(floor(log10(abs(axLim))));
         axLim  = ceil(axLim./axMagn).*axMagn;
         axLim(isnan(axLim)) = 0;
@@ -413,16 +416,16 @@ if param.mode == 3
         if axLim(1) < 0
             axLim = [-max(abs(axLim)) max(abs(axLim))];
         end
-%         zi(zi<=0) = [];
-%         maxsort  = sort(zi,'descend');
-%         maxsortS = maxsort(ceil(end*8e-3));
-%         magni    = 10^(floor(log10(maxsortS)));
-%         cMax     = ceil(maxsortS/magni)*magni;
-%         cMaxMax  = maxsort(1);
-%         
-%         if cMax <= 0
-%             cMax = 1;
-%         end
+        %         zi(zi<=0) = [];
+        %         maxsort  = sort(zi,'descend');
+        %         maxsortS = maxsort(ceil(end*8e-3));
+        %         magni    = 10^(floor(log10(maxsortS)));
+        %         cMax     = ceil(maxsortS/magni)*magni;
+        %         cMaxMax  = maxsort(1);
+        %
+        %         if cMax <= 0
+        %             cMax = 1;
+        %         end
     else
         axLim   = param.axLim;
         cMaxMax = max(abs(axLim));
@@ -479,7 +482,7 @@ if param.mode == 3
     end
     
     caxis(axLim);
-        
+    
     if param.colorbar && (nPlot == 1)
         cHandle = colorbar;
         set(get(cHandle,'ylabel'),'String', 'Intensity (arb. u.)');

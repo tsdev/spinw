@@ -34,8 +34,8 @@ try
     luvo.addcoupling('J1a',1);
     luvo.addcoupling('J1b',1);
     
-    luvo.setmatrix('label','J1a','pref',{[1 0 0]});
-    luvo.setmatrix('label','J1b','pref',{[0 1 0]});
+    luvo.setmatrix('label','J1a','pref',{[0 1 0]});
+    luvo.setmatrix('label','J1b','pref',{[1 0 0]});
     
     hFig = plot(luvo,'pNonMagAtom',false,'pZeroCoupling',true);
     

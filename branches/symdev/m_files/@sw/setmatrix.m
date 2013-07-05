@@ -8,15 +8,17 @@ function setmatrix(obj, varargin)
 % One of the below options has to be given:
 %
 % label         Label of the matrix that is already assigned to either as
-%               anisotropy or coupling only once.
+%               anisotropy, g-tensor or coupling.
 % mat_idx       Index of the matrix, stored in obj.matrix. Alternative to
 %               the 'label' option.
 % coupling_idx  Value of the obj.coupling.idx, that defines the coupling,
-%               for which the symmetry allowed matrices has to be
-%               determined.
-% aniso_idx     Value of the obj.matom.idx, that selects a magnetic atoms,
-%               for which the symmetry allowed anisotropy matrices has to
-%               be determined.
+%               for which the symmetry allowed matrix elements will be set.
+% aniso_idx     Value of the obj.matom.idx, that selects a magnetic atom,
+%               for which the symmetry allowed matrix elements will be
+%               set for single ion anisotropy.
+% g_idx         Value of the obj.matom.idx, that selects a magnetic atoms,
+%               for which the symmetry allowed matrix elements will be
+%               set for the g-tensor.
 %
 % Optional inputs:
 %
@@ -63,8 +65,14 @@ end
 [aMat, param] = obj.getmatrix(varargin{:});
 
 if isempty(param.pref)
-    % Heisenberg coupling is always allowed by symmetry!
-    aMat = eye(3);
+    % Identity matrix (Heisenberg coupling) is always allowed by symmetry!
+    if param.g_idx
+        % g-tensor default is 2 for spin only magnetic moment
+        aMat = 2*eye(3);
+    else
+        % identity matrix
+        aMat = eye(3);
+    end
 end
 
 if param.mat_idx > 0

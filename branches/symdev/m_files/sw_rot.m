@@ -19,10 +19,10 @@ function [V, rotM] = sw_rot(rotAxis, rotAngle, V)
 % following:
 %   vp = rotM * v;
 %
-% To rotate matrices use the following command:
+% To rotate tensors (3x3 matrices) use the following command:
 %   Ap = rotM * A * rotM';
 %
-% See also SW.GENMAGSTR.
+% See also SW.GENMAGSTR, SW_MIRROR.
 %
 
 if nargin==0

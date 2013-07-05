@@ -20,16 +20,15 @@ function [Vseq,Dseq] = eigenshuffle(Asequence)
 %      one such set for each eigenvalue problem.
 %
 % Arguments: (Output)
-%  Vseq - a 3-d array (pxpxn) of eigenvectors. Each
-%      plane of the array will be sorted into a
-%      consistent order with the other eigenvalue
-%      problems. The ordering chosen will be one
-%      that maximizes the energy of the consecutive
-%      eigensystems relative to each other.
+%  Vseq - a 3-d array (pxpxn) of eigenvectors.
 %
-%  Dseq - pxn array of eigen values, sorted in order
-%      to be consistent with each other and with the
-%      eigenvectors in Vseq.
+%  Dseq - pxn array of eigen values.
+%  Idx  - Permutation indices that sorts the eigenvalues and eigenvectors,
+%         dimensions are (pxn). The ordering chosen will be one that
+%         maximizes the energy of the consecutive eigensystems relative to
+%         each other. The proper order:
+%           Vseq(:,:,i) = Vseq(:,Idx(:,i),i);
+%           Dseq(:,i)   = Dseq(Idx(:,i),i);
 %
 % Example:
 %  Efun = @(t) [1 2*t+1 t^2 t^3;2*t+1 2-t t^2 1-t^3; ...
@@ -40,7 +39,7 @@ function [Vseq,Dseq] = eigenshuffle(Asequence)
 %    Aseq(:,:,i) = Efun((i-11)/10);
 %  end
 %  [Vseq,Dseq] = eigenshuffle(Aseq);
-%  
+%
 % To see that eigenshuffle has done its work correctly,
 % look at the eigenvalues in sequence, after the shuffle.
 %
@@ -135,61 +134,63 @@ function [Vseq,Dseq] = eigenshuffle(Asequence)
 % e-mail: woodchips@rochester.rr.com
 % Release: 3.0
 % Release date: 2/18/09
+%
 
 % Is Asequence a 3-d array?
 Asize = size(Asequence);
 if (Asize(1)~=Asize(2))
-  error('Asequence must be a (pxpxn) array of eigen-problems, each of size pxp')
+    error('Asequence must be a (pxpxn) array of eigen-problems, each of size pxp')
 end
 p = Asize(1);
 if length(Asize)<3
-  n = 1;
+    n = 1;
 else
-  n = Asize(3);
+    n = Asize(3);
 end
 
 % the initial eigenvalues/vectors in nominal order
 Vseq = zeros(p,p,n);
 Dseq = zeros(p,n);
+
 for i = 1:n
-  [V,D] = eig(Asequence(:,:,i));
-  D = diag(D);
-  % initial ordering is purely in decreasing order.
-  % If any are complex, the sort is in terms of the
-  % real part.
-  [~,tags] = sort(real(D),1,'descend');
-  
-  Dseq(:,i) = D(tags);
-  Vseq(:,:,i) = V(:,tags);
+    [V,D] = eig(Asequence(:,:,i));
+    D = diag(D);
+    % initial ordering is purely in decreasing order.
+    % If any are complex, the sort is in terms of the
+    % real part.
+    [~,tags] = sort(real(D),1,'descend');
+    
+    Dseq(:,i) = D(tags);
+    Vseq(:,:,i) = V(:,tags);
 end
 
 % was there only one eigenvalue problem?
 if n < 2
-  % we can quit now, having sorted the eigenvalues
-  % as best as we could.
-  return
+    % we can quit now, having sorted the eigenvalues
+    % as best as we could.
+    return
 end
 
 % now, treat each eigenproblem in sequence (after
 % the first one.)
 for i = 2:n
-  % compute distance between systems
-  V1 = Vseq(:,:,i-1);
-  V2 = Vseq(:,:,i);
-  D1 = Dseq(:,i-1);
-  D2 = Dseq(:,i);
-  dist = (1-abs(V1'*V2)).*sqrt( ...
-    distancematrix(real(D1),real(D2)).^2+ ...
-    distancematrix(imag(D1),imag(D2)).^2);
-  
-  % Is there a best permutation? use munkres.
-  % much faster than my own mintrace, munkres
-  % is used by gracious permission from Yi Cao.
-  reorder = munkres(dist);
-  
-  Vseq(:,:,i) = Vseq(:,reorder,i);
-  Dseq(:,i) = Dseq(reorder,i);
-
+    % compute distance between systems
+    V1 = Vseq(:,:,i-1);
+    V2 = Vseq(:,:,i);
+    D1 = Dseq(:,i-1);
+    D2 = Dseq(:,i);
+    dist = (1-abs(V1'*V2)).*sqrt( ...
+        distancematrix(real(D1),real(D2)).^2+ ...
+        distancematrix(imag(D1),imag(D2)).^2);
+    
+    % Is there a best permutation? use munkres.
+    % much faster than my own mintrace, munkres
+    % is used by gracious permission from Yi Cao.
+    reorder = munkres(dist);
+    
+    Vseq(:,:,i) = Vseq(:,reorder,i);
+    Dseq(:,i)   = Dseq(reorder,i);
+    
 end
 
 % =================
@@ -204,7 +205,7 @@ function d = distancematrix(vec1,vec2)
 d = abs(vec1 - vec2);
 
 function [assignment,cost] = munkres(costMat)
-% MUNKRES   Munkres (Hungarian) Algorithm for Linear Assignment Problem. 
+% MUNKRES   Munkres (Hungarian) Algorithm for Linear Assignment Problem.
 %
 % [ASSIGN,COST] = munkres(COSTMAT) returns the optimal column indices,
 % ASSIGN assigned to each row and the minimum COST based on the assignment
@@ -228,7 +229,7 @@ n=400;
 A=rand(n);
 tic
 [a,b]=munkres(A);
-toc                 % about 2 seconds 
+toc                 % about 2 seconds
 %}
 % Example 3: rectangular assignment with inf costs
 %{
@@ -237,7 +238,7 @@ A(A>0.7)=Inf;
 [a,b]=munkres(A);
 %}
 % Reference:
-% "Munkres' Assignment Algorithm, Modified for Rectangular Matrices", 
+% "Munkres' Assignment Algorithm, Modified for Rectangular Matrices",
 % http://csclab.murraystate.edu/bob.pilgrim/445/munkres.html
 
 % version 2.0 by Yi Cao at Cranfield University on 10th July 2008
@@ -272,7 +273,7 @@ dMat(1:nRows,1:nCols) = costMat(validRow,validCol);
 minR = min(dMat,[],2);
 minC = min(bsxfun(@minus, dMat, minR));
 
-%**************************************************************************  
+%**************************************************************************
 %   STEP 2: Find a zero of dMat. If there are no starred zeros in its
 %           column or row start the zero. Repeat for each zero
 %**************************************************************************
@@ -287,10 +288,10 @@ while any(zP(:))
 end
 
 while 1
-%**************************************************************************
-%   STEP 3: Cover each column with a starred zero. If all the columns are
-%           covered then the matching is maximum
-%**************************************************************************
+    %**************************************************************************
+    %   STEP 3: Cover each column with a starred zero. If all the columns are
+    %           covered then the matching is maximum
+    %**************************************************************************
     if all(starZ>0)
         break
     end
@@ -302,10 +303,10 @@ while 1
     while 1
         %**************************************************************************
         %   STEP 4: Find a noncovered zero and prime it.  If there is no starred
-        %           zero in the row containing this primed zero, Go to Step 5.  
-        %           Otherwise, cover this row and uncover the column containing 
-        %           the starred zero. Continue in this manner until there are no 
-        %           uncovered zeros left. Save the smallest uncovered value and 
+        %           zero in the row containing this primed zero, Go to Step 5.
+        %           Otherwise, cover this row and uncover the column containing
+        %           the starred zero. Continue in this manner until there are no
+        %           uncovered zeros left. Save the smallest uncovered value and
         %           Go to Step 6.
         %**************************************************************************
         cR = find(~coverRow);
@@ -338,7 +339,7 @@ while 1
             %         row, and subtract it from every element of each uncovered column.
             %         Return to Step 4 without altering any stars, primes, or covered lines.
             %**************************************************************************
-            [minval,rIdx,cIdx]=outerplus(dMat(~coverRow,~coverColumn),minR(~coverRow),minC(~coverColumn));            
+            [minval,rIdx,cIdx]=outerplus(dMat(~coverRow,~coverColumn),minR(~coverRow),minC(~coverColumn));
             minC(~coverColumn) = minC(~coverColumn) + minval;
             minR(coverRow) = minR(coverRow) - minval;
         else
@@ -389,5 +390,3 @@ for r=1:nx
     end
 end
 [rIdx,cIdx]=find(M==minval);
-
-

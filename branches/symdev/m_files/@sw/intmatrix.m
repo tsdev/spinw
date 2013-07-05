@@ -45,7 +45,10 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 % SI            Single ion energy, due to anisotropy and magnetic field.
 % SI.aniso      Matrix with dimensions of [3 3 nMagAtom] sized matrix,
 %               where the energy of the i-th spin is
-%               spin(:)*A(:,:,i)*spin(:)'.
+%               E_aniso = spin(:)*A(:,:,i)*spin(:)'.
+% SI.g          g-tensor, with dimensions of [3 3 nMagAtom]. It determines
+%               the energy of the magnetic moment in external field:
+%               E_field = B(:)*g(:,:,i)*spin(:)'.
 % SI.field      External magnetic field [Bx By Bz].
 %
 % RR            Positions of the atoms in lattice units, dimensions are
@@ -66,6 +69,8 @@ nMat     = size(mat,3);
 
 % Add extra zero matrix to the end of the matrix list
 mat = cat(3,mat,zeros(3));
+% Add another extra matrix for g=2 default tensor
+mat = cat(3,mat,2*eye(3));
 
 % Anisotropy matrix.
 if size(obj.single_ion.aniso,2) == nMagAtom
@@ -77,6 +82,19 @@ if size(obj.single_ion.aniso,2) == nMagAtom
     SI.aniso = (SI.aniso + permute(SI.aniso,[2 1 3]))/2;
 else
     SI.aniso = zeros(3,3,nMagAtom);
+end
+
+% g-tensor.
+if size(obj.single_ion.g,2) == nMagAtom
+    idx = obj.single_ion.g;
+    % the non-assigned atoms get a pointer to the last zero energy matrix
+    idx(idx == 0) = nMat + 2;
+    SI.g = mat(:,:,idx);
+    % keeping only the symmetric part of the g-tensor
+    SI.g = (SI.g + permute(SI.g,[2 1 3]))/2;
+else
+    % default g-tensor value of 2
+    SI.g = repmat(2*eye(3),[1 1 nMagAtom]);
 end
 
 % Couplings
@@ -128,6 +146,14 @@ if obj.issym
         % rotate the matrices: R*M*R'
         SI.aniso = mmat(rotOp,mmat(SI.aniso,permute(rotOp,[2 1 3])));
     end
+    
+    % Generate g-tensor using the space group symmetry
+    [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
+    % convert rotation operators to xyz Cartesian coordinate system
+    rotOp = mmat(A,mmat(rotOp,inv(A)));
+    % rotate the matrices: R*M*R'
+    SI.g = mmat(rotOp,mmat(SI.g,permute(rotOp,[2 1 3])));
+    
     
     % Generate interaction matrices using the space group symmetry
     if numel(SS.all) > 0
@@ -212,15 +238,16 @@ if param.plotmode
         % change the sign of the DM interaction (transpose J matrices)
         SS.all(6:14,flip)  = SS.all([1 4 7 2 5 8 3 6 9]+5,flip);
     end
-end
-
-% Extend the lattice for magnetic interactions
-if ~param.plotmode
-    [mAtom, SI.aniso, SS] = sw_extendlattice(double(obj.mag_str.N_ext), mAtom, SI.aniso, SS);
+    RR = mAtom.r;
+else
+    % Extend the lattice for magnetic interactions
+    nExt = double(obj.mag_str.N_ext);
+    [mAtom, SS] = sw_extendlattice(nExt, mAtom, SS);
+    SI.aniso = repmat(SI.aniso, [1 1 prod(nExt)]);
+    SI.g     = repmat(SI.g, [1 1 prod(nExt)]);
+    
     % Save the position of all atoms
     RR = mAtom.RRext;
-else
-    RR = mAtom.r;
 end
 
 % Save external field.

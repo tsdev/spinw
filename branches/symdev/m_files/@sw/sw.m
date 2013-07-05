@@ -31,7 +31,7 @@ classdef sw < class_handlelight
     properties
         lattice     % lattice parameters, fields: angle, lat_const, sym
         unit_cell   % atoms in the unit cell, fields: r, S, label, color
-        twin        % twins, fields: vol, rotc 
+        twin        % twins, fields: vol, rotc
         matrix      % definition of 3x3 matrices, fields: mat, color, label
         single_ion  % single ion terms in the Hamiltonian, fields: aniso, field
         coupling    % magnetic interactions, fields: dl, atom1, atom2, mat_idx, idx
@@ -125,15 +125,12 @@ classdef sw < class_handlelight
                         [~, ~, objS.unit_cell.S(ii)] = sw_mff(name0{ii});
                     end
                     objS.unit_cell.color = int32(col);
-                    %objS.unit_cell.S = zeros(1,nAtom);
                 end
                 
                 fNames = fieldnames(objS);
                 for ii = 1:length(fNames)
                     obj.(fNames{ii}) = objS.(fNames{ii});
                 end
-
-                
                 
             end
             

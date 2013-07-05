@@ -25,24 +25,26 @@ function spectra = spinwave(obj, hkl, varargin)
 %               example: hkl = {[0 0 0] [1 0 0]  50}, defines a scan along
 %               (h,0,0) from 0 to 1 and 50 Q points are calculated along
 %               the scan.
-% tol           Tolerance of the incommensurability of the magnetic
-%               ordering wavevector. Deviations from integer values of the
-%               ordering wavevector smaller than the tolerance are
-%               considered to be commensurate. Default value is 1e-4.
-% omega_tol     Tolerance on the energy difference of degenerate modes when
-%               diagonalising the quadratic form, default is 1e-5.
 %
 % Options:
 %
 % fitmode       Speedup (for fitting mode only), default is false.
 % notwin        If true, the spectra of the twins won't be calculated.
 %               Default is false.
+% sortMode      The spin wave modes will be sorted if true. Default is
+%               true.
 % optmem        Optimise memory usage, default is true.
 % fid           For text output of the calculation:
 %               0   No text output.
 %               1   Output written onto the Command Window. (default)
 %               fid Output written into a text file opened with the
 %                   fid = fopen(path) command.
+% tol           Tolerance of the incommensurability of the magnetic
+%               ordering wavevector. Deviations from integer values of the
+%               ordering wavevector smaller than the tolerance are
+%               considered to be commensurate. Default value is 1e-4.
+% omega_tol     Tolerance on the energy difference of degenerate modes when
+%               diagonalising the quadratic form, default is 1e-5.
 %
 % Output:
 %
@@ -81,11 +83,15 @@ if iscell(hkl)
     hkl = sw_qscan(hkl);
 end
 
-inpForm.fname  = {'fitmode' 'notwin' 'modesort' 'optmem' 'fid' 'tol' 'omega_tol'};
-inpForm.defval = {false     false    false      true     1     1e-4   1e-5      };
+inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol' 'omega_tol'};
+inpForm.defval = {false     false    true      true     1     1e-4   1e-5      };
 inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]  [1 1]     };
 
 param = sw_readparam(inpForm, varargin{:});
+
+if param.fitmode
+    param.sortMode = false;
+end
 
 % saize of the extended magnetic unit cell
 nExt    = double(obj.mag_str.N_ext);
@@ -127,6 +133,10 @@ if nTwin>1
     hkl0 = cell2mat(obj.twinq(hkl0));
     nHkl = nHkl*nTwin;
 end
+
+% determines a twin index for every q point
+twinIdx = repmat(1:nTwin,[nHkl 1]);
+twinIdx = twinIdx(:);
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
@@ -212,7 +222,16 @@ A20 = -S0(atom2).*AD;
 D20 = -S0(atom1).*AD;
 BC0 =  SiSj.*shiftdim(sum(sum(zedL.*JJ.*     zedR ,2),1),1);
 AD0 =  SiSj.*shiftdim(sum(sum(zedL.*JJ.*conj(zedR),2),1),1);
-MF  =  repmat(obj.unit.gamma*SI.field*eta,[1 2]);
+
+% Magnetic field is different for every twin
+%MF  =  repmat(obj.unit.muB*SI.field*eta,[1 2]);
+MF = zeros(1,2*nMagExt,nTwin);
+for ii = 1:nTwin
+    % rotate the magnetic field to the relative direction of every twin
+    % backward rotation with the rotc matrix of the twin
+    twinB = SI.field*obj.twin.rotc(:,:,ii)*obj.unit.muB;
+    MF(:,:,ii) = repmat(twinB*permute(mmat(SI.g,permute(eta,[1 3 2])),[1 3 2]),[1 2]);
+end
 
 % Creates the serial indices for every matrix element in ham matrix.
 idxA1 = [atom1'         atom2'         ];
@@ -256,10 +275,14 @@ if fid == 1
 end
 
 for jj = 1:nSlice
+    % q indices selected for every chunk
+    hklIdxMEM  = hklIdx(jj):(hklIdx(jj+1)-1);
     % q values contatining the k_m vector
-    hklExtMEM  = hklExt(:,hklIdx(jj):(hklIdx(jj+1)-1));
-    % q values without the +/-k_m vector 
-    hklExt0MEM = hklExt0(:,hklIdx(jj):(hklIdx(jj+1)-1));
+    hklExtMEM  = hklExt(:,hklIdxMEM);
+    % q values without the +/-k_m vector
+    hklExt0MEM = hklExt0(:,hklIdxMEM);
+    % twin indices for every q point
+    twinIdxMEM = twinIdx(hklIdxMEM);
     nHklMEM = size(hklExtMEM,2);
     
     % Creates the matrix of exponential factors nCoupling x nHkl size.
@@ -289,7 +312,13 @@ for jj = 1:nSlice
     ham = ham + repmat(accumarray([idxA2; idxD2],2*[A20 D20],[1 1]*2*nMagExt),[1 1 nHklMEM]);
     
     if any(SI.field)
-        ham = ham + repmat(accumarray(idxMF,MF,[1 1]*2*nMagExt),[1 1 nHklMEM]);
+        % different field for different twin
+        for ii = min(twinIdxMEM):max(twinIdxMEM)
+            nTwinQ = sum(twinIdxMEM==ii);
+            ham(:,:,twinIdxMEM==ii) = ham(:,:,twinIdxMEM==ii) + repmat(accumarray(idxMF,MF(:,:,ii),[1 1]*2*nMagExt),[1 1 nTwinQ]);
+        end
+        
+        %ham = ham + repmat(accumarray(idxMF,MF,[1 1]*2*nMagExt),[1 1 nHklMEM]);
     end
     
     ham = (ham + conj(permute(ham,[2 1 3])))/2;
@@ -304,14 +333,17 @@ for jj = 1:nSlice
     end
     
     
-    V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
-    D = zeros(2*nMagExt,nHklMEM);
+    %V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
+    %D = zeros(2*nMagExt,nHklMEM);
     
-    for ii = 1:nHklMEM
-        %[V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
-        %D(:,ii)     = diag(Dtemp);
-        [V(:,:,ii), D(:,ii)] = eigorth(gham(:,:,ii),param.omega_tol);
-    end
+    %for ii = 1:nHklMEM
+    %[V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
+    %D(:,ii)     = diag(Dtemp);
+    %[V(:,:,ii), D(:,ii)] = eigorth(gham(:,:,ii),param.omega_tol);
+    %[V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
+    %D(:,ii) = diag(Dtemp);
+    [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
+    %end
     
     for ii = 1:nHklMEM
         omega(:,end+1) = diag(g).*D(:,ii); %#ok<AGROW>
@@ -342,7 +374,7 @@ for jj = 1:nSlice
     if fid == 1
         sw_status(jj/nSlice*100);
     end
-
+    
 end
 
 if fid == 1
@@ -413,6 +445,11 @@ spectra.Sab    = Sab;
 spectra.hkl    = hkl(:,1:nHkl0);
 spectra.hklA   = hklA;
 spectra.incomm = incomm;
+% save the important parameters
+spectra.param.notwin    = param.notwin;
+spectra.param.sortMode  = param.sortMode;
+spectra.param.tol       = param.tol;
+spectra.param.omega_tol = param.omega_tol;
 
 if ~param.fitmode
     spectra.ff  = ones(nMagExt,nHkl0);

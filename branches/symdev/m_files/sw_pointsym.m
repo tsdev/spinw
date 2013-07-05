@@ -1,6 +1,7 @@
 function pOp = sw_pointsym(sym, r)
 % pOp = SW_POINTSYM(sym, r) determines point group symmetry in an arbitrary
-% position in the unit cell in any space group.
+% position in the unit cell in any space group. Returns all the generators
+% of the point group.
 %
 % Input:
 %
@@ -28,7 +29,10 @@ if nargin == 0
 end
 
 if ~iscell(sym)
+    % returns all operators
     [symOp, symTr] = sw_gencoord(sym);
+    % return only the generators
+    %[symOp, symTr] = sw_gensym(sym);
 else
     symOp = sym{1};
     symTr = sym{2};

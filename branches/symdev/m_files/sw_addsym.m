@@ -31,9 +31,25 @@ if nargin == 1
     symName = ['sym' num2str(nLines+1)];
 end
 
+% determine the symmetry generators
+[symOp, symTr] = sw_gensym(symName, symStr);
+[~, ~, isG] = sw_symgetgen(symOp, symTr);
+% parse the input string
+idx = 1;
+parStr = {};
+while ~isempty(symStr)
+    [parStr{idx}, symStr] = strtok(symStr,';'); %#ok<STTOK,AGROW>
+    idx = idx + 1;
+end
+parStr = parStr(isG);
+parStr = parStr(:)';
+parStr = [parStr; repmat({';'},1,numel(parStr))];
+symStrG = [parStr{:}];
+symStrG = symStrG(1:end-1);
+
 % Write the file
 fid = fopen(symPath,'a');
-fprintf(fid,'\n%4d  %-11s: %s',nLines+1,symName,symStr);
+fprintf(fid,'\n%4d  %-11s: %s',nLines+1,symName,symStrG);
 fclose(fid);
 
 sym = nLines + 1;

@@ -12,11 +12,14 @@ function [aMat, param] = getmatrix(obj, varargin)
 % mat_idx       Index of the matrix, stored in obj.matrix. Alternative to
 %               the 'label' option.
 % coupling_idx  Value of the obj.coupling.idx, that defines the coupling,
-%               for which the symmetry allowed matrices has to be
+%               for which the symmetry allowed matrix elements have to be
 %               determined.
-% aniso_idx     Value of the obj.matom.idx, that selects a magnetic atoms,
-%               for which the symmetry allowed anisotropy matrices has to
-%               be determined.
+% aniso_idx     Value of the obj.matom.idx, that selects a magnetic atom,
+%               for which the symmetry allowed anisotropy matrix elements
+%               have to be determined.
+% g_idx         Value of the obj.matom.idx, that selects a magnetic atom,
+%               for which the symmetry allowed elemtns of the g-tensor
+%               have to be determined.
 %
 % Optional inputs:
 %
@@ -61,10 +64,10 @@ function [aMat, param] = getmatrix(obj, varargin)
 % See also SW.SETMATRIX.
 %
 
-inpForm.fname  = {'label' 'mat_idx' 'aniso_idx' 'coupling_idx' 'fid' 'tol' 'pref'};
-inpForm.defval = {zeros(1,0) 0       0          0              0     1e-5  []    };
-inpForm.size   = {[1 -1]  [1 1]      [1 1]      [1 1]          [1 1] [1 1] [1 -2]};
-inpForm.soft   = {false   false      false      false          false false true  };
+inpForm.fname  = {'label' 'mat_idx' 'aniso_idx' 'coupling_idx' 'fid' 'tol' 'pref' 'g_idx'};
+inpForm.defval = {zeros(1,0) 0       0          0              0     1e-5  []     0      };
+inpForm.size   = {[1 -1]  [1 1]      [1 1]      [1 1]          [1 1] [1 1] [1 -2] [1 1]  };
+inpForm.soft   = {false   false      false      false          false false true   false  };
 
 param = sw_readparam(inpForm, varargin{:});
 tol = param.tol;
@@ -76,10 +79,10 @@ if nargin == 1
 end
 
 % Check for appropriate input
-inpL = [~isempty(param.label) [param.mat_idx param.aniso_idx param.coupling_idx]~=0];
+inpL = [~isempty(param.label) [param.mat_idx param.aniso_idx param.coupling_idx param.g_idx]~=0];
 
 if sum(inpL) ~= 1
-    error('sw:getmatrix:WrongInput','Exactly one of the following options have to be defined: label, mat_idx, aniso_idx or coupling_idx!');
+    error('sw:getmatrix:WrongInput','Exactly one of the following options have to be defined: label, mat_idx, aniso_idx, g_idx or coupling_idx!');
 end
 
 if ~isempty(param.label)
@@ -93,26 +96,31 @@ if ~isempty(param.label)
     end
 end
 
-% Identify the coupling or anisotropy
+% Identify the coupling, anisotropy or g-tensor
 if param.mat_idx ~= 0
     
     % search to which coupling/anisotropy the matrix is assigned to
     [~, selCpIdx] = find(obj.coupling.mat_idx == param.mat_idx);
     [~, selAnIdx] = find(obj.single_ion.aniso == param.mat_idx);
+    [~, selGIdx ] = find(obj.single_ion.g     == param.mat_idx);
     
     Cpidx = unique(obj.coupling.idx(selCpIdx));
     Anidx = unique(obj.matom.idx(selAnIdx));
-    sumNum = numel(Cpidx) + numel(Anidx);
+    Gidx   = unique(obj.matom.idx(selGIdx));
     
-    if isempty(Cpidx) && isempty(Anidx)
-        error('sw:setmatrix:WrongInput','Matrix is not assigned to any coupling/anisotropy, define idx!');
+    sumNum = numel(Cpidx) + numel(Anidx) + numel(Gidx);
+    
+    if isempty(Cpidx) && isempty(Anidx) && isempty(Gidx)
+        error('sw:setmatrix:WrongInput','Matrix is not assigned to any coupling/anisotropy/g-tensor, define idx!');
     elseif sumNum > 1
-        error('sw:setmatrix:WrongInput','Matrix is assigned to multiple coupling/anisotropy idx, define idx!');
+        error('sw:setmatrix:WrongInput','Matrix is assigned to multiple coupling/anisotropy/g-tensor idx, define idx!');
     else
         if ~isempty(Cpidx)
             param.coupling_idx = Cpidx;
-        else
+        elseif ~isempty(Anidx)
             param.aniso_idx = Anidx;
+        else
+            param.g_idx = Gidx;
         end
     end
 end
@@ -141,18 +149,31 @@ if param.coupling_idx
     if sum(mat_idx>0) == 1
         param.mat_idx = sum(mat_idx);
     end
-else
+elseif param.aniso_idx
     % Anisotropy is defined
     center = obj.unit_cell.r(:,param.aniso_idx);
     dr     = 0;
     
     mat_idx = obj.single_ion.aniso(obj.matom.idx == param.aniso_idx);
     if isempty(mat_idx)
-        error('sw:getmatrix:WrongInput','The given obj.matom.idx does not existst, check your input!');
+        error('sw:getmatrix:WrongInput','The given obj.matom.idx does not exists, check your input!');
     end
     if mat_idx(1) > 0
         param.mat_idx = mat_idx(1);
     end
+else
+    % g-tensor is defined
+    center = obj.unit_cell.r(:,param.g_idx);
+    dr     = 0;
+    
+    mat_idx = obj.single_ion.g(obj.matom.idx == param.g_idx);
+    if isempty(mat_idx)
+        error('sw:getmatrix:WrongInput','The given obj.matom.idx does not exists, check your input!');
+    end
+    if mat_idx(1) > 0
+        param.mat_idx = mat_idx(1);
+    end
+    
 end
 
 if param.mat_idx ~= 0
@@ -330,9 +351,12 @@ if fid
         fprintf(fid,' lattice translation vector: [%d,%d,%d]\n',dl(:,1));
         fprintf(fid,' distance: %5.3f Angstrom\n',norm(obj.basisvector*dr(:,1)));
         fprintf(fid,' center of bond (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
-    else
+    elseif param.aniso_idx
         fprintf(fid,'\nThe symmetry analysis of the anisotropy matrix of atom %d (''%s''):\n',param.aniso_idx,obj.unit_cell.label{param.aniso_idx});
         fprintf(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
+    else
+        fprintf(fid,'\nThe symmetry analysis of the g-tensor of atom %d (''%s''):\n',param.g_idx,obj.unit_cell.label{param.g_idx});
+        fprintf(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));        
     end
     if ~isempty(param.label)
         fprintf(fid,' label of the assigned matrix: ''%s''\n',param.label);

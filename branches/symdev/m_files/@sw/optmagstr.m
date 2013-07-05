@@ -149,8 +149,10 @@ dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
 atom1 = [SS.all(4,:)   1:nMagExt];
 atom2 = [SS.all(5,:)   1:nMagExt];
 JJ    = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
+g     = SI.g;
 
-Bgamma = obj.unit.gamma * SI.field;
+% B * g: field * g-tensor
+Bg  = permute(mmat(SI.field,g)*obj.unit.muB,[2 3 1]);
 
 minE = 0;
 minX = zeros(1,nPar);
@@ -162,7 +164,7 @@ for ii = 1:param.nRun
     else
         x0 = param.x0;
     end
-    [X, E, exitflag, output] = sw_fminsearchbnd(@(x)efunc(x, S, dR, atom1, atom2, JJ, nExt, Bgamma, param.epsilon, param.func),x0,param.xmin,param.xmax,...
+    [X, E, exitflag, output] = sw_fminsearchbnd(@(x)efunc(x, S, dR, atom1, atom2, JJ, nExt, Bg, param.epsilon, param.func),x0,param.xmin,param.xmax,...
         optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
     if E < minE
         minE = E;
@@ -193,7 +195,7 @@ end
 end
 
 %% Energy function
-function E = efunc(x, S, dR, atom1, atom2, JJ, nExt, Bgamma, epsilon, func)
+function E = efunc(x, S, dR, atom1, atom2, JJ, nExt, Bg, epsilon, func)
 % Cost function to optimize.
 
 [M, k, n] = func(S, x);
@@ -218,6 +220,6 @@ end
 Ml = repmat(permute(M1,[1 3 2]),[1 3 1]);
 Mr = repmat(permute(M2,[3 1 2]),[3 1 1]);
 
-E =  (sum(sum(sum(Ml.*JJ.*Mr))) - sum(Bgamma*M))/nMagExt;
+E =  (sum(sum(sum(Ml.*JJ.*Mr))) - sum(Bg(:).*M(:)))/nMagExt;
 
 end

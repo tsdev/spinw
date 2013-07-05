@@ -16,8 +16,8 @@ function [M, asym] = sw_basismat(symOp, r, tol)
 %           allowed matrices, dimensions are [3 3 nM]. Any matrix is
 %           allowed that can be expressed as a linear combination of the
 %           symmetry allowed matrices.
-% asym      Logical vector, for each 3x3 matrix in M, tells whether is is
-%           antisymmetry, dimensions are [1 nM].
+% asym      Logical vector, for each 3x3 matrix in M, tells whether it is
+%           antisymmetric, dimensions are [1 nM].
 %
 
 if nargin == 0
@@ -84,7 +84,9 @@ for ii = 1:nSym
     M.S = M.S+permute(M.S,[2 1 3]);
     M.V = reshape(cat(3,M.S,M.A),9,[]);
     
-    M0.V = [dep(M0.V,M.V) dep(M.V,M0.V)];
+    %M0.V = [dep(M0.V,M.V) dep(M.V,M0.V)];
+    M0.V = intersec(M0.V,M.V);
+    
     % remove small matrices
     normM = arrayfun(@(idx)norm(M0.V(:,idx)),1:size(M0.V,2));
     M0.V(:,normM < tol) = [];
@@ -99,14 +101,14 @@ M0.V = reshape(cat(3,M0.V-permute(M0.V,[2 1 3]),M0.V+permute(M0.V,[2 1 3])),9,[]
 normM = arrayfun(@(idx)norm(M0.V(:,idx)),1:size(M0.V,2));
 M0.V(:,normM < tol) = [];
 
-rM = arrayfun(@(idx)rank([M0.V V0(:,idx)]),1:9);
+rM = arrayfun(@(idx)rank([M0.V V0(:,idx)],tol),1:9);
 % the nice part
-rM = (rM==rank(M0.V));
+rM = (rM==rank(M0.V,tol));
 Vnice = V0(:,rM);
 
 % add rest of the vectors that cannot be expressed nicely :)
 for ii = 1:size(M0.V,2)
-    addV = indep(Vnice,M0.V(:,ii));
+    addV = indep(Vnice,M0.V(:,ii),tol);
     if ~isempty(addV)
         addV = addV - sum(bsxfun(@times,sum(bsxfun(@times,addV,Vnice),1),Vnice),2);
         Vnice = [Vnice addV]; %#ok<AGROW>
@@ -116,6 +118,45 @@ end
 %M0.V = orth([Vnice M0.V]);
 %M = M0.V;
 M = Vnice;
+
+% normalize the largest absolute value element to one
+divM  = arrayfun(@(idx)M(find(abs(M(:,idx))==max(abs(M(:,idx))),1,'first'),idx),1:size(M,2));
+M = bsxfun(@rdivide,M,divM);
+
+% subtract vectors from each other to get nicer result
+for ii = 1:(size(M,2)-1)
+    for jj = (ii+1):size(M,2)
+        factM = M(:,jj).*M(:,ii);
+        if any(factM)
+            factM = sum(factM)/sum(factM~=0);
+        else
+            factM = 0;
+        end
+         M(:,jj) = M(:,jj)-M(:,ii)*factM;
+    end
+end
+
+% remove small matrices
+normM = arrayfun(@(idx)norm(M(:,idx)),1:size(M,2));
+M(:,normM < tol) = [];
+
+% normalize the largest absolute value element to one
+divM  = arrayfun(@(idx)M(find(abs(M(:,idx))==max(abs(M(:,idx))),1,'first'),idx),1:size(M,2));
+M = bsxfun(@rdivide,M,divM);
+
+% subtract vectors from each other to get nicer result backwards as well
+M = M(:,end:-1:1);
+for ii = 1:(size(M,2)-1)
+    for jj = (ii+1):size(M,2)
+        factM = M(:,jj).*M(:,ii);
+        if any(factM)
+            factM = sum(factM)/sum(factM~=0);
+        else
+            factM = 0;
+        end
+         M(:,jj) = M(:,jj)-M(:,ii)*factM;
+    end
+end
 
 % normalize the largest absolute value element to one
 divM  = arrayfun(@(idx)M(find(abs(M(:,idx))==max(abs(M(:,idx))),1,'first'),idx),1:size(M,2));
@@ -133,7 +174,7 @@ end
 % sort assimetric matrices to the end
 M = cat(3,M(:,:,~asym),M(:,:,asym));
 
-% round M to the first 12th digit for better plotting 
+% round M to the first 12th digit for better plotting
 % (slightly larger than the numerical error)
 M = round(M*1e12)/1e12;
 
@@ -142,24 +183,38 @@ asym = [asym(~asym) asym(asym)];
 
 end
 
-function v = dep(M,v)
+function v = dep(M,v,tol)
 % returns column vectors of v that can be produced from the column vectors
 % of M
 %
 
-rv = arrayfun(@(idx)rank([M v(:,idx)]),1:size(v,2));
-rv = rv == rank(M);
+rv = arrayfun(@(idx)rank([M v(:,idx)],tol),1:size(v,2));
+rv = rv == rank(M,tol);
 v = v(:,rv);
 
 end
 
-function v = indep(M,v)
+function I = intersec(U1,U2)
+% returns the intersection of two vectorspaces U1 and U2. Each column of U1
+% and U2 are a vector.
+
+% N = basis for nullspace of [U1 U2]
+N = null([U1 U2]); 
+% I = basis for intersection of U1 and U2
+I = U1*N(1:size(U1,2),:); 
+% I = orthonormal and minimal size basis
+I = orth(I); 
+
+end
+
+
+function v = indep(M,v, tol)
 % returns column vectors of v that cannot be produced from the column
 % vectors of M
 %
 
-rv = arrayfun(@(idx)rank([M v(:,idx)]),1:size(v,2));
-rv = rv > rank(M);
+rv = arrayfun(@(idx)rank([M v(:,idx)],tol),1:size(v,2));
+rv = rv > rank(M,tol);
 v = v(:,rv);
 
 end

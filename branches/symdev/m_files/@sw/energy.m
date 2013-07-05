@@ -59,13 +59,13 @@ kExt = obj.mag_str.k.*nExt;
 % Incommenasurate structure in the extended unit cell.
 incomm = any(abs(kExt-round(kExt))>param.epsilon);
 
-% Anisotropy energy can be wrong.
-if  incomm && (any(any(any((SI.aniso)))) || (any(SI.field)))
-    warning('sw:energy:AnisoFieldIncomm','The calculated energy might be wrong due to incommensurate structure!');
-end
-
 M0      = obj.mag_str.S;
 nMagExt = size(M0,2);
+
+% Anisotropy energy can be wrong.
+if  incomm && (any(any(any((SI.aniso)))) || (any(SI.field)) || (any(any(any(SI.g-SI.g(1)*repmat(eye(3),[1 1 nMagExt]))))))
+    warning('sw:energy:AnisoFieldIncomm','The calculated energy might be wrong due to incommensurate structure!');
+end
 
 if nMagExt>0
     
@@ -91,7 +91,7 @@ if nMagExt>0
     Mr = repmat(permute(M2,[3 1 2]),[3 1 1]);
     
     exchE   =  sum(sum(sum(Ml.*JJ.*Mr)));
-    ZeemanE = -sum(SI.field*M0*obj.unit.gamma);
+    ZeemanE = -sum(SI.field*permute(mmat(SI.g,permute(M0,[1 3 2])),[1 3 2]))*obj.unit.muB;
     
     % energy per spin
     E = (exchE + ZeemanE)/nMagExt;

@@ -1,11 +1,13 @@
 function [symOp, symTr, symName] = sw_gencoord(sym, fid)
-% [symOp, symTr, symName] = SW_GENCOORD(sym, fid) calculates the
-% general coordinates for a given space group.
+% [symOp, symTr, symName] = SW_GENCOORD(sym, fid) calculates all symmtery
+% operators for a given space group.
 %
 % Input:
 %
 % sym           Line index in the symmetry.dat file or string of the
-%               symmetry operators.
+%               symmetry operators or cell: {symOp, symTr}.
+%               For example:
+%                   sym = 'P b n m';
 % fid           For printing the symmetry operators:
 %                   0   no printed output (Default)
 %                   1   standard output (Command Line)
@@ -19,7 +21,8 @@ function [symOp, symTr, symName] = sw_gencoord(sym, fid)
 %               are [3 nSym].
 % symName       String, the name of  the space group.
 %
-% See also SW, SW.ATOM, SW.MATOM, SW_GENCOUPLING, SW_POINTSYM, SW_GENATPOS.
+% See also SW, SW.ATOM, SW.MATOM, SW.GENCOUPLING, SW_POINTSYM, SW_GENATPOS,
+% SW_GENSYM.
 %
 
 if nargin == 0
@@ -34,7 +37,14 @@ if nargin < 2
     fid = 0;
 end
 
-[genOp, transl, symName] = sw_gensym(sym);
+if iscell(sym)
+    genOp  = sym{1};
+    transl = sym{2};
+    symName = '';
+else
+    [genOp, transl, symName] = sw_gensym(sym);
+end
+
 
 nGen  = size(genOp,3);
 symOp = eye(3);
@@ -47,23 +57,22 @@ P = zeros(1,nGen);
 
 % generate all symmetry elements
 for ii = 1:nGen
-    % order of the rotational matrix
-    N(ii) = sw_rotorder(genOp(:,:,ii));
-    % order of the translation
-    M(ii) = max(12./gcd(abs(transl(:,ii))*12,12));
-    if M(ii) == 0
-        M(ii) = 1;
-    end
-    % take the least common multiplier
-    P(ii) = lcm(M(ii),N(ii));
+    R0 = genOp(:,:,ii);
+    T0 = transl(:,ii);
+    % order of the symmetry operator
+    P(ii) = sw_rotorder(R0,T0);
+    
+    R = eye(3);
+    T = zeros(3,1);
+    
     for jj = 1:(P(ii)-1)
-        R = genOp(:,:,ii)^jj;
-        T = transl(:,ii)*jj;
+        R = R0*R;
+        T = R0*T + T0;
         
         nSym = size(symOp,3);
         for kk = 1:nSym
-            RS = symOp(:,:,kk)*R;
-            TS = mod(symTr(:,kk) + T,1);
+            RS = R*symOp(:,:,kk);
+            TS = mod(R*symTr(:,kk) + T,1);
             
             idxR = permute(sum(sum(abs(bsxfun(@minus,symOp,RS)),1),2),[3 1 2]) > tol;
             idxT = sum(abs(bsxfun(@minus,symTr,TS)),1)' > tol;

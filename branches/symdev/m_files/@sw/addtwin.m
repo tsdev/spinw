@@ -1,7 +1,7 @@
 function addtwin(obj,varargin)
 % adds new twins to an sw object
 %
-% obj = ADDTWIN(obj,'Option', Value,...)
+% ADDTWIN(obj,'Option', Value,...)
 %
 % Options:
 %

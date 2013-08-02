@@ -29,15 +29,24 @@ if nargin <= 1
     return;
 end
 
-spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:});
+spectra = obj.spinwave([qh(:) qk(:) ql(:)]');
 spectra = sw_neutron(spectra,'pol',false);
 
-nModes = size(spectra.omega,1);
-nHkl   = size(spectra.omega,2);
+% add all modes for different twins
+if iscell(spectra.omega)
+    omega = cell2mat(spectra.omega');
+    Sperp = cell2mat(spectra.Sperp');
+else
+    omega = spectra.omega;
+    Sperp = spectra.Sperp;
+end
+
+nModes = size(omega,1);
+nHkl   = size(omega,2);
 
 % dispersion in cell
-w = mat2cell(spectra.omega',nHkl,ones(nModes,1));
+w = mat2cell(omega',nHkl,ones(nModes,1));
 % intensity in cell
-s = mat2cell(spectra.Sperp' ,nHkl,ones(nModes,1));
+s = mat2cell(Sperp' ,nHkl,ones(nModes,1));
 
 end

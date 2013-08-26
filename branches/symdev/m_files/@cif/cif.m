@@ -4,7 +4,8 @@ classdef cif
     % class handling cif data
     % Any field returns a value belonging to that field name. Use
     % cif.('field-name') for field names that are not valid matlab field
-    % names.
+    % names. Cif files containing multiple crystal structure, the first one
+    % will be retrieved.
     %
     % path      Path to the cif file to be opened.
     %
@@ -30,6 +31,7 @@ classdef cif
                     for ii = 1:numel(obj.cifdat)
                         if strcmp(S.subs, obj.cifdat(ii).name)
                             B = obj.cifdat(ii).val;
+                            break;
                         end
                     end
                     

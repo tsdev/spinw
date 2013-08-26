@@ -83,7 +83,7 @@ for ii = 1:numel(strout)
                 LP = true;
             end
         case 'variable'
-            if ~isempty(lpVal)
+            if (~isempty(lpVal)) || (size(strLine,2)>1)
                 LP = false;
                 % save data
                 savedata = true;
@@ -144,10 +144,15 @@ for ii = 1:numel(strout)
     if savedata || (ii == numel(strout))
         for jj = 1:numel(lpVar)
             cifdat(end+1).name = lpVar{jj};
-            cifdat(end).type   = lpType{1,jj};
-            cifdat(end).val    = lpVal(:,jj);
-            if strcmp(lpType{1,jj},'number')
-                cifdat(end).val = [cifdat(end).val{:}]';
+            if jj > size(lpVal,2)
+                cifdat(end).type   = 'string';
+                cifdat(end).val    = '';
+            else
+                cifdat(end).type   = lpType{1,jj};
+                cifdat(end).val    = lpVal(:,jj);
+                if strcmp(lpType{1,jj},'number')
+                    cifdat(end).val = [cifdat(end).val{:}]';
+                end
             end
         end
         lpVar = cell(0,0);

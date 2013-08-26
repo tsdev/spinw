@@ -436,7 +436,7 @@ if nTwin>1
         SabAll{ii} = reshape(SabRot,sSabT);
     end
     Sab = SabAll;
-    omega = mat2cell(omega,2*nMagExt,repmat(nHkl0,[1 nTwin]));
+    omega = mat2cell(omega,size(omega,1),repmat(nHkl0,[1 nTwin]));
 end
 
 % Creates output structure with the calculated values.

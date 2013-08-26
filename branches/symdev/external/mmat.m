@@ -51,8 +51,8 @@ nDA = ndims(A);
 nDB = ndims(B);
 nD = max(nDA,nDB);
 
-nA = size(A); nA = nA(dim);
-nB = size(B); nB = nB(dim);
+nA = [size(A),ones(1,nD-nDA)]; nA = nA(dim); 
+nB = [size(B),ones(1,nD-nDB)]; nB = nB(dim);
 
 % form A matrix
 % (nA1) x (nA2) x nB2

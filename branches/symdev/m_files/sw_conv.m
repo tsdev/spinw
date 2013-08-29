@@ -212,72 +212,50 @@ end
 
 % Create vector for energy values, and put extra value below minimum and
 % above maximum for easy indexing swConv.
-Evect     = sort(param.Evect);
-epsilon   = 1e-8;
+Evect   = sort(param.Evect);
+epsilon = 1e-8;
 
-% Separate the negative and positive energies.
-EvectNeg  = Evect(Evect<0);
-if ~isempty(EvectNeg)
-    EvectNeg = [EvectNeg(1)-epsilon; EvectNeg(:); EvectNeg(end)+epsilon];
+if ~isempty(Evect)
+    Evect = [Evect(1)-epsilon; Evect(:); Evect(end)+epsilon];
 else
-    EvectNeg = [-epsilon; epsilon];
+    Evect = [-epsilon; epsilon];
 end
-nENeg = length(EvectNeg);
-
-EvectPos  = Evect(Evect>=0);
-if ~isempty(EvectPos)
-    EvectPos = [EvectPos(1)-epsilon; EvectPos(:); EvectPos(end)+epsilon];
-else
-    EvectPos = [-epsilon; epsilon];
-end
-nEPos = length(EvectPos);
+nE      = numel(Evect);
 
 % Create indices in the matrix by searching for the closest value, size
 % nMode x nHkl. Put all the modes to the positive side for magnon creation.
 % The negative side will be the same, however with different Bose factor
 % for non-zero temperature.
-idxNeg = cell(1,nTwin);
-idxPos = cell(1,nTwin);
+idxE = cell(1,nTwin);
+
 for tt = 1:nTwin
-    [~, idxNeg{tt}] = min(abs(repmat(-abs(omega{tt}),[1 1 nENeg])-repmat(permute(EvectNeg,[2 3 1]),[nMode nHkl 1])),[],3);
-    [~, idxPos{tt}] = min(abs(repmat( abs(omega{tt}),[1 1 nEPos])-repmat(permute(EvectPos,[2 3 1]),[nMode nHkl 1])),[],3);
+    [~, idxE{tt}] = min(abs(repmat(real(omega{tt}),[1 1 nE])-repmat(permute(Evect,[2 3 1]),[nMode nHkl 1])),[],3);
     
     % Creates indices in the swConv matrix.
-    idxNeg{tt} = idxNeg{tt} + repmat((0:nHkl-1).*nENeg,[nMode 1]);
-    idxNeg{tt} = idxNeg{tt}(:);
-    idxPos{tt} = idxPos{tt} + repmat((0:nHkl-1).*nEPos,[nMode 1]);
-    idxPos{tt} = idxPos{tt}(:);
+    idxE{tt} = idxE{tt} + repmat((0:nHkl-1).*nE,[nMode 1]);
+    idxE{tt} = idxE{tt}(:);
 end
 
 % Sums up the intensities in DSF into swConv.
-swConvNeg = cell(nConv,nTwin);
-swConvPos = cell(nConv,nTwin);
+swConv = cell(nConv,nTwin);
 
 for tt = 1:nTwin
     for ii = 1:nConv
-        swConvNeg{ii,tt} = reshape(accumarray(idxNeg{tt},DSF{ii,tt}(:),[nENeg*nHkl 1]),[nENeg nHkl]);
-        swConvPos{ii,tt} = reshape(accumarray(idxPos{tt},DSF{ii,tt}(:),[nEPos*nHkl 1]),[nEPos nHkl]);
+        swConv{ii,tt} = reshape(accumarray(idxE{tt},DSF{ii,tt}(:),[nE*nHkl 1]),[nE nHkl]);
     end
 end
 
-% Bose temperature factor for magnons
+% Calculate Bose temperature factor for magnons
 if param.T==0
-    nNeg = 1+0*EvectNeg(2:(end-1));
+    nBose = double(Evect(2:(end-1))>0);
 else
-    nNeg = 1./(exp(abs(EvectNeg(2:(end-1)))/(spectra.obj.unit.kB*param.T))-1);
+    nBose = 1./(exp(abs(Evect(2:(end-1)))./(spectra.obj.unit.kB*param.T))-1)+double(Evect(2:(end-1))>0);
 end
 
-if param.T == 0
-    nPos = 1+0*EvectPos(2:(end-1));
-else
-    nPos = 1./(exp((abs(EvectPos(2:(end-1)))+1e-8)/(obj.unit.kB*param.T))-1)+1;
-end
-
-% Unite the negative and positive energy transfer sides.
-swConv = cell(nConv,nTwin);
+% Multiply the intensities with the Bose factor.
 for tt = 1:nTwin
     for ii = 1:nConv
-        swConv{ii,tt} = [bsxfun(@times,swConvNeg{ii,tt}(2:(end-1),:),nNeg); bsxfun(@times,swConvPos{ii,tt}(2:(end-1),:),nPos)];
+        swConv{ii,tt} = bsxfun(@times,swConv{ii,tt}(2:(end-1),:),nBose);
     end
 end
 

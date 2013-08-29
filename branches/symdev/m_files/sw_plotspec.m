@@ -259,8 +259,8 @@ switch param.mode
         titleStr0 = 'Spin wave dispersion: \omega(Q)';
         % loop over the twins
         for tt = 1:nTwin
-            plotr = abs(real(omega{1,tt}));
-            ploti = abs(imag(omega{1,tt}));
+            plotr = (real(omega{1,tt}));
+            ploti = (imag(omega{1,tt}));
             if param.sortMode
                 plotr = sort(plotr,1);
                 ploti = sort(ploti,1);
@@ -291,12 +291,12 @@ switch param.mode
         for tt = 1:nTwinS
             for jj = 1:nConv
                 if param.imag
-                    plotr = imag(swInt{jj,tt});
+                    plotr = abs(imag(swInt{jj,tt}));
                 else
-                    plotr = real(swInt{jj,tt});
+                    plotr = abs(real(swInt{jj,tt}));
                 end
                 for ii = 1:nMode
-                    hPlot(end+1) = plot3(xAxis,abs(plotr(ii,:)),xAxis*0+1e5,param.lineStyle{mod(jj-1,3)+1},...
+                    hPlot(end+1) = plot3(xAxis,plotr(ii,:),xAxis*0+1e5,param.lineStyle{mod(jj-1,3)+1},...
                         'Color', colors(ii,:),'LineWidth',param.lineWidth); %#ok<*AGROW>
                     if ii == nMode
                         hLegend(jj) = hPlot(end);
@@ -306,9 +306,9 @@ switch param.mode
             if param.imag
                 
                 for jj = 1:nConv
-                    ploti = imag(swInt{jj,tt});
+                    ploti = abs(imag(swInt{jj,tt}));
                     for ii = 1:nMode
-                        hPlot(end+1) = plot3(xAxis,abs(ploti(ii,:)),xAxis*0+2e5,'ro-');
+                        hPlot(end+1) = plot3(xAxis,ploti(ii,:),xAxis*0+2e5,'ro-');
                         hLegend(nConv+1) = hPlot(end);
                     end
                 end

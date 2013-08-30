@@ -20,7 +20,9 @@ elseif nargin == 2
     else
         error('sw:magfield:ArraySize','Input magnetic field has to be a 3 element vector!');
     end
-    varargout{1} = obj;
+    if nargout > 0
+        varargout{1} = obj;
+    end
 end
 
 end % .magfield

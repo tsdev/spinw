@@ -63,7 +63,7 @@ M0      = obj.mag_str.S;
 nMagExt = size(M0,2);
 
 % Anisotropy energy can be wrong.
-if  incomm && (any(any(any((SI.aniso)))) || (any(SI.field)) || (any(any(any(SI.g-SI.g(1)*repmat(eye(3),[1 1 nMagExt]))))))
+if  incomm && (any(any(any((SI.aniso)))) || (any(SI.field)) || (any(any(any(abs(SI.g-SI.g(1)*repmat(eye(3),[1 1 nMagExt]))>param.epsilon)))))
     warning('sw:energy:AnisoFieldIncomm','The calculated energy might be wrong due to incommensurate structure!');
 end
 

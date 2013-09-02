@@ -237,7 +237,8 @@ end
 idxA1 = [atom1'         atom2'         ];
 idxA2 = [atom1'         atom1'         ];
 idxB  = [atom1'         atom2'+nMagExt ];
-idxC  = [atom1'+nMagExt atom2'         ];
+% transpose of idxB
+idxC  = [atom2'+nMagExt atom1'         ];
 idxD1 = idxA1+nMagExt;
 idxD2 = [atom2'+nMagExt atom2'+nMagExt ];
 idxMF = [(1:2*nMagExt)' (1:2*nMagExt)' ];
@@ -292,13 +293,12 @@ for jj = 1:nSlice
     % Creates the matrix elements containing zed.
     A1 = bsxfun(@times,     AD0 ,ExpF);
     B  = bsxfun(@times,     BC0 ,ExpF);
-    C  = bsxfun(@times,conj(BC0),ExpF);
     D1 = bsxfun(@times,conj(AD0),ExpF);
     
     % Store all indices
     idxAll = [idxA1; idxB; idxC; idxD1];
     % Store all matrix elements
-    ABCD   = [A1     B     C     D1   ];
+    ABCD   = [A1     B     conj(B)  D1];
     
     % Stores the matrix elements in ham.
     idx3   = repmat(1:nHklMEM,[4*nCoupling 1]);
@@ -346,25 +346,36 @@ for jj = 1:nSlice
     %end
     
     for ii = 1:nHklMEM
-        omega(:,end+1) = diag(g).*D(:,ii); %#ok<AGROW>
+        %
+        %omega(:,end+1) = diag(g).*D(:,ii); %#ok<AGROW>
+        % multiplication with g removed to get negative and positive
+        % energies as well
+        omega(:,end+1) = D(:,ii); %#ok<AGROW>
         M           = diag(g*V(:,:,ii)'*g*V(:,:,ii));
         V(:,:,ii)   = V(:,:,ii)*diag(sqrt(1./M));
     end
     
     % Calculates correlation functions.
+    % V right
     VExtR = repmat(permute(V      ,[4 5 1 2 3]),[3 3 1 1 1]);
-    VExtL = repmat(permute(conj(V),[4 5 2 1 3]),[3 3 1 1 1]);
+    % V left: conjgate transpose of V
+    VExtL = conj(permute(VExtR,[1 2 4 3 5]));
+    %VExtL = repmat(permute(conj(V),[4 5 2 1 3]),[3 3 1 1 1]);
     
     % Introduces the exp(-ikR) exponential factor.
     ExpF =  exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
     % Includes the sqrt(Si/2) prefactor.
     ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHklMEM]);
     
-    ExpFL = repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt 2]);
-    ExpFR = conj(repmat(permute(ExpF,[1 4 2 5 3]),[3 3 2 2*nMagExt]));
+    ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt         2]);
+    % conj transpose of ExpFL
+    ExpFR = conj(permute(ExpFL,[1 2 4 3 5]));
+    %ExpFR = conj(repmat(permute(ExpF,[1 4 2 5 3]),[3 3 2         2*nMagExt]));
     
     zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1         nHklMEM]);
-    zedb = repmat(permute([conj(zed) zed],[3 1 2])  ,[3 1 1         2*nMagExt nHklMEM]);
+    % conj transpose of zeda
+    zedb = conj(permute(zeda,[2 1 4 3 5]));
+    %zedb = repmat(permute([conj(zed) zed],[3 1 2 4]),[3 1 1         2*nMagExt nHklMEM]);
     
     % Dynamical for factor from S^alpha^beta(k) correlation function.
     % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
@@ -392,23 +403,20 @@ end
 if incomm
     % resize matrices due to the incommensurability (k-km,k,k+km) multiplicity
     kmIdx = repmat(sort(repmat([1 2 3],1,nHkl0/3)),1,nTwin);
-    
-    omega = [omega(:,kmIdx==1); omega(:,kmIdx==2); omega(:,kmIdx==3)];
-    
     % Rodrigues' rotation formula.
     nx  = [0 -n(3) n(2); n(3) 0 -n(1); -n(2) n(1) 0];
     nxn = n'*n;
     K1 = 1/2*(eye(3) - nxn - 1i*nx);
-    K2 = 1/2*(eye(3) - nxn + 1i*nx);
-    K3 = nxn;
+    K2 = nxn;
     
     % symmetrise Sab by averaging two directions
     [~, rot90] = sw_rot(n,pi/2);
     Sab = (Sab+mmat(mmat(rot90,Sab),rot90'))/2;
     
-    %Sab   = cat(3,mmat(Sab(:,:,:,kmIdx==1),K2), mmat(Sab(:,:,:,kmIdx==2),K3), mmat(Sab(:,:,:,kmIdx==3),K1));
+    % dispersion
+    omega = [omega(:,kmIdx==1); omega(:,kmIdx==2); omega(:,kmIdx==3)];
     % exchange matrices
-    Sab   = cat(3,mmat(Sab(:,:,:,kmIdx==1),K1), mmat(Sab(:,:,:,kmIdx==2),K3), mmat(Sab(:,:,:,kmIdx==3),K2));
+    Sab   = cat(3,mmat(Sab(:,:,:,kmIdx==1),K1), mmat(Sab(:,:,:,kmIdx==2),K2), mmat(Sab(:,:,:,kmIdx==3),conj(K1)));
     
     hkl   = hkl(:,kmIdx==2);
     nHkl0 = nHkl0/3;

@@ -171,6 +171,21 @@ for ii = 1:size(M,3)
     asym(ii) = sum(sum((M(:,:,ii)-M(:,:,ii)').^2)) > tol^2*9;
 end
 
+aIdx = find(asym);
+
+% sort assimetrix matrices to Dx, Dy, Dz order
+if any(asym)
+    [~, aSort] = sort(squeeze(abs(M(2,3,asym)) + abs(M(1,3,asym))*10 + abs(M(1,2,asym))*100));
+    M(:,:,aIdx) = M(:,:,aIdx(aSort));
+end
+% choose proper sign of the DM interactions
+for ii = 1:numel(aIdx)
+    signM = sign(M(2,3,aIdx(ii))*100 + M(3,1,aIdx(ii))*10 + M(1,2,aIdx(ii)));
+    M(:,:,aIdx(ii)) = M(:,:,aIdx(ii)) * signM;
+end
+
+
+
 % sort assimetric matrices to the end
 M = cat(3,M(:,:,~asym),M(:,:,asym));
 

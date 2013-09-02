@@ -35,7 +35,7 @@ function setmatrix(obj, varargin)
 %           This is identical to obj.matrix.mat = eye(3)*0.1
 %           For DM interactions (antisymmetric coupling matrices), use
 %           three element vector in the cell:
-%               {[Dx Dy Dz]}
+%               {[D1 D2 D3]}
 %           In this case, these will be the prefactors of the 3
 %           antisymmetric symmetry allowed matrices. In case no crystal
 %           symmetry is defined, these will define directly the components

@@ -17,7 +17,7 @@ function spectra = sw_neutron(spectra, varargin)
 %           coordinate system), dimensions are [1 3]. Default is [0 0 1].
 % pol       Whether to calculate cross sections in the Blume-Maleev
 %           coordinate system (inP, Pab and Mab fields of spectra). Default
-%           is true.
+%           is false.
 %
 % Output:
 %
@@ -57,7 +57,7 @@ if nargin == 0
 end
 
 inpForm.fname  = {'n'     'pol' 'uv'  };
-inpForm.defval = {[0 0 1] true  {}    };
+inpForm.defval = {[0 0 1] false  {}    };
 inpForm.size   = {[1 3]   [1 1] [1 2] };
 inpForm.soft   = {false   false true  };
 

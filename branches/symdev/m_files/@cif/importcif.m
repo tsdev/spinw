@@ -72,7 +72,7 @@ cifdat.val  = '';
 
 savedata = false;
 
-for ii = 1:numel(strout)
+for ii = 1:numel(strout) 
     strLine = strout{ii};
     switch strLine{1,1}
         case 'loop'
@@ -227,7 +227,7 @@ while ~isempty(strin)
     end
     
     % NUMBER
-    if ismember(strin(1), [mat2cell('0':'9',1,ones(1,10)) {'-'}])
+    if ismember(strin(1), [mat2cell('0':'9',1,ones(1,10)) {'-' '.'}])
         bracket1Idx = find(strin(1:end)=='(',1,'first');
         bracket2Idx = find(strin(1:end)==')',1,'first');
         whiteIdx    = find(strin(1:end)==' ',1,'first');
@@ -243,12 +243,22 @@ while ~isempty(strin)
         
         if whiteIdx <= bracket1Idx
             strout{1,end+1} = 'number';
-            strout{2,end} = str2num(strin(1:(whiteIdx-1)));
+            numOut = str2num(strin(1:(whiteIdx-1)));
+            if ~isempty(numOut)
+                strout{2,end} = numOut;
+            else
+                strout{2,end} = 0;
+            end
             strin = strin((whiteIdx+1):end);
             continue;
         else
             strout{1,end+1} = 'number';
-            strout{2,end} = str2num(strin(1:(bracket1Idx-1)));
+            numOut = str2num(strin(1:(bracket1Idx-1)));
+            if ~isempty(numOut)
+                strout{2,end} = numOut;
+            else
+                strout{2,end} = 0;
+            end
             strin = strin((bracket2Idx+1):end);
             continue;
             

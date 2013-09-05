@@ -1,4 +1,4 @@
-function C = mdiag(A,dim)
+function A = mdiag(A,dim)
 % Returns the diagonal elements along two selected dimensions.
 %
 % Input:
@@ -6,7 +6,7 @@ function C = mdiag(A,dim)
 % dim       Contains two number, that selects two dimensions.
 %
 % The diagonal is the diagonal of every A(... dim(1)...dim(2)...) matrix.
-% The dim(2) dimension will be contracted.
+% The result is contracted along dim(2).
 %
 % The default value for dim is dim = [1 2].
 %
@@ -36,40 +36,24 @@ if numel(dim)~=2
     error('mdiag:WrongInput','dim has to be a two element array!');
 end
 
-sA = size(A);
+
 nD = ndims(A);
 
+permIdx = [dim find(~ismember(1:nD,dim))];
 
-sM = sA(dim);
-sR = sA; sR(dim) = 1;
+A  = permute(A,permIdx);
+sA = size(A);
 
-pVect = 1:nD; pVect = pVect()
-repmat(permute(eye(sM),pVect())
+B = repmat(eye(sA(1:2)),[1 1 sA(3:end)]);
 
+A = sum(A.*B,2);
 
+% permute back
+permIdx2 = 1:nD;
+permIdx2(permIdx) = permIdx2;
+permIdx2 = [permIdx2 permIdx2(dim(2))];
+permIdx2(dim(2)) = [];
 
-
-
-
-
-nA = [size(A),ones(1,nD-nDA)]; nA = nA(dim); 
-
-% form A matrix
-% (nA1) x (nA2) x nB2
-A = repmat(A,[ones(1,nD) nB(2)]);
-% form B matrix
-% nA1 x (nB1) x (nB2)
-idx = 1:nD+1; idx([dim end]) = idx([end dim]);
-repv = ones(1,nD+1); repv(dim(1)) = nA(1);
-
-B = repmat(permute(B,idx),repv);
-
-% multiply with expanding along singleton dimensions
-C = sum(bsxfun(@times,A,B),dim(2));
-
-idx2 = 1:nD+1; idx2([dim end]) = idx2([dim(1) end dim(2)]);
-
-% permute back the final result to the right size
-C = permute(C,idx2);
+A = permute(A,permIdx2);
 
 end

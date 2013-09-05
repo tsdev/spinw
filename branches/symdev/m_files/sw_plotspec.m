@@ -128,7 +128,7 @@ if param.mode == 4
     if ~powmode
         hold on
         [~, pHandle2] = sw_plotspec(spectra,'mode',1,'ahandle',gca,'colorbar',false,...
-            'dashed',false,'title',false,'legend',false,'imag',false,'lineStyle',param.lineStyle);
+            'dashed',false,'title',false,'legend',false,'imag',false,'lineStyle',param.lineStyle,'colormap',[0 0 0]);
     end
     
     if nargout >0

@@ -1,5 +1,5 @@
 function optm = optmagstr(obj, varargin)
-% optimises magnetic structure by minimizing the energy using non-linear optimization algorithms.
+% optimises magnetic structure by minimizing the energy using non-linear optimization algorithms
 %
 % optm = OPTMAGSTR(swobj, Option1, Value1, ...)
 %

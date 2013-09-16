@@ -93,7 +93,7 @@ if param.fitmode
     param.sortMode = false;
 end
 
-% saize of the extended magnetic unit cell
+% seize of the extended magnetic unit cell
 nExt    = double(obj.mag_str.N_ext);
 % magnetic ordering wavevector in the extended magnetic unit cell
 km = obj.mag_str.k.*nExt;
@@ -161,7 +161,7 @@ hklExt0 = bsxfun(@times,hkl0,nExt')*2*pi;
 
 % Calculates parameters eta and zed.
 if isempty(obj.mag_str.S)
-    error('sw:sw_spinwave:NoMagneticStr','No magnetic structure defined in obj!');
+    error('sw:spinwave:NoMagneticStr','No magnetic structure defined in obj!');
 end
 
 M0 = obj.mag_str.S;
@@ -203,7 +203,8 @@ if incomm
     % transform JJ due to the incommensurate wavevector
     [~, K] = sw_rot(n,km*dR*2*pi);
     % multiply JJ with K matrices for every interaction
-    JJ = mmat(JJ,K);
+    % and symmetrising JJ for the rotating basis
+    JJ = (mmat(JJ,K)+mmat(K,JJ))/2;
 end
 
 nCoupling = size(JJ,3);

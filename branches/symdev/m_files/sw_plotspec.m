@@ -49,6 +49,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % lineStyle Line style for line plots (dispersion and intensity), default
 %           is {'-' 'o-' '--'}. For example '--' gives dashed lines.
 % lineWidth Line width of line plots, default is 0.5 point.
+% log       Plot logarithmic intensity, default is false.
 %
 % Output:
 %
@@ -78,6 +79,11 @@ inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 1]  [1 -4]     }];
 inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
 inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
 inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
+
+inpForm.fname  = [inpForm.fname  {'log'}];
+inpForm.defval = [inpForm.defval {false}];
+inpForm.size   = [inpForm.size   {[1 1]}];
+
 param = sw_readparam(inpForm, varargin{:});
 
 % select twins for omega plot
@@ -440,7 +446,12 @@ if param.mode == 3
         iTemp = swConv{ii}';
         iTemp = conv2(iTemp,fG,'same');
         swConv{ii} = iTemp';
+        % take log if param.log is true
+        if param.log
+            swConv{ii} = log(swConv{ii}+1e-10);
+        end
     end
+    
     
     if nPlot == 1
         % single spectra
@@ -485,7 +496,13 @@ if param.mode == 3
     
     if param.colorbar && (nPlot == 1)
         cHandle = colorbar;
-        set(get(cHandle,'ylabel'),'String', 'Intensity (arb. u.)');
+        if param.log
+            cLabel = 'log Intensity (arb. u.)';
+        else
+            cLabel = 'Intensity (arb. u.)';
+        end
+        
+        set(get(cHandle,'ylabel'),'String',cLabel);
     end
     for ii = 1:nPlot
         lColor      = param.colormap{ii}(2);
@@ -516,6 +533,7 @@ if param.mode > 1
         else
             titleStr{ii} = ['Re ' titleStr{ii}];
         end
+        
     end
     
     for ii = 1:nConv-1

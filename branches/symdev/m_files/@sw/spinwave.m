@@ -1,4 +1,4 @@
-function spectra = spinwave4(obj, hkl, varargin)
+function spectra = spinwave(obj, hkl, varargin)
 % calculates dynamical spin-spin correlation function using linear spin wave theory
 %
 % spectra = SPINWAVE(obj, k, 'option1', value1 ...)
@@ -46,11 +46,10 @@ function spectra = spinwave4(obj, hkl, varargin)
 % omega_tol     Tolerance on the energy difference of degenerate modes when
 %               diagonalising the quadratic form, default is 1e-5.
 % hermit        Method for matrix diagonalization:
-%                   true        Method of J.H.P. Colpa, Physica 93A (1978)
-%                               327.
-%                   false       Method of R.M. White, PR 139 (1965) A450.
+%                   true      J.H.P. Colpa, Physica 93A (1978) 327,
+%                   false     R.M. White, PR 139 (1965) A450.
 %               Colpa: the grand dynamical matrix is converted into another
-%                      Hermitian matrix, that can will give the real
+%                      Hermitian matrix, that will give the real
 %                      eigenvalues.
 %               White: the non-Hermitian g*H matrix will be diagonalised,
 %                      that is strictly speaking not the right solution

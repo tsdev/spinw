@@ -1,4 +1,4 @@
-function spectra = spinwave(obj, hkl, varargin)
+function spectra = spinwave4(obj, hkl, varargin)
 % calculates dynamical spin-spin correlation function using linear spin wave theory
 %
 % spectra = SPINWAVE(obj, k, 'option1', value1 ...)
@@ -45,6 +45,23 @@ function spectra = spinwave(obj, hkl, varargin)
 %               considered to be commensurate. Default value is 1e-4.
 % omega_tol     Tolerance on the energy difference of degenerate modes when
 %               diagonalising the quadratic form, default is 1e-5.
+% hermit        Method for matrix diagonalization:
+%                   true        Method of J.H.P. Colpa, Physica 93A (1978)
+%                               327.
+%                   false       Method of R.M. White, PR 139 (1965) A450.
+%               Colpa: the grand dynamical matrix is converted into another
+%                      Hermitian matrix, that can will give the real
+%                      eigenvalues.
+%               White: the non-Hermitian g*H matrix will be diagonalised,
+%                      that is strictly speaking not the right solution
+%                      method.
+%               Advise:
+%               Always use Colpa's method, except when small imaginary
+%               eigenvalues are expected. In this case only White's method
+%               work. The solution in this case is wrong, however by 
+%               examining the eigenvalues it can give a hint where the 
+%               problem is.
+%               Default is true.
 %
 % Output:
 %
@@ -83,9 +100,9 @@ if iscell(hkl)
     hkl = sw_qscan(hkl);
 end
 
-inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol' 'omega_tol'};
-inpForm.defval = {false     false    true      true     1     1e-4   1e-5      };
-inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]  [1 1]     };
+inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol' 'omega_tol' 'hermit'};
+inpForm.defval = {false     false    true      true     1     1e-4   1e-5        true    };
+inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]  [1 1]      [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -326,35 +343,60 @@ for jj = 1:nSlice
     
     g = diag([ones(nMagExt,1); -ones(nMagExt,1)]);
     
-    % All the matrix calculations are according to White's paper
-    
-    gham = 0*ham;
-    for ii = 1:nHklMEM
-        gham(:,:,ii) = g*ham(:,:,ii);
+    if param.hermit
+        % All the matrix calculations are according to Colpa's paper
+        % J.H.P. Colpa, Physica 93A (1978) 327-353
+        
+        V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
+        
+        for ii = 1:nHklMEM
+            [K, posDef]  = chol(ham(:,:,ii));
+            if posDef > 0
+                try
+                    K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
+                catch PD
+                    error('sw:spinwave:PositiveDefiniteHamiltonian',...
+                        ['Hamiltonian matrix is not positive definite, probably'...
+                        ' the magnetic structure is wrong! For approximate'...
+                        ' diagonalization try the param.hermit=false option']);
+                end
+            end
+            
+            K2 = K*g*K';
+            K2 = 1/2*(K2+K2');
+            % Hermitian K2 will give orthogonal eigenvectors
+            [U, D] = eig(K2);
+            
+            % sort eigenvalues to decreasing order
+            [D, idx] = sort(diag(D),'descend');
+            U = U(:,idx);
+            
+            % omega dispersion
+            omega(:,end+1) = g*D; %#ok<AGROW>
+            
+            % the inverse of the para-unitary transformation V
+            V(:,:,ii) = inv(K)*U*diag(sqrt(omega(:,end))); %#ok<MINV>
+        end
+    else
+        % All the matrix calculations are according to White's paper
+        % R.M. White, et al., Physical Review 139, A450?A454 (1965)
+        
+        gham = 0*ham;
+        for ii = 1:nHklMEM
+            gham(:,:,ii) = g*ham(:,:,ii);
+        end
+        
+        [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
+        
+        for ii = 1:nHklMEM
+            % multiplication with g removed to get negative and positive
+            % energies as well
+            omega(:,end+1) = D(:,ii); %#ok<AGROW>
+            M           = diag(g*V(:,:,ii)'*g*V(:,:,ii));
+            V(:,:,ii)   = V(:,:,ii)*diag(sqrt(1./M));
+        end
     end
     
-    
-    %V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
-    %D = zeros(2*nMagExt,nHklMEM);
-    
-    %for ii = 1:nHklMEM
-    %[V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
-    %D(:,ii)     = diag(Dtemp);
-    %[V(:,:,ii), D(:,ii)] = eigorth(gham(:,:,ii),param.omega_tol);
-    %[V(:,:,ii), Dtemp] = eig(gham(:,:,ii));
-    %D(:,ii) = diag(Dtemp);
-    [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
-    %end
-    
-    for ii = 1:nHklMEM
-        %
-        %omega(:,end+1) = diag(g).*D(:,ii); %#ok<AGROW>
-        % multiplication with g removed to get negative and positive
-        % energies as well
-        omega(:,end+1) = D(:,ii); %#ok<AGROW>
-        M           = diag(g*V(:,:,ii)'*g*V(:,:,ii));
-        V(:,:,ii)   = V(:,:,ii)*diag(sqrt(1./M));
-    end
     
     % Calculates correlation functions.
     % V right

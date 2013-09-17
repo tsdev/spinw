@@ -29,7 +29,16 @@ if nargin <= 1
     return;
 end
 
+<<<<<<< .mine
+if nargin > 5
+    spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:});
+else
+    spectra = obj.spinwave([qh(:) qk(:) ql(:)]');
+end
+
+=======
 spectra = obj.spinwave([qh(:) qk(:) ql(:)]');
+>>>>>>> .r62
 spectra = sw_neutron(spectra,'pol',false);
 
 % add all modes for different twins

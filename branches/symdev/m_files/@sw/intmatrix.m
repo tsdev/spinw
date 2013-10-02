@@ -219,7 +219,7 @@ end
 if param.plotmode
     % Saves all coupling matrix indices in SS.all in case of non-fitting mode
     % in the bottom row
-    SS.all = [SS.all; double(JJ.idx'); idxTemp];
+    SS.all   = [SS.all; double(JJ.idx'); idxTemp];
     
     if ~isempty(SS.all)
         % sort properly the atom1-atom2 pairs for the DM interaction

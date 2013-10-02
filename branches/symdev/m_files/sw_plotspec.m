@@ -57,6 +57,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %               int     Integrated intensity of the line is normalized
 %                       (good for fitting simulation to data).
 %           Default is 'amp'.
+% plotf     Plot function for color plot. Default is @surf.
 %
 % Output:
 %
@@ -87,9 +88,9 @@ inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
 inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
 inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'log' 'norm'}];
-inpForm.defval = [inpForm.defval {false 'amp' }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 3]}];
+inpForm.fname  = [inpForm.fname  {'log' 'plotf' 'norm'}];
+inpForm.defval = [inpForm.defval {false @surf   'amp' }];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]   [1 3]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -109,6 +110,11 @@ if isfield(spectra,'omega') && iscell(spectra.omega)
 else
     nTwin = 1;
     param.twin = 1;
+end
+
+if ~isfield(spectra,'swConv')
+    error('sw_plotspec:WrongInput',['Reference to non-existent field ''swConv'','...
+        'use ''sw_conv'' to produce the convoluted spectra before plotting!'])
 end
 
 % select twins for convoluted plots
@@ -484,13 +490,16 @@ if param.mode == 3
         % Use surf to hide the NaN numbers
         [X, Y] = meshgrid(xAxis,yAxis);
         if cMaxMax <1e-6
-            hSurf = surf(X,Y,imageDisp'*0);
+            hSurf = param.plotf(X,Y,imageDisp'*0);
             axLim = [0 1];
         else
-            hSurf = surf(X,Y,imageDisp');
+            hSurf = param.plotf(X,Y,imageDisp');
         end
         view(2);
-        set(hSurf,'EdgeAlpha',0);
+        if ishandle(hSurf)
+            set(hSurf,'EdgeAlpha',0);
+        end
+        
         colormap(flipud(param.colormap{1}(param.nCol)));
     else
         

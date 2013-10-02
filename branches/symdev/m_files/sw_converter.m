@@ -14,7 +14,7 @@ function out = sw_converter(unitIn, value, unitOut, particleName)
 %                       'Angstrom'  wavelength in Angstrom.
 %                       'Kelvin'    temperature in Kelvin.
 %                       'mps'       speed in m/s.
-%                       'mEV'       energy in mEv.
+%                       'meV'       energy in meV.
 %                       'THz'       energy in Thz.
 % unitOut           Units of the output value, same options as for unitIn.
 % value             Numerical input value, can be arbitrary matrix.
@@ -125,7 +125,7 @@ switch unitOut
         if m~=0
             out = (k*hBar*1e10).^2/EmeV2J/2/m;
         else
-            out = k/EmeV2J*clight*1e10;
+            out = k/EmeV2J*clight*1e10*hBar;
         end
     case 'THz'
         if m~=0

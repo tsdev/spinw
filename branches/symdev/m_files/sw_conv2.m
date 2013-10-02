@@ -1,4 +1,4 @@
-function spectra = sw_conv(spectra, varargin)
+function spectra = sw_conv2(spectra, varargin)
 % spectra = SW_CONV(spectra, 'Option1', Value1, ...) convolutes different
 % magnetic scattering cross sections with the spin wave dispersion.
 %
@@ -130,12 +130,6 @@ else
     param.convmode = {param.convmode};
 end
 
-if ~isfield(spectra,'intP')
-    error('sw_conv:WrongInput',['Reference to non-existent field ''intP'','...
-        ' use ''sw_neutron'' to produce the neutron scattering cross sections,'...
-        ' before convolution with energy transfer!'])
-end
-
 % pack all cross section into a cell for easier looping
 if iscell(spectra.omega)
     nTwin = numel(spectra.omega);
@@ -247,18 +241,20 @@ swConv = cell(nConv,nTwin);
 
 for tt = 1:nTwin
     for ii = 1:nConv
-        swConv{ii,tt} = reshape(accumarray(idxE{tt},DSF{ii,tt}(:),[nE*nHkl 1]),[nE nHkl]);
+        % division by two because we sum up positive and negative
+        % intensities for both channels
+        swConv{ii,tt} = reshape(accumarray(idxE{tt},DSF{ii,tt}(:),[nE*nHkl 1]),[nE nHkl])/2;
     end
 end
 
-% Calculate Bose temperature factor for magnons
+% Bose temperature factor for magnons
 if param.T==0
     nBose = double(Evect(2:(end-1))>0);
 else
     nBose = 1./(exp(abs(Evect(2:(end-1)))./(spectra.obj.unit.kB*param.T))-1)+double(Evect(2:(end-1))>0);
 end
 
-% Multiply the intensities with the Bose factor.
+% Unite the negative and positive energy transfer sides.
 for tt = 1:nTwin
     for ii = 1:nConv
         swConv{ii,tt} = bsxfun(@times,swConv{ii,tt}(2:(end-1),:),nBose);

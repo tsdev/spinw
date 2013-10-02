@@ -1,4 +1,4 @@
-function [w, s] = horace(obj, qh, qk, ql, ~)
+function [w, s] = horace(obj, qh, qk, ql, varargin)
 % dispersion/correltion function calculator, can be called from Horace
 %
 % [w, s] = HORACE(obj, qh, qk, ql, p) function to produce
@@ -29,16 +29,12 @@ if nargin <= 1
     return;
 end
 
-<<<<<<< .mine
 if nargin > 5
     spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:});
 else
     spectra = obj.spinwave([qh(:) qk(:) ql(:)]');
 end
 
-=======
-spectra = obj.spinwave([qh(:) qk(:) ql(:)]');
->>>>>>> .r62
 spectra = sw_neutron(spectra,'pol',false);
 
 % add all modes for different twins

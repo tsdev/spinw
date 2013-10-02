@@ -96,11 +96,11 @@ function varargout = plot(obj, varargin)
 %                   onto the middle of the bond. pDM value is used to
 %                   scale the length of the vector. Standard bond is
 %                   plotted if pDM is zero. Default is 1.
-%   cCoupling       cSpin of different couplings. Default is 'auto', when
+%   cCoupling       Color of different couplings. Default is 'auto', when
 %                   they are set to the color stored in the corresponding
 %                   obj.matrix. [R G B] will fix the color of all couplings
 %                   to a uniform one.
-%   cDM             cSpin of different DM vectors. Default is 'auto', when
+%   cDM             Color of different DM vectors. Default is 'auto', when
 %                   they are set to the color stored in the corresponding
 %                   obj.matrix. [R G B] will fix the color of all DM
 %                   vectors to a uniform one.
@@ -705,19 +705,24 @@ if (param.legend) && size(matrix.mat,3)>0
         handle.lRect(end+1) = rectangle('Position',[5 lHeight-20*ii+6 sRadius*2 sRadius]);
         if dashList(ii)
             % legend for dashed matrices
-            handle.lRect(end+1) = rectangle('Position',[6 lHeight-20*ii+7 sRadius*2/3-1 sRadius-2]);
+            handle.lRect(end+1) = rectangle('Position',[6 lHeight-20*ii+6.5 sRadius*2/3-1 sRadius-1.5]);
             set(handle.lRect(end),'FaceColor',double(matrix.color(:,ii))/255);
             set(handle.lRect(end),'EdgeColor',double(matrix.color(:,ii))/255);
             
-            handle.lRect(end+1) = rectangle('Position',[5+sRadius*2/3*2 lHeight-20*ii+7 sRadius*2/3-1 sRadius-2]);
+            handle.lRect(end+1) = rectangle('Position',[5+sRadius*2/3*2 lHeight-20*ii+6.5 sRadius*2/3-1 sRadius-1.5]);
             set(handle.lRect(end),'FaceColor',double(matrix.color(:,ii))/255);
             set(handle.lRect(end),'EdgeColor',double(matrix.color(:,ii))/255);
         else
             set(handle.lRect(end),'FaceColor',double(matrix.color(:,ii))/255);
         end
         
-        handle.lText(ii) = text(30,(lHeight-20*ii+10),matrix.label{ii},...
-            'fontSize',param.fontSize);
+        if dashList(ii)
+            handle.lText(ii) = text(30,(lHeight-20*ii+10),matrix.label{ii}(1:end-1),...
+                'fontSize',param.fontSize);
+        else
+            handle.lText(ii) = text(30,(lHeight-20*ii+10),matrix.label{ii},...
+                'fontSize',param.fontSize);
+        end
     end
     set(handle.lRect,'Tag','legend');
     set(handle.lText,'Tag','legend');

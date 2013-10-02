@@ -22,12 +22,20 @@ if nargin < 2
 end
 
 if nargin>2
-    inpForm.fname  = {'mat'    'label' 'color' };
-    inpForm.defval = {[]       {}      []      };
-    inpForm.size   = {[3 3 -1] [-2 -3] [-4 -5] };
-    inpForm.soft   = {true    true    true    };
+    inpForm.fname  = {'mat'      'label' 'color' };
+    inpForm.defval = {[]         {}      []      };
+    inpForm.size   = {[-6 -6 -1] [-2 -3] [-4 -5] };
+    inpForm.soft   = {true       true    true    };
     
     newMat = sw_readparam(inpForm, varargin{:});
+    
+    if numel(newMat.mat) == 1
+        newMat.mat = newMat.mat*eye(3);
+    end
+    
+    if numel(newMat.color) == 3
+        newMat.color = newMat.color(:);
+    end
 else
     newMat = varargin{1};
 end

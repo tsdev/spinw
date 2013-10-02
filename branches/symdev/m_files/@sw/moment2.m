@@ -40,9 +40,9 @@ function M = moment(obj, varargin)
 % See also SW, SW.SPINWAVE, SW.GENMAGSTR.
 %
 
-inpForm.fname  = {'T'   'nRand' 'fid' 'tol' 'omega_tol' 'hermit'};
-inpForm.defval = {0     1000    1     1e-4  1e-5        true    };
-inpForm.size   = {[1 1] [1 1]   [1 1] [1 1] [1 1]       [1 1]   };
+inpForm.fname  = {'T'   'nRand' 'fid' 'tol' 'omega_tol'};
+inpForm.defval = {0     1000    1     1e-4  1e-5       };
+inpForm.size   = {[1 1] [1 1]   [1 1] [1 1] [1 1]      };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -220,60 +220,24 @@ for jj = 1:nSlice
     ham = (ham + conj(permute(ham,[2 1 3])))/2;
     
     g = diag([ones(nMagExt,1); -ones(nMagExt,1)]);
+    
+    % All the matrix calculations are according to White's paper
+    
+    gham = 0*ham;
+    for ii = 1:nHklMEM
+        gham(:,:,ii) = g*ham(:,:,ii);
+    end
+    
+    [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
+    
     omega = zeros(2*nMagExt,nHklMEM);
     
-    if param.hermit
-        % All the matrix calculations are according to Colpa's paper
-        % J.H.P. Colpa, Physica 93A (1978) 327-353
-        
-        V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
-        
-        for ii = 1:nHklMEM
-            [K, posDef]  = chol(ham(:,:,ii));
-            if posDef > 0
-                try
-                    K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
-                catch PD
-                    error('sw:spinwave:PositiveDefiniteHamiltonian',...
-                        ['Hamiltonian matrix is not positive definite, probably'...
-                        ' the magnetic structure is wrong! For approximate'...
-                        ' diagonalization try the param.hermit=false option']);
-                end
-            end
-            
-            K2 = K*g*K';
-            K2 = 1/2*(K2+K2');
-            % Hermitian K2 will give orthogonal eigenvectors
-            [U, D] = eig(K2);
-            
-            % sort eigenvalues to decreasing order
-            [D, idx] = sort(diag(D),'descend');
-            U = U(:,idx);
-            
-            % omega dispersion
-            omega(:,ii) = D;
-            
-            % the inverse of the para-unitary transformation V
-            V(:,:,ii) = inv(K)*U*diag(sqrt(g*omega(:,ii))); %#ok<MINV>
-        end
-    else
-        % All the matrix calculations are according to White's paper
-        % R.M. White, et al., Physical Review 139, A450?A454 (1965)
-        
-        gham = 0*ham;
-        for ii = 1:nHklMEM
-            gham(:,:,ii) = g*ham(:,:,ii);
-        end
-        
-        [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
-        
-        for ii = 1:nHklMEM
-            % multiplication with g removed to get negative and positive
-            % energies as well
-            omega(:,ii) = D(:,ii);
-            U           = diag(g*V(:,:,ii)'*g*V(:,:,ii));
-            V(:,:,ii)   = V(:,:,ii)*diag(sqrt(1./U));
-        end
+    for ii = 1:nHklMEM
+        % multiplication with g removed to get negative and positive
+        % energies as well
+        omega(:,ii) = D(:,ii);
+        N           = diag(g*V(:,:,ii)'*g*V(:,:,ii));
+        V(:,:,ii)   = V(:,:,ii)*diag(sqrt(1./N));
     end
     
     

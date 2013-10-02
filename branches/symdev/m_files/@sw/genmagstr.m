@@ -73,6 +73,11 @@ function genmagstr(obj, varargin)
 %
 % nExt      Number of unit cell to extend the magnetic structure,
 %           dimensions are [1 3]. Default value is stored in obj.
+%           If nExt is a single number, then the size of the extended unit
+%           cell is automatically determined from the magnetic ordering
+%           wavevector. If nExt = 0.01, then the number of unit cells is
+%           determined so, that in the extended unit cell, the magnetic
+%           ordering wave vector is [0 0 0], within the given 0.01 error.
 %
 % k         Magnetic ordering wavevector in r.l.u., dimensions are [1 3].
 %           Default value is defined in obj.
@@ -104,7 +109,7 @@ function genmagstr(obj, varargin)
 
 inpForm.fname  = {'mode'   'nExt'            'k'           'n'     'S'           'phi' 'epsilon'};
 inpForm.defval = {'extend' obj.mag_str.N_ext obj.mag_str.k [0 0 1]  obj.mag_str.S 0     1e-5     };
-inpForm.size   = {[1 -1]   [1 3]             [1 3]         [1 3]   [3 -2]        [1 1] [1 1]    };
+inpForm.size   = {[1 -1]   [1 -4]            [1 3]         [1 3]   [3 -2]        [1 1] [1 1]    };
 inpForm.soft   = {false    false             false         false   false         false false    };
 
 inpForm.fname  = [inpForm.fname  {'func'          'x0'   'norm'}];
@@ -115,6 +120,13 @@ inpForm.soft   = [inpForm.soft   {false           true   false }];
 param = sw_readparam(inpForm, varargin{:});
 
 nExt     = double(param.nExt);
+
+% automatic determination of the size of the extended unit cell
+% if nExt is a single number
+if numel(nExt) == 1
+    [~, nExt] = rat(param.k,nExt);
+end
+
 mAtom    = obj.matom;
 nMagAtom = size(mAtom.r,2);
 nMagExt  = nMagAtom*prod(nExt);
@@ -160,7 +172,7 @@ switch param.mode
         kExt = k.*nExt;
         % Warns about the non sufficient extension of the unit cell.
         if any(abs(kExt-round(kExt))>param.epsilon)
-            warning('spinw:sw_magstr:UCExtNonSuff','In the extended unit cell k is still larger than epsilon!');
+            warning('sw:genmagstr:UCExtNonSuff','In the extended unit cell k is still larger than epsilon!');
         end
         % Number of spins in the input.
         nSpin = size(param.S,2);

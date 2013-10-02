@@ -49,7 +49,14 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % lineStyle Line style for line plots (dispersion and intensity), default
 %           is {'-' 'o-' '--'}. For example '--' gives dashed lines.
 % lineWidth Line width of line plots, default is 0.5 point.
-% log       Plot logarithmic intensity, default is false.
+% log       Plot 10based logarithmic intensity, default is false.
+% norm      Determines how to calculate the convoluted spectrum intensity,
+%           when instrumental resolution is included as well:
+%               amp     Amplitude of the line is normalized (good for
+%                       comparing plots).
+%               int     Integrated intensity of the line is normalized
+%                       (good for fitting simulation to data).
+%           Default is 'amp'.
 %
 % Output:
 %
@@ -80,9 +87,9 @@ inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
 inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
 inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'log'}];
-inpForm.defval = [inpForm.defval {false}];
-inpForm.size   = [inpForm.size   {[1 1]}];
+inpForm.fname  = [inpForm.fname  {'log' 'norm'}];
+inpForm.defval = [inpForm.defval {false 'amp' }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 3]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -128,7 +135,12 @@ end
 if param.mode == 4
     % PLOT EASY PEASY
     
-    Eres = (spectra.Evect(end) - spectra.Evect(1))/50;
+    if param.dE == 0
+        Eres = (spectra.Evect(end) - spectra.Evect(1))/50;
+    else
+        Eres = param.dE;
+    end
+    
     [fHandle, pHandle1] = sw_plotspec(spectra,'ahandle',gca,'mode',3,'dE',Eres,...
         'dashed',true,'colorbar',false,'axLim',param.axLim,'lineStyle',param.lineStyle);
     if ~powmode
@@ -287,12 +299,13 @@ switch param.mode
     case 2
         % Line plot of cross sections but only the first cell array element
         axis0 = [xAxis(1) xAxis(end) 0 1];
+        
         yLabel = 'Intensity (arb. u.)';
-        if param.imag
-            titleStr0 = 'Intensity of the spin-spin correlation function: Im ';
-        else
-            titleStr0 = 'Intensity of the spin-spin correlation function: Re ';
+        if param.log
+            yLabel = ['log ' yLabel];
         end
+        
+        titleStr0 = 'Intensity of the spin-spin correlation function: ';
         % loop over the twins
         for tt = 1:nTwinS
             for jj = 1:nConv
@@ -301,6 +314,11 @@ switch param.mode
                 else
                     plotr = abs(real(swInt{jj,tt}));
                 end
+                
+                if param.log
+                    plotr = log10(plotr);
+                end
+                
                 for ii = 1:nMode
                     hPlot(end+1) = plot3(xAxis,plotr(ii,:),xAxis*0+1e5,param.lineStyle{mod(jj-1,3)+1},...
                         'Color', colors(ii,:),'LineWidth',param.lineWidth); %#ok<*AGROW>
@@ -397,7 +415,13 @@ if param.mode == 3
         xG = (-nG*dx):dx:(nG*dx);
         % Gaussian normalised intensity
         fG = exp(-(xG/sG).^2/2);
-        fG = fG/sum(fG);
+        if strcmpi(param.norm,'amp')
+            fG = fG/max(fG(:));
+        elseif strcmpi(param.norm,'int')
+            fG = fG/sum(fG);
+        else
+            warning('sw_plotspec:WrongInput','The given norm option is invalid!')
+        end
     else
         fG = 1;
     end
@@ -448,7 +472,7 @@ if param.mode == 3
         swConv{ii} = iTemp';
         % take log if param.log is true
         if param.log
-            swConv{ii} = log(swConv{ii}+1e-10);
+            swConv{ii} = log10(swConv{ii}+1e-10);
         end
     end
     

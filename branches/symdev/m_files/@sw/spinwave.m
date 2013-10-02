@@ -340,7 +340,8 @@ for jj = 1:nSlice
     
     ham = (ham + conj(permute(ham,[2 1 3])))/2;
     
-    g = diag([ones(nMagExt,1); -ones(nMagExt,1)]);
+    g  = diag([ones(nMagExt,1); -ones(nMagExt,1)]);
+    gd = diag(g);
     
     if param.hermit
         % All the matrix calculations are according to Colpa's paper
@@ -371,10 +372,10 @@ for jj = 1:nSlice
             U = U(:,idx);
             
             % omega dispersion
-            omega(:,end+1) = g*D; %#ok<AGROW>
+            omega(:,end+1) = D; %#ok<AGROW>
             
             % the inverse of the para-unitary transformation V
-            V(:,:,ii) = inv(K)*U*diag(sqrt(omega(:,end))); %#ok<MINV>
+            V(:,:,ii) = inv(K)*U*diag(sqrt(gd.*omega(:,end))); %#ok<MINV>
         end
     else
         % All the matrix calculations are according to White's paper
@@ -500,6 +501,7 @@ spectra.param.notwin    = param.notwin;
 spectra.param.sortMode  = param.sortMode;
 spectra.param.tol       = param.tol;
 spectra.param.omega_tol = param.omega_tol;
+spectra.param.hermit    = param.hermit;
 
 if ~param.fitmode
     spectra.ff  = ones(nMagExt,nHkl0);

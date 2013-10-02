@@ -35,7 +35,6 @@ else
 end
     
 if dash == 0
-    dash  = 1;
     nDash = 0;
 else
     nDash = floor(norm(r2-r1)/((N1+N2)*R*dash));

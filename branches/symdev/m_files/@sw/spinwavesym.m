@@ -121,7 +121,7 @@ spectra = struct;
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
-[SS, SI, RR] = obj.intmatrix('plotmode',true);
+[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true);
 
 
 % Introduce the opposite couplings.
@@ -260,7 +260,7 @@ for ii = 1:size(idxAll,1)
     ham(idxAll(ii,1),idxAll(ii,2)) = ham(idxAll(ii,1),idxAll(ii,2)) + ABCD(ii);
 end
 
-ham = (ham + conj(permute(ham,[2 1 3])))/2;
+ham = simplify((ham + conj(permute(ham,[2 1 3])))/2);
 
 g = sym(diag([ones(nMagExt,1); -ones(nMagExt,1)]));
 
@@ -268,33 +268,33 @@ if param.hermit
     % All the matrix calculations are according to Colpa's paper
     % J.H.P. Colpa, Physica 93A (1978) 327-353
     
-    
-        [K, posDef]  = chol(ham(:,:,ii));
-        if posDef > 0
-            try
-                K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
-            catch PD
-                error('sw:spinwave:PositiveDefiniteHamiltonian',...
-                    ['Hamiltonian matrix is not positive definite, probably'...
-                    ' the magnetic structure is wrong! For approximate'...
-                    ' diagonalization try the param.hermit=false option']);
-            end
-        end
+%         posDef = feval(symengine,'linalg::isPosDef',ham);
+%         
+%         if ~posDef
+%             ham = ham + sym(eye(2*nMagExt)*param.omega_tol);
+%             posDef = feval(symengine,'linalg::isPosDef',ham);
+%             warning('sw:spinwavesym',['To make ham positive definite, a '...
+%                 'small omega_tol added to the diagonal!'])
+%         end
+        
+        K = simplify(feval(symengine,'linalg::factorCholesky',ham,'NoCheck'));
+        
+%         if ~posDef
+%             warning('sw:spinwavesym:PositiveDefiniteHamiltonian',...
+%                 ['Hamiltonian matrix is not positive definite, probably'...
+%                 ' the magnetic structure is wrong!']);
+%         end
         
         K2 = K*g*K';
         K2 = 1/2*(K2+K2');
+        
         % Hermitian K2 will give orthogonal eigenvectors
-        [U, D] = eig(K2);
-        
-        % sort eigenvalues to decreasing order
-        [D, idx] = sort(diag(D),'descend');
-        U = U(:,idx);
-        
-        % omega dispersion
-        omega(:,end+1) = g*D;
+        [U, omega] = eig(K2);
         
         % the inverse of the para-unitary transformation V
-        V = inv(K)*U*diag(sqrt(omega(:,end))); %#ok<MINV>
+        V = inv(K)*U*diag(sqrt(g*omega)); %#ok<MINV>
+        
+        omega = diag(omega);
 
 else
     % All the matrix calculations are according to White's paper

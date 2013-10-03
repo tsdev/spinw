@@ -20,6 +20,9 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %                   3. dr(z) > 0.
 % zeroC         Whether to give couplings with assigned matrices that are
 %               zero. Default is false.
+% extend        Calculate terms of the Hamiltonian in the magnetic
+%               supercell if plotmode is true (if plotmode is false, the
+%               supercell is always used). Default is false.
 %
 % Output:
 %
@@ -55,9 +58,9 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %               [3 nMAgExt].
 %
 
-inpForm.fname  = {'fitmode' 'plotmode' 'zeroC'};
-inpForm.defval = {0          false     false  };
-inpForm.size   = {[1 1]      [1 1]     [1 1]  };
+inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' };
+inpForm.defval = {0          false     false   false    };
+inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -239,7 +242,9 @@ if param.plotmode
         SS.all(6:14,flip)  = SS.all([1 4 7 2 5 8 3 6 9]+5,flip);
     end
     RR = mAtom.r;
-else
+end
+
+if ~param.plotmode || param.extend
     % Extend the lattice for magnetic interactions
     nExt = double(obj.mag_str.N_ext);
     [mAtom, SS] = sw_extendlattice(nExt, mAtom, SS);

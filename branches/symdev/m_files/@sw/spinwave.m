@@ -188,9 +188,11 @@ nMagExt = size(M0,2);
 
 if fid ~= 0
     if incomm
-        fprintf(fid,'Calculating INCOMMENSURATE spin wave spectra (nMagExt = %d, nHkl = %d, nTwin = %d)...\n',nMagExt, nHkl0, nTwin);
+        fprintf(fid,['Calculating INCOMMENSURATE spin wave spectra '...
+            '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
     else
-        fprintf(fid,'Calculating COMMENSURATE spin wave spectra (nMagExt = %d, nHkl = %d, nTwin = %d)...\n',nMagExt, nHkl0, nTwin);
+        fprintf(fid,['Calculating COMMENSURATE spin wave spectra '...
+            '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
     end
 end
 
@@ -269,12 +271,14 @@ if param.optmem
     nSlice = ceil(nMagExt^2*nHkl*6912/sw_freemem*2);
     if nHkl < nSlice
         if fid ~= 0
-            fprintf(fid,'Memory allocation is not optimal, nMagExt is too large compared to the free memory!\n');
+            fprintf(fid,['Memory allocation is not optimal, nMagExt is'...
+                ' too large compared to the free memory!\n']);
         end
         nSlice = nHkl;
     elseif nSlice > 1
         if fid ~= 0
-            fprintf(fid,'To optimise memory allocation, Q is cut into %d pieces!\n',nSlice);
+            fprintf(fid,['To optimise memory allocation, Q is cut'...
+                ' into %d pieces!\n'],nSlice);
         end
     end
 else
@@ -305,7 +309,8 @@ for jj = 1:nSlice
     
     % Creates the matrix of exponential factors nCoupling x nHkl size.
     % Extends dR into 3 x 3 x nCoupling x nHkl
-    ExpF = exp(1i*permute(sum(repmat(dR,[1 1 nHklMEM]).*repmat(permute(hklExtMEM,[1 3 2]),[1 nCoupling 1]),1),[2 3 1]))';
+    ExpF = exp(1i*permute(sum(repmat(dR,[1 1 nHklMEM]).*repmat(...
+        permute(hklExtMEM,[1 3 2]),[1 nCoupling 1]),1),[2 3 1]))';
     
     % Creates the matrix elements containing zed.
     A1 = bsxfun(@times,     AD0 ,ExpF);
@@ -332,7 +337,8 @@ for jj = 1:nSlice
         % different field for different twin
         for ii = min(twinIdxMEM):max(twinIdxMEM)
             nTwinQ = sum(twinIdxMEM==ii);
-            ham(:,:,twinIdxMEM==ii) = ham(:,:,twinIdxMEM==ii) + repmat(accumarray(idxMF,MF(:,:,ii),[1 1]*2*nMagExt),[1 1 nTwinQ]);
+            ham(:,:,twinIdxMEM==ii) = ham(:,:,twinIdxMEM==ii) + ...
+                repmat(accumarray(idxMF,MF(:,:,ii),[1 1]*2*nMagExt),[1 1 nTwinQ]);
         end
         
         %ham = ham + repmat(accumarray(idxMF,MF,[1 1]*2*nMagExt),[1 1 nHklMEM]);
@@ -354,8 +360,10 @@ for jj = 1:nSlice
             if posDef > 0
                 try
                     K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
+                    warning('sw:spinwave:NonPosDefHamiltonian',['Trying to make '...
+                        'ham positive definite, a small omega_tol added to its diagonal!'])
                 catch PD
-                    error('sw:spinwave:PositiveDefiniteHamiltonian',...
+                    error('sw:spinwave:NonPosDefHamiltonian',...
                         ['Hamiltonian matrix is not positive definite, probably'...
                         ' the magnetic structure is wrong! For approximate'...
                         ' diagonalization try the param.hermit=false option']);
@@ -459,7 +467,8 @@ if incomm
     % dispersion
     omega = [omega(:,kmIdx==1); omega(:,kmIdx==2); omega(:,kmIdx==3)];
     % exchange matrices
-    Sab   = cat(3,mmat(Sab(:,:,:,kmIdx==1),K1), mmat(Sab(:,:,:,kmIdx==2),K2), mmat(Sab(:,:,:,kmIdx==3),conj(K1)));
+    Sab   = cat(3,mmat(Sab(:,:,:,kmIdx==1),K1), mmat(Sab(:,:,:,kmIdx==2),K2), ...
+        mmat(Sab(:,:,:,kmIdx==3),conj(K1)));
     
     hkl   = hkl(:,kmIdx==2);
     nHkl0 = nHkl0/3;

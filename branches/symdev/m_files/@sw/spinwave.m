@@ -57,8 +57,8 @@ function spectra = spinwave(obj, hkl, varargin)
 %               Advise:
 %               Always use Colpa's method, except when small imaginary
 %               eigenvalues are expected. In this case only White's method
-%               work. The solution in this case is wrong, however by 
-%               examining the eigenvalues it can give a hint where the 
+%               work. The solution in this case is wrong, however by
+%               examining the eigenvalues it can give a hint where the
 %               problem is.
 %               Default is true.
 %
@@ -373,7 +373,7 @@ for jj = 1:nSlice
             K2 = K*g*K';
             K2 = 1/2*(K2+K2');
             % Hermitian K2 will give orthogonal eigenvectors
-            [U, D] = eig(K2);
+            [U, D] = eigorth(K2,param.omega_tol, param.sortMode);
             
             % sort eigenvalues to decreasing order
             [D, idx] = sort(diag(D),'descend');

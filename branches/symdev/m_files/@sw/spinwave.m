@@ -361,7 +361,7 @@ for jj = 1:nSlice
                 try
                     K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
                     warning('sw:spinwave:NonPosDefHamiltonian',['Trying to make '...
-                        'ham positive definite, a small omega_tol added to its diagonal!'])
+                        'ham positive definite, a small omega_tol added to its diagonal!\n' repmat(' ',[1 9])])
                 catch PD
                     error('sw:spinwave:NonPosDefHamiltonian',...
                         ['Hamiltonian matrix is not positive definite, probably'...
@@ -373,10 +373,15 @@ for jj = 1:nSlice
             K2 = K*g*K';
             K2 = 1/2*(K2+K2');
             % Hermitian K2 will give orthogonal eigenvectors
-            [U, D] = eigorth(K2,param.omega_tol, param.sortMode);
+            if param.sortMode
+                [U, D] = eigenshuffle(K2);
+            else
+                [U, D] = eig(K2);
+                D = diag(D);
+            end
             
             % sort eigenvalues to decreasing order
-            [D, idx] = sort(diag(D),'descend');
+            [D, idx] = sort(D,'descend');
             U = U(:,idx);
             
             % omega dispersion

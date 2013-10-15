@@ -1,4 +1,4 @@
-function sw_release(test, tempDir)
+function sw_release(tempDir)
 % SW_RELEASE creates a release and packs it into a .zip file.
 %
 % SW_RELEASE(tempDir)
@@ -7,11 +7,6 @@ function sw_release(test, tempDir)
 %           store the modified .m files and the final .zip file. By default
 %           it is current folder.
 % 
-
-if nargin == 0
-    help sw_release;
-    return;
-end
 
 % runs the test code and only saves the files if the test runs without
 % problems
@@ -23,7 +18,7 @@ cd(sw_rootdir);
 [statSys, revNum] = system('svn info |grep Revision: |cut -c11-');
 
 if ~statSys
-    revNum = str2num(revNum);
+    revNum = str2double(revNum);
 else
     revNum = 1;
 end
@@ -41,7 +36,7 @@ revText{3} = newLine;
 
 % use current directory where the temp directory is created in case no
 % tempDir defined
-if nargin == 1
+if nargin == 0
     tempDir = pwd;
 end
 

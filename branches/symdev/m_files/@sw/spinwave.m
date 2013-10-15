@@ -33,7 +33,11 @@ function spectra = spinwave(obj, hkl, varargin)
 %               Default is false.
 % sortMode      The spin wave modes will be sorted if true. Default is
 %               true.
-% optmem        Optimise memory usage, default is true.
+% optmem        Parameter to optimise memory usage. The list of hkl values
+%               will be cut into optmem number of pieces and will be
+%               calculated piece by piece to decrease memory usage. Default
+%               of optmem is zero, when the number of slices are determined
+%               automatically from the available free memory.
 % fid           For text output of the calculation:
 %               0   No text output.
 %               1   Output written onto the Command Window. (default)
@@ -61,6 +65,11 @@ function spectra = spinwave(obj, hkl, varargin)
 %               examining the eigenvalues it can give a hint where the
 %               problem is.
 %               Default is true.
+% nSlice        Parameter to optimise memory usage. The list of hkl values
+%               will be cut into nSlice pieces and will be calculated piece
+%               by piece to decrease memory usage. Default is zero, when
+%               the number of slices are determined automatically from the
+%               available free memory.
 %
 % Output:
 %
@@ -99,9 +108,13 @@ if iscell(hkl)
     hkl = sw_qscan(hkl);
 end
 
-inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol' 'omega_tol' 'hermit'};
-inpForm.defval = {false     false    true      true     1     1e-4   1e-5        true    };
-inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]  [1 1]      [1 1]   };
+inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol'  };
+inpForm.defval = {false     false    true       0        1      1e-4  };
+inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1]  [1 1] };
+
+inpForm.fname  = [inpForm.fname  {'omega_tol' 'hermit' }];
+inpForm.defval = [inpForm.defval {1e-5        true     }];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1]    }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -267,23 +280,31 @@ idxMF = [(1:2*nMagExt)' (1:2*nMagExt)' ];
 % MEMORY MANAGEMENT LOOP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if param.optmem
-    nSlice = ceil(nMagExt^2*nHkl*6912/sw_freemem*2);
-    if nHkl < nSlice
-        if fid ~= 0
-            fprintf(fid,['Memory allocation is not optimal, nMagExt is'...
-                ' too large compared to the free memory!\n']);
-        end
-        nSlice = nHkl;
-    elseif nSlice > 1
-        if fid ~= 0
-            fprintf(fid,['To optimise memory allocation, Q is cut'...
-                ' into %d pieces!\n'],nSlice);
-        end
+if param.optmem == 0
+    freeMem = sw_freemem;
+    if freeMem > 0
+        nSlice = ceil(nMagExt^2*nHkl*6912/sw_freemem*2);
+    else
+        nSlice = 1;
+        warning('sw:spinwave:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
     end
 else
-    nSlice = 1;
+    nSlice = param.optmem;
 end
+
+if nHkl < nSlice
+    if fid ~= 0
+        fprintf(fid,['Memory allocation is not optimal, nMagExt is'...
+            ' too large compared to the free memory!\n']);
+    end
+    nSlice = nHkl;
+elseif nSlice > 1
+    if fid ~= 0
+        fprintf(fid,['To optimise memory allocation, Q is cut'...
+            ' into %d pieces!\n'],nSlice);
+    end
+end
+
 hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 
 % Empty omega dispersion of all spin wave modes, size: 2*nMagExt x nHkl.

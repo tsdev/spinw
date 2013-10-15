@@ -34,8 +34,8 @@ try
     luvo.addcoupling('J1a',1);
     luvo.addcoupling('J1b',1);
     
-    luvo.setmatrix('label','J1a','pref',{[0 1 0]});
-    luvo.setmatrix('label','J1b','pref',{[1 0 0]});
+    luvo.setmatrix('label','J1a','pref',{[1 0 0]});
+    luvo.setmatrix('label','J1b','pref',{[0 1 0]});
     
     hFig = plot(luvo,'pNonMagAtom',false,'pZeroCoupling',true);
     
@@ -62,10 +62,10 @@ try
     % test the generated DM interactions
     gMat = reshape(luvo.intmatrix.all(end-8:end,:),3,3,[]);
     % (- - + + - + + -)
-    if any(abs(permute(cat(3,gMat(2,3,1:4),gMat(1,3,5:8)),[2,3,1]) - [-1 -1 1 1 -1 1 1 -1])>tol)
+    if any(abs(permute(cat(3,gMat(2,3,1:4),gMat(1,3,5:8)),[2,3,1]) - [1 1 -1 -1 -1 1 1 -1])>tol)
         error('sw_test_sym1:WrongMat','Wrong values of the generated antisymmetric coupling matrix!');
     end
-    if any(abs(permute(cat(3,gMat(3,2,1:4),gMat(3,1,5:8)),[2,3,1]) - [1 1 -1 -1 1 -1 -1 1])>tol)
+    if any(abs(permute(cat(3,gMat(3,2,1:4),gMat(3,1,5:8)),[2,3,1]) - [-1 -1 1 1 1 -1 -1 1])>tol)
         error('sw_test_sym1:WrongMat','Wrong values of the generated antisymmetric coupling matrix!');
     end
     

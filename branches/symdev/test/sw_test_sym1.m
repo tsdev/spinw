@@ -47,7 +47,7 @@ try
     rightMat = cat(3,diag([0 0 1]),diag([1 1 0]));
     errMat1 = (aMat - rightMat).^2;
     errMat2 = (aMat - rightMat(:,:,[2 1])).^2;
-    if (sum(errMat1(:))>tol) && (sum(errMat2(:)) > 1e-5)
+    if (sum(errMat1(:)) > tol) && (sum(errMat2(:)) > tol)
         error('sw_test_sym1:WrongMat','Wrong values in the allowed anisotropy matrix!');
     end
     
@@ -55,7 +55,7 @@ try
     if size(cMat,3) ~= 3
         error('sw_test_sym1:WrongMat','Wrong number of allowed coupling matrix!');
     end
-    rightMat = cat(3,diag([0 0 1]),diag([1 1 0]),[0 -1 0;1 0 0;0 0 0]);
+    rightMat = cat(3,diag([1 1 0]),diag([0 0 1]),[0 1 0;-1 0 0;0 0 0]);
     for ii = 1:3
         right = false;
         for jj = 1:3

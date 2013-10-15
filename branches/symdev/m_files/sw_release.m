@@ -1,4 +1,4 @@
-function sw_release(tempDir)
+function sw_release(test, tempDir)
 % SW_RELEASE creates a release and packs it into a .zip file.
 %
 % SW_RELEASE(tempDir)

@@ -2,6 +2,17 @@ function varargout = sw_version()
 % SW_VERSION gives the current version of the SpinW code
 %
 
+% read file header
+testStr = '% $Author: Sandor Toth$ ($Contact: sandor.toth@psi.ch$)';
+
+while numel(testStr) > 0
+    [~, testStr] = strtok(testStr,'$');
+    [partStr, testStr] = strtok(testStr,'$');
+    partStr
+end
+
+
+
 build   = 'SpinW release 2.0beta';
 name    = 'SpinW';
 version = 2.0;

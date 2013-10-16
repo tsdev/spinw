@@ -1,20 +1,23 @@
-function sw_release(tempDir)
+function sw_release(verNum, tempDir)
 % SW_RELEASE creates a release and packs it into a .zip file.
 %
-% SW_RELEASE(tempDir)
+% SW_RELEASE(verNum, {tempDir})
 %
+% verNum    Version number either  string or a number.
 % tempDir   Directory where a temporary subdirectory will be created to
 %           store the modified .m files and the final .zip file. By default
 %           it is current folder.
 % 
 
-% runs the test code and only saves the files if the test runs without
-% problems
-%sw_test;
+if nargin == 0
+    help sw_release;
+    return
+end
 
 % get latest revision number
 aDir = pwd;
 cd(sw_rootdir);
+
 [statSys, revNum] = system('svn info |grep Revision: |cut -c11-');
 
 if ~statSys
@@ -25,18 +28,21 @@ end
 
 cd(aDir);
 
+if isnumeric(verNum)
+    verNum = num2str(verNum);
+end
+
 % includes the following comments to every .m file
-
 newLine = sprintf('\n');
-
-%revText{1} = newLine;
-revText{1} = ['% Original author: S. Toth (sandor.toth@psi.ch)' newLine];
-revText{2} = ['% $Revision: ' num2str(revNum) ' $ ($Date: ' date ' $)' newLine];
-revText{3} = newLine;
+revText{1} = ['% $Name: SpinW$ ($Version: ' verNum '$)' newLine];
+revText{2} = ['% $Author: S. Toth$ ($Contact: sandor.toth@psi.ch$)' newLine];
+revText{3} = ['% $Revision: ' num2str(revNum) ' $ ($Date: ' date ' $)' newLine];
+revText{4} = ['% $License: GNU GENERAL PUBLIC LICENSE$' newLine];
+revText{5} = newLine;
 
 % use current directory where the temp directory is created in case no
 % tempDir defined
-if nargin == 0
+if nargin == 1
     tempDir = pwd;
 end
 
@@ -62,7 +68,7 @@ tempDirName = [tempDirName0 filesep 'spinw'];
 copyfile([sw_rootdir '*'],tempDirName);
 
 % include extra comment to all m files
-mFiles = rdir([tempDirName filesep '**' filesep 'm_files' filesep '*.m']);
+mFiles = rdir([tempDirName filesep 'm_files' filesep '**' filesep '*.m']);
 
 % go through all files and add comments
 for ii = 1:numel(mFiles)

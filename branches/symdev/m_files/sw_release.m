@@ -7,7 +7,7 @@ function sw_release(verNum, tempDir)
 % tempDir   Directory where a temporary subdirectory will be created to
 %           store the modified .m files and the final .zip file. By default
 %           it is current folder.
-% 
+%
 
 if nargin == 0
     help sw_release;
@@ -77,9 +77,11 @@ for ii = 1:numel(mFiles)
     fid = fopen(mFiles(ii).name);
     mLines{end+1} = fgets(fid); %#ok<*AGROW>
     mLines{end+1} = fgets(fid);
+    tLines = strtrim(mLines{end});
     
-    while numel(mLines{end})>0 && (strcmp(mLines{end}(1),'%'))
+    while numel(tLines)>0 && (strcmp(tLines(1),'%'))
         mLines{end+1} = fgets(fid);
+        tLines = strtrim(mLines{end});
     end
     
     % add revision number
@@ -112,7 +114,7 @@ zipDel = {};
 
 for ii = 1:numel(zipList)
     if any(strfind(zipList(ii).name,[filesep '.']))
-       zipDel{end+1} = zipList(ii).name;
+        zipDel{end+1} = zipList(ii).name;
     end
 end
 
@@ -122,7 +124,5 @@ system(['zip -d ' zipName ' "*/.*"']);
 movefile([zipName '.zip'], aDir);
 cd(aDir);
 rmdir(tempDirName0,'s');
-
-
 
 end

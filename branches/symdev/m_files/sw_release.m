@@ -60,9 +60,15 @@ if ~statDir
     error('sw_release:CannotCreateDir',['No write access to the ' tempDir ' folder!']);
 end
 
-mkdir([tempDirName filesep 'spinw']);
+% change dots in version name to minus
+verNum2 = verNum;
+verNum2(verNum2=='.') = '-';
+
+swDirName = ['spinw_' verNum2 '_rev' num2str(revNum)];
+
+mkdir([tempDirName filesep swDirName]);
 tempDirName0 = tempDirName;
-tempDirName = [tempDirName0 filesep 'spinw'];
+tempDirName = [tempDirName0 filesep swDirName];
 
 % copy all files from sw_rootdir to the temp folder
 copyfile([sw_rootdir '*'],tempDirName);
@@ -104,7 +110,7 @@ end
 
 cd(tempDirName0);
 
-zipName = ['spinw_rev' num2str(revNum)];
+zipName = [swDirName '.zip'];
 % compress files
 system(['zip -r ' zipName ' * -x \*.DS_Store -x \*.svn']);
 
@@ -121,7 +127,7 @@ end
 % remove .svn files
 system(['zip -d ' zipName ' "*/.*"']);
 
-movefile([zipName '.zip'], aDir);
+movefile(zipName, aDir);
 cd(aDir);
 rmdir(tempDirName0,'s');
 

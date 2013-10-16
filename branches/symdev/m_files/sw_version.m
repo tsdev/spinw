@@ -2,7 +2,30 @@ function varargout = sw_version()
 % SW_VERSION gives the current version of the SpinW code
 %
 
-% read file header
+% read file header from sw.m file
+fid = fopen([sw_rootdir 'm_files' filesep '@sw' filesep 'sw.m']);
+
+% first line
+fgets(fid);
+% skip comments
+fLine = fgets(fid);
+while strcmp(fLine(1),'%')
+    fLine = fgets(fid);
+end
+% skip empty lines
+while ~strcmp(fLine(1),'%')
+    fLine = fgets(fid);
+end
+% read version information
+verLine = {fLine};
+while strcmp(verLine{end}(1),'%')
+    verLine{end+1} = fgets(fid);
+end
+fclose(fid);
+
+
+
+
 testStr = '% $Author: Sandor Toth$ ($Contact: sandor.toth@psi.ch$)';
 
 while numel(testStr) > 0

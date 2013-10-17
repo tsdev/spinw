@@ -14,19 +14,23 @@ if nargin == 0
     return
 end
 
-% get latest revision number
+% current directory
 aDir = pwd;
-cd(sw_rootdir);
 
-[statSys, revNum] = system('svn info |grep Revision: |cut -c11-');
+swVer = sw_version;
 
-if ~statSys
-    revNum = str2double(revNum);
+if isfield(swVer,'Version')
+    disp('The current version of SpinW is already released!');
+    return;
+end
+
+% get latest revision number
+if isfield(swVer,'Revision')
+    revNum = str2double(swVer.Revision);
 else
     revNum = 1;
 end
 
-cd(aDir);
 
 if isnumeric(verNum)
     verNum = num2str(verNum);
@@ -111,18 +115,21 @@ end
 cd(tempDirName0);
 
 zipName = [swDirName '.zip'];
-% compress files except with '.' in the beginning of the file name/folder
-% name and '~' in the end
-fList = rdir('**/*');
-fListZip = {};
+% compress files
+system(['zip -r ' zipName ' * -x \*.DS_Store -x \*.svn']);
 
-for ii = 1:numel(fList)
-    if (~any(strfind(fList(ii).name,[filesep '.']))) && (~any(strfind(fList(ii).name,'~')))
-        fListZip{end+1} = fList(ii).name;
+zipList = rdir('**/*');
+
+zipDel = {};
+
+for ii = 1:numel(zipList)
+    if any(strfind(zipList(ii).name,[filesep '.']))
+        zipDel{end+1} = zipList(ii).name;
     end
 end
 
-zip(zipName,fListZip,tempDirName0);
+% remove .svn files
+system(['zip -d ' zipName ' "*/.*"']);
 
 movefile(zipName, aDir);
 cd(aDir);

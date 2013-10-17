@@ -3,7 +3,6 @@ function varargout = sw_version()
 %
 
 % read file header from sw.m file
-%fid = fopen([sw_rootdir 'm_files' filesep '@sw' filesep 'sw.m']);
 fid = fopen('sw.m');
 
 % first line
@@ -49,14 +48,36 @@ for ii = 1:nField
     verStruct.(fieldName{ii}) = fieldVal{ii};
 end
 
+
 if nField == 0
-    varargout{1} = [];
+    aDir = pwd;
+    cd(sw_rootdir);
+    [~, revNum] = system('svn info |grep Revision: |cut -c11-');
+    cd(aDir);
+    revNum = str2double(revNum);
 end
 
-if nargout < 1
-    disp([verStruct.Name verStruct.Version ' (rev ' num2str(verStruct.Revision) ')']);
+if nargout == 0
+    if nField == 0
+        
+        if any(revNum)
+            fprintf('This version of SpinW (rev. num. %d) is not released yet!\n',revNum);
+        else
+            fprintf('This version of SpinW is not released yet!\n');
+        end
+    else
+        disp([verStruct.Name verStruct.Version ' (rev ' num2str(verStruct.Revision) ')']);
+    end
 else
-    varargout{1} = verStruct;
+    if nField == 0
+        if any(revNum)
+            varargout{1}.Revision = num2str(revNum);
+        else
+            varargout{1} = struct;
+        end
+    else
+        varargout{1} = verStruct;
+    end
 end
 
 end

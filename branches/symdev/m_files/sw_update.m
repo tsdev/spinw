@@ -13,6 +13,11 @@ function sw_update(installDir)
 %               folder.
 %
 
+% $Name: SpinW$ ($Version: 2.0beta$)
+% $Author: S. Toth$ ($Contact: sandor.toth@psi.ch$)
+% $Revision: 98 $ ($Date: 17-Oct-2013 $)
+% $License: GNU GENERAL PUBLIC LICENSE$
+
 % check current version
 swVer = sw_version;
 
@@ -62,6 +67,18 @@ else
 end
 
 % check whether the online version is newer (compare revision numbers)
+
+if isstring(swVer.Revision)
+    swVer.Revision = str2double(swVer.Revision);
+end
+
+if swVer.Revision ==  newRev
+    disp('Your SpinW installation is up to date!');
+    return
+elseif swVer.Revision >  newRev
+    disp('Your SpinW installation is newer than the one in the repository! Lucky you! :)');
+    return
+end
 
 fprintf('Current version has a revision number: %d\n',swVer.Revision);
 fprintf('New version has a revision number:     %d\n',newRev);

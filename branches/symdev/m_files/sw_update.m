@@ -50,7 +50,7 @@ end
 %   message in the next few lines
 newInfo = urlread(baseUrl);
 % separate lines of text
-newInfo = textscan(newInfo,'%s');
+newInfo = textscan(newInfo, '%s', 'delimiter', sprintf('\n'));
 newInfo = newInfo{1};
 
 newLink = newInfo{1};
@@ -114,6 +114,8 @@ disp('Removing unnecessary files... ')
 delete([installDir updateName]);
 
 disp('In oder to load the new class definitions, issue a ''clear classes'' command before using SpinW!');
+disp('In order to reach SpinW after every restart of Matlab, add the following line to your startup.m file:');
+fprintf('addpath(genpath(''%s''));\n',folName);
 disp('Update was successful!')
 
 end

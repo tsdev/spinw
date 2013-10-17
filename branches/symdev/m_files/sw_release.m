@@ -14,9 +14,6 @@ if nargin == 0
     return
 end
 
-% current directory
-aDir = pwd;
-
 swVer = sw_version;
 
 if isfield(swVer,'Version')
@@ -25,12 +22,24 @@ if isfield(swVer,'Version')
 end
 
 % get latest revision number
-if isfield(swVer,'Revision')
-    revNum = str2double(swVer.Revision);
+aDir = pwd;
+cd(sw_rootdir);
+
+%[statSys, revNum] = system('svn info |grep Revision: |cut -c11-');
+[statSys, revNum] = system('svn up');
+
+revNum = strtrim(revNum);
+strIdx = strfind(revNum,' ');
+revNum = revNum(strIdx(end):(end-1));
+
+if ~statSys
+    
+    revNum = str2double(revNum);
 else
     revNum = 1;
 end
 
+cd(aDir);
 
 if isnumeric(verNum)
     verNum = num2str(verNum);

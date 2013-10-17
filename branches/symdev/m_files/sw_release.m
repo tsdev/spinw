@@ -131,7 +131,7 @@ fList = rdir('**/*');
 fListZip = {};
 
 for ii = 1:numel(fList)
-    if (~any(strfind(fList(ii).name,[filesep '.']))) || (~any(strfind(fList(ii).name,'~'))) || (~any(strfind(fList(ii).name,'sw_release.m')))
+    if (~any(strfind(fList(ii).name,[filesep '.']))) && (~any(strfind(fList(ii).name,'~'))) && (~any(strfind(fList(ii).name,'sw_release.m')))
         fListZip{end+1} = fList(ii).name;
     end
 end

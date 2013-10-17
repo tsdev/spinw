@@ -124,21 +124,19 @@ end
 cd(tempDirName0);
 
 zipName = [swDirName '.zip'];
-% compress files
-system(['zip -r ' zipName ' * -x \*.DS_Store -x \*.svn']);
 
-zipList = rdir('**/*');
+% compress files except files and folders with name starting '.' or backup
+% files with '~' and 'sw_release.m' file
+fList = rdir('**/*');
+fListZip = {};
 
-zipDel = {};
-
-for ii = 1:numel(zipList)
-    if any(strfind(zipList(ii).name,[filesep '.']))
-        zipDel{end+1} = zipList(ii).name;
+for ii = 1:numel(fList)
+    if (~any(strfind(fList(ii).name,[filesep '.']))) || (~any(strfind(fList(ii).name,'~'))) || (~any(strfind(fList(ii).name,'sw_release.m')))
+        fListZip{end+1} = fList(ii).name;
     end
 end
 
-% remove .svn files
-system(['zip -d ' zipName ' "*/.*"']);
+zip(zipName,fListZip);
 
 movefile(zipName, aDir);
 cd(aDir);

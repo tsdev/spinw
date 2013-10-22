@@ -705,11 +705,11 @@ if (param.legend) && size(matrix.mat,3)>0
         handle.lRect(end+1) = rectangle('Position',[5 lHeight-20*ii+6 sRadius*2 sRadius]);
         if dashList(ii)
             % legend for dashed matrices
-            handle.lRect(end+1) = rectangle('Position',[6 lHeight-20*ii+6.5 sRadius*2/3-1 sRadius-1.5]);
+            handle.lRect(end+1) = rectangle('Position',[6 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5]);
             set(handle.lRect(end),'FaceColor',double(matrix.color(:,ii))/255);
             set(handle.lRect(end),'EdgeColor',double(matrix.color(:,ii))/255);
             
-            handle.lRect(end+1) = rectangle('Position',[5+sRadius*2/3*2 lHeight-20*ii+6.5 sRadius*2/3-1 sRadius-1.5]);
+            handle.lRect(end+1) = rectangle('Position',[5+sRadius*2/3*2 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5]);
             set(handle.lRect(end),'FaceColor',double(matrix.color(:,ii))/255);
             set(handle.lRect(end),'EdgeColor',double(matrix.color(:,ii))/255);
         else

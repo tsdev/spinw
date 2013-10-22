@@ -107,15 +107,20 @@ function genmagstr(obj, varargin)
 %
 %
 
-inpForm.fname  = {'mode'   'nExt'            'k'           'n'     'S'           'phi' 'epsilon'};
-inpForm.defval = {'extend' obj.mag_str.N_ext obj.mag_str.k [0 0 1]  obj.mag_str.S 0     1e-5     };
-inpForm.size   = {[1 -1]   [1 -4]            [1 3]         [1 3]   [3 -2]        [1 1] [1 1]    };
-inpForm.soft   = {false    false             false         false   false         false false    };
+inpForm.fname  = {'mode'   'nExt'            'k'           'n'           }; 
+inpForm.defval = {'extend' obj.mag_str.N_ext obj.mag_str.k obj.mag_str.n };
+inpForm.size   = {[1 -1]   [1 -4]            [1 3]         [1 3]         };
+inpForm.soft   = {false    false             false         false         };
 
 inpForm.fname  = [inpForm.fname  {'func'          'x0'   'norm'}];
 inpForm.defval = [inpForm.defval {@gm_spherical3d []     true  }];
 inpForm.size   = [inpForm.size   {[1 1]           [1 -3] [1 1] }];
 inpForm.soft   = [inpForm.soft   {false           true   false }];
+
+inpForm.fname  = [inpForm.fname  {'S'           'phi' 'epsilon'}];
+inpForm.defval = [inpForm.defval {obj.mag_str.S 0     1e-5     }];
+inpForm.size   = [inpForm.size   {[3 -2]        [1 1] [1 1]    }];
+inpForm.soft   = [inpForm.soft   {false         false false    }];
 
 param = sw_readparam(inpForm, varargin{:});
 

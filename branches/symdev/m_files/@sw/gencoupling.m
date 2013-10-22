@@ -129,7 +129,7 @@ if nMagAtom > 0
         newM = zeros(6,0);
         ii  = 1;
         idx = 1;
-        while (ii < max(sortM(6,:)))
+        while (ii <= max(sortM(6,:)))
             % select columns from sorM with a certain idx value
             sortMs = sortM(:,sortM(6,:) == ii);
             while (size(sortMs,2)>0)

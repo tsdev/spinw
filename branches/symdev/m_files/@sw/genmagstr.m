@@ -98,7 +98,7 @@ function genmagstr(obj, varargin)
 %           of the spin rotation plane, its dimensions are [1 3]. The
 %           default is @gm_spherical3d. For planar magnetic structure
 %           use @gm_planar.
-% x0        Input parameters for param.func function, dimensions are 
+% x0        Input parameters for param.func function, dimensions are
 %           [1 nx].
 % norm      Set the length of the generated magnetic moments to be equal to
 %           the spin of the magnetic atoms. Default is true.
@@ -214,8 +214,8 @@ switch param.mode
         % Direct input of the magnetic moments.
         S = param.S;
         if size(S,2)==nMagAtom
-          % single unit cell
-          nExt = [1 1 1];
+            % single unit cell
+            nExt = [1 1 1];
         end
         
         if (size(S,1) ~= 3) || (size(S,2) ~= nMagExt)
@@ -252,6 +252,10 @@ end
 % normalize the magnetic moments
 if param.norm
     S = bsxfun(@rdivide,S,sqrt(sum(S.^2,1))./repmat(mAtom.S,[1 prod(nExt)]));
+    if any(isnan(S(:)))
+        error('spinw:genmagstr:WrongMoments','Zero magnetic moments cannot be normalized!');
+    end
+    
 end
 
 mag_str.N_ext = int32(nExt(:))';

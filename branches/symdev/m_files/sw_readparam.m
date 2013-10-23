@@ -40,6 +40,8 @@ rName     = fieldnames(raw);
 storeSize = zeros(20,1);
 input     = struct;
 
+usedField = false(1,numel(rName));
+
 % Go through all fields.
 for ii = 1:length(fName)
     
@@ -47,6 +49,8 @@ for ii = 1:length(fName)
     
     if any(rawIdx)
         rawIdx = rawIdx(1);
+        usedField(rawIdx) = true;
+        
         inputValid = true;
         
         % Go through all dimension of the selected field to check size.
@@ -83,6 +87,11 @@ for ii = 1:length(fName)
             error('spinw:sw_readparam:ParameterMissing',['Necessary input parameter missing (param.' fName{ii} ')!']);
         end
     end
+end
+
+if ~all(usedField)
+    wName = sprintf('%s, ',rName{~usedField});
+    warning('sw_readparam:UnreadInput','Invalid input parameter names: %s\b\b!',wName);
 end
 
 end

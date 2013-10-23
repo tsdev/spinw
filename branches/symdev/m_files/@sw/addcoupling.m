@@ -32,10 +32,12 @@ end
 if nargin>3
     bondIdx = varargin{1};
     if numel(couplingIdx) > 1
-        warning('sw:addcoupling:CouplingSize','couplingIdx is non-scalar but bondIdx is defined!');
+        warning('sw:addcoupling:CouplingSize',['couplingIdx is '...
+            'non-scalar but bondIdx is defined!']);
     end
     if obj.lattice.sym > 1
-        error('sw:addcoupling:SymmetryProblem','bondIdx is not allowed when crystal symmetry is not P1!');
+        error('sw:addcoupling:SymmetryProblem',['bondIdx is not allowed '...
+            'when crystal symmetry is not P1!']);
     end
 end
 
@@ -43,8 +45,10 @@ warn = false;
 for cSelect = 1:length(couplingIdx)
     
     index = (obj.coupling.idx==couplingIdx(cSelect));
-    if isempty(index)
-        error('sw:addcoupling:CouplingError','Coupling with idx=%d does not exist!',couplingIdx(cSelect));
+    if ~any(index)
+        error('sw:addcoupling:CouplingError',['Coupling with idx=%d does '...
+            'not exist, use gencoupling with larger maxDistance and '...
+            'nUnitCell parameters!'],couplingIdx(cSelect));
     end
     
     index = find(index);
@@ -62,7 +66,8 @@ for cSelect = 1:length(couplingIdx)
             tIndex = find(~Jmod(:,ii),1,'first');
             Jmod(tIndex,ii) = int32(matrixIdx);
         else
-            error('sw:addcoupling:TooManyCoupling','The maximum number of allowed couplings (3) between 2 spins are reached!');
+            error('sw:addcoupling:TooManyCoupling',['The maximum '...
+                'number of allowed couplings (3) between 2 spins are reached!']);
         end
     end
     
@@ -71,7 +76,8 @@ for cSelect = 1:length(couplingIdx)
 end
 
 if warn
-    warning('sw:addcoupling:CouplingIdxWarning','Same matrix already assigned on some coupling!');
+    warning('sw:addcoupling:CouplingIdxWarning',['Same matrix already '...
+        'assigned on some coupling!']);
 end
 
 end

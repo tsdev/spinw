@@ -19,6 +19,8 @@ classdef sw < class_handlelight
     % See also:
     % <a href='/Applications/MATLAB_R2012b.app/help/matlab/matlab_oop/comparing-handle-and-value-classes.html'>Comparing handle and value classes</a>
     %
+    % Information in a blog form:
+    % <a href='http://spinw.tumblr.com'>http://spinw.tumblr.com</a>
     % Documentation can be found here:
     % <a href='https://wiki.helmholtz-berlin.de/spinw'>https://wiki.helmholtz-berlin.de/spinw</a>
     % Forum for questions:

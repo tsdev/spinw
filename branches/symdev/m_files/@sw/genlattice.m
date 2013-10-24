@@ -5,7 +5,8 @@ function genlattice(obj, varargin)
 %
 % Options:
 %
-%   angle       Alpha, beta, gamma angles, dimensions are [1 3].
+%   angled      Alpha, beta, gamma angles in degree, dimensions are [1 3].
+%   angle       Alpha, beta, gamma angles in radian.
 %   lat_const   Lattice parameters, dimensions are [1 3].
 %   sym         Crystal symmetry group index, see symmetry.dat file in the
 %               sw folder. To include new symmetry operators, append a new
@@ -18,17 +19,21 @@ function genlattice(obj, varargin)
 %
 % Example:
 %
-% genlattice(crystal,'lat_const',[3 3 4],'angle',[90 90 120]*pi/180,'sym','P 6');
+% genlattice(crystal,'lat_const',[3 3 4],'angled',[90 90 120],'sym','P 6');
 % This line will create hexagonal lattice, with 'P 6' space group.
 %
 % See also SW, SW_ADDSYM, SW_GENSYM.
 %
 
-inpForm.fname  = {'angle'           'lat_const'           'sym'            };
-inpForm.defval = {obj.lattice.angle obj.lattice.lat_const obj.lattice.sym };
-inpForm.size   = {[1 3]             [1 3]                 [1 -1]          };
+inpForm.fname  = {'angle'           'lat_const'           'sym'           'angled'};
+inpForm.defval = {obj.lattice.angle obj.lattice.lat_const obj.lattice.sym [0 0 0] };
+inpForm.size   = {[1 3]             [1 3]                 [1 -1]          [1 3]   };
 
 param = sw_readparam(inpForm, varargin{:});
+
+if all(param.angled)
+    param.angle = param.angled*pi/180;
+end
 
 obj.lattice.angle     = param.angle;
 obj.lattice.lat_const = param.lat_const;

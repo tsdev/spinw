@@ -30,6 +30,14 @@ if fid == -1
         regexprep(rPath,'\' , '\\\') '!']);
 end
 
+% cut M from the beginning of the atom label
+upStr = isstrprop(atomSymb,'upper');
+if (numel(atomSymb)>=2) && all(upStr(1:2))
+    atomSymb = atomSymb(2:end);
+end
+% cut end symbols
+atomSymb = atomSymb(isstrprop(atomSymb,'alpha'));
+
 atom = struct;
 idx = 1;
 found = false;

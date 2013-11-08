@@ -79,6 +79,7 @@ inpForm.soft   = [inpForm.soft   {0      0        0             0     }];
 param = sw_readparam(inpForm, varargin{:});
 
 % creat initial magnetic structure
+param.showWarn = false;
 obj.genmagstr(param);
 
 % starting magnetic structure from sw object
@@ -106,6 +107,7 @@ if nargout(param.func) == 6
     inpForm.size   = repmat({[1 2]},1,nPar);
     inpForm.soft   = repmat({1},1,nPar);
     % test input parameters
+    varargin{1}.showWarn = false;
     fparam = sw_readparam(inpForm, varargin{:});
     
     for ii = 1:nPar

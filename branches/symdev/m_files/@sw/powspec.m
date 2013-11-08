@@ -50,9 +50,9 @@ end
 
 hklA = hklA(:)';
 
-inpForm.fname  = {'nRand' 'Evect'           'T'   'formfact'};
-inpForm.defval = {100     linspace(0,1,100) 0     false     };
-inpForm.size   = {[1 1]   [1 -1]            [1 1] [1 -2]    };
+inpForm.fname  = {'nRand' 'Evect'           'T'   'formfact' 'Hermit'};
+inpForm.defval = {100     linspace(0,1,100) 0     false      true    };
+inpForm.size   = {[1 1]   [1 -1]            [1 1] [1 -2]     [1 1]   };
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -67,7 +67,7 @@ for ii = 1:nQ
     Q   = bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2)))*hklA(ii);
     hkl = (Q'*obj.basisvector)'/2/pi;
     
-    specQ = obj.spinwave(hkl,'fitmode',true,'notwin',true,'fid',0);
+    specQ = obj.spinwave(hkl,'fitmode',true,'notwin',true,'fid',0,'Hermit',param.Hermit);
     specQ = sw_neutron(specQ,'pol',false);
     specQ = sw_conv(specQ,'Evect',param.Evect,'T',param.T,'formfact',param.formfact);
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;

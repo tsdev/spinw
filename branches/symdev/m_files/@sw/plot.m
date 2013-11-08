@@ -33,6 +33,11 @@ function varargout = plot(obj, varargin)
 %   dText           Distance between item and its text label, default is
 %                   0.2 Angstrom.
 %   fontSize        Font size of all text on the plot in pt, default is 12.
+%   rAxis           Radius of the cylinder of the axis vectors, default is
+%                   0.06.
+%   angHeadAxis     Angle of the axis arrow head, default is 15 deg.
+%   lHeadAxis       Length of the axis arrow head, default is 0.5
+%                   Angstrom.
 %
 %   Atom ==================================================================
 %
@@ -177,6 +182,10 @@ inpForm.fname  = {'range' 'pSpin'    'cAxis'    'pCell'     'pDM' };
 inpForm.defval = {range0  true       [0 0 0]     true       1     };
 inpForm.size   = {[-5 -6] [1 1]      [1 3]       [1 1]      [1 1] };
 
+inpForm.fname  = [inpForm.fname  {'angHeadAxis' 'lHeadAxis'     'rAxis'}];
+inpForm.defval = [inpForm.defval {15             0.5           0.06    }];
+inpForm.size   = [inpForm.size   {[1 1]          [1 1]         [1 1]   }];
+
 inpForm.fname  = [inpForm.fname  {'pMultCell'    'pAxis'   'surfRes' 'rCoupling' 'sSpin'  'rSpin'}];
 inpForm.defval = [inpForm.defval {false          true       30        0.05        1        0.06  }];
 inpForm.size   = [inpForm.size   {[1 1]          [1 1]      [1 1]     [1 1]       [1 1]    [1 1] }];
@@ -280,9 +289,9 @@ if param.pAxis
     r = -ones(3,1).*param.dAxis + v1*param.range(1,1) + v2*param.range(2,1) + v3*param.range(3,1);
     handle.arrow = zeros(12,1);
     
-    [handle.arrow(1:4)]  = sw_arrow(r,(r+v1),param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
-    [handle.arrow(5:8)]  = sw_arrow(r,(r+v2),param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
-    [handle.arrow(9:12)] = sw_arrow(r,(r+v3),param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
+    [handle.arrow(1:4)]  = sw_arrow(r,(r+v1),param.rAxis,param.angHeadAxis,param.lHeadAxis,param.surfRes);
+    [handle.arrow(5:8)]  = sw_arrow(r,(r+v2),param.rAxis,param.angHeadAxis,param.lHeadAxis,param.surfRes);
+    [handle.arrow(9:12)] = sw_arrow(r,(r+v3),param.rAxis,param.angHeadAxis,param.lHeadAxis,param.surfRes);
     
     set(handle.arrow,'Facecolor',param.cAxis);
     set(handle.arrow,'Tag','arrow');

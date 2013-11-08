@@ -21,6 +21,14 @@ if nargin == 0
     return;
 end
 
+% create a showWarn field to check whether to show warnings (default true)
+format.fname  = [format.fname  {'showWarn'}];
+format.defval = [format.defval {true      }];
+format.size   = [format.size   {[1 1]     }];
+if isfield(format,'soft')
+    format.soft   = [format.soft   {true      }];
+end
+
 if (nargin>2) && (mod(nargin,2) == 1)
     nPar = nargin-1;
     raw = struct;
@@ -89,9 +97,11 @@ for ii = 1:length(fName)
     end
 end
 
-if ~all(usedField)
+if input.showWarn && ~all(usedField)
     wName = sprintf('%s, ',rName{~usedField});
     warning('sw_readparam:UnreadInput','Invalid input parameter names: %s\b\b!',wName);
 end
+
+input = rmfield(input,'showWarn');
 
 end

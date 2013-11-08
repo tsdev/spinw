@@ -1,7 +1,7 @@
 function spectra = spinwavesym(obj, varargin)
 % calculates dynamical spin-spin correlation function using linear spin wave theory
 %
-% spectra = SPINWAVE(obj, k, 'option1', value1 ...)
+% spectra = SPINWAVESYM(obj, k, 'option1', value1 ...)
 %
 % Spin wave dispersion and spin-spin correlation function is calculated at
 % the reciprocal space points k. The function can deal with arbitrary
@@ -31,9 +31,6 @@ function spectra = spinwavesym(obj, varargin)
 % fitmode       Speedup (for fitting mode only), default is false.
 % notwin        If true, the spectra of the twins won't be calculated.
 %               Default is false.
-% sortMode      The spin wave modes will be sorted if true. Default is
-%               true.
-% optmem        Optimise memory usage, default is true.
 % fid           For text output of the calculation:
 %               0   No text output.
 %               1   Output written onto the Command Window. (default)
@@ -76,16 +73,10 @@ function spectra = spinwavesym(obj, varargin)
 % If several domains exist in the sample, omega and Sab are packaged into a
 % cell, that contains nTwin number of matrices.
 %
-% hkl           Contains the input Q values, dimensins are [3 nHkl].
-% hklA          Same Q values, but in reciproc Angstrom units in the
-%               lab coordinate system, dimensins are [3 nHkl].
-% formfact      Magnetic form factor for all magnetic ions calculated
-%               for hklA momentum transfer values, dimensions are
-%               [nMagExt nHkl].
 % incomm        Whether the spectra calculated is incommensurate or not.
 % obj           The copy of the input obj.
 %
-% See also SW, SW_NEUTRON, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
+% See also SW, SW.SPINWAVE, SW_NEUTRON, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
 %
 
 % help when executed without argument
@@ -131,6 +122,7 @@ SS.new         = [SS.all(1:3,:)   -SS.all(1:3,:)  ];
 SS.new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];
 SS.new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:) ]/2;
 
+% ???
 idxM = [SS.all(15,:) SS.all(15,:)];
 
 SS.all         = SS.new;
@@ -300,20 +292,14 @@ else
     % All the matrix calculations are according to White's paper
     % R.M. White, et al., Physical Review 139, A450?A454 (1965)
     
-    gham = 0*ham;
-    for ii = 1:nHklMEM
-        gham(:,:,ii) = g*ham(:,:,ii);
-    end
+    [V, D] = eig(g*ham);
     
-    [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
-    
-    for ii = 1:nHklMEM
-        % multiplication with g removed to get negative and positive
-        % energies as well
-        omega(:,end+1) = D(:,ii); %#ok<AGROW>
-        M           = diag(g*V(:,:,ii)'*g*V(:,:,ii));
-        V(:,:,ii)   = V(:,:,ii)*diag(sqrt(1./M));
-    end
+    % multiplication with g removed to get negative and positive
+    % energies as well
+    omega = diag(D);
+    M = diag(g*V'*g*V);
+    V = V*diag(sqrt(1./M));
+
 end
 
 

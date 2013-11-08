@@ -71,21 +71,23 @@ if isa(newAtom,'struct')
         end
     end
     
+    for ii = 1:numel(newAtom)
+        if  ~iscell(newAtom(ii).label)
+            newAtom(ii).label = {newAtom(ii).label};
+        end
+    end
+    
     % Generate atom colors.
     if ~isfield(newAtom,'color') || isempty([newAtom.color])
         for ii = 1:numel(newAtom)
             for jj = 1:numel(newAtom(ii).r)/3
                 %newAtom(ii).color(jj) = repmat([255;165;0],1,numel(newAtom(ii).r)/3);
-                newAtom(ii).color(:,jj) = sw_atomdata(newAtom(ii).label,'color');
+                newAtom(ii).color(:,jj) = sw_atomdata(newAtom(ii).label{1},'color');
             end
         end
     end
     
-    for ii = 1:numel(newAtom)
-        if  ~iscell(newAtom(ii).label)
-            newAtom(ii).label = {newAtom(ii).label};
-        end
-        
+    for ii = 1:numel(newAtom)        
         if ~any(size(newAtom(ii).r)-[1 3])
             newAtom(ii).r = newAtom(ii).r';
         end

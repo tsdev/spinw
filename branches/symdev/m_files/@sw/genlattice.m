@@ -5,13 +5,8 @@ function genlattice(obj, varargin)
 %
 % Options:
 %
-<<<<<<< .mine
-%   angle       Alpha, beta, gamma angles in radian, dimensions are [1 3].
-%   angled      Alpha, beta, gamma angles in degree.
-=======
 %   angled      Alpha, beta, gamma angles in degree, dimensions are [1 3].
 %   angle       Alpha, beta, gamma angles in radian.
->>>>>>> .r107
 %   lat_const   Lattice parameters, dimensions are [1 3].
 %   sym         Crystal symmetry group index, see symmetry.dat file in the
 %               sw folder. To include new symmetry operators, append a new
@@ -36,17 +31,10 @@ inpForm.size   = {[1 3]             [1 3]                 [1 -1]          [1 3] 
 
 param = sw_readparam(inpForm, varargin{:});
 
-<<<<<<< .mine
-if all(param.angled)
-    param.angle = param.angled * pi/180;
-end
-
-=======
 if all(param.angled)
     param.angle = param.angled*pi/180;
 end
 
->>>>>>> .r107
 obj.lattice.angle     = param.angle;
 obj.lattice.lat_const = param.lat_const;
 

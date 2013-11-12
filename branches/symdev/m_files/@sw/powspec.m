@@ -14,18 +14,6 @@ function spectra = powspec(obj, hklA, varargin)
 %           Default is linspace(0,1,100).
 % T         Temperature to calculate the Bose factor in units
 %           depending on the Boltzmann constant. Default is zero.
-% formfact  Whether to include the magnetic form factor in the
-%           convoluted spectra. If true the form factor based on the name
-%           of the magnetic atoms are used to read form factor coefficients
-%           from the ion.dat file, see sw_mff('atomname'). 
-%           Other options:
-%           true        The magnetic form factor determined from the name
-%                       of the magnetic ion in the crystal, only works if a
-%                       single type of magnetic atom is present (for naming
-%                       convention, see help of sw_mff).
-%           false       No magnetic form factor is included. (default)
-%           'name'      Name of the magnetic ion.
-%           [A a B b C c D] coefficients used to calculate the form factor.
 %
 % Output:
 % spectra is struct type with the following fields:
@@ -39,7 +27,7 @@ function spectra = powspec(obj, hklA, varargin)
 % param     Contains all the input parameters.
 % obj       The input sw object.
 %
-% See also SW, SW.SPINWAVE, SW.OPTMAGSTR, SW_MFF.
+% See also SW, SW.SPINWAVE, SW.OPTMAGSTR.
 %
 
 % help when executed without argument
@@ -69,7 +57,8 @@ for ii = 1:nQ
     
     specQ = obj.spinwave(hkl,'fitmode',true,'notwin',true,'fid',0,'Hermit',param.Hermit);
     specQ = sw_neutron(specQ,'pol',false);
-    specQ = sw_conv(specQ,'Evect',param.Evect,'T',param.T,'formfact',param.formfact);
+    specQ.obj = obj;
+    specQ = sw_conv(specQ,'Evect',param.Evect,'T',param.T);
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
     sw_status(ii/nQ*100);
 end
@@ -82,5 +71,6 @@ spectra.convmode = 'Sperp';
 spectra.nRand    = param.nRand;
 spectra.T        = param.T;
 spectra.obj      = copy(obj);
+spectra.norm     = false;
 
 end

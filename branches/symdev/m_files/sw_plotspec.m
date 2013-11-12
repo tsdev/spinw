@@ -50,13 +50,6 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           is {'-' 'o-' '--'}. For example '--' gives dashed lines.
 % lineWidth Line width of line plots, default is 0.5 point.
 % log       Plot 10based logarithmic intensity, default is false.
-% norm      Determines how to calculate the convoluted spectrum intensity,
-%           when instrumental resolution is included as well:
-%               amp     Amplitude of the line is normalized (good for
-%                       comparing plots).
-%               int     Integrated intensity of the line is normalized
-%                       (good for fitting simulation to data).
-%           Default is 'amp'.
 % plotf     Plot function for color plot. Default is @surf.
 %
 % Output:
@@ -88,9 +81,9 @@ inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
 inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
 inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'log' 'plotf' 'norm'}];
-inpForm.defval = [inpForm.defval {false @surf   'amp' }];
-inpForm.size   = [inpForm.size   {[1 1] [1 1]   [1 3]}];
+inpForm.fname  = [inpForm.fname  {'log' 'plotf'}];
+inpForm.defval = [inpForm.defval {false @surf  }];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -376,12 +369,17 @@ end
 if param.mode == 3
     
     % filter out imaginary, inf and NaN values
+    mask = cell(1,nPlot);
     for ii = 1:nPlot
         if param.imag
             swConv{ii} = imag(swConv{ii});
         else
             swConv{ii} = real(swConv{ii});
         end
+        maskT = swConv{ii};
+        maskT(~isnan(maskT)) = 1;
+        mask{ii} = maskT;
+        
         swConv{ii}(isnan(swConv{ii})) = 0;
         swConv{ii}(isinf(swConv{ii})) = 0;
     end
@@ -421,12 +419,10 @@ if param.mode == 3
         xG = (-nG*dx):dx:(nG*dx);
         % Gaussian normalised intensity
         fG = exp(-(xG/sG).^2/2);
-        if strcmpi(param.norm,'amp')
-            fG = fG/max(fG(:));
-        elseif strcmpi(param.norm,'int')
+        if spectra.norm
             fG = fG/sum(fG);
         else
-            warning('sw_plotspec:WrongInput','The given norm option is invalid!')
+            fG = fG/max(fG(:));
         end
     else
         fG = 1;
@@ -485,7 +481,7 @@ if param.mode == 3
     
     if nPlot == 1
         % single spectra
-        imageDisp = swConv{1}';
+        imageDisp = (swConv{1}.*mask{ii})';
         
         % Use surf to hide the NaN numbers
         [X, Y] = meshgrid(xAxis,yAxis);
@@ -506,7 +502,7 @@ if param.mode == 3
         % multiple spectra
         vMat = zeros([size(swConv{1}),nPlot]);
         for ii = 1:nPlot
-            vMat(:,:,ii) = swConv{ii};
+            vMat(:,:,ii) = swConv{ii}.*mask{ii};
         end
         cMat = sw_multicolor(vMat, param.colormap, axLim, param.nCol,true);
         % plot image piece-by-pice for the different Q directions
@@ -529,10 +525,15 @@ if param.mode == 3
     
     if param.colorbar && (nPlot == 1)
         cHandle = colorbar;
-        if param.log
-            cLabel = 'log Intensity (arb. u.)';
+        if spectra.norm
+            cLabelU = '(mbarn/meV)';
         else
-            cLabel = 'Intensity (arb. u.)';
+            cLabelU = '(arb. u.)';
+        end
+        if param.log
+            cLabel = ['log Intensity ' cLabelU];
+        else
+            cLabel = ['Intensity ' cLabelU];
         end
         
         set(get(cHandle,'ylabel'),'String',cLabel);

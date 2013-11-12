@@ -531,6 +531,8 @@ spectra.Sab    = Sab;
 spectra.hkl    = hkl(:,1:nHkl0);
 spectra.hklA   = hklA;
 spectra.incomm = incomm;
+spectra.norm   = false;
+
 % save the important parameters
 spectra.param.notwin    = param.notwin;
 spectra.param.sortMode  = param.sortMode;

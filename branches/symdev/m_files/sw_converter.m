@@ -12,6 +12,7 @@ function out = sw_converter(unitIn, value, unitOut, particleName)
 % unitIn            Units of the input value:
 %                       'k'         momentum in Angstrom^-1.
 %                       'Angstrom'  wavelength in Angstrom.
+%                       'A'         wavelength in Angstrom.
 %                       'Kelvin'    temperature in Kelvin.
 %                       'mps'       speed in m/s.
 %                       'meV'       energy in meV.
@@ -75,6 +76,8 @@ switch unitIn
     % convert everything into momentum in Angstrom^-1
     case 'Angstrom'
         k = 2*pi./value;
+    case 'A'
+        k = 2*pi./value;
     case 'Kelvin'
         if m~=0
             k = sqrt((value*EK2J*2*m))/hBar/1e10;
@@ -106,6 +109,8 @@ end
 switch unitOut
     % convert from momentum in Angstrom^-1 to output units
     case 'Angstrom'
+        out = 2*pi./k;
+    case 'A'
         out = 2*pi./k;
     case 'Kelvin'
         if m~=0

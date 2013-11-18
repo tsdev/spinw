@@ -70,7 +70,16 @@ else
 end
 
 % remove non-finite values
-spectra.swConv(~isfinite(spectra.swConv)) = 0;
+if ~iscell(spectra.swConv)
+    spectra.swConv = {spectra.swConv};
+end
+
+% number of plots
+nPlot = numel(spectra.swConv);
+
+for ii = 1:nPlot
+    spectra.swConv{ii}(~isfinite(spectra.swConv{ii})) = 0;
+end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -114,24 +123,29 @@ else
     fprintf('Finite instrumental energy resolution is applied.\n');
 end
 
-swConv2 = spectra.swConv * 0;
 
-% convolute gaussian to the convoluted spectra
-E = spectra.Evect;
-
-for ii = 1:numel(E)
-    % standard deviation of the energy resolution Gaussian
-    stdG = polyval(param.dE,E(ii))/2.35482;
+for jj = 1:nPlot
     
-    % Gaussian with intensity normalised to 1, centered on E(ii)
-    fG = exp(-((E-E(ii))/stdG).^2/2);
-    fG = fG/sum(fG);
+    swConv = spectra.swConv{jj};
     
-    swConv2 = swConv2 + fG' * spectra.swConv(ii,:);
+    swConvTemp = swConv * 0;
     
+    % convolute gaussian to the convoluted spectra
+    E = spectra.Evect;
+    
+    for ii = 1:numel(E)
+        % standard deviation of the energy resolution Gaussian
+        stdG = polyval(param.dE,E(ii))/2.35482;
+        
+        % Gaussian with intensity normalised to 1, centered on E(ii)
+        fG = exp(-((E-E(ii))/stdG).^2/2);
+        fG = fG/sum(fG);
+        
+        swConvTemp = swConvTemp + fG' * swConv(ii,:);
+        
+    end
+    spectra.swConv{jj} = swConvTemp;
 end
-
-spectra.swConv = swConv2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Q resolution
@@ -139,22 +153,31 @@ spectra.swConv = swConv2;
 
 Q = spectra.hklA;
 
+if size(Q,1) > 1
+    Q = sqrt(sum(Q.^2,1));
+end
+
 if param.dQ > 0
     
     % standard deviation of the Q resolution Gaussian
     stdG = param.dQ/2.35482;
     
-    swConv2 = spectra.swConv * 0;
-    for ii = 1:numel(Q)
-        % Gaussian with intensity normalised to 1, centered on E(ii)
-        fG = exp(-((Q-Q(ii))/stdG).^2/2);
-        fG = fG/sum(fG);
-        swConv2 = swConv2 + spectra.swConv(:,ii) * fG;
-        
+    for jj = 1:nPlot
+        swConv = spectra.swConv{jj};
+        swConvTemp = swConv * 0;
+        for ii = 1:numel(Q)
+            % Gaussian with intensity normalised to 1, centered on E(ii)
+            fG = exp(-((Q-Q(ii))/stdG).^2/2);
+            fG = fG/sum(fG);
+            swConvTemp = swConvTemp + swConv(:,ii) * fG;
+            
+        end
+        spectra.swConv{jj} = swConvTemp;
     end
-    spectra.swConv = swConv2;
+    
     spectra.dQ = param.dQ;
-    fprintf('Finite instrumental momentum resolution of %5.3f is applied.\n',param.dQ);
+    
+    fprintf('Finite instrumental momentum resolution of %5.3f A-1 is applied.\n',param.dQ);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -172,20 +195,26 @@ if ki > 0
     cosT = cosd(param.ThetaMin);
     sinT = sind(param.ThetaMin);
     
-    Emax = (ki^2-(ki*cosT-sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter('k',1,'meV');
-    Emin = (ki^2-(ki*cosT+sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter('k',1,'meV');
-    
-    Emax(abs(imag(Emax))>0) = 0;
-    Emin(abs(imag(Emin))>0) = 0;
-    
-    
     %Emax  =  spectra.hklA.*(2*param.ki-spectra.hklA) * sw_converter('k',1,'meV');
     %Emin  = -spectra.hklA.*(2*param.ki+spectra.hklA) * sw_converter('k',1,'meV');
-    Elist = repmat(spectra.Evect',[1 size(spectra.swConv,2)]);
-    Emin  = repmat(Emin,[size(spectra.swConv,1) 1]);
-    Emax  = repmat(Emax,[size(spectra.swConv,1) 1]);
     
-    spectra.swConv((Elist<Emin) | (Elist>Emax)) = NaN;
+    for jj = 1:nPlot
+        Emax = (ki^2-(ki*cosT-sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter('k',1,'meV');
+        Emin = (ki^2-(ki*cosT+sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter('k',1,'meV');
+        
+        Emax(abs(imag(Emax))>0) = 0;
+        Emin(abs(imag(Emin))>0) = 0;
+
+        Elist = repmat(spectra.Evect',[1 size(spectra.swConv{jj},2)]);
+        Emin  = repmat(Emin,[size(spectra.swConv{jj},1) 1]);
+        Emax  = repmat(Emax,[size(spectra.swConv{jj},1) 1]);
+        
+    
+        idx = (Elist<Emin) | (Elist>Emax);
+        swConv = spectra.swConv{jj};
+        swConv(idx) = NaN;
+        spectra.swConv{jj} = swConv;
+    end
     fprintf('Energy transfer is limited to instrument, using ki=%5.3f A-1.\n',ki);
 end
 
@@ -204,10 +233,13 @@ if strcmp(param.formFact,'auto')
 end
 
 % form factor of the given ion
-[formFactCalc, formFactCoeff] = sw_mff(param.formFact,spectra.hklA);
+hklA = sqrt(sum(spectra.hklA.^2,1));
+[formFactCalc, formFactCoeff] = sw_mff(param.formFact,hklA);
 
 if any(formFactCoeff(1:end-1))
-    spectra.swConv = bsxfun(@times,spectra.swConv,formFactCalc.^2);
+    for jj = 1:nPlot
+        spectra.swConv{jj} = bsxfun(@times,spectra.swConv{jj},formFactCalc.^2);
+    end
     if isstring(param.formFact)
         fprintf('Magnetic form factor of %s is applied.\n',param.formFact);
     else
@@ -236,7 +268,14 @@ p2 = (g*gamma*r0/2)^2*1e28*1e3; % mbarn
 % convert intensity to mbarn/meV units
 %dE = diff(spectra.Evect);
 %dE = [dE(1) (dE(2:end)+dE(1:end-1))/2 dE(end)];
-spectra.swConv = spectra.swConv*p2;%./repmat(dE',[1 size(spectra.swConv,2)]);
+for jj = 1:nPlot
+    spectra.swConv{jj} = spectra.swConv{jj}*p2;%./repmat(dE',[1 size(spectra.swConv,2)]);
+end
+
+if nPlot == 1
+    spectra.swConv = spectra.swConv{1};
+end
+
 % set 'normalized units' switch on
 spectra.norm = true;
 

@@ -203,8 +203,8 @@ inpForm.defval = [inpForm.defval {'--'            [0.5;1.5;2.0] 0.2     10      
 inpForm.size   = [inpForm.size   {[1 -1]          [3 1]         [1 1]   [1 1]    [1 1]      }];
 
 inpForm.fname  = [inpForm.fname  {'rAtom' 'aEll' 'coplanar' 'fontSize' 'pNonMagAtom'}];
-inpForm.defval = [inpForm.defval {0.3     0.3          0          12     true         }];
-inpForm.size   = [inpForm.size   {[1 1]   [1 1]        [1 1]      [1 1]  [1 1]        }];
+inpForm.defval = [inpForm.defval {0.3     0.3          0          12     true       }];
+inpForm.size   = [inpForm.size   {[1 -8]  [1 1]        [1 1]      [1 1]  [1 1]      }];
 
 inpForm.fname  = [inpForm.fname  {'rEll' 'eEll' 'pZeroCoupling' 'tooltip' 'cCoupling' 'cDM'    'cAtom'}];
 inpForm.defval = [inpForm.defval {1          0.1          true             true      'auto'     'auto'   'auto' }];
@@ -335,7 +335,11 @@ atom.rad   = ones(nAtom,1) * param.rAtom; % atomic radius
 for ll = 1:nAtom
     % Saves atomic radius data if allowed and exists scaled with param.rAtom.
     if param.rAtomData && (sw_atomdata(atom.name{ll},'radius') > 0)
-        atom.rad(ll) = sw_ratom(atom.name{ll})*param.rAtom;
+        if numel(param.rAtom)>1
+            atom.rad(ll) = sw_atomdata(atom.name{ll},'radius')*param.rAtom(atom.idx(ll));
+        else
+            atom.rad(ll) = sw_atomdata(atom.name{ll},'radius')*param.rAtom;
+        end
     end
 end
 
@@ -509,7 +513,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         end
                     end
                     
-                    if (atom.mag(ll) || param.pNonMagAtom) && (param.rAtom>0)
+                    if (atom.mag(ll) || param.pNonMagAtom) && (param.rAtom(1)>0)
                         % Plot the label of the atom.
                         if (~any(dCell)) && param.labelAtom
                             

@@ -147,6 +147,12 @@ symOp = symOp(:,:,1:nOp);
 symTr = symTr(:,1:nOp);
 
 % cut trailing spaces from symName
-symName = symName(1:find(diff([symName '  ']==32),1,'last'));
+if isnan(symName)
+    symName = '';
+else
+    symName = symName(1:find(diff([symName '  ']==32),1,'last'));
+end
+
+    
 
 end

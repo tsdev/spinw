@@ -34,7 +34,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           single color all dispersion curves have the same color (e.g.
 %           [255 0 0] for red), or as many colors as dispersion curves
 %           (dimensions are [3 nMode]), or any colormap can be given, like
-%           @jet. In this case evry mode will have different colors, the
+%           @jet. In this case every mode will have different colors, the
 %           color is determined from the index of the mode. Default is
 %           'auto'.
 % sortMode  Sorting the modes before plotting. Default is false.
@@ -191,7 +191,7 @@ end
 
 
 if ~powmode
-    % dErt the convoluted intensities into cell array.
+    % sort the convoluted intensities into cell array.
     if ~iscell(spectra.convmode)
         swInt    = {spectra.swInt};
         swConv   = {spectra.swConv};
@@ -231,7 +231,7 @@ if ~powmode
             elseif (size(param.colormap,2) == nMode) && (size(param.colormap,1)==3)
                 colors = [0 0 0; param.colormap'; 0 0 0]/255;
             else
-                error('sw:sw_plotspec:ColormapError','The dimensions of the colormap should be [3 nMode]');
+                error('sw:sw_plotspec:ColormapError','The dimensions of the colormap should be [3 nMode=%d]',nMode);
             end
         end
     end
@@ -502,7 +502,7 @@ if param.mode == 3
         % multiple spectra
         vMat = zeros([size(swConv{1}),nPlot]);
         for ii = 1:nPlot
-            vMat(:,:,ii) = swConv{ii}.*mask{ii};
+            vMat(:,:,ii) = swConv{ii};%.*mask{ii};
         end
         cMat = sw_multicolor(vMat, param.colormap, axLim, param.nCol,true);
         % plot image piece-by-pice for the different Q directions

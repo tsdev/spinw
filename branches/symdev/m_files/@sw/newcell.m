@@ -88,6 +88,8 @@ Sext(idxCut)   = [];
 
 % new lattice simmetry is P1
 obj.lattice.sym     = int32(1);
+% no symmetry operations
+obj.issym = false;
 
 % new unit cell defined
 obj.unit_cell.r     = rNew;

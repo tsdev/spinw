@@ -65,11 +65,7 @@ repv = ones(1,nD+1); repv(dim(1)) = nA(1);
 B = repmat(permute(B,idx),repv);
 
 % multiply with expanding along singleton dimensions
-if isa(A,'sym') || isa(B,'sym')
-    C = symsum2(A.*B,dim(2));
-else
-    C = sum(bsxfun(@times,A,B),dim(2));
-end
+C = sumsym(bsxfunsym(@times,A,B),dim(2));
 
 
 idx2 = 1:nD+1; idx2([dim end]) = idx2([dim(1) end dim(2)]);

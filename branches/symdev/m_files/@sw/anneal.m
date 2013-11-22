@@ -144,6 +144,7 @@ else
     mag_param.mode = 'extend';
 end
 
+mag_param.showWarn = false;
 obj.genmagstr(mag_param);
 M0  = obj.mag_str.S;
 
@@ -192,7 +193,7 @@ SS.gen(:, SS.gen(4,:)==SS.gen(5,:)) = [];
 % anisotropy matrix. B is in units of the couplings.
 switch spinDim
     case 1
-        B  = SI.field(1)*obj.unit.gamma;
+        B  = SI.field(1)*obj.unit.muB*2;
         AA = SI.aniso(1,1,:);
         Ax = squeeze(AA(:,1,:));
         Ay = Ax*0;
@@ -201,13 +202,13 @@ switch spinDim
             warning('sw:anneal:IsingAnisotropy','Anisotropy for Ising model is omitted.');
         end
     case 2
-        B  = SI.field(1:2)'*obj.unit.gamma;
+        B  = SI.field(1:2)'*obj.unit.muB*2;
         AA = SI.aniso(1:2,1:2,:);
         Ax = squeeze(AA(:,1,:));
         Ay = squeeze(AA(:,2,:));
         Az = Ay*0;
     case 3
-        B  = SI.field'*obj.unit.gamma;
+        B  = SI.field'*obj.unit.muB*2;
         AA = SI.aniso;
         Ax = squeeze(AA(:,1,:));
         Ay = squeeze(AA(:,2,:));

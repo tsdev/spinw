@@ -56,8 +56,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %                      Hermitian matrix, that will give the real
 %                      eigenvalues.
 %               White: the non-Hermitian g*H matrix will be diagonalised,
-%                      that is strictly speaking not the right solution
-%                      method.
+%                      that is not the elegant method.
 %               Advise:
 %               Always use Colpa's method, except when small imaginary
 %               eigenvalues are expected. In this case only White's method

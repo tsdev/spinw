@@ -194,17 +194,28 @@ if param.fitmode < 2
     % Select only the anisotropic exchange. Remove zero value elements.
     JJ.ani = [squeeze(JJ.mat(1,1,:))'; squeeze(JJ.mat(2,2,:))'; squeeze(JJ.mat(3,3,:))'];
     SS.ani = [SS.all(:,JJ.type == 2); JJ.ani(:,JJ.type == 2)];
-    SS.ani = SS.ani(:,sum(SS.ani(6:end,:).^2,1)~=0);
+    
+    
+    %idx = sum(SS.ani(6:end,:).^2,1)~=0;
+    idx = any(SS.ani(6:end,:));
+    SS.ani = SS.ani(:,idx);
     
     % Select DM interactions. Remove zero value elements.
     JJ.dm = [squeeze(JJ.mat(2,3,:))'; squeeze(JJ.mat(3,1,:))'; squeeze(JJ.mat(1,2,:))'];
     SS.dm = [SS.all(:,JJ.type == 3); JJ.dm(:,JJ.type == 3)];
-    SS.dm = SS.dm(:,sum(SS.dm(6:end,:).^2,1)~=0);
+    
+    idx = any(SS.dm(6:end,:));
+    %SS.dm = SS.dm(:,sum(SS.dm(6:end,:).^2,1)~=0);
+    SS.dm = SS.dm(:,idx);
     
     % Select general interactions. Remove zero value elements.
     JJ.gen = reshape(JJ.mat,1,9,size(JJ.mat,3));
     SS.gen = [SS.all(:,JJ.type == 4); shiftdim(JJ.gen(1,:,JJ.type == 4),1)];
-    SS.gen = SS.gen(:,sum(SS.gen(6:end,:).^2,1)~=0);
+    
+    idx = any(SS.gen(6:end,:));
+    %SS.gen = SS.gen(:,sum(SS.gen(6:end,:).^2,1)~=0);
+    SS.gen = SS.gen(:,idx);
+    
 end
 
 % Saves the whole interaction matrices into SS.all
@@ -229,12 +240,12 @@ if param.plotmode
         % based on the vector pointing from atom1 to atom2
         % rv = r_atom2 + dl - r_atom1
         rv = mAtom.r(:,SS.all(5,:)) + SS.all(1:3,:) - mAtom.r(:,SS.all(4,:));
-        rmax = max(max(rv));
+        rmax = max(max(double(rv)));
         
         multL = ceil(fliplr(cumprod([1 [1 1]*(rmax+1)])));
         
         % find the couplings that have to be flipped
-        flip = find(sum(bsxfun(@times,rv,multL'),1) < 0);
+        flip = find(sum(bsxfunsym(@times,rv,multL'),1) < 0);
         % flip the selected couplings
         SS.all(1:3,flip)   = -SS.all(1:3,flip);
         SS.all([4 5],flip) =  SS.all([5 4],flip);

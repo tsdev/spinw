@@ -114,7 +114,8 @@ if isa(newAtom,'struct')
         % check whether atom exists already
         occupied = false;
         for jj = 1:size(newObj.unit_cell.r,2)
-            if any(sum(abs(bsxfun(@minus,obj.unit_cell.r,newObj.unit_cell.r(:,jj))),1) < 1e-2)
+            %if any(sum(abs(bsxfun(@minus,obj.unit_cell.r,newObj.unit_cell.r(:,jj))),1) < 1e-2)
+            if any(sum(abs(bsxfunsym(@minus,obj.unit_cell.r,newObj.unit_cell.r(:,jj))),1) < 1e-2)
                 occupied = true;
             end
         end

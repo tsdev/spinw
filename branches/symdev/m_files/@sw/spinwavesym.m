@@ -1,4 +1,4 @@
-function spectra = spinwavesym(obj, varargin)
+function omega = spinwavesym(obj, varargin)
 % calculates dynamical spin-spin correlation function using linear spin wave theory
 %
 % spectra = SPINWAVESYM(obj, k, 'option1', value1 ...)
@@ -11,6 +11,9 @@ function spectra = spinwavesym(obj, varargin)
 % If the magnetic ordering wavevector is non-integer, the dispersion is
 % calculated using a coordinate system rotating from cell to cell. In this
 % case the Hamiltonian has to fulfill this extra rotational symmetry.
+%
+% The method for matrix diagonalization is according to R.M. White, PR 139
+% (1965) A450. The non-Hermitian g*H matrix will be diagonalised.
 %
 % Input:
 %
@@ -42,24 +45,6 @@ function spectra = spinwavesym(obj, varargin)
 %               considered to be commensurate. Default value is 1e-4.
 % omega_tol     Tolerance on the energy difference of degenerate modes when
 %               diagonalising the quadratic form, default is 1e-5.
-% hermit        Method for matrix diagonalization:
-%                   true        Method of J.H.P. Colpa, Physica 93A (1978)
-%                               327.
-%                   false       Method of R.M. White, PR 139 (1965) A450.
-%               Colpa: the grand dynamical matrix is converted into another
-%                      Hermitian matrix, that can will give the real
-%                      eigenvalues.
-%               White: the non-Hermitian g*H matrix will be diagonalised,
-%                      that is strictly speaking not the right solution
-%                      method.
-%               Advise:
-%               Always use Colpa's method, except when small imaginary
-%               eigenvalues are expected. In this case only White's method
-%               work. The solution in this case is wrong, however by
-%               examining the eigenvalues it can give a hint where the
-%               problem is.
-%               Default is true.
-%
 % Output:
 %
 % spectra is a structure, with the following fields:
@@ -79,15 +64,11 @@ function spectra = spinwavesym(obj, varargin)
 % See also SW, SW.SPINWAVE, SW_NEUTRON, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
 %
 
-% help when executed without argument
-if nargin==1
-    help sw.spinwave
-    return
-end
+hkl0 = [sym('h','real'); sym('k','real'); sym('l','real')];
 
-inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol' 'omega_tol' 'hermit'};
-inpForm.defval = {false     false    true      true     1     1e-4   1e-5        true    };
-inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]  [1 1]      [1 1]   };
+inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol' 'omega_tol' 'hkl'};
+inpForm.defval = {false     false    true      true     1     1e-4   1e-5        hkl0  };
+inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]  [1 1]      [3 1]};
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -103,12 +84,12 @@ km = obj.mag_str.k.*nExt;
 incomm = any(abs(km-round(km)) > param.tol);
 
 % symbolic wavevectors
-syms h k l real
-hkl = [h; k; l];
+%syms h k l real
+%hkl = [h; k; l];
+hkl = param.hkl;
 
 fid = param.fid;
 
-spectra = struct;
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
@@ -151,12 +132,12 @@ end
 
 % Local (e1,e2,e3) coordinate system fixed to the moments.
 % e3 || Si
-e3 = bsxfun(@rdivide,M0,S0);
+e3 = M0./repmat(S0,[3 1]);
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
 %e2(3,~any(e2)) = 1;
 e2(3,~any(abs(e2)>1e-10)) = 1;
-e2  = bsxfun(@rdivide,e2,sqrt(sum(e2.^2,1)));
+e2  = e2./repmat(sqrt(sum(e2.^2,1)),[3 1]);
 % e1 = e2 x e3
 e1  = cross(e2,e3);
 
@@ -172,7 +153,7 @@ idxM  = [idxM repmat(obj.single_ion.aniso,1,prod(nMagExt))];
 JJ = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
 
 % remove zero anisotropy matrices
-anyIdx = squeeze(sum(sum(abs(JJ),1),2))>0;
+anyIdx = squeeze(sumsym(sumsym(abs(JJ),1),2))>0;
 dR    = dR(:,anyIdx);
 atom1 = atom1(1,anyIdx);
 atom2 = atom2(1,anyIdx);
@@ -187,7 +168,7 @@ for ii = 1:nMat
 end
 
 % normalize JJ to the maximum value
-JJ = JJ./repmat(max(max(abs(JJ))),[3 3 1]);
+%JJ = JJ./repmat(max(max(abs(JJ))),[3 3 1]);
 
 
 % create symbolic matrices
@@ -210,9 +191,9 @@ etaR = repmat(permute(eta(:,atom2),[3 1 2]),[3 1 1]);
 SiSj = sqrt(S0(atom1).*S0(atom2));
 
 % Creates temporary values for calculating matrix elements.
-A0 =  SiSj.*shiftdim(symsum2(symsum2(zedL.*JJ.*conj(zedR),2),1),1);
-B0 =  SiSj.*shiftdim(symsum2(symsum2(zedL.*JJ.*     zedR ,2),1),1);
-C0 =  shiftdim(symsum2(symsum2(etaL.*JJ.*etaR,2),1),1);
+A0 =  SiSj.*shiftdim(sumsym(sumsym(zedL.*JJ.*conj(zedR),2),1),1);
+B0 =  SiSj.*shiftdim(sumsym(sumsym(zedL.*JJ.*     zedR ,2),1),1);
+C0 =  shiftdim(sumsym(sumsym(etaL.*JJ.*etaR,2),1),1);
 C1 = -2*S0(atom2).*C0;
 C2 = -2*S0(atom1).*C0;
 
@@ -256,152 +237,16 @@ ham = simplify((ham + conj(permute(ham,[2 1 3])))/2);
 
 g = sym(diag([ones(nMagExt,1); -ones(nMagExt,1)]));
 
-if param.hermit
-    % All the matrix calculations are according to Colpa's paper
-    % J.H.P. Colpa, Physica 93A (1978) 327-353
-    
-%         posDef = feval(symengine,'linalg::isPosDef',ham);
-%         
-%         if ~posDef
-%             ham = ham + sym(eye(2*nMagExt)*param.omega_tol);
-%             posDef = feval(symengine,'linalg::isPosDef',ham);
-%             warning('sw:spinwavesym',['To make ham positive definite, a '...
-%                 'small omega_tol added to the diagonal!'])
-%         end
-        
-        K = simplify(feval(symengine,'linalg::factorCholesky',ham,'NoCheck'));
-        
-%         if ~posDef
-%             warning('sw:spinwavesym:PositiveDefiniteHamiltonian',...
-%                 ['Hamiltonian matrix is not positive definite, probably'...
-%                 ' the magnetic structure is wrong!']);
-%         end
-        
-        K2 = K*g*K';
-        K2 = 1/2*(K2+K2');
-        
-        % Hermitian K2 will give orthogonal eigenvectors
-        [U, omega] = eig(K2);
-        
-        % the inverse of the para-unitary transformation V
-        V = inv(K)*U*diag(sqrt(g*omega)); %#ok<MINV>
-        
-        omega = diag(omega);
+% All the matrix calculations are according to White's paper
+% R.M. White, et al., Physical Review 139, A450?A454 (1965)
 
-else
-    % All the matrix calculations are according to White's paper
-    % R.M. White, et al., Physical Review 139, A450?A454 (1965)
-    
-    [V, D] = eig(g*ham);
-    
-    % multiplication with g removed to get negative and positive
-    % energies as well
-    omega = diag(D);
-    M = diag(g*V'*g*V);
-    V = V*diag(sqrt(1./M));
+fprintf(fid,'Calculating SYMBOLIC eigenvalues... ');
+[V, D] = eig(g*ham);
+fprintf('ready!\n');
 
-end
-
-
-% Calculates correlation functions.
-% V right
-VExtR = repmat(permute(V      ,[4 5 1 2 3]),[3 3 1 1 1]);
-% V left: conjgate transpose of V
-VExtL = conj(permute(VExtR,[1 2 4 3 5]));
-%VExtL = repmat(permute(conj(V),[4 5 2 1 3]),[3 3 1 1 1]);
-
-% Introduces the exp(-ikR) exponential factor.
-ExpF =  exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
-% Includes the sqrt(Si/2) prefactor.
-ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHklMEM]);
-
-ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt         2]);
-% conj transpose of ExpFL
-ExpFR = conj(permute(ExpFL,[1 2 4 3 5]));
-%ExpFR = conj(repmat(permute(ExpF,[1 4 2 5 3]),[3 3 2         2*nMagExt]));
-
-zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1         nHklMEM]);
-% conj transpose of zeda
-zedb = conj(permute(zeda,[2 1 4 3 5]));
-%zedb = repmat(permute([conj(zed) zed],[3 1 2 4]),[3 1 1         2*nMagExt nHklMEM]);
-
-% Dynamical for factor from S^alpha^beta(k) correlation function.
-% Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
-% Normalizes the intensity to single unit cell.
-Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
-
-if fid ~= 0
-    fprintf(fid,'Calculation finished.\n');
-end
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% END MEMORY MANAGEMENT LOOP
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-if incomm
-    % resize matrices due to the incommensurability (k-km,k,k+km) multiplicity
-    kmIdx = repmat(sort(repmat([1 2 3],1,nHkl0/3)),1,nTwin);
-    % Rodrigues' rotation formula.
-    nx  = [0 -n(3) n(2); n(3) 0 -n(1); -n(2) n(1) 0];
-    nxn = n'*n;
-    K1 = 1/2*(eye(3) - nxn - 1i*nx);
-    K2 = nxn;
-    
-    % symmetrise Sab by averaging two directions
-    [~, rot90] = sw_rot(n,pi/2);
-    Sab = (Sab+mmat(mmat(rot90,Sab),rot90'))/2;
-    
-    % dispersion
-    omega = [omega(:,kmIdx==1); omega(:,kmIdx==2); omega(:,kmIdx==3)];
-    % exchange matrices
-    Sab   = cat(3,mmat(Sab(:,:,:,kmIdx==1),K1), mmat(Sab(:,:,:,kmIdx==2),K2), mmat(Sab(:,:,:,kmIdx==3),conj(K1)));
-    
-    hkl   = hkl(:,kmIdx==2);
-    nHkl0 = nHkl0/3;
-end
-
-if nTwin>1
-    % Rotate the calculated correlation function into the twin coordinate
-    % system using rotC
-    SabAll = cell(1,nTwin);
-    for ii = 1:nTwin
-        % select the ii-th twin from the Q points
-        idx    = (1:nHkl0) + (ii-1)*nHkl0;
-        % select correlation function of twin ii
-        SabT   = Sab(:,:,:,idx);
-        % size of the correlation function matrix
-        sSabT  = size(SabT);
-        % convert the matrix into cell of 3x3 matrices
-        SabT   = reshape(SabT,3,3,[]);
-        % select the rotation matrix of twin ii
-        rotC   = obj.twin.rotc(:,:,ii);
-        % rotate correlation function using arrayfun
-        SabRot = arrayfun(@(idx)(rotC*SabT(:,:,idx)*(rotC')),1:size(SabT,3),'UniformOutput',false);
-        SabRot = cat(3,SabRot{:});
-        % resize back the correlation matrix
-        SabAll{ii} = reshape(SabRot,sSabT);
-    end
-    Sab = SabAll;
-    omega = mat2cell(omega,size(omega,1),repmat(nHkl0,[1 nTwin]));
-end
-
-% Creates output structure with the calculated values.
-spectra.omega  = omega;
-spectra.Sab    = Sab;
-spectra.hkl    = hkl(:,1:nHkl0);
-spectra.hklA   = hklA;
-spectra.incomm = incomm;
-% save the important parameters
-spectra.param.notwin    = param.notwin;
-spectra.param.sortMode  = param.sortMode;
-spectra.param.tol       = param.tol;
-spectra.param.omega_tol = param.omega_tol;
-
-if ~param.fitmode
-    spectra.ff  = ones(nMagExt,nHkl0);
-    spectra.obj = copy(obj);
-end
+% multiplication with g removed to get negative and positive
+% energies as well
+omega = simplify(diag(D));
 
 
 end

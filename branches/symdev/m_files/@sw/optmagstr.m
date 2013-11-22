@@ -48,6 +48,7 @@ function optm = optmagstr(obj, varargin)
 %               default value is 1e-5.
 % maxfunevals   Maximum number of function evaluations, default value
 %               is 1e7.
+% maxiter       Maximum number of iterations, default value is 1e4.
 %
 %
 % Output:
@@ -71,10 +72,10 @@ inpForm.defval = {1e-5      @gm_spherical3d  {'per' 'per' 'per'} []       []    
 inpForm.size   = {[1 1]     [1 1]            [1 3]               [1 -1]   [1 -2]  [1 -3] };
 inpForm.soft   = {0         0                0                   1        1       1      };
 
-inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'nRun'}];
-inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           1     }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 1] }];
-inpForm.soft   = [inpForm.soft   {0      0        0             0     }];
+inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'nRun' 'maxiter'}];
+inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           1      1e4      }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 1]  [1 1]    }];
+inpForm.soft   = [inpForm.soft   {0      0        0             0      0        }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -167,7 +168,7 @@ for ii = 1:param.nRun
         x0 = param.x0;
     end
     [X, E, exitflag, output] = sw_fminsearchbnd(@(x)efunc(x, S, dR, atom1, atom2, JJ, nExt, Bg, param.epsilon, param.func),x0,param.xmin,param.xmax,...
-        optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
+        optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'MaxIter',param.maxiter,'Display','off'));
     if E < minE
         minE = E;
         minX = X;

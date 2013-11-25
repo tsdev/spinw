@@ -265,11 +265,12 @@ r0 = 2.8179403267e-15; % m
 % cross section constant in mbarn
 p2 = (g*gamma*r0/2)^2*1e28*1e3; % mbarn
 
-% convert intensity to mbarn/meV units
-%dE = diff(spectra.Evect);
-%dE = [dE(1) (dE(2:end)+dE(1:end-1))/2 dE(end)];
+% convert intensity to mbarn/meV units using the energy bin size
+dE = diff(spectra.Evect);
+dE = [dE(1) (dE(2:end)+dE(1:end-1))/2 dE(end)];
+
 for jj = 1:nPlot
-    spectra.swConv{jj} = spectra.swConv{jj}*p2;%./repmat(dE',[1 size(spectra.swConv,2)]);
+    spectra.swConv{jj} = spectra.swConv{jj}*p2./repmat(dE',[1 size(spectra.swConv,2)]);
 end
 
 if nPlot == 1

@@ -13,11 +13,6 @@ function sw_update(installDir)
 %               folder.
 %
 
-% $Name: SpinW$ ($Version: 2.0beta$)
-% $Author: S. Toth$ ($Contact: sandor.toth@psi.ch$)
-% $Revision: 98 $ ($Date: 17-Oct-2013 $)
-% $License: GNU GENERAL PUBLIC LICENSE$
-
 % check current version
 swVer = sw_version;
 

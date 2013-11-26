@@ -30,7 +30,7 @@ function stat = anneal(obj, varargin)
 % cool      Generates a new temperature from the previous one.
 %           Any function handle that takes a scalar as input and
 %           returns a smaller but positive scalar as output.
-%           Default is @(T) (.9*T).
+%           Default is @(T) (.92*T).
 % random    Random initial conditions, if initial spin configuration
 %           is undefined (obj.mag_str.S is empty) the initial configuration
 %           is automaticly random independently of the value of random.

@@ -63,7 +63,7 @@ end
 
 % check whether the online version is newer (compare revision numbers)
 
-if isstring(swVer.Revision)
+if ischar(swVer.Revision)
     swVer.Revision = str2double(swVer.Revision);
 end
 

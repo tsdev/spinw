@@ -256,6 +256,7 @@ spectra.formFact = param.formFact;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Lande' g-factor
+% TODO
 g  = 2;
 % constant: p = gamma*r0/2
 % neutron magnetic moment constant: M = gamma*gammaN

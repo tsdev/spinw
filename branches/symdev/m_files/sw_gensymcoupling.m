@@ -51,11 +51,11 @@ r1new = mod(r1new,1);
 r2new = mod(r2new,1);
 % throw away generated couplings with wrong distance
 % determine the new indices in mAtom
-[iNew, atom1] = isnewUC(mAtom.r,r1new,0.05);
+[iNew, atom1] = isnewUC(mAtom.r,r1new,0.005);
 if any(iNew)
     error('Sym error: generated positions for atom1 are wrong!');
 end
-[iNew, atom2] = isnewUC(mAtom.r,r2new,0.05);
+[iNew, atom2] = isnewUC(mAtom.r,r2new,0.005);
 if any(iNew)
     error('Sym error: generated positions for atom2 are wrong!');
 end

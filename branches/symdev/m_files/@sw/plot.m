@@ -12,7 +12,7 @@ function varargout = plot(obj, varargin)
 %                   first unit cell, use: [0 1;0 1;0 1]. Also the number
 %                   unit cells can be given along the a, b and c
 %                   directions: [2 1 2], that is equivalent to
-%                   [-0.1 2.1;-0.1 1.1; -0.1 2.1].
+%                   [0 2;0 1;0 2]. Default is the single unit cell.
 %
 %   Axis & labels =========================================================
 %
@@ -164,20 +164,9 @@ tooltip(hFigure,'<< Click on any object to get information! >>')
 cva = get(gca,'CameraViewAngle');
 [az, el] = view();
 
-set(gca,'Position',[0 0 1 1]);
-set(gca,'Color','none');
-set(gca,'Box','off');
-set(gca,'Clipping','Off');
-daspect([1 1 1]);
-pbaspect([1 1 1]);
-axis off
-axis vis3d
-hold on
-material dull;
-
 %% input parameters
 
-range0 = [-0.1 1.1;-0.1 1.1;-0.1 1.1];
+range0 = [0 1;0 1;0 1];
 inpForm.fname  = {'range' 'pSpin'    'cAxis'    'pCell'     'pDM' };
 inpForm.defval = {range0  true       [0 0 0]     true       1     };
 inpForm.size   = {[-5 -6] [1 1]      [1 3]       [1 1]      [1 1] };
@@ -218,22 +207,27 @@ param = sw_readparam(inpForm, varargin{:});
 
 % change range, if the number of unit cells are given
 if numel(param.range) == 3
-    param.range = [-0.1*[1 1 1]' param.range(:)+0.1];
+    param.range = [ [0 0 0]' param.range(:)];
 elseif numel(param.range) ~=6
-    error('sw:plot:WrongInput','The plotting range is wrong, see help sw.plot!');
+    error('sw:plot:WrongInput','The plotting range is wrong, see doc sw.plot!');
 end
 
 %shift of the plot
-param.wShift = -sum(basisVector * sum(param.range,2)/2,2);
-param.wShift = repmat(param.wShift,[1 2]);
-param.wShift = reshape(param.wShift',1,[]);
+wShift = -sum(basisVector * sum(param.range,2)/2,2);
+wShift = repmat(wShift,[1 2]);
+wShift = reshape(wShift',1,[]);
 
 % Plot spins if spin variables exist and param.pSpin is true.
 param.pSpin = param.pSpin && ~isempty(obj.mag_str.S);
 
 %% save data to figure
 
-setappdata(hFigure,'obj',copy(obj));
+% delete previous object if a different one is going to be saved
+objOld = getappdata(hFigure,'obj');
+if isempty(objOld) || (objOld ~= obj)
+    delete(objOld);
+    setappdata(hFigure,'obj',copy(obj));
+end
 setappdata(hFigure,'param',param);
 
 %% Calculated parameters
@@ -246,7 +240,7 @@ v3 = basisVector(:,3);
 
 %axis range to show
 param.wRange = [param.range(:,1)-param.wSpace param.range(:,2)+param.wSpace];
-axis(reshape((basisVector*param.wRange)',1,[])+param.wShift);
+axis(reshape((basisVector*param.wRange)',1,[])+wShift);
 zoom(10);
 
 %sphare surface for atoms
@@ -258,6 +252,7 @@ cr{3} = sw_circle([0 0 0]',[0 0 1]',1.01,param.surfRes);
 
 %% Plot the unit cell.
 
+hold on
 handle.unitCell = [];
 
 if param.pCell
@@ -472,7 +467,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                 rLat = atom.r(:,ll) + dCell;
                 
                 % Plot if the atom is within the plotting range.
-                if all((rLat < param.range(:,2)) & (rLat > param.range(:,1)))
+                if all((rLat <= param.range(:,2)) & (rLat >= param.range(:,1)))
                     rPlot = basisVector*rLat;
                     
                     % Draw anisotropy semi-transparent ellipsoid.

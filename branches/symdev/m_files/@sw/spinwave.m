@@ -132,10 +132,10 @@ incomm = any(abs(km-round(km)) > param.tol);
 hklA = 2*pi*(hkl'/obj.basisvector)';
 
 if incomm
-    % calculate dispersion for (k-km, k, k+km)
-    hkl  = [bsxfun(@minus,hkl,km') hkl bsxfun(@plus,hkl,km')];
     % without the k_m: (k, k, k)
     hkl0 = repmat(hkl,[1 3]);
+    % calculate dispersion for (k-km, k, k+km)
+    hkl  = [bsxfun(@minus,hkl,km') hkl bsxfun(@plus,hkl,km')];
 else
     hkl0 = hkl;
 end
@@ -380,8 +380,7 @@ for jj = 1:nSlice
             if posDef > 0
                 try
                     K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
-                    warning('sw:spinwave:NonPosDefHamiltonian',['Trying to make '...
-                        'ham positive definite, a small omega_tol added to its diagonal!\n' repmat(' ',[1 9])])
+                    warning('sw:spinwave:NonPosDefHamiltonian','Trying to make ham positive definite, a small omega_tol added to its diagonal!')
                 catch PD
                     error('sw:spinwave:NonPosDefHamiltonian',...
                         ['Hamiltonian matrix is not positive definite, probably'...
@@ -486,8 +485,15 @@ if incomm
     K2 = nxn;
     
     % symmetrise Sab by averaging two directions
-    [~, rot90] = sw_rot(n,pi/2);
-    Sab = (Sab+mmat(mmat(rot90,Sab),rot90'))/2;
+    %[~, rot90] = sw_rot(n,pi/2);
+    %Sab = (Sab+mmat(mmat(rot90,Sab),rot90'))/2;
+    
+    % keep the rotation invariant part of Sab
+    nx  = [0 -n(3) n(2);n(3) 0 -n(1);-n(2) n(1) 0];
+    nxn = n'*n;
+    m1  = eye(3);
+    
+    Sab = 1/2*Sab - 1/2*mmat(mmat(nx,Sab),nx) + 1/2*mmat(mmat(nxn-m1,Sab),nxn) + 1/2*mmat(mmat(nxn,Sab),2*nxn-m1);
     
     % dispersion
     omega = [omega(:,kmIdx==1); omega(:,kmIdx==2); omega(:,kmIdx==3)];

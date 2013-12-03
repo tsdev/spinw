@@ -316,6 +316,8 @@ if fid == 1
     sw_status(0,1);
 end
 
+warn1 = false;
+
 for jj = 1:nSlice
     % q indices selected for every chunk
     hklIdxMEM  = hklIdx(jj):(hklIdx(jj+1)-1);
@@ -380,7 +382,7 @@ for jj = 1:nSlice
             if posDef > 0
                 try
                     K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
-                    warning('sw:spinwave:NonPosDefHamiltonian','Trying to make ham positive definite, a small omega_tol added to its diagonal!')
+                    warn1 = true;
                 catch PD
                     error('sw:spinwave:NonPosDefHamiltonian',...
                         ['Hamiltonian matrix is not positive definite, probably'...
@@ -471,6 +473,11 @@ else
     end
 end
 
+if warn1
+    warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...
+        'positive definite, a small omega_tol value was added to its diagonal!'])
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % END MEMORY MANAGEMENT LOOP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -483,10 +490,6 @@ if incomm
     nxn = n'*n;
     K1 = 1/2*(eye(3) - nxn - 1i*nx);
     K2 = nxn;
-    
-    % symmetrise Sab by averaging two directions
-    %[~, rot90] = sw_rot(n,pi/2);
-    %Sab = (Sab+mmat(mmat(rot90,Sab),rot90'))/2;
     
     % keep the rotation invariant part of Sab
     nx  = [0 -n(3) n(2);n(3) 0 -n(1);-n(2) n(1) 0];
@@ -549,6 +552,5 @@ if ~param.fitmode
     spectra.ff  = ones(nMagExt,nHkl0);
     spectra.obj = copy(obj);
 end
-
 
 end

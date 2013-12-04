@@ -108,7 +108,12 @@ if nargout(param.func) == 6
     inpForm.size   = repmat({[1 2]},1,nPar);
     inpForm.soft   = repmat({1},1,nPar);
     % test input parameters
-    varargin{1}.showWarn = false;
+    if nargin == 2
+        varargin{1}.showWarn = false;
+    else
+        varargin{end+1} = 'showWarn';
+        varargin{end+1} = false;
+    end
     fparam = sw_readparam(inpForm, varargin{:});
     
     for ii = 1:nPar

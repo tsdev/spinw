@@ -603,7 +603,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                     rLat1 = mAtom.r(:,coupling.atom1(ll)) + dCell;
                     rLat2 = mAtom.r(:,coupling.atom2(ll)) + double(coupling.dl(:,ll)) + dCell;
                     
-                    if all((rLat1<param.range(:,2))&(rLat1>param.range(:,1))&(rLat2<param.range(:,2))&(rLat2>param.range(:,1)))
+                    if all((rLat1<=param.range(:,2))&(rLat1>=param.range(:,1))&(rLat2<=param.range(:,2))&(rLat2>=param.range(:,1)))
                         rPlot1    = basisVector*rLat1;
                         rPlot2    = basisVector*rLat2;
                         if strcmpi(param.cCoupling,'auto')

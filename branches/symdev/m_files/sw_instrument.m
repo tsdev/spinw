@@ -271,7 +271,7 @@ dE = diff(spectra.Evect);
 dE = [dE(1) (dE(2:end)+dE(1:end-1))/2 dE(end)];
 
 for jj = 1:nPlot
-    spectra.swConv{jj} = spectra.swConv{jj}*p2./repmat(dE',[1 size(spectra.swConv,2)]);
+    spectra.swConv{jj} = spectra.swConv{jj}*p2./repmat(dE',[1 size(spectra.swConv{jj},2)]);
 end
 
 if nPlot == 1

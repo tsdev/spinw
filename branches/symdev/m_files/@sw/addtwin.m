@@ -10,6 +10,9 @@ function addtwin(obj,varargin)
 % phi       Defines the angle of rotation to generte twins in radian,
 %           several twins can be defined parallel if phi is a vector.
 %           Dimensions are [1 nTwin].
+% phid      Defines the angle of rotation to generte twins in degree,
+%           several twins can be defined parallel if phi is a vector.
+%           Dimensions are [1 nTwin].
 % rotC      Rotation matrices, that define crystallographic twins, can be
 %           given directly, dimensions are [3 3 nTwin].
 % vol       Volume fractions of the twins, dimensions are [1 nTwin] default
@@ -21,11 +24,15 @@ if nargin == 1
     return;
 end
 
-inpForm.fname  = {'axis'  'phi'  'rotC'   'vol' };
-inpForm.defval = {[0 0 0] 0      zeros(3) 1     };
-inpForm.size   = {[1 3]   [1 -1] [3 3 -2] [1 -3]};
+inpForm.fname  = {'axis'  'phi'  'rotC'   'vol'  'phid'};
+inpForm.defval = {[0 0 0] 0      zeros(3) 1      0     };
+inpForm.size   = {[1 3]   [1 -1] [3 3 -2] [1 -3] [1 -4]};
 
 param = sw_readparam(inpForm, varargin{:});
+
+if numel(param.phid)>1 || param.phid~=0
+    param.phi = param.phid *pi/180;
+end
 
 % prefer axis definition over matrix
 if any(param.axis)

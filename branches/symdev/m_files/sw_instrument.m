@@ -36,6 +36,8 @@ function spectra = sw_instrument(spectra, varargin)
 %               coefficients. Default is 'auto', when the name of the
 %               magnetic ion is determined by the first magnetic atom in
 %               the crystal.
+% norm          If true, the data is normalized to mbarn units. Default is
+%               true.
 %
 % Output:
 %
@@ -55,9 +57,9 @@ function spectra = sw_instrument(spectra, varargin)
 % See also SW_MFF, POLYFIT, POLYVAL.
 %
 
-inpForm.fname  = {'dE'  'ki'  'Ei' 'plot' 'polDeg' 'ThetaMin' 'formFact' 'dQ' };
-inpForm.defval = {0      0     0     true  5        0          'auto'    0    };
-inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1]    [1 1]      [1 -2]    [1 1]};
+inpForm.fname  = {'dE'  'ki'  'Ei' 'plot' 'polDeg' 'ThetaMin' 'formFact' 'dQ'  'norm'};
+inpForm.defval = {0      0     0     true  5        0          'auto'    0     true  };
+inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1]    [1 1]      [1 -2]    [1 1] [1 1] };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -204,12 +206,12 @@ if ki > 0
         
         Emax(abs(imag(Emax))>0) = 0;
         Emin(abs(imag(Emin))>0) = 0;
-
+        
         Elist = repmat(spectra.Evect',[1 size(spectra.swConv{jj},2)]);
         Emin  = repmat(Emin,[size(spectra.swConv{jj},1) 1]);
         Emax  = repmat(Emax,[size(spectra.swConv{jj},1) 1]);
         
-    
+        
         idx = (Elist<Emin) | (Elist>Emax);
         swConv = spectra.swConv{jj};
         swConv(idx) = NaN;
@@ -230,6 +232,8 @@ if strcmp(param.formFact,'auto')
     else
         param.formFact = '';
     end
+elseif numel(param.formFact) == 1 && param.formFact==0
+    param.formFact = '';
 end
 
 % form factor of the given ion
@@ -255,32 +259,35 @@ spectra.formFact = param.formFact;
 % normalise spectrum to mbarn/meV
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Lande' g-factor
-% TODO
-g  = 2;
-% constant: p = gamma*r0/2
-% neutron magnetic moment constant: M = gamma*gammaN
-gamma = 1.91304272; % 1/s/T
-% classical radius of the electron
-r0 = 2.8179403267e-15; % m
-% cross section constant in mbarn
-p2 = (g*gamma*r0/2)^2*1e28*1e3; % mbarn
-
-% convert intensity to mbarn/meV units using the energy bin size
-dE = diff(spectra.Evect);
-dE = [dE(1) (dE(2:end)+dE(1:end-1))/2 dE(end)];
-
-for jj = 1:nPlot
-    spectra.swConv{jj} = spectra.swConv{jj}*p2./repmat(dE',[1 size(spectra.swConv{jj},2)]);
+if param.norm
+    % Lande' g-factor
+    % TODO
+    g  = 2;
+    % constant: p = gamma*r0/2
+    % neutron magnetic moment constant: M = gamma*gammaN
+    gamma = 1.91304272; % 1/s/T
+    % classical radius of the electron
+    r0 = 2.8179403267e-15; % m
+    % cross section constant in mbarn
+    p2 = (g*gamma*r0/2)^2*1e28*1e3; % mbarn
+    
+    % convert intensity to mbarn/meV units using the energy bin size
+    dE = diff(spectra.Evect);
+    dE = [dE(1) (dE(2:end)+dE(1:end-1))/2 dE(end)];
+    
+    for jj = 1:nPlot
+        spectra.swConv{jj} = spectra.swConv{jj}*p2./repmat(dE',[1 size(spectra.swConv{jj},2)]);
+    end
+    
+    % set 'normalized units' switch on
+    spectra.norm = true;
+    fprintf('Intensity is converted to mbarn/meV units.\n');
+else
+    spectra.norm = false;
 end
 
 if nPlot == 1
     spectra.swConv = spectra.swConv{1};
 end
-
-% set 'normalized units' switch on
-spectra.norm = true;
-
-fprintf('Intensity is converted to mbarn/meV units.\n');
 
 end

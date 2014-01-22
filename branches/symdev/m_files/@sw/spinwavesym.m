@@ -1,12 +1,12 @@
 function omega = spinwavesym(obj, varargin)
-% calculates dynamical spin-spin correlation function using linear spin wave theory
+% calculates symbolic spin wave dispersion
 %
 % spectra = SPINWAVESYM(obj, k, 'option1', value1 ...)
 %
-% Spin wave dispersion and spin-spin correlation function is calculated at
-% the reciprocal space points k. The function can deal with arbitrary
-% magnetic structure and magnetic interactions as well as single ion
-% anisotropy and magnetic field.
+% Symbolic spin wave dispersion  is calculated as a function of reciprocal
+% space points. The function can deal with arbitrary magnetic structure and
+% magnetic interactions as well as single ion anisotropy and magnetic
+% field.
 %
 % If the magnetic ordering wavevector is non-integer, the dispersion is
 % calculated using a coordinate system rotating from cell to cell. In this
@@ -18,16 +18,8 @@ function omega = spinwavesym(obj, varargin)
 % Input:
 %
 % obj           Input structure, sw class object.
-% hkl           Defines the Q points where the spectra is calculated, in
-%               reciprocal lattice units, size is [3 nHkl]. Q can be also
-%               defined by several linear scan in reciprocal space. In this
-%               case hkl is cell type, where each element of the cell
-%               defines a point in Q space. Linear scans are assumed
-%               between consecutive points. Also the number of Q points can
-%               be specified as a last element, it is 100 by defaults. For
-%               example: hkl = {[0 0 0] [1 0 0]  50}, defines a scan along
-%               (h,0,0) from 0 to 1 and 50 Q points are calculated along
-%               the scan.
+% hkl           Symbolic definition of q vector. For a general Q point use:
+%                   hkl = [sym('h') sym('k') sym('l')];
 %
 % Options:
 %

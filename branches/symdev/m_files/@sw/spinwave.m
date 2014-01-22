@@ -92,7 +92,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % incomm        Whether the spectra calculated is incommensurate or not.
 % obj           The copy of the input obj.
 %
-% See also SW, SW_NEUTRON, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
+% See also SW, SW.SPINWAVESYM, SW_NEUTRON, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
 %
 
 % help when executed without argument
@@ -101,6 +101,11 @@ if nargin==1
     return
 end
 
+% calculate symbolic spectrum if hkl is symbolic variable
+if isa(hkl,'sym')
+    spectra = obj.spinwavesym(hkl, varargin{:});
+    return
+end
 
 % for linear scans create the Q line(s)
 if iscell(hkl)

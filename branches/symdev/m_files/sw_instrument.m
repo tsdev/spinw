@@ -86,7 +86,7 @@ end
 % energy resolution
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if isstring(param.dE)
+if ischar(param.dE)
     
     % load file and read values
     fid = fopen(param.dE);
@@ -240,7 +240,7 @@ if any(formFactCoeff(1:end-1))
     for jj = 1:nPlot
         spectra.swConv{jj} = bsxfun(@times,spectra.swConv{jj},formFactCalc.^2);
     end
-    if isstring(param.formFact)
+    if ischar(param.formFact)
         fprintf('Magnetic form factor of %s is applied.\n',param.formFact);
     else
         fprintf('Magnetic form factor with given coefficients is applied.\n');

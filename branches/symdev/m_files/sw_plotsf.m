@@ -4,9 +4,9 @@ function varargout = sw_plotsf(sFact, varargin)
 %
 % Options:
 %
-% range     Plotting range in r.l.u., dimensions are [3 2]. If the lower
-%           and upper range is equal along one of the directions, the
-%           signal will be integrated along that dimension. Default is 
+% range     Plotting range in inverse Angstrom, dimensions are [3 2]. If
+%           the lower and upper range is equal along one of the directions,
+%           the signal will be integrated along that dimension. Default is
 %           [0 0;0 1;0 1].
 % type      Type of plot.
 %               'sf'    plot calculated structure factor. (default)

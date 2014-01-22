@@ -103,8 +103,8 @@ elseif nargin >= 2
 
 end
 
-symOp = zeros(3,3,10);
-symTr = zeros(3,10);
+symOp = zeros(3,3,30);
+symTr = zeros(3,30);
 vNew   = zeros(3,1);
 
 nNew  = 1;

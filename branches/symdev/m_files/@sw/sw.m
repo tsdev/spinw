@@ -2,9 +2,14 @@ classdef sw < class_handlelight
     % SW class defines data structure and methods to calculate spin wave
     % dispersion in magnetic crystals.
     %
+    % SW() constructs a new sw class object, with default parameters.
+    %
     % SW(obj) constructs new sw class object. If obj is sw class, it only
     % checks its data integrity. If obj is struct type, it creates new sw
     % object and checks data integrity.
+    %
+    % SW(cif_path) construct new sw class object, where cif_path contains a
+    % string of a .cif file path defining a crystals structure.
     %
     % The data structure behind the sw object can be accessed by
     % struct(sw). All fields of the struct type data behind the sw object
@@ -31,14 +36,100 @@ classdef sw < class_handlelight
     %
     
     properties
-        lattice     % lattice parameters, fields: angle, lat_const, sym
-        unit_cell   % atoms in the unit cell, fields: r, S, label, color
-        twin        % twins, fields: vol, rotc
-        matrix      % definition of 3x3 matrices, fields: mat, color, label
-        single_ion  % single ion terms in the Hamiltonian, fields: aniso, field
-        coupling    % magnetic interactions, fields: dl, atom1, atom2, mat_idx, idx
-        mag_str     % magnetic structure, fields: N_ext, k, S, n
-        unit        % units of energy, magnetic field and temperature
+        % Field stores the crystallographic unit cell parameters.
+        % Sub fields are:
+        %   'lat_const' lattice constants in a 1x3 vector in Angstrom units
+        %   'angle'     (alpha,beta,gamma) angles in 1x3 vector in radian
+        %   'sym'       crystal space group, line number in symmetry.dat file
+        %
+        % See also SW.GENLATTICE, SW.ABC, SW.BASISVECTOR, SW.NOSYM.
+        lattice
+        % Field stores the atoms in the crystallographic unit cell.
+        % Sub fields are:
+        %   'r'         pasitions of the atoms in the unit cell, in a
+        %               3 x nAtom matrix, in lattice units
+        %   'S'         spin quantum number of the atoms, in a 1 x nAtom
+        %               vector, non-magnetic atoms have S=0
+        %   'label'     label of the atom, strings in a 1 x nAtom cell
+        %   'color'     color of the atom in 3 x nAtom matrix, where every
+        %               column is an 0-255 RGB color
+        %
+        % See also SW.ADDATOM, SW.ATOM, SW.MATOM, SW.NEWCELL, SW.PLOT.
+        unit_cell
+        % Field stores crystallographic twins.
+        % Sub fields are:
+        %   'rotc'      rotation matrices in the xyz coordinate system for
+        %               every twin, stored in a 3 x 3 x nTwin matrix
+        %   'vol'       volume ratio of the different twins, stored in a
+        %               1 x nTwin vector
+        %
+        % See also SW.ADDTWIN, SW.TWINQ, SW.UNIT_CELL.
+        twin
+        % Field stores 3x3 matrices for using them in the Hailtonian.
+        % Sub fields are:
+        %   'mat'       stores the actual values of 3x3 matrices, in a 
+        %               3 x 3 x nMatrix matrix, defult unit is meV
+        %   'color'     color assigned for every matrix, stored in a
+        %               3 x nMatrix matrix, with 0-255 RGB columns
+        %   'label'     label for every matrix, stored as string in a 
+        %               1 x nMatrix cell
+        %
+        % See also SW.ADDMATRIX, SW.NTWIN.
+        matrix
+        % Field stores single ion terms of the Hamiltonian.
+        % Sub fields are:
+        %   'aniso'     vector contains 1 x nMagAtom integers, each integer
+        %               assignes one of the nMatrix from the .matrix field 
+        %               to a magnetic atom in the sw.matom list as a single
+        %               ion anisotropy (zeros for no anisotropy)
+        %   'g'         vector contains 1 x nMagAtom integers, each integer
+        %               assignes one of the nMatrix from the .matrix field 
+        %               to a magnetic atom in the sw.matom list as a
+        %               g-tensor
+        %   'field'     external magnetic field stored in a 1x3 vector,
+        %               defalult unit is Tesla
+        %
+        % See also SW.ADDANISO, SW.ADDG, SW.GETMATRIX, SW.SETMATRIX, SW.INTMATRIX.
+        single_ion
+        % Field stores the list of spin-spin couplings.
+        % Sub fields are:
+        %   'dl'        distance between the unit cells of two interacting
+        %               spins, stored in a 3 x nCoupling matrix
+        %   'atom1'     first magnetic atom, pointing to the list of
+        %               magnetic atoms in sw.matom list, stored in a 
+        %               1 x nCoupling vector
+        %   'atom2'     second magnetic atom, stored in a  1 x nCoupling
+        %               vector
+        %   'mat_idx'   stores pointers to matrices for every coupling in a
+        %               3 x nCoupling matrix, maximum three matrices per
+        %               coupling (zeros for no coupling)
+        %   'idx'       increasing indices for the symmetry equivalent
+        %               couplings, starting with 1,2,3...
+        %
+        % See also SW.GENCOUPLING, SW.ADDCOUPLING, SW.FIELD.
+        coupling
+        % Field stores the magnetic structure.
+        % Sub fields are:
+        %   'S'         stores the moment direction for every spin in the
+        %               crystallographic or magnetic supercell in a 
+        %               3 x nMagExt matrix, where nMagExt = nMagAtom*prod(N_ext)
+        %   'k'         magnetic ordering wave vector in a 3x1 vector
+        %   'n'         normal vector to the rotation of the moments in
+        %               case of non-zero ordering wave vector, dimensions
+        %               are 3x1
+        %   'N_ext'     Size of the magnetic supercell, default is [1 1 1]
+        %               if the magnetic cell is identical to the
+        %               crystallographic cell, the 1x3 vector extends the
+        %               cell along the a, b and c axis
+        %
+        % See also SW.GENMAGSTR, SW.OTPMAGSTR, SW.ANNEAL, SW.MOMENT, SW.NMAGEXT, SW.STRUCTFACT.
+        mag_str
+        % Field stores the physical units in the Hamiltonian. Default are
+        % meV, Tesla and Kelvin.
+        % Sub fields are:
+        %   'kB'        Boltzmann constant, default is 0.0862
+        %   'muB'       Bohr magneton, default is 0.0579
+        unit
     end
     
     properties (Access = private)

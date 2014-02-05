@@ -73,6 +73,7 @@ elseif nargin == 1
                 ii = ii+1;
             end
             if symIdx == 0
+                fclose(fid);
                 error('sw:sw_gensym:WrongInput','Symmetry name does not exists (case insensitive)!');
             end
             symNum = symIdx;
@@ -92,6 +93,7 @@ elseif nargin == 1
         end
         fclose(fid);
         if ii <= symNum
+            fclose(fid);
             error('spinw:sw_gensym:WrongInput','Symmetry number not found!')
         end
         symStr   = textLine(20:end);

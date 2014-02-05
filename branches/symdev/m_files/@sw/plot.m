@@ -28,6 +28,7 @@ function varargout = plot(obj, varargin)
 %   cAxis           Color of the (a,b,c) axis, [R G B], default is
 %                   black ([0 0 0]).
 %   lineStyleCell   Line style of the unit cell, default is '--'.
+%   lineWidthCell   Line width of the unit cell, default is 1.
 %   dAxis           Distance of coordinate system arrows origin from
 %                   crystal origin in Angstrom, default is [0.5;1.5;2.0].
 %   dText           Distance between item and its text label, default is
@@ -199,9 +200,9 @@ inpForm.fname  = [inpForm.fname  {'rEll' 'eEll' 'pZeroCoupling' 'tooltip' 'cCoup
 inpForm.defval = [inpForm.defval {1          0.1          true             true      'auto'     'auto'   'auto' }];
 inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]            [1 1]     [1 -7]     [1 -2]   [1 -3] }];
 
-inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' }];
-inpForm.defval = [inpForm.defval {1      1       1      }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  }];
+inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' }];
+inpForm.defval = [inpForm.defval {1      1       1      1               }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]           }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -273,7 +274,7 @@ if param.pCell
         handle.unitCell = plot3(path(1,:),path(2,:),path(3,:));
     end
     
-    set(handle.unitCell,'Color',param.cCell,'LineStyle',param.lineStyleCell);
+    set(handle.unitCell,'Color',param.cCell,'LineStyle',param.lineStyleCell,'LineWidth',param.lineWidthCell);
     set(handle.unitCell,'Tag','unitCell');
     tooltip(handle.unitCell,['Unit cell \na=' sprintf('%5.3f',lattice.lat_const(1)) ' \nb=' sprintf('%5.3f',lattice.lat_const(2)) ' \nc=' sprintf('%5.3f',lattice.lat_const(3))])
 end

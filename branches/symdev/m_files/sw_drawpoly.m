@@ -147,7 +147,30 @@ function [handle] = polyhedron2(vertex)
 %Euler: face=2*vertex-4
 %
 
-trids  = convhulln(vertex');
-handle = patch('faces',trids,'vertices',vertex');
+try
+    % 3D polyhedra
+    trids  = convhulln(vertex');
+    handle = patch('faces',trids,'vertices',vertex');
+catch
+    % flat polygons
+    n1 = -cross(vertex(:,2)-vertex(:,1),vertex(:,3)-vertex(:,1));
+    n1 = n1/norm(n1);
+    n2  = [0; n1(3); -n1(2)];
+    n2(3,~any(abs(n2)>1e-10)) = 1;
+    n2  = n2/norm(n2);
+    % n3 = n1 x n2
+    n3  = cross(n1,n2);
+    
+    T  = [n1 n2 n3];
+    vT = T'*vertex;
+    vT = vT(2:3,:)';
+    % sort the points around the polygon
+    pIndex = convexHull(DelaunayTri(vT(:,1),vT(:,2)));
+    % sort the points in 2D
+    
+    vertex = vertex(:,pIndex);
+    handle = fill3(vertex(1,:),vertex(2,:),vertex(3,:),[0 1 0]);
+    
+end
 
 end

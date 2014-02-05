@@ -534,8 +534,14 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                     
                     % Plots magnetic moments.
                     if param.pSpin && atom.mag(ll)
+                        % translation in lat.units to calculate moment
+                        transl  = floor(dCell./nExt').*nExt';
+                        % angles of rotation of the moment
+                        phi   = obj.mag_str.k*transl*2*pi;
+                        selS  = obj.mag_str.S(:,llMagAtom+llSpin);
+                        plotS = param.sSpin*sw_rot(obj.mag_str.n,phi,selS);
                         
-                        plotS   = param.sSpin*obj.mag_str.S(:,llMagAtom+llSpin);
+                        %plotS   = param.sSpin*obj.mag_str.S(:,llMagAtom+llSpin);
                         lengthS = norm(obj.mag_str.S(:,llMagAtom+llSpin));
                         
                         if param.coplanar

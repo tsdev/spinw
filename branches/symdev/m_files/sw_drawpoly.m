@@ -142,16 +142,16 @@ hold off
 end
 
 function [handle] = polyhedron2(vertex)
-%vertex: 3x3 array, column vectors contain coordinates
-%polyhedron from triangular faces
-%Euler: face=2*vertex-4
+% vertex: 3x3 array, column vectors contain coordinates
+% polyhedron from triangular faces
+% Euler: face=2*vertex-4
 %
 
 try
     % 3D polyhedra
     trids  = convhulln(vertex');
     handle = patch('faces',trids,'vertices',vertex');
-catch
+catch %#ok<CTCH>
     % flat polygons
     n1 = -cross(vertex(:,2)-vertex(:,1),vertex(:,3)-vertex(:,1));
     n1 = n1/norm(n1);
@@ -166,8 +166,8 @@ catch
     vT = vT(2:3,:)';
     % sort the points around the polygon
     pIndex = convexHull(DelaunayTri(vT(:,1),vT(:,2)));
-    % sort the points in 2D
     
+    % reorder the edge points
     vertex = vertex(:,pIndex);
     handle = fill3(vertex(1,:),vertex(2,:),vertex(3,:),[0 1 0]);
     

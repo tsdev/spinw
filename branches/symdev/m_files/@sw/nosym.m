@@ -8,5 +8,6 @@ function nosym(obj, varargin)
 %
 
 obj.newcell({[1 0 0] [0 1 0] [0 0 1]});
+obj.issym = false;
 
 end

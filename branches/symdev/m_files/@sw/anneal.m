@@ -80,6 +80,8 @@ function stat = anneal(obj, varargin)
 %           magnetic moment, size is (1,nMagExt). If undefined, the
 %           function defined in 'fSub' will be used to partition the
 %           lattice.
+% title     Gives a title string to the simulation that is saved in the
+%           output.
 %
 % Output:
 %
@@ -133,6 +135,11 @@ inpForm.fname  = [inpForm.fname  {'fStat'   'fSub'   'random' 'boundary'        
 inpForm.defval = [inpForm.defval {@sw_fstat @sw_fsub true     {'per' 'per' 'per'}}];
 inpForm.size   = [inpForm.size   {[1 1]     [1 1]    [1 1]    [1 3]              }];
 inpForm.soft   = [inpForm.soft   {0         0        0        0                  }];
+
+inpForm.fname  = [inpForm.fname  {'title'   }];
+inpForm.defval = [inpForm.defval {''        }];
+inpForm.size   = [inpForm.size   {[1 -2]	}];
+inpForm.soft   = [inpForm.soft   {1         }];
 
 param = sw_readparam(inpForm,varargin{:});
 

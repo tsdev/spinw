@@ -1,7 +1,7 @@
-function F2 = structfact(obj, varargin)
+function sFact = structfact(obj, varargin)
 % calculates magnetic structure factor using FFT
 %
-% F2 = STRUCTFACT(swobj, Option1, Value1, ...)
+% sFact = STRUCTFACT(swobj, Option1, Value1, ...)
 %
 % Input:
 %
@@ -18,27 +18,24 @@ function F2 = structfact(obj, varargin)
 %
 % Output:
 %
-% F2.int            Square of the 3 dimensional magnetic structure factor,
-%                   dimensions are 
-%                   [nExt(1)*fExt(1) nExt(2)*fExt(2) nExt(3)*fExt(3)], 
+% sFact.F2          Square of the 3 dimensional magnetic structure factor,
+%                   dimensions are
+%                   [nExt(1)*fExt(1) nExt(2)*fExt(2) nExt(3)*fExt(3)],
 %                   where nExt is the size of the extended unit cell.
-% F2.perp           Square of the perpendicular component of the magnetic
+% sFact.perp        Square of the perpendicular component of the magnetic
 %                   structure factor to the Q scattering vector, same size
-%                   as F2.int.
+%                   as sFact.int.
 %
-% F2.x              X component of the complex structure factor.
-% F2.y              Y component of the complex structure factor.
-% F2.z              Z component of the complex structure factor.
+% sFact.xyz         Cell storing the components of the complex structure
+%                   factor in the form {X, Y, Z}.
 %
-% F2.h              Wavevector h in reciprocal lattice units, dimensions
-%                   are [1 nExt(1)*fExt(1)].
-% F2.k              Wavevector k in reciprocal lattice units, dimensions 
-%                   are [1 nExt(2)*fExt(2)].
-% F2.l              Wavevector l in reciprocal lattice units, dimensions 
-%                   are [1 nExt(3)*fExt(3)].
-% F2.basisvector    Matrix contains the basis vectors in columns.
+% sFact.hkl         Cell storing the wavevectors (h, k, l) in reciprocal
+%                   lattice units, in the form {h, k, l} where the
+%                   dimensions of each vector are [1 nExt(ii)*fExt(ii)]
+%                   where ii is {1, 2, 3} for {h, k, l}.
+% sFact.obj         Copy of the sw object.
 %
-% See also SW_PLOTSF, SW.ANNEAL, SW.GENMAGSTR.
+% See also SW_PLOTSF, SW_INTSF, SW.ANNEAL, SW.GENMAGSTR.
 %
 
 inpF.fname  = {'fExt'  'S'           };
@@ -95,15 +92,11 @@ fFact = (nMagAtom*prod(nExt));
 mMatk = mMatk/fFact;
 
 % Save the components of the calculated structure factor.
-F2.int = sum(abs(mMatk).^2,4);
-F2.x   = mMatk(:,:,:,1);
-F2.y   = mMatk(:,:,:,2);
-F2.z   = mMatk(:,:,:,3);
+sFact.F2 = sum(abs(mMatk).^2,4);
+sFact.xyz = {mMatk(:,:,:,1) mMatk(:,:,:,2) mMatk(:,:,:,3)};
 
 % Save the k-vector values.
-F2.h  = 2*pi*k{1};
-F2.k  = 2*pi*k{2};
-F2.l  = 2*pi*k{3};
+sFact.hkl = k';
 
 % Calculate magnetic neutron scattering cross section.
 bVect = inv(obj.basisvector);
@@ -114,12 +107,12 @@ qq{3} = bVect(3,1)*kk{1}+bVect(3,2)*kk{2}+bVect(3,3)*kk{3};
 % Normalise Q vectors.
 qqNorm = qq{1}.^2+qq{2}.^2+qq{3}.^2;
 % Calculates the perpendicular component of F to Q
-F2qq = F2.x.*qq{1}+F2.y.*qq{3}+F2.z.*qq{3};
+sFactqq = sFact.xyz{1}.*qq{1}+sFact.xyz{2}.*qq{3}+sFact.xyz{3}.*qq{3};
 mMatM = mMatk*0;
-mMatM(:,:,:,1) = F2.x-F2qq.*qq{1}./qqNorm;
-mMatM(:,:,:,2) = F2.y-F2qq.*qq{2}./qqNorm;
-mMatM(:,:,:,3) = F2.z-F2qq.*qq{3}./qqNorm;
-F2.perp = sum(abs(mMatM).^2,4);
+mMatM(:,:,:,1) = sFact.xyz{1}-sFactqq.*qq{1}./qqNorm;
+mMatM(:,:,:,2) = sFact.xyz{2}-sFactqq.*qq{2}./qqNorm;
+mMatM(:,:,:,3) = sFact.xyz{3}-sFactqq.*qq{3}./qqNorm;
+sFact.perp = sum(abs(mMatM).^2,4);
 
-F2.basisvector = obj.basisvector;
+sFact.obj = copy(obj);
 end

@@ -74,21 +74,23 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % spectra is a structure, with the following fields:
 % omega         Calculated spin wave dispersion, dimensins are
-%               [2*nMagExt nHkl], where nMagExt is the number of magnetic
+%               [nMode nHkl], where nMagExt is the number of magnetic
 %               atoms in the extended unit cell.
 % Sab           Dynamical structure factor, dimensins are
-%               [3 3 2*nMagExt nHkl]. Each (:,:,i,j) submatrix contains the
+%               [3 3 nMode nHkl]. Each (:,:,i,j) submatrix contains the
 %               9 correlation functions: Sxx, Sxy, Sxz, etc.
 %
-% If several domains exist in the sample, omega and Sab are packaged into a
+% nMode is the number of magnetic mode. For commensurate structures it is
+% double the number of magnetic atoms in the magnetic cell/supercell. For
+% incommensurate structures this number is tripled due to the appearance of
+% the (Q+/-km) Fourier components in the correlation functions.
+%
+% If several twins exist in the sample, omega and Sab are packaged into a
 % cell, that contains nTwin number of matrices.
 %
 % hkl           Contains the input Q values, dimensins are [3 nHkl].
 % hklA          Same Q values, but in reciproc Angstrom units in the
 %               lab coordinate system, dimensins are [3 nHkl].
-% formfact      Magnetic form factor for all magnetic ions calculated
-%               for hklA momentum transfer values, dimensions are
-%               [nMagExt nHkl].
 % incomm        Whether the spectra calculated is incommensurate or not.
 % obj           The copy of the input obj.
 %

@@ -67,11 +67,11 @@ classdef sw < class_handlelight
         twin
         % Field stores 3x3 matrices for using them in the Hailtonian.
         % Sub fields are:
-        %   'mat'       stores the actual values of 3x3 matrices, in a 
+        %   'mat'       stores the actual values of 3x3 matrices, in a
         %               3 x 3 x nMatrix matrix, defult unit is meV
         %   'color'     color assigned for every matrix, stored in a
         %               3 x nMatrix matrix, with 0-255 RGB columns
-        %   'label'     label for every matrix, stored as string in a 
+        %   'label'     label for every matrix, stored as string in a
         %               1 x nMatrix cell
         %
         % See also SW.ADDMATRIX, SW.NTWIN.
@@ -79,11 +79,11 @@ classdef sw < class_handlelight
         % Field stores single ion terms of the Hamiltonian.
         % Sub fields are:
         %   'aniso'     vector contains 1 x nMagAtom integers, each integer
-        %               assignes one of the nMatrix from the .matrix field 
+        %               assignes one of the nMatrix from the .matrix field
         %               to a magnetic atom in the sw.matom list as a single
         %               ion anisotropy (zeros for no anisotropy)
         %   'g'         vector contains 1 x nMagAtom integers, each integer
-        %               assignes one of the nMatrix from the .matrix field 
+        %               assignes one of the nMatrix from the .matrix field
         %               to a magnetic atom in the sw.matom list as a
         %               g-tensor
         %   'field'     external magnetic field stored in a 1x3 vector,
@@ -96,7 +96,7 @@ classdef sw < class_handlelight
         %   'dl'        distance between the unit cells of two interacting
         %               spins, stored in a 3 x nCoupling matrix
         %   'atom1'     first magnetic atom, pointing to the list of
-        %               magnetic atoms in sw.matom list, stored in a 
+        %               magnetic atoms in sw.matom list, stored in a
         %               1 x nCoupling vector
         %   'atom2'     second magnetic atom, stored in a  1 x nCoupling
         %               vector
@@ -111,7 +111,7 @@ classdef sw < class_handlelight
         % Field stores the magnetic structure.
         % Sub fields are:
         %   'S'         stores the moment direction for every spin in the
-        %               crystallographic or magnetic supercell in a 
+        %               crystallographic or magnetic supercell in a
         %               3 x nMagExt matrix, where nMagExt = nMagAtom*prod(N_ext)
         %   'k'         magnetic ordering wave vector in a 3x1 vector
         %   'n'         normal vector to the rotation of the moments in
@@ -236,6 +236,13 @@ classdef sw < class_handlelight
             
             objS = struct(obj);
             objC = sw(objS);
+            
+            % copy the private properties
+            objC.issym  = obj.issym;
+            objC.Elabel = obj.Elabel;
+            objC.Qlabel = obj.Qlabel;
+            objC.Rlabel = obj.Rlabel;
+            objC.Blabel = obj.Blabel;
         end % copy
         function abc = abc(obj)
             % returns [a, b, c, alpha, beta, gamma] vector

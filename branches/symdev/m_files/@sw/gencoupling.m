@@ -4,35 +4,39 @@ function gencoupling(obj, varargin)
 % GENCOUPLING(obj, 'option1', value, ...)
 %
 % It calculates the symmetry equivalent couplings between magnetic atoms
-% and sorts them according to the atom-atom distance. If option 'sym' is
+% and sorts them according to the bond length. If option 'sym' is
 % false, the crystal symmetry is not considered.
 %
 % Options:
 %
-% sym           If true, simmetry equivalent pairs of atoms are calculated.
-%               If false, equivalent pairs will be identified based on
-%               distance. If the crystal has space group symmetry > 1, the
-%               default is true, otherwise false.
+% sym           If true, equivalent couplings are generated based on
+%               crystal space group. If false, equivalent couplings are
+%               generated based on bond length with .tolDist tolerance. If
+%               the crystal has space group symmetry > 1, the default is
+%               true, otherwise false.
 % nUnitCell     Edge length of the parallelepiped withing the
 %               algorithm searches for neares neighbours in lattice
 %               units. Default is 3.
 % maxDistance   Maximum inter-ion distance that will be stored in the
 %               obj.coupling property in units of Angstrom. Default
 %               is 8.
-% tol           Tolerance of distance, within two couplings are regarded
-%               equivalent, default is 1e-5.
+% tolDist       Tolerance of distance, within two couplings are regarded
+%               equivalent, default is 1e-3 Angstrom. Only used, when no
+%               space group is defined (sym=1).
+% tol           Relative tolerance on symmetry operations, default is 1e-5.
 %
-% See also SW.
+% See also SW, SYMMETRY, NOSYM.
 %
 
 isSym = obj.lattice.sym > 1;
 
-inpForm.fname  = {'sym' 'nUnitCell' 'maxDistance' 'tol' };
-inpForm.defval = {isSym 3           8             1e-5  };
-inpForm.size   = {[1 1] [1 1]       [1 1]         [1 1] };
+inpForm.fname  = {'sym' 'nUnitCell' 'maxDistance' 'tol' 'tolDist'};
+inpForm.defval = {isSym 3           8             1e-5  1e-3     };
+inpForm.size   = {[1 1] [1 1]       [1 1]         [1 1] [1 1]    };
 
 param = sw_readparam(inpForm, varargin{:});
 tol   = param.tol;
+tolD  = param.tolDist;
 
 % save the sym/nosym method into obj
 obj.issym = isSym;
@@ -119,7 +123,7 @@ if nMagAtom > 0
     sortM = sortrows(sortM(:,sortM(7,:)<param.maxDistance)',7)';
     
     % Finds the equivalent distances and index them in coupling.idx
-    sortM(6,:) = cumsum([1 (sortM(7,2:end)-sortM(7,1:(end-1))) > tol]);
+    sortM(6,:) = cumsum([1 (sortM(7,2:end)-sortM(7,1:(end-1))) > tolD]);
     
     % symmetry equivalent couplings
     if param.sym

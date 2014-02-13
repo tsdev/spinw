@@ -8,7 +8,7 @@ function varargout = field(obj,varargin)
 %
 % B = SW.FIELD
 %
-% It returns the actual B field value.
+% It returns the current B field value.
 %
 
 if nargin == 1
@@ -25,4 +25,4 @@ elseif nargin == 2
     end
 end
 
-end % .magfield
+end % .field

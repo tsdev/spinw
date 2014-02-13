@@ -87,7 +87,8 @@ classdef sw < class_handlelight
         %               to a magnetic atom in the sw.matom list as a
         %               g-tensor
         %   'field'     external magnetic field stored in a 1x3 vector,
-        %               defalult unit is Tesla
+        %               default unit is Tesla
+        %   'T'         temperature, scalar, default unit is Kelvin
         %
         % See also SW.ADDANISO, SW.ADDG, SW.GETMATRIX, SW.SETMATRIX, SW.INTMATRIX.
         single_ion
@@ -139,6 +140,7 @@ classdef sw < class_handlelight
         Qlabel = 'Angstrom^{-1}';
         Rlabel = 'Angstrom';
         Blabel = 'T';
+        Tlabel = 'K';
     end
     
     methods
@@ -243,6 +245,8 @@ classdef sw < class_handlelight
             objC.Qlabel = obj.Qlabel;
             objC.Rlabel = obj.Rlabel;
             objC.Blabel = obj.Blabel;
+            objC.Tlabel = obj.Tlabel;
+            
         end % copy
         function abc = abc(obj)
             % returns [a, b, c, alpha, beta, gamma] vector
@@ -257,6 +261,57 @@ classdef sw < class_handlelight
             % gives the number of twins
             nTwin = size(obj.twin.vol,2);
         end
+        
+        function varargout = temperature(obj,varargin)
+            % get/set stored temperature value
+            %
+            % {obj} = SW.TEMPERATURE(obj, T)
+            %
+            % If T is defined, it sets the temperature stored in sw object to T,
+            % where T is scalar. The units of temerature is determined by
+            % the sw.unit.kB value, default is Kelvin.
+            %
+            % T = SW.TEMPERATURE
+            %
+            % It returns the current temperature value.
+            %
+            
+            if nargin == 1
+                varargout{1} = obj.single_ion.T;
+            elseif nargin == 2
+                T = varargin{1};
+                if numel(T) == 1
+                    obj.single_ion.T = T;
+                else
+                    error('sw:temperature:ArraySize','Input temperature has to be scalar!');
+                end
+                if nargout > 0
+                    varargout{1} = obj;
+                end
+            end
+            
+        end % .temperature
+        
+        function issym = symmetry(obj)
+            % true if space group is used to generate couplings
+            %
+            % issym = SW.SYMMETRY(obj)
+            %
+            % If true, equivalent couplings are generated based on the
+            % crystal space group and all matrices (interaction, anisotropy
+            % and g-tensor) are transformed according to the symmetry
+            % operators. If false, equivalent couplings are generated based
+            % on bond length, equivalent matrices won't be transformed
+            % (all identical).
+            %
+            % To change it use sw.gencoupling with the sym option. To
+            % remove all symmetry operators use sw.nosym.
+            %
+            
+            issym = obj.issym;
+            
+        end % .symmetry
+        
     end
     methods (Hidden=true)
         function obj = addmagfield(obj, B)

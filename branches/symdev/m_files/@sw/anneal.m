@@ -5,7 +5,7 @@ function stat = anneal(obj, varargin)
 %
 % The function can deal only with single ion anisotropy and isotropic
 % exchange interactions in 1, 2 or 3 spin dimensions. General and DM
-% interactions are not supported.
+% interactions are not supported yet!
 %
 % Input:
 %
@@ -36,14 +36,14 @@ function stat = anneal(obj, varargin)
 %           is automaticly random independently of the value of random.
 %           Default is true.
 % nMC       Number of Monte-Carlo steps per spin at each temperature
-%           step. Default is 100.
+%           step to reach thermal equilibrium. Default is 100.
 % nORel     Number of over-relaxation steps after every Monte-Carlo
 %           steps. It rotates the spins around the direction of the local
 %           field by 180deg. It is reversible and microcanonical if the
 %           single ion anisotropy is zero. Default is 0.
-% nStat     Number of cycles at the end of the cooling to calculate
-%           statistical averages, has to be smaller than 'nMC'. Default is
-%           100.
+% nStat     Number of cycles at the last temperature to calculate
+%           statistical averages. It has to be smaller or equal nMC.
+%           Default is 100.
 % boundary  Boundary conditions of the extended unit cell.
 %               'free'  Free, interactions between extedned unit cells are
 %                       omitted.
@@ -149,6 +149,11 @@ if param.random
     mag_param.mode = 'random';
 else
     mag_param.mode = 'extend';
+end
+
+if param.nStat > param.nMC
+    warning('sw.anneal.wrongParam','nStat is larger than nMC, instead of the given value, nMC will be used!');
+    param.nStat = param.nMC;
 end
 
 mag_param.showWarn = false;

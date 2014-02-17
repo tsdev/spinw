@@ -28,7 +28,7 @@ while ~isempty(uIdx)
     
     % generate all symmetry elements from the given generators
     [symOp1, symTr1] = sw_gencoord({symOpG symTrG});
-    % number of already generate symmetry operators
+    % number of already generated symmetry operators
     nReady = size(symOp1,3);
     % find all non-generated operators
     symMat = [[reshape(symOp1,9,[]) reshape(symOp,9,[])];[symTr1 symTr]]';

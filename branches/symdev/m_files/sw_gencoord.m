@@ -60,7 +60,7 @@ for ii = 1:nGen
     R0 = genOp(:,:,ii);
     T0 = transl(:,ii);
     % order of the symmetry operator
-    P(ii) = sw_rotorder(R0,T0);
+    P(ii) = sw_symorder(R0,T0);
     
     R = eye(3);
     T = zeros(3,1);

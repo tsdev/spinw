@@ -63,7 +63,7 @@ for ii = 1:nSym
         
     else
         % check that the rotation operator is valid
-        ordR = sw_rotorder(R);
+        ordR = sw_symorder(R);
         parR = 1;
     end
     if ordR == 10

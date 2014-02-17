@@ -120,7 +120,7 @@ if nMagAtom > 0
         end
     end
     % sort according to distance and cut away large distances
-    sortM = sortrows(sortM(:,sortM(7,:)<param.maxDistance)',7)';
+    sortM = sortrows(sortM(:,sortM(7,:)<=param.maxDistance)',7)';
     
     % Finds the equivalent distances and index them in coupling.idx
     sortM(6,:) = cumsum([1 (sortM(7,2:end)-sortM(7,1:(end-1))) > tolD]);

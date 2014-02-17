@@ -93,7 +93,6 @@ elseif nargin == 1
         end
         fclose(fid);
         if ii <= symNum
-            fclose(fid);
             error('spinw:sw_gensym:WrongInput','Symmetry number not found!')
         end
         symStr   = textLine(20:end);

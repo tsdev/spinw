@@ -1,11 +1,15 @@
 function sym = sw_addsym(symStr, symName)
 % sym = SW_ADDSYM(symStr, {symName}) saves the symmetry generators in
-% symStr into the symmetry.dat file and returns the number of the space
-% group.
+% symStr into the symmetry.dat file and returns the line number of the
+% space group in the symmetry.dat file.
 %
 % Input:
-% symStr        Name for the 
-% See also SW_GENSYM.
+% symStr        String, that contains the operators of the space group. If
+%               not only the generators are given, a possible set of
+%               generators will be determined and only those will be saved.
+% symName       Label for the space group.
+%
+% See also SW_GENSYM, SW_SYMGETGEN.
 %
 
 if nargin == 0

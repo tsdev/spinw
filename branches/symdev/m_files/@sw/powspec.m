@@ -58,7 +58,7 @@ for ii = 1:nQ
     specQ = obj.spinwave(hkl,'fitmode',true,'notwin',true,'fid',0,'Hermit',param.Hermit);
     specQ = sw_neutron(specQ,'pol',false);
     specQ.obj = obj;
-    specQ = sw_conv(specQ,'Evect',param.Evect,'T',param.T);
+    specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T);
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
     sw_status(ii/nQ*100);
 end
@@ -67,7 +67,7 @@ sw_status(100,2);
 spectra.swConv   = powSpec;
 spectra.hklA     = hklA;
 spectra.Evect    = param.Evect;
-spectra.convmode = 'Sperp';
+spectra.component = 'Sperp';
 spectra.nRand    = param.nRand;
 spectra.T        = param.T;
 spectra.obj      = copy(obj);

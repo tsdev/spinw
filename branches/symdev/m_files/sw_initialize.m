@@ -1,6 +1,6 @@
 function sw_initialize()
-% SW_INITIALIZE initializes sw library and creates help files in the Matlab
-% documentation and cleans symmetry.dat file.
+% SW_INITIALIZE initializes sw library and cleans symmetry.dat file from
+% user entries.
 %
 % See also SW.
 %

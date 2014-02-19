@@ -82,7 +82,7 @@ try
     
     specD = nairo.spinwave([Qp {nQ}]);
     specD = sw_neutron(specD,'pol',false);
-    specD = sw_conv(specD,'convmode','Sxx','evect',E);
+    specD = sw_egrid(specD,'component','Sxx','evect',E);
     
     hFig = figure;
     sw_plotspec(specD,'mode',3,'ahandle',gca,'imag',false,'convE',0.05,'axLim',0.5);
@@ -107,7 +107,7 @@ try
     
     specEF = nairo.spinwave([Qp {nQ}]);
     specEF = sw_neutron(specEF,'pol',false);
-    specEF = sw_conv(specEF,'convmode','Syy','evect',E);
+    specEF = sw_egrid(specEF,'component','Syy','evect',E);
     
     hFig = figure;
     sw_plotspec(specEF,'mode',3,'ahandle',gca,'imag',false,'convE',0.05,'axLim',0.5);
@@ -134,7 +134,7 @@ try
     
     specG = nairo.spinwave([Qp {nQ}]);
     specG = sw_neutron(specG,'pol',false);
-    specG = sw_conv(specG,'convmode','Szz','evect',E);
+    specG = sw_egrid(specG,'component','Szz','evect',E);
     
     hFig = figure;
     sw_plotspec(specG,'mode',3,'ahandle',gca,'imag',false,'convE',0.05,'axLim',0.5);
@@ -160,7 +160,7 @@ try
     
     specH = nairo.spinwave([Qp {nQ}]);
     specH = sw_neutron(specH,'pol',false);
-    specH = sw_conv(specH,'convmode','Syy','evect',E);
+    specH = sw_egrid(specH,'component','Syy','evect',E);
     
     hFig = figure;
     subplot(2,1,1)
@@ -220,13 +220,13 @@ try
     specIJ = nairo.spinwave([Qp {nQ}]);
     specIJ = sw_neutron(specIJ,'pol',false);
     
-    convmode = {'Sxx' 'Szz'};
+    component = {'Sxx' 'Szz'};
     
     hFig = figure;
     
     for ii = 1:2
         subplot(3,1,ii);
-        specIJ = sw_conv(specIJ,'convmode',convmode{ii},'evect',E);
+        specIJ = sw_egrid(specIJ,'component',component{ii},'evect',E);
         
         sw_plotspec(specIJ,'mode',3,'ahandle',gca,'imag',false,'convE',0.05,'axLim',0.5);
         sw_plotspec(specIJ,'mode',1,'ahandle',gca,'imag',false,'dashed',true,'colorbar',false,'legend',false,'title',false,'colormap',[0 0 0]);

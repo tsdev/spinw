@@ -68,7 +68,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 250});
 banbSpec.hkl = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Sperp','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Sperp','Evect',linspace(0,6,500));
 
 figure
 sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca);
@@ -80,7 +80,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 300});
 banbSpec.hkl  = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Myz-Mzy','Evect',linspace(0,6,500));
 
 figure
 subplot(2,1,1)
@@ -97,7 +97,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 300});
 banbSpec.hkl  = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Myz-Mzy','Evect',linspace(0,6,500));
 
 subplot(2,1,2)
 sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca,'imag',true);
@@ -122,7 +122,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 250});
 banbSpec.hkl = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Sperp','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Sperp','Evect',linspace(0,6,500));
 
 figure
 sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca);
@@ -134,7 +134,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 300});
 banbSpec.hkl  = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Myz-Mzy','Evect',linspace(0,6,500));
 
 figure
 subplot(2,1,1)
@@ -151,7 +151,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 300});
 banbSpec.hkl  = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Myz-Mzy','Evect',linspace(0,6,500));
 
 subplot(2,1,2)
 sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca,'imag',true);
@@ -200,7 +200,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 250});
 banbSpec.hkl = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Sperp','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Sperp','Evect',linspace(0,6,500));
 
 figure
 sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca);
@@ -212,7 +212,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 300});
 banbSpec.hkl  = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Myz-Mzy','Evect',linspace(0,6,500));
 
 figure
 subplot(2,1,1)
@@ -229,7 +229,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 300});
 banbSpec.hkl  = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Myz-Mzy','Evect',linspace(0,6,500));
 
 subplot(2,1,2)
 sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca,'imag',true);
@@ -254,7 +254,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 250});
 banbSpec.hkl = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Sperp','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Sperp','Evect',linspace(0,6,500));
 
 figure
 sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca);
@@ -266,7 +266,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 300});
 banbSpec.hkl  = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Myz-Mzy','Evect',linspace(0,6,500));
 
 figure
 subplot(2,1,1)
@@ -283,7 +283,7 @@ banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 300});
 banbSpec.hkl  = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,'pol',true,'n',[1 0 0]);
-banbSpec = sw_conv(banbSpec,'convmode','Myz-Mzy','Evect',linspace(0,6,500));
+banbSpec = sw_egrid(banbSpec,'component','Myz-Mzy','Evect',linspace(0,6,500));
 
 subplot(2,1,2)
 sw_plotspec(banbSpec,'mode',3,'dE',0.25,'ahandle',gca,'imag',true);

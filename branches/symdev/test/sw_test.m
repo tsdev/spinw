@@ -64,23 +64,7 @@ end
 errMsg = [allTestPath; errMsg];
 
 % clear symmetry.dat file from newly added entries
-symF1  = [sw_rootdir 'dat_files' filesep 'symmetry.dat'];
-symF2 = [sw_rootdir 'dat_files' filesep 'symmetry0.dat'];
-
-fid1 = fopen(symF1, 'rt');
-fid2 = fopen(symF2,'wt');
-
-for ii = 1:229
- fLine = fgets(fid1);
- fprintf(fid2,fLine);
-end
-fLine = fgets(fid1);
-fprintf(fid2,fLine(1:end-2));
-
-fclose(fid1);
-fclose(fid2);
-copyfile(symF2,symF1);
-delete(symF2)
+sw_initialize;
 
 % change back to the current directory
 cd(currDir);

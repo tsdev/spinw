@@ -3,9 +3,9 @@ function genmagstr(obj, varargin)
 %
 % GENMAGSTR(obj, 'option1', value1 ...)
 %
-% There are several ways to generate magnetic structure. The method depends
-% on the 'mode' option, see below. The magnetic structure is stored in the
-% sw object mag_str property.
+% There are several ways to generate magnetic structure. The selected
+% method depends on the 'mode' option, see below. The magnetic structure is
+% stored in the sw object mag_str property.
 %
 % Options:
 %
@@ -67,10 +67,8 @@ function genmagstr(obj, varargin)
 %                   For planar magnetic structure use @gm_planar. Only
 %                   param.func and param.x have to be defined for this
 %                   mode.
-%
 % phi       Angle of rotation of the magnetic moments in rad. Default
 %           value 0.
-%
 % nExt      Number of unit cell to extend the magnetic structure,
 %           dimensions are [1 3]. Default value is stored in obj.
 %           If nExt is a single number, then the size of the extended unit
@@ -78,15 +76,18 @@ function genmagstr(obj, varargin)
 %           wavevector. If nExt = 0.01, then the number of unit cells is
 %           determined so, that in the extended unit cell, the magnetic
 %           ordering wave vector is [0 0 0], within the given 0.01 error.
-%
 % k         Magnetic ordering wavevector in r.l.u., dimensions are [1 3].
 %           Default value is defined in obj.
-%
 % n         Normal vector to the spin rotation plane, dimensions are [1 3].
 %           Default value [0 0 1].
-%
 % S         Direct input of the spin values, dimensions are [3 nSpin].
-%           Default value is stored in swobj.
+%           Every column defines the S_x, S_y and S_z components of the
+%           moment in the xyz Descartes coodinate system.
+%           Default value is stored in obj.
+% unitS     Units for S, default is 'xyz', optionally 'lu' can be used,
+%           in this case the input spin components are assumed to be in
+%           lattice units and they will be converted to the xyz coordinate
+%           system.
 % epsilon   The smalles value of incommensurability that is
 %           tolerated without warning. Default is 1e-5.
 % func      Function that produce the magnetic moments, ordering wave
@@ -107,7 +108,7 @@ function genmagstr(obj, varargin)
 %
 %
 
-inpForm.fname  = {'mode'   'nExt'            'k'           'n'           }; 
+inpForm.fname  = {'mode'   'nExt'            'k'           'n'           };
 inpForm.defval = {'extend' obj.mag_str.N_ext obj.mag_str.k obj.mag_str.n };
 inpForm.size   = {[1 -1]   [1 -4]            [1 3]         [1 3]         };
 inpForm.soft   = {false    false             false         false         };
@@ -117,12 +118,32 @@ inpForm.defval = [inpForm.defval {@gm_spherical3d []     true  }];
 inpForm.size   = [inpForm.size   {[1 1]           [1 -3] [1 1] }];
 inpForm.soft   = [inpForm.soft   {false           true   false }];
 
-inpForm.fname  = [inpForm.fname  {'S'           'phi' 'epsilon'}];
-inpForm.defval = [inpForm.defval {obj.mag_str.S 0     1e-5     }];
-inpForm.size   = [inpForm.size   {[3 -2]        [1 1] [1 1]    }];
-inpForm.soft   = [inpForm.soft   {false         false false    }];
+inpForm.fname  = [inpForm.fname  {'S'     'phi' 'epsilon' 'unitS'}];
+inpForm.defval = [inpForm.defval {[]      0     1e-5      'xyz'  }];
+inpForm.size   = [inpForm.size   {[-6 -2] [1 1] [1 1]     [1 -5] }];
+inpForm.soft   = [inpForm.soft   {true    false false     false  }];
 
 param = sw_readparam(inpForm, varargin{:});
+
+if isempty(param.S)
+    param.S = obj.mag_str.S;
+else
+    % number of rows in .S has to be three
+    if numel(param.S) == 3
+        param.S = param.S(:);
+    elseif (size(param.S,1) ~= 3)
+        error('sw:genmagstr:WrongInput','Parameter S has to have dimensions of [3 nSpin]!');
+    end
+    
+    if strcmpi(param.unitS,'lu')
+        % convert the moments from lattice units to xyz
+        param.S = obj.basisvector(true)*param.S;
+        
+    elseif ~strcmpi(param.unitS,'xyz')
+        error('sw:genmagstr:WrongInput','Parameter unitS has to be either ''xyz'' or ''lu''!');
+    end
+    
+end
 
 nExt     = double(param.nExt);
 
@@ -155,8 +176,8 @@ switch param.mode
     case 'extend'
         % Extend the unit cell if:
         % -the new number of extended cells does not equal to the number of
-        %  cells defined in swobj
-        % -the number of spins stored in swobj is not equal to the number
+        %  cells defined in obj
+        % -the number of spins stored in obj is not equal to the number
         %  of spins in the final structure
         if any(obj.mag_str.N_ext - int32(param.nExt)) || (size(param.S,2) ~= nMagExt)
             S = param.S(:,1:nMagAtom);

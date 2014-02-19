@@ -4,7 +4,7 @@ function spectra = sw_omegasum(spectra, varargin)
 % according to the energy.
 %
 % The degenerate dispersion energies are substituted with NaN values. Be
-% carefull, after this function sw_conv won't work properly on spectra.
+% carefull, after this function sw_egrid() won't work properly on spectra.
 %
 % Options:
 %

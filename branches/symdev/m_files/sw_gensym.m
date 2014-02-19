@@ -2,11 +2,11 @@ function [symOp, symTr, symName, symStr, symNum] = sw_gensym(varargin)
 % [symOp, symTr, symName, symStr, symNum] = SW_GENSYM({sym}) gives the
 % symmetry elements based on the space group number or given list of
 % symmetry operators. Without arguments, returns the name of all space
-% groups stored in symmetry.dat.
+% groups stored in symmetry.dat file.
 %
 % Input:
 %
-% sym           It is either the name of the space group or the index from
+% sym           Either the label of the space group or the index from
 %               the International Tables of Crystallography.
 %
 % Output:
@@ -82,9 +82,16 @@ elseif nargin == 1
         
     else
         symNum = varargin{1};
-        if symNum<=0
+        if symNum<0
             fclose(fid);
             error('spinw:sw_gensym:WrongInput','Symmetry number has to be positive integer!');
+        elseif symNum == 0
+            symOp   = eye(3);
+            symTr   = [0 0 0]';
+            symName = 'No sym';
+            symStr  = 'x,y,z';
+            symNum  = 0;
+            return;
         end
         ii = 1;
         while (ii<=symNum) && ~feof(fid)

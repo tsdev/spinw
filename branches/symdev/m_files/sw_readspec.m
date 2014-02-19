@@ -26,7 +26,7 @@ function data = sw_readspec(path)
 % formatting of this string, see <a href="matlab:doc sw_parstr">sw_parstr</a>.
 % If the measured type of correlation is undefined, unpolarised neutron
 % scattering intensity is assumed ([Sperp]). When cross sections measured
-% in the Blume-Maleev coordinate system (see <a href="matlab:doc sw_conv">sw_conv</a>), the normal to the
+% in the Blume-Maleev coordinate system (see <a href="matlab:doc sw_egrid">sw_egrid</a>), the normal to the
 % scattering plane has to be also defined. This can be given in a second
 % pair of square brackes in the xyz coordinate system, for example: [Myy]
 % [1 0 0]. If n is undefined, the default value is [0 0 1].

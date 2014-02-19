@@ -86,8 +86,8 @@ rNew(:,idxCut) = [];
 idxExt(idxCut) = [];
 Sext(idxCut)   = [];
 
-% new lattice simmetry is P1
-obj.lattice.sym     = int32(1);
+% new lattice simmetry is no-symmetry
+obj.lattice.sym     = int32(0);
 % no symmetry operations
 obj.issym = false;
 

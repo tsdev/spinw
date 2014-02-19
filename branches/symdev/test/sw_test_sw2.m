@@ -115,7 +115,7 @@ try
     
     specLi = linipo.spinwave({Qa Qb nQ});
     specLi = sw_neutron(specLi,'pol',false);
-    specLi = sw_conv(specLi,'Evect',linspace(0,8.5,400));
+    specLi = sw_egrid(specLi,'Evect',linspace(0,8.5,400));
     
     % calculate difference between exact and numerical solutions
     specLiSim = specLi;
@@ -139,7 +139,7 @@ try
     
     specLi = linipo.spinwave({Qa Qb nQ});
     specLi = sw_neutron(specLi,'pol',false);
-    specLi = sw_conv(specLi,'Evect',linspace(0,8.5,400));
+    specLi = sw_egrid(specLi,'Evect',linspace(0,8.5,400));
     
     hFig = figure;
     subplot(2,1,1)
@@ -153,7 +153,7 @@ try
     
     specLi = linipo.spinwave({Qa Qb nQ});
     specLi = sw_neutron(specLi,'pol',false);
-    specLi = sw_conv(specLi,'Evect',linspace(0,8.5,400));
+    specLi = sw_egrid(specLi,'Evect',linspace(0,8.5,400));
     
     % calculate difference between exact and numerical solutions
     specLiSim = specLi;

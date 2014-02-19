@@ -3,40 +3,45 @@ function gencoupling(obj, varargin)
 %
 % GENCOUPLING(obj, 'option1', value, ...)
 %
-% It calculates the symmetry equivalent couplings between magnetic atoms
-% and sorts them according to the bond length. If option 'sym' is
-% false, the crystal symmetry is not considered.
+% It calculates equivalent bonds between magnetic atoms. These are
+% determined either based on crystal symmetry or bond length (with tolDist
+% tolerance). If the space group index of 0 is defined (obj.lattice.sym=0),
+% the equivalent bonds will be based on bond length. For space group index
+% larger than 0, the symmetry equivalent bonds will be determined. This can
+% ve overwritten by the forceNoSym parameter to consider bond length.
 %
 % Options:
 %
-% sym           If true, equivalent couplings are generated based on
-%               crystal space group. If false, equivalent couplings are
-%               generated based on bond length with .tolDist tolerance. If
-%               the crystal has space group symmetry > 1, the default is
-%               true, otherwise false.
-% nUnitCell     Edge length of the parallelepiped withing the
-%               algorithm searches for neares neighbours in lattice
-%               units. Default is 3.
-% maxDistance   Maximum inter-ion distance that will be stored in the
-%               obj.coupling property in units of Angstrom. Default
-%               is 8.
-% tolDist       Tolerance of distance, within two couplings are regarded
+% forceNoSym    If true, equivalent bonds are generated based on
+%               bond length with .tolDist tolerance. If false symmetry
+%               operators will be used if they are given
+%               (obj.lattice.sym>0).
+% nUnitCell     Edge length of the parallelepiped (same along a,b and c)
+%               withing the algorithm searches for neares neighbours in
+%               lattice units. Default is 3.
+% maxDistance   Maximum bond length that will be stored in the
+%               obj.coupling property in units of Angstrom. Default is 8.
+% tolDist       Tolerance of distance, within two bonds are regarded
 %               equivalent, default is 1e-3 Angstrom. Only used, when no
-%               space group is defined (sym=1).
-% tol           Relative tolerance on symmetry operations, default is 1e-5.
+%               space group is defined.
 %
 % See also SW, SYMMETRY, NOSYM.
 %
 
-isSym = obj.lattice.sym > 1;
+isSym = obj.lattice.sym > 0;
 
-inpForm.fname  = {'sym' 'nUnitCell' 'maxDistance' 'tol' 'tolDist'};
-inpForm.defval = {isSym 3           8             1e-5  1e-3     };
-inpForm.size   = {[1 1] [1 1]       [1 1]         [1 1] [1 1]    };
+inpForm.fname  = {'forceNoSym' 'nUnitCell' 'maxDistance' 'tol' 'tolDist'};
+inpForm.defval = {false        3           8             1e-5  1e-3     };
+inpForm.size   = {[1 1]        [1 1]       [1 1]         [1 1] [1 1]    };
 
 param = sw_readparam(inpForm, varargin{:});
 tol   = param.tol;
 tolD  = param.tolDist;
+
+% force no symmetry operator mode
+if param.forceNoSym
+    isSym = false;
+end
 
 % save the sym/nosym method into obj
 obj.issym = isSym;
@@ -126,7 +131,7 @@ if nMagAtom > 0
     sortM(6,:) = cumsum([1 (sortM(7,2:end)-sortM(7,1:(end-1))) > tolD]);
     
     % symmetry equivalent couplings
-    if param.sym
+    if isSym
         % get the symmetry operators
         [symOp, symTr] = sw_gencoord(obj.lattice.sym);
         % store the final sorted couoplings in newM

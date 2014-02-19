@@ -5,15 +5,20 @@ function addmatrix(obj, varargin)
 %
 % Options:
 %
-% mat       The value matrix, dimensions are  [3 3 nJ], default is eye(3).
+% value     The value of the matrix, dimensions are  [3 3 nJ], default is
+%           eye(3).
+% mat       Equivalent option to 'value'.
 % label     Label for plotting, strings in a cell, dimensions are [1 nJ],
 %           default is 'matI', where I is the index of the matrix.
 % color     Color for plotting, dimensions are  [3 nJ], default is
 %           [255;0;0] for all couplings.
 %
+% If 'value' option is scalar, a diagonal matrix is generated with the
+% given scalar value in its diagonal.
+%
 % Example:
-% ADDMATRIX(obj,'mat',eye(3))
-% Adds matrix, that can describe Heisenberg interaction.
+% ADDMATRIX(obj,'value',eye(3))
+% Adds a diagonal matrix, that can describe Heisenberg interaction.
 %
 
 if nargin < 2
@@ -22,12 +27,16 @@ if nargin < 2
 end
 
 if nargin>2
-    inpForm.fname  = {'mat'      'label' 'color' };
-    inpForm.defval = {[]         {}      []      };
-    inpForm.size   = {[-6 -6 -1] [-2 -3] [-4 -5] };
-    inpForm.soft   = {true       true    true    };
+    inpForm.fname  = {'value'    'mat'      'label' 'color' };
+    inpForm.defval = {[]         []         {}      []      };
+    inpForm.size   = {[-1 -1 -2] [-3 -3 -4] [-5 -6] [-7 -8] };
+    inpForm.soft   = {true       true       true    true    };
     
     newMat = sw_readparam(inpForm, varargin{:});
+    
+    if ~isempty(newMat.value)
+        newMat.mat = newMat.value;
+    end
     
     if numel(newMat.mat) == 1
         newMat.mat = newMat.mat*eye(3);

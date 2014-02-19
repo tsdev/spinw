@@ -60,7 +60,7 @@ function parsed = sw_parstr(strIn, spectra)
 % Test it with:
 % <a href="matlab:parsed = sw_parstr('Sxx + Syy')">parsed = sw_parstr('Sxx + Syy')</a>
 %
-% See also SW_CONV, SW.FITSPEC.
+% See also SW_EGRID, SW.FITSPEC.
 %
 
 if nargin == 0

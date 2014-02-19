@@ -32,6 +32,8 @@ function addatom(obj, varargin)
 % Adds a magnetic atom (S=1) at position (0,0,0) and a non-magnetic one at
 % (1/2 0 0).
 %
+% See also SW.GENLATTICE, SW.ADDMATRIX.
+%
 
 if nargin < 2
     help sw.addatom;

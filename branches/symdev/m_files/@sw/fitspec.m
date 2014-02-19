@@ -47,7 +47,7 @@ function fitsp = fitspec(obj, varargin)
 %
 % All other options used by SPINWAVE function are accepted.
 %
-% See also SW.SPINWAVE, SW_CONV, SW_NEUTRON, SW_READSPEC, FMINSEARCH.
+% See also SW.SPINWAVE, SW_EGRID, SW_NEUTRON, SW_READSPEC, FMINSEARCH.
 %
 
 inpForm.fname  = {'epsilon' 'datapath' 'xmin'   'xmax'  'x0'    'func' 'plot'};
@@ -161,7 +161,7 @@ for ii = 1:nConv
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy
-    spec = sw_conv(spec,'convmode',data.corr,'Evect',param.Evect);
+    spec = sw_egrid(spec,'component',data.corr,'Evect',param.Evect);
     
     nQ = size(data.Q,2);
     pHandle = [];

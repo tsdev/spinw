@@ -352,7 +352,7 @@ end
 % GENERATE HAMILTONIAN USING SYMMETRY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[SS, SI] = intmatrix(obj,'plotmode',true,'zeroC',param.pZeroCoupling);
+[SS, SI] = intmatrix(obj,'plotmode',true,'extend',false,'zeroC',param.pZeroCoupling);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % COUPLINGS

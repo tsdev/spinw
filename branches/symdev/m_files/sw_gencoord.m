@@ -51,8 +51,6 @@ symOp = eye(3);
 symTr = zeros(3,1);
 
 % determine the order of the generators
-N = zeros(1,nGen);
-M = zeros(1,nGen);
 P = zeros(1,nGen);
 
 % generate all symmetry elements

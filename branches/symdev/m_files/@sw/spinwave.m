@@ -139,6 +139,13 @@ incomm = any(abs(km-round(km)) > param.tol);
 hklA = 2*pi*(hkl'/obj.basisvector)';
 
 if incomm
+    tol = param.tol*2;
+    if sum(abs(mod(abs(2*km)+tol,1)-tol).^2) < tol
+        error('sw:spinwave:kHalf',['For magnetic structures where 2*km equal' ...
+            ' to lattice translation vector, the magnetic unit cell has to'...
+            ' be extended!']);
+    end
+    
     % without the k_m: (k, k, k)
     hkl0 = repmat(hkl,[1 3]);
     % calculate dispersion for (k-km, k, k+km)

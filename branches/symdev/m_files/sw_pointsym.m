@@ -31,8 +31,6 @@ end
 if ~iscell(sym)
     % returns all operators
     [symOp, symTr] = sw_gencoord(sym);
-    % return only the generators
-    %[symOp, symTr] = sw_gensym(sym);
 else
     symOp = sym{1};
     symTr = sym{2};

@@ -105,13 +105,13 @@ else
     param.twin = 1;
 end
 
-if ~isfield(spectra,'swConv')
+if ~isfield(spectra,'swConv') && param.mode>1
     error('sw_plotspec:WrongInput',['Reference to non-existent field ''swConv'','...
-        'use ''sw_conv'' to produce the convoluted spectra before plotting!'])
+        'use ''sw_egrid'' to produce the convoluted spectra before plotting!'])
 end
 
 % select twins for convoluted plots
-if iscell(spectra.swConv)
+if param.mode>1 && iscell(spectra.swConv)
     % number of convoluted spectras to plot
     nTwinS      = size(spectra.swConv,2);
     param.twinS = param.twin((param.twin<=nTwinS) & (param.twin>0));
@@ -166,12 +166,23 @@ else
     [xLabel, xAxis] = sw_label(spectra);
 end
 
-yAxis  = spectra.Evect;
+if isfield(spectra,'Evect')
+    yAxis = spectra.Evect;
+else
+    yAxis = [min(spectra.omega(:)) max(spectra.omega(:))];
+end
+
 yLabel = 'Energy transfer (meV)';
 
 if any(param.aHandle)
+    if any(strfind(get(get(param.aHandle,'Parent'),'Tag'),'sw_crystal'))
+        % don't plot into the crystal structure window
+        fHandle = figure;
+        param.aHandle = gca;
+    else
+        fHandle = get(gca,'Parent');
+    end
     axes(param.aHandle);
-    fHandle = get(gca,'Parent');
 else
     fHandle = sw_getfighandle('sw_spectra');
     if isempty(fHandle)
@@ -192,19 +203,21 @@ end
 
 if ~powmode
     % sort the convoluted intensities into cell array.
-    if ~iscell(spectra.convmode)
-        swInt    = {spectra.swInt};
-        swConv   = {spectra.swConv};
-        convmode = {spectra.convmode};
-    else
-        swInt    = spectra.swInt(:,param.twinS);
-        swConv   = spectra.swConv(:,param.twinS);
-        convmode = spectra.convmode;
+    if param.mode>1
+        if ~iscell(spectra.component)
+            swInt     = {spectra.swInt};
+            swConv    = {spectra.swConv};
+            component = {spectra.component};
+        else
+            swInt     = spectra.swInt(:,param.twinS);
+            swConv    = spectra.swConv(:,param.twinS);
+            component = spectra.component;
+        end
+        % number of different convoluted cross sections
+        nConv = numel(component);
+        % number of convoluted plots
+        nPlot  = nTwinS * nConv;
     end
-    % number of different convoluted cross sections
-    nConv = numel(convmode);
-    % number of convoluted plots
-    nPlot  = nTwinS * nConv;
     
     % package all fields into cells for easy looping over twins
     if ~iscell(spectra.omega)
@@ -254,10 +267,10 @@ if ~powmode
         error('sw:sw_plotspec:NumberOfModes','Wrong number of spin wave modes!');
     end
 else
-    nPlot    = 1;
-    swConv   = {spectra.swConv};
-    nConv    = 1;
-    convmode = {spectra.convmode};
+    nPlot     = 1;
+    swConv    = {spectra.swConv};
+    nConv     = 1;
+    component = {spectra.component};
     param.legend = false;
 end
 
@@ -360,9 +373,10 @@ if param.mode == 1
     
     if param.colorbar
         cHandle = colorbar;
-        set(get(cHandle,'ylabel'),'String', 'Index of modes');
+        set(get(cHandle,'ylabel'),'String', 'Index of dispersion line');
         colormap(colors);
-        caxis([1 nMode]);
+        caxis([0.5 nMode+0.5]);
+        set(cHandle,'YTick',1:nMode);
     end
 end
 
@@ -561,7 +575,7 @@ ylabel(yLabel);
 if param.mode > 1
     titleStr = cell(1,nConv);
     for ii = 1:nConv
-        titleStr{ii} = sw_titlestr(convmode{ii});
+        titleStr{ii} = sw_titlestr(component{ii});
         if param.imag
             titleStr{ii} = ['Im ' titleStr{ii}];
         else
@@ -623,10 +637,10 @@ elseif nargout == 2
 end
 end
 
-function titleStr = sw_titlestr(convmode)
-% creates plot title string from param.convmode string
+function titleStr = sw_titlestr(component)
+% creates plot title string from param.component string
 
-titleStr = [convmode '}(\omega,Q)'];
+titleStr = [component '}(\omega,Q)'];
 titleStr = strrep(titleStr,'perp','\perp ');
 titleStr = strrep(titleStr,'S','S^{');
 titleStr = strrep(titleStr,'P','P^{');

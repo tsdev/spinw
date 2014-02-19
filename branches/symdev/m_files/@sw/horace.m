@@ -12,7 +12,7 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %
 % Options:
 %
-% convmode  Selects the previously calculated intensity component to be
+% component Selects the previously calculated intensity component to be
 %           convoluted. The possible options are:
 %               'Sperp' convolutes the magnetic neutron scattering
 %                       intensity (<Sperp * Sperp> expectation value).
@@ -32,7 +32,7 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %
 % horace_on;
 % d3dobj = d3d(cryst.abc,[0 1 0 0],[0,0.01,1],[0 0 1 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
-% d3dobj = disp2sqw_eval(d3dobj,@cryst.horace,{'convmode','Sperp'},0.1);
+% d3dobj = disp2sqw_eval(d3dobj,@cryst.horace,{'component','Sperp'},0.1);
 % plot(d3dobj);
 %
 % This example creates a d3d object, a square in (h,k,0) plane and in
@@ -47,7 +47,7 @@ if nargin <= 1
     return;
 end
 
-inpForm.fname  = {'convmode'};
+inpForm.fname  = {'component'};
 inpForm.defval = {'Sperp'   };
 inpForm.size   = {[1 -2]    };
 
@@ -64,21 +64,21 @@ end
 spectra = sw_neutron(spectra,'pol',false);
 
 
-% parse the convmode string
-if iscell(param.convmode)
-    nConv = numel(param.convmode);
+% parse the component string
+if iscell(param.component)
+    nConv = numel(param.component);
     parsed = cell(1,nConv);
-    for ii = 1:numel(param.convmode)
-        parsed{ii} = sw_parstr(param.convmode{ii});
+    for ii = 1:numel(param.component)
+        parsed{ii} = sw_parstr(param.component{ii});
     end
-elseif isstruct(param.convmode)
+elseif isstruct(param.component)
     nConv  = 1;
-    parsed = {param.convmode};
-    param.convmode = {parsed{1}.string};
+    parsed = {param.component};
+    param.component = {parsed{1}.string};
 else
     nConv = 1;
-    parsed = {sw_parstr(param.convmode)};
-    param.convmode = {param.convmode};
+    parsed = {sw_parstr(param.component)};
+    param.component = {param.component};
 end
 
 % pack all cross section into a cell for easier looping
@@ -113,7 +113,7 @@ for tt = 1:nTwin
                 case 2
                     DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*permute(Sab{tt}(par0.type{jj}(2),par0.type{jj}(3),:,:),[3 4 1 2]);
                 otherwise
-                    error('sw:horace:WrongPar','Wrong convmode parameter!');
+                    error('sw:horace:WrongPar','Wrong ''component'' parameter!');
             end
         end
     end

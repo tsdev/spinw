@@ -18,7 +18,10 @@ function ellM = sw_quadell(M, toplot)
 % axes are shown by black line.
 %
 
-
+if nargin == 0
+    help sw_quadell;
+    return
+end
 
 if nargin < 2
     toplot = true;

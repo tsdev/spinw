@@ -83,6 +83,9 @@ mkdir([tempDirName filesep swDirName]);
 tempDirName0 = tempDirName;
 tempDirName = [tempDirName0 filesep swDirName];
 
+% initialize the symmetry.dat file
+sw_initialize;
+
 % copy all files from sw_rootdir to the temp folder
 copyfile([sw_rootdir '*'],tempDirName);
 

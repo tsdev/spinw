@@ -53,7 +53,7 @@ function spectra = sw_egrid(spectra, varargin)
 % Evect     Vector, defined the center of the energy bins of the calculated
 %           output, dimensions ar is [1 nE]. The energy units are defined
 %           by the unit.kB property of the sw object. Default is
-%           linspace(0,1,100).
+%           linspace(0,1.1*maxOmega,500).
 % T         Temperature to calculate the Bose factor in units
 %           depending on the Boltzmann constant (sw.unit.kB). Default is
 %           taken from obj.single_ion.T (no Bose factor).
@@ -102,11 +102,16 @@ if nargin == 0
     return;
 end
 
-inpForm.fname  = {'Evect'           'T'   'component' 'sumtwin' 'formfact'};
-inpForm.defval = {linspace(0,1,100) 0     'Sperp'    true      false     };
-inpForm.size   = {[1 -1]            [1 1] [1 -2]     [1 1]     [1 -3]    };
+inpForm.fname  = {'Evect' 'T'   'component' 'sumtwin' 'formfact'};
+inpForm.defval = {[]      0     'Sperp'     true      false     };
+inpForm.size   = {[1 -1]  [1 1] [1 -2]      [1 1]     [1 -3]    };
+inpForm.soft   = {true    false false       false     false     };
 
 param = sw_readparam(inpForm, varargin{:});
+
+if isempty(param.Evect)
+    param.Evect = linspace(0,1.1*max(spectra.omega(:)),500);
+end
 
 % parse the component string
 if iscell(param.component)

@@ -105,13 +105,13 @@ else
     param.twin = 1;
 end
 
-if ~isfield(spectra,'swConv') && param.mode>1
+if ~isfield(spectra,'swConv') && param.mode>1 && param.mode<4
     error('sw_plotspec:WrongInput',['Reference to non-existent field ''swConv'','...
         'use ''sw_egrid'' to produce the convoluted spectra before plotting!'])
 end
 
 % select twins for convoluted plots
-if param.mode>1 && iscell(spectra.swConv)
+if param.mode>1 && param.mode<4 && iscell(spectra.swConv)
     % number of convoluted spectras to plot
     nTwinS      = size(spectra.swConv,2);
     param.twinS = param.twin((param.twin<=nTwinS) & (param.twin>0));
@@ -134,25 +134,37 @@ end
 if param.mode == 4
     % PLOT EASY PEASY
     
-    if param.dE == 0
-        Eres = (spectra.Evect(end) - spectra.Evect(1))/50;
-    else
-        Eres = param.dE;
-    end
+    fHandle = [];
+    pHandle = [];
+    pColor = isfield(spectra,'swConv');
     
-    [fHandle, pHandle1] = sw_plotspec(spectra,'ahandle',gca,'mode',3,'dE',Eres,...
-        'dashed',true,'colorbar',false,'axLim',param.axLim,'lineStyle',param.lineStyle);
+    if pColor
+        if param.dE == 0
+            Eres = (spectra.Evect(end) - spectra.Evect(1))/50;
+        else
+            Eres = param.dE;
+        end
+        
+        [fHandle, pHandle] = sw_plotspec(spectra,'ahandle',gca,'mode',3,'dE',Eres,...
+            'dashed',true,'colorbar',false,'axLim',param.axLim,'lineStyle',param.lineStyle);
+    end
     if ~powmode
         hold on
-        [~, pHandle2] = sw_plotspec(spectra,'mode',1,'ahandle',gca,'colorbar',false,...
-            'dashed',false,'title',false,'legend',false,'imag',false,'lineStyle',param.lineStyle,'colormap',[0 0 0]);
+        if pColor
+            cMap0 = [0 0 0];
+        else
+            cMap0 = 'auto';
+        end
+        
+        [fHandle, pHandle] = sw_plotspec(spectra,'mode',1,'ahandle',gca,'colorbar',~pColor,...
+            'dashed',false,'title',~pColor,'legend',~pColor,'imag',~pColor,'lineStyle',param.lineStyle,'colormap',cMap0,'axLim',[0 max(spectra.omega(:))*1.1]);
     end
     
     if nargout >0
         fHandle0 = fHandle;
     end
     if nargout>1
-        pHandle0 = [pHandle1 pHandle2];
+        pHandle0 = pHandle;
     end
     return
 end
@@ -373,7 +385,7 @@ if param.mode == 1
     
     if param.colorbar
         cHandle = colorbar;
-        set(get(cHandle,'ylabel'),'String', 'Index of dispersion line');
+        set(get(cHandle,'ylabel'),'String', 'Index of dispersion line (each color different mode)');
         colormap(colors);
         caxis([0.5 nMode+0.5]);
         set(cHandle,'YTick',1:nMode);

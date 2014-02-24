@@ -20,7 +20,7 @@ function M = moment(obj, varargin)
 %
 % nRand         The number of random Q points in the Brillouin-zone,
 %               default is 1000.
-% T             Temperature, default is zero.
+% T             Temperature, default is taken from obj.single_ion.T value.
 % fid           Control the text output, default is one (Command Window).
 % tol           Tolerance of the incommensurability of the magnetic
 %               ordering wavevector. Deviations from integer values of the
@@ -40,8 +40,10 @@ function M = moment(obj, varargin)
 % See also SW, SW.SPINWAVE, SW.GENMAGSTR.
 %
 
+T0 = obj.single_ion.T;
+
 inpForm.fname  = {'T'   'nRand' 'fid' 'tol' 'omega_tol' 'hermit'};
-inpForm.defval = {0     1000    1     1e-4  1e-5        true    };
+inpForm.defval = {T0    1000    1     1e-4  1e-5        true    };
 inpForm.size   = {[1 1] [1 1]   [1 1] [1 1] [1 1]       [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});

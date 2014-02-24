@@ -8,6 +8,8 @@ function sw_release(verNum, tempDir)
 %           store the modified .m files and the final .zip file. By default
 %           it is current folder.
 %
+% See also SW_INITIALIZE, SW_VERSION, SW_ROOTDIR.
+%
 
 if nargin == 0
     help sw_release;

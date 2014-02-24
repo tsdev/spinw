@@ -13,7 +13,8 @@ function spectra = powspec(obj, hklA, varargin)
 %           convoluted output in units of meV, dimensions are [1 nE].
 %           Default is linspace(0,1,100).
 % T         Temperature to calculate the Bose factor in units
-%           depending on the Boltzmann constant. Default is zero.
+%           depending on the Boltzmann constant. Default is taken from
+%           obj.single_ion.T value.
 %
 % Output:
 % spectra is struct type with the following fields:
@@ -37,9 +38,10 @@ if nargin==1
 end
 
 hklA = hklA(:)';
+T0 = obj.single_ion.T;
 
 inpForm.fname  = {'nRand' 'Evect'           'T'   'formfact' 'Hermit'};
-inpForm.defval = {100     linspace(0,1,100) 0     false      true    };
+inpForm.defval = {100     linspace(0,1,100) T0    false      true    };
 inpForm.size   = {[1 1]   [1 -1]            [1 1] [1 -2]     [1 1]   };
 
 param  = sw_readparam(inpForm, varargin{:});

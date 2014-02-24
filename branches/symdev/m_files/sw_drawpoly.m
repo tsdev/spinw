@@ -19,6 +19,7 @@ function polyDat = sw_drawpoly(varargin)
 %           Default is 0.5.
 %
 % Output:
+%
 % polyDat is structure type, with the following fields:
 % polyhedron    Vector, contains the handle of all polyhedron
 %               surface.
@@ -83,6 +84,11 @@ for ii = 1:size(atom1.r0,2)
             end
         end
     end
+end
+
+if isempty(atom1.r)
+    fprintf('No polygon in the plotting range!\n');
+    return
 end
 
 nPol  = 9*size(atom2.r,2);

@@ -55,8 +55,8 @@ function spectra = sw_egrid(spectra, varargin)
 %           by the unit.kB property of the sw object. Default is
 %           linspace(0,1.1*maxOmega,500).
 % T         Temperature to calculate the Bose factor in units
-%           depending on the Boltzmann constant (sw.unit.kB). Default is
-%           taken from obj.single_ion.T (no Bose factor).
+%           depending on the Boltzmann constant (sw.unit.kB). Default
+%           temperature is taken from obj.single_ion.T.
 % sumtwin   If true, the spectra of the different twins will be summed
 %           together weighted with the normalized volume fractions. Default
 %           is true.
@@ -102,8 +102,10 @@ if nargin == 0
     return;
 end
 
+T0 = obj.single_ion.T;
+
 inpForm.fname  = {'Evect' 'T'   'component' 'sumtwin' 'formfact'};
-inpForm.defval = {[]      0     'Sperp'     true      false     };
+inpForm.defval = {[]      T0    'Sperp'     true      false     };
 inpForm.size   = {[1 -1]  [1 1] [1 -2]      [1 1]     [1 -3]    };
 inpForm.soft   = {true    false false       false     false     };
 

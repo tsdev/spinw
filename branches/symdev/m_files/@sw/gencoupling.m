@@ -24,15 +24,17 @@ function gencoupling(obj, varargin)
 % tolDist       Tolerance of distance, within two bonds are regarded
 %               equivalent, default is 1e-3 Angstrom. Only used, when no
 %               space group is defined.
+% dMin          Minimum bond length, below which an error is triggered.
+%               Default value is 0.5 Angstrom.
 %
 % See also SW, SYMMETRY, NOSYM.
 %
 
 isSym = obj.lattice.sym > 0;
 
-inpForm.fname  = {'forceNoSym' 'nUnitCell' 'maxDistance' 'tol' 'tolDist'};
-inpForm.defval = {false        3           8             1e-5  1e-3     };
-inpForm.size   = {[1 1]        [1 1]       [1 1]         [1 1] [1 1]    };
+inpForm.fname  = {'forceNoSym' 'nUnitCell' 'maxDistance' 'tol' 'tolDist' 'dMin'};
+inpForm.defval = {false        3           8             1e-5  1e-3      0.5   };
+inpForm.size   = {[1 1]        [1 1]       [1 1]         [1 1] [1 1]     [1 1] };
 
 param = sw_readparam(inpForm, varargin{:});
 tol   = param.tol;
@@ -129,6 +131,11 @@ if nMagAtom > 0
     
     % Finds the equivalent distances and index them in coupling.idx
     sortM(6,:) = cumsum([1 (sortM(7,2:end)-sortM(7,1:(end-1))) > tolD]);
+    
+    % check whether some atoms are too close
+    if sortM(7,1)<param.dMin
+        error('sw:gencoupling:AtomPos',['Some atoms are too close (Dmin=' num2str(sortM(7,1)) '<' num2str(param.dMin) '), check your crystal structure!']);
+    end
     
     % symmetry equivalent couplings
     if isSym

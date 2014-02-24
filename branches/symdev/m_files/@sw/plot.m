@@ -404,6 +404,7 @@ switch param.sEll
     case 2
         single_ion.mat = SI.g;
         single_ion.idx = single_ion.g;
+    case 0
     otherwise
         error('sw:plot:WrongParameter','The sEll parameter has to be 0,1 or 2!');
 end

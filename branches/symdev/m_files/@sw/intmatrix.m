@@ -129,7 +129,7 @@ else
     colSel  = [find(coupling.mat_idx(1,:)~=0) find(coupling.mat_idx(2,:)~=0) find(coupling.mat_idx(3,:)~=0)];
     SS.all = SS.all(:,colSel(:));
     
-    SS.all = [SS.all; double(JJ.idx')];
+    SS.all = [SS.all; double(JJ.idx(:)')];
     
     % sum the interactions on the same coupling
     JJ.mat  = mat(:,:,JJ.idx);

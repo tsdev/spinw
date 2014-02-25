@@ -102,7 +102,7 @@ if nargin == 0
     return;
 end
 
-T0 = obj.single_ion.T;
+T0 = spectra.obj.single_ion.T;
 
 inpForm.fname  = {'Evect' 'T'   'component' 'sumtwin' 'formfact'};
 inpForm.defval = {[]      T0    'Sperp'     true      false     };

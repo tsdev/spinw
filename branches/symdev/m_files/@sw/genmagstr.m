@@ -67,6 +67,35 @@ function genmagstr(obj, varargin)
 %                   For planar magnetic structure use @gm_planar. Only
 %                   param.func and param.x have to be defined for this
 %                   mode.
+%                fourier:
+%                   generate magnetic structure from Fourier components,
+%                   usefull for multi-k structures. It creates a magnetic
+%                   supercell that incorporates the magnetic structure
+%                   using the following equation:
+%
+%                   S_{l,j} = sum_k F(k)_j*exp(-i*k*l)
+%
+%                   Where the summation runs over all given k-vectors, 
+%                   S_{l,j} is the direction of the ordered moment of the
+%                   l-th unit cell, j-th atom. The size of the generated
+%                   supercell is determined by the 'nExt' option. The 'Fk'
+%                   option gives the Furier components and the k-vectors in
+%                   a cell in the following structure:
+%                   {Fk1 k1 Fk2 k2 ...}
+%                   The Fk1, Fk2 etc are complex matrices that contain the
+%                   Fourier compoents on every magnetic atom in the
+%                   crystallographic unit cell. They have a dimension of 
+%                   [3 nMagAtom]. The k1, k2 etc are k-vectors of the
+%                   Fourier compoents, with dimensions of [1 3]. Since the
+%                   generated magnetic structures have to be real, the -k
+%                   compoents are automatically added: F(-k) = conj(F(k)).
+%                   Example input: 
+%                   {[1 -1;i1 -i1;0 0] [1/2 0 0] [1 -1;0 0; i1 -i1] [0 1/2 0]}
+%                   This gives a double k structure for a lattice with two
+%                   magnetic atoms in the unit cell.The Fourier compoents
+%                   are by default in the xyz coordinate system but if
+%                   'unitS' is set to 'lu', than the moment components are
+%                   assumed to be in lattice units.
 % phi       Angle of rotation of the magnetic moments in rad. Default
 %           value 0.
 % nExt      Number of unit cell to extend the magnetic structure,
@@ -84,6 +113,9 @@ function genmagstr(obj, varargin)
 %           Every column defines the S_x, S_y and S_z components of the
 %           moment in the xyz Descartes coodinate system.
 %           Default value is stored in obj.
+% Fk        Fourier compoents for a multi-k magnetic structure in a cell.
+%           For description, see the 'fourier' mode description above.
+%           No default value, it has to be defined if 'mode' is 'fourier'.
 % unitS     Units for S, default is 'xyz', optionally 'lu' can be used,
 %           in this case the input spin components are assumed to be in
 %           lattice units and they will be converted to the xyz coordinate
@@ -118,12 +150,16 @@ inpForm.defval = [inpForm.defval {@gm_spherical3d []     true  }];
 inpForm.size   = [inpForm.size   {[1 1]           [1 -3] [1 1] }];
 inpForm.soft   = [inpForm.soft   {false           true   false }];
 
-inpForm.fname  = [inpForm.fname  {'S'     'phi' 'epsilon' 'unitS'}];
-inpForm.defval = [inpForm.defval {[]      0     1e-5      'xyz'  }];
-inpForm.size   = [inpForm.size   {[-6 -2] [1 1] [1 1]     [1 -5] }];
-inpForm.soft   = [inpForm.soft   {true    false false     false  }];
+inpForm.fname  = [inpForm.fname  {'S'     'phi' 'epsilon' 'unitS' 'Fk'      }];
+inpForm.defval = [inpForm.defval {[]      0     1e-5      'xyz'   cell(1,0) }];
+inpForm.size   = [inpForm.size   {[-6 -2] [1 1] [1 1]     [1 -5]  [1 -7]    }];
+inpForm.soft   = [inpForm.soft   {true    false false     false   false     }];
 
 param = sw_readparam(inpForm, varargin{:});
+
+% make lowercase the string options
+param.mode  = lower(param.mode);
+param.unitS = lower(param.unitS);
 
 if isempty(param.S)
     param.S = obj.mag_str.S;
@@ -135,14 +171,22 @@ else
         error('sw:genmagstr:WrongInput','Parameter S has to have dimensions of [3 nSpin]!');
     end
     
-    if strcmpi(param.unitS,'lu')
-        % convert the moments from lattice units to xyz
-        param.S = obj.basisvector(true)*param.S;
-        
-    elseif ~strcmpi(param.unitS,'xyz')
-        error('sw:genmagstr:WrongInput','Parameter unitS has to be either ''xyz'' or ''lu''!');
+    switch param.unitS
+        case 'lu'
+            % convert the moments from lattice units to xyz
+            param.S = obj.basisvector(true)*param.S;
+            
+            % convert the Fourier components if they are given
+            if ~isempty(param.Fk)
+                for ii = 1:2:numel(param.Fk)
+                    param.Fk{ii} = obj.basisvector(true)*param.Fk{ii};
+                end
+            end
+        case 'xyz'
+            % do nothing
+        otherwise
+            error('sw:genmagstr:WrongInput','Parameter unitS has to be either ''xyz'' or ''lu''!');
     end
-    
 end
 
 nExt     = double(param.nExt);
@@ -265,6 +309,17 @@ switch param.mode
         S = repmat(S,[prod(nExt) 1]);
         
         [S, k, n] = param.func(S, param.x0);
+    case 'fourier'
+        % generate supercell from Fourier components
+        % keeps the final k-vector zero
+        Fk = param.Fk;
+        if isempty(Fk) || ~iscell(Fk)
+            error('sw:genmagstr:WrongInput','Wrong ''Fk'' option that defines the Fourier components!');
+        end
+        
+        for ii = 1:2:numel(Fk)
+            % TODO
+        end
         
     otherwise
         error('sw:genmagstr:WrongMode','Wrong param.mode value!');

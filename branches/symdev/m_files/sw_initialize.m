@@ -5,7 +5,7 @@ function sw_initialize()
 % See also SW.
 %
 
-cd(sw_rootdir);
+%cd(sw_rootdir);
 %m2html('mfiles','m_files','htmldir','doc')
 %builddocsearchdb([sw_rootdir 'doc']);
 

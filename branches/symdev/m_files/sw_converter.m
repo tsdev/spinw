@@ -1,5 +1,5 @@
-function out = sw_converter(unitIn, value, unitOut, particleName)
-% out = SW_CONVERTER(unitIn, value, unitOut, {particleName}) converts energy
+function out = sw_converter(value, unitIn, unitOut, particleName)
+% out = SW_CONVERTER(value, unitIn, unitOut, {particleName}) converts energy
 % and momentum units for a given particle.
 %
 % Input:
@@ -9,6 +9,7 @@ function out = sw_converter(unitIn, value, unitOut, particleName)
 %                       'proton'
 %                       'electron'
 %                       'photon'
+% value             Numerical input value, can be arbitrary matrix.
 % unitIn            Units of the input value:
 %                       'k'         momentum in Angstrom^-1.
 %                       'Angstrom'  wavelength in Angstrom.
@@ -18,7 +19,6 @@ function out = sw_converter(unitIn, value, unitOut, particleName)
 %                       'meV'       energy in meV.
 %                       'THz'       energy in Thz.
 % unitOut           Units of the output value, same options as for unitIn.
-% value             Numerical input value, can be arbitrary matrix.
 %
 
 if nargin == 0

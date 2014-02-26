@@ -317,9 +317,35 @@ switch param.mode
             error('sw:genmagstr:WrongInput','Wrong ''Fk'' option that defines the Fourier components!');
         end
         
-        for ii = 1:2:numel(Fk)
-            % TODO
+        % number of moments for the Fourier components are defined
+        nFourier = size(Fk{1},2);
+        
+        if (nFourier~= nMagAtom) && (nFourier==1)
+            % Single defined moment, use the atomic position in l.u.
+            RR = bsxfun(@times,mAtom.RRext,nExt');
+        elseif nFourier == nMagAtom
+            % First crystallographic unit cell defined, use only unit cell
+            % position in l.u.
+            RR = floor(bsxfun(@times,mAtom.RRext,nExt'));
+        else
+            error('sw:genmagstr:WrongNumberComponent','Wrong number of input Fourier components!');
         end
+        
+        % no moments
+        S = RR*0;
+        % number of cells in the supercell
+        nCell = prod(nExt);
+        
+        for ii = 1:2:numel(Fk)
+            % F(k)
+            S = S + bsxfun(@times,repmat(Fk{ii},[1 nCell*nMagAtom/nFourier]),exp(1i*Fk{ii+1}*RR*2*pi));
+            % conj(F(k))
+            S = S + bsxfun(@times,repmat(conj(Fk{ii}),[1 nCell*nMagAtom/nFourier]),exp(-1i*Fk{ii+1}*RR*2*pi));
+            
+        end
+        S = real(S);
+        k = [0 0 0];
+        n = [0 0 1];
         
     otherwise
         error('sw:genmagstr:WrongMode','Wrong param.mode value!');

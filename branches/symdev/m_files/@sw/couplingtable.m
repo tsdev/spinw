@@ -38,6 +38,14 @@ function bonds = couplingtable(obj, varargin)
 % See also SW.MATOM, SW.INTMATRIX.
 %
 
+% no bonds are defined
+if isempty(obj.coupling.idx)
+    bonds.table = zeros(9,0);
+    bonds.bondv = zeros(4,0);
+    bonds.matrix = zeros(3,3,0);
+    return;
+end
+
 if nargin < 2
     bondIdx = 1:obj.coupling.idx(end);
 else

@@ -36,15 +36,15 @@ function genmagstr(obj, varargin)
 %                   vectors to generate magnetic structure according to the
 %                   following formula (param.n value then omitted):
 %
-%                   M_i(r) = Re(Psi_i)cos(2*pi*km*r)+Im(Psi)sin(2*pi*km*r).
+%                   M_i(r) = R(2*pi*km*r)*M_i.
 %
-%                   param.S has to contain either 1 spin direction or basis
-%                   vector, or as many as the number of magnetic atoms in
-%                   the crystallographic unit cell. In the first case, the
-%                   r position is the atomic position, in the second case r
-%                   is the lattice translation vector of the
-%                   crystallographic cell where the moment directions are
-%                   calculated.
+%                   where M_i vectors are defined in param.S. It has to
+%                   contain either 1 spin direction or as many as the
+%                   number of magnetic atoms in the crystallographic unit
+%                   cell. In the first case, the r position is the atomic
+%                   position, in the second case r is the lattice
+%                   translation vector of the crystallographic cell where
+%                   the moment directions are calculated.
 %
 %                rotate:
 %                   uniform rotation of all magnetic moments with a
@@ -137,7 +137,6 @@ function genmagstr(obj, varargin)
 %           the spin of the magnetic atoms. Default is true.
 %
 % See also SW, SW.ANNEAL, SW.OPTMAGSTR, GM_SPHERICAL3D, GM_PLANAR.
-%
 %
 
 inpForm.fname  = {'mode'   'nExt'            'k'           'n'           };
@@ -269,11 +268,7 @@ switch param.mode
                 S(:,ii) = sw_rot(n,phi(ii),selS);
             end
         else
-            % Use param.S as complex basis vectors.
-            for ii = 1:nMagExt
-                selS    = S0(:,mod(ii-1,nSpin)+1);
-                S(:,ii) = real(selS)*cos(phi(ii))+imag(selS)*sin(phi(ii));
-            end
+            error('sw:genmagstr:WrongInput','For complex Fourier components use the ''mode'' ''fourier'' option!');
         end
     case 'direct'
         % Direct input of the magnetic moments.

@@ -19,6 +19,9 @@ function [genCp, ugenCp] = sw_gensymcoupling(obj, coupling, sym, tol, fitmode)
 %           generated couplings.
 %
 
+% TODO
+tolDist = 1e-5;
+
 if nargin == 0
     help sw_gensymcoupling;
     return;
@@ -51,11 +54,11 @@ r1new = mod(r1new,1);
 r2new = mod(r2new,1);
 % throw away generated couplings with wrong distance
 % determine the new indices in mAtom
-[iNew, atom1] = isnewUC(mAtom.r,r1new,0.005);
+[iNew, atom1] = isnewUC(mAtom.r,r1new,tolDist);
 if any(iNew)
     error('Sym error: generated positions for atom1 are wrong!');
 end
-[iNew, atom2] = isnewUC(mAtom.r,r2new,0.005);
+[iNew, atom2] = isnewUC(mAtom.r,r2new,tolDist);
 if any(iNew)
     error('Sym error: generated positions for atom2 are wrong!');
 end

@@ -194,7 +194,7 @@ classdef sw < class_handlelight
                 %symi0 = cif0.symmetry_Int_Tables_number;
                 xyz0 = cif0.symmetry_equiv_pos_as_xyz; xyz0 = sprintf('%s; ',xyz0{:}); xyz0 = xyz0(1:end-2);
                 name0 = cif0.atom_site_type_symbol';
-                r0 = [cif0.atom_site_fract_x cif0.atom_site_fract_y cif0.atom_site_fract_z]';
+                r0 = mod([cif0.atom_site_fract_x cif0.atom_site_fract_y cif0.atom_site_fract_z]',1);
                 
                 if numel(abc0)==3
                     objS.lattice.lat_const = abc0;

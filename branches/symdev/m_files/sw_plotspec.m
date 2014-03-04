@@ -507,7 +507,7 @@ if param.mode == 3
     
     if nPlot == 1
         % single spectra
-        imageDisp = (swConv{1}.*mask{ii})';
+            imageDisp = (swConv{1}.*mask{ii})';
         
         % Use surf to hide the NaN numbers
         [X, Y] = meshgrid(xAxis,yAxis);

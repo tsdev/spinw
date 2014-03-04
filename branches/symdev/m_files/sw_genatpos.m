@@ -46,7 +46,7 @@ if nargin == 2
 end
 
 if nargin < 4
-    tol = 0.001;
+    tol = 1e-5;
 end
 
 if ~iscell(sym)

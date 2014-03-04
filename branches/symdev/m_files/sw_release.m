@@ -16,6 +16,10 @@ if nargin == 0
     return
 end
 
+% create search database for the help
+%builddocsearchdb([sw_rootdir 'help' filesep 'html']);
+%builddocsearchdb([sw_rootdir 'html']);
+
 swVer = sw_version;
 
 if isfield(swVer,'Version')

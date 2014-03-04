@@ -158,7 +158,7 @@ if nMagAtom > 0
                 % list
                 genC(:,~unC) = [];
                 if sum(~iNew) ~= sum(unC)
-                    warning('Sym problem! ii=%d, idx=%d',ii,idx);
+                    error('sw:gencoupling:SymProblem','Symmetry error! ii=%d, idx=%d. Try to change ''tol'' parameter.',ii,idx);
                 end
                 % move the non-unique (not new) couplings (symmetry equivalent ones)
                 newM = [newM [genC;ones(1,size(genC,2))*idx]]; %#ok<AGROW>

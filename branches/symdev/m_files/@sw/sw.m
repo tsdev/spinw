@@ -123,7 +123,7 @@ classdef sw < class_handlelight
         %               crystallographic cell, the 1x3 vector extends the
         %               cell along the a, b and c axis
         %
-        % See also SW.GENMAGSTR, SW.OTPMAGSTR, SW.ANNEAL, SW.MOMENT, SW.NMAGEXT, SW.STRUCTFACT.
+        % See also SW.GENMAGSTR, SW.OPTMAGSTR, SW.ANNEAL, SW.MOMENT, SW.NMAGEXT, SW.STRUCTFACT.
         mag_str
         % Field stores the physical units in the Hamiltonian. Default are
         % meV, Tesla and Kelvin.

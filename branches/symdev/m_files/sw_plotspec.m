@@ -81,9 +81,9 @@ inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
 inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
 inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'log' 'plotf'}];
-inpForm.defval = [inpForm.defval {false @surf  }];
-inpForm.size   = [inpForm.size   {[1 1] [1 1]  }];
+inpForm.fname  = [inpForm.fname  {'log' 'plotf'  }];
+inpForm.defval = [inpForm.defval {false @sw_surf }];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]    }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -507,22 +507,27 @@ if param.mode == 3
     
     if nPlot == 1
         % single spectra
-            imageDisp = (swConv{1}.*mask{ii})';
+        imageDisp = (swConv{1}.*mask{ii})';
         
         % Use surf to hide the NaN numbers
         [X, Y] = meshgrid(xAxis,yAxis);
-        if cMaxMax <1e-6
-            hSurf = param.plotf(X,Y,imageDisp'*0);
-            axLim = [0 1];
-        else
-            hSurf = param.plotf(X,Y,imageDisp');
-        end
-        view(2);
-        if ishandle(hSurf)
-            set(hSurf,'EdgeAlpha',0);
-        end
+        cMap = flipud(param.colormap{1}(param.nCol));
         
-        colormap(flipud(param.colormap{1}(param.nCol)));
+        if cMaxMax <1e-6
+            %hSurf = param.plotf(X,Y,imageDisp'*0);
+            axLim = [0 1];
+            param.plotf(X,Y,imageDisp'*0,axLim,cMap);
+            
+        else
+           % hSurf = param.plotf(X,Y,imageDisp');
+           param.plotf(X,Y,imageDisp',axLim,cMap);
+        end
+        %view(2);
+        %if all(ishandle(hSurf))
+        %    set(hSurf,'EdgeAlpha',0);
+        %end
+        
+        
     else
         
         % multiple spectra

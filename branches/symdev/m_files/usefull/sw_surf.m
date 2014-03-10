@@ -1,4 +1,4 @@
-function sw_surf(X,Y,C,cLim,cMap)
+function sw_surf(X,Y,C,cLim,cMap,maxPatch)
 % SW_SURF draws a two dimensional plot using the patch function when the
 % figure is saved in .pdf format, it is saved as a vector image
 %
@@ -16,12 +16,18 @@ function sw_surf(X,Y,C,cLim,cMap)
 % cLim      Color axis limits, if undefined the minimum and maximum values
 %           C are taken as limits.
 % cMap      Colormap, default is @jet.
+% maxPatch  Maximum number of pixels that can be plotted using the patch()
+%           function. Using patch for color plot can be slow on older
+%           machines, but the figure can be exported afterwards as a vector
+%           graphics, using the print() function. Default is 1000.
 %
 % Change of the color axis after plotting is not possible, replot is
 % necessary.
 %
 
-maxPatch = 1000;
+if nargin < 6
+    maxPatch = 1000;
+end
 
 if nargin == 1
     C = X;
@@ -52,10 +58,10 @@ if numel(C) < maxPatch
     idxD(idxD<1) = 1;
     idxD(idxD>N) = N;
     
-    dx = diff(X);
-    dx = [dx(1,:); dx];
-    dy = diff(Y')';
-    dy = [dy(:,1)  dy];
+    dx = diff(X,1,2);
+    dx = [dx(:,1) dx];
+    dy = diff(Y);
+    dy = [dy(1,:);  dy];
     
     for ii = 1:size(C,1)
         for jj = 1:size(C,2)

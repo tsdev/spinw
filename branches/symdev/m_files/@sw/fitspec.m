@@ -70,13 +70,13 @@ nRun = param.nRun;
 if ~isempty(param.x0)
     x0 = param.x0;
 elseif isempty(param.xmax) && isempty(param.xmin)
-    x0 = rand(1,nPar);
+    x0 = rand(nRun,nPar);
 elseif isempty(param.xmax)
-    x0 = param.xmin + rand(1,nPar);
+    x0 = repmat(param.xmin,[nRun 1]) + rand(nRun,nPar);
 elseif isempty(param.xmin)
-    x0 = param.xmax - rand(1,nPar);
+    x0 = repmat(param.xmax,[nRun 1]) - rand(nRun,nPar);
 else
-    x0 = rand(1,nPar).*(param.xmax-param.xmin)+param.xmin;
+    x0 = bsxfun(@times,rand(nRun,nPar),(param.xmax-param.xmin))+repmat(param.xmin,[nRun 1]);
 end
 
 % Read experimental data
@@ -87,12 +87,12 @@ param0.plot = false;
 
 x = zeros(nRun,nPar);
 R = zeros(nRun,1);
-exitflag = struct;
-output   = struct;
+%exitflag = zeros(nRun,1);
+%output   = struct;
 
 sw_status(0,1);
 for ii = 1:nRun
-    [x(ii,:), R(ii), exitflag(ii), output(ii)] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0,param.xmin,param.xmax,...
+    [x(ii,:), R(ii), exitflag(ii), output(ii)] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0(ii,:),param.xmin,param.xmax,...
         optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
     sw_status(ii/nRun*100);
 end
@@ -143,7 +143,7 @@ param.nPoints = 50;
 
 obj = parfunc(obj,x);
 
-nExt = double(obj.mag_str.N_ext);
+%nExt = double(obj.mag_str.N_ext);
 
 % Number of different correlation functions measured.
 nConv = numel(dataCell);
@@ -157,7 +157,7 @@ for ii = 1:nConv
     data = dataCell{ii};
     
     % calculate spin-spin correlation function
-    spec = obj.spinwave(data.Q,'fitmode',true);
+    spec = obj.spinwave(data.Q,'fitmode',true,'fid',0);
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy
@@ -178,16 +178,20 @@ for ii = 1:nConv
         idx       = idx(1:sim.nMode);
         sim.I     = swConv(idx);
         sim.E     = Evect(idx);
+        % sort calculated magnon energies in increasing order
+        [sim.E, idx2] = sort(sim.E);
+        sim.I     = sim.I(idx2);
         
         data.Eii  = data.E(1:data.nii,jj)';
         data.Iii  = data.I(1:data.nii,jj)';
         data.wii  = data.w(1:data.nii,jj)';
-        
+
         simVect   = [repmat(data.minE(jj),[1 data.nii]) sim.E repmat(data.maxE(jj),[1 data.nii])];
         
         nSlip     = (data.nii+sim.nMode+1);
         d = zeros(1,nSlip);
         for kk = 1:nSlip
+            % R-value calculated as width(Data)*(E(simulation)-E(Data))^2
             d(kk) = sum(data.wii.*(simVect((1:data.nii)+kk-1)-data.Eii).^2);
         end
         R = R + min(d);

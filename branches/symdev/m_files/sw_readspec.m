@@ -9,14 +9,17 @@ function data = sw_readspec(path)
 %
 %   QH QK QL minE maxE I1 E1 w1 I2 E2 w2 ...
 %       where:
-% QH    H index of the Q point,
-% QK    K index of the Q point,
-% QL    L index of the Q point,
-% minE  lower boundary of the E scan,
-% maxE  upper boundary of the E scan,
-% In    intensity of the n-th spin wave mode,
-% En    center of the n-th spin wave mode,
-% wn    width of the n-th spin wave mode.
+%
+% QH        H index of the Q point,
+% QK        K index of the Q point,
+% QL        L index of the Q point,
+% minE      lower boundary of the E scan,
+% maxE      upper boundary of the E scan,
+% In        intensity of the n-th spin wave mode,
+% En        center of the n-th spin wave mode, has to be in increasing
+%           order,
+% wn        weight of the n-th spin wave mode.
+%
 % The number of modes in a single line of the data file is unlimited,
 % however in every line the number of modes have to be the same. Scans with
 % less modes should contain in the end zero intensities.
@@ -33,6 +36,7 @@ function data = sw_readspec(path)
 %
 %
 % Example input data file (polarised scans in the (0KL) plane):
+%
 % QH    QK        QL      ENlim1  ENlim2  I1  EN1       W1    I2  EN2       W2
 % [Mxx] [1 0 0]
 % 0     1        2.9992   0       15      1    3.7128   1.0   1   8.6778    1.0
@@ -101,11 +105,20 @@ while ~feof(fid)
         data{polIdx}.Q     = dTemp(:,1:3)';
         data{polIdx}.minE  = dTemp(:,4)';
         data{polIdx}.maxE  = dTemp(:,5)';
-        data{polIdx}.I     = dTemp(:,6:3:end)';
         data{polIdx}.E     = dTemp(:,7:3:end)';
+        data{polIdx}.I     = dTemp(:,6:3:end)';
         data{polIdx}.w     = dTemp(:,8:3:end)';
         data{polIdx}.nMode = sum(data{polIdx}.I~=0,1);
         data{polIdx}.corr  = sw_parstr(modeStr{polIdx});
+        
+        %         % sort magnon energies in increasing order
+        %         for ii = 1:size(data{polIdx}.E,1)
+        %             [~, idx] = sort(data{polIdx}.E(ii,:));
+        %
+        %             data{polIdx}.E(ii,:) = data{polIdx}.E(ii,idx);
+        %             data{polIdx}.I(ii,:) = data{polIdx}.I(ii,idx);
+        %             data{polIdx}.w(ii,:) = data{polIdx}.w(ii,idx);
+        %         end
         
         if ~feof(fid)
             modeStr{polIdx+1}  = temp(2:strPosR(1));

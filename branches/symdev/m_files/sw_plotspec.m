@@ -51,13 +51,18 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % lineWidth Line width of line plots, default is 0.5 point.
 % log       Plot 10based logarithmic intensity, default is false.
 % plotf     Plot function for color plot. Default is @surf.
+% maxPatch  Maximum number of pixels that can be plotted using the patch()
+%           function within sw_surf(). Using patch for color plot can be
+%           slow on older machines, but the figure can be exported
+%           afterwards as a vector graphics, using the print() function.
+%           Default is 1000.
 %
 % Output:
 %
 % fHandle   Handle of the plot figure.
 % pHandle   Handle of the graphics objects on the figure.
 %
-% See also SW.PLOT, SW.SPINWAVE.
+% See also SW.PLOT, SW.SPINWAVE, SW_SURF.
 %
 
 if nargin==0
@@ -81,9 +86,9 @@ inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
 inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
 inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'log' 'plotf'  }];
-inpForm.defval = [inpForm.defval {false @sw_surf }];
-inpForm.size   = [inpForm.size   {[1 1] [1 1]    }];
+inpForm.fname  = [inpForm.fname  {'log' 'plotf'  'maxPatch' }];
+inpForm.defval = [inpForm.defval {false @sw_surf 1000       }];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -146,7 +151,7 @@ if param.mode == 4
         end
         
         [fHandle, pHandle] = sw_plotspec(spectra,'ahandle',gca,'mode',3,'dE',Eres,...
-            'dashed',true,'colorbar',false,'axLim',param.axLim,'lineStyle',param.lineStyle);
+            'dashed',true,'colorbar',false,'axLim',param.axLim,'lineStyle',param.lineStyle,'maxPatch',param.maxPatch);
     end
     if ~powmode
         hold on
@@ -516,11 +521,11 @@ if param.mode == 3
         if cMaxMax <1e-6
             %hSurf = param.plotf(X,Y,imageDisp'*0);
             axLim = [0 1];
-            param.plotf(X,Y,imageDisp'*0,axLim,cMap);
+            param.plotf(X,Y,imageDisp'*0,axLim,cMap,param.maxPatch);
             
         else
            % hSurf = param.plotf(X,Y,imageDisp');
-           param.plotf(X,Y,imageDisp',axLim,cMap);
+           param.plotf(X,Y,imageDisp',axLim,cMap,param.maxPatch);
         end
         %view(2);
         %if all(ishandle(hSurf))

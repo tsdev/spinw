@@ -18,6 +18,7 @@ function out = sw_converter(value, unitIn, unitOut, particleName)
 %                       'mps'       speed in m/s.
 %                       'meV'       energy in meV.
 %                       'THz'       energy in Thz.
+%                       'cm-1'      2*pi/lambda in cm^-1.
 % unitOut           Units of the output value, same options as for unitIn.
 %
 
@@ -75,7 +76,11 @@ end
 switch unitIn
     % convert everything into momentum in Angstrom^-1
     case 'Angstrom'
-        k = 2*pi./value;
+        if m~=0
+            k = 2*pi./value;
+        else
+            k = 2*pi./value;
+        end
     case 'A'
         k = 2*pi./value;
     case 'Kelvin'
@@ -104,6 +109,8 @@ switch unitIn
         else
             k = value*h*1e12/1e10;
         end
+    case 'cm-1'
+        k = 10e-8*value;
 end
 
 switch unitOut
@@ -138,6 +145,8 @@ switch unitOut
         else
             out = k/h/1e12*1e10;
         end
+    case 'cm-1'
+        out = 10e8*k;
 end
 
 end

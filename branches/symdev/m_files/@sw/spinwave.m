@@ -112,6 +112,8 @@ end
 % for linear scans create the Q line(s)
 if iscell(hkl)
     hkl = sw_qscan(hkl);
+elseif numel(hkl)==3
+    hkl = hkl(:);
 end
 
 inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol'  };

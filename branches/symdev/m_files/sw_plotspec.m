@@ -110,6 +110,10 @@ else
     param.twin = 1;
 end
 
+if ~isfield(spectra,'omega')
+    param.mode = 3;
+end
+
 if ~isfield(spectra,'swConv') && param.mode>1 && param.mode<4
     error('sw_plotspec:WrongInput',['Reference to non-existent field ''swConv'','...
         'use ''sw_egrid'' to produce the convoluted spectra before plotting!'])
@@ -162,7 +166,7 @@ if param.mode == 4
         end
         
         [fHandle, pHandle] = sw_plotspec(spectra,'mode',1,'ahandle',gca,'colorbar',~pColor,...
-            'dashed',false,'title',~pColor,'legend',~pColor,'imag',~pColor,'lineStyle',param.lineStyle,'colormap',cMap0,'axLim',[0 max(spectra.omega(:))*1.1]);
+            'dashed',false,'title',~pColor,'legend',~pColor,'imag',~pColor,'lineStyle',param.lineStyle,'colormap',cMap0,'axLim',[0 max(abs(spectra.omega(:)))*1.1]);
     end
     
     if nargout >0
@@ -236,15 +240,22 @@ if ~powmode
         nPlot  = nTwinS * nConv;
     end
     
+    nMagExt = spectra.obj.nmagext;
     % package all fields into cells for easy looping over twins
-    if ~iscell(spectra.omega)
-        omega = {spectra.omega};
+    if isfield(spectra,'omega')
+        if ~iscell(spectra.omega)
+            omega = {spectra.omega};
+        else
+            omega = spectra.omega(:,param.twin);
+        end
+        nMode   = size(omega{1},1);
     else
-        omega = spectra.omega(:,param.twin);
+        omega = {0};
+        nMode = 2*nMagExt;
     end
     
-    nMode   = size(omega{1},1);
-    nMagExt = spectra.obj.nmagext;
+    
+    
     % Defines colors for plotting modes.
     %colors  = flipud(fireprint(nMode+2));
     if isa(param.colormap,'function_handle')
@@ -476,7 +487,7 @@ if param.mode == 3
             axLim = [0 1];
         end
         
-        if axLim(1) < 0
+        if axLim(1) < -1e-8
             axLim = [-max(abs(axLim)) max(abs(axLim))];
         end
         %         zi(zi<=0) = [];
@@ -524,8 +535,8 @@ if param.mode == 3
             param.plotf(X,Y,imageDisp'*0,axLim,cMap,param.maxPatch);
             
         else
-           % hSurf = param.plotf(X,Y,imageDisp');
-           param.plotf(X,Y,imageDisp',axLim,cMap,param.maxPatch);
+            % hSurf = param.plotf(X,Y,imageDisp');
+            param.plotf(X,Y,imageDisp',axLim,cMap,param.maxPatch);
         end
         %view(2);
         %if all(ishandle(hSurf))

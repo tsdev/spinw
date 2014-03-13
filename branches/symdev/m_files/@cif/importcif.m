@@ -3,8 +3,8 @@ function cifdat = importcif(~, path)
 
 fid = fopen(path);
 
-loop = false;
-loopvar = {};
+%loop = false;
+%loopvar = {};
 
 
 idx = 1;
@@ -15,34 +15,61 @@ if fid < 0
 end
 % read in all lines
 while ~feof(fid)
-    cifStr{idx} = fgetl(fid); %#ok<AGROW>
+    cifStr{idx} = fgetl(fid);
     idx = idx + 1;
 end
 % unite broken lines
-bLine = cellfun(@(x)numel(x)>0 && x(1)==';',cifStr);
+bLine = double(cellfun(@(x)numel(x)>0 && x(1)==';',cifStr));
 
 % first and last line of the series of broken lines
-firstBL = find(diff([0 bLine])>0);
-lastBL  = find(diff([bLine 0])<0);
+firstL = true;
+firstBL = [];
+lastBL  = [];
+for ii = 1:numel(bLine)
+    if bLine(ii)
+        if firstL
+            firstBL(end+1) = ii;
+            firstL = false;
+        else
+            lastBL(end+1) = ii;
+            firstL = true;
+        end
+    end
+end
 
 cifStr2 = {};
 BL = false;
-idx = 1;
+%idx = 1;
+isfirst = true;
 
 for ii = 1:numel(cifStr)
     if any(ii==firstBL)
         BL = true;
+        isfirst = true;
     end
     
     if ~BL
         cifStr2{end+1} = cifStr{ii};
+        isfirst = true;
     else
+        if isfirst
+            cifStr2{end} = [cifStr2{end} ' '' ' cifStr{ii}(2:end)];
+        else
+            if all(ii~=lastBL)
+                cifStr2{end} = [cifStr2{end} '\n'  cifStr{ii}];            
+            else
+                cifStr2{end} = [cifStr2{end} ''''];
+            end
+        end
         % end comment sign
-        cifStr2{end} = [cifStr2{end} ' ±'  cifStr{ii}(2:end)];
+        %cifStr2{end} = [cifStr2{end} char([32 26])  cifStr{ii}(2:end)]; %' ?'
+
+        isfirst = false;
     end
     
     if any(ii==lastBL)
         BL = false;
+        isfirst = true;
     end
 end
 
@@ -56,7 +83,7 @@ end
 % remove comments
 for ii = 1:numel(strout)
     comIdx = strcmp('comment',strout{ii}(1,:));
-    strout{ii} = strout{ii}(:,~comIdx);
+    strout{ii} = strout{ii}(:,~comIdx); %#ok<*AGROW>
 end
 
 % remove empty lines
@@ -184,7 +211,7 @@ while ~isempty(strin)
     
     % COMMENT
     if strin(1) == '#'
-        endcomIdx    = find(strin(1:end)=='±',1,'first');
+        endcomIdx    = find(strin(1:end)=='?',1,'first');
         if isempty(endcomIdx)
             endcomIdx = numel(strin)+1;
         end
@@ -228,7 +255,7 @@ while ~isempty(strin)
     end
     
     % NUMBER
-    if ismember(strin(1), [mat2cell('0':'9',1,ones(1,10)) {'-' '.'}])
+    if ismember(strin(1), [num2cell('0':'9') {'-' '.'}])
        
         bracket1Idx = find(strin(1:end)=='(',1,'first');
         bracket2Idx = find(strin(1:end)==')',1,'first');
@@ -245,7 +272,7 @@ while ~isempty(strin)
         
         if whiteIdx <= bracket1Idx
             strout{1,end+1} = 'number';
-            numOut = str2num(strin(1:(whiteIdx-1)));
+            numOut = str2double(strin(1:(whiteIdx-1)));
             if ~isempty(numOut)
                 strout{2,end} = numOut;
             else
@@ -255,7 +282,7 @@ while ~isempty(strin)
             continue;
         else
             strout{1,end+1} = 'number';
-            numOut = str2num(strin(1:(bracket1Idx-1)));
+            numOut = str2double(strin(1:(bracket1Idx-1)));
             if ~isempty(numOut)
                 strout{2,end} = numOut;
             else
@@ -277,7 +304,7 @@ while ~isempty(strin)
     end
     
     % END COMMENT WITHOUT BEGIN
-    if strin(1) == '±'
+    if strcmp(strin(1),char(63)) %'?'
         strin = strin(2:end);
         continue;
     end

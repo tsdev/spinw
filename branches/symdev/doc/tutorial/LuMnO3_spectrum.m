@@ -6,7 +6,7 @@
 %
 %% crystal structure
 
-importciffile = false;
+importciffile = true;
 
 if importciffile
     % import crystal structure from .cif file, .cif file can be found in
@@ -101,7 +101,7 @@ lSpec = sw_egrid(lSpec,'component','Sperp');
 % negative energy
 figure
 subplot(2,1,1)
-sw_plotspec(lSpec,'mode',1,'linestyle','-','dashed',true,'colormap',@jet,'dE',0.8,'axlim',[0 30],'aHandle',gca,'imag',true)
+sw_plotspec(lSpec,'mode',1,'linestyle','o','dashed',true,'colormap',@jet,'dE',0.8,'axlim',[0 30],'aHandle',gca,'imag',true)
 
 % plot color spectrum
 subplot(2,1,2)

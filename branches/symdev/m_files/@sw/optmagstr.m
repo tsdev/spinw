@@ -30,6 +30,11 @@ function optm = optmagstr(obj, varargin)
 %           optimisation process will be rerun nRun times and the best
 %           result (lowest ground state energy per spin) will be saved in
 %           the result.
+% fid       For text output of the calculation:
+%               0   No text output.
+%               1   Output written onto the Command Window. (default)
+%               fid Output written into a text file opened with the
+%                   fid = fopen(path) command.
 %
 % Limits only on selected prameters:
 %
@@ -72,10 +77,10 @@ inpForm.defval = {1e-5      @gm_spherical3d  {'per' 'per' 'per'} []       []    
 inpForm.size   = {[1 1]     [1 1]            [1 3]               [1 -1]   [1 -2]  [1 -3] };
 inpForm.soft   = {0         0                0                   1        1       1      };
 
-inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'nRun' 'maxiter'}];
-inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           1      1e4      }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 1]  [1 1]    }];
-inpForm.soft   = [inpForm.soft   {0      0        0             0      0        }];
+inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'nRun' 'maxiter' 'fid'}];
+inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           1      1e4       1    }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 1]  [1 1]     [1 1]}];
+inpForm.soft   = [inpForm.soft   {0      0        0             0      0         0    }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -165,6 +170,12 @@ Bg  = permute(mmat(SI.field,g)*obj.unit.muB,[2 3 1]);
 minE = 0;
 minX = zeros(1,nPar);
 
+fid = param.fid;
+
+if fid == 1
+    sw_status(0,1);
+end
+
 % Loop over nRun times
 for ii = 1:param.nRun
     if xRand
@@ -177,6 +188,18 @@ for ii = 1:param.nRun
     if E < minE
         minE = E;
         minX = X;
+    end
+    if fid == 1
+        sw_status(ii/param.nRun*100);
+    end
+
+end
+
+if fid == 1
+    sw_status(100,2);
+else
+    if fid ~= 0
+        fprintf(fid,'Calculation finished.\n');
     end
 end
 

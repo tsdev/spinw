@@ -108,8 +108,15 @@ else
     T0 = 0;
 end
 
+% use Evect if defined in spectra
+if isfield(spectra,'Evect')
+    E0 = spectra.Evect;
+else
+    E0 = [];
+end
+
 inpForm.fname  = {'Evect' 'T'   'component' 'sumtwin' 'formfact'};
-inpForm.defval = {[]      T0    'Sperp'     true      false     };
+inpForm.defval = {E0      T0    'Sperp'     true      false     };
 inpForm.size   = {[1 -1]  [1 1] [1 -2]      [1 1]     [1 -3]    };
 inpForm.soft   = {true    false false       false     false     };
 
@@ -150,8 +157,8 @@ if parType(1)
         Sperp = spectra.Sperp;
     catch
         error('sw_egrid:WrongInput',['Reference to non-existent field ''Sperp'','...
-        ' use ''sw_neutron'' to produce the neutron scattering cross sections,'...
-        ' before binning in energy!'])
+            ' use ''sw_neutron'' to produce the neutron scattering cross sections,'...
+            ' before binning in energy!'])
     end
 else
     Sperp = [];
@@ -194,24 +201,35 @@ else
 end
 
 % pack all cross section into a cell for easier looping
-if iscell(spectra.omega)
-    nTwin = numel(spectra.omega);
-    omega = spectra.omega;
-    Sab   = spectra.Sab;
+if isfield(spectra,'omega')
+    if iscell(spectra.omega)
+        nTwin = numel(spectra.omega);
+        omega = spectra.omega;
+        Sab   = spectra.Sab;
+    else
+        nTwin = 1;
+        omega = {spectra.omega};
+        Sab   = {spectra.Sab};
+        intP  = {intP};
+        Pab   = {Pab};
+        Mab   = {Mab};
+        Sperp = {Sperp};
+    end
 else
     nTwin = 1;
-    omega = {spectra.omega};
-    Sab   = {spectra.Sab};
-    intP  = {intP};
-    Pab   = {Pab};
-    Mab   = {Mab};
-    Sperp = {Sperp};
-    
+    omega = {};
+    Sab   = {spectra.Sab2};
 end
 
 % extract the requested cross section
-nMode = size(omega{1},1);
-nHkl  = size(omega{1},2);
+if isfield(spectra,'omega')
+    nMode = size(omega{1},1);
+    nHkl  = size(omega{1},2);
+else
+    nMode = size(spectra.Sab2,3);
+    nHkl = size(spectra.Sab2,4);
+end
+
 % DSF stores the intensity that is going to be convoluted
 DSF = cell(nConv,nTwin);
 
@@ -242,7 +260,7 @@ end
 % if numel(param.formfact == 1) && param.formfact
 %     % abolute value of Q in Angstrom^-1
 %     QA = sqrt(sum(spectra.hklA.^2,1));
-%     
+%
 %     if ischar(param.formfact)
 %         % name of magnetic atom is given
 %         formfact = sw_mff(param.formfact,QA);
@@ -261,61 +279,66 @@ end
 %     if isempty(formfact)
 %         error('sw_egrid:FormFactorError','Form factor is wrong!')
 %     end
-%     
+%
 %     for ii = 1:numel(DSF)
 %         DSF{ii} = bsxfun(@times,DSF{ii},formfact.^2);
 %     end
 % end
 
 
-% Create vector for energy values, and put extra value below minimum and
-% above maximum for easy indexing swConv.
-Evect   = sort(param.Evect);
-epsilon = 1e-8;
-
-if ~isempty(Evect)
-    Evect = [Evect(1)-epsilon; Evect(:); Evect(end)+epsilon];
-else
-    Evect = [-epsilon; epsilon];
-end
-nE      = numel(Evect);
-
-% Create indices in the matrix by searching for the closest value, size
-% nMode x nHkl. Put all the modes to the positive side for magnon creation.
-% The negative side will be the same, however with different Bose factor
-% for non-zero temperature.
-idxE = cell(1,nTwin);
-
-for tt = 1:nTwin
-    [~, idxE{tt}] = min(abs(repmat(real(omega{tt}),[1 1 nE])-repmat(permute(Evect,[2 3 1]),[nMode nHkl 1])),[],3);
+if isfield(spectra,'omega')
+    % Create vector for energy values, and put extra value below minimum and
+    % above maximum for easy indexing swConv.
+    Evect   = sort(param.Evect);
+    epsilon = 1e-8;
     
-    % Creates indices in the swConv matrix.
-    idxE{tt} = idxE{tt} + repmat((0:nHkl-1).*nE,[nMode 1]);
-    idxE{tt} = idxE{tt}(:);
-end
-
-% Sums up the intensities in DSF into swConv.
-swConv = cell(nConv,nTwin);
-
-for tt = 1:nTwin
-    for ii = 1:nConv
-        swConv{ii,tt} = reshape(accumarray(idxE{tt},DSF{ii,tt}(:),[nE*nHkl 1]),[nE nHkl]);
+    if ~isempty(Evect)
+        Evect = [Evect(1)-epsilon; Evect(:); Evect(end)+epsilon];
+    else
+        Evect = [-epsilon; epsilon];
     end
-end
-
-% Calculate Bose temperature factor for magnons
-if param.T==0
-    nBose = double(Evect(2:(end-1))>0);
+    nE      = numel(Evect);
+    
+    % Create indices in the matrix by searching for the closest value, size
+    % nMode x nHkl. Put all the modes to the positive side for magnon creation.
+    % The negative side will be the same, however with different Bose factor
+    % for non-zero temperature.
+    idxE = cell(1,nTwin);
+    
+    for tt = 1:nTwin
+        [~, idxE{tt}] = min(abs(repmat(real(omega{tt}),[1 1 nE])-repmat(permute(Evect,[2 3 1]),[nMode nHkl 1])),[],3);
+        
+        % Creates indices in the swConv matrix.
+        idxE{tt} = idxE{tt} + repmat((0:nHkl-1).*nE,[nMode 1]);
+        idxE{tt} = idxE{tt}(:);
+    end
+    
+    % Sums up the intensities in DSF into swConv.
+    swConv = cell(nConv,nTwin);
+    
+    for tt = 1:nTwin
+        for ii = 1:nConv
+            swConv{ii,tt} = reshape(accumarray(idxE{tt},DSF{ii,tt}(:),[nE*nHkl 1]),[nE nHkl]);
+        end
+    end
+    
+    % Calculate Bose temperature factor for magnons
+    if param.T==0
+        nBose = double(Evect(2:(end-1))>0);
+    else
+        nBose = 1./(exp(abs(Evect(2:(end-1)))./(spectra.obj.unit.kB*param.T))-1)+double(Evect(2:(end-1))>0);
+    end
+    
+    % Multiply the intensities with the Bose factor.
+    for tt = 1:nTwin
+        for ii = 1:nConv
+            swConv{ii,tt} = bsxfun(@times,swConv{ii,tt}(2:(end-1),:),nBose);
+            swConv{ii,tt}(isnan(swConv{ii,tt})) = 0;
+        end
+    end
+    
 else
-    nBose = 1./(exp(abs(Evect(2:(end-1)))./(spectra.obj.unit.kB*param.T))-1)+double(Evect(2:(end-1))>0);
-end
-
-% Multiply the intensities with the Bose factor.
-for tt = 1:nTwin
-    for ii = 1:nConv
-        swConv{ii,tt} = bsxfun(@times,swConv{ii,tt}(2:(end-1),:),nBose);
-        swConv{ii,tt}(isnan(swConv{ii,tt})) = 0; 
-    end
+    swConv = DSF;
 end
 
 % sum up twin spectra if requested

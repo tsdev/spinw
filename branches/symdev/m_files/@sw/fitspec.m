@@ -21,7 +21,24 @@ function fitsp = fitspec(obj, varargin)
 % x0        Starting value of the optimisation parameters. If empty
 %           or undefined, then random values are used.
 % nRun      Number of consecutive fitting runs, each result is saved in the
-%           output fitsp.x and R arrays. Default is 1.
+%           output fitsp.x and R arrays. If the Hamiltonian given by the
+%           random x parameters is incompatible with the ground state,
+%           those x values will be skipped and new random x values will be
+%           generated. Default is 1.
+% nMax      Maximum number of runs, including the ones that produce error
+%           (due to incompatible ground state). Default is 1000.
+% hermit    Method for matrix diagonalization:
+%                  true      J.H.P. Colpa, Physica 93A (1978) 327, 
+%                  false     R.M. White, PR 139 (1965) A450.
+%           Colpa: the grand dynamical matrix is converted into another
+%                  Hermitian matrix, that will give the real eigenvalues.
+%           White: the non-Hermitian g*H matrix will be diagonalised,
+%                  that is not the elegant method.
+%           Advise: 
+%           Always use Colpa's method that is faster, except when small
+%           imaginary eigenvalues are expected. In this case only White's
+%           method work.
+%           Default is true.
 %
 % Optimisation options:
 %
@@ -60,6 +77,11 @@ inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           []      1     }]
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 -6]  [1 1] }];
 inpForm.soft   = [inpForm.soft   {0      0        0             0       0     }];
 
+inpForm.fname  = [inpForm.fname  {'nMax' 'hermit'}];
+inpForm.defval = [inpForm.defval {1e3    true    }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]   }];
+inpForm.soft   = [inpForm.soft   {0      0       }];
+
 param = sw_readparam(inpForm, varargin{:});
 
 % number of parameters (length of x)
@@ -94,6 +116,8 @@ R = zeros(nRun,1);
 sw_status(0,1);
 
 idx = 1;
+idxAll = 1;
+
 while idx <= nRun
     try
         if ~isempty(param.x0)
@@ -109,15 +133,20 @@ while idx <= nRun
         end
         
         [x(idx,:), R(idx), exitflag(idx), output(idx)] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0,param.xmin,param.xmax,...
-            optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
+            optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'),struct('hermit',param.hermit));
         idx = idx + 1;
     catch
         warning('Hamiltonian is not compatible with the magnetic ground state!');
         if ~isempty(param.x0)
             error('sw:fitspec:WrongInput','x0 input incompatible with ground state!');
         end
+        
+        if idxAll >= param.nMax
+            warning('sw:fitspec:WrongInput','Maximum number of wrong runs (param.nMax) reached, calculation is terminated!');
+            break;
+        end
     end
-    
+    idxAll = idxAll + 1;
     sw_status(idx/nRun*100);
 end
 sw_status(100,2);
@@ -146,7 +175,7 @@ fitsp.output   = output;
 
 end
 
-function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param)
+function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param,sw_param)
 % [R, pHandle] = SW_FITFUN(obj, data, param, swfunc, x) calculates the
 % agreement factor between simulated and measured data.
 %
@@ -181,7 +210,7 @@ for ii = 1:nConv
     data = dataCell{ii};
     
     % calculate spin-spin correlation function
-    spec = obj.spinwave(data.Q,'fitmode',true,'fid',0);
+    spec = obj.spinwave(data.Q,'fitmode',true,'fid',0,'hermit',sw_param.hermit);
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy

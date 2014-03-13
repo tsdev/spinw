@@ -68,16 +68,17 @@ nRun = param.nRun;
 
 % Initial parameters are random if param.x0 is undefined.
 if ~isempty(param.x0)
-    x0 = param.x0;
-elseif isempty(param.xmax) && isempty(param.xmin)
-    x0 = rand(nRun,nPar);
-elseif isempty(param.xmax)
-    x0 = repmat(param.xmin,[nRun 1]) + rand(nRun,nPar);
-elseif isempty(param.xmin)
-    x0 = repmat(param.xmax,[nRun 1]) - rand(nRun,nPar);
-else
-    x0 = bsxfun(@times,rand(nRun,nPar),(param.xmax-param.xmin))+repmat(param.xmin,[nRun 1]);
+    nRun = 1;
 end
+% elseif isempty(param.xmax) && isempty(param.xmin)
+%     x0 = rand(nRun,nPar);
+% elseif isempty(param.xmax)
+%     x0 = repmat(param.xmin,[nRun 1]) + rand(nRun,nPar);
+% elseif isempty(param.xmin)
+%     x0 = repmat(param.xmax,[nRun 1]) - rand(nRun,nPar);
+% else
+%     x0 = bsxfun(@times,rand(nRun,nPar),(param.xmax-param.xmin))+repmat(param.xmin,[nRun 1]);
+% end
 
 % Read experimental data
 data = sw_readspec(param.datapath);
@@ -91,10 +92,33 @@ R = zeros(nRun,1);
 %output   = struct;
 
 sw_status(0,1);
-for ii = 1:nRun
-    [x(ii,:), R(ii), exitflag(ii), output(ii)] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0(ii,:),param.xmin,param.xmax,...
-        optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
-    sw_status(ii/nRun*100);
+
+idx = 1;
+while idx <= nRun
+    try
+        if ~isempty(param.x0)
+            x0 = param.x0;
+        elseif isempty(param.xmax) && isempty(param.xmin)
+            x0 = rand(1,nPar);
+        elseif isempty(param.xmax)
+            x0 = param.xmin + rand(1,nPar);
+        elseif isempty(param.xmin)
+            x0 = param.xmax - rand(1,nPar);
+        else
+            x0 = rand(1,nPar).*(param.xmax-param.xmin)+param.xmin;
+        end
+        
+        [x(idx,:), R(idx), exitflag(idx), output(idx)] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0,param.xmin,param.xmax,...
+            optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
+        idx = idx + 1;
+    catch
+        warning('Hamiltonian is not compatible with the magnetic ground state!');
+        if ~isempty(param.x0)
+            error('sw:fitspec:WrongInput','x0 input incompatible with ground state!');
+        end
+    end
+    
+    sw_status(idx/nRun*100);
 end
 sw_status(100,2);
 

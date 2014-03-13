@@ -12,6 +12,7 @@ function hFigure = sw_structfigure
 % Create new figure.
 hFigure = figure;
 set(0,'Showhidden','on')
+set(gcf,'color','w')
 
 % Make the look of the plot
 set(gca,'Position',[0 0 1 1]);

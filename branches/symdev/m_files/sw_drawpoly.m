@@ -4,9 +4,10 @@ function polyDat = sw_drawpoly(varargin)
 % Options:
 %
 % cAtom     Indices of atom types for the center atom
-%           Default is 1.
+%           Default is 1. Can be also a string or strings in a cell that
+%           identify atoms by their labels.
 % pAtom     Indices of atom types of the surrounding atoms
-%           Default is 2.
+%           Default is 2. Can be also string or cell of strings.
 % range     Plot range in reciprocal lattice units, dimensions are [3 2].
 %           Default is the plotting range of the figure.
 % limits    Can be a single number: gives the number of neighbours or
@@ -52,6 +53,33 @@ inpForm.defval = {1       2       param.range 6        true   0.5    };
 inpForm.size   = {[1 -1]  [1 -2]  [3 2]                [1 -3]   [1 1]  [1 1]  };
 
 param  = sw_readparam(inpForm, varargin{:});
+
+% identify atoms by their labels
+if ischar(param.cAtom)
+    param.cAtom = {param.cAtom};
+end
+if ischar(param.pAtom)
+    param.pAtom = {param.pAtom};
+end
+
+if iscell(param.cAtom)
+    cAtom = [];
+    for ii = 1:numel(param.cAtom)
+        cAtom = [cAtom find(cellfun(@isempty,strfind(obj.unit_cell.label,param.cAtom{ii}))==false)]; %#ok<AGROW>
+    end
+    param.cAtom = cAtom;
+end
+
+if iscell(param.pAtom)
+    pAtom = [];
+    for ii = 1:numel(param.pAtom)
+        pAtom = [pAtom find(cellfun(@isempty,strfind(obj.unit_cell.label,param.pAtom{ii}))==false)]; %#ok<AGROW>
+    end
+    param.pAtom = pAtom;
+end
+
+
+
 limits = param.limits;
 
 atom = obj.atom;

@@ -153,9 +153,9 @@ end
 parType = ismember(1:5,parType);
 
 if parType(1)
-    try
+    if isfield(spectra,'Sperp') && ~isempty(spectra.Sperp)
         Sperp = spectra.Sperp;
-    catch
+    else
         error('sw_egrid:WrongInput',['Reference to non-existent field ''Sperp'','...
             ' use ''sw_neutron'' to produce the neutron scattering cross sections,'...
             ' before binning in energy!'])
@@ -165,9 +165,9 @@ else
 end
 
 if parType(3)
-    try
+    if isfield(spectra,'Mab') && ~isempty(spectra.Mab)
         Mab = spectra.Mab;
-    catch
+    else
         error('sw_egrid:WrongInput',['Reference to non-existent field ''Mab'','...
             ' use ''sw_neutron(''pol'',true)'' to produce the polarised neutron scattering cross sections,'...
             ' before binning with energy transfer!'])
@@ -177,9 +177,9 @@ else
 end
 
 if parType(4)
-    try
+    if isfield(spectra,'Pab') && ~isempty(spectra.Pab)
         Pab = spectra.Pab;
-    catch
+    else
         error('sw_egrid:WrongInput',['Reference to non-existent field ''Pab'','...
             ' use ''sw_neutron(''pol'',true)'' to produce the polarised neutron scattering cross sections,'...
             ' before binning with energy transfer!'])
@@ -189,9 +189,9 @@ else
 end
 
 if parType(5)
-    try
+    if isfield(spectra,'intP') && ~isempty(spectra.intP)
         intP = spectra.intP;
-    catch
+    else
         error('sw_egrid:WrongInput',['Reference to non-existent field ''intP'','...
             ' use ''sw_neutron(''pol'',true)'' to produce the polarised neutron scattering cross sections,'...
             ' before binning with energy transfer!'])

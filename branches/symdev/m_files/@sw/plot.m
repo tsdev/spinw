@@ -761,7 +761,7 @@ if param.tooltip
     
 end
 
-axes(cAxis); %#ok<MAXES>
+axes(cAxis);
 
 %% Stuff...
 

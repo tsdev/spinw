@@ -28,7 +28,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 %               For symbolic calculation at a general reciprocal space
 %               point use sym class input. For example to calculate the
-%               spectrum along (h,0,0): hkl = [sym('h') sym(0) sym(0)]. To
+%               spectrum along (h,0,0): hkl = [sym('h') 0 0]. To
 %               do calculation at a specific point do for example 
 %               sym([0 1 0]), to calculate the spectrum at (0,1,0).
 %

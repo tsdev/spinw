@@ -191,6 +191,7 @@ if param.fitmode < 2
     % Select only the isotropic exchange. Remove zero value elements.
     JJ.iso = squeeze(JJ.mat(1,1,:))';
     SS.iso = [SS.all(:,JJ.type == 1); JJ.iso(1,JJ.type == 1)];
+
     SS.iso = SS.iso(:,SS.iso(6,:)~=0);
     
     % Select only the anisotropic exchange. Remove zero value elements.
@@ -225,7 +226,11 @@ SS.all = [SS.all; shiftdim(reshape(JJ.mat,1,9,size(JJ.mat,3)),1)];
 
 % Cut out zero valued interactions
 if ~param.zeroC
-    nzeroJ  = sum(SS.all(6:end,:).^2,1) > 1e-10;
+    if obj.symb
+        
+    else
+        nzeroJ  = sum(SS.all(6:end,:).^2,1) > 1e-10;
+    end
     SS.all  = SS.all(:,nzeroJ);
     JJ.idx  = JJ.idx(nzeroJ);
     JJ.mat  = JJ.mat(:,:,nzeroJ);

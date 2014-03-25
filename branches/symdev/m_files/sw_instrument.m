@@ -57,6 +57,11 @@ function spectra = sw_instrument(spectra, varargin)
 % See also SW_MFF, POLYFIT, POLYVAL.
 %
 
+if nargin == 0
+    help sw_instrument
+    return;
+end
+
 inpForm.fname  = {'dE'  'ki'  'Ei' 'plot' 'polDeg' 'ThetaMin' 'formFact' 'dQ'  'norm'};
 inpForm.defval = {0      0     0     true  5        0          'auto'    0     true  };
 inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1]    [1 1]      [1 -2]    [1 1] [1 1] };
@@ -187,7 +192,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if param.ki <= 0
-    param.ki = sw_converter('meV',param.Ei,'k');
+    param.ki = sw_converter(param.Ei,'meV','k');
 end
 
 ki = param.ki;

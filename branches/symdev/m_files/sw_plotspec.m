@@ -212,6 +212,10 @@ else
     end
 end
 
+setappdata(fHandle,'param',param);
+setappdata(fHandle,'spectra',spectra);
+
+
 % Plotting styles for commensurate/incommensurate structures.
 if iscell(param.lineStyle)
     if numel(param.lineStyle) ~= 3

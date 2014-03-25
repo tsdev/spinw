@@ -150,8 +150,8 @@ nE      = numel(Evect);
 M0 = obj.mag_str.S;
 eta = bsxfun(@rdivide,M0,sqrt(sum(M0.^2,1)));
 
-% number of omega modes
-nMode = size(M0,2)*2;
+% number of magnetic atoms in the magnetic supercell
+nMagExt = size(M0,2);
 
 % temperature in energy units
 kBT = obj.unit.kB*param.T;
@@ -175,36 +175,64 @@ if fid == 1
     sw_status(0,1);
 end
 
+% size of the extended magnetic unit cell
+nExt    = double(obj.mag_str.N_ext);
+
+mAtom = sw_extendlattice(nExt, obj.matom);
+RR = mAtom.RRext;
+
+% Converts wavevctor list into the extended unit cell
+hklExt  = bsxfun(@times,hkl,nExt')*2*pi;
+
+% exp(-i*k*(Ri-Rj) factor
+ExpF = exp(-1i*sum(repmat(permute(hklExt,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHkl]),1));
+%ExpF = repmat(bsxfun(@times,permute(ExpF,[2 1 3]),conj(ExpF)),[2 2 1]);
 
 for ii = 1:nHkl
     for jj = 1:nKm
         % random Q points from the first Brillouin-zone
-        randQ = rand(3,param.nRand);
+        randQ = rand(3,nRand);
         
         % calculate dispersion, V matrix
-        [omega1, V1] = obj.corespec(randQ);
-        [omega2, V2] = obj.corespec(bsxfun(@plus,randQ,hkl(:,ii)+kmList(:,jj)));
+        [omega1, V1] = obj.corespec(randQ,'hermit',param.hermit);
+        [omega2, V2] = obj.corespec(bsxfun(@minus,hkl(:,ii)+kmList(:,jj),-randQ),'hermit',param.hermit);
+                
+        omega1 = permute(omega1(1:nMagExt,:),[1 3 2]);
+        omega2 = permute(omega2(1:nMagExt,:),[3 1 2]);
         
-        % energy of the two magnon process
-        omega = omega1 + omega2;
+        Q1 = V1(1:nMagExt,1+nMagExt:end,:);
+        P2 = V2(1:nMagExt,1:nMagExt,:);
+        
+        % energy of the two magnon process = sum(omega)
+        omega = permute(bsxfun(@plus,omega1,omega2),[1 2 3]);
         
         % intensity
-        Int = sum(V1.*conj(V1),1).*sum(V2.*conj(V2),1);
+        % dimensions [nMagExt nMagExt nRand alpha beta]
+        ExpF1 = bsxfun(@times,ExpF(:,:,ii),permute(eta,[3 2 4 1]));
         
-        % Calculate Bose temperature factor for magnons
-        if param.T==0
-            nBose = double(omega1>0).*double(omega2>0);
-        else
-            nBose = 1./((exp(abs(omega1)./kBT)-1)+double(omega1>0).*(exp(abs(omega2)./kBT)-1)+double(omega2>0));
-        end
+        Int = mmat(bsxfun(@times,ExpF1,permute(conj(Q1),[2 1 3])),P2);
+        %Int2 = mmat(bsxfun(@times,permute(ExpF1,[1 2 4 3]),permute(conj(Q1),[2 1 3])),P2);
         
-        % intensity * Bose
-        Int = permute(Int.*permute(nBose,[3 1 2]),[4 1 2 3]);
+        Int = bsxfun(@times,Int,permute(conj(Int),[1 2 3 5 4]));
         
-        % eta_alpha*eta_beta factor
-        Int = bsxfun(@times,Int,repmat(bsxfun(@times,permute(eta,[1 3 2]),permute(eta,[3 1 2])),[1 1 2]));
+   
+%         % Calculate Bose temperature factor for magnons
+%         % dimensions [nMode nMode nRand]
+%         if param.T==0
+%             nBose = bsxfun(@times,double(omega1>0),double(omega2>0));
+%         else
+%             nBose = bsxfun(@times,1./((exp(abs(omega1)./kBT)-1)+double(omega1>0)), ...
+%                 1./((exp(abs(omega2)./kBT)-1)+double(omega2>0)));
+%         end
+        % intensity = intensity * Bose
+        % dimensions [alpha beta nMode nRand]
+        %Int = permute(reshape(bsxfun(@times,Int,nBose),nMagExt^2,1,nRand,3,3),[4 5 1 3 2]);
+        Int = permute(reshape(Int,nMagExt^2,1,nRand,3,3),[4 5 1 3 2]);
         
-        [~, idxE] = min(abs(repmat(real(omega),[1 1 nE])-repmat(permute(Evect,[2 3 1]),[nMode nRand 1])),[],3);
+        
+        omega = permute(reshape(omega,nMagExt^2,1,nRand),[1 3 2]);
+        
+        [~, idxE] = min(abs(repmat(real(omega),[1 1 nE])-repmat(permute(Evect,[2 3 1]),[nMagExt^2 nRand 1])),[],3);
         
         if incomm
             % introduce the rotation matrices from the Rodriguez formula

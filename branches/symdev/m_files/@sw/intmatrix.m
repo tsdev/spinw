@@ -231,6 +231,8 @@ if ~param.zeroC
     else
         nzeroJ  = sum(SS.all(6:end,:).^2,1) > 1e-10;
     end
+    % for symbolic variables
+    %nzeroJ  = isAlways(sum(SS.all(6:end,:).^2,1) > 1e-10);
     SS.all  = SS.all(:,nzeroJ);
     JJ.idx  = JJ.idx(nzeroJ);
     JJ.mat  = JJ.mat(:,:,nzeroJ);

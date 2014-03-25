@@ -7,7 +7,11 @@ function addatom(obj, varargin)
 %
 %   r       Atomic positions, dimensions are [3 nAtom]. No default value!
 %   S       Spin of the atoms, dimensions are [1 nAtom], for non-magnetic
-%           atoms set S to zero. Default is 1.
+%           atoms set S to zero. Default spin is generated from the given
+%           label of the atom. For example if 'label' is 'MCr3+' or 'Cr3+'
+%           then the high spin of S=3/2 is automatically generated. The
+%           high spin values for every ion is stored in the last column of
+%           the ion.dat file.
 %   label   Names of the atoms for plotting and form factor
 %           calculations (see ion.dat), it is a cell, optional.
 %           Example:
@@ -94,9 +98,12 @@ if isa(newAtom,'struct')
             newAtom(ii).r = newAtom(ii).r';
         end
         
-        % Generate spins, default is 1.
+        % Generate spins, default is generated from the label of the atom.
         if isempty(newAtom(ii).S)
-            newAtom(ii).S = ones(1,size(newAtom.r,2));
+            for jj = 1:numel(newAtom(ii).r)/3
+                [~,~,S0] = sw_mff(newAtom(ii).label{jj});
+                newAtom(ii).S(jj) = S0;
+            end
         end
         
         if ~any(size(newAtom(ii).color)-[1 3])

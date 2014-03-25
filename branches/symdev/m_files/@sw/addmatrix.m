@@ -126,13 +126,24 @@ if isa(newMat,'struct')
             
         elseif numel(cIdx) == 1
             % Replace the coupling type with the new one.
-            obj.matrix.mat(:,:,cIdx) = newJItem.mat;
+            if obj.symb
+                obj.matrix.mat(:,:,cIdx) = newJItem.mat*sym(newJItem.label);
+            else
+                obj.matrix.mat(:,:,cIdx) = newJItem.mat;
+            end
             obj.matrix.label(cIdx)   = newJItem.label;
             obj.matrix.color(:,cIdx) = newJItem.color;
             
+            
         else
             % Add the coupling type to the list.
-            obj.matrix.mat   = cat(3,obj.matrix.mat,newObj.matrix.mat);
+            if obj.symb
+                for jj = 1:size(newObj.matrix.mat,3)
+                    obj.matrix.mat(:,:,end+1) = newObj.matrix.mat(:,:,jj)*sym(newObj.matrix.label{jj});
+                end
+            else
+                obj.matrix.mat = cat(3,obj.matrix.mat,newObj.matrix.mat);
+            end
             obj.matrix.label = [obj.matrix.label newObj.matrix.label];
             obj.matrix.color = [obj.matrix.color newObj.matrix.color];
             

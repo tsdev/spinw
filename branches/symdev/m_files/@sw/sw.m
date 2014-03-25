@@ -135,7 +135,8 @@ classdef sw < class_handlelight
     
     properties (Access = private)
         matomstore = [];
-        issym  = true;  % stores whether the couplings are generated under symmetr constraints
+        sym  = true;  % stores whether the couplings are generated under symmetry constraints
+        symb = false; % stores whether the calculation are done symbolically
         Elabel = 'meV';
         Qlabel = 'Angstrom^{-1}';
         Rlabel = 'Angstrom';
@@ -240,7 +241,8 @@ classdef sw < class_handlelight
             objC = sw(objS);
             
             % copy the private properties
-            objC.issym  = obj.issym;
+            objC.sym    = obj.sym;
+            objC.symb   = obj.symb;
             objC.Elabel = obj.Elabel;
             objC.Qlabel = obj.Qlabel;
             objC.Rlabel = obj.Rlabel;
@@ -292,10 +294,10 @@ classdef sw < class_handlelight
             
         end % .temperature
         
-        function issym = symmetry(obj)
+        function sym = symmetry(obj)
             % true if space group is used to generate couplings
             %
-            % issym = SW.SYMMETRY(obj)
+            % sym = SW.SYMMETRY(obj)
             %
             % If true, equivalent couplings are generated based on the
             % crystal space group and all matrices (interaction, anisotropy
@@ -304,13 +306,51 @@ classdef sw < class_handlelight
             % on bond length, equivalent matrices won't be transformed
             % (all identical).
             %
-            % To change it use sw.gencoupling with the sym option. To
-            % remove all symmetry operators use sw.nosym.
+            % To change it use sw.gencoupling with the forceNoSym option.
+            % To remove all symmetry operators use sw.nosym.
             %
             
-            issym = obj.issym;
+            sym = obj.sym;
             
         end % .symmetry
+        
+        function varargout = symbolic(obj, symb)
+            % true/false for symbolic/numerical calculation
+            %
+            % symb = SW.SYMBOLIC(obj)
+            %
+            % If true, magnetic structure are spin wave dispersions are
+            % calculated symbolically.
+            %
+            
+            if nargin == 1
+                symb = obj.symb;
+            elseif symb == true
+                
+                obj.mag_str.S = sym(obj.mag_str.S); %#ok<*CPROP>
+                obj.mag_str.k = sym(obj.mag_str.k);
+                obj.mag_str.n = sym(obj.mag_str.n);
+                
+                nMat = numel(obj.matrix.label);
+                if isa(obj.matrix.mat,'sym')
+                    % matrices are already symbolic
+                elseif nMat == 0
+                    obj.matrix.mat = sym(obj.matrix.mat);
+                else
+                    for ii = 1:nMat
+                        symVar = sym(obj.matrix.label{ii});
+                        obj.matrix.mat = obj.matrix.mat*symVar;
+                    end
+                end
+                
+                obj.symb = true;
+            end
+            
+            if (nargin < 2) || (nargout > 0)
+                varargout = {logical(symb)};
+            end
+            
+        end % .symbolic
         
     end
     methods (Hidden=true)

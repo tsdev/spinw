@@ -89,7 +89,7 @@ Sext(idxCut)   = [];
 % new lattice simmetry is no-symmetry
 obj.lattice.sym     = int32(0);
 % no symmetry operations
-obj.issym = false;
+obj.sym = false;
 
 % new unit cell defined
 obj.unit_cell.r     = rNew;

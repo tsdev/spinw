@@ -26,6 +26,12 @@ function spectra = spinwave(obj, hkl, varargin)
 %               (h,0,0) from 0 to 1 and 50 Q points are calculated along
 %               the scan.
 %
+%               For symbolic calculation at a general reciprocal space
+%               point use sym class input. For example to calculate the
+%               spectrum along (h,0,0): hkl = [sym('h') sym(0) sym(0)]. To
+%               do calculation at a specific point do for example 
+%               sym([0 1 0]), to calculate the spectrum at (0,1,0).
+%
 % Options:
 %
 % fitmode       Speedup (for fitting mode only), default is false.
@@ -99,8 +105,12 @@ if nargin==1
     return
 end
 
-% calculate symbolic spectrum if hkl is symbolic variable
-if isa(hkl,'sym')
+% calculate symbolic spectrum if obj is in symbolic mode
+if obj.symb
+    if ~isa(hkl,'sym')
+        warning('hkl has to be symbolic, spin wave spectrum for general Q (h,k,l) will be calculated!');
+        hkl = [sym('h'); sym('k'); sym('l')];
+    end
     spectra = obj.spinwavesym(hkl, varargin{:});
     return
 end

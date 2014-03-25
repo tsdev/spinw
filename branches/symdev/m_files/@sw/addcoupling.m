@@ -35,7 +35,7 @@ if nargin>3
         warning('sw:addcoupling:CouplingSize',['couplingIdx is '...
             'non-scalar but bondIdx is defined!']);
     end
-    if obj.issym
+    if obj.sym
         error('sw:addcoupling:SymmetryProblem',['bondIdx is not allowed '...
             'when crystal symmetry is not P1!']);
     end

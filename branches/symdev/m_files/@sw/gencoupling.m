@@ -21,6 +21,9 @@ function gencoupling(obj, varargin)
 %               lattice units. Default is 3.
 % maxDistance   Maximum bond length that will be stored in the
 %               obj.coupling property in units of Angstrom. Default is 8.
+% maxBond       Maximum number of generated inequivalent bonds. If
+%               zero, maxDistance is considered to limit the longest
+%               bond. Default is zero.
 % tolDist       Tolerance of distance, within two bonds are regarded
 %               equivalent, default is 1e-3 Angstrom. Only used, when no
 %               space group is defined.
@@ -32,9 +35,9 @@ function gencoupling(obj, varargin)
 
 isSym = obj.lattice.sym > 0;
 
-inpForm.fname  = {'forceNoSym' 'nUnitCell' 'maxDistance' 'tol' 'tolDist' 'dMin'};
-inpForm.defval = {false        3           8             1e-5  1e-3      0.5   };
-inpForm.size   = {[1 1]        [1 1]       [1 1]         [1 1] [1 1]     [1 1] };
+inpForm.fname  = {'forceNoSym' 'nUnitCell' 'maxDistance' 'tol' 'tolDist' 'dMin' 'maxBond'};
+inpForm.defval = {false        3           8             1e-5  1e-3      0.5    0        };
+inpForm.size   = {[1 1]        [1 1]       [1 1]         [1 1] [1 1]     [1 1]  [1 1]    };
 
 param = sw_readparam(inpForm, varargin{:});
 tol   = param.tol;
@@ -46,7 +49,7 @@ if param.forceNoSym
 end
 
 % save the sym/nosym method into obj
-obj.issym = isSym;
+obj.sym = isSym;
 
 % Number of unit cells along any direction to find nearest neighbours.
 nUnitCell = param.nUnitCell;
@@ -170,6 +173,10 @@ if nMagAtom > 0
         newM = sortM;
     end
     
+    % cut the number of bonds
+    if param.maxBond > 0
+        newM = newM(:,newM(6,:)<=param.maxBond);
+    end
     % default anisotropy and g-tensor values
     aniso = int32(zeros(1,nMagAtom));
     g     = int32(zeros(1,nMagAtom));

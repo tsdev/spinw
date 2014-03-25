@@ -138,7 +138,7 @@ end
 
 % For non P1 symmetry and when the couplings are generated using symmetry,
 % generate the Hamiltonian using the symmetry operators
-if obj.issym
+if obj.sym
     % Generate the transformation matrix between lattice units and xyz
     % coordinate system
     A = obj.basisvector;

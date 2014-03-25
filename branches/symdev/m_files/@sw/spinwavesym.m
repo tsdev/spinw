@@ -1,4 +1,4 @@
-function omega = spinwavesym(obj, varargin)
+function spectra = spinwavesym(obj, varargin)
 % calculates symbolic spin wave dispersion
 %
 % spectra = SPINWAVESYM(obj, k, 'option1', value1 ...)
@@ -85,7 +85,7 @@ fid = param.fid;
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
-[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true);
+[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
 
 
 % Introduce the opposite couplings.
@@ -238,7 +238,7 @@ fprintf('ready!\n');
 
 % multiplication with g removed to get negative and positive
 % energies as well
-omega = simplify(diag(D));
-
+spectra.omega = simplify(diag(D));
+spectra.V = V;
 
 end

@@ -831,7 +831,11 @@ string = [];
 for ii = 1:size(mat,1)
     string = [string '|']; %#ok<AGROW>
     for jj = 1:size(mat,2)
-        string = [string sprintf(['%' num2str(p1) '.' num2str(p2) 'f '],mat(ii,jj))]; %#ok<AGROW>
+        if isa(mat,'sym')
+            string = [string char(mat(ii,jj))]; %#ok<AGROW>
+        else
+            string = [string sprintf(['%' num2str(p1) '.' num2str(p2) 'f '],mat(ii,jj))]; %#ok<AGROW>
+        end
     end
     string = [string '|\n']; %#ok<AGROW>
 end

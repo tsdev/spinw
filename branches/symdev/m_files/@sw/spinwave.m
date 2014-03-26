@@ -99,27 +99,32 @@ function spectra = spinwave(obj, hkl, varargin)
 % See also SW, SW.SPINWAVESYM, SW_NEUTRON, SW.POWSPEC, SW.OPTMAGSTR.
 %
 
-% help when executed without argument
-if nargin==1
-    help sw.spinwave
-    return
+% for linear scans create the Q line(s)
+if nargin > 1
+    if iscell(hkl)
+        hkl = sw_qscan(hkl);
+    elseif numel(hkl)==3
+        hkl = hkl(:);
+    end
+else
+    hkl = [];
 end
 
 % calculate symbolic spectrum if obj is in symbolic mode
 if obj.symb
     if ~isa(hkl,'sym')
         warning('hkl has to be symbolic, spin wave spectrum for general Q (h,k,l) will be calculated!');
-        hkl = [sym('h'); sym('k'); sym('l')];
+        spectra = obj.spinwavesym(varargin{:});
+    else
+        spectra = obj.spinwavesym(varargin{:},'hkl',hkl);
     end
-    spectra = obj.spinwavesym(hkl, varargin{:});
     return
 end
 
-% for linear scans create the Q line(s)
-if iscell(hkl)
-    hkl = sw_qscan(hkl);
-elseif numel(hkl)==3
-    hkl = hkl(:);
+% help when executed without argument
+if nargin==1
+    help sw.spinwave
+    return
 end
 
 inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol'  };

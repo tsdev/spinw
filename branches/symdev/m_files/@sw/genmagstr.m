@@ -215,6 +215,12 @@ if strcmp(param.mode,'extend') && (nMagAtom > size(param.S,2))
     warning('sw:genmagstr:WrongInitialStructure','No magnetic structure is defined, random structure is created instead!')
 end
 
+if obj.symb
+    k = sym(k);
+    param.S = sym(param.S);
+    n = sym(n);
+end
+
 switch param.mode
     case 'extend'
         % Extend the unit cell if:

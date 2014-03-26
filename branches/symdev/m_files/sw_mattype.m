@@ -21,7 +21,7 @@ if any(mSize(1:2)-[3 3])
     error('sw:sw_mattype:InputError','Input matrix is not 3x3xN!');
 end
 
-if ~isreal(mat)
+if ~isreal(mat) && ~isa(mat,'sym')
     error('sw:sw_mattype:InputError','Input matrix is not real!');
 end
 

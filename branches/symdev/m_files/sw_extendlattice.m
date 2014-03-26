@@ -80,10 +80,15 @@ switch nargin
         
         % Extend coupling matrices.
         for ll = 1:length(fName)
-            
-            SS0 = double(SS.(fName{ll}));
-            N   = size(SS0,2);
-            SS2 = zeros(size(SS0,1),N*nCell);
+            if isa(SS.(fName{ll}),'sym')
+                SS0 = SS.(fName{ll});
+                N   = size(SS0,2);
+                SS2 = sym(zeros(size(SS0,1),N*nCell));
+            else
+                SS0 = double(SS.(fName{ll}));
+                N   = size(SS0,2);
+                SS2 = zeros(size(SS0,1),N*nCell);
+            end
             
             if ~isempty(SS0)
                 rIndex = 0;

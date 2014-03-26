@@ -1,7 +1,7 @@
 function spectra = spinwavesym(obj, varargin)
 % calculates symbolic spin wave dispersion
 %
-% spectra = SPINWAVESYM(obj, k, 'option1', value1 ...)
+% spectra = SPINWAVESYM(obj, 'option1', value1 ...)
 %
 % Symbolic spin wave dispersion  is calculated as a function of reciprocal
 % space points. The function can deal with arbitrary magnetic structure and
@@ -18,11 +18,12 @@ function spectra = spinwavesym(obj, varargin)
 % Input:
 %
 % obj           Input structure, sw class object.
-% hkl           Symbolic definition of q vector. For a general Q point use:
-%                   hkl = [sym('h') sym('k') sym('l')];
 %
 % Options:
 %
+% hkl           Symbolic definition of q vector. Default is the general Q
+%               point:
+%                   hkl = [sym('h') sym('k') sym('l')]
 % fitmode       Speedup (for fitting mode only), default is false.
 % notwin        If true, the spectra of the twins won't be calculated.
 %               Default is false.
@@ -138,33 +139,38 @@ zed = e1 + 1i*e2;
 eta = e3;
 
 dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
-atom1 = [SS.all(4,:)   1:nMagExt];
-atom2 = [SS.all(5,:)   1:nMagExt];
-idxM  = [idxM repmat(obj.single_ion.aniso,1,prod(nMagExt))];
+atom1 = int32([SS.all(4,:)   1:nMagExt]);
+atom2 = int32([SS.all(5,:)   1:nMagExt]);
+idxM  = int32([idxM repmat(obj.single_ion.aniso,1,prod(nMagExt))]);
 % magnetic couplings, 3x3xnJ
 JJ = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
 
 % remove zero anisotropy matrices
-anyIdx = squeeze(sumsym(sumsym(abs(JJ),1),2))>0;
+anyIdx = squeeze(sumsym(sumsym(abs(JJ),1),2)) == 0;
+if ~isa(anyIdx,'logical')
+    anyIdx = isAlways(anyIdx);
+end
+anyIdx = ~anyIdx;
+
 dR    = dR(:,anyIdx);
 atom1 = atom1(1,anyIdx);
 atom2 = atom2(1,anyIdx);
 JJ    = JJ(:,:,anyIdx);
-idxM  = idxM(1,anyIdx);
+%idxM  = idxM(1,anyIdx);
 
 % create symbolic variables from matrix labels
-nMat = size(obj.matrix.mat,3);
+%nMat = size(obj.matrix.mat,3);
 
-for ii = 1:nMat
-    JS(ii) = sym(obj.matrix.label{ii},'real'); %#ok<AGROW>
-end
+%for ii = 1:nMat
+%    JS(ii) = sym(obj.matrix.label{ii},'real'); %#ok<AGROW>
+%end
 
 % normalize JJ to the maximum value
 %JJ = JJ./repmat(max(max(abs(JJ))),[3 3 1]);
 
 
 % create symbolic matrices
-JJ = JJ.*repmat(permute(JS(idxM),[3 1 2]),[3 3 1]);
+%JJ = JJ.*repmat(permute(JS(idxM),[3 1 2]),[3 3 1]);
 
 if incomm
     % transform JJ due to the incommensurate wavevector
@@ -235,6 +241,11 @@ g = sym(diag([ones(nMagExt,1); -ones(nMagExt,1)]));
 fprintf(fid,'Calculating SYMBOLIC eigenvalues... ');
 [V, D] = eig(g*ham);
 fprintf('ready!\n');
+
+spectra.V0 = V;
+
+M = diag(g*V'*g*V);
+V = V*diag(sqrt(1./M));
 
 % multiplication with g removed to get negative and positive
 % energies as well

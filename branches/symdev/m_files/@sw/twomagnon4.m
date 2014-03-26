@@ -147,14 +147,14 @@ end
 nE      = numel(Evect);
 
 % eta vectors
-M0 = double(obj.mag_str.S);
-eta = M0./repmat(sqrt(sum(M0.^2,1)),3,1);
+M0 = obj.mag_str.S;
+eta = bsxfun(@rdivide,M0,sqrt(sum(M0.^2,1)));
 
-% number of magnetic atoms in the magnetic supercell
-nMagExt = size(M0,2);
+% number of omega modes
+nMode = size(M0,2)*2;
 
 % temperature in energy units
-%kBT = obj.unit.kB*param.T;
+kBT = obj.unit.kB*param.T;
 
 Sab2 = zeros(nE,nHkl,3,3);
 
@@ -185,117 +185,49 @@ RR = mAtom.RRext;
 hklExt  = bsxfun(@times,hkl,nExt')*2*pi;
 
 % exp(-i*k*(Ri-Rj) factor
-ExpF = exp(-1i*sum(repmat(permute(hklExt,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHkl]),1));
+ExpF = exp(1i*sum(repmat(permute(hklExt,[1 3 2]),[1 nMode/2 1]).*repmat(RR,[1 1 nHkl]),1));
 %ExpF = repmat(bsxfun(@times,permute(ExpF,[2 1 3]),conj(ExpF)),[2 2 1]);
-
-persistent spec0
-syms h k l J
 
 for ii = 1:nHkl
     for jj = 1:nKm
         % random Q points from the first Brillouin-zone
         randQ = rand(3,nRand);
-        %randQ = [linspace(0,1,nRand);zeros(2,nRand)];
         
         % calculate dispersion, V matrix
-        if obj.symb
-            if ii == 1
-                spec0 = obj.spinwave;
-            end
-            
-            Q1 = randQ;
-            h = Q1(1,:); k = Q1(2,:); l = Q1(3,:); J = 1;
-            omega1 = eval(spec0.omega);
-            V1 = zeros(4,4,nRand);
-            for k1 = 1:4
-                for k2 = 1:4
-                    V1(k1,k2,:) = eval(spec0.V(k1,k2));
-                end
-            end
-            
-            Q2 = bsxfun(@minus,hkl(:,ii)+kmList(:,jj),randQ);
-            
-            h = Q2(1,:); k = Q2(2,:); l = Q2(3,:); J = 1;
-            omega2 = eval(spec0.omega);
-            V2 = zeros(4,4,nRand);
-            for k1 = 1:4
-                for k2 = 1:4
-                    V2(k1,k2,:) = eval(spec0.V(k1,k2));
-                end
-            end
-            
-            % sort omegas to positive values
-            idx1 = repmat([1;2;3;4],1,nRand);
-            idx2 = repmat([1;2;3;4],1,nRand);
-            nFlip1 = sum(omega1(1,:)<0);
-            nFlip2 = sum(omega2(1,:)<0);
-            
-            idx1(:,omega1(1,:)<0) = repmat([3;4;1;2],1,nFlip1);
-            idx2(:,omega2(1,:)<0) = repmat([3;4;1;2],1,nFlip2);
-            
-            
-            %[omega1, idx1] = sort(omega1,'descend');
-            %[omega2, idx2] = sort(omega2,'descend');
-            
-            V1new = V1; V2new = V2;
-            omega1new = omega1; omega2new = omega2;
-            
-            for k1 = 1:4
-                for k3 = 1:nRand
-                    omega1new(k1,k3) = omega1(idx1(k1,k3),k3);
-                    omega2new(k1,k3) = omega2(idx2(k1,k3),k3);
-                    
-                    for k2 = 1:4
-                        V1new(k1,k2,k3) = V1(idx1(k1,k3),idx1(k2,k3),k3);
-                        V2new(k1,k2,k3) = V2(idx2(k1,k3),idx2(k2,k3),k3);
-                    end
-                end
-            end
-            
-            V1 = V1new; V2 = V2new;
-            omega1 = omega1new; omega2 = omega2new;
-            
-        else
-            [omega1, V1] = obj.corespec(randQ,'hermit',param.hermit);
-            [omega2, V2] = obj.corespec(bsxfun(@minus,hkl(:,ii)+kmList(:,jj),randQ),'hermit',param.hermit);
-        end
+        [omega1, V1] = obj.corespec(randQ);
+        [omega2, V2] = obj.corespec(bsxfun(@plus,-randQ,hkl(:,ii)+kmList(:,jj)));
         
-        omega1 = permute(omega1(1:nMagExt,:),[1 3 2]);
-        omega2 = permute(omega2(1:nMagExt,:),[3 1 2]);
-        
-        Q1 = V1(1:nMagExt,1+nMagExt:end,:);
-        P2 = V2(1:nMagExt,1:nMagExt,:);
+        omega1 = omega1(1:nMode/2,:);
+        omega2 = omega2(1:nMode/2,:);
         
         % energy of the two magnon process = sum(omega)
-        omega = permute(bsxfun(@plus,omega1,omega2),[1 2 3]);
+        omega = omega1+omega2;
         
         % intensity
-        % dimensions [nMagExt nMagExt nRand alpha beta]
+        % dimensions [nMode nMode nRand alpha beta]
         ExpF1 = bsxfun(@times,ExpF(:,:,ii),permute(eta,[3 2 4 1]));
         
-        Int = mmat(bsxfun(@times,ExpF1,permute(conj(Q1),[2 1 3])),P2);
-        %Int2 = mmat(bsxfun(@times,permute(ExpF1,[1 2 4 3]),permute(conj(Q1),[2 1 3])),P2);
+        Int = mmat(bsxfun(@times,ExpF1,permute(conj(V1(1:nMode/2,1:nMode/2,:)),[2 1 3])),permute(V2(1:nMode/2,1:nMode/2,:),[2 1 3]));
+        Int0 = bsxfun(@times,Int,permute(conj(Int),[1 2 3 5 4]));
         
-        Int = bsxfun(@times,Int,permute(conj(Int),[1 2 3 5 4]));
+        Int = zeros(nMode/2,nRand,3,3);
+        for kk = 1:nMode/2
+            Int(kk,:,:,:) = Int0(kk,kk,:,:,:);
+        end
         
+        % Calculate Bose temperature factor for magnons
+        % dimensions [nMode nMode nRand]
+        if param.T==0
+            nBose = double(omega1>0).*double(omega2>0);
+        else
+            nBose = 1./((exp(abs(omega1)./kBT)-1)+double(omega1>0).*(exp(abs(omega2)./kBT)-1)+double(omega2>0));
+        end
         
-        %         % Calculate Bose temperature factor for magnons
-        %         % dimensions [nMode nMode nRand]
-        %         if param.T==0
-        %             nBose = bsxfun(@times,double(omega1>0),double(omega2>0));
-        %         else
-        %             nBose = bsxfun(@times,1./((exp(abs(omega1)./kBT)-1)+double(omega1>0)), ...
-        %                 1./((exp(abs(omega2)./kBT)-1)+double(omega2>0)));
-        %         end
         % intensity = intensity * Bose
         % dimensions [alpha beta nMode nRand]
-        %Int = permute(reshape(bsxfun(@times,Int,nBose),nMagExt^2,1,nRand,3,3),[4 5 1 3 2]);
-        Int = permute(reshape(Int,nMagExt^2,1,nRand,3,3),[4 5 1 3 2]);
+        Int = permute(bsxfun(@times,Int,nBose),[3 4 1 2]);
         
-        
-        omega = permute(reshape(omega,nMagExt^2,1,nRand),[1 3 2]);
-        
-        [~, idxE] = min(abs(repmat(real(omega),[1 1 nE])-repmat(permute(Evect,[2 3 1]),[nMagExt^2 nRand 1])),[],3);
+        [~, idxE] = min(abs(repmat(real(omega),[1 1 nE])-repmat(permute(Evect,[2 3 1]),[nMode/2 nRand 1])),[],3);
         
         if incomm
             % introduce the rotation matrices from the Rodriguez formula

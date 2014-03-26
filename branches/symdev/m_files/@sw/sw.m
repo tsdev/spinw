@@ -325,6 +325,15 @@ classdef sw < class_handlelight
             
             if nargin == 1
                 symb = obj.symb;
+                
+                if symb
+                    v = ver;
+                    if ~any(strcmp('Symbolic Math Toolbox', {v.Name}))
+                        symb = false;
+                        warning('You need Symbolic Math Toolbox installed to run symbolic calculations!')
+                    end
+                end
+                
             elseif symb == true
                 
                 obj.mag_str.S = sym(obj.mag_str.S); %#ok<*CPROP>

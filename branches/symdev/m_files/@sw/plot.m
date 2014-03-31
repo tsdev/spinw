@@ -150,21 +150,6 @@ function varargout = plot(obj, varargin)
 % legend           Legend.
 %
 
-lattice   = obj.lattice;
-% The basis vectors in columns.
-basisVector = obj.basisvector;
-
-% Handle of figure window to plot.
-hFigure = sw_getfighandle('sw_crystal');
-if isempty(hFigure)
-    hFigure = sw_structfigure;
-end
-
-tooltip(hFigure,'<< Click on any object to get information! >>')
-
-cva = get(gca,'CameraViewAngle');
-[az, el] = view();
-
 %% input parameters
 
 range0 = [0 1;0 1;0 1];
@@ -200,11 +185,33 @@ inpForm.fname  = [inpForm.fname  {'rEll' 'eEll' 'pZeroCoupling' 'tooltip' 'cCoup
 inpForm.defval = [inpForm.defval {1          0.1          true             true      'auto'     'auto'   'auto' }];
 inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]            [1 1]     [1 -7]     [1 -2]   [1 -3] }];
 
-inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' }];
-inpForm.defval = [inpForm.defval {1      1       1      1               }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]           }];
+inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' 'hFigure'}];
+inpForm.defval = [inpForm.defval {1      1       1      1                0       }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]            [1 1]   }];
 
 param = sw_readparam(inpForm, varargin{:});
+
+
+lattice   = obj.lattice;
+% The basis vectors in columns.
+basisVector = obj.basisvector;
+
+% Handle of figure window to plot.
+if param.hFigure>0
+    hFigure = param.hFigure;
+    figure(hFigure);
+else
+    hFigure = sw_getfighandle('sw_crystal');
+end
+
+if isempty(hFigure)
+    hFigure = sw_structfigure;
+end
+
+tooltip(hFigure,'<< Click on any object to get information! >>')
+
+cva = get(gca,'CameraViewAngle');
+[az, el] = view();
 
 % change range, if the number of unit cells are given
 if numel(param.range) == 3

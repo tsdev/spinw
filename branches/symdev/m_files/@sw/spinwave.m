@@ -113,6 +113,10 @@ end
 
 % calculate symbolic spectrum if obj is in symbolic mode
 if obj.symb
+    if numel(hkl) == 3
+        hkl = sym(hkl);
+    end
+    
     if ~isa(hkl,'sym')
         warning('hkl has to be symbolic, spin wave spectrum for general Q (h,k,l) will be calculated!');
         spectra = obj.spinwavesym(varargin{:});

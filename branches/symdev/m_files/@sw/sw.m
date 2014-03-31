@@ -346,10 +346,12 @@ classdef sw < class_handlelight
                 elseif nMat == 0
                     obj.matrix.mat = sym(obj.matrix.mat);
                 else
+                    mat0 = sym(obj.matrix.mat*0);
                     for ii = 1:nMat
-                        symVar = sym(obj.matrix.label{ii});
-                        obj.matrix.mat = obj.matrix.mat*symVar;
+                        symVar = sym(obj.matrix.label{ii},'real');
+                        mat0(:,:,ii) = obj.matrix.mat(:,:,ii)*symVar;
                     end
+                    obj.matrix.mat = mat0;
                 end
                 
                 obj.symb = true;

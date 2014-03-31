@@ -267,7 +267,11 @@ switch param.mode
         
         % Spin in the extended unit cell.
         S = zeros(3,nMagExt);
-        if isreal(param.S)
+        if obj.symb
+            S = sym(S);
+        end
+        
+        if isreal(param.S) || isa(param.S,'sym')
             % Rotate spins for each unit cell.
             for ii = 1:nMagExt
                 selS    = S0(:,mod(ii-1,nSpin)+1);

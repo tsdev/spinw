@@ -106,12 +106,14 @@ end
 coupling = obj.coupling;
 SS.all = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx]);
 
-
+% just keep all non-zero coupling
+mat_idx = coupling.mat_idx;
+    
 if param.fitmode > 0
     % sum up couplings on the same bond
     
     % Remove couplings where all mat_idx == 0.
-    colSel = any(coupling.mat_idx ~= 0,1);
+    colSel = any(mat_idx ~= 0,1);
     
     JJ.idx = coupling.mat_idx(:,colSel);
     JJ.idx(JJ.idx == 0) = nMat + 1;
@@ -120,10 +122,10 @@ if param.fitmode > 0
     
     % sum the interactions on the same coupling
     JJ.mat  = mat(:,:,JJ.idx(1,:)) + mat(:,:,JJ.idx(2,:)) + mat(:,:,JJ.idx(3,:));
-    
+    JJ.idx  = mat_idx(mat_idx(:) ~= 0);
 else
     % just keep all non-zero coupling
-    mat_idx = coupling.mat_idx';
+    %mat_idx = coupling.mat_idx';
     JJ.idx  = mat_idx(mat_idx(:) ~= 0);
     
     colSel  = [find(coupling.mat_idx(1,:)~=0) find(coupling.mat_idx(2,:)~=0) find(coupling.mat_idx(3,:)~=0)];
@@ -131,7 +133,7 @@ else
     
     SS.all = [SS.all; double(JJ.idx(:)')];
     
-    % sum the interactions on the same coupling
+    % select the non-zero interactions into JJ.mat
     JJ.mat  = mat(:,:,JJ.idx);
     
 end

@@ -448,6 +448,7 @@ setappdata(objMod,'handles',handles);
         end
         
         if all((param.range(:,1) - param.range(:,2)) < 0)
+            param.hFigure = hFigure;
             plot(obj, param);
             figure(objMod);
         end

@@ -72,8 +72,8 @@ elseif nargin == 1
                 end
                 ii = ii+1;
             end
+            fclose(fid);
             if symIdx == 0
-                fclose(fid);
                 error('sw:sw_gensym:WrongInput','Symmetry name does not exists (case insensitive)!');
             end
             symNum = symIdx;
@@ -160,7 +160,5 @@ if isnan(symName)
 else
     symName = symName(1:find(diff([symName '  ']==32),1,'last'));
 end
-
-    
 
 end

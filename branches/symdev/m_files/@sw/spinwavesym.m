@@ -86,8 +86,8 @@ fid = param.fid;
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
-[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
-
+%[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
+[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
 
 % Introduce the opposite couplings.
 % (i-->j) and (j-->i)
@@ -97,7 +97,7 @@ SS.new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];
 SS.new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:) ]/2;
 
 % ???
-idxM = [SS.all(15,:) SS.all(15,:)];
+%idxM = [SS.all(15,:) SS.all(15,:)];
 
 SS.all         = SS.new;
 
@@ -125,12 +125,13 @@ end
 
 % Local (e1,e2,e3) coordinate system fixed to the moments.
 % e3 || Si
-e3 = M0./repmat(S0,[3 1]);
+e3 = M0./repmat(S0(:),[3 1]);
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
 %e2(3,~any(e2)) = 1;
 e2(3,~any(abs(e2)>1e-10)) = 1;
-e2  = e2./repmat(sqrt(sum(e2.^2,1)),[3 1]);
+E0 = sqrt(sum(e2.^2,1));
+e2  = e2./repmat(E0(:),[3 1]);
 % e1 = e2 x e3
 e1  = cross(e2,e3);
 
@@ -141,7 +142,7 @@ eta = e3;
 dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
 atom1 = int32([SS.all(4,:)   1:nMagExt]);
 atom2 = int32([SS.all(5,:)   1:nMagExt]);
-idxM  = int32([idxM repmat(obj.single_ion.aniso,1,prod(nMagExt))]);
+%idxM  = int32([idxM repmat(obj.single_ion.aniso,1,prod(nMagExt))]);
 % magnetic couplings, 3x3xnJ
 JJ = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
 
@@ -239,17 +240,21 @@ g = sym(diag([ones(nMagExt,1); -ones(nMagExt,1)]));
 % R.M. White, et al., Physical Review 139, A450?A454 (1965)
 
 fprintf(fid,'Calculating SYMBOLIC eigenvalues... ');
-[V, D] = eig(g*ham);
+[V, D] = eig(g*ham); % 3rd output P
 fprintf('ready!\n');
 
 spectra.V0 = V;
 
-M = diag(g*V'*g*V);
-V = V*diag(sqrt(1./M));
+if size(V,2) == size(ham,2)
+    M = diag(g*V'*g*V);
+    V = V*diag(sqrt(1./M));
+    spectra.V = V;
+else
+    warning('There are degenerate eigenvalues!')
+end
 
 % multiplication with g removed to get negative and positive
 % energies as well
 spectra.omega = simplify(diag(D));
-spectra.V = V;
 
 end

@@ -85,7 +85,8 @@ function spectra = spinwave(obj, hkl, varargin)
 % nMode is the number of magnetic mode. For commensurate structures it is
 % double the number of magnetic atoms in the magnetic cell/supercell. For
 % incommensurate structures this number is tripled due to the appearance of
-% the (Q+/-km) Fourier components in the correlation functions.
+% the (Q+/-km) Fourier components in the correlation functions. For every k
+% points in the following order: (k-km,k,k+km).
 %
 % If several twins exist in the sample, omega and Sab are packaged into a
 % cell, that contains nTwin number of matrices.

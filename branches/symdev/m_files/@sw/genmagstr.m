@@ -246,7 +246,7 @@ switch param.mode
         % Magnetic ordering wavevector in the extended unit cell.
         kExt = k.*nExt;
         % Warns about the non sufficient extension of the unit cell.
-        if any(abs(kExt-round(kExt))>param.epsilon)
+        if any(abs(kExt-round(kExt))>param.epsilon) && prod(nExt) > 1
             warning('sw:genmagstr:UCExtNonSuff','In the extended unit cell k is still larger than epsilon!');
         end
         % Number of spins in the input.

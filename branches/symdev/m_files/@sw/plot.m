@@ -421,10 +421,11 @@ if param.sEll>0
         if any(cIdx)
             
             % Calculates the main radiuses of the ellipsoid.
-            [V, R] = eig(single_ion.mat(:,:,ll));
+            %[V, R] = eig(single_ion.mat(:,:,ll));
+            [V, R0] = eigorth(single_ion.mat(:,:,ll),1e-5);
             % Creates positive definite matrix by adding constant to all
             % eigenvalues.
-            R0      = diag(R);
+            %R0      = diag(R);
             epsilon = sqrt(sum(R0.^2))*param.eEll;
             dR      = 1./(R0-min(R0)+epsilon);
             dR0     = max(dR);

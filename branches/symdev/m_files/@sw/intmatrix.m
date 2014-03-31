@@ -144,7 +144,17 @@ if obj.sym
     A = obj.basisvector;
     
     % Generate anisotropy matrice using the space group symmetry
-    if any(SI.aniso(:))
+    if obj.symb
+        nzeroA = sum(SI.aniso(:).^2,1)==0;
+        if ~isa(nzeroA,'logical')
+            nzeroA = isAlways(nzeroA);
+        end
+        nzeroA = ~nzeroA;
+    else
+        nzeroA  = any(SI.aniso(:));
+    end
+    
+    if nzeroA
         [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
         % convert rotation operators to xyz Cartesian coordinate system
         rotOp = mmat(A,mmat(rotOp,inv(A)));

@@ -586,7 +586,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         
                         hArrow  = sw_arrow(rPlot-plotS,rPlot+plotS,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
                         set(hArrow,'Tag','spinArrow');
-                        handle.spinArrow(atom.idx(ll),end+(1:4)) = hArrow;
+                        handle.spinArrow(atom.idx(ll),end+(1:numel(hArrow))) = hArrow;
                         set(hArrow,'FaceColor',MColor);
                         set(hArrow,'LineStyle','none');
                         if intS

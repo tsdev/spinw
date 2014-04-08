@@ -82,10 +82,12 @@ elseif nargin == 1
         
     else
         symNum = varargin{1};
+        
         if symNum<0
             fclose(fid);
             error('spinw:sw_gensym:WrongInput','Symmetry number has to be positive integer!');
         elseif symNum == 0
+            fclose(fid);
             symOp   = eye(3);
             symTr   = [0 0 0]';
             symName = 'No sym';

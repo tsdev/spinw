@@ -23,6 +23,7 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 % extend        If true, all bonds in the magnetic supercell will be
 %               generated, if false, only the bonds in the crystallographic
 %               unit cell is calculated. Default is true.
+% conjugate     Introduce the conjugate of the couplings. Default is false.
 %
 % Output:
 %
@@ -60,9 +61,9 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 % See also SW.COUPLINGTABLE.
 %
 
-inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend'};
-inpForm.defval = {0          false     false   true    };
-inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]   };
+inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate'};
+inpForm.defval = {0          false     false   true     false      };
+inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]      };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -289,6 +290,16 @@ if param.extend
     
     % Save the position of all atoms
     RR = mAtom.RRext;
+end
+
+if param.conjugate
+    % Introduce the opposite couplings.
+    % (i-->j) and (j-->i)
+    % transpose the JJ matrix as well [1 2 3 4 5 6 7 8 9] --> [6 9 12 7 10 13 8 11 14]
+    new         = [SS.all(1:3,:)   -SS.all(1:3,:)  ];
+    new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];
+    new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:)]/2;
+    SS.all      = new;
 end
 
 % Save external field.

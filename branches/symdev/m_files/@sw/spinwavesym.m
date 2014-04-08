@@ -87,19 +87,19 @@ fid = param.fid;
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
 %[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
-[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
+[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true);
 
 % Introduce the opposite couplings.
 % (i-->j) and (j-->i)
 % transpose the JJ matrix as well [1 2 3 4 5 6 7 8 9] --> [6 9 12 7 10 13 8 11 14]
-SS.new         = [SS.all(1:3,:)   -SS.all(1:3,:)  ];
-SS.new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];
-SS.new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:) ]/2;
+% SS.new         = [SS.all(1:3,:)   -SS.all(1:3,:)  ];
+% SS.new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];
+% SS.new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:) ]/2;
 
 % ???
 %idxM = [SS.all(15,:) SS.all(15,:)];
 
-SS.all         = SS.new;
+%SS.all         = SS.new;
 
 % Converts wavevctor list into the extended unit cell
 hklExt  = hkl.*nExt'*2*pi;

@@ -11,24 +11,24 @@ function polyDat = sw_drawpoly(varargin)
 % range     Plot range in reciprocal lattice units, dimensions are [3 2].
 %           Default is the plotting range of the figure.
 % limits    Can be a single number: gives the number of neighbours or
-%           vector: [min max] distance range from neighbours.
-%           Default is 6 to plot octahedra.
+%           vector: [min max] distance range from neighbours. Default is 6
+%           to plot octahedra.
 % edge      Whether to paint the edge of the polyhedra to the color of
-%           the central atom (true) or keep it black (false).
-%           Default is true.
-% alpha     Transparency of the polyhedra surface.
-%           Default is 0.5.
+%           the central atom (true) or keep it black (false). Default is
+%           true.
+% alpha     Transparency of the polyhedra surface. Default is 0.5.
+%
 %
 % Output:
 %
 % polyDat is structure type, with the following fields:
-% polyhedron    Vector, contains the handle of all polyhedron
-%               surface.
+%
+% polyhedron    Vector, contains the handle of all polyhedron surface.
 % index         Index of the center atom.
-% pos           Positions of the surrounding atoms relatice to the
-%               center atom in Angstrom units.
-% center        Positions of the center atoms in the crystal, in
-%               Angstrom units.
+% pos           Positions of the surrounding atoms relative to the center
+%               atom in Angstrom units.
+% center        Positions of the center atoms in the crystal, in Angstrom
+%               units.
 %
 % See also SW, SW_T2G, SW_ORBITAL, SW_ADDOBJECT.
 %

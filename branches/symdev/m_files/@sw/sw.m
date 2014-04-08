@@ -314,6 +314,20 @@ classdef sw < class_handlelight
             
         end % .symmetry
         
+        function varargout = notwin(obj)
+            % removes any twin added to the sw object
+            %
+            % SW.NOTWIN(obj)
+            %
+            
+            obj.twin.vol = 1;
+            obj.twin.rotc = eye(3);
+            
+            if nargout >0
+                varargout{1} = obj;
+            end
+        end
+            
         function varargout = symbolic(obj, symb)
             % true/false for symbolic/numerical calculation
             %

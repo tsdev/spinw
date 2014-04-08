@@ -201,18 +201,18 @@ twinIdx = twinIdx(:);
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
 if param.fitmode
-    [SS, SI, RR] = obj.intmatrix('fitmode',2);
+    [SS, SI, RR] = obj.intmatrix('fitmode',2,'conjugate',true);
 else
-    [SS, SI, RR] = obj.intmatrix;
+    [SS, SI, RR] = obj.intmatrix('conjugate',true);
 end
 
 % Introduce the opposite couplings.
 % (i-->j) and (j-->i)
 % transpose the JJ matrix as well [1 2 3 4 5 6 7 8 9] --> [6 9 12 7 10 13 8 11 14]
-SS.new         = [SS.all(1:3,:)   -SS.all(1:3,:)  ];
-SS.new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];
-SS.new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:) ]/2;
-SS.all         = SS.new;
+% SS.new         = [SS.all(1:3,:)   -SS.all(1:3,:)  ];
+% SS.new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];
+% SS.new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:) ]/2;
+% SS.all         = SS.new;
 
 % Converts wavevctor list into the extended unit cell
 hklExt  = bsxfun(@times,hkl,nExt')*2*pi;

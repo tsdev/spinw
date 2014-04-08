@@ -14,7 +14,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           and the correlation functions. For convoluted spectra, if true,
 %           the imaginary part is plotted. Default is false.
 % aHandle   Handle of the axis object for plotting, if undefined the
-%           previous plot sw_plotspec plot window is used.
+%           active axis will be used (gca).
 % colorbar  Plot colorbar for dispersion and intensity, default is true.
 % nCol      Number of colors in the colormap, default is 500.
 % dashed    Whether to plot dashed vertical line between multiple linear
@@ -71,7 +71,7 @@ if nargin==0
 end
 
 inpForm.fname  = {'mode' 'imag' 'aHandle' 'colorbar' 'dashed' };
-inpForm.defval = {4      false   0         true       false    };
+inpForm.defval = {4      false   gca      true       false    };
 inpForm.size   = {[1 1]  [1 1]  [1 1]     [1 1]      [1 1]    };
 
 inpForm.fname  = [inpForm.fname  {'dE'  'fontSize' 'colormap' 'axLim'}];

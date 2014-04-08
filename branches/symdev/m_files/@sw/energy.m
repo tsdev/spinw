@@ -68,7 +68,7 @@ if  incomm && (any(any(any((SI.aniso)))) || (any(SI.field)) || (any(any(any(abs(
 end
 
 if nMagExt>0
-    
+
     dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
     atom1 = [SS.all(4,:)   1:nMagExt];
     atom2 = [SS.all(5,:)   1:nMagExt];

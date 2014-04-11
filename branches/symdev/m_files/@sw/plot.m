@@ -118,6 +118,9 @@ function varargout = plot(obj, varargin)
 %   surfRes         Number of points on the surface mesh, default is 30.
 %   wSpace          Space between figure window and plot structure,
 %                   default is 10.
+%   hg              Whether to use hgtransform (nice rotation with the
+%                   mouse) or default Matlab rotation of 3D objects.
+%                   Default is true.
 %
 % Output:
 %
@@ -185,9 +188,9 @@ inpForm.fname  = [inpForm.fname  {'rEll' 'eEll' 'pZeroCoupling' 'tooltip' 'cCoup
 inpForm.defval = [inpForm.defval {1          0.1          true             true      'auto'     'auto'   'auto' }];
 inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]            [1 1]     [1 -7]     [1 -2]   [1 -3] }];
 
-inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' 'hFigure'}];
-inpForm.defval = [inpForm.defval {1      1       1      1                0       }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]            [1 1]   }];
+inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' 'hFigure' 'hg' }];
+inpForm.defval = [inpForm.defval {1      1       1      1                0        true }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]            [1 1]    [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -703,24 +706,27 @@ if isappdata(hFigure,'handle')
     end
 end
 
-h  = getappdata(hFigure,'h');
-h2 = hgtransform('Parent',h);
-hName = fieldnames(handle);
+% put all objects into a hgtransform object for rotation
+if param.hg
+    h  = getappdata(hFigure,'h');
+    h2 = hgtransform('Parent',h);
+    hName = fieldnames(handle);
+    
+    for ii = 1:length(hName)
+        h0 = reshape(handle.(hName{ii}),1,[]);
+        h0(h0 == 0) = [];
+        h0(~ishandle(h0)) = [];
+        set(h0,'Parent',h2);
+        set(h0,'Clipping','Off');
+    end
+    T = makehgtform('translate',-sum(basisVector * sum(param.range,2)/2,2)');
+    set(h2,'Matrix',T);
 
-for ii = 1:length(hName)
-    h0 = reshape(handle.(hName{ii}),1,[]);
-    h0(h0 == 0) = [];
-    h0(~ishandle(h0)) = [];
-    set(h0,'Parent',h2);
-    set(h0,'Clipping','Off');
 end
 
 set(gca,'CameraViewAngle',cva);
 handle.light = camlight('right');
 set(handle.light,'Tag','light');
-
-T = makehgtform('translate',-sum(basisVector * sum(param.range,2)/2,2)');
-set(h2,'Matrix',T);
 
 %% Plot the legend.
 

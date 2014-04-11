@@ -1,10 +1,12 @@
-function data = sw_atomdata(atomSymb, datType)
-% data = SW_ATOMDATA(atomSymb, dataType) returns information about atoms
+function varargout = sw_atomdata(atomSymb, datType)
+% [data atomLabel] = SW_ATOMDATA(atomSymb, dataType) returns information about atoms
 % from the atom.dat file.
 %
 % Input:
 %
-% atomSymb  String of the name of the atom, for example 'He'.
+% atomSymb  String of the name of the atom, for example 'He'. If the string
+%           contains whitespace character, the second word will be used to
+%           identify the atom.
 % datType   Type of information requested:
 %               radius  Atomic radius.
 %               color   Color of the atom from the CPK color scheme.
@@ -13,6 +15,9 @@ function data = sw_atomdata(atomSymb, datType)
 % sw_atomdata('H','radius') = 0.37
 % If the atom label does not exists, the function returns radius = 1, 
 % color = [255 167 0].
+%
+% optional second output is 'atomLabel' that contains the name of the atom
+% clean.
 %
 % See also SW_MFF.
 %
@@ -29,6 +34,18 @@ if fid == -1
     error('spinw:sw_atomdata:FileNotFound',['Atom definition file cannot be found: '...
         regexprep(rPath,'\' , '\\\') '!']);
 end
+
+% split multiple words and use the second word if exists
+atomSymb = strword(atomSymb,2,true);
+atomSymb = atomSymb{1};
+
+% atomSymb = strsplit(atomSymb);
+% wordIdx = find(cellfun(@numel,atomSymb));
+% if numel(wordIdx) > 1
+%     atomSymb = atomSymb{wordIdx(2)};
+% else
+%     atomSymb = atomSymb{wordIdx(1)};
+% end
 
 % cut M from the beginning of the atom label
 upStr = isstrprop(atomSymb,'upper');
@@ -66,6 +83,12 @@ elseif strcmpi('color',datType)
     end
 else
     error('sw_atomdata:WrongInput','datType has to be either radius or color!');
+end
+
+varargout{1} = data;
+
+if nargout > 1
+    varargout{2} = atomSymb;
 end
 
 end

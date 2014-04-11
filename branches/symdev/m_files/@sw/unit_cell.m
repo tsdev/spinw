@@ -24,6 +24,7 @@ function unit_cell_info = unit_cell(obj, idx)
 % keeps only the Oxygen atoms in crystal sw object.
 %
 % See also SW.ADDTWIN, SW.TWINQ, SW.UNIT_CELL.
+%
 
 if nargin == 1
     idx = 1:numel(obj.unit_cell.S);

@@ -6,7 +6,8 @@ function [formFactVal, coeff, S] = sw_mff(atomName, Q)
 %
 % atomName      String, contains the name of the magnetic ion in FullProf
 %               notation (e.g. Cr^3+ --> 'MCR3' or 'Cr3'). It can be also a
-%               vector of the 7 coefficients, see below.
+%               vector of the 7 coefficients, see below. If the string
+%               contains whitespace, the first word will be used as input.
 % Q             Momentum transfer in Angstrom^-1 units, optional.
 %
 % Output:
@@ -31,6 +32,13 @@ end
 formFact = struct;
 
 if ischar(atomName)
+    % if there is whitespace, use the first word
+    atomName = strword(atomName,1);
+    atomName = atomName{1};
+    %     atomName = strsplit(atomName);
+    %     wordIdx = find(cellfun(@numel,atomName));
+    %     atomName = atomName{wordIdx(1)};
+    
     % remove +/- symbols
     atomName = atomName(atomName>45);
     % Open the form factor definition file.

@@ -8,6 +8,11 @@ function sw_createpcr(path, pcrFile, perm)
 % perm  Permutation of the (x,y,z) coordinates.
 %
 
+if nargin == 0
+    help sw_createpcr;
+    return;
+end
+
 if nargin < 3
     perm = 1:3;
 end

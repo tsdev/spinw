@@ -333,6 +333,19 @@ nMagAtom   = size(mAtom.r,2);
 
 atom.color = double(obj.unit_cell.color(:,atom.idx))/255;
 atom.name  = obj.unit_cell.label(atom.idx);
+atom.label = cell(1,nAtom);
+
+% plot only the first word of every label
+for ii = 1:nAtom
+    labelTemp = strword(atom.name{ii},[1 2],true);
+    atom.label{ii} = labelTemp{1};
+    atom.name{ii}  = labelTemp{2};
+    
+    % labelTemp = strsplit(atom.name{ii});
+    % wordIdx = find(cellfun(@numel,labelTemp));
+    % atom.name{ii} = labelTemp{wordIdx(1)};
+end
+
 atom.rad   = ones(nAtom,1) * param.rAtom; % atomic radius
 
 for ll = 1:nAtom
@@ -497,7 +510,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             set(sAniso,'LineStyle','none');
                             set(sAniso,'FaceAlpha',param.aEll);
                             set(sAniso,'FaceColor',double(obj.matrix.color(:,aIdx))/255);
-                            set(sAniso,'Tag',['aniso_' atom.name{ll}]);
+                            set(sAniso,'Tag',['aniso_' atom.label{ll}]);
                             
                             tooltip(sAniso,[single_ion.label{llMagAtom} ' anisotropy\n' strmat(single_ion.mat(:,:,llMagAtom))]);
                             
@@ -512,7 +525,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                                 sC(3) = plot3(ell.c3(1,:)+rPlot(1),ell.c3(2,:)+rPlot(2),ell.c3(3,:)+rPlot(3));
                                 set(sC,'LineWidth',param.lwEll);
                                 set(sC,'Color',[0 0 0]);
-                                set(sC,'Tag',['aniso_circle_' atom.name{ll}]);
+                                set(sC,'Tag',['aniso_circle_' atom.label{ll}]);
                                 handle.aniso(atom.idx(ll),end+(1:3)) = sC;
                             end
                         end
@@ -524,21 +537,21 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             
                             handle.atomText(atom.idx(ll),end+1) = text(...
                                 'Position',             rPlot+param.dText+atom.rad(ll)/sqrt(3),...
-                                'String',               sprintf('%s(%d)_{%d}',atom.name{ll},atom.idx(ll),ll),...
+                                'String',               sprintf('%s(%d)_{%d}',atom.label{ll},atom.idx(ll),ll),...
                                 'VerticalAlignment',    'bottom',...
-                                'Tag',                  ['atomText_' atom.name{ll} ' '],...
+                                'Tag',                  ['atomText_' atom.label{ll} ' '],...
                                 'fontSize',             param.fontSize);
-                            tooltip(handle.atomText(atom.idx(ll),end),[atom.name{ll} ' atom \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
+                            tooltip(handle.atomText(atom.idx(ll),end),[atom.label{ll} ' atom \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
                         end
                         
                         % Creates the sphere of the atom.
                         aSphere = surf(sp.x*atom.rad(ll)+rPlot(1), sp.y*atom.rad(ll)+rPlot(2), sp.z*atom.rad(ll)+rPlot(3));
-                        set(aSphere,'Tag',['atom_' atom.name{ll}]);
+                        set(aSphere,'Tag',['atom_' atom.label{ll}]);
                         handle.atom(atom.idx(ll),end+1) = aSphere;
                         set(aSphere,'LineStyle','none');
                         set(aSphere,'FaceColor',AColor);
                         
-                        tooltip(aSphere,[atom.name{ll} ' atom \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
+                        tooltip(aSphere,[atom.name{ll} ' atom (' atom.label{ll} ') \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
                     end
                     
                     % Plots magnetic moments.

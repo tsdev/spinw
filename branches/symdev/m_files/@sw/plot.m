@@ -241,6 +241,41 @@ if plotmode
     [az, el] = view();
 end
 
+<<<<<<< .mine
+if param.hg
+    if isempty(hFigure)
+        hFigure = sw_structfigure;
+    end
+else
+    hFigure = figure;
+    set(hFigure,...
+        'Name',          sprintf('Figure %d: SpinW : Crystal structure',hFigure),...
+        'NumberTitle',   'off',...
+        'DockControls',  'off',...
+        'PaperType',     'A4',...
+        'Tag',           'sw_crystal',...
+        'Toolbar',       'figure');
+    set(gcf,'color','w')
+    set(gca,'Position',[0 0 1 1]);
+    set(gca,'Color','none');
+    set(gca,'Box','off');
+    set(gca,'Clipping','Off');
+    daspect([1 1 1]);
+    pbaspect([1 1 1]);
+    axis off
+    axis vis3d
+    hold on
+    material dull;
+
+end
+
+tooltip(hFigure,'<< Click on any object to get information! >>')
+
+cva = get(gca,'CameraViewAngle');
+[az, el] = view();
+
+=======
+>>>>>>> .r165
 % change range, if the number of unit cells are given
 if numel(param.range) == 3
     param.range = [ [0 0 0]' param.range(:)];

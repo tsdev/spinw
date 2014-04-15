@@ -8,6 +8,9 @@ function out = export(obj, varargin)
 %
 % 'pcr'     Creates part of a .pcr file used by FullProf. It exports the
 %           atomic positions.
+% 'spt'     Creates a Jmol script, that reproduce the same plot as used the
+%           built in sw.plot() function. Any additional parameter of the
+%           sw.plot() function can be used.
 %
 %
 % Other general options:
@@ -27,16 +30,20 @@ function out = export(obj, varargin)
 % If either 'path' nor 'fid' is given, the 'out' will be a cell containing
 % strings for each line of the text output.
 %
+% Links:
+% Jmol Wiki: http://wiki.jmol.org/index.php/Main_Page
+% FullProf:  https://www.ill.eu/sites/fullprof
+%
 
 if nargin == 1
     help sw.export;
     return
 end
 
-inpForm.fname  = {'format' 'path' 'fid' 'perm'  };
-inpForm.defval = {''       ''      []   [1 2 3] };
-inpForm.size   = {[1 -1]   [1 -2] [1 1] [1 3]   };
-inpForm.soft   = {true     true    true false   };
+inpForm.fname  = {'format' 'path' 'fid' 'perm'  'showWarn'};
+inpForm.defval = {''       ''      []   [1 2 3] false     };
+inpForm.size   = {[1 -1]   [1 -2] [1 1] [1 3]   [1 1]     };
+inpForm.soft   = {true     true    true false   false     };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -44,6 +51,20 @@ switch param.format
     case 'pcr'
         % create .pcr text file
         outStr = createpcr(obj, param.perm);
+    case 'spt'
+        % create Jmol script file
+        if nargin == 2
+            varargin{1}.showWarn = false;
+            varargin{1}.format = 'jmol';
+        else
+            varargin{end+1} = 'showWarn';
+            varargin{end+1} = false;
+            varargin{end+1} = 'format';
+            varargin{end+1} = 'jmol';
+            
+        end
+
+        outStr = plot(obj, varargin{:});
         
     case ''
         warning('sw:export:NoInput','No ''format'' option was given, no output is produced!');

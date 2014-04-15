@@ -118,14 +118,25 @@ function varargout = plot(obj, varargin)
 %   surfRes         Number of points on the surface mesh, default is 30.
 %   wSpace          Space between figure window and plot structure,
 %                   default is 10.
+%   format          Output format.
+%                       'plot'  Plot onto Matlab figure. (Default)
+%                       'jmol'  Return Jmol script file as a script,
+%                               (spt file).
 %   hg              Whether to use hgtransform (nice rotation with the
 %                   mouse) or default Matlab rotation of 3D objects.
 %                   Default is true.
 %
 % Output:
 %
+% For plotting:
+% hFigure           Handle of the plot figure.
 % handle            Stores the handles for all graphical object in a
 %                   struct.
+%
+% For 'jmol' script file output:
+% strOut            A single string is returned, that contains a Jmol
+%                   script that reproduce the figure as close as possible.
+%
 %
 % The labels on the atom has the following meaning:
 %
@@ -152,13 +163,15 @@ function varargout = plot(obj, varargin)
 % spinPlane        Circle showing the plane of the spins.
 % legend           Legend.
 %
+% See also SW_DRAW, SW_GETOBJECT, SW_ADDOBJECT.
+%
 
 %% input parameters
 
 range0 = [0 1;0 1;0 1];
-inpForm.fname  = {'range' 'pSpin'    'cAxis'    'pCell'     'pDM' };
-inpForm.defval = {range0  true       [0 0 0]     true       1     };
-inpForm.size   = {[-5 -6] [1 1]      [1 3]       [1 1]      [1 1] };
+inpForm.fname  = {'range' 'pSpin'    'cAxis'    'pCell'     'pDM' 'format'};
+inpForm.defval = {range0  true       [0 0 0]     true       1     'plot'  };
+inpForm.size   = {[-5 -6] [1 1]      [1 3]       [1 1]      [1 1] [1 -9]  };
 
 inpForm.fname  = [inpForm.fname  {'angHeadAxis' 'lHeadAxis'     'rAxis'}];
 inpForm.defval = [inpForm.defval {15             0.5           0.06    }];
@@ -194,27 +207,39 @@ inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]            [1 1]  
 
 param = sw_readparam(inpForm, varargin{:});
 
+switch param.format
+    case 'plot'
+        plotmode = true;
+    case 'jmol'
+        plotmode = false;
+        strOut = sprintf('BACKGROUND WHITE;\n');
+    otherwise
+        error('sw:plot:WrongInput','''format'' option has to be either ''plot'' or ''jmol''!');
+end
+
 
 lattice   = obj.lattice;
 % The basis vectors in columns.
 basisVector = obj.basisvector;
 
-% Handle of figure window to plot.
-if param.hFigure>0
-    hFigure = param.hFigure;
-    figure(hFigure);
-else
-    hFigure = sw_getfighandle('sw_crystal');
+if plotmode
+    % Handle of figure window to plot.
+    if param.hFigure>0
+        hFigure = param.hFigure;
+        figure(hFigure);
+    else
+        hFigure = sw_getfighandle('sw_crystal');
+    end
+    
+    if isempty(hFigure)
+        hFigure = sw_structfigure;
+    end
+    
+    tooltip(hFigure,'<< Click on any object to get information! >>')
+    
+    cva = get(gca,'CameraViewAngle');
+    [az, el] = view();
 end
-
-if isempty(hFigure)
-    hFigure = sw_structfigure;
-end
-
-tooltip(hFigure,'<< Click on any object to get information! >>')
-
-cva = get(gca,'CameraViewAngle');
-[az, el] = view();
 
 % change range, if the number of unit cells are given
 if numel(param.range) == 3
@@ -233,13 +258,15 @@ param.pSpin = param.pSpin && ~isempty(obj.mag_str.S);
 
 %% save data to figure
 
-% delete previous object if a different one is going to be saved
-objOld = getappdata(hFigure,'obj');
-if isempty(objOld) || (objOld ~= obj)
-    delete(objOld);
-    setappdata(hFigure,'obj',copy(obj));
+if plotmode
+    % delete previous object if a different one is going to be saved
+    objOld = getappdata(hFigure,'obj');
+    if isempty(objOld) || (objOld ~= obj)
+        delete(objOld);
+        setappdata(hFigure,'obj',copy(obj));
+    end
+    setappdata(hFigure,'param',param);
 end
-setappdata(hFigure,'param',param);
 
 %% Calculated parameters
 
@@ -250,23 +277,28 @@ v2 = basisVector(:,2);
 v3 = basisVector(:,3);
 
 %axis range to show
-param.wRange = [param.range(:,1)-param.wSpace param.range(:,2)+param.wSpace];
-axis(reshape((basisVector*param.wRange)',1,[])+wShift);
-zoom(10);
-
-%sphare surface for atoms
-[sp.x, sp.y, sp.z] = sphere(param.surfRes);
-% circles for the ellipsoid
-cr{1} = sw_circle([0 0 0]',[1 0 0]',1.01,param.surfRes);
-cr{2} = sw_circle([0 0 0]',[0 1 0]',1.01,param.surfRes);
-cr{3} = sw_circle([0 0 0]',[0 0 1]',1.01,param.surfRes);
+if plotmode
+    param.wRange = [param.range(:,1)-param.wSpace param.range(:,2)+param.wSpace];
+    axis(reshape((basisVector*param.wRange)',1,[])+wShift);
+    zoom(10);
+    
+    %sphare surface for atoms
+    [sp.x, sp.y, sp.z] = sphere(param.surfRes);
+    % circles for the ellipsoid
+    cr{1} = sw_circle([0 0 0]',[1 0 0]',1.01,param.surfRes);
+    cr{2} = sw_circle([0 0 0]',[0 1 0]',1.01,param.surfRes);
+    cr{3} = sw_circle([0 0 0]',[0 0 1]',1.01,param.surfRes);
+    
+    hold on
+end
 
 %% Plot the unit cell.
 
-hold on
+
 handle.unitCell = [];
 
 if param.pCell
+    idx = 1;
     
     path=[v0 v1 v1+v2 v2 v0 v3 v3+v1 v1 v3+v1 v3+v1+v2 v1+v2 v3+v1+v2 v3+v2 v2 v3+v2 v3];
     
@@ -275,13 +307,31 @@ if param.pCell
             for jj = ceil(param.range(2,1)):floor(param.range(2,2)-1)
                 for kk = ceil(param.range(3,1)):floor(param.range(3,2)-1)
                     pathd = path+(v1*ii+v2*jj+v3*kk)*ones(1,16);
-                    handle.unitCell(end+1) = plot3(pathd(1,:),pathd(2,:),pathd(3,:));
+                    if plotmode
+                        handle.unitCell(end+1) = plot3(pathd(1,:),pathd(2,:),pathd(3,:));
+                    else
+                        for ll = 2:size(pathd,2)
+                            objid = sprintf('unitCell%d',idx);
+                            idx = idx + 1;
+                            strOut = [strOut jmol_command('line',objid,pathd(:,ll-1),pathd(:,ll),param.cCell)];
+                        end
+                    end
                 end
             end
         end
     end
-    if isempty(handle.unitCell)
-        handle.unitCell = plot3(path(1,:),path(2,:),path(3,:));
+    if plotmode
+        if isempty(handle.unitCell)
+            handle.unitCell = plot3(path(1,:),path(2,:),path(3,:));
+        end
+    else
+        if idx == 1
+            for ll = 2:size(path,2)
+                objid = sprintf('unitCell%d',idx);
+                idx = idx + 1;
+                strOut = [strOut jmol_command('line',objid,path(:,ll-1),path(:,ll),param.cCell)];
+            end
+        end
     end
     
     set(handle.unitCell,'Color',param.cCell,'LineStyle',param.lineStyleCell,'LineWidth',param.lineWidthCell);
@@ -293,36 +343,44 @@ end
 if param.pAxis
     
     r = -ones(3,1).*param.dAxis + v1*param.range(1,1) + v2*param.range(2,1) + v3*param.range(3,1);
-    handle.arrow = zeros(12,1);
     
-    [handle.arrow(1:4)]  = sw_arrow(r,(r+v1),param.rAxis,param.angHeadAxis,param.lHeadAxis,param.surfRes);
-    [handle.arrow(5:8)]  = sw_arrow(r,(r+v2),param.rAxis,param.angHeadAxis,param.lHeadAxis,param.surfRes);
-    [handle.arrow(9:12)] = sw_arrow(r,(r+v3),param.rAxis,param.angHeadAxis,param.lHeadAxis,param.surfRes);
-    
-    set(handle.arrow,'Facecolor',param.cAxis);
-    set(handle.arrow,'Tag','arrow');
-    
-    v1n = v1/norm(v1)*param.dText;
-    v2n = v2/norm(v2)*param.dText;
-    v3n = v3/norm(v3)*param.dText;
-    
-    handle.arrowText(1) = text(r(1)+v1(1)+v1n(1),r(2)+v1(2)+v1n(2),r(3)+v1(3)+v1n(1),'a','fontSize',param.fontSize);
-    handle.arrowText(2) = text(r(1)+v2(1)+v2n(1),r(2)+v2(2)+v2n(2),r(3)+v2(3)+v2n(2),'b','fontSize',param.fontSize);
-    handle.arrowText(3) = text(r(1)+v3(1)+v3n(1),r(2)+v3(2)+v3n(2),r(3)+v3(3)+v3n(3),'c','fontSize',param.fontSize);
-    
-    set(handle.arrowText,'Tag','arrowText');
-    tooltip(handle.arrow,'Arrow')
-    tooltip(handle.arrowText,'Arrow text')
+    if plotmode
+        handle.arrow = zeros(12,1);
+        
+        [handle.arrow(1:4)]  = sw_arrow(r,r+v1,param.rAxis,param.angHeadAxis,param.lHeadAxis,param.surfRes);
+        [handle.arrow(5:8)]  = sw_arrow(r,r+v2,param.rAxis,param.angHeadAxis,param.lHeadAxis,param.surfRes);
+        [handle.arrow(9:12)] = sw_arrow(r,r+v3,param.rAxis,param.angHeadAxis,param.lHeadAxis,param.surfRes);
+        
+        set(handle.arrow,'Facecolor',param.cAxis);
+        set(handle.arrow,'Tag','arrow');
+        
+        v1n = v1/norm(v1)*param.dText;
+        v2n = v2/norm(v2)*param.dText;
+        v3n = v3/norm(v3)*param.dText;
+        
+        handle.arrowText(1) = text(r(1)+v1(1)+v1n(1),r(2)+v1(2)+v1n(2),r(3)+v1(3)+v1n(1),'a','fontSize',param.fontSize);
+        handle.arrowText(2) = text(r(1)+v2(1)+v2n(1),r(2)+v2(2)+v2n(2),r(3)+v2(3)+v2n(2),'b','fontSize',param.fontSize);
+        handle.arrowText(3) = text(r(1)+v3(1)+v3n(1),r(2)+v3(2)+v3n(2),r(3)+v3(3)+v3n(3),'c','fontSize',param.fontSize);
+        
+        set(handle.arrowText,'Tag','arrowText');
+        tooltip(handle.arrow,'Arrow')
+        tooltip(handle.arrowText,'Arrow text')
+        
+        handle.atom        = [];
+        handle.aniso       = [];
+        handle.atomText    = [];
+        handle.spinCircle  = [];
+        handle.spinCircle2 = [];
+        handle.spinArrow   = [];
+        handle.coupling    = [];
+        handle.DMcoupling  = [];
+        
+    else
+        strOut = [strOut jmol_command('arrow','a-axis',param.rAxis,r,r+v1,param.cAxis)];
+        strOut = [strOut jmol_command('arrow','b-axis',param.rAxis,r,r+v2,param.cAxis)];
+        strOut = [strOut jmol_command('arrow','c-axis',param.rAxis,r,r+v3,param.cAxis)];
+    end
 end
-
-handle.atom        = [];
-handle.aniso       = [];
-handle.atomText    = [];
-handle.spinCircle  = [];
-handle.spinCircle2 = [];
-handle.spinArrow   = [];
-handle.coupling    = [];
-handle.DMcoupling  = [];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ATOMS
@@ -466,6 +524,13 @@ if param.sEll>0
     end
 end
 
+if plotmode
+    
+else
+    idxe = 1;
+    idxs = 1;
+end
+
 %% Plot all atoms and couplings in selected range.
 for ii = floor(param.range(1,1)):floor(param.range(1,2))
     for jj = floor(param.range(2,1)):floor(param.range(2,2))
@@ -501,6 +566,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         aIdx = single_ion.idx(llMagAtom);
                         if any(aIdx) && (norm(obj.matrix.mat(:,:,aIdx))>0)
                             
+                            if param.plot
                             ell.xyz = single_ion.ell(:,:,llMagAtom)*[sp.x(:) sp.y(:) sp.z(:)]';
                             
                             ell.x = reshape(ell.xyz(1,:),[1 1]*param.surfRes+1);
@@ -531,30 +597,42 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                                 set(sC,'Tag',['aniso_circle_' atom.label{ll}]);
                                 handle.aniso(atom.idx(ll),end+(1:3)) = sC;
                             end
+                            
+                            else
+                                objid = sprintf('anisotropy%d',idxe);
+                                idxe = idxe + 1;
+                                jmol_command('ellipsoid',objid,rPlot,ell.xyz(:,1),ell.xyz(:,2),ell.xyz(:,3),obj.matrix.color(:,aIdx));
+                            end
+                            
                         end
                     end
                     
                     if (atom.mag(ll) || param.pNonMagAtom) && (param.rAtom(1)>0)
                         % Plot the label of the atom.
-                        if (~any(dCell)) && param.labelAtom
+                        if plotmode
+                            if (~any(dCell)) && param.labelAtom
+                                
+                                handle.atomText(atom.idx(ll),end+1) = text(...
+                                    'Position',             rPlot+param.dText+atom.rad(ll)/sqrt(3),...
+                                    'String',               sprintf('%s(%d)_{%d}',atom.label{ll},atom.idx(ll),ll),...
+                                    'VerticalAlignment',    'bottom',...
+                                    'Tag',                  ['atomText_' atom.label{ll} ' '],...
+                                    'fontSize',             param.fontSize);
+                                tooltip(handle.atomText(atom.idx(ll),end),[atom.label{ll} ' atom \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
+                            end
                             
-                            handle.atomText(atom.idx(ll),end+1) = text(...
-                                'Position',             rPlot+param.dText+atom.rad(ll)/sqrt(3),...
-                                'String',               sprintf('%s(%d)_{%d}',atom.label{ll},atom.idx(ll),ll),...
-                                'VerticalAlignment',    'bottom',...
-                                'Tag',                  ['atomText_' atom.label{ll} ' '],...
-                                'fontSize',             param.fontSize);
-                            tooltip(handle.atomText(atom.idx(ll),end),[atom.label{ll} ' atom \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
+                            % Creates the sphere of the atom.
+                            aSphere = surf(sp.x*atom.rad(ll)+rPlot(1), sp.y*atom.rad(ll)+rPlot(2), sp.z*atom.rad(ll)+rPlot(3));
+                            set(aSphere,'Tag',['atom_' atom.label{ll}]);
+                            handle.atom(atom.idx(ll),end+1) = aSphere;
+                            set(aSphere,'LineStyle','none');
+                            set(aSphere,'FaceColor',AColor);
+                            
+                            tooltip(aSphere,[atom.name{ll} ' atom (' atom.label{ll} ') \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
+                        else
+                            objid = sprintf('%s(%d)_{%d}',atom.label{ll},atom.idx(ll),ll);
+                            strOut = [strOut jmol_command('sphere',objid,atom.rad(ll),rPlot,AColor*255)];
                         end
-                        
-                        % Creates the sphere of the atom.
-                        aSphere = surf(sp.x*atom.rad(ll)+rPlot(1), sp.y*atom.rad(ll)+rPlot(2), sp.z*atom.rad(ll)+rPlot(3));
-                        set(aSphere,'Tag',['atom_' atom.label{ll}]);
-                        handle.atom(atom.idx(ll),end+1) = aSphere;
-                        set(aSphere,'LineStyle','none');
-                        set(aSphere,'FaceColor',AColor);
-                        
-                        tooltip(aSphere,[atom.name{ll} ' atom (' atom.label{ll} ') \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
                     end
                     
                     % Plots magnetic moments.
@@ -572,19 +650,21 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         if param.coplanar
                             % TODO
                             % Circle for planar structure and maybe cones :)
-                            cPoints = sw_circle(rPlot,nSpin,norm(plotS),param.surfRes);
-                            C1 = plot3(cPoints(1,:),cPoints(2,:),cPoints(3,:));
-                            handle.spinCircle(atom.idx(ll),end+1) = C1;
-                            set(C1,'Color',MColor);
-                            set(C1,'Tag','spinPlane');
-                            tooltip(C1,['Plane of the ordered moment: \n' sprintf('[%6.3f, %6.3f, %6.3f]',nSpin)]);
-                            
-                            C2 = sw_circlesurf(rPlot,nSpin,norm(plotS),param.surfRes);
-                            handle.spinCircle2(atom.idx(ll),end+1) = C2;
-                            set(C2,'LineStyle','none');
-                            set(C2,'FaceAlpha',param.aPlaneSpin);
-                            set(C2,'FaceColor',MColor);
-                            tooltip(C2,['Plane of the ordered moment: \n' sprintf('[%6.3f, %6.3f, %6.3f]',nSpin)]);
+                            if plotmode
+                                cPoints = sw_circle(rPlot,nSpin,norm(plotS),param.surfRes);
+                                C1 = plot3(cPoints(1,:),cPoints(2,:),cPoints(3,:));
+                                handle.spinCircle(atom.idx(ll),end+1) = C1;
+                                set(C1,'Color',MColor);
+                                set(C1,'Tag','spinPlane');
+                                tooltip(C1,['Plane of the ordered moment: \n' sprintf('[%6.3f, %6.3f, %6.3f]',nSpin)]);
+                                
+                                C2 = sw_circlesurf(rPlot,nSpin,norm(plotS),param.surfRes);
+                                handle.spinCircle2(atom.idx(ll),end+1) = C2;
+                                set(C2,'LineStyle','none');
+                                set(C2,'FaceAlpha',param.aPlaneSpin);
+                                set(C2,'FaceColor',MColor);
+                                tooltip(C2,['Plane of the ordered moment: \n' sprintf('[%6.3f, %6.3f, %6.3f]',nSpin)]);
+                            end
                         end
                         
                         halfS = false;
@@ -599,20 +679,25 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             intS  = true;
                         end
                         
-                        
-                        hArrow  = sw_arrow(rPlot-plotS,rPlot+plotS,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
-                        set(hArrow,'Tag','spinArrow');
-                        handle.spinArrow(atom.idx(ll),end+(1:numel(hArrow))) = hArrow;
-                        set(hArrow,'FaceColor',MColor);
-                        set(hArrow,'LineStyle','none');
-                        if intS
-                            if halfS
-                                tooltip(hArrow,['S=' sprintf('%d',lengthS2) '/2 magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',obj.mag_str.S(:,llMagAtom+llSpin))])
+                        if plotmode
+                            hArrow  = sw_arrow(rPlot-plotS,rPlot+plotS,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
+                            set(hArrow,'Tag','spinArrow');
+                            handle.spinArrow(atom.idx(ll),end+(1:numel(hArrow))) = hArrow;
+                            set(hArrow,'FaceColor',MColor);
+                            set(hArrow,'LineStyle','none');
+                            if intS
+                                if halfS
+                                    tooltip(hArrow,['S=' sprintf('%d',lengthS2) '/2 magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',obj.mag_str.S(:,llMagAtom+llSpin))])
+                                else
+                                    tooltip(hArrow,['S=' sprintf('%d',lengthS) ' magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',obj.mag_str.S(:,llMagAtom+llSpin))])
+                                end
                             else
-                                tooltip(hArrow,['S=' sprintf('%d',lengthS) ' magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',obj.mag_str.S(:,llMagAtom+llSpin))])
+                                tooltip(hArrow,['S=' sprintf('%4.2f',lengthS) ' magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',obj.mag_str.S(:,llMagAtom+llSpin))])
                             end
                         else
-                            tooltip(hArrow,['S=' sprintf('%4.2f',lengthS) ' magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',obj.mag_str.S(:,llMagAtom+llSpin))])
+                            objid = sprintf('spinArrow%d',idxs);
+                            idxs = idxs + 1;
+                            strOut = [strOut jmol_command('arrow',objid,param.rSpin,rPlot-plotS,rPlot+plotS,MColor*255)];
                         end
                     end
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -721,7 +806,7 @@ if param.hg
     end
     T = makehgtform('translate',-sum(basisVector * sum(param.range,2)/2,2)');
     set(h2,'Matrix',T);
-
+    
 end
 
 set(gca,'CameraViewAngle',cva);
@@ -875,3 +960,38 @@ function tooltip(hObject, string)
 set(hObject,'buttondownfcn',['oTemp=findobj(''tag'',''tooltip''); if ~isempty(oTemp) set(oTemp,''string'',sprintf(''' string '''));end']);
 
 end
+
+function str = jmol_command(shape, varargin)
+% create Jmol script lines
+% shape:
+%   cylinder    (id,radius,R1,R2,color)
+%   sphere      (id,radius,R1,color)
+%   ellipsoid   (id,R1,ax1,ax2,ax3,color)
+%   arrow       (id,radius,R1,R2,color)
+%   line        (id,R1,R2,color)
+%
+
+switch shape
+    case 'cylinder'
+        str = sprintf('DRAW ID "%s" CYLINDER RADIUS %5.3f {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d};\n',varargin{1},varargin{2},varargin{3},varargin{4},varargin{5});
+    case 'sphere'
+        str = sprintf('DRAW ID "%s" SPHERE RADIUS %5.3f {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d};\n',varargin{1},varargin{2},varargin{3},varargin{4});
+    case 'ellipsoid'
+        str = sprintf('ELLIPSOID ID "%s" CENTER {%5.3f,%5.3f,%5.3f} AXES {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d};\n',...
+            varargin{1},varargin{2},varargin{3},varargin{4},varargin{5},varargin{6});
+    case 'arrow'
+        str = sprintf('DRAW ID "%s" ARROW RADIUS %5.3f {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d};\n',varargin{1},varargin{2},varargin{3},varargin{4},varargin{5});
+    case 'line'
+        str = sprintf('DRAW ID "%s" LINE RADIUS 0.01 {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d};\n',varargin{1},varargin{2},varargin{3},varargin{4});
+    otherwise
+        error('sw:plot:Internal','Internal error in sw.plot(), please submit a bug report!');
+end
+
+
+end
+
+
+
+
+
+

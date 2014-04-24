@@ -70,6 +70,7 @@ if isa(newMat,'struct')
             error('sw:addmatrix:WrongInput','Define some matrix property!');
         else
             newMat.mat = repmat(eye(3),[1 1 nJ]);
+            warning('sw:addmatrix:NoValue','No valid value was given for the new matrix, default value used!');
         end
     end
 

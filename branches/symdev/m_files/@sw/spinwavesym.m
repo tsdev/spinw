@@ -125,13 +125,13 @@ end
 
 % Local (e1,e2,e3) coordinate system fixed to the moments.
 % e3 || Si
-e3 = M0./repmat(S0(:),[3 1]);
+e3 = M0./repmat(S0,[3 1]);
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
 %e2(3,~any(e2)) = 1;
 e2(3,~any(abs(e2)>1e-10)) = 1;
 E0 = sqrt(sum(e2.^2,1));
-e2  = e2./repmat(E0(:),[3 1]);
+e2  = e2./repmat(E0,[3 1]);
 % e1 = e2 x e3
 e1  = cross(e2,e3);
 

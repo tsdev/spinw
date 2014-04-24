@@ -231,8 +231,31 @@ if plotmode
         hFigure = sw_getfighandle('sw_crystal');
     end
     
-    if isempty(hFigure)
-        hFigure = sw_structfigure;
+    if param.hg
+        if isempty(hFigure)
+            hFigure = sw_structfigure;
+        end
+    else
+        hFigure = figure;
+        set(hFigure,...
+            'Name',          sprintf('Figure %d: SpinW : Crystal structure',hFigure),...
+            'NumberTitle',   'off',...
+            'DockControls',  'off',...
+            'PaperType',     'A4',...
+            'Tag',           'sw_crystal',...
+            'Toolbar',       'figure');
+        set(gcf,'color','w')
+        set(gca,'Position',[0 0 1 1]);
+        set(gca,'Color','none');
+        set(gca,'Box','off');
+        set(gca,'Clipping','Off');
+        daspect([1 1 1]);
+        pbaspect([1 1 1]);
+        axis off
+        axis vis3d
+        hold on
+        material dull;
+        
     end
     
     tooltip(hFigure,'<< Click on any object to get information! >>')
@@ -241,41 +264,6 @@ if plotmode
     [az, el] = view();
 end
 
-<<<<<<< .mine
-if param.hg
-    if isempty(hFigure)
-        hFigure = sw_structfigure;
-    end
-else
-    hFigure = figure;
-    set(hFigure,...
-        'Name',          sprintf('Figure %d: SpinW : Crystal structure',hFigure),...
-        'NumberTitle',   'off',...
-        'DockControls',  'off',...
-        'PaperType',     'A4',...
-        'Tag',           'sw_crystal',...
-        'Toolbar',       'figure');
-    set(gcf,'color','w')
-    set(gca,'Position',[0 0 1 1]);
-    set(gca,'Color','none');
-    set(gca,'Box','off');
-    set(gca,'Clipping','Off');
-    daspect([1 1 1]);
-    pbaspect([1 1 1]);
-    axis off
-    axis vis3d
-    hold on
-    material dull;
-
-end
-
-tooltip(hFigure,'<< Click on any object to get information! >>')
-
-cva = get(gca,'CameraViewAngle');
-[az, el] = view();
-
-=======
->>>>>>> .r165
 % change range, if the number of unit cells are given
 if numel(param.range) == 3
     param.range = [ [0 0 0]' param.range(:)];
@@ -564,6 +552,8 @@ if plotmode
 else
     idxe = 1;
     idxs = 1;
+    idxa = 1;
+    idxc = 1;
 end
 
 %% Plot all atoms and couplings in selected range.
@@ -665,8 +655,9 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             
                             tooltip(aSphere,[atom.name{ll} ' atom (' atom.label{ll} ') \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
                         else
-                            objid = sprintf('%s(%d)_{%d}',atom.label{ll},atom.idx(ll),ll);
-                            strOut = [strOut jmol_command('sphere',objid,atom.rad(ll),rPlot,AColor*255)];
+                            objid = sprintf('%s(%d)_{%d}%d',atom.label{ll},atom.idx(ll),ll,idxa);
+                            idxa = idxa + 1;
+                            strOut = [strOut jmol_command('sphere',objid,atom.rad(ll),rPlot,AColor*255)]; %#ok<*AGROW>
                         end
                     end
                     
@@ -771,33 +762,53 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         
                         % plot normal cylinder
                         if param.pCoupling
-                            dashS = (param.dash*dashList(coupling.mat_idx(ll)));
-                            if dashS>0
-                                cCylinder = sw_cylinder(rPlot1,rPlot2,param.rCoupling*1.2,param.surfRes,dashS);
+                            if plotmode
+                                dashS = (param.dash*dashList(coupling.mat_idx(ll)));
+                                if dashS>0
+                                    cCylinder = sw_cylinder(rPlot1,rPlot2,param.rCoupling*1.2,param.surfRes,dashS);
+                                else
+                                    cCylinder = sw_cylinder(rPlot1,rPlot2,param.rCoupling,param.surfRes,0);
+                                end
+                                handle.coupling(coupling.idx(ll),end+(1:numel(cCylinder))) = cCylinder;
+                                set(cCylinder,'FaceColor',cColor);
+                                set(cCylinder,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
+                                
+                                tooltip(cCylinder,[matrix.label{coupling.mat_idx(ll)} ' coupling\nValue:\n' strmat(matrix.mat(:,:,coupling.mat_idx(ll)))]);
                             else
-                                cCylinder = sw_cylinder(rPlot1,rPlot2,param.rCoupling,param.surfRes,0);
+                                objid = sprintf('coupling_%s%d',matrix.label{coupling.mat_idx(ll)},idxc);
+                                idxc = idxc + 1;
+                                strOut = [strOut jmol_command('cylinder',objid,param.rCoupling,rPlot1,rPlot2,cColor*255)];
                             end
-                            handle.coupling(coupling.idx(ll),end+(1:numel(cCylinder))) = cCylinder;
-                            set(cCylinder,'FaceColor',cColor);
-                            set(cCylinder,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
-                            
-                            tooltip(cCylinder,[matrix.label{coupling.mat_idx(ll)} ' coupling\nValue:\n' strmat(matrix.mat(:,:,coupling.mat_idx(ll)))]);
                         end
                         % plot DM vector
                         if param.pDM>0 && (norm(coupling.DM(1,:,ll))>1e-5)
                             rCent = (rPlot1+rPlot2)/2;
                             vDM   = coupling.DM(1,:,ll)'*param.pDM;
-                            hDM   = sw_arrow(rCent,rCent+vDM,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
-                            handle.DMcoupling(coupling.idx(ll),end+(1:4)) = hDM;
-                            set(hDM,'FaceColor',DMColor);
-                            set(hDM,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
-                            
-                            tooltip(hDM,[matrix.label{coupling.mat_idx(ll)} ' DM coupling\nValue:\n' strmat(vDM')]);
+                            if plotmode
+                                hDM   = sw_arrow(rCent,rCent+vDM,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
+                                handle.DMcoupling(coupling.idx(ll),end+(1:4)) = hDM;
+                                set(hDM,'FaceColor',DMColor);
+                                set(hDM,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
+                                
+                                tooltip(hDM,[matrix.label{coupling.mat_idx(ll)} ' DM coupling\nValue:\n' strmat(vDM')]);
+                            else
+                                objid = sprintf('coupling_%s%d',matrix.label{coupling.mat_idx(ll)},idxc);
+                                idxc = idxc + 1;
+                                strOut = [strOut jmol_command('arrow',objid,param.rSpin,rCent,rCent+vDM,DMColor*255)];
+                                
+                            end
                             if ~param.pCoupling
-                                rPlot = [rPlot1 rPlot2];
-                                hLine = line(rPlot(1,:),rPlot(2,:),rPlot(3,:),'LineStyle','--','LineWidth',2,'Color',[0 0 0]);
-                                set(hLine,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
-                                handle.DMcoupling(coupling.idx(ll),end+1) = hLine;
+                                
+                                if plotmode
+                                    rPlot = [rPlot1 rPlot2];
+                                    hLine = line(rPlot(1,:),rPlot(2,:),rPlot(3,:),'LineStyle','--','LineWidth',2,'Color',[0 0 0]);
+                                    set(hLine,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
+                                    handle.DMcoupling(coupling.idx(ll),end+1) = hLine;
+                                else
+                                    objid = sprintf('coupling_%s%d',matrix.label{coupling.mat_idx(ll)},idxc);
+                                    idxc = idxc + 1;
+                                    strOut = [strOut jmol_command('line',objid,rPlot1,rPlot2,[0 0 0])];
+                                end
                             end
                         end
                     end
@@ -808,45 +819,51 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
     end
 end
 
+%% for Jmol output quit here
+if ~plotmode
+    strOut = [strOut sprintf('set drawHover on;')];
+    varargout{1} = strOut;
+    return;
+end
 
 %% Do the rest.
 
-view([az el]);
-hold off
-
-if isappdata(hFigure,'handle')
-    oldHandle = getappdata(hFigure,'handle');
-    hName = fieldnames(oldHandle);
+    view([az el]);
+    hold off
     
-    for ii = 1:length(hName)
-        h0 = reshape(oldHandle.(hName{ii}),1,[]);
-        h0(h0 == 0) = [];
-        h0(~ishandle(h0)) = [];
-        delete(h0);
+    if isappdata(hFigure,'handle')
+        oldHandle = getappdata(hFigure,'handle');
+        hName = fieldnames(oldHandle);
+        
+        for ii = 1:length(hName)
+            h0 = reshape(oldHandle.(hName{ii}),1,[]);
+            h0(h0 == 0) = [];
+            h0(~ishandle(h0)) = [];
+            delete(h0);
+        end
     end
-end
-
-% put all objects into a hgtransform object for rotation
-if param.hg
-    h  = getappdata(hFigure,'h');
-    h2 = hgtransform('Parent',h);
-    hName = fieldnames(handle);
     
-    for ii = 1:length(hName)
-        h0 = reshape(handle.(hName{ii}),1,[]);
-        h0(h0 == 0) = [];
-        h0(~ishandle(h0)) = [];
-        set(h0,'Parent',h2);
-        set(h0,'Clipping','Off');
+    % put all objects into a hgtransform object for rotation
+    if param.hg
+        h  = getappdata(hFigure,'h');
+        h2 = hgtransform('Parent',h);
+        hName = fieldnames(handle);
+        
+        for ii = 1:length(hName)
+            h0 = reshape(handle.(hName{ii}),1,[]);
+            h0(h0 == 0) = [];
+            h0(~ishandle(h0)) = [];
+            set(h0,'Parent',h2);
+            set(h0,'Clipping','Off');
+        end
+        T = makehgtform('translate',-sum(basisVector * sum(param.range,2)/2,2)');
+        set(h2,'Matrix',T);
+        
     end
-    T = makehgtform('translate',-sum(basisVector * sum(param.range,2)/2,2)');
-    set(h2,'Matrix',T);
     
-end
-
-set(gca,'CameraViewAngle',cva);
-handle.light = camlight('right');
-set(handle.light,'Tag','light');
+    set(gca,'CameraViewAngle',cva);
+    handle.light = camlight('right');
+    set(handle.light,'Tag','light');
 
 %% Plot the legend.
 
@@ -976,15 +993,15 @@ end
 
 string = [];
 for ii = 1:size(mat,1)
-    string = [string '|']; %#ok<AGROW>
+    string = [string '|'];
     for jj = 1:size(mat,2)
         if isa(mat,'sym')
-            string = [string char(mat(ii,jj))]; %#ok<AGROW>
+            string = [string char(mat(ii,jj))];
         else
-            string = [string sprintf(['%' num2str(p1) '.' num2str(p2) 'f '],mat(ii,jj))]; %#ok<AGROW>
+            string = [string sprintf(['%' num2str(p1) '.' num2str(p2) 'f '],mat(ii,jj))];
         end
     end
-    string = [string '|\n']; %#ok<AGROW>
+    string = [string '|\n'];
 end
 
 end
@@ -1008,16 +1025,17 @@ function str = jmol_command(shape, varargin)
 
 switch shape
     case 'cylinder'
-        str = sprintf('DRAW ID "%s" CYLINDER RADIUS %5.3f {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d};\n',varargin{1},varargin{2},varargin{3},varargin{4},varargin{5});
+        str = sprintf('DRAW ID "%s" CYLINDER RADIUS %5.3f {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d} "%s";\n',varargin{1},varargin{2},varargin{3},varargin{4},varargin{5},varargin{1});
     case 'sphere'
-        str = sprintf('DRAW ID "%s" SPHERE RADIUS %5.3f {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d};\n',varargin{1},varargin{2},varargin{3},varargin{4});
+        R = varargin{2};
+        str = sprintf('ELLIPSOID ID "%s" CENTER {%5.3f,%5.3f,%5.3f} AXES {%5.3f,0,0} {0,%5.3f,0} {0,0,%5.3f} COLOR {%3d,%3d,%3d};\n',varargin{1},varargin{3},R,R,R,varargin{4});
     case 'ellipsoid'
         str = sprintf('ELLIPSOID ID "%s" CENTER {%5.3f,%5.3f,%5.3f} AXES {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d};\n',...
             varargin{1},varargin{2},varargin{3},varargin{4},varargin{5},varargin{6});
     case 'arrow'
-        str = sprintf('DRAW ID "%s" ARROW RADIUS %5.3f {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d};\n',varargin{1},varargin{2},varargin{3},varargin{4},varargin{5});
+        str = sprintf('DRAW ID "%s" ARROW RADIUS %5.3f {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d} "%s";\n',varargin{1},varargin{2},varargin{3},varargin{4},varargin{5},varargin{1});
     case 'line'
-        str = sprintf('DRAW ID "%s" LINE RADIUS 0.01 {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d};\n',varargin{1},varargin{2},varargin{3},varargin{4});
+        str = sprintf('DRAW ID "%s" LINE RADIUS 0.01 {%5.3f,%5.3f,%5.3f} {%5.3f,%5.3f,%5.3f} COLOR {%3d,%3d,%3d} "%s";\n',varargin{1},varargin{2},varargin{3},varargin{4},varargin{1});
     otherwise
         error('sw:plot:Internal','Internal error in sw.plot(), please submit a bug report!');
 end

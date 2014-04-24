@@ -121,8 +121,10 @@ end
 
 
 % add all modes for different twins
-omega = cell2mat(omega');
-DSF = abs(cell2mat(DSF'));
+% use only the real part of the dispersion
+omega = real(cell2mat(omega'));
+DSF   = abs(cell2mat(DSF'));
+
 
 % dispersion in cell
 w = mat2cell(omega',nHkl,ones(nMode,1));

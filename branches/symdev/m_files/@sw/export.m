@@ -35,17 +35,32 @@ function out = export(obj, varargin)
 % FullProf:  https://www.ill.eu/sites/fullprof
 %
 
+inpForm.fname  = {'format' 'path' 'fid' 'perm' };
+inpForm.defval = {''       ''      []   [1 2 3]};
+inpForm.size   = {[1 -1]   [1 -2] [1 1] [1 3]  };
+inpForm.soft   = {true     true    true false  };
+
 if nargin == 1
-    help sw.export;
-    return
+    varargin{1}.showWarn = false;
+elseif nargin>1
+    varargin{end+1} = 'showWarn';
+    varargin{end+1} = false;
 end
 
-inpForm.fname  = {'format' 'path' 'fid' 'perm'  'showWarn'};
-inpForm.defval = {''       ''      []   [1 2 3] false     };
-inpForm.size   = {[1 -1]   [1 -2] [1 1] [1 3]   [1 1]     };
-inpForm.soft   = {true     true    true false   false     };
-
 param = sw_readparam(inpForm, varargin{:});
+
+% produce the requested output
+
+if isempty(param.path) && isempty(param.fid)
+    % dialog to get a filename
+    [fName, fDir] = uiputfile({'*.pcr','FullProf file (*.pcr)';'*.spt','Jmol script (*.spt)';'*.*' 'All Files (*.*)'}, 'Select an output filename');
+    param.path = [fDir fName];
+    if isempty(param.format)
+        [~,~,fExt] = fileparts(param.path);
+        param.format = fExt(2:end);
+    end
+end
+
 
 switch param.format
     case 'pcr'
@@ -73,8 +88,6 @@ switch param.format
     otherwise
         error('sw:export:WrongInput','''format'' has to be one of the strings given in the help!');
 end
-
-% produce the requested output
 
 % write into fid file
 if ~isempty(param.fid)

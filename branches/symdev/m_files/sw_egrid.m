@@ -56,7 +56,8 @@ function spectra = sw_egrid(spectra, varargin)
 %           linspace(0,1.1*maxOmega,500).
 % T         Temperature to calculate the Bose factor in units
 %           depending on the Boltzmann constant (sw.unit.kB). Default
-%           temperature is taken from obj.single_ion.T.
+%           temperature is taken from obj.single_ion.T. The Bose factor is
+%           includec in swConv field of the output.
 % sumtwin   If true, the spectra of the different twins will be summed
 %           together weighted with the normalized volume fractions. Default
 %           is true.
@@ -73,7 +74,7 @@ function spectra = sw_egrid(spectra, varargin)
 % spectra contains the following additional fields beside the input:
 %
 % swConv    Stores the selected cross section binned along energy, size is
-%           [nE nHkl].
+%           [nE nHkl]. Includes the Bose factor.
 % swInt     Stores the selected cross sections for every mode, size is
 %           [nMode nHkl].
 % T         Input temperature.

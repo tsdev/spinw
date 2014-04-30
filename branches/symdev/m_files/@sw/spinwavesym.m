@@ -139,12 +139,21 @@ e1  = cross(e2,e3);
 zed = e1 + 1i*e2;
 eta = e3;
 
-dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
-atom1 = int32([SS.all(4,:)   1:nMagExt]);
-atom2 = int32([SS.all(5,:)   1:nMagExt]);
-%idxM  = int32([idxM repmat(obj.single_ion.aniso,1,prod(nMagExt))]);
-% magnetic couplings, 3x3xnJ
-JJ = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
+if numel(SS.all) > 0
+    dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
+    atom1 = int32([SS.all(4,:)   1:nMagExt]);
+    atom2 = int32([SS.all(5,:)   1:nMagExt]);
+    %idxM  = int32([idxM repmat(obj.single_ion.aniso,1,prod(nMagExt))]);
+    % magnetic couplings, 3x3xnJ
+    JJ = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
+else
+    % no magnetic couplings
+    dR    = zeros(3,nMagExt);
+    atom1 = int32(1:nMagExt);
+    atom2 = int32(1:nMagExt);
+
+    JJ = SI.aniso;
+end
 
 % remove zero anisotropy matrices
 anyIdx = squeeze(sumsym(sumsym(abs(JJ),1),2)) == 0;

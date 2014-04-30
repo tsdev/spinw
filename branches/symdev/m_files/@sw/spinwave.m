@@ -70,6 +70,10 @@ function spectra = spinwave(obj, hkl, varargin)
 %               examining the eigenvalues it can give a hint where the
 %               problem is.
 %               Default is true.
+% saveT         If true, the matrices that transform the normal magnon
+%               modes into the magnon modes localized on the spins are
+%               saved. Be carefull, it can take up lots of memory.
+%               Default is false.
 %
 % Output:
 %
@@ -81,6 +85,10 @@ function spectra = spinwave(obj, hkl, varargin)
 % Sab           Dynamical structure factor, dimensins are
 %               [3 3 nMode nHkl]. Each (:,:,i,j) submatrix contains the
 %               9 correlation functions: Sxx, Sxy, Sxz, etc.
+%  T            Transformation matrix from the normal magnon modes to the
+%               magnons localized on spins:
+%                   x_i = sum_j T_ij * x_j'
+%               Only saved if saveT is true.
 %
 % nMode is the number of magnetic mode. For commensurate structures it is
 % double the number of magnetic atoms in the magnetic cell/supercell. For
@@ -136,9 +144,9 @@ inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol'  };
 inpForm.defval = {false     false    true       0        1      1e-4  };
 inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1]  [1 1] };
 
-inpForm.fname  = [inpForm.fname  {'omega_tol' 'hermit' }];
-inpForm.defval = [inpForm.defval {1e-5        true     }];
-inpForm.size   = [inpForm.size   {[1 1]       [1 1]    }];
+inpForm.fname  = [inpForm.fname  {'omega_tol' 'hermit' 'saveT'}];
+inpForm.defval = [inpForm.defval {1e-5        true     false  }];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1]    [1 1]  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -343,6 +351,9 @@ omega = zeros(2*nMagExt,0);
 
 % empty Sab
 Sab = zeros(3,3,2*nMagExt,0);
+if param.saveT
+    Tsave = zeros(2*nMagExt,2*nMagExt,nHkl);
+end
 
 if fid == 1
     sw_status(0,1);
@@ -433,7 +444,10 @@ for jj = 1:nSlice
                 D = diag(D);
             end
             
-            % sort eigenvalues to decreasing order
+            % sort eigenvalues to decreasing order this contradicts with
+            % eigenshuffle
+            
+            % TODO
             [D, idx] = sort(D,'descend');
             U = U(:,idx);
             
@@ -463,6 +477,9 @@ for jj = 1:nSlice
         end
     end
     
+    if param.saveT
+        Tsave(:,:,hklIdxMEM) = V;
+    end
     
     % Calculates correlation functions.
     % V right
@@ -572,6 +589,10 @@ spectra.hkl    = hkl(:,1:nHkl0);
 spectra.hklA   = hklA;
 spectra.incomm = incomm;
 spectra.norm   = false;
+
+if param.saveT
+    spectra.T = Tsave;
+end
 
 % save the important parameters
 spectra.param.notwin    = param.notwin;

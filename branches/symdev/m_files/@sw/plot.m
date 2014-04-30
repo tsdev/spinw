@@ -125,6 +125,8 @@ function varargout = plot(obj, varargin)
 %   hg              Whether to use hgtransform (nice rotation with the
 %                   mouse) or default Matlab rotation of 3D objects.
 %                   Default is true.
+% hFigure           Handle of the figure to plot. In not given, the figure
+%                   window handle is determined automatically.
 %
 % Output:
 %
@@ -591,38 +593,38 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         aIdx = single_ion.idx(llMagAtom);
                         if any(aIdx) && (norm(obj.matrix.mat(:,:,aIdx))>0)
                             
-                            if param.plot
-                            ell.xyz = single_ion.ell(:,:,llMagAtom)*[sp.x(:) sp.y(:) sp.z(:)]';
-                            
-                            ell.x = reshape(ell.xyz(1,:),[1 1]*param.surfRes+1);
-                            ell.y = reshape(ell.xyz(2,:),[1 1]*param.surfRes+1);
-                            ell.z = reshape(ell.xyz(3,:),[1 1]*param.surfRes+1);
-                            
-                            sAniso = surf(ell.x+rPlot(1),ell.y+rPlot(2),ell.z+rPlot(3));
-                            
-                            handle.aniso(atom.idx(ll),end+1) = sAniso;
-                            set(sAniso,'LineStyle','none');
-                            set(sAniso,'FaceAlpha',param.aEll);
-                            set(sAniso,'FaceColor',double(obj.matrix.color(:,aIdx))/255);
-                            set(sAniso,'Tag',['aniso_' atom.label{ll}]);
-                            
-                            tooltip(sAniso,[single_ion.label{llMagAtom} ' anisotropy\n' strmat(single_ion.mat(:,:,llMagAtom))]);
-                            
-                            if param.lwEll > 0
-                                % draw the main circles of the ellipsoids
-                                ell.c1 = single_ion.ell(:,:,llMagAtom)*cr{1};
-                                ell.c2 = single_ion.ell(:,:,llMagAtom)*cr{2};
-                                ell.c3 = single_ion.ell(:,:,llMagAtom)*cr{3};
+                            if plotmode
+                                ell.xyz = single_ion.ell(:,:,llMagAtom)*[sp.x(:) sp.y(:) sp.z(:)]';
                                 
-                                sC(1) = plot3(ell.c1(1,:)+rPlot(1),ell.c1(2,:)+rPlot(2),ell.c1(3,:)+rPlot(3));
-                                sC(2) = plot3(ell.c2(1,:)+rPlot(1),ell.c2(2,:)+rPlot(2),ell.c2(3,:)+rPlot(3));
-                                sC(3) = plot3(ell.c3(1,:)+rPlot(1),ell.c3(2,:)+rPlot(2),ell.c3(3,:)+rPlot(3));
-                                set(sC,'LineWidth',param.lwEll);
-                                set(sC,'Color',[0 0 0]);
-                                set(sC,'Tag',['aniso_circle_' atom.label{ll}]);
-                                handle.aniso(atom.idx(ll),end+(1:3)) = sC;
-                            end
-                            
+                                ell.x = reshape(ell.xyz(1,:),[1 1]*param.surfRes+1);
+                                ell.y = reshape(ell.xyz(2,:),[1 1]*param.surfRes+1);
+                                ell.z = reshape(ell.xyz(3,:),[1 1]*param.surfRes+1);
+                                
+                                sAniso = surf(ell.x+rPlot(1),ell.y+rPlot(2),ell.z+rPlot(3));
+                                
+                                handle.aniso(atom.idx(ll),end+1) = sAniso;
+                                set(sAniso,'LineStyle','none');
+                                set(sAniso,'FaceAlpha',param.aEll);
+                                set(sAniso,'FaceColor',double(obj.matrix.color(:,aIdx))/255);
+                                set(sAniso,'Tag',['aniso_' atom.label{ll}]);
+                                
+                                tooltip(sAniso,[single_ion.label{llMagAtom} ' anisotropy\n' strmat(single_ion.mat(:,:,llMagAtom))]);
+                                
+                                if param.lwEll > 0
+                                    % draw the main circles of the ellipsoids
+                                    ell.c1 = single_ion.ell(:,:,llMagAtom)*cr{1};
+                                    ell.c2 = single_ion.ell(:,:,llMagAtom)*cr{2};
+                                    ell.c3 = single_ion.ell(:,:,llMagAtom)*cr{3};
+                                    
+                                    sC(1) = plot3(ell.c1(1,:)+rPlot(1),ell.c1(2,:)+rPlot(2),ell.c1(3,:)+rPlot(3));
+                                    sC(2) = plot3(ell.c2(1,:)+rPlot(1),ell.c2(2,:)+rPlot(2),ell.c2(3,:)+rPlot(3));
+                                    sC(3) = plot3(ell.c3(1,:)+rPlot(1),ell.c3(2,:)+rPlot(2),ell.c3(3,:)+rPlot(3));
+                                    set(sC,'LineWidth',param.lwEll);
+                                    set(sC,'Color',[0 0 0]);
+                                    set(sC,'Tag',['aniso_circle_' atom.label{ll}]);
+                                    handle.aniso(atom.idx(ll),end+(1:3)) = sC;
+                                end
+                                
                             else
                                 objid = sprintf('anisotropy%d',idxe);
                                 idxe = idxe + 1;
@@ -708,6 +710,9 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         if plotmode
                             hArrow  = sw_arrow(rPlot-plotS,rPlot+plotS,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
                             set(hArrow,'Tag','spinArrow');
+                            % save information into the spin arrow
+                            % [a b c idx] unit cell position and spin index
+                            setappdata(hArrow(1),'dat',[dCell' llMagAtom+llSpin]);
                             handle.spinArrow(atom.idx(ll),end+(1:numel(hArrow))) = hArrow;
                             set(hArrow,'FaceColor',MColor);
                             set(hArrow,'LineStyle','none');
@@ -828,42 +833,42 @@ end
 
 %% Do the rest.
 
-    view([az el]);
-    hold off
+view([az el]);
+hold off
+
+if isappdata(hFigure,'handle')
+    oldHandle = getappdata(hFigure,'handle');
+    hName = fieldnames(oldHandle);
     
-    if isappdata(hFigure,'handle')
-        oldHandle = getappdata(hFigure,'handle');
-        hName = fieldnames(oldHandle);
-        
-        for ii = 1:length(hName)
-            h0 = reshape(oldHandle.(hName{ii}),1,[]);
-            h0(h0 == 0) = [];
-            h0(~ishandle(h0)) = [];
-            delete(h0);
-        end
+    for ii = 1:length(hName)
+        h0 = reshape(oldHandle.(hName{ii}),1,[]);
+        h0(h0 == 0) = [];
+        h0(~ishandle(h0)) = [];
+        delete(h0);
     end
+end
+
+% put all objects into a hgtransform object for rotation
+if param.hg
+    h  = getappdata(hFigure,'h');
+    h2 = hgtransform('Parent',h);
+    hName = fieldnames(handle);
     
-    % put all objects into a hgtransform object for rotation
-    if param.hg
-        h  = getappdata(hFigure,'h');
-        h2 = hgtransform('Parent',h);
-        hName = fieldnames(handle);
-        
-        for ii = 1:length(hName)
-            h0 = reshape(handle.(hName{ii}),1,[]);
-            h0(h0 == 0) = [];
-            h0(~ishandle(h0)) = [];
-            set(h0,'Parent',h2);
-            set(h0,'Clipping','Off');
-        end
-        T = makehgtform('translate',-sum(basisVector * sum(param.range,2)/2,2)');
-        set(h2,'Matrix',T);
-        
+    for ii = 1:length(hName)
+        h0 = reshape(handle.(hName{ii}),1,[]);
+        h0(h0 == 0) = [];
+        h0(~ishandle(h0)) = [];
+        set(h0,'Parent',h2);
+        set(h0,'Clipping','Off');
     end
+    T = makehgtform('translate',-sum(basisVector * sum(param.range,2)/2,2)');
+    set(h2,'Matrix',T);
     
-    set(gca,'CameraViewAngle',cva);
-    handle.light = camlight('right');
-    set(handle.light,'Tag','light');
+end
+
+set(gca,'CameraViewAngle',cva);
+handle.light = camlight('right');
+set(handle.light,'Tag','light');
 
 %% Plot the legend.
 

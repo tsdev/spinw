@@ -296,10 +296,12 @@ if param.conjugate
     % Introduce the opposite couplings.
     % (i-->j) and (j-->i)
     % transpose the JJ matrix as well [1 2 3 4 5 6 7 8 9] --> [6 9 12 7 10 13 8 11 14]
-    new         = [SS.all(1:3,:)   -SS.all(1:3,:)  ];
-    new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];
-    new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:)]/2;
-    SS.all      = new;
+    if numel(SS.all) > 0
+        new         = [SS.all(1:3,:)   -SS.all(1:3,:)  ];
+        new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];
+        new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:)]/2;
+        SS.all      = new;
+    end
 end
 
 % Save external field.

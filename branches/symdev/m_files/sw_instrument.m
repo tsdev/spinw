@@ -37,7 +37,7 @@ function spectra = sw_instrument(spectra, varargin)
 %               magnetic ion is determined by the first magnetic atom in
 %               the crystal.
 % norm          If true, the data is normalized to mbarn units. Default is
-%               true.
+%               true. g-factor of two is assumed.
 %
 % Output:
 %

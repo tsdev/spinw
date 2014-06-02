@@ -1,7 +1,7 @@
 function sFact = structfact(obj, varargin)
 % calculates magnetic structure factor using FFT
 %
-% sFact = STRUCTFACT(swobj, Option1, Value1, ...)
+% sFact = STRUCTFACT(obj, Option1, Value1, ...)
 %
 % Input:
 %

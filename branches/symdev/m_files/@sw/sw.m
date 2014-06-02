@@ -1,4 +1,4 @@
-classdef sw < class_handlelight
+classdef (ConstructOnLoad) sw < class_handlelight
     % SW class defines data structure and methods to calculate spin wave
     % dispersion in magnetic crystals.
     %
@@ -271,7 +271,7 @@ classdef sw < class_handlelight
         function varargout = temperature(obj,varargin)
             % get/set stored temperature value
             %
-            % {obj} = SW.TEMPERATURE(obj, T)
+            % {obj} = TEMPERATURE(obj, T)
             %
             % If T is defined, it sets the temperature stored in sw object to T,
             % where T is scalar. The units of temerature is determined by
@@ -301,7 +301,7 @@ classdef sw < class_handlelight
         function sym = symmetry(obj)
             % true if space group is used to generate couplings
             %
-            % sym = SW.SYMMETRY(obj)
+            % sym = SYMMETRY(obj)
             %
             % If true, equivalent couplings are generated based on the
             % crystal space group and all matrices (interaction, anisotropy
@@ -335,7 +335,7 @@ classdef sw < class_handlelight
         function varargout = symbolic(obj, symb)
             % true/false for symbolic/numerical calculation
             %
-            % symb = SW.SYMBOLIC(obj)
+            % symb = SYMBOLIC(obj)
             %
             % If true, magnetic structure are spin wave dispersions are
             % calculated symbolically.

@@ -74,7 +74,7 @@ nExt    = double(obj.mag_str.N_ext);
 % magnetic ordering wavevector in the extended magnetic unit cell
 km = obj.mag_str.k.*nExt;
 % whether the structure is incommensurate
-incomm = any(abs(km-round(km)) > param.tol);
+incomm = any(~isAlways(abs(km-round(km)) <= param.tol));
 
 % symbolic wavevectors
 %syms h k l real
@@ -87,7 +87,7 @@ fid = param.fid;
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
 %[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
-[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true);
+[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true,'rotMat',false);
 
 % Introduce the opposite couplings.
 % (i-->j) and (j-->i)

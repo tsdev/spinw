@@ -388,6 +388,7 @@ if param.pAxis
         handle.arrowText(3) = text(r(1)+v3(1)+v3n(1),r(2)+v3(2)+v3n(2),r(3)+v3(3)+v3n(3),'c','fontSize',param.fontSize);
         
         set(handle.arrowText,'Tag','arrowText');
+        set(handle.arrowText,'color',param.cAxis);
         tooltip(handle.arrow,'Arrow')
         tooltip(handle.arrowText,'Arrow text')
         
@@ -1017,7 +1018,7 @@ end
 function tooltip(hObject, string)
 % Creates tooltip for graphical objects, with string.
 
-set(hObject,'buttondownfcn',['oTemp=findobj(''tag'',''tooltip''); if ~isempty(oTemp) set(oTemp,''string'',sprintf(''' string '''));end']);
+set(hObject,'buttondownfcn',['oTemp=findobj(''tag'',''tooltip''); if ~isempty(oTemp) set(oTemp,''string'',sprintf(''' string '''));end; clear oTemp;']);
 
 end
 

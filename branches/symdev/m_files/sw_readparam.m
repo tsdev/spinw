@@ -21,6 +21,13 @@ if nargin == 0
     return;
 end
 
+if nargin == 2 && ischar(varargin{1}) && varargin{1} == '-'
+    % return all variable strings onto the Command Window
+    varStr = sprintf('%s ',format.fname{:});
+    clipboard('copy',varStr(1:end-1));
+    error('sw_readparam:List','All input variable names are copied to the clipboard!');
+end
+
 % create a showWarn field to check whether to show warnings (default true)
 format.fname  = [format.fname  {'showWarn'}];
 format.defval = [format.defval {true      }];

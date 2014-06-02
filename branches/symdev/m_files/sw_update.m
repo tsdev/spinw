@@ -48,7 +48,12 @@ end
 %   link to new download
 %   revision number
 %   message in the next few lines
-newInfo = urlread(baseUrl);
+try
+    newInfo = urlread(baseUrl);
+catch
+    error('sw_update:NoNetwork','It looks like there is a problem with your network connection!');
+end
+
 % separate lines of text
 newInfo = textscan(newInfo, '%s', 'delimiter', sprintf('\n'));
 newInfo = newInfo{1};

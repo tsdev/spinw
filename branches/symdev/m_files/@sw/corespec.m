@@ -1,7 +1,7 @@
 function [omega, Vsave] = corespec(obj, hkl, varargin)
 % calculates dispersion and V transformation matrix using linear spin wave theory
 %
-% [omega, V] = CORESPEC(obj, k, 'option1', value1 ...)
+% [omega, V] = CORESPEC(obj, hkl, 'option1', value1 ...)
 %
 % Spin wave dispersion and spin-spin correlation function is calculated at
 % the reciprocal space points k. The function can deal with arbitrary

@@ -24,6 +24,8 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %               generated, if false, only the bonds in the crystallographic
 %               unit cell is calculated. Default is true.
 % conjugate     Introduce the conjugate of the couplings. Default is false.
+% rotMat        Rotate the J and A matrices according to the point group
+%               operations between symmetry equivalent sites.
 %
 % Output:
 %
@@ -61,9 +63,9 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 % See also SW.COUPLINGTABLE.
 %
 
-inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate'};
-inpForm.defval = {0          false     false   true     false      };
-inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]      };
+inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate' 'rotMat'};
+inpForm.defval = {0          false     false   true     false       true    };
+inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -106,12 +108,11 @@ end
 % Couplings
 coupling = obj.coupling;
 SS.all = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx]);
-
-% just keep all non-zero coupling
-mat_idx = coupling.mat_idx;
     
 if param.fitmode > 0
     % sum up couplings on the same bond
+    
+    mat_idx = coupling.mat_idx;
     
     % Remove couplings where all mat_idx == 0.
     colSel = any(mat_idx ~= 0,1);
@@ -125,8 +126,10 @@ if param.fitmode > 0
     JJ.mat  = mat(:,:,JJ.idx(1,:)) + mat(:,:,JJ.idx(2,:)) + mat(:,:,JJ.idx(3,:));
     JJ.idx  = mat_idx(mat_idx(:) ~= 0);
 else
-    % just keep all non-zero coupling
-    %mat_idx = coupling.mat_idx';
+    % just keep all coupling that has an assigned matrix
+    % TODO
+    mat_idx = coupling.mat_idx';
+    
     JJ.idx  = mat_idx(mat_idx(:) ~= 0);
     
     colSel  = [find(coupling.mat_idx(1,:)~=0) find(coupling.mat_idx(2,:)~=0) find(coupling.mat_idx(3,:)~=0)];
@@ -162,7 +165,9 @@ if obj.sym
         % convert rotation operators to xyz Cartesian coordinate system
         rotOp = mmat(A,mmat(rotOp,inv(A)));
         % rotate the matrices: R*M*R'
-        SI.aniso = mmat(rotOp,mmat(SI.aniso,permute(rotOp,[2 1 3])));
+        if param.rotMat
+            SI.aniso = mmat(rotOp,mmat(SI.aniso,permute(rotOp,[2 1 3])));
+        end
     end
     
     % Generate g-tensor using the space group symmetry
@@ -170,7 +175,9 @@ if obj.sym
     % convert rotation operators to xyz Cartesian coordinate system
     rotOp = mmat(A,mmat(rotOp,inv(A)));
     % rotate the matrices: R*M*R'
-    SI.g = mmat(rotOp,mmat(SI.g,permute(rotOp,[2 1 3])));
+    if param.rotMat
+        SI.g = mmat(rotOp,mmat(SI.g,permute(rotOp,[2 1 3])));
+    end
     
     
     % Generate interaction matrices using the space group symmetry
@@ -190,7 +197,9 @@ if obj.sym
         rotOp = mmat(A,mmat(rotOp,inv(A)));
         
         % rotate the matrices: R*M*R'
-        JJ.mat = mmat(rotOp,mmat(JJ.mat,permute(rotOp,[2 1 3])));
+        if param.rotMat
+            JJ.mat = mmat(rotOp,mmat(JJ.mat,permute(rotOp,[2 1 3])));
+        end
     end
 end
 

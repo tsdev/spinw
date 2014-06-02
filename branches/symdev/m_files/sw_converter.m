@@ -17,8 +17,13 @@ function out = sw_converter(value, unitIn, unitOut, particleName)
 %                       'Kelvin'    temperature in Kelvin.
 %                       'mps'       speed in m/s.
 %                       'meV'       energy in meV.
-%                       'THz'       energy in Thz.
+%                       'THz'       frequency in Thz.
 %                       'cm-1'      2*pi/lambda in cm^-1.
+%                       'eV'        energy in eV.
+%                       'fs'        wave period time in fs.
+%                       'ps'        wave period time in ps.
+%                       'nm'        wavelength in nm.
+%                       'um'        wavelength in um.
 % unitOut           Units of the output value, same options as for unitIn.
 %
 
@@ -75,14 +80,12 @@ end
 % Conversions
 switch unitIn
     % convert everything into momentum in Angstrom^-1
-    case 'Angstrom'
-        if m~=0
-            k = 2*pi./value;
-        else
-            k = 2*pi./value;
-        end
-    case 'A'
+    case {'Angstrom' 'A'}
         k = 2*pi./value;
+    case 'nm'
+        k = 2*pi./(value*10);
+    case 'um'
+        k = 2*pi./(value*1e4);
     case 'Kelvin'
         if m~=0
             k = sqrt((value*EK2J*2*m))/hBar/1e10;
@@ -101,24 +104,36 @@ switch unitIn
         if m~=0
             k = sqrt((value*EmeV2J*2*m))/hBar/1e10;
         else
-            k = value*EmeV2J/clight/1e10;
+            k = value/hBar/clight*EmeV2J/1e10;
+        end
+    case 'eV'
+        if m~=0
+            k = sqrt((value*1e3*EmeV2J*2*m))/hBar/1e10;
+        else
+            k = value*1e3/hBar/clight*EmeV2J/1e10;
         end
     case 'THz'
         if m~=0
             k = sqrt(value*ETHz2meV*EmeV2J*2*m)/hBar/1e10;
         else
-            k = value*h*1e12/1e10;
+            k = value*1e12*2*pi/clight/1e10;
         end
     case 'cm-1'
-        k = 10e-8*value;
+        k = 1e-8*value*2*pi;
+    case 'fs'
+        k = 1/(value*1e-15)*2*pi/clight/1e10;
+    case 'ps'
+        k = 1/(value*1e3*1e-15)*2*pi/clight/1e10;
 end
 
 switch unitOut
     % convert from momentum in Angstrom^-1 to output units
-    case 'Angstrom'
+    case {'Angstrom' 'A'}
         out = 2*pi./k;
-    case 'A'
-        out = 2*pi./k;
+    case 'nm'
+        out = 2*pi./k*0.1;
+    case 'um'
+        out = 2*pi./k*1e-4;
     case 'Kelvin'
         if m~=0
             out = (k*hBar*1e10).^2/2/m/EK2J;
@@ -139,14 +154,24 @@ switch unitOut
         else
             out = k/EmeV2J*clight*1e10*hBar;
         end
+    case 'eV'
+        if m~=0
+            out = (k*hBar*1e10).^2/EmeV2J/2/m*1e-3;
+        else
+            out = k/EmeV2J*clight*1e10*hBar*1e-3;
+        end
     case 'THz'
         if m~=0
             out = (k*hBar*1e10).^2/ETHz2meV/EmeV2J/2/m;
         else
-            out = k/h/1e12*1e10;
+            out = k*clight/2/pi/1e12*1e10;
         end
     case 'cm-1'
-        out = 10e8*k;
+        out = 1e8*k/2/pi;
+    case 'fs'
+        out = 2*pi/clight/k/1e10*1e15;
+    case 'ps'
+        out = 2*pi/clight/k/1e10*1e15*1e-3;
 end
 
 end

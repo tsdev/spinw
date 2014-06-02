@@ -127,7 +127,7 @@ if isa(newMat,'struct')
             
         elseif numel(cIdx) == 1
             % Replace the coupling type with the new one.
-            if obj.symb
+            if obj.symb && ~isa(newJItem.mat,'sym')
                 obj.matrix.mat(:,:,cIdx) = newJItem.mat*sym(newJItem.label,'real');
             else
                 obj.matrix.mat(:,:,cIdx) = newJItem.mat;
@@ -138,7 +138,7 @@ if isa(newMat,'struct')
             
         else
             % Add the coupling type to the list.
-            if obj.symb
+            if (obj.symb) && ~isa(newObj.matrix.mat,'sym')
                 for jj = 1:size(newObj.matrix.mat,3)
                     obj.matrix.mat = cat(3,obj.matrix.mat,newObj.matrix.mat(:,:,jj)*sym(newObj.matrix.label{jj},'real'));
                 end

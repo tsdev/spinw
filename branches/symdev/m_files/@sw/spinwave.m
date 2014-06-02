@@ -144,9 +144,9 @@ inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol'  };
 inpForm.defval = {false     false    true       0        1      1e-4  };
 inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1]  [1 1] };
 
-inpForm.fname  = [inpForm.fname  {'omega_tol' 'hermit' 'saveT'}];
-inpForm.defval = [inpForm.defval {1e-5        true     false  }];
-inpForm.size   = [inpForm.size   {[1 1]       [1 1]    [1 1]  }];
+inpForm.fname  = [inpForm.fname  {'omega_tol' 'hermit' 'saveT' }];
+inpForm.defval = [inpForm.defval {1e-5        true     false   }];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1]    [1 1]   }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -165,13 +165,7 @@ incomm = any(abs(km-round(km)) > param.tol);
 hklA = 2*pi*(hkl'/obj.basisvector)';
 
 if incomm
-    tol = param.tol*2;
-    if sum(abs(mod(abs(2*km)+tol,1)-tol).^2) < tol
-        error('sw:spinwave:kHalf',['For magnetic structures where 2*km equal' ...
-            ' to lattice translation vector, the magnetic unit cell has to'...
-            ' be extended!']);
-    end
-    
+   
     % without the k_m: (k, k, k)
     hkl0 = repmat(hkl,[1 3]);
     % calculate dispersion for (k-km, k, k+km)
@@ -545,7 +539,15 @@ if incomm
     nxn = n'*n;
     m1  = eye(3);
     
-    Sab = 1/2*Sab - 1/2*mmat(mmat(nx,Sab),nx) + 1/2*mmat(mmat(nxn-m1,Sab),nxn) + 1/2*mmat(mmat(nxn,Sab),2*nxn-m1);
+    % if the 2*km vector is integer, the magnetic structure is not a true
+    % helix
+    tol = param.tol*2;
+    helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
+    
+    if helical
+        % integrating out the starting phase of the helix
+        Sab = 1/2*Sab - 1/2*mmat(mmat(nx,Sab),nx) + 1/2*mmat(mmat(nxn-m1,Sab),nxn) + 1/2*mmat(mmat(nxn,Sab),2*nxn-m1);
+    end
     
     % dispersion
     omega = [omega(:,kmIdx==1); omega(:,kmIdx==2); omega(:,kmIdx==3)];
@@ -555,6 +557,8 @@ if incomm
     
     hkl   = hkl(:,kmIdx==2);
     nHkl0 = nHkl0/3;
+else
+    helical = false;
 end
 
 if nTwin>1
@@ -583,12 +587,13 @@ if nTwin>1
 end
 
 % Creates output structure with the calculated values.
-spectra.omega  = omega;
-spectra.Sab    = Sab;
-spectra.hkl    = hkl(:,1:nHkl0);
-spectra.hklA   = hklA;
-spectra.incomm = incomm;
-spectra.norm   = false;
+spectra.omega   = omega;
+spectra.Sab     = Sab;
+spectra.hkl     = hkl(:,1:nHkl0);
+spectra.hklA    = hklA;
+spectra.incomm  = incomm;
+spectra.helical = helical;
+spectra.norm    = false;
 
 if param.saveT
     spectra.T = Tsave;

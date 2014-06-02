@@ -7,7 +7,7 @@ function sw_animate(spectra, varargin)
 %
 % Options:
 %
-% pAmp      Amplitude of the motion, default is 0.3.
+% pAmp      Amplitude of the motion, default is 1.
 % rps       Rotation per second, default is 1.
 % fps       Frame per second, default is 25 for continuous rotation.
 % phi0      Starting phase in radian, default is zero.
@@ -16,6 +16,14 @@ function sw_animate(spectra, varargin)
 %           the t=0 phase is drawn.
 % tMax      Maximum time to run in seconds. Default is zero when nCycle
 %           determines the running time.
+% dMagnon   Thickness of the spin precession ellipse, if zero it won't be
+%           plotted. Default is 0.05.
+% cMagnon   Color of the ellipses of the spin precession, [R G B] color
+%           code, where R, G, B = 0..255. Defeult is 'auto', when the color
+%           of the ellipses are the same as the magnetic atoms.
+% aMagnon   Alpha value of the ellipses, default is 0.5 for semi
+%           transparent ellipses.
+% surfRes   Number of points on the surface mesh, default is 30.
 %
 % Example:
 %
@@ -40,9 +48,9 @@ obj = spectra.obj;
 
 %persistent isrunning
 
-inpForm.fname  = {'hFigure' 'pAmp' 'rps' 'fps' 'nCycle' 'phi0' 'tMax'};
-inpForm.defval = {0         0.3    1     25    Inf      0      0     };
-inpForm.size   = {[1 1]     [1 1]  [1 1] [1 1] [1 1]   [1 1]   [1 1] };
+inpForm.fname  = {'hFigure' 'pAmp' 'rps' 'fps' 'nCycle' 'phi0' 'tMax' 'dMagnon' 'cMagnon' 'aMagnon' 'surfRes'};
+inpForm.defval = {0         1      1     25    Inf      0      0      0.05      'auto'    0.5       30       };
+inpForm.size   = {[1 1]     [1 1]  [1 1] [1 1] [1 1]   [1 1]   [1 1]  [1 1]     [1 -1]    [1 1]     [1 1]    };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -116,6 +124,10 @@ if nCycle == 0
     nCycle = 1;
 end
 
+if ~isfield(spectra,'motion')
+    error('sw_animate:WrongInput','Use sw_spinmotion() function first to select magnon mode to plot!');
+end
+
 % phase difference from the magnon momentum
 phiK = spectra.hkl(:,spectra.motion.iQ)'*vectDat(:,1:3)'*2*pi;
 
@@ -123,7 +135,52 @@ if param.tMax > 0
     tic;
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DRAW ELLIPSE OF MOTION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% delete previous ellipses
+if isfield(pHandle,'magnonEll')
+    delete(pHandle.magnonEll);
+end
+pHandle.magnonEll = [];
+
+if param.dMagnon > 0
+    % major and minor axes of the spin precession ellipses
+    Amp1 = spectra.motion.Amp1;
+    Amp2 = spectra.motion.Amp2;
+    
+    cMagnon1 = M0.M;
+    cMagnon2 = M0.M + bsxfun(@mrdivide,M0.M,sqrt(sum(M0.M.^2,1)))*param.dMagnon;
+    
+    % draw ellipse
+    % TODO rotation for incommensurate magnetic structures
+    for ii = 1:nVector
+        idx = vectDat(ii,4);
+        cEll1 = cMagnon1(:,idx) + posVect(:,ii);
+        cEll2 = cMagnon2(:,idx) + posVect(:,ii);
+        pHandle.magnonEll(end+(1:3)) = sw_ellcylinder(cEll1,cEll2,[1 1],param.surfRes,param.pAmp*Amp1(:,idx),param.pAmp*Amp2(:,idx), true);
+    end
+    set(pHandle.magnonEll,'tag','magnonEll');
+    
+    % set ellipse color
+    if strcmp(param.cMagnon,'auto')
+        for ii = 1:nVector
+            cEll = obj.unit_cell.color(:,M0.atom(vectDat(ii,4)));
+            set(pHandle.magnonEll,'FaceColor',double(cEll)/255);
+        end
+    else
+        set(pHandle.magnonEll,'FaceColor',double(param.cMagnon)/255);
+    end
+    set(pHandle.magnonEll,'Clipping','Off');
+    set(pHandle.magnonEll,'FaceAlpha',param.aMagnon);
+    set(pHandle.magnonEll,'parent',h);
+    setappdata(hFigure,'handle',pHandle);
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ANIMATE!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 while iCycle < nCycle
     for tt = 1:nPhi
         phit = vPhi(tt);
@@ -131,25 +188,26 @@ while iCycle < nCycle
             % add a phase due to the magnon momentum
             phi = phit + phiK(ii);
             
-            spinIdx = vectDat(ii,4);
-            selS = M0.M(:,spinIdx);
+            idx = vectDat(ii,4);
+            selS = M0.M(:,idx);
             
             % translate vector to the origin
             M1 = eye(4);
             M1(1:3,4) = -posVect(:,ii);
             
             % move the spin out of the equilibrium along Amp1
-            Avect1 = spectra.motion.Amp1(:,spinIdx);
-            Avect2 = spectra.motion.Amp2(:,spinIdx);
+            Avect1 = Amp1(:,idx);
+            Avect2 = Amp2(:,idx);
             
             % minor major ellipse axes
             Amp = [norm(Avect1) norm(Avect2)];
             
             % calculated amplitude for the magnon
-            Acalc = prod(Amp)/sqrt((Amp(1)*cos(phi))^2+(Amp(2)*sin(phi))^2);
+            Acalc = prod(Amp)/sqrt((Amp(2)*cos(phi))^2+(Amp(1)*sin(phi))^2);
             
             % move spin out of equilibrium
-            M2 = makehgtform('axisrotate',Avect2,Acalc/norm(selS)*2*pi*param.pAmp);
+            %M2 = makehgtform('axisrotate',Avect2,Acalc/norm(selS)*2*pi*param.pAmp);
+            M2 = makehgtform('axisrotate',Avect2,asin(Acalc*param.pAmp/norm(selS)));
             
             % rotate around the spin direction
             M3 = makehgtform('axisrotate',selS,phi);
@@ -165,6 +223,9 @@ while iCycle < nCycle
     iCycle = iCycle + 1;
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% STATIC SPIN DEVIATION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if param.nCycle == 0
     while 1
         if (param.tMax > 0) && (toc>param.tMax)
@@ -173,6 +234,10 @@ if param.nCycle == 0
         pause(1/param.fps);
     end
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PUT SPINS BACK TO ORIGINAL DIRECTION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     function cleanMagnon(hgMagnon, hSpin)
         % remove magnon hgtransform objects

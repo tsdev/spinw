@@ -14,6 +14,7 @@ function moments = magtable(obj)
 %           are [3 nMagExt].
 %   R       Matrix, where evry column defines the position of the magnetic
 %           atom in lattice units.
+%   atom    Pointer to the magnetic atom in the subfields of sw.unit_cell
 %
 % See also SW.GENMAGSTR.
 %
@@ -28,9 +29,13 @@ mAtom    = sw_extendlattice(nExt, mAtom);
 
 if isempty(moments.M)
     moments.R = zeros(3,0);
+    moments.atom = zeros(1,1);
 else
     % Positions in l.u.
     moments.R = bsxfun(@times,mAtom.RRext,nExt');
+    
+    % atom idx values
+    moments.atom = repmat(mAtom.idx,[1 prod(nExt)]);
 end
 
 end

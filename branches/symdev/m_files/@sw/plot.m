@@ -391,20 +391,23 @@ if param.pAxis
         tooltip(handle.arrow,'Arrow')
         tooltip(handle.arrowText,'Arrow text')
         
-        handle.atom        = [];
-        handle.aniso       = [];
-        handle.atomText    = [];
-        handle.spinCircle  = [];
-        handle.spinCircle2 = [];
-        handle.spinArrow   = [];
-        handle.coupling    = [];
-        handle.DMcoupling  = [];
-        
     else
         strOut = [strOut jmol_command('arrow','a-axis',param.rAxis,r,r+v1,param.cAxis)];
         strOut = [strOut jmol_command('arrow','b-axis',param.rAxis,r,r+v2,param.cAxis)];
         strOut = [strOut jmol_command('arrow','c-axis',param.rAxis,r,r+v3,param.cAxis)];
     end
+end
+
+if plotmode
+    
+    handle.atom        = [];
+    handle.aniso       = [];
+    handle.atomText    = [];
+    handle.spinCircle  = [];
+    handle.spinCircle2 = [];
+    handle.spinArrow   = [];
+    handle.coupling    = [];
+    handle.DMcoupling  = [];
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1047,9 +1050,3 @@ end
 
 
 end
-
-
-
-
-
-

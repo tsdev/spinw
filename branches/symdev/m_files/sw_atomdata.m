@@ -8,12 +8,14 @@ function varargout = sw_atomdata(atomSymb, datType)
 %           contains whitespace character, the second word will be used to
 %           identify the atom.
 % datType   Type of information requested:
-%               radius  Atomic radius.
-%               color   Color of the atom from the CPK color scheme.
+%               radius      Atomic radius.
+%               color       Color of the atom from the CPK color scheme.
+%               mass        Average mass of the element.
+%               longname    Name of the element.
 %
 % Example:
 % sw_atomdata('H','radius') = 0.37
-% If the atom label does not exists, the function returns radius = 1, 
+% If the atom label does not exists, the function returns radius = 1,
 % color = [255 167 0].
 %
 % optional second output is 'atomLabel' that contains the name of the atom
@@ -56,33 +58,43 @@ end
 atomSymb = atomSymb(isstrprop(atomSymb,'alpha'));
 
 atom = struct;
-idx = 1;
-found = false;
-while (~feof(fid)) && ~found
-    fLine = fgets(fid);
-    [atom.name, ~, ~, nextIdx] = sscanf(fLine,'%s',1);
-    [atom.rad, ~, ~, nextIdx2] = sscanf(fLine(nextIdx:end),'%f,',1);
-    atom.col = sscanf(fLine((nextIdx+nextIdx2):end),'%f ',[1 3]);
-    found = strcmpi(atom.name,atomSymb);
-    idx = idx + 1;
-end
 
+% read in all data
+% Symbol IonicRadius R G B Mass Name
+aData = textscan(fid,'%s %f %d %d %d %f %s');
 fclose(fid);
 
-if strcmpi('radius',datType)
-    if found
-        data = atom.rad;
-    else
-        data = 1;
-    end
-elseif strcmpi('color',datType)
-    if ~isempty(atom.col)
-        data = atom.col;
-    else
-        data = [255 167 0];
-    end
+% find atom symbol
+idx = find(strcmp(aData{1},atomSymb));
+
+if isempty(idx)
+    found = false;
+    atom.name  = '';
+    atom.rad   = 1;
+    atom.color = [255 167 0];
+    atom.mass  = 0;
+    atom.longname = '';
+    
 else
-    error('sw_atomdata:WrongInput','datType has to be either radius or color!');
+    found = true;
+    atom.name  = aData{1}{idx};
+    atom.rad   = aData{2}(idx);
+    atom.color = double([aData{3}(idx) aData{4}(idx) aData{5}(idx)]);
+    atom.mass  = aData{6}(idx);
+    atom.longname = aData{7}{idx};
+end
+
+switch datType
+    case 'radius'
+        data = atom.rad;
+    case 'color'
+        data = atom.color;
+    case 'mass'
+        data = atom.mass;
+    case 'longname'
+        data = atom.longname;
+    otherwise
+        error('sw_atomdata:WrongInput','datType has to be one of the string options, see help sw_atomdata!');
 end
 
 varargout{1} = data;

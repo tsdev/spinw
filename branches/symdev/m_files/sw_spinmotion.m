@@ -24,10 +24,8 @@ function spectra = sw_spinmotion(spectra, varargin)
 %               selected normal magnon will create on the i-th spin a
 %               precession around the ground state direction along the
 %               ellipse defined by the Amp1(:,i) and Amp2(:,i) orthogonal
-%               vectors as major and minor axes.
-% phi           Gives the phase of the motion, dimensions are [1 nMagExt].
-%               Zero phase is when the i-th spin deviation vector is
-%               parallel to the Amp1(:,i) vector.
+%               vectors as major and minor axes. At t=0 the spin deviation
+%               vector points along Amp1.
 % iQ            Index the magnon momentum, spectra.hkl(:,iQ) gives the
 %               magnon momentum in r.l.u. units.
 % iMagnon       The index of the normal magnon mode.
@@ -62,7 +60,7 @@ else
     iQ = find(dQ == min(dQ));
     
     if dQ(iQ) > 1e-3
-        warning('sw_spinmotion','The closest Q point is (%5.3f %5.3f %5.3f) r.l.u.!',spectra.hkl(:,iQ)); %#ok<CTPCT>
+        warning('sw_spinmotion:WrongQ','The closest calculated Q point (%5.3f %5.3f %5.3f) is far!',spectra.hkl(1,iQ),spectra.hkl(2,iQ),spectra.hkl(3,iQ));
     end
 end
 
@@ -88,22 +86,13 @@ Tm = spectra.T(:,nMagS,iQ);
 % energy of the selected magnon
 om = spectra.omega(nMagS,iQ);
 
-% spin precession phase
-phi = angle(Tm(1:nMagExt))-angle(Tm(((end/2)+1):end));
-% relative phase to atom 1
-phi = phi - repmat(phi(1,:),[nMagExt 1]);
-% modulo 2*pi
-phi = mod(phi+1e-5,2*pi)-1e-5;
+% original complex prefactors of the boson operators
+A = Tm(1:nMagExt);
+B = Tm((nMagExt+1):end);
 
-% (X,Y) amplitudes
-Amp1 = abs(Tm(1:nMagExt)+Tm(((end/2)+1):end));
-Amp2 = abs(Tm(1:nMagExt)-Tm(((end/2)+1):end));
-
-% normalize amplitude to 1
-Amp  = sqrt(sum(Amp1.^2+Amp2.^2,1))+1e-10;
-Amp1 = Amp1./repmat(Amp,[nMagExt 1]);
-Amp2 = Amp2./repmat(Amp,[nMagExt 1]);
-
+% complex amplitudes along the e1 and e2 axes (x,y)
+Cx = transpose(A + B);
+Cy = transpose(B - A);
 
 % local spin coordinate system (e1, e2, e3||S)
 % spin precession is in the (e2,e3) plane
@@ -119,11 +108,27 @@ e2  = bsxfun(@rdivide,e2,sqrt(sum(e2.^2,1)));
 % e1 = e2 x e3
 e1  = cross(e2,e3);
 
-% save results into spectra.motion field
-spectra.motion.Amp1 = bsxfun(@times,Amp1',e1);
-spectra.motion.Amp2 = bsxfun(@times,Amp2',e2);
-spectra.motion.phi  = phi';
+% new elliptical motion with new major and minor axes
+% all phi starting phases are zero
+% TODO check (+/-)
+e1p = bsxfun(@times,real(Cx),e1) - bsxfun(@times,imag(Cy),e2);
+e2p = bsxfun(@times,real(Cy),e2) + bsxfun(@times,imag(Cx),e1);
 
+% check whether elliptical motion is valid
+if sum((imag(Cy)./real(Cx)-imag(Cx)./real(Cy)).^2) > 1e-10
+    warning('sw_spinmotion:NoElliptical','The spin precession is not elliptical!');
+end
+
+% normalize amplitudes to 1
+Amp  = sqrt(sum(sum(e1p.^2+e2p.^2)))+1e-10;
+e1p = e1p./Amp;
+e2p = e2p./Amp;
+
+% save results into spectra.motion field
+spectra.motion.Amp1 = e1p;
+spectra.motion.Amp2 = e2p;
+
+% save additional information about the spin motion
 spectra.motion.iQ = iQ;
 spectra.motion.iMagnon = iMagnon;
 spectra.motion.omega   = om;

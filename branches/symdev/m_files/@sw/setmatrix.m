@@ -1,7 +1,11 @@
 function setmatrix(obj, varargin)
-% changes the selected matrix of sw object.
+% changes the selected matrix inside the sw object
 %
-% setmatrix(obj, 'Option1', Value1, ...)
+% SETMATRIX(obj, 'Option1', Value1, ...)
+%
+% Input:
+%
+% obj           sw class object.
 %
 % Options:
 %
@@ -44,17 +48,24 @@ function setmatrix(obj, varargin)
 %           order of the two interacting atoms! Default value is {1}.
 %           For anisotropy matrices antisymmetric matrices are not allowed.
 %
+% Output:
+%
+% The selected obj.matrix.mat will contain the new value.
+%
 % Example:
 %
+% ...
 % setmatrix(crystal,'label','J1','pref',{[6 0.235]})
-% This will set 'J1' coupling to the 6th symmetry allowed matrix, with
-% prefactor 0.235.
+%
+% This example will set 'J1' coupling to the 6th symmetry allowed matrix,
+% with prefactor 0.235.
 %
 % setmatrix(crystal,'label','J2','pref',{1.25})
+%
 % This will set 'J2' to antiferromagnetic Heisenberg exchange, with value
 % of 1.25 meV.
 %
-% See also SW.GETMATRIX.
+% See also SW, SW.GENCOUPLING, SW.GETMATRIX.
 %
 
 if nargin == 1

@@ -15,7 +15,7 @@ function addatom(obj, varargin)
 %           label of the atom. For example if 'label' is 'MCr3+' or 'Cr3+'
 %           then the high spin of S=3/2 is automatically generated. The
 %           high spin values for every ion is stored in the last column of
-%           the ion.dat file.
+%           the ion.dat file. If the atom type is unknown S=0 is assumed.
 %   label   Names of the atoms for plotting and form factor
 %           calculations (see ion.dat), it is a cell, optional.
 %           Example:
@@ -31,8 +31,8 @@ function addatom(obj, varargin)
 %
 % Output:
 %
-% the function creates extra elements in the unit_cell field of the obj sw
-% object.
+% The function creates extra elements in the 'unit_cell' field of the obj
+% sw object.
 %
 % Example:
 %

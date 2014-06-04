@@ -3,8 +3,11 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % spectra = POWSPEC(obj, hklA, 'Option1', Value1, ...)
 %
-% hklA          Q values in reciproc angstrom, where powder spectra is
-%               to be calculated, dimensions are[1 nQ].
+% Input:
+%
+% obj       sw class object.
+% hklA      Vector containing the Q values in inverse Angstrom where powder
+%           spectra will be calculated, dimensions are [1 nQ].
 %
 % Options:
 %
@@ -17,8 +20,8 @@ function spectra = powspec(obj, hklA, varargin)
 %           obj.single_ion.T value.
 %
 % Output:
-% spectra is struct type with the following fields:
 %
+% 'spectra' is a struct type variable with the following fields:
 % swConv    The spectra convoluted with the dispersion. The center
 %           of the energy bins are stored in spectra.Evect. Dimensions are
 %           [nE nQ].
@@ -26,7 +29,19 @@ function spectra = powspec(obj, hklA, varargin)
 %           Contains the input energy transfer values, dimensions are
 %           [1 nE].
 % param     Contains all the input parameters.
-% obj       The input sw object.
+% obj       The copy of the input obj object.
+%
+% Example:
+%
+% tri = sw_model('triAF',1);
+% E = linspace(0,3,100);
+% Q = linspace(0,4,300);
+% triSpec = tri.powspec(Q,'Evect',E,'nRand',1e3);
+% sw_plotspec(triSpec);
+%
+% The example calculates the powder spectrum of the triangular lattice
+% antiferromagnet (S=1, J=1) between Q = 0 and 3 A^-1 (the lattice
+% parameter is 3 Angstrom).
 %
 % See also SW, SW.SPINWAVE, SW.OPTMAGSTR.
 %

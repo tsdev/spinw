@@ -1,13 +1,25 @@
 function basisVector = basisvector(obj, varargin)
-% generates basis vectors
+% generates basis vectors of the crystal lattice
 %
-% basisVector = BASISVECTOR(obj, {norm})
+% basisVec = BASISVECTOR(obj, {norm})
 %
-% basisVector   Stores the three basis vectors in columns, dimensions are
-%               [3 3].
+% Input:
 %
-% basisVector can be used also as a coordinate transformation matrix. If
-% norm is true, the basis vectors will be normalized. Default is false.
+% obj       sw class object.
+% norm      If true, the basis vectors are normalized to 1, otherwise the
+%           length is equal to the lattice constants. Defult is false.
+%           Optional.
+%
+% Output:
+%
+% basisVec  Stores the three basis vectors in columns, dimensions are 
+%           [3 3].
+%
+% The 3x3 basisVec matrix can be used also as a coordinate transformation
+% matrix from the relative atomic position to positions in the xyz
+% coordinate system in Angstrom units.
+%
+% Example:
 %
 % To change coordinate system:
 %
@@ -16,6 +28,8 @@ function basisVector = basisvector(obj, varargin)
 %
 % reciprocal lattice units --> Angstrom^-1 (xyz coordinate system)
 %   Q_xyz =  [h k l] * 2*pi*inv(basisvector);
+%
+% See also SW, SW.ABC.
 %
 
 if nargin == 1

@@ -1,5 +1,5 @@
 function out = export(obj, varargin)
-% export data from sw object into different formats
+% export data from sw object into different file formats
 %
 % out = EXPORT(obj, 'Option1', Value1, ...)
 %
@@ -27,8 +27,17 @@ function out = export(obj, varargin)
 % PCR format:
 % perm      Permutation of the xyz atomic positions, default is [1 2 3].
 %
-% If either 'path' nor 'fid' is given, the 'out' will be a cell containing
+% If neither 'path' nor 'fid' is given, the 'out' will be a cell containing
 % strings for each line of the text output.
+%
+% Example:
+%
+% cryst = sw('test.cif');
+% cryst.export('format','pcr','path','test.pcr');
+%
+% In this example the crystal structure is imported from the test.cif file,
+% and the atomic positions are saved into the test.pcr file for FullProf
+% refinement (the pcr file needs additional text to work with FullProf).
 %
 % Links:
 % Jmol Wiki: http://wiki.jmol.org/index.php/Main_Page

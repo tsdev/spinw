@@ -1,27 +1,43 @@
 function unit_cell_info = unit_cell(obj, idx)
-% returns information on atoms in the crystallographic unit cell.
+% returns information on atoms in the crystallographic unit cell
 %
-% unit_cell_info = UNIT_CELL(obj, idx) returns information on symmetry
-% inequivalent atoms. idx selects certain atoms, while UNIT_CELL(obj) or
-% obj.UNIT_CELL returns information on all atoms. The selection can be also
-% done according to the atom labels, in this case either a string of the
-% label or cell of strings for several labels can be given.
+% unit_cell_info = UNIT_CELL(obj, idx)
 %
-% Sub fields are:
-%   'r'         pasitions of the atoms in the unit cell, in a
-%               3 x nAtom matrix, in lattice units
-%   'S'         spin quantum number of the atoms, in a 1 x nAtom
-%               vector, non-magnetic atoms have S=0
-%   'label'     label of the atom, strings in a 1 x nAtom cell
-%   'color'     color of the atom in 3 x nAtom matrix, where every
-%               column is an 0-255 RGB color
+% The function returns information on symmetry inequivalent atoms. 
+%
+% Input:
+%
+% obj       sw class object.
+% idx       Selects certain atoms. If undefined UNIT_CELL(obj) or
+%           obj.UNIT_CELL returns information on all atoms. The selection
+%           can be also done according to the atom labels, in this case
+%           either a string of the label or cell of strings for several
+%           labels can be given.
+%
+% Output:
+%
+% 'unit_cell_info' is a tructure with the following fields:
+% r         Positions of the atoms in the unit cell, in a matrix with
+%           dimensions of [3 nAtom], in lattice units.
+% S         Spin quantum number of the atoms, in a [1 nAtom] horizontal
+%           vector, non-magnetic atoms have S=0.
+% label     Label of the atom, strings in a cell with dimensions of 
+%           [1 nAtom].
+% color     Color of the atom in a matrix with dimensions of [3 nAtom],
+%           where every column is an 0-255 RGB color code.
 %
 % Example:
-% crystal.unit_cell = unit_cell(crystal,[1 3]);
-% keeps only the first and third symmetry inequivalent atoms in sw object.
 %
-% crystal.unit_cell = unit_cell(crystal,'O');
-% keeps only the Oxygen atoms in crystal sw object.
+% ...
+% cryst.unit_cell = unit_cell(cryst,[1 3]);
+%
+% The example keeps only the first and third symmetry inequivalent atoms in
+% cryst object.
+%
+% ...
+% cryst.unit_cell = unit_cell(cryst,'O');
+%
+% The example keeps only the Oxygen atoms in cryst object.
 %
 % See also SW.ADDTWIN, SW.TWINQ, SW.UNIT_CELL.
 %

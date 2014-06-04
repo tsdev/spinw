@@ -3,7 +3,7 @@ function spectra = spinwavesym(obj, varargin)
 %
 % spectra = SPINWAVESYM(obj, 'option1', value1 ...)
 %
-% Symbolic spin wave dispersion  is calculated as a function of reciprocal
+% Symbolic spin wave dispersion is calculated as a function of reciprocal
 % space points. The function can deal with arbitrary magnetic structure and
 % magnetic interactions as well as single ion anisotropy and magnetic
 % field.
@@ -11,6 +11,10 @@ function spectra = spinwavesym(obj, varargin)
 % If the magnetic ordering wavevector is non-integer, the dispersion is
 % calculated using a coordinate system rotating from cell to cell. In this
 % case the Hamiltonian has to fulfill this extra rotational symmetry.
+%
+% The method works for incommensurate structures, however the calculated
+% omega dispersion does not contain the omega(k+/-km) terms that has to be
+% added manually.
 %
 % The method for matrix diagonalization is according to R.M. White, PR 139
 % (1965) A450. The non-Hermitian g*H matrix will be diagonalised.
@@ -54,6 +58,34 @@ function spectra = spinwavesym(obj, varargin)
 % incomm        Whether the spectra calculated is incommensurate or not.
 % obj           The copy of the input obj.
 %
+% Example:
+%
+% tri = sw_model('triAF',1);
+% tri.symbolic(true)
+% tri.genmagstr('mode','direct','k',[1/3 1/3 0],'S',[1 0 0])
+% symSpec = tri.spinwave;
+% 
+% J1 = 1;
+% h = linspace(0,1,500);
+% k = h;
+% omega = eval(symSpec.omega);
+% 
+% p1 = plot(h,real(omega(1,:)),'ko');
+% hold on
+% plot(h,real(omega(2,:)),'ko')
+% p2 = plot(h,imag(omega(1,:)),'r-');
+% plot(h,imag(omega(2,:)),'r-')
+% xlabel('Momentum (H,H,0) (r.l.u.)')
+% ylabel('Energy (meV)')
+% legend([p1 p2],'Real(\omega(Q))','Imag(\omega(Q))')
+% title('Spin wave dispersion of the TLHAF')
+%
+% The first section calculates the symbolic spin wave spectrum.
+% Unfortunatelly the symbolic expression needs manipulations to bring it to
+% readable form. To check the solution, the second section converts the 
+% symbolic expression into a numerical vector and the third section plots
+% the real and imaginary part of the solution.
+%
 % See also SW, SW.SPINWAVE, SW_NEUTRON, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
 %
 
@@ -74,7 +106,12 @@ nExt    = double(obj.mag_str.N_ext);
 % magnetic ordering wavevector in the extended magnetic unit cell
 km = obj.mag_str.k.*nExt;
 % whether the structure is incommensurate
-incomm = any(~isAlways(abs(km-round(km)) <= param.tol));
+incomm = abs(km-round(km)) <= param.tol;
+if islogical(incomm)
+    incomm = any(~incomm);
+else
+    incomm = any(~isAlways(incomm));
+end
 
 % symbolic wavevectors
 %syms h k l real
@@ -125,13 +162,13 @@ end
 
 % Local (e1,e2,e3) coordinate system fixed to the moments.
 % e3 || Si
-e3 = M0./repmat(S0,[3 1]);
+e3 = M0./[S0; S0; S0];
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
 %e2(3,~any(e2)) = 1;
 e2(3,~any(abs(e2)>1e-10)) = 1;
 E0 = sqrt(sum(e2.^2,1));
-e2  = e2./repmat(E0,[3 1]);
+e2  = e2./[E0; E0; E0];
 % e1 = e2 x e3
 e1  = cross(e2,e3);
 

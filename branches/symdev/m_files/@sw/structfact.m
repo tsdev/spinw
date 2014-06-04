@@ -18,22 +18,20 @@ function sFact = structfact(obj, varargin)
 %
 % Output:
 %
-% sFact.F2          Square of the 3 dimensional magnetic structure factor,
-%                   dimensions are
-%                   [nExt(1)*fExt(1) nExt(2)*fExt(2) nExt(3)*fExt(3)],
-%                   where nExt is the size of the extended unit cell.
-% sFact.perp        Square of the perpendicular component of the magnetic
-%                   structure factor to the Q scattering vector, same size
-%                   as sFact.int.
-%
-% sFact.xyz         Cell storing the components of the complex structure
-%                   factor in the form {X, Y, Z}.
-%
-% sFact.hkl         Cell storing the wavevectors (h, k, l) in reciprocal
-%                   lattice units, in the form {h, k, l} where the
-%                   dimensions of each vector are [1 nExt(ii)*fExt(ii)]
-%                   where ii is {1, 2, 3} for {h, k, l}.
-% sFact.obj         Copy of the sw object.
+% 'sFact' is a structure with the following fields:
+% F2        Square of the 3 dimensional magnetic structure factor,
+%           dimensions are:
+%               [nExt(1)*fExt(1) nExt(2)*fExt(2) nExt(3)*fExt(3)],
+%           where nExt is the size of the extended unit cell.
+% perp      Square of the perpendicular component of the magnetic structure
+%           factor to the Q scattering vector, same size as sFact.int.
+% xyz       Cell storing the components of the complex structure factor in
+%           the form {X, Y, Z}.
+% hkl       Cell storing the wavevectors (h, k, l) in reciprocal lattice
+%           units, in the form {h, k, l} where the dimensions of each
+%           vector are [1 nExt(ii)*fExt(ii)] where ii is {1, 2, 3} for
+%           {h, k, l}.
+% obj       Copy of the input obj object.
 %
 % See also SW_PLOTSF, SW_INTSF, SW.ANNEAL, SW.GENMAGSTR.
 %

@@ -3,25 +3,39 @@ function addg(obj, matrixIdx, varargin)
 %
 % ADDG(obj, matrixIdx, {atomTypeIdx}, {atomIdx})
 %
-% matrixIdx         Either an integer, that selects one of the matrices in
-%                   obj.matrix.mat, or a string that identical to one of
-%                   the previously defined labels, stored in
-%                   obj.matrix.label. Maximum value is nCoupling.
-% atomTypeIdx       A vector that contains integers, that point to the atom
-%                   in obj.unit_cell, then it selects atoms and
-%                   symmetry equivalent ones with coordinates:
-%                       unit_cell.r(:,atomIdx)
-%                   Maximum value is nAtom, it is optional, if undefined
-%                   g-tensor is assigned to all magnetic atoms. Optional.
-%  atomIdx          A vector that contains indices of the symmetry
-%                   equivalent atoms, selecting only a few of them. Maximum
-%                   value is the number of symmetry equivalent atoms
-%                   generated. If crystal symmetry is not P1, atomIdx is
-%                   not allowed, since the g-tensor for equivalent
-%                   atoms will be calculated using the symmetry operators
-%                   of the space group. Optional.
+% Input:
 %
-% See also SW.ADDCOUPLING, SW.ADDANISO.
+% matrixIdx     Either an integer, that selects the matrix
+%               obj.matrix.mat(:,:,matrixIdx), or a string identical to one
+%               of the previously defined matrix labels, stored in
+%               obj.matrix.label. Maximum value is nJ.
+% atomTypeIdx   A vector that contains integers, the index of the magnetic
+%               atoms in obj.unit_cell, with all symmetry equivalent atoms.
+%               Maximum value is nAtom, if undefined g-tensor is assigned
+%               to all magnetic atoms. Optional.
+%  atomIdx      A vector that contains indices selecting some of the
+%               symmetry equivalent atoms. Maximum value is the number of
+%               symmetry equivalent atoms generated. If crystal symmetry is
+%               not 0, atomIdx is not allowed, since the g-tensor for
+%               equivalent atoms will be calculated using the symmetry
+%               operators of the space group. Optional.
+%
+% Output:
+%
+% The function adds extra entries in the 'single_ion.g' field of the obj sw
+% object.
+%
+% Example:
+%
+% ...
+% cryst.addmatrix('label','g1','value',diag([1.8 1.8 2.1]))
+% cryst.gencoupling
+% cryst.addg('g1')
+%
+% This will add the 'g1' diagonal matrix to all magnetic atoms as
+% anisotropic g-tensor.
+%
+% See also SW, SW.ADDCOUPLING, SW.ADDANISO, SW.ADDMATRIX.
 %
 
 mAtom    = obj.matom;

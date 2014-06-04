@@ -1,8 +1,11 @@
 function addcoupling(obj, matrixLabel, couplingIdx, varargin)
-% assign a predefined matrix to pairs of magnetic atoms as interaction
+% assigns a predefined matrix as exchange coupling on selected bonds
 %
 % ADDCOUPLING(obj, matrixLabel, couplingIdx, {bondIdx})
 %
+% Input:
+%
+% obj           sw class object.
 % matrixLabel   Label of the matrix, or the index.
 % couplingIdx   Selects the interacting atom pairs through the coupling.idx
 %               number. The coupling.idx numbers are in increasing order
@@ -11,12 +14,29 @@ function addcoupling(obj, matrixLabel, couplingIdx, varargin)
 %               shortest idx=2 and so on. couplingIdx can be vector to
 %               assign the matrix to multiple inequivalent magnetic atom
 %               distances.
-% {bondIdx}     Selects the indices of bonds within coupling.idx to
+% bondIdx       Selects the indices of bonds within coupling.idx to
 %               differentiate between equal length bonds. If bondIdx
 %               defined, couplingIdx has to be scalar. Optional. If the
 %               crystal symmetry is not P1, bondIdx is not allowed, since
 %               each equivalent coupling matrix will be calculated using
-%               the symmetry operators of the space group.
+%               the symmetry operators of the space group. Optional.
+%
+% Output:
+%
+% The function adds extra entries in the 'coupling.matrix' field of the obj
+% sw object.
+%
+% Example:
+%
+% ...
+% cryst.addmatrix('label','J1','value',0.123)
+% cryst.gencoupling
+% cryst.addcoupling('J1',1)
+%
+% This will add the 'J1' diagonal matrix to all second shortes bonds
+% between magnetic atoms.
+%
+% See also SW, SW.GENCOUPLING, SW.ADDMATRIX.
 %
 
 if isnumeric(matrixLabel)

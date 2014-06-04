@@ -1,5 +1,10 @@
 function MF = meanfield(obj, varargin)
 % returns different mean field values
+%
+% EXPERIMENTAL EXPERIMENTAL EXPERIMENTAL EXPERIMENTAL EXPERIMENTAL
+%
+% Please contact sandor.toth@psi.ch if you wish to use!
+%
 
 inpForm.fname  = {'epsilon'};
 inpForm.defval = {1e-5     };

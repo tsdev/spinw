@@ -1,5 +1,5 @@
 function fitsp = fitspec(obj, varargin)
-% fits spin wave spectra to experimental data
+% fits spin wave spectra to experimental spectral data
 %
 % fitsp = FITSPEC(obj, 'Option1', Value1, ...)
 %
@@ -62,7 +62,7 @@ function fitsp = fitspec(obj, varargin)
 % exitflag  Exit flag of the fminsearch command.
 % output    Output of the fminsearch command.
 %
-% All other options used by SPINWAVE function are accepted.
+% Any option used by SW.SPINWAVE function are also accepted.
 %
 % See also SW.SPINWAVE, SW_EGRID, SW_NEUTRON, SW_READSPEC, FMINSEARCH.
 %

@@ -22,4 +22,4 @@ else
     obj.matomstore = mAtomList;
 end
 
-end % .matom
+end

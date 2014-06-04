@@ -1,14 +1,16 @@
 function [w, s] = horace(obj, qh, qk, ql, varargin)
-% dispersion/correltion function calculator, can be called from Horace
+% calculates spin wave dispersion/correlation functions to be called from Horace
 %
-% [w, s] = HORACE(obj, qh, qk, ql, p) function to produce
-% spin wave dispersion and intensity for Horace (<a href=http://horace.isis.rl.ac.uk>http://horace.isis.rl.ac.uk</a>).
+% [w, s] = HORACE(obj, qh, qk, ql, p) 
+%
+% The function produces spin wave dispersion and intensity for Horace 
+% (<a href=http://horace.isis.rl.ac.uk>http://horace.isis.rl.ac.uk</a>).
 %
 % Input:
 %
-% ojb           Input sw object.
+% obj           Input sw object.
 % qh, qk, ql    Reciprocal lattice components in reciprocal lattice units.
-% p             Prameters, not used.
+% p             Parameters, currently unused.
 %
 % Options:
 %
@@ -22,22 +24,33 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %                       'y' or 'z'. For example: 'Sxx' will convolute the
 %                       xx component of the correlation function with the
 %                       dispersion. xyz is the standard coordinate system,
-%                       see online documentation of sw.
+%                       see online documentation of SpinW.
 %           Any linear combination of the above are allowed, for example:
 %           'Sxx+2*Syy' convolutes the linear combination of the xx
 %           component of the spin-spin correlation function and the yy
 %           component.
 %
+% Output:
+%
+% w         Cell that contains the spin wave energies. Every cell elements
+%           contains a vector of spin wave energies for the corresponding
+%           input Q vector.
+% s         Cell that contains the calculated element of the spin-spin
+%           correlation function. Every cell element contains a vector of
+%           intensities in the same order as the spin wave energies in w.
+%
 % Example:
 %
+% ...
 % horace_on;
 % d3dobj = d3d(cryst.abc,[0 1 0 0],[0,0.01,1],[0 0 1 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
 % d3dobj = disp2sqw_eval(d3dobj,@cryst.horace,{'component','Sperp'},0.1);
 % plot(d3dobj);
 %
 % This example creates a d3d object, a square in (h,k,0) plane and in
-% energy between 0 and 10 meV. Then calculates the neutron scattering
-% intensity of the spin wave in this volume and plots it using sliceomatic.
+% energy between 0 and 10 meV. Then calculates the inelastice neutron
+% scattering intensity of the spin wave model stored in cryst and plots it
+% using sliceomatic.
 %
 % See also SW, SW.SPINWAVE.
 %

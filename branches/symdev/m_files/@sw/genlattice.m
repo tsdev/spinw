@@ -1,14 +1,18 @@
 function genlattice(obj, varargin)
-% generates lattice from given parameters
+% generates crystal lattice from given parameters
 %
 % GENLATTICE(obj, 'option1', value1, 'option2', value2...)
 %
+% Input:
+%
+% obj       sw class object.
+%
 % Options:
 %
-%   angled      Alpha, beta, gamma angles in degree, dimensions are [1 3].
-%   angle       Alpha, beta, gamma angles in radian, dimensions are [1 3].
-%   lat_const   a, b, c lattice parameters, dimensions are [1 3].
-%   sym         Space group index, or space group name (string).
+% angled    Alpha, beta, gamma angles in degree, dimensions are [1 3].
+% angle     Alpha, beta, gamma angles in radian, dimensions are [1 3].
+% lat_const a, b, c lattice parameters, dimensions are [1 3].
+% sym       Space group index, or space group name (string).
 %
 % Alternatively the lattice parameters can be given directly when the sw
 % object is created using: sw(inpStr), where struct contains the fields
@@ -26,10 +30,17 @@ function genlattice(obj, varargin)
 % If the sym option is 0, no symmetry will be used. The sw.gencoupling()
 % function will determine the equivalent bonds based on bond length.
 %
+% Output:
+%
+% The obj.lattice field will be changed based on the input, the lattice
+% constants stored directly and the optional space group string is
+% converted to the integer type index.
+%
 % Example:
 %
-% genlattice(crystal,'lat_const',[3 3 4],'angled',[90 90 120],'sym','P 6');
-% genlattice(crystal,'lat_const',[3 3 4],'angled',[90 90 120],'sym',168);
+% ...
+% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'sym','P 6')
+% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'sym',168)
 %
 % The two lines are equivalent, both will create hexagonal lattice, with 
 % 'P 6' space group.

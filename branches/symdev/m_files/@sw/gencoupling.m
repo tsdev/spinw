@@ -3,12 +3,22 @@ function gencoupling(obj, varargin)
 %
 % GENCOUPLING(obj, 'option1', value, ...)
 %
-% It calculates equivalent bonds between magnetic atoms. These are
-% determined either based on crystal symmetry or bond length (with tolDist
-% tolerance). If the space group index of 0 is defined (obj.lattice.sym=0),
-% the equivalent bonds will be based on bond length. For space group index
-% larger than 0, the symmetry equivalent bonds will be determined. This can
-% ve overwritten by the forceNoSym parameter to consider bond length.
+% The function calculates equivalent bonds between magnetic atoms. These
+% are determined either based on crystal symmetry or bond length (with
+% tolDist tolerance). If the space group index of 0 is defined
+% (obj.lattice.sym=0), the equivalent bonds will be based on bond length.
+% For space group index larger than 0, the symmetry equivalent bonds will
+% be determined. This can ve overwritten by the forceNoSym parameter to
+% consider bond length.
+%
+% IMPORTANT!
+%   This function has to be used after the crystal structure is defined.
+%   The SW.ADDCOUPLING, SW.COUPLINGTABLE functions will only work
+%   afterwards.
+%
+% Input:
+%
+% obj           sw class object.
 %
 % Options:
 %
@@ -30,7 +40,23 @@ function gencoupling(obj, varargin)
 % dMin          Minimum bond length, below which an error is triggered.
 %               Default value is 0.5 Angstrom.
 %
-% See also SW, SYMMETRY, NOSYM.
+% Output:
+%
+% The obj.coupling field will be filled with values, depending on the
+% crystal geometry.
+%
+% Example:
+%
+% cryst = sw;
+% cryst.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
+% cryst.addatom('r',[0 0 0])
+% cryst.gencoupling
+% cryst.couplingtable(1:3)
+%
+% A triangular lattice is created in cryst and after using gencoupling()
+% the couplingtable() function lists the 1st, 2nd and 3rd neighbor bonds.
+%
+% See also SW, SW.SYMMETRY, SW.NOSYM.
 %
 
 isSym = obj.lattice.sym > 0;

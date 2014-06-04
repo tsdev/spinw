@@ -1,14 +1,16 @@
 function varargout = field(obj,varargin)
 % get/set magnetic field value
 %
-% {obj} = SW.FIELD(obj, B)
+% SW.FIELD(obj, B)
 %
 % If B is defined, it sets the magnetic field stored in sw object to B,
 % where B is a 1x3 vector.
 %
-% B = SW.FIELD
+% B = FIELD(obj)
 %
-% It returns the current B field value.
+% The function returns the current B field value stored in obj.
+%
+% See also SW, SW.TEMPERATURE.
 %
 
 if nargin == 1

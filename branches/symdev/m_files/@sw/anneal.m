@@ -4,8 +4,8 @@ function stat = anneal(obj, varargin)
 % stat = ANNEAL(obj, 'option1', value1 ...)
 %
 % The function can deal only with single ion anisotropy and isotropic
-% exchange interactions in 1, 2 or 3 spin dimensions. General and DM
-% interactions are not supported yet!
+% exchange interactions in 1, 2 or 3 spin dimensions. 
+% General and antisymmetric exchage interactions are not supported yet!
 %
 % Input:
 %

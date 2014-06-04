@@ -1,7 +1,11 @@
 function optm = optmagstr(obj, varargin)
 % optimises magnetic structure by minimizing the energy using non-linear optimization algorithms
 %
-% optm = OPTMAGSTR(swobj, Option1, Value1, ...)
+% optm = OPTMAGSTR(obj, Option1, Value1, ...)
+%
+% Input:
+%
+% obj       sw class object.
 %
 % Options:
 %
@@ -58,7 +62,7 @@ function optm = optmagstr(obj, varargin)
 %
 % Output:
 %
-% optm is struct type with the following fields:
+% 'optm' is a struct type variable with the following fields:
 % obj       sw object that contains the optimised magnetic structure.
 % x         Optimised paramters, dimensions are [1 nPar].
 % fname     Name of the contraint function.
@@ -69,6 +73,19 @@ function optm = optmagstr(obj, varargin)
 % output    Detailed output of the optimisation code, see fminsearch.
 % param     Input parameters, stored in a struct.
 %
+% Example:
+%
+% tri = sw_model('triAF',1);
+% X1 = [0 0 0 0 pi/2 0];
+% X2 = [0 1/2 1/2 0 pi/2 0];
+% optRes = tri.optmagstr('func',@gm_planar,'xmin',X1,'xmax',X2);
+% plot(tri)
+%
+% The example determined the magnetic structure of the triangular lattice
+% antiferromagnet assuming planar magnetic structure and constraining the
+% moments into the [0 y z] plane (nTheta = 90 deg, nPhi = 0 deg or 
+% n = [1 0 0]). Then plots the magnetic structure.
+% 
 % See also SW, SW.ANNEAL, GM_SPHERICAL3D, GM_PLANAR, FMINSEARCH.
 %
 

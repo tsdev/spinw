@@ -1,9 +1,15 @@
 function varargout = plot(obj, varargin)
 % plots crystal structure, magnetic structure, anisotropy and couplings
 %
-% [hFigure, handle] = PLOT(obj, 'option1', value1, ...): plot the atoms and
-% couplings of obj. Instead of ('option1', value1) pairs, a struct can be
-% used.
+% [hFigure, handle] = PLOT(obj, 'option1', value1, ...)
+%
+% The function plots the atoms and couplings stored in obj onto a Matlab
+% figure. Optionally a script output can be produced that creates a jMol
+% plot of the crystal structure.
+%
+% Input:
+%
+% obj               sw class object.
 %
 % Options:
 %
@@ -13,6 +19,10 @@ function varargout = plot(obj, varargin)
 %                   unit cells can be given along the a, b and c
 %                   directions: [2 1 2], that is equivalent to
 %                   [0 2;0 1;0 2]. Default is the single unit cell.
+%   format          Output format string with the following values:
+%                       'plot'  Plot onto Matlab figure. (Default)
+%                       'jmol'  Return Jmol script file as a script,
+%                               (.spt file).
 %
 %   Axis & labels =========================================================
 %
@@ -113,19 +123,15 @@ function varargout = plot(obj, varargin)
 %   rCoupling       Radius of the cylinder of the couplings, default is
 %                   0.05 Angstrom.
 %
-% Other options ===========================================================
+%   Other options =========================================================
 %
 %   surfRes         Number of points on the surface mesh, default is 30.
 %   wSpace          Space between figure window and plot structure,
 %                   default is 10.
-%   format          Output format.
-%                       'plot'  Plot onto Matlab figure. (Default)
-%                       'jmol'  Return Jmol script file as a script,
-%                               (spt file).
 %   hg              Whether to use hgtransform (nice rotation with the
 %                   mouse) or default Matlab rotation of 3D objects.
 %                   Default is true.
-% hFigure           Handle of the figure to plot. In not given, the figure
+%   hFigure         Handle of the figure to plot. In not given, the figure
 %                   window handle is determined automatically.
 %
 % Output:
@@ -147,7 +153,7 @@ function varargout = plot(obj, varargin)
 %   idx2    The index of the atom in obj.atom
 %
 % To access the graphical objects, use the function:
-%   handleList = sw_getobject(tagName,fHandle)
+%   handleList = sw_getobject(tagName,fHandle);
 % This command returns all objects with tagName string in their 'Tag'
 % field, in figure with fHandle.
 %
@@ -164,6 +170,14 @@ function varargout = plot(obj, varargin)
 %                  couplings with label 'J1'.
 % spinPlane        Circle showing the plane of the spins.
 % legend           Legend.
+%
+% Example:
+%
+% sq = sw_model('squareAF',1);
+% plot(sq);
+%
+% The example plots the structure, couplings and magnetic structure of the
+% square lattice antiferromagnet.
 %
 % See also SW_DRAW, SW_GETOBJECT, SW_ADDOBJECT.
 %

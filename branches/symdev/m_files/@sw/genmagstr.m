@@ -5,20 +5,24 @@ function genmagstr(obj, varargin)
 %
 % There are several ways to generate magnetic structure. The selected
 % method depends on the 'mode' option, see below. The magnetic structure is
-% stored in the sw object mag_str property.
+% stored in the obj.mag_str field.
+%
+% Input:
+%
+% obj       sw class object.
 %
 % Options:
 %
 % mode       Mode how the magnetic structure is generated.
 %
-%                random:
+%            'random'
 %                   generates random spin directions with zero k.
 %
-%                direct:
+%            'direct'
 %                   direct input of the magnetic structure from the S, k, n
 %                   parameters.
 %
-%                extend:
+%            'extend'
 %                   Simply extend the existing or input structure (param.S),
 %                   if no structure exists, random structure is generated.
 %                   If defined param.S is used as starting structure for
@@ -28,7 +32,7 @@ function genmagstr(obj, varargin)
 %                   be set to zero. To generate structure with non-zero k,
 %                   use 'helical' or 'direct' option. (default)
 %
-%                helical:
+%            'helical'
 %                   generates helical structure, starting structure
 %                   is defined by param.S, the normal vector of rotation is
 %                   stored in param.n, the ordering wavevector is stored in
@@ -46,7 +50,7 @@ function genmagstr(obj, varargin)
 %                   translation vector of the crystallographic cell where
 %                   the moment directions are calculated.
 %
-%                rotate:
+%            'rotate'
 %                   uniform rotation of all magnetic moments with a
 %                   param.phi angle around the param.n vector. If
 %                   param.phi=0, all moments are rotated so, that the first
@@ -55,7 +59,7 @@ function genmagstr(obj, varargin)
 %                   param.n defines the normal of the plane of the magnetic
 %                   moments.
 %
-%                func:
+%            'func'
 %                   function that defines the magnetic moments, ordering
 %                   wave vector and normal vector from parameters in the
 %                   following form:
@@ -67,7 +71,7 @@ function genmagstr(obj, varargin)
 %                   For planar magnetic structure use @gm_planar. Only
 %                   param.func and param.x have to be defined for this
 %                   mode.
-%                fourier:
+%            'fourier'
 %                   generate magnetic structure from Fourier components,
 %                   usefull for multi-k structures. It creates a magnetic
 %                   supercell that incorporates the magnetic structure
@@ -97,7 +101,7 @@ function genmagstr(obj, varargin)
 %                   'unitS' is set to 'lu', than the moment components are
 %                   assumed to be in lattice units.
 % phi       Angle of rotation of the magnetic moments in rad. Default
-%           value 0.
+%           value is 0.
 % nExt      Number of unit cell to extend the magnetic structure,
 %           dimensions are [1 3]. Default value is stored in obj.
 %           If nExt is a single number, then the size of the extended unit
@@ -135,6 +139,22 @@ function genmagstr(obj, varargin)
 %           [1 nx].
 % norm      Set the length of the generated magnetic moments to be equal to
 %           the spin of the magnetic atoms. Default is true.
+%
+% Output:
+%
+% The obj.mag_str field will contain the new magnetic structure.
+%
+% Example:
+%
+% USb = sw;
+% USb.genlattice('lat_const',[6.203 6.203 6.203],'angled',[90 90 90],'sym','F m -3 m')
+% USb.addatom('r',[0 0 0],'S',1)
+% FQ = {[0;0;1+1i] [0 0 1] [0;1+1i;0] [0 1 0] [1+1i;0;0] [1 0 0]};
+% USb.genmagstr('mode','fourier','Fk',FQ,'nExt',[1 1 1])
+% plot(USb,'range',[1 1 1])
+%
+% The above example creates the multi-q magnetic structure of USb with the
+% FQ Fourier components and plots the magnetic structure.
 %
 % See also SW, SW.ANNEAL, SW.OPTMAGSTR, GM_SPHERICAL3D, GM_PLANAR.
 %

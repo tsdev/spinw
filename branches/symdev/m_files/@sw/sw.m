@@ -2,27 +2,34 @@ classdef (ConstructOnLoad) sw < class_handlelight
     % SW class defines data structure and methods to calculate spin wave
     % dispersion in magnetic crystals.
     %
-    % SW() constructs a new sw class object, with default parameters.
+    % obj = SW() 
     %
-    % SW(obj) constructs new sw class object. If obj is sw class, it only
-    % checks its data integrity. If obj is struct type, it creates new sw
-    % object and checks data integrity.
+    % constructs a new sw class object, with default parameters.
     %
-    % SW(cif_path) construct new sw class object, where cif_path contains a
-    % string of a .cif file path defining a crystals structure.
+    % obj = SW(obj)
     %
-    % The data structure behind the sw object can be accessed by
-    % struct(sw). All fields of the struct type data behind the sw object
-    % are accessible through the main field names of the sw object. For
+    % constructs new sw class object. If obj is sw class, it only checks
+    % its data integrity. If obj is struct type, it creates new sw object
+    % and checks data integrity.
+    %
+    % obj = SW(cif_path) 
+    %
+    % construct new sw class object, where cif_path contains a string of a
+    % .cif file path defining an input crystals structure.
+    %
+    % The data structure behind the sw object can be accessed by using
+    % STRUCT(obj). All fields of the struct type data behind the sw object
+    % are accessible through the main field names of the obj object. For
     % example the lattice parameters:
-    %   abc = sw.unit_cell.lat_const;
+    %   abc = obj.unit_cell.lat_const;
     %
-    % sw is a handle class, it means that only the handle of the object
+    % sw is a handle class, that means that only the handle of the object
     % is copied in a swobj1 = swobj2 command. To create a copy (clone) of
     % an sw object use:
-    %    swobj1 = swobj2.copy;
-    % See also:
-    % <a href='/Applications/MATLAB_R2012b.app/help/matlab/matlab_oop/comparing-handle-and-value-classes.html'>Comparing handle and value classes</a>
+    %    swobj1 = swobj2.COPY;
+    %
+    % See also: SW.COPY, SW.STRUCT,
+    % <a href='/Applications/MATLAB_R2012b.app/help/matlab/matlab_oop/comparing-handle-and-value-classes.html'>Comparing handle and value classes</a>.
     %
     % Information in a blog form:
     % <a href='http://spinw.tumblr.com'>http://spinw.tumblr.com</a>
@@ -32,7 +39,6 @@ classdef (ConstructOnLoad) sw < class_handlelight
     % <a href='https://groups.google.com/forum/#!forum/spinwforum'>https://groups.google.com/forum/#!forum/spinwforum</a>
     % Lates version and bug reports/feature requests:
     % <a href='http://code.google.com/p/spinw/'>http://code.google.com/p/spinw/</a>
-    %
     %
     
     properties
@@ -238,7 +244,40 @@ classdef (ConstructOnLoad) sw < class_handlelight
         end % .sw
         
         function objC = copy(obj)
-            % clones sw object
+            % clones sw object with all data
+            %
+            % newObj = COPY(obj)
+            %
+            % Use this command instead of the '=' sign if you want to
+            % create an independent duplicate of an sw class object.
+            %
+            % Input:
+            %
+            % obj       sw class object.
+            %
+            % Output:
+            %
+            % newObj    New sw class object that contains all the data of
+            %           obj.
+            %
+            % Example:
+            %
+            % cryst = sw;
+            % cryst.addmatrix('label','J1','value',3.1415)
+            %
+            % cryst1 = cryst;
+            % cryst2 = cryst.copy;
+            %
+            % cryst.addmatrix('label','J1','value',1)
+            % J1a = cryst1.matrix.mat;
+            % J1b = cryst2.matrix.mat;
+            %
+            % Where J1a will be a matrix with 1 in the diagonal, while J1b
+            % has 3.1415 in the diagonal. If cryst is changed, cryst1 will
+            % be changed as well and viece versa, since they point to the
+            % same object. However cryst2 is independent of cryst.
+            %
+            % See also SW, SW.STRUCT.
             %
             
             objS = struct(obj);
@@ -254,32 +293,57 @@ classdef (ConstructOnLoad) sw < class_handlelight
             objC.Tlabel = obj.Tlabel;
             
         end % copy
+
         function abc = abc(obj)
-            % returns [a, b, c, alpha, beta, gamma] vector
-            % in Angstrom and degree units
+            % returns lattice parameters and angles
+            %
+            % latVect = ABC(obj)
+            %
+            % Input:
+            %
+            % obj       sw class object
+            %
+            % Output:
+            %
+            % latVect   Vetor with elements [a, b, c, alpha, beta, gamma],
+            %           contains the lattice parameters and angles in
+            %           Angstrom and degree units respectively.
+            %
+            % See also SW.HORACE.
+            %
+            
             abc = [obj.lattice.lat_const obj.lattice.angle*180/pi];
         end
         function nMagExt = nmagext(obj)
-            % gives the number of magnetic atoms in the extended unit cell
+            % gives the number of magnetic atoms in the magnetic supercell
+            %
+            % nMagExt = NMAGEXT(obj)
+            %
+            
             nMagExt = size(obj.mag_str.S,2);
         end
         function nTwin = ntwin(obj)
             % gives the number of twins
+            %
+            % nTwin = NTWIN(obj)
+            %
+            
             nTwin = size(obj.twin.vol,2);
         end
         
         function varargout = temperature(obj,varargin)
             % get/set stored temperature value
             %
-            % {obj} = TEMPERATURE(obj, T)
+            % TEMPERATURE(obj, T)
             %
-            % If T is defined, it sets the temperature stored in sw object to T,
-            % where T is scalar. The units of temerature is determined by
-            % the sw.unit.kB value, default is Kelvin.
+            % If T is defined, it sets the temperature stored in obj object
+            % to T, where T is scalar. The units of temerature is
+            % determined by the sw.unit.kB value, default is Kelvin.
             %
-            % T = SW.TEMPERATURE
+            % T = TEMPERATURE(obj)
             %
-            % It returns the current temperature value.
+            % The function returns the current temperature value stored in
+            % obj.
             %
             
             if nargin == 1
@@ -313,6 +377,8 @@ classdef (ConstructOnLoad) sw < class_handlelight
             % To change it use sw.gencoupling with the forceNoSym option.
             % To remove all symmetry operators use sw.nosym.
             %
+            % See also SW, SW.NOSYM, SW.GENCOUPLING.
+            %
             
             sym = obj.sym;
             
@@ -321,7 +387,9 @@ classdef (ConstructOnLoad) sw < class_handlelight
         function varargout = notwin(obj)
             % removes any twin added to the sw object
             %
-            % SW.NOTWIN(obj)
+            % NOTWIN(obj)
+            %
+            % The function keeps only the original twin.
             %
             
             obj.twin.vol = 1;
@@ -339,6 +407,13 @@ classdef (ConstructOnLoad) sw < class_handlelight
             %
             % If true, magnetic structure are spin wave dispersions are
             % calculated symbolically.
+            %
+            % SYMBOLIC(obj, symb)
+            %
+            % symb sets whether the calculations are symbolic/numerical
+            % (true/false).
+            %
+            % See also SW, SW.SPINWAVESYM.
             %
             
             if nargin == 1

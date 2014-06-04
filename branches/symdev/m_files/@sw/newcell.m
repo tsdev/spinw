@@ -1,11 +1,22 @@
 function varargout = newcell(obj,bvect, bshift)
 % changes lattice vectors while keeping atoms
 %
-% {T} = NEWCELL(obj, bvect, {bshift}) defines new unit cell using 3 vectors
-% contained in bvect cell: {v1, v2, v3}. The three vectors in lattice units
-% define a parallelepiped. This will be the new unit cell. The atoms from
-% the original unit cell will fill the new unit cell. bshift vector defines
-% a shift of the position of the unit cell.
+% {T} = NEWCELL(obj, bvect, {bshift}) 
+%
+% The function defines new unit cell using the 3 vectors contained in
+% bvect. The three vectors in lattice units define a parallelepiped. This
+% will be the new unit cell. The atoms from the original unit cell will
+% fill the new unit cell.
+%
+% Input:
+%
+% obj       sw class object.
+% bvect     Defines the new lattice vectors in the original lattice
+%           coordinate system. Cell with the following elements 
+%           {v1 v2 v3}.
+% bshift    Vector defines a shift of the position of the unit cell.
+%           Optional.
+%
 % There might be problem, if there are atoms on the faces and corners of
 % the new lattice (due to numerical error). In this case use small bshift
 % to move the atoms.
@@ -18,7 +29,18 @@ function varargout = newcell(obj,bvect, bshift)
 %           Qrlu_new = T * Qrlu_old,
 %       where the dimensions of the Q vectors are [1 3].
 %
-% See also SW.GENLATTICE.
+% Example:
+%
+% tri = sw;
+% tri.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
+% tri.addatom('r',[0 0 0])
+% tri.newcell({[1 0 0] [1 2 0] [0 0 1]})
+% plot(tri)
+%
+% The example show how to convert a triangular lattice into orthogonal
+% lattice vectors and plots the new unit cell.
+%
+% See also SW.GENLATTICE, SW.GENCOUPLING, SW.NOSYM.
 %
 
 if nargin <= 1

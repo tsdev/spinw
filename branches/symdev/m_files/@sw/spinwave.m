@@ -77,8 +77,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % Output:
 %
-% spectra is a structure, with the following fields:
-%
+% 'spectra' is a structure, with the following fields:
 % omega         Calculated spin wave dispersion, dimensins are
 %               [nMode nHkl], where nMagExt is the number of magnetic
 %               atoms in the extended unit cell.
@@ -104,6 +103,15 @@ function spectra = spinwave(obj, hkl, varargin)
 %               lab coordinate system, dimensins are [3 nHkl].
 % incomm        Whether the spectra calculated is incommensurate or not.
 % obj           The copy of the input obj.
+%
+% Example:
+%
+% tri = sw_model('triAF',1);
+% sw_plotspec(tri.spinwave({[0 0 0] [1 1 0]}))
+%
+% The above example will calculate and plot the spin wave dispersion of the
+% triangular lattice antiferromagnet (S=1, J=1) along the [H H 0] direction
+% in reciprocal space.
 %
 % See also SW, SW.SPINWAVESYM, SW_NEUTRON, SW.POWSPEC, SW.OPTMAGSTR.
 %

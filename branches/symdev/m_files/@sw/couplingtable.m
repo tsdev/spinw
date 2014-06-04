@@ -1,16 +1,17 @@
 function bonds = couplingtable(obj, varargin)
-% creates tabulated list of all bonds as stored in sw object
+% creates tabulated list of all bonds as stored
 %
 % bonds = COUPLINGTABLE(obj,{bondIdx})
 %
 % Input:
 %
-%   bondIdx If defined, only bonds with the given list of indices will be
-%           output.
+% obj       sw class object. 
+% bondIdx   List of bond indices, by default all bonds will be output.
+%           Optional.
 %
 % Output:
 %
-% Struct tye data that contains the following fields:
+% bonds is a struct type data that contains the following fields:
 %   table   Matrix, where every column defines a bond. The rows are the
 %           following: (dl_x, dl_y, dl_z, atom1, atom2, idx, mat_idx1,
 %           mat_idx2, mat_idx3). Where (dl_x, dl_y, dl_z) defines the
@@ -31,11 +32,13 @@ function bonds = couplingtable(obj, varargin)
 %
 % Example:
 %
+% ...
+% crystal.gencoupling
 % bonds = crystal.couplingtable([1 2 3]);
 %
-% The line will list only the 1st, 2nd and third neighbour bonds.
+% This will list only the 1st, 2nd and third neighbour bonds.
 %
-% See also SW.MATOM, SW.INTMATRIX.
+% See also SW.MATOM, SW.INTMATRIX, SW.ADDCOUPLING, SW.GENCOUPLING.
 %
 
 % no bonds are defined

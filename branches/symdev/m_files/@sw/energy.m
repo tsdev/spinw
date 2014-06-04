@@ -16,15 +16,18 @@ function  E = energy(obj, varargin)
 % is equivalent to the crystallographic unit cell, this is equivalent to
 % the standard definition of the k vector.
 %
+% Input:
+%
+% obj       sw class object.
+%
 % Options:
 %
-% epsilon       The smalles value of incommensurability that is tolerated
-%               without warning. Default is 1e-5.
+% epsilon   The smallest value of incommensurability that is tolerated 
+%           without warning. Default is 1e-5.
 %
 % Output:
 %
-% E             Energy per moment (anisotropy, exchange and Zeeman
-%               energy).
+% E         Energy per moment (anisotropy, exchange and Zeeman energy).
 %
 %
 % WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
@@ -41,6 +44,16 @@ function  E = energy(obj, varargin)
 %
 % WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 %
+% Example:
+%
+% ...
+% cryst.optmagstr('nRun',10)
+% E = cryst.energy
+%
+% After optimising the magnetic structure (by minimizing the ground state 
+% energy), the energy per spin is calculated. This can be compared to
+% different ground state structures to decide which is the right classical
+% ground state of the magnetic model in cryst.
 %
 % See also SW, SW.ANNEAL, SW.EXTENDLATTICE.
 %

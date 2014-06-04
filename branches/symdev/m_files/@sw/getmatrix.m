@@ -3,9 +3,13 @@ function [aMat, param] = getmatrix(obj, varargin)
 %
 % aMat = GETMATRIX(obj, 'Option1', Value1, ...)
 %
+% Input:
+%
+% obj           sw class object.
+%
 % Options:
 %
-% One of the below options has to be given:
+% One of the following options has to be given in the input:
 %
 % label         Label of the matrix that is already assigned to either as
 %               anisotropy or coupling only once.
@@ -23,14 +27,13 @@ function [aMat, param] = getmatrix(obj, varargin)
 %
 % Optional inputs:
 %
-% fid           For printing of the allowed matrices and point group
-%               symmetries
+% fid       For printing of the allowed matrices and point group symmetries
 %               0   No text output.
 %               1   Output written onto the Command Window.
 %               fid Output written into a text file opened with the
 %                   fid = fopen(path) command.
-% tol           Tolerance for printing the output for the smallest matrix
-%               element.
+% tol       Tolerance for printing the output for the smallest matrix
+%           element.    
 % pref      Defines prefactors as a vector for the symmetry allowed
 %           components, dimensions are [1 nSymMat]. Alternatively, if only
 %           a few of the symmetry allowed matrices have non-zero
@@ -55,11 +58,26 @@ function [aMat, param] = getmatrix(obj, varargin)
 %
 % Output:
 %
-% aMat          If no prefactors are defined, aMat contains all symmetry
-%               allowed elements of the coupling/anisotropy matrix,
-%               dimensions are [3 3 nSymMat]. If prefactor is defined, it
-%               is a single 3x3 matrix, that is a sum of all symmetry
-%               allowed elemenets multiplied by the given prefactors.
+% aMat      If no prefactors are defined, aMat contains all symmetry
+%           allowed elements of the coupling/anisotropy matrix, dimensions
+%           are [3 3 nSymMat]. If prefactor is defined, it is a single 3x3
+%           matrix, that is a sum of all symmetry allowed elemenets
+%           multiplied by the given prefactors.
+%
+% Example:
+%
+% cryst = sw;
+% cryst.genlattice('sym','P 4')
+% cryst.addatom('r',[0 0 0],'label','MCu2')
+% cryst.addmatrix('label','A','value',eye(3))
+% cryst.gencoupling
+% cryst.addaniso('A')
+% cryst.getmatrix('label','A','fid',1);
+%
+% The above example determines the allowed anisotropy matrix elements in
+% the C4 point group symmetry (the symmetry at the [0 0 0] atomic
+% position) and prints them onto the Command Window. The allowed matrix
+% elements are: diag([A A B]).
 %
 % See also SW.SETMATRIX.
 %

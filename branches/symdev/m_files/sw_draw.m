@@ -139,7 +139,7 @@ for ii = 1:size(atom1.r0,2)
 end
 
 if isempty(atom1.r)
-    fprintf('Nothing to plot in the plotting range!\n');
+    fprintf0(obj.fileid,'Nothing to plot in the plotting range!\n');
     return
 end
 

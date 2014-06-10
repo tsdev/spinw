@@ -115,7 +115,7 @@ for ii = 1:size(atom1.r0,2)
 end
 
 if isempty(atom1.r)
-    fprintf('No polygon in the plotting range!\n');
+    fprintf0(obj.fileid,'No polygon in the plotting range!\n');
     return
 end
 

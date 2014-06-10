@@ -27,11 +27,6 @@ function [aMat, param] = getmatrix(obj, varargin)
 %
 % Optional inputs:
 %
-% fid       For printing of the allowed matrices and point group symmetries
-%               0   No text output.
-%               1   Output written onto the Command Window.
-%               fid Output written into a text file opened with the
-%                   fid = fopen(path) command.
 % tol       Tolerance for printing the output for the smallest matrix
 %           element.    
 % pref      Defines prefactors as a vector for the symmetry allowed
@@ -82,14 +77,14 @@ function [aMat, param] = getmatrix(obj, varargin)
 % See also SW.SETMATRIX.
 %
 
-inpForm.fname  = {'label' 'mat_idx' 'aniso_idx' 'coupling_idx' 'fid' 'tol' 'pref' 'g_idx'};
-inpForm.defval = {zeros(1,0) 0       0          0              0     1e-5  []     0      };
-inpForm.size   = {[1 -1]  [1 1]      [1 1]      [1 1]          [1 1] [1 1] [1 -2] [1 1]  };
-inpForm.soft   = {false   false      false      false          false false true   false  };
+inpForm.fname  = {'label' 'mat_idx' 'aniso_idx' 'coupling_idx' 'tol' 'pref' 'g_idx'};
+inpForm.defval = {zeros(1,0) 0       0          0              1e-5  []     0      };
+inpForm.size   = {[1 -1]  [1 1]      [1 1]      [1 1]          [1 1] [1 -2] [1 1]  };
+inpForm.soft   = {false   false      false      false          false true   false  };
 
 param = sw_readparam(inpForm, varargin{:});
 tol = param.tol;
-fid = param.fid;
+fid = obj.fid;
 
 if nargin == 1
     help getmatrix;
@@ -365,26 +360,26 @@ if fid
     
     % print the answer
     if param.coupling_idx
-        fprintf(fid,'\nThe symmetry analysis of the coupling between atom %d and atom %d:\n',atom1(1),atom2(1));
-        fprintf(fid,' lattice translation vector: [%d,%d,%d]\n',dl(:,1));
-        fprintf(fid,' distance: %5.3f Angstrom\n',norm(obj.basisvector*dr(:,1)));
-        fprintf(fid,' center of bond (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
+        fprintf0(fid,'\nThe symmetry analysis of the coupling between atom %d and atom %d:\n',atom1(1),atom2(1));
+        fprintf0(fid,' lattice translation vector: [%d,%d,%d]\n',dl(:,1));
+        fprintf0(fid,' distance: %5.3f Angstrom\n',norm(obj.basisvector*dr(:,1)));
+        fprintf0(fid,' center of bond (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
     elseif param.aniso_idx
-        fprintf(fid,'\nThe symmetry analysis of the anisotropy matrix of atom %d (''%s''):\n',param.aniso_idx,obj.unit_cell.label{param.aniso_idx});
-        fprintf(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
+        fprintf0(fid,'\nThe symmetry analysis of the anisotropy matrix of atom %d (''%s''):\n',param.aniso_idx,obj.unit_cell.label{param.aniso_idx});
+        fprintf0(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
     else
-        fprintf(fid,'\nThe symmetry analysis of the g-tensor of atom %d (''%s''):\n',param.g_idx,obj.unit_cell.label{param.g_idx});
-        fprintf(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));        
+        fprintf0(fid,'\nThe symmetry analysis of the g-tensor of atom %d (''%s''):\n',param.g_idx,obj.unit_cell.label{param.g_idx});
+        fprintf0(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));        
     end
     if ~isempty(param.label)
-        fprintf(fid,' label of the assigned matrix: ''%s''\n',param.label);
+        fprintf0(fid,' label of the assigned matrix: ''%s''\n',param.label);
     end
     
-    fprintf(fid,' allowed elements in the symmetric matrix:\n');
-    fprintf(fid,'  S = %s\n',smatStr);
+    fprintf0(fid,' allowed elements in the symmetric matrix:\n');
+    fprintf0(fid,'  S = %s\n',smatStr);
     if param.coupling_idx
-        fprintf(fid,' allowed components of the Dzyaloshinskii-Moriya vector:\n');
-        fprintf(fid,'  D = %s\n\n',amatStr);
+        fprintf0(fid,' allowed components of the Dzyaloshinskii-Moriya vector:\n');
+        fprintf0(fid,'  D = %s\n\n',amatStr);
     end
 end
 

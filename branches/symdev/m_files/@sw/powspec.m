@@ -52,6 +52,8 @@ if nargin==1
     return
 end
 
+fid = obj.fid;
+
 hklA = hklA(:)';
 T0 = obj.single_ion.T;
 
@@ -65,21 +67,34 @@ nQ      = length(hklA);
 nE      = length(param.Evect);
 powSpec = zeros(nE,nQ);
 
-fprintf('Calculating powder spectra:\n');
-sw_status(0,1);
+fprintf0(fid,'Calculating powder spectra:\n');
+
+if fid
+    sw_status(0,1);
+end
+
 for ii = 1:nQ
     rQ  = randn(3,param.nRand);
     Q   = bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2)))*hklA(ii);
     hkl = (Q'*obj.basisvector)'/2/pi;
     
-    specQ = obj.spinwave(hkl,'fitmode',true,'notwin',true,'fid',0,'Hermit',param.Hermit);
+    % no output from spinwave() function
+    obj.fileid(0);
+    specQ = obj.spinwave(hkl,'fitmode',true,'notwin',true,'Hermit',param.Hermit);
+    
+    % reset output to original value
+    obj.fileid(fid);
     specQ = sw_neutron(specQ,'pol',false);
     specQ.obj = obj;
     specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T);
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
-    sw_status(ii/nQ*100);
+    if fid
+        sw_status(ii/nQ*100);
+    end
 end
-sw_status(100,2);
+if fid
+    sw_status(100,2);
+end
 
 spectra.swConv   = powSpec;
 spectra.hklA     = hklA;

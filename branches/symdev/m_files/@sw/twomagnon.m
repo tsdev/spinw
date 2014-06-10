@@ -34,11 +34,6 @@ function spectra = twomagnon(obj, hkl, varargin)
 %               taken from obj.single_ion.T value.
 % Evect         Energy grid for binning the correlation function along
 %               energy. Default is linspace(0,1,101);
-% fid           For text output of the calculation:
-%               0   No text output.
-%               1   Output written onto the Command Window. (default)
-%               fid Output written into a text file opened with the
-%                   fid = fopen(path) command.
 % tol           Tolerance of the incommensurability of the magnetic
 %               ordering wavevector. Deviations from integer values of the
 %               ordering wavevector smaller than the tolerance are
@@ -99,13 +94,13 @@ end
 T0 = obj.single_ion.T;
 E0 = linspace(0,1,101);
 
-inpForm.fname  = {'nRand' 'T'  'Evect' 'fid' 'tol'  'omega_tol' 'hermit' };
-inpForm.defval = {1e4     T0    E0      1      1e-4  1e-5        true    };
-inpForm.size   = {[1 1]   [1 1] [1 -1]  [1 1]  [1 1] [1 1]       [1 1]   };
+inpForm.fname  = {'nRand' 'T'  'Evect' 'tol' 'omega_tol' 'hermit' };
+inpForm.defval = {1e4     T0    E0     1e-4  1e-5        true     };
+inpForm.size   = {[1 1]   [1 1] [1 -1] [1 1] [1 1]       [1 1]    };
 
 param = sw_readparam(inpForm, varargin{:});
 
-fid = param.fid;
+fid = obj.fid;
 
 % size of the extended magnetic unit cell
 nExt    = double(obj.mag_str.N_ext);
@@ -333,7 +328,7 @@ if fid == 1
     sw_status(100,2);
 else
     if fid ~= 0
-        fprintf(fid,'Calculation finished.\n');
+        fprintf0(fid,'Calculation finished.\n');
     end
 end
 

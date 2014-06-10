@@ -143,6 +143,7 @@ classdef (ConstructOnLoad) sw < class_handlelight
         matomstore = [];
         sym  = true;  % stores whether the couplings are generated under symmetry constraints
         symb = false; % stores whether the calculation are done symbolically
+        fid  = 1;     % stores the file ID of the text output, default is the Command Window
         Elabel = 'meV';
         Qlabel = 'Angstrom^{-1}';
         Rlabel = 'Angstrom';
@@ -194,7 +195,7 @@ classdef (ConstructOnLoad) sw < class_handlelight
                 objS = initfield(struct);
                 
                 cif0 = cif(firstArg);
-                fprintf(1,'Crystal structure is imported from %s.\n',firstArg);
+                fprintf0(1,'Crystal structure is imported from %s.\n',firstArg);
                 abc0 = [cif0.cell_length_a cif0.cell_length_b cif0.cell_length_c];
                 ang0 = [cif0.cell_angle_alpha cif0.cell_angle_beta cif0.cell_angle_gamma];
                 sym0 = cif0.('symmetry_space_group_name_H-M');
@@ -286,6 +287,7 @@ classdef (ConstructOnLoad) sw < class_handlelight
             % copy the private properties
             objC.sym    = obj.sym;
             objC.symb   = obj.symb;
+            objC.fid    = obj.fid;
             objC.Elabel = obj.Elabel;
             objC.Qlabel = obj.Qlabel;
             objC.Rlabel = obj.Rlabel;
@@ -383,7 +385,32 @@ classdef (ConstructOnLoad) sw < class_handlelight
             sym = obj.sym;
             
         end % .symmetry
-        
+
+        function fidOut = fileid(obj,fid)
+            % determines where the text out is written
+            %
+            % FILEID(obj,fid)
+            %
+            % Determines the text output of all sw class methods. Default
+            % is 1, where all output is printed onto the MATLAB Command
+            % Window.
+            %
+            % fidOut = FILEID(obj)
+            %
+            % Outputs the stored fileID value.
+            %
+            % See also SW, SW.DISPLAY.
+            %
+            if nargin > 1
+                obj.fid = fid;
+            end
+            
+            if nargout > 0
+                fidOut = obj.fid;
+            end
+            
+        end % .fileid
+
         function varargout = notwin(obj)
             % removes any twin added to the sw object
             %

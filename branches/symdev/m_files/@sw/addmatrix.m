@@ -54,6 +54,7 @@ if numel(newMat.mat) == 1
 end
 
 
+
 % Defult Heisenberg matrix.
 if isempty(newMat(1).mat)
     if ~iscell(newMat.label)
@@ -61,7 +62,7 @@ if isempty(newMat(1).mat)
     else
         nLabel = size(newMat.label,2);
     end
-    nJ = max(nLabel,size(newMat.color,2));
+    nJ = nLabel;
     if nJ == 0
         error('sw:addmatrix:WrongInput','Define some matrix property!');
     else

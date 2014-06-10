@@ -44,11 +44,6 @@ function spectra = spinwave(obj, hkl, varargin)
 %               calculated piece by piece to decrease memory usage. Default
 %               of optmem is zero, when the number of slices are determined
 %               automatically from the available free memory.
-% fid           For text output of the calculation:
-%               0   No text output.
-%               1   Output written onto the Command Window. (default)
-%               fid Output written into a text file opened with the
-%                   fid = fopen(path) command.
 % tol           Tolerance of the incommensurability of the magnetic
 %               ordering wavevector. Deviations from integer values of the
 %               ordering wavevector smaller than the tolerance are
@@ -113,7 +108,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % triangular lattice antiferromagnet (S=1, J=1) along the [H H 0] direction
 % in reciprocal space.
 %
-% See also SW, SW.SPINWAVESYM, SW_NEUTRON, SW.POWSPEC, SW.OPTMAGSTR.
+% See also SW, SW.SPINWAVESYM, SW_NEUTRON, SW.POWSPEC, SW.OPTMAGSTR, SW.FILEID.
 %
 
 % for linear scans create the Q line(s)
@@ -145,12 +140,13 @@ end
 % help when executed without argument
 if nargin==1
     help sw.spinwave
+    spectra = [];
     return
 end
 
-inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol'  };
-inpForm.defval = {false     false    true       0        1      1e-4  };
-inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1]  [1 1] };
+inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' };
+inpForm.defval = {false     false    true       0        1e-4  };
+inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] };
 
 inpForm.fname  = [inpForm.fname  {'omega_tol' 'hermit' 'saveT' }];
 inpForm.defval = [inpForm.defval {1e-5        true     false   }];
@@ -182,7 +178,8 @@ else
     hkl0 = hkl;
 end
 
-fid = param.fid;
+% Print output into the following file
+fid = obj.fid;
 
 spectra = struct;
 nHkl    = size(hkl,2);
@@ -242,10 +239,10 @@ nMagExt = size(M0,2);
 
 if fid ~= 0
     if incomm
-        fprintf(fid,['Calculating INCOMMENSURATE spin wave spectra '...
+        fprintf0(fid,['Calculating INCOMMENSURATE spin wave spectra '...
             '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
     else
-        fprintf(fid,['Calculating COMMENSURATE spin wave spectra '...
+        fprintf0(fid,['Calculating COMMENSURATE spin wave spectra '...
             '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
     end
 end
@@ -335,13 +332,13 @@ end
 
 if nHkl < nSlice
     if fid ~= 0
-        fprintf(fid,['Memory allocation is not optimal, nMagExt is'...
+        fprintf0(fid,['Memory allocation is not optimal, nMagExt is'...
             ' too large compared to the free memory!\n']);
     end
     nSlice = nHkl;
 elseif nSlice > 1
     if fid ~= 0
-        fprintf(fid,['To optimise memory allocation, Q is cut'...
+        fprintf0(fid,['To optimise memory allocation, Q is cut'...
             ' into %d pieces!\n'],nSlice);
     end
 end
@@ -520,7 +517,7 @@ if fid == 1
     sw_status(100,2);
 else
     if fid ~= 0
-        fprintf(fid,'Calculation finished.\n');
+        fprintf0(fid,'Calculation finished.\n');
     end
 end
 

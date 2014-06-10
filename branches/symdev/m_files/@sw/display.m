@@ -7,8 +7,8 @@ function varargout = display(obj, fid)
 %
 % obj       sw class object.
 % fid       File identifier (created by fopen function) where the output
-%           will be written. Default is 1, the output will be written onto
-%           the Command Line. Optional
+%           will be written. Default is stored in obj, the output will be
+%           written onto the Command Line. Optional.
 %
 % Output:
 %
@@ -82,10 +82,10 @@ if nargout == 1
     varargout{1} = swDescr;
 else
     if nargin == 1
-        fid = 1;
+        fid = obj.fid;
     end
     % print the text
-    fprintf(fid,swDescr);
+    fprintf0(fid,swDescr);
 end
 
 end

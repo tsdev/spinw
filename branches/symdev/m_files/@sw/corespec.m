@@ -38,11 +38,6 @@ function [omega, Vsave] = corespec(obj, hkl, varargin)
 %               calculated piece by piece to decrease memory usage. Default
 %               of optmem is zero, when the number of slices are determined
 %               automatically from the available free memory.
-% fid           For text output of the calculation:
-%               0   No text output.
-%               1   Output written onto the Command Window. (default)
-%               fid Output written into a text file opened with the
-%                   fid = fopen(path) command.
 % tol           Tolerance of the incommensurability of the magnetic
 %               ordering wavevector. Deviations from integer values of the
 %               ordering wavevector smaller than the tolerance are
@@ -112,9 +107,9 @@ if nargin==1
 end
 
 
-inpForm.fname  = {'fitmode' 'sortMode' 'optmem' 'fid' 'tol'  'omega_tol' 'hermit' };
-inpForm.defval = {false     true       0        0      1e-4  1e-5        true     };
-inpForm.size   = {[1 1]     [1 1]      [1 1]    [1 1]  [1 1] [1 1]       [1 1]    };
+inpForm.fname  = {'fitmode' 'sortMode' 'optmem' 'tol'  'omega_tol' 'hermit' };
+inpForm.defval = {false     true       0        1e-4  1e-5        true     };
+inpForm.size   = {[1 1]     [1 1]      [1 1]    [1 1] [1 1]       [1 1]    };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -129,7 +124,7 @@ km = obj.mag_str.k.*nExt;
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
 
-fid = param.fid;
+fid = obj.fid;
 
 nHkl    = size(hkl,2);
 
@@ -233,13 +228,13 @@ end
 
 if nHkl < nSlice
     if fid ~= 0
-        fprintf(fid,['Memory allocation is not optimal, nMagExt is'...
+        fprintf0(fid,['Memory allocation is not optimal, nMagExt is'...
             ' too large compared to the free memory!\n']);
     end
     nSlice = nHkl;
 elseif nSlice > 1
     if fid ~= 0
-        fprintf(fid,['To optimise memory allocation, Q is cut'...
+        fprintf0(fid,['To optimise memory allocation, Q is cut'...
             ' into %d pieces!\n'],nSlice);
     end
 end
@@ -370,7 +365,7 @@ if fid == 1
     sw_status(100,2);
 else
     if fid ~= 0
-        fprintf(fid,'Calculation finished.\n');
+        fprintf0(fid,'Calculation finished.\n');
     end
 end
 

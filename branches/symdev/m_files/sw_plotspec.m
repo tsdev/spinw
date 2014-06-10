@@ -56,6 +56,10 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           slow on older machines, but the figure can be exported
 %           afterwards as a vector graphics, using the print() function.
 %           Default is 1000.
+% norm      If true, the convolution with a Gaussian function (in case of
+%           non-zero 'dE' option) keeps the energy integrated intensity. If
+%           false the amplitude is kept constant. Default is the input
+%           spectra.norm value.
 %
 % Output:
 %
@@ -70,9 +74,9 @@ if nargin==0
     return;
 end
 
-inpForm.fname  = {'mode' 'imag' 'aHandle' 'colorbar' 'dashed' };
-inpForm.defval = {4      false   gca      true       false    };
-inpForm.size   = {[1 1]  [1 1]  [1 1]     [1 1]      [1 1]    };
+inpForm.fname  = {'mode' 'imag' 'aHandle' 'colorbar' 'dashed' 'norm'     };
+inpForm.defval = {4      false   gca      true       false   spectra.norm};
+inpForm.size   = {[1 1]  [1 1]  [1 1]     [1 1]      [1 1]   [1 1]       };
 
 inpForm.fname  = [inpForm.fname  {'dE'  'fontSize' 'colormap' 'axLim'}];
 inpForm.defval = [inpForm.defval {0     14         'auto'     'auto' }];
@@ -465,7 +469,7 @@ if param.mode == 3
         xG = (-nG*dx):dx:(nG*dx);
         % Gaussian normalised intensity
         fG = exp(-(xG/sG).^2/2);
-        if spectra.norm
+        if param.norm
             fG = fG/sum(fG);
         else
             fG = fG/max(fG(:));

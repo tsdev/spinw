@@ -133,6 +133,10 @@ function varargout = plot(obj, varargin)
 %                   Default is true.
 %   hFigure         Handle of the figure to plot. In not given, the figure
 %                   window handle is determined automatically.
+%   zoom            Number of steps to zoom in/out on the figure. Positive
+%                   number gives zoom in, negative numbers give zoom out.
+%                   One step equal to the (+/-) button press on the figure
+%                   toolbar. Default is zero.
 %
 % Output:
 %
@@ -213,13 +217,13 @@ inpForm.fname  = [inpForm.fname  {'rAtom' 'aEll' 'coplanar' 'fontSize' 'pNonMagA
 inpForm.defval = [inpForm.defval {0.3     0.3          0          12     true       }];
 inpForm.size   = [inpForm.size   {[1 -8]  [1 1]        [1 1]      [1 1]  [1 1]      }];
 
-inpForm.fname  = [inpForm.fname  {'rEll' 'eEll' 'pZeroCoupling' 'tooltip' 'cCoupling' 'cDM'    'cAtom'}];
-inpForm.defval = [inpForm.defval {1          0.1          true             true      'auto'     'auto'   'auto' }];
-inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]            [1 1]     [1 -7]     [1 -2]   [1 -3] }];
+inpForm.fname  = [inpForm.fname  {'rEll' 'eEll' 'pZeroCoupling' 'tooltip' 'cCoupling' 'cDM' 'cAtom'}];
+inpForm.defval = [inpForm.defval {1          0.1          true             true      'auto' 'auto'   'auto' }];
+inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]            [1 1]     [1 -7] [1 -2]   [1 -3] }];
 
-inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' 'hFigure' 'hg' }];
-inpForm.defval = [inpForm.defval {1      1       1      1                0        true }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]            [1 1]    [1 1]}];
+inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' 'hFigure' 'hg'  'zoom' }];
+inpForm.defval = [inpForm.defval {1      1       1      1                0        true  0      }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]            [1 1]    [1 1] [1 1]  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -271,7 +275,6 @@ if plotmode
         axis vis3d
         hold on
         material dull;
-        
     end
     
     tooltip(hFigure,'<< Click on any object to get information! >>')
@@ -957,6 +960,10 @@ setappdata(hFigure,'handle',handle);
 if get(gca,'CameraViewAngle') == 0.6
     camva('auto');
 end;
+
+% apply zoom setting
+cva = get(gca,'CameraViewAngle');
+set(gca,'CameraViewAngle',cva*(1.5)^(-param.zoom));
 
 
 %% Output

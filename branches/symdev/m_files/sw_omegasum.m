@@ -20,9 +20,12 @@ inpForm.size   = {[1 1] [1 1]    };
 
 param = sw_readparam(inpForm, varargin{:});
 
-omega    = abs(real(spectra.omega));
+tol = param.tol;
+omega    = real(spectra.omega);
 omega(isnan(omega)) = 0;
+omega(omega<0) = 0;
 omegaCol = omega*NaN;
+intCol   = omegaCol;
 
 nQ = size(omega,2);
 
@@ -34,8 +37,16 @@ for ii = 1:nQ
     oTemp = sw_uniquetol(omega(:,ii)',param.tol);
     oTemp(oTemp == 0) = NaN;
     omegaCol(1:numel(oTemp),ii) = sort(oTemp);
+    oTemp(isnan(oTemp)) = [];
+    
+    if isfield(spectra,'swInt') && ~isempty(oTemp)
+        for jj = 1:numel(oTemp)
+            intCol(jj,ii) = sum(spectra.swInt(abs(omegaCol(jj,ii)-omega(:,ii))<tol,ii));
+        end
+    end
+    
 end
 
 spectra.omega = omegaCol;
-
+spectra.swInt = intCol;
 end

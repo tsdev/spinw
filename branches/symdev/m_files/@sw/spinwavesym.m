@@ -28,29 +28,26 @@ function spectra = spinwavesym(obj, varargin)
 % hkl           Symbolic definition of q vector. Default is the general Q
 %               point:
 %                   hkl = [sym('h') sym('k') sym('l')]
-% fitmode       Speedup (for fitting mode only), default is false.
-% notwin        If true, the spectra of the twins won't be calculated.
-%               Default is false.
-% fid           For text output of the calculation:
-%               0   No text output.
-%               1   Output written onto the Command Window. (default)
-%               fid Output written into a text file opened with the
-%                   fid = fopen(path) command.
+% eig           If true the symbolic Hamiltonian is diagonalised. For large
+%               matrices (many magnetic atom per unit cell) this might be
+%               impossible. Set 'eig' to false to output only the quadratic
+%               Hamiltonian. Default is true.
 % tol           Tolerance of the incommensurability of the magnetic
 %               ordering wavevector. Deviations from integer values of the
 %               ordering wavevector smaller than the tolerance are
 %               considered to be commensurate. Default value is 1e-4.
-% omega_tol     Tolerance on the energy difference of degenerate modes when
-%               diagonalising the quadratic form, default is 1e-5.
+% norm          Whether to produce the normalized eigenvectors. It can be
+%               impossible for large matrices, in that case set it to
+%               false. Default is true.
 % Output:
 %
-% spectra is a structure, with the following fields:
+% 'spectra' is a structure, with the following fields:
 % omega         Calculated spin wave dispersion, dimensins are
 %               [2*nMagExt nHkl], where nMagExt is the number of magnetic
 %               atoms in the extended unit cell.
-% Sab           Dynamical structure factor, dimensins are
-%               [3 3 2*nMagExt nHkl]. Each (:,:,i,j) submatrix contains the
-%               9 correlation functions: Sxx, Sxy, Sxz, etc.
+% V0            Eigenvectors of the quadratic Hamiltonian.
+% V             Normalized eigenvectors of the quadratic Hamiltonian.
+% ham           Symbolic matrix of the Hamiltonian.
 %
 % If several domains exist in the sample, omega and Sab are packaged into a
 % cell, that contains nTwin number of matrices.
@@ -91,15 +88,11 @@ function spectra = spinwavesym(obj, varargin)
 
 hkl0 = [sym('h','real'); sym('k','real'); sym('l','real')];
 
-inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'fid' 'tol' 'omega_tol' 'hkl'};
-inpForm.defval = {false     false    true      true     1     1e-4   1e-5        hkl0  };
-inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]  [1 1]      [3 1]};
+inpForm.fname  = {'tol' 'hkl'  'eig' 'norm'};
+inpForm.defval = {1e-4   hkl0   true true  };
+inpForm.size   = {[1 1] [3 1]  [1 1] [1 1] };
 
 param = sw_readparam(inpForm, varargin{:});
-
-if param.fitmode
-    param.sortMode = false;
-end
 
 % seize of the extended magnetic unit cell
 nExt    = double(obj.mag_str.N_ext);
@@ -114,29 +107,15 @@ else
 end
 
 % symbolic wavevectors
-%syms h k l real
-%hkl = [h; k; l];
 hkl = param.hkl;
 
-fid = param.fid;
+fid = obj.fid;
 
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
 %[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
 [SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true,'rotMat',false);
-
-% Introduce the opposite couplings.
-% (i-->j) and (j-->i)
-% transpose the JJ matrix as well [1 2 3 4 5 6 7 8 9] --> [6 9 12 7 10 13 8 11 14]
-% SS.new         = [SS.all(1:3,:)   -SS.all(1:3,:)  ];
-% SS.new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];
-% SS.new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:) ]/2;
-
-% ???
-%idxM = [SS.all(15,:) SS.all(15,:)];
-
-%SS.all         = SS.new;
 
 % Converts wavevctor list into the extended unit cell
 hklExt  = hkl.*nExt'*2*pi;
@@ -154,9 +133,9 @@ nMagExt = size(M0,2);
 
 if fid ~= 0
     if incomm
-        fprintf(fid,'Calculating SYMBOLIC INCOMMENSURATE spin wave spectra (nMagExt = %d)...\n',nMagExt);
+        fprintf0(fid,'Calculating SYMBOLIC INCOMMENSURATE spin wave spectra (nMagExt = %d)...\n',nMagExt);
     else
-        fprintf(fid,'Calculating SYMBOLIC COMMENSURATE spin wave spectra (nMagExt = %d)...\n',nMagExt);
+        fprintf0(fid,'Calculating SYMBOLIC COMMENSURATE spin wave spectra (nMagExt = %d)...\n',nMagExt);
     end
 end
 
@@ -280,27 +259,38 @@ end
 
 ham = simplify((ham + conj(permute(ham,[2 1 3])))/2);
 
-g = sym(diag([ones(nMagExt,1); -ones(nMagExt,1)]));
+% save symbolic Hamiltonian matrix
+spectra.ham = ham;
 
-% All the matrix calculations are according to White's paper
-% R.M. White, et al., Physical Review 139, A450?A454 (1965)
-
-fprintf(fid,'Calculating SYMBOLIC eigenvalues... ');
-[V, D] = eig(g*ham); % 3rd output P
-fprintf('ready!\n');
-
-spectra.V0 = V;
-
-if size(V,2) == size(ham,2)
-    M = diag(g*V'*g*V);
-    V = V*diag(sqrt(1./M));
-    spectra.V = V;
-else
-    warning('There are degenerate eigenvalues!')
+if param.eig
+    g = sym(diag([ones(nMagExt,1); -ones(nMagExt,1)]));
+    
+    % All the matrix calculations are according to White's paper
+    % R.M. White, et al., Physical Review 139, A450?A454 (1965)
+    
+    fprintf0(fid,'Calculating SYMBOLIC eigenvalues... ');
+    [V, D] = eig(g*ham); % 3rd output P
+    fprintf0('ready!\n');
+    
+    
+    spectra.V0 = V;
+    
+    if size(V,2) == size(ham,2)
+        if param.norm
+            % normalized iegenvectors
+            M = diag(g*V'*g*V);
+            V = V*diag(sqrt(1./M));
+            spectra.V = V;
+        end
+    else
+        warning('There are degenerate eigenvalues!')
+    end
+    
+    % multiplication with g removed to get negative and positive
+    % energies as well
+    spectra.omega = simplify(diag(D));
 end
 
-% multiplication with g removed to get negative and positive
-% energies as well
-spectra.omega = simplify(diag(D));
+
 
 end

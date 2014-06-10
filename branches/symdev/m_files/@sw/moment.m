@@ -18,7 +18,6 @@ function M = moment(obj, varargin)
 % nRand         The number of random Q points in the Brillouin-zone,
 %               default is 1000.
 % T             Temperature, default is taken from obj.single_ion.T.
-% fid           Control the text output, default is one (Command Window).
 % tol           Tolerance of the incommensurability of the magnetic
 %               ordering wavevector. Deviations from integer values of the
 %               ordering wavevector smaller than the tolerance are
@@ -65,9 +64,9 @@ function M = moment(obj, varargin)
 
 T0 = obj.single_ion.T;
 
-inpForm.fname  = {'T'   'nRand' 'fid' 'tol' 'omega_tol' 'hermit'};
-inpForm.defval = {T0    1000    1     1e-4  1e-5        true    };
-inpForm.size   = {[1 1] [1 1]   [1 1] [1 1] [1 1]       [1 1]   };
+inpForm.fname  = {'T'   'nRand' 'tol' 'omega_tol' 'hermit'};
+inpForm.defval = {T0    1000    1e-4  1e-5        true    };
+inpForm.size   = {[1 1] [1 1]   [1 1] [1 1]       [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -82,7 +81,7 @@ km = obj.mag_str.k.*nExt;
 incomm = any(abs(km-round(km)) > param.tol);
 
 
-fid      = param.fid;
+fid      = obj.fid;
 nRand    = param.nRand;
 
 % sum up the moment reduction
@@ -117,9 +116,9 @@ nMagExt = size(M0,2);
 
 if fid ~= 0
     if incomm
-        fprintf(fid,'Calculating reduced moments of INCOMMENSURATE structure (nMagExt = %d, nRand = %d)...\n',nMagExt, nRand);
+        fprintf0(fid,'Calculating reduced moments of INCOMMENSURATE structure (nMagExt = %d, nRand = %d)...\n',nMagExt, nRand);
     else
-        fprintf(fid,'Calculating reduced moments of COMMENSURATE structure (nMagExt = %d, nRand = %d)...\n',nMagExt, nRand);
+        fprintf0(fid,'Calculating reduced moments of COMMENSURATE structure (nMagExt = %d, nRand = %d)...\n',nMagExt, nRand);
     end
 end
 
@@ -191,12 +190,12 @@ nSlice = ceil(nMagExt^2*nRand*6912/sw_freemem*2);
 
 if nRand < nSlice
     if fid ~= 0
-        fprintf(fid,'Memory allocation is not optimal, nMagExt is too large compared to the free memory!\n');
+        fprintf0(fid,'Memory allocation is not optimal, nMagExt is too large compared to the free memory!\n');
     end
     nSlice = nRand;
 elseif nSlice > 1
     if fid ~= 0
-        fprintf(fid,'To optimise memory allocation, Q is cut into %d pieces!\n',nSlice);
+        fprintf0(fid,'To optimise memory allocation, Q is cut into %d pieces!\n',nSlice);
     end
 end
 
@@ -323,7 +322,7 @@ if fid == 1
     sw_status(100,2);
 else
     if fid ~= 0
-        fprintf(fid,'Calculation finished.\n');
+        fprintf0(fid,'Calculation finished.\n');
     end
 end
 

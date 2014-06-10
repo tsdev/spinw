@@ -143,6 +143,9 @@ inpForm.soft   = [inpForm.soft   {1         }];
 
 param = sw_readparam(inpForm,varargin{:});
 
+% Text output file
+fid = obj.fid;
+
 % Creates random spin directions if param.random is true.
 mag_param = param;
 if param.random
@@ -152,7 +155,7 @@ else
 end
 
 if param.nStat > param.nMC
-    warning('sw.anneal.wrongParam','nStat is larger than nMC, instead of the given value, nMC will be used!');
+    warning('sw:anneal:wrongParam','nStat is larger than nMC, instead of the given value, nMC will be used!');
     param.nStat = param.nMC;
 end
 
@@ -247,7 +250,7 @@ rate = zeros(nMC,1);
 E    = [];
 
 % Initialise plot.
-sw_annealplot(T,E,rate,param);
+sw_annealplot(T,E,rate,param,fid);
 
 % Assing moments to sublattices for parallel calculation. On any sublattice
 % there are no coupling between moments, thus annealing can be calculated
@@ -554,7 +557,7 @@ while 1
     % Calculates the system energy at the end of the temperature step.
     E(end+1,1) = ETemp/nMagExt; %#ok<AGROW>
     % Monitor annealing process.
-    sw_annealplot(T,E,rate,param);
+    sw_annealplot(T,E,rate,param,fid);
     % End annealing process if final temperature reached.
     if T(end) <= endT
         break;

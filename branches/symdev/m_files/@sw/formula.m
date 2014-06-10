@@ -1,13 +1,11 @@
-function varargout = formula(obj, print)
+function varargout = formula(obj)
 % returns chemical formula, mass, volume, etc.
 %
-% formula = FORMULA(obj,{print})
+% formula = FORMULA(obj)
 %
 % Options:
 %
 % obj       sw class object.
-% print     If true, the results are printed onto the Matlab Command
-%           Window. Default is false. Optional
 %
 % Output:
 %
@@ -22,15 +20,11 @@ function varargout = formula(obj, print)
 % Example:
 %
 % cryst = sw('test.cif')
-% cryst.formula(true);
+% cryst.formula;
 %
 % The formula of the crystal stored in the test.cif file will be printed
 % onto the Command Window.
 %
-
-if nargin == 1
-    print = false;
-end
 
 atom = obj.atom;
 
@@ -74,12 +68,11 @@ if nargout > 0
     varargout{1} = formula;
 end
 
-if print
-    fprintf('Chemical formula: %s\n',formula.chemform);
-    fprintf('Mass:             %8.3f g/mol\n',formula.m);
-    fprintf('Volume:           %8.3f Angstrom^3\n',formula.V);
-    fprintf('Density:          %8.3f g/cm^3\n',formula.rho);
-    
-end
+fid = obj.fid;
+
+fprintf0(fid,'Chemical formula: %s\n',formula.chemform);
+fprintf0(fid,'Mass:             %8.3f g/mol\n',formula.m);
+fprintf0(fid,'Volume:           %8.3f Angstrom^3\n',formula.V);
+fprintf0(fid,'Density:          %8.3f g/cm^3\n',formula.rho);
 
 end

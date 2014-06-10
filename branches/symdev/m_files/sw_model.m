@@ -1,5 +1,6 @@
-function obj = sw_model(model, param)
-% obj = SW_MODEL(model, param) creates different predefined spin models.
+function obj = sw_model(model, param, fid)
+% obj = SW_MODEL(model, param, {fid}) creates different predefined spin
+% models.
 %
 % Input:
 %
@@ -14,6 +15,8 @@ function obj = sw_model(model, param)
 %               'chainAF'   Antiferromagnetic chain.
 %
 % param     Input parameters of the model, depending on which is selected.
+% fid       Where to print the text output. Default is 1 to print to the
+%           Command Window. Optional.
 %
 % Output:
 %
@@ -22,11 +25,17 @@ function obj = sw_model(model, param)
 % See also SW.
 %
 
-fprintf('Preparing ''%s'' model ...',model)
+if nargin < 3
+    fid = 1;
+end
+
+fprintf0(fid,'Preparing ''%s'' model ...\n',model);
+
+obj = sw;
+fileid(obj,fid)
 
 switch model
     case 'triAF'
-        obj = sw;
         obj.genlattice('lat_const',[3 3 500],'angled',[90 90 120])
         obj.addatom('r',[0 0 0],'S',1,'color','darkmagenta')
         obj.gencoupling('maxDistance',10)
@@ -38,9 +47,8 @@ switch model
         
         obj.lattice.lat_const(3) = 5;
         obj.genmagstr('mode','direct','S',[1 0 0])
-        obj.optmagstr('func',@gm_planar,'xmin',[0 0 0 0 0 0],'xmax',[0 1/2 1/2 0 0 0],'nRun',10,'fid',0)
+        obj.optmagstr('func',@gm_planar,'xmin',[0 0 0 0 0 0],'xmax',[0 1/2 1/2 0 0 0],'nRun',10)
     case 'squareAF'
-        obj = sw;
         obj.genlattice('lat_const',[3 3 500],'angled',[90 90 90])
         obj.addatom('r',[0 0 0],'S',1,'color','darkmagenta')
         obj.gencoupling('maxDistance',10)
@@ -52,12 +60,12 @@ switch model
         
         obj.lattice.lat_const(3) = 5;
         obj.genmagstr('mode','direct','S',[1 0 0])
-        obj.optmagstr('func',@gm_planar,'xmin',[0 0 0 0 0 0],'xmax',[0 1/2 1/2 0 0 0],'nRun',10,'fid',0)
+        obj.optmagstr('func',@gm_planar,'xmin',[0 0 0 0 0 0],'xmax',[0 1/2 1/2 0 0 0],'nRun',10)
         
     otherwise
         error('sw_model:WrongINput','Model does not exists!')
 end
 
-fprintf(' ready!\n')
+fprintf0(fid,'... ready!\n');
 
 end

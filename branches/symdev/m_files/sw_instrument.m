@@ -68,6 +68,9 @@ inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1]    [1 1]      [1 -2]    [1 1] [
 
 param = sw_readparam(inpForm, varargin{:});
 
+% Print output
+fid = spectra.obj.fileid;
+
 if isfield(spectra,'swRaw')
     % take raw convoluted spectra if exists
     spectra.swConv = spectra.swRaw;
@@ -127,7 +130,7 @@ if ~any(param.dE)
     param.dE = 1e-8;
 else
     spectra.dE = param.dE;
-    fprintf('Finite instrumental energy resolution is applied.\n');
+    fprintf0(fid,'Finite instrumental energy resolution is applied.\n');
 end
 
 
@@ -184,7 +187,7 @@ if param.dQ > 0
     
     spectra.dQ = param.dQ;
     
-    fprintf('Finite instrumental momentum resolution of %5.3f A-1 is applied.\n',param.dQ);
+    fprintf0(fid,'Finite instrumental momentum resolution of %5.3f A-1 is applied.\n',param.dQ);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -206,8 +209,8 @@ if ki > 0
     %Emin  = -spectra.hklA.*(2*param.ki+spectra.hklA) * sw_converter('k',1,'meV');
     
     for jj = 1:nPlot
-        Emax = (ki^2-(ki*cosT-sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter('k',1,'meV');
-        Emin = (ki^2-(ki*cosT+sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter('k',1,'meV');
+        Emax = (ki^2-(ki*cosT-sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter(1,'k','meV');
+        Emin = (ki^2-(ki*cosT+sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter(1,'k','meV');
         
         Emax(abs(imag(Emax))>0) = 0;
         Emin(abs(imag(Emin))>0) = 0;
@@ -222,7 +225,7 @@ if ki > 0
         swConv(idx) = NaN;
         spectra.swConv{jj} = swConv;
     end
-    fprintf('Energy transfer is limited to instrument, using ki=%5.3f A-1.\n',ki);
+    fprintf0(fid,'Energy transfer is limited to instrument, using ki=%5.3f A-1.\n',ki);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -250,12 +253,12 @@ if any(formFactCoeff(1:end-1))
         spectra.swConv{jj} = bsxfun(@times,spectra.swConv{jj},formFactCalc.^2);
     end
     if ischar(param.formFact)
-        fprintf('Magnetic form factor of %s is applied.\n',param.formFact);
+        fprintf0(fid,'Magnetic form factor of %s is applied.\n',param.formFact);
     else
-        fprintf('Magnetic form factor with given coefficients is applied.\n');
+        fprintf0(fid,'Magnetic form factor with given coefficients is applied.\n');
     end
 else
-    fprintf('No magnetic form factor applied.\n');
+    fprintf0(fid,'No magnetic form factor applied.\n');
 end
 
 spectra.formFact = param.formFact;
@@ -286,7 +289,7 @@ if param.norm
     
     % set 'normalized units' switch on
     spectra.norm = true;
-    fprintf('Intensity is converted to mbarn/meV units.\n');
+    fprintf0(fid,'Intensity is converted to mbarn/meV units.\n');
 else
     spectra.norm = false;
 end

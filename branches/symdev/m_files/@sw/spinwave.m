@@ -65,10 +65,14 @@ function spectra = spinwave(obj, hkl, varargin)
 %               examining the eigenvalues it can give a hint where the
 %               problem is.
 %               Default is true.
+% saveH         If true, the quadratic form of the Hamiltonian is saved. Be
+%               carefull, it can take up lots of memory. Default is false.
 % saveT         If true, the matrices that transform the normal magnon
 %               modes into the magnon modes localized on the spins are
 %               saved. Be carefull, it can take up lots of memory.
 %               Default is false.
+% saveSabp      If true, the dynamical structure factorin the rotating
+%               frame is saved S'(k,omega). Default is false.
 %
 % Output:
 %
@@ -79,10 +83,15 @@ function spectra = spinwave(obj, hkl, varargin)
 % Sab           Dynamical structure factor, dimensins are
 %               [3 3 nMode nHkl]. Each (:,:,i,j) submatrix contains the
 %               9 correlation functions: Sxx, Sxy, Sxz, etc.
-%  T            Transformation matrix from the normal magnon modes to the
+% H             Quadratic for mof the Hamiltonian.
+%               Only saved if saveH is true.
+% T             Transformation matrix from the normal magnon modes to the
 %               magnons localized on spins:
 %                   x_i = sum_j T_ij * x_j'
 %               Only saved if saveT is true.
+% Sabp          Dynamical structure factor in the rotating frame,
+%               dimensions are [3 3 nMode nHkl], but the number of modes
+%               are equal to twice the number of magnetic atoms.
 %
 % nMode is the number of magnetic mode. For commensurate structures it is
 % double the number of magnetic atoms in the magnetic cell/supercell. For
@@ -144,13 +153,13 @@ if nargin==1
     return
 end
 
-inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' };
-inpForm.defval = {false     false    true       0        1e-4  };
-inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] };
+inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' 'hermit'};
+inpForm.defval = {false     false    true       0        1e-4  true    };
+inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]   };
 
-inpForm.fname  = [inpForm.fname  {'omega_tol' 'hermit' 'saveT' }];
-inpForm.defval = [inpForm.defval {1e-5        true     false   }];
-inpForm.size   = [inpForm.size   {[1 1]       [1 1]    [1 1]   }];
+inpForm.fname  = [inpForm.fname  {'omega_tol' 'saveSabp' 'saveT' 'saveH'}];
+inpForm.defval = [inpForm.defval {1e-5        true       false   false  }];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1]      [1 1]   [1 1]  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -252,7 +261,7 @@ end
 % e1 = e2 x e3
 magTab = obj.magtable;
 
-zed = magTab.e1 + 1i*magTab*e2;
+zed = magTab.e1 + 1i*magTab.e2;
 eta = magTab.e3;
 
 dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
@@ -343,8 +352,15 @@ omega = zeros(2*nMagExt,0);
 
 % empty Sab
 Sab = zeros(3,3,2*nMagExt,0);
+
+% Empty matrices to save different intermediate results for further
+% analysis: Hamiltonian, eigenvectors, dynamical structure factor in the
+% rotating frame
 if param.saveT
     Tsave = zeros(2*nMagExt,2*nMagExt,nHkl);
+end
+if param.saveH
+    Hsave = zeros(2*nMagExt,2*nMagExt,nHkl);
 end
 
 if fid == 1
@@ -472,6 +488,9 @@ for jj = 1:nSlice
     if param.saveT
         Tsave(:,:,hklIdxMEM) = V;
     end
+    if param.saveH
+        Hsave(:,:,hklIdxMEM) = ham;
+    end
     
     % Calculates correlation functions.
     % V right
@@ -543,8 +562,14 @@ if incomm
     %helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
     
     if helical
-        % integrating out the starting phase of the helix
+        % integrating out the arbitrary initial phase of the helix
         Sab = 1/2*Sab - 1/2*mmat(mmat(nx,Sab),nx) + 1/2*mmat(mmat(nxn-m1,Sab),nxn) + 1/2*mmat(mmat(nxn,Sab),2*nxn-m1);
+    end
+    
+    % Save the structure factor in the rotating frame
+    if param.saveSabp
+        Sabp = Sab(:,:,:,kmIdx==2);
+        omegap = omega(:,kmIdx==2);
     end
     
     % dispersion
@@ -593,8 +618,16 @@ spectra.incomm  = incomm;
 spectra.helical = helical;
 spectra.norm    = false;
 
+% Save different intermediate results.
 if param.saveT
     spectra.T = Tsave;
+end
+if param.saveH
+    spectra.H = Hsave;
+end
+if param.saveSabp && incomm
+    spectra.Sabp = Sabp;
+    spectra.omegap = omegap;
 end
 
 % save the important parameters

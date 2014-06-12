@@ -149,7 +149,7 @@ end
 % e1 = e2 x e3
 magTab = obj.magtable;
 
-zed = magTab.e1 + 1i*magTab*e2;
+zed = magTab.e1 + 1i*magTab.e2;
 eta = magTab.e3;
 
 if numel(SS.all) > 0

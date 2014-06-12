@@ -184,7 +184,11 @@ if obj.sym
     end
     
     % Generate g-tensor using the space group symmetry
-    [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,isAlways(obj.unit_cell.S>0)));
+    if obj.symbolic
+        [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,isAlways(obj.unit_cell.S>0)));
+    else
+        [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
+    end
     % convert rotation operators to xyz Cartesian coordinate system
     rotOp = mmat(A,mmat(rotOp,inv(A)));
     % rotate the matrices: R*M*R'

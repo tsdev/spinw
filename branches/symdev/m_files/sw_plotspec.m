@@ -60,6 +60,12 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           non-zero 'dE' option) keeps the energy integrated intensity. If
 %           false the amplitude is kept constant. Default is the input
 %           spectra.norm value.
+% figPos    Position of the figure window on the screen. The [1,1] position
+%           is the upper left corner of the screen, [2,1] is shifted
+%           downwards by 1 figure window height, [1,2] is shifted right by
+%           1 figure window width relative to the [1,1] position. Default
+%           is [0,0] where the figure window will not be moved from the
+%           original position.
 %
 % Output:
 %
@@ -90,9 +96,9 @@ inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
 inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
 inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'log' 'plotf'  'maxPatch' }];
-inpForm.defval = [inpForm.defval {false @sw_surf 1000       }];
-inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      }];
+inpForm.fname  = [inpForm.fname  {'log' 'plotf'  'maxPatch' 'figPos'}];
+inpForm.defval = [inpForm.defval {false @sw_surf 1000       [0 0]   }];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      [1 2]   }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -214,6 +220,19 @@ else
         fHandle = figure;
         set(fHandle,'Tag','sw_spectra');
     end
+end
+
+% Position figure window on the screen
+if all(param.figPos>0)
+    fUnit = get(fHandle,'Units');
+    set(fHandle,'Units','pixels');
+    fPos = get(fHandle,'outerPosition');
+    fWidth  = fPos(3);
+    fHeight = fPos(4);
+    % Display size in pixel
+    dSize = get(0,'ScreenSize');
+    set(fHandle,'outerPosition',[(param.figPos(2)-1)*fWidth dSize(4)-20-param.figPos(1)*fHeight fWidth fHeight]);
+    set(fHandle,'Units',fUnit);
 end
 
 setappdata(fHandle,'param',param);

@@ -115,7 +115,11 @@ fid = obj.fid;
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
 %[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
-[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true,'rotMat',false);
+%if obj.symmetry && any(sw_mattype(obj.matrix.mat)~=1)
+%    warning('sw:spinwavesym:symmetry','The non-isotropic symbolic matrices will not be rotated unsing the point group operators, define them manually!')
+%end
+%[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true,'rotMat',false);
+[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true);
 
 % Converts wavevctor list into the extended unit cell
 hklExt  = hkl.*nExt'*2*pi;
@@ -139,21 +143,14 @@ if fid ~= 0
     end
 end
 
-% Local (e1,e2,e3) coordinate system fixed to the moments.
-% e3 || Si
-e3 = M0./[S0; S0; S0];
+% Local (e1,e2,e3) coordinate system fixed to the moments, 
+% e3||Si, 
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
-e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
-%e2(3,~any(e2)) = 1;
-e2(3,~any(abs(e2)>1e-10)) = 1;
-E0 = sqrt(sum(e2.^2,1));
-e2  = e2./[E0; E0; E0];
 % e1 = e2 x e3
-e1  = cross(e2,e3);
+magTab = obj.magtable;
 
-% Defines eta and zed.
-zed = e1 + 1i*e2;
-eta = e3;
+zed = magTab.e1 + 1i*magTab*e2;
+eta = magTab.e3;
 
 if numel(SS.all) > 0
     dR    = [SS.all(1:3,:) zeros(3,nMagExt)];

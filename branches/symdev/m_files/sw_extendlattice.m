@@ -42,7 +42,11 @@ nExt1    = nExt-1;
 
 rIndex   = 0;
 RRext    = zeros(3,nAtom*nCell);
-Sext     = zeros(1,nAtom*nCell);
+if isa(S,'sym')
+    Sext     = sym(zeros(1,nAtom*nCell));
+else
+    Sext     = zeros(1,nAtom*nCell);
+end
 
 % Extend unit cell.
 for kk = 0:nExt1(3)

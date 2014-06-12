@@ -168,8 +168,15 @@ incomm = any(abs(km-round(km)) > param.tol);
 % Calculates momentum transfer in A^-1 units.
 hklA = 2*pi*(hkl'/obj.basisvector)';
 
+% Check for 2*km
+tol = param.tol*2;
+helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
+
 if incomm
-   
+   if ~helical
+       error('sw:spinwave:Twokm',['The two times the magnetic ordering '...
+           'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
+   end
     % without the k_m: (k, k, k)
     hkl0 = repmat(hkl,[1 3]);
     % calculate dispersion for (k-km, k, k+km)
@@ -213,14 +220,6 @@ else
     [SS, SI, RR] = obj.intmatrix('conjugate',true);
 end
 
-% Introduce the opposite couplings.
-% (i-->j) and (j-->i)
-% transpose the JJ matrix as well [1 2 3 4 5 6 7 8 9] --> [6 9 12 7 10 13 8 11 14]
-% SS.new         = [SS.all(1:3,:)   -SS.all(1:3,:)  ];
-% SS.new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];
-% SS.new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:) ]/2;
-% SS.all         = SS.new;
-
 % Converts wavevctor list into the extended unit cell
 hklExt  = bsxfun(@times,hkl,nExt')*2*pi;
 % q values without the +/-k_m value
@@ -247,20 +246,14 @@ if fid ~= 0
     end
 end
 
-% Local (e1,e2,e3) coordinate system fixed to the moments.
-% e3 || Si
-e3 = bsxfun(@rdivide,M0,S0);
+% Local (e1,e2,e3) coordinate system fixed to the moments, 
+% e3||Si, 
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
-e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
-%e2(3,~any(e2)) = 1;
-e2(3,~any(abs(e2)>1e-10)) = 1;
-e2  = bsxfun(@rdivide,e2,sqrt(sum(e2.^2,1)));
 % e1 = e2 x e3
-e1  = cross(e2,e3);
+magTab = obj.magtable;
 
-% Defines eta and zed.
-zed = e1 + 1i*e2;
-eta = e3;
+zed = magTab.e1 + 1i*magTab*e2;
+eta = magTab.e3;
 
 dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
 atom1 = [SS.all(4,:)   1:nMagExt];
@@ -540,14 +533,14 @@ if incomm
     K2 = nxn;
     
     % keep the rotation invariant part of Sab
-    nx  = [0 -n(3) n(2);n(3) 0 -n(1);-n(2) n(1) 0];
-    nxn = n'*n;
+    %nx  = [0 -n(3) n(2);n(3) 0 -n(1);-n(2) n(1) 0];
+    %nxn = n'*n;
     m1  = eye(3);
     
     % if the 2*km vector is integer, the magnetic structure is not a true
     % helix
-    tol = param.tol*2;
-    helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
+    %tol = param.tol*2;
+    %helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
     
     if helical
         % integrating out the starting phase of the helix

@@ -104,6 +104,21 @@ for ii = 1:numel(newAtom)
     if size(newAtom(ii).S,2) == 1
         newAtom(ii).S = newAtom(ii).S';
     end
+    
+    if obj.symbolic
+        if ~isa(newAtom(ii).S,'sym')
+            symS = sym('');
+            for jj = 1:numel(newAtom(ii).r)/3
+                if newAtom(ii).S(jj) > 0
+                    symS(jj) = sym(['S_' num2str(jj)],'positive');
+                else
+                    symS(jj) = sym(0);
+                end
+            end
+            newAtom(ii).S = symS;
+        end
+    end
+    
     if size(newAtom(ii).label,2) == 1
         newAtom(ii).label = newAtom(ii).label';
     end

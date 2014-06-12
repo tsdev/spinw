@@ -74,6 +74,14 @@ inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
+if obj.symmetry
+    param.rotMat = false;
+    if any(sw_mattype(obj.matrix.mat)~=1)
+        warning('sw:intmatrix:symmetry',['The non-isotropic symbolic matrices '...
+            'will not be rotated unsing the point group operators, define them manually!']);
+    end
+end
+
 % Create parameters of magnetic atoms in the unit cell.
 mAtom    = obj.matom(param.fitmode);
 nMagAtom = size(mAtom.r,2);
@@ -176,7 +184,7 @@ if obj.sym
     end
     
     % Generate g-tensor using the space group symmetry
-    [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
+    [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,isAlways(obj.unit_cell.S>0)));
     % convert rotation operators to xyz Cartesian coordinate system
     rotOp = mmat(A,mmat(rotOp,inv(A)));
     % rotate the matrices: R*M*R'
@@ -218,8 +226,10 @@ if param.fitmode < 2
     % Select only the isotropic exchange. Remove zero value elements.
     JJ.iso = squeeze(JJ.mat(1,1,:))';
     SS.iso = [SS.all(:,JJ.type == 1); JJ.iso(1,JJ.type == 1)];
-
-    SS.iso = SS.iso(:,SS.iso(6,:)~=0);
+    
+    if ~isempty(SS.iso)
+        SS.iso = SS.iso(:,SS.iso(6,:)~=0);
+    end
     
     % Select only the anisotropic exchange. Remove zero value elements.
     JJ.ani = [squeeze(JJ.mat(1,1,:))'; squeeze(JJ.mat(2,2,:))'; squeeze(JJ.mat(3,3,:))'];

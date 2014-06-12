@@ -61,6 +61,9 @@ function spectra = sw_egrid(spectra, varargin)
 % sumtwin   If true, the spectra of the different twins will be summed
 %           together weighted with the normalized volume fractions. Default
 %           is true.
+% modeIdx   Select certain spin wave modes from the 2*nMagAtom number of
+%           modes to include in the output. Default is 1:2*nMagAtom to
+%           include all modes.
 %
 % The Blume-Maleev coordinate system is a cartesian coordinate system
 % with (xBM, yBM and zBM) basis vectors as follows:
@@ -116,15 +119,15 @@ else
     E0 = [];
 end
 
-inpForm.fname  = {'Evect' 'T'   'component' 'sumtwin' 'formfact'};
-inpForm.defval = {E0      T0    'Sperp'     true      false     };
-inpForm.size   = {[1 -1]  [1 1] [1 -2]      [1 1]     [1 -3]    };
-inpForm.soft   = {true    false false       false     false     };
+inpForm.fname  = {'Evect' 'T'   'component' 'sumtwin' 'formfact' 'modeIdx' };
+inpForm.defval = {E0      T0    'Sperp'     true      false      zeros(1,0)};
+inpForm.size   = {[1 -1]  [1 1] [1 -2]      [1 1]     [1 -3]     [1 -4]    };
+inpForm.soft   = {true    false false       false     false      false     };
 
 param = sw_readparam(inpForm, varargin{:});
 
 if isempty(param.Evect)
-    param.Evect = linspace(0,1.1*max(abs(spectra.omega(:))),500);
+    param.Evect = linspace(0,1.1*max(real(spectra.omega(:))),500);
 end
 
 % parse the component string
@@ -231,6 +234,11 @@ else
     nHkl = size(spectra.Sab2,4);
 end
 
+% Default value of the modeIdx vector selects all modes for output
+if isempty(param.modeIdx)
+    param.modeIdx = 1:nMode;
+end
+
 % DSF stores the intensity that is going to be convoluted
 DSF = cell(nConv,nTwin);
 
@@ -307,6 +315,9 @@ if isfield(spectra,'omega')
     idxE = cell(1,nTwin);
     
     for tt = 1:nTwin
+        % put the modes that are not in the modeIdx parameter above the
+        % energy bin vector
+        omega{tt}(~ismember(1:nMode,param.modeIdx),:) = Evect(end);
         [~, idxE{tt}] = min(abs(repmat(real(omega{tt}),[1 1 nE])-repmat(permute(Evect,[2 3 1]),[nMode nHkl 1])),[],3);
         
         % Creates indices in the swConv matrix.

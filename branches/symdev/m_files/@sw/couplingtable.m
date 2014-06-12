@@ -75,6 +75,9 @@ nCoupling = size(bonds.table,2);
 
 % assign bond index to the coupling
 bonds.matrix = zeros(3,3,nCoupling);
+if obj.symbolic
+    bonds.matrix = sym(bonds.matrix);
+end
 
 bondT = bonds.table(1:5,:);
 bondT = bondT(:)';

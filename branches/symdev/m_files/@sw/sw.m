@@ -444,7 +444,7 @@ classdef (ConstructOnLoad) sw < class_handlelight
             %
             
             if nargin == 1
-                symb = obj.symb;
+                symb = logical(obj.symb);
                 
                 if symb
                     v = ver;

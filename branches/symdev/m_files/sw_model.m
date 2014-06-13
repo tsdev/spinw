@@ -61,7 +61,11 @@ switch model
         obj.lattice.lat_const(3) = 5;
         obj.genmagstr('mode','direct','S',[1 0 0])
         obj.optmagstr('func',@gm_planar,'xmin',[0 0 0 0 0 0],'xmax',[0 1/2 1/2 0 0 0],'nRun',10)
-        
+        tol = 2e-4;
+        helical = sum(abs(mod(abs(2*obj.mag_str.k)+tol,1)-tol).^2) > tol;
+        if ~helical
+            obj.genmagstr('mode','helical','nExt',[2 2 1]);
+        end
     otherwise
         error('sw_model:WrongINput','Model does not exists!')
 end

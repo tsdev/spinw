@@ -1,0 +1,184 @@
+<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Antiferromagnetic nearest-enighbor spin chain</a></li><li><a href="#2">Create antiferromagnetic interactions</a></li><li><a href="#3">Two ways of defining the magnetic structure</a></li><li><a href="#4">Define all spins</a></li><li><a href="#5">Define only one spin</a></li><li><a href="#6">Ground state energy</a></li><li><a href="#7">Spin wave spectrum</a></li></ul></div><h2>Antiferromagnetic nearest-enighbor spin chain<a name="1"></a></h2><p>Definition of crystal structure, shortest bonds along the a-axis magnetic Cu+ atoms with S=1 spin.</p><pre class="codeinput">AFMchain = sw;
+AFMchain.fileid(0)
+AFMchain.genlattice(<span class="string">'lat_const'</span>,[3 8 8],<span class="string">'angled'</span>,[90 90 90],<span class="string">'sym'</span>,0);
+AFMchain.addatom(<span class="string">'r'</span>,[0 0 0],<span class="string">'S'</span>,1,<span class="string">'label'</span>,<span class="string">'MCu1'</span>,<span class="string">'color'</span>,<span class="string">'blue'</span>);
+display(<span class="string">'Atomic positions as columns:'</span>)
+AFMchain.atom.r
+plot(AFMchain,<span class="string">'range'</span>,[3 1 1],<span class="string">'zoom'</span>,0.5)
+</pre><pre class="codeoutput">Atomic positions as columns:
+
+ans =
+
+     0
+     0
+     0
+
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial2_01.png" alt=""> <h2>Create antiferromagnetic interactions<a name="2"></a></h2><p>Ja = 1 meV, positive sign denotes antiferromagnetic interaction.</p><pre class="codeinput">AFMchain.gencoupling(<span class="string">'maxDistance'</span>,7)
+display(<span class="string">'Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3'</span>)
+AFMchain.couplingtable.table
+AFMchain.coupling
+display(<span class="string">'Bond vectors (first three rows) and bond distances'</span>)
+AFMchain.couplingtable.bondv
+
+AFMchain.addmatrix(<span class="string">'label'</span>,<span class="string">'Ja'</span>,<span class="string">'value'</span>,1,<span class="string">'color'</span>,<span class="string">'red'</span>);
+AFMchain.addcoupling(<span class="string">'Ja'</span>,1);
+plot(AFMchain,<span class="string">'range'</span>,[3 0.9 0.9],<span class="string">'zoom'</span>,0.8)
+</pre><pre class="codeoutput">Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3
+
+ans =
+
+           1           2
+           0           0
+           0           0
+           1           1
+           1           1
+           1           2
+           0           0
+           0           0
+           0           0
+
+
+ans = 
+
+         dl: [3x2 int32]
+      atom1: [1 1]
+      atom2: [1 1]
+        idx: [1 2]
+    mat_idx: [3x2 int32]
+
+Bond vectors (first three rows) and bond distances
+
+ans =
+
+     1     2
+     0     0
+     0     0
+     3     6
+
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial2_02.png" alt=""> <h2>Two ways of defining the magnetic structure<a name="3"></a></h2><h2>Define all spins<a name="4"></a></h2><p>We define a magnetic supercell 2x1x1 of the crystal cell and define both spin direction in the supercell with the following parameters:</p><div><ul><li>magnetic ordering wave vector k = (1/2 0 0)</li><li>spins pointing along +/- y direction: S = [[0 1 0]' [0 -1 0]']</li><li>normal to the spin vectors n = (1 0 0)</li></ul></div><pre class="codeinput">AFMchain.genmagstr(<span class="string">'mode'</span>,<span class="string">'direct'</span>,<span class="string">'k'</span>,[1/2 0 0],<span class="string">'n'</span>,[1 0 0],<span class="string">'S'</span>,[0 0; 1 -1;0 0],<span class="string">'nExt'</span>,[2 1 1]);
+</pre><h2>Define only one spin<a name="5"></a></h2><p>We define the spin direction in the crystallographic unit cell and let the sw.genmagstr() function generate the other spin based on the magnetic ordering wave vector and normal vectors. This method is usefull for creating complex structures. Both methods gives the same magnetic structure, all stored values in the afchain.mag_str field are the same.</p><pre class="codeinput">AFMchain.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'k'</span>,[1/2 0 0],<span class="string">'n'</span>,[1 0 0],<span class="string">'S'</span>,[0; 1; 0],<span class="string">'nExt'</span>,[2 1 1]);
+display(<span class="string">'Magnetic structure with spins 1 2 ... as columns, xyz as rows:'</span>)
+AFMchain.mag_str
+AFMchain.mag_str.S
+</pre><h2>Ground state energy<a name="6"></a></h2><pre class="codeinput">display(<span class="string">'Ground state energy (meV/spin)'</span>)
+AFMchain.energy
+plot(AFMchain,<span class="string">'range'</span>,[3 0.9 0.9])
+</pre><pre class="codeoutput">Magnetic structure with spins 1 2 ... as columns, xyz as rows:
+
+ans = 
+
+    N_ext: [2 1 1]
+        k: [0.5000 0 0]
+        S: [3x2 double]
+        n: [1 0 0]
+
+
+ans =
+
+         0         0
+    1.0000   -1.0000
+         0    0.0000
+
+Ground state energy (meV/spin)
+
+ans =
+
+    -1
+
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial2_03.png" alt=""> <h2>Spin wave spectrum<a name="7"></a></h2><p>We calculate the spin wave spectrum and neutron scattering cross sections along the chain direction. The neutron scattering cross section is plotted together with the dispersion (black line).</p><pre class="codeinput">afcSpec = AFMchain.spinwave({[0 0 0] [1 0 0] 523}, <span class="string">'hermit'</span>,true);
+figure
+sw_plotspec(afcSpec,<span class="string">'mode'</span>,4,<span class="string">'dE'</span>,0.2,<span class="string">'axLim'</span>,[0 3])
+
+<span class="comment">% To calculate the intensity, we need to sum up the intensity of the two</span>
+<span class="comment">% degenerate spin wave mode using the sw_omegasum() function. We plot the</span>
+<span class="comment">% logarithm of the intensity.</span>
+
+afcSpec = sw_neutron(afcSpec);
+afcSpec = sw_egrid(afcSpec,<span class="string">'Evect'</span>,linspace(0,6.5,500),<span class="string">'component'</span>,<span class="string">'Sperp'</span>);
+afcSpec = sw_omegasum(afcSpec,<span class="string">'zeroint'</span>,1e-6);
+figure
+sw_plotspec(afcSpec,<span class="string">'mode'</span>,2,<span class="string">'log'</span>,true,<span class="string">'axLim'</span>,[-4 10])
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial2_04.png" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial2_05.png" alt=""> <pre>Written by
+Bjorn Fak &amp; Sandor Toth
+06-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+<literal>##### SOURCE BEGIN #####
+%% Antiferromagnetic nearest-enighbor spin chain
+% Definition of crystal structure, shortest bonds along the a-axis magnetic
+% Cu+ atoms with S=1 spin.
+
+AFMchain = sw; 
+AFMchain.fileid(0)
+AFMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0);
+AFMchain.addatom('r',[0 0 0],'S',1,'label','MCu1','color','blue');
+display('Atomic positions as columns:')
+AFMchain.atom.r
+plot(AFMchain,'range',[3 1 1],'zoom',0.5)
+
+%% Create antiferromagnetic interactions
+% Ja = 1 meV, positive sign denotes antiferromagnetic interaction.
+
+AFMchain.gencoupling('maxDistance',7)
+display('Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3')
+AFMchain.couplingtable.table 
+AFMchain.coupling
+display('Bond vectors (first three rows) and bond distances')
+AFMchain.couplingtable.bondv
+
+AFMchain.addmatrix('label','Ja','value',1,'color','red'); 
+AFMchain.addcoupling('Ja',1);
+plot(AFMchain,'range',[3 0.9 0.9],'zoom',0.8)
+
+%% Two ways of defining the magnetic structure
+
+%%% Define all spins
+% We define a magnetic supercell 2x1x1 of the crystal cell and define both
+% spin direction in the supercell with the following parameters:
+%
+% * magnetic ordering wave vector k = (1/2 0 0)
+% * spins pointing along +/- y direction: S = [[0 1 0]' [0 -1 0]']
+% * normal to the spin vectors n = (1 0 0)
+
+AFMchain.genmagstr('mode','direct','k',[1/2 0 0],'n',[1 0 0],'S',[0 0; 1 -1;0 0],'nExt',[2 1 1]);
+
+%%% Define only one spin
+% We define the spin direction in the crystallographic unit cell and let
+% the sw.genmagstr() function generate the other spin based on the magnetic
+% ordering wave vector and normal vectors. This method is usefull for
+% creating complex structures. Both methods gives the same magnetic
+% structure, all stored values in the afchain.mag_str field are the same.
+
+AFMchain.genmagstr('mode','helical','k',[1/2 0 0],'n',[1 0 0],'S',[0; 1; 0],'nExt',[2 1 1]); 
+display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
+AFMchain.mag_str
+AFMchain.mag_str.S
+
+%%% Ground state energy
+display('Ground state energy (meV/spin)')
+AFMchain.energy
+plot(AFMchain,'range',[3 0.9 0.9])
+
+%% Spin wave spectrum
+% We calculate the spin wave spectrum and neutron scattering cross
+% sections along the chain direction. The neutron scattering cross section
+% is plotted together with the dispersion (black line).
+
+afcSpec = AFMchain.spinwave({[0 0 0] [1 0 0] 523}, 'hermit',true);
+figure
+sw_plotspec(afcSpec,'mode',4,'dE',0.2,'axLim',[0 3])
+
+% To calculate the intensity, we need to sum up the intensity of the two
+% degenerate spin wave mode using the sw_omegasum() function. We plot the
+% logarithm of the intensity.
+
+afcSpec = sw_neutron(afcSpec);
+afcSpec = sw_egrid(afcSpec,'Evect',linspace(0,6.5,500),'component','Sperp');
+afcSpec = sw_omegasum(afcSpec,'zeroint',1e-6);
+figure
+sw_plotspec(afcSpec,'mode',2,'log',true,'axLim',[-4 10])
+
+%%
+%  Written by
+%  Bjorn Fak & Sandor Toth
+%  06-June-2014
+##### SOURCE END #####</literal>
+-->

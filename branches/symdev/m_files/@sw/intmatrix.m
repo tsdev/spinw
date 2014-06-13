@@ -74,7 +74,7 @@ inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
-if obj.symmetry
+if obj.symbolic && obj.symmetry
     param.rotMat = false;
     if any(sw_mattype(obj.matrix.mat)~=1)
         warning('sw:intmatrix:symmetry',['The non-isotropic symbolic matrices '...

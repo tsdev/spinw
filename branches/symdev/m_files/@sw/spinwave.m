@@ -138,7 +138,9 @@ if obj.symb
     end
     
     if ~isa(hkl,'sym')
-        warning('hkl has to be symbolic, spin wave spectrum for general Q (h,k,l) will be calculated!');
+        if ~param.fitmode
+            warning('hkl has to be symbolic, spin wave spectrum for general Q (h,k,l) will be calculated!');
+        end
         spectra = obj.spinwavesym(varargin{:});
     else
         spectra = obj.spinwavesym(varargin{:},'hkl',hkl);
@@ -326,7 +328,9 @@ if param.optmem == 0
         nSlice = ceil(nMagExt^2*nHkl*6912/sw_freemem*2);
     else
         nSlice = 1;
-        warning('sw:spinwave:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
+        if ~param.fitmode
+            warning('sw:spinwave:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
+        end
     end
 else
     nSlice = param.optmem;
@@ -533,7 +537,7 @@ else
     end
 end
 
-if warn1
+if warn1 && ~param.fitmode
     warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...
         'positive definite, a small omega_tol value was added to its diagonal!'])
 end

@@ -56,7 +56,7 @@ sw_plotspec(afkSpec,'mode',1,'axLim',[0 3],'colorbar',false,'colormap',[0 0 0],'
 
 afkPow = AFkagome.powspec(linspace(0,2.5,150),'Evect',linspace(0,3,250),'nRand',1000,'hermit',false);
 figure;
-sw_plotspec(afkPow,'axLim',[0 0.5])
+sw_plotspec(afkPow,'axLim',[0 0.2])
 
 %%
 %  Written by

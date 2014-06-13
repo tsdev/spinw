@@ -4,12 +4,11 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %
 % Options:
 %
-% mode      Choose the type of plot:
-%               1   dispersion,
-%               2   absolute value of the correlation functions,
-%               3   convoluted spectra.
-%               4   FANCY PLOT MODE, only axLim parameter can be defined.
-%                   (default)
+% mode      Choose the type of plot, either a string (or number):
+%               'disp'  dispersion (1),
+%               'int'   intensity of the correlation functions (2),
+%               'color' convoluted spectrum (3),
+%               'fancy' FANCY PLOT MODE (default, 4).
 % imag      Whether to plot the imaginary values of the dispersion
 %           and the correlation functions. For convoluted spectra, if true,
 %           the imaginary part is plotted. Default is false.
@@ -82,7 +81,7 @@ end
 
 inpForm.fname  = {'mode' 'imag' 'aHandle' 'colorbar' 'dashed' 'norm'     };
 inpForm.defval = {4      false   gca      true       false   spectra.norm};
-inpForm.size   = {[1 1]  [1 1]  [1 1]     [1 1]      [1 1]   [1 1]       };
+inpForm.size   = {[1 -6] [1 1]  [1 1]     [1 1]      [1 1]   [1 1]       };
 
 inpForm.fname  = [inpForm.fname  {'dE'  'fontSize' 'colormap' 'axLim'}];
 inpForm.defval = [inpForm.defval {0     14         'auto'     'auto' }];
@@ -101,6 +100,22 @@ inpForm.defval = [inpForm.defval {false @sw_surf 1000       [0 0]   }];
 inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      [1 2]   }];
 
 param = sw_readparam(inpForm, varargin{:});
+
+% plotmode string
+if numel(param.mode)>1
+    switch param.mode
+        case 'disp'
+            param.mode = 1;
+        case 'int'
+            param.mode = 2;
+        case 'color'
+            param.mode = 3;
+        case 'fancy'
+            param.mode = 4;
+        otherwise
+            param.mode = 4;
+    end
+end
 
 % select twins for omega plot
 param.twin = round(param.twin);

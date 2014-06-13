@@ -84,6 +84,9 @@ function varargout = plot(obj, varargin)
 %                    x    Plane of the moment is plotted if the best
 %                         fitting plane is better than x.
 %                   Default value is 0.
+%   centerS         If true, the spin vector is centered on the atom, if
+%                   false the beggining of the spin vector is on the atom.
+%                   Default is true.
 %
 %   Anisotropy and g-tensor ===============================================
 %
@@ -224,6 +227,10 @@ inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]            [1 1]
 inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' 'hFigure' 'hg'  'zoom' }];
 inpForm.defval = [inpForm.defval {1      1       1      1                0        true  0      }];
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]            [1 1]    [1 1] [1 1]  }];
+
+inpForm.fname  = [inpForm.fname  {'centerS' }];
+inpForm.defval = [inpForm.defval {true      }];
+inpForm.size   = [inpForm.size   {[1 1]     }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -729,7 +736,11 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         end
                         
                         if plotmode
-                            hArrow  = sw_arrow(rPlot-plotS,rPlot+plotS,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
+                            if param.centerS
+                                hArrow  = sw_arrow(rPlot-plotS,rPlot+plotS,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
+                            else
+                                hArrow  = sw_arrow(rPlot,rPlot+plotS,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
+                            end
                             set(hArrow,'Tag','spinArrow');
                             % save information into the spin arrow
                             % [a b c idx] unit cell position and spin index
@@ -749,7 +760,11 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         else
                             objid = sprintf('spinArrow%d',idxs);
                             idxs = idxs + 1;
-                            strOut = [strOut jmol_command('arrow',objid,param.rSpin,rPlot-plotS,rPlot+plotS,MColor*255)];
+                            if param.centerS
+                                strOut = [strOut jmol_command('arrow',objid,param.rSpin,rPlot-plotS,rPlot+plotS,MColor*255)];
+                            else
+                                strOut = [strOut jmol_command('arrow',objid,param.rSpin,rPlot,rPlot+plotS,MColor*255)];
+                            end
                         end
                     end
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

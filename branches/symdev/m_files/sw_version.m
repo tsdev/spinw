@@ -67,7 +67,13 @@ if nargout == 0
         end
     else
         disp([verStruct.Name verStruct.Version ' (rev ' num2str(verStruct.Revision) ')']);
-    end
+        onlineRev = sw_update;
+        if onlineRev > str2num(verStruct.Revision)
+            disp(['Newer version of SpinW is available online (rev. num. ' num2str(onlineRev) '), use the sw_update() function to download it!']);
+        else
+            disp('You have the latest version of SpinW!')
+        end
+    end    
 else
     if nField == 0
         if any(revNum)

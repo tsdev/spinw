@@ -157,13 +157,15 @@ end
 parType = ismember(1:5,parType);
 
 if parType(1)
-    if isfield(spectra,'Sperp') && ~isempty(spectra.Sperp)
-        Sperp = spectra.Sperp;
-    else
-        error('sw_egrid:WrongInput',['Reference to non-existent field ''Sperp'','...
-            ' use ''sw_neutron'' to produce the neutron scattering cross sections,'...
-            ' before binning in energy!'])
+    if ~isfield(spectra,'Sperp') || isempty(spectra.Sperp)
+        % auto produce neutron scattering cross section
+        
+        spectra = sw_neutron(spectra);
+        %error('sw_egrid:WrongInput',['Reference to non-existent field ''Sperp'','...
+        %    ' use ''sw_neutron'' to produce the neutron scattering cross sections,'...
+        %    ' before binning in energy!'])
     end
+    Sperp = spectra.Sperp;
 else
     Sperp = [];
 end

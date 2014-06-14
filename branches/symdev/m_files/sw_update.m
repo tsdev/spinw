@@ -1,16 +1,23 @@
-function sw_update(installDir)
+function onlineRev = sw_update(installDir)
 % SW_UPDATE updates the SpinW installation from the internet
 %
-% SW_UPDATE(installDir)
+% {onlineRev} = SW_UPDATE(installDir)
 %
 % sw_update creates a new folder with the latest release beside the current
 % SpinW installation and add the new version to the working path (and
 % removing the old one).
 %
+% Input:
+%
 % installDir    Folder name, where the new version is installed. Default is
 %               the parent folder of the current version of SpinW. If
 %               installDir == '.' update will be installed to current
 %               folder.
+%
+% Output:
+%
+% onlineVer     If output is expected, the revision number of the online
+%               SpinW is given. Optional.
 %
 
 % check current version
@@ -19,29 +26,29 @@ swVer = sw_version;
 % base url, where the sw_download_info file stored
 baseUrl = 'https://docs.google.com/uc?export=download&id=0BzFs7CQXhehSRXpjT0dndDNxNUE';
 
-
-if ~isfield(swVer,'Version')
-    answer = getinput('This is a not yet released version of SpinW, update is not recommended! Do you want to continue? (y/n)','yn');
+if nargout == 0
+    if ~isfield(swVer,'Version')
+        answer = getinput('This is a not yet released version of SpinW, update is not recommended! Do you want to continue? (y/n)','yn');
+        
+        if answer == 'n'
+            disp('SpinW update process cancelled!');
+            return
+        end
+        swVer.Revision = 0;
+    end
     
-    if answer == 'n'
-        disp('SpinW update process cancelled!');
-        return
-    end
-    swVer.Revision = 0;
-end
-
-if nargin == 0
-    installDir = sw_rootdir;
-    strIdx = strfind(installDir,filesep);
-    installDir = installDir(1:strIdx(end-1));
-else
-    if installDir(1) == '.'
-        installDir = [pwd filesep];
-    elseif installDir(end) ~= filesep
-        installDir = [installDir filesep];
+    if nargin == 0
+        installDir = sw_rootdir;
+        strIdx = strfind(installDir,filesep);
+        installDir = installDir(1:strIdx(end-1));
+    else
+        if installDir(1) == '.'
+            installDir = [pwd filesep];
+        elseif installDir(end) ~= filesep
+            installDir = [installDir filesep];
+        end
     end
 end
-
 
 % download the link to the newest version & comments!
 % the file format:
@@ -60,6 +67,13 @@ newInfo = newInfo{1};
 
 newLink = newInfo{1};
 newRev  = str2double(newInfo{2});
+
+if nargout == 1
+    % Give the revision number and exit.
+    onlineRev = newRev;
+    return
+end
+
 if numel(newInfo)>2
     newMsg  = newInfo(3:end);
 else
@@ -67,7 +81,6 @@ else
 end
 
 % check whether the online version is newer (compare revision numbers)
-
 if ischar(swVer.Revision)
     swVer.Revision = str2double(swVer.Revision);
 end

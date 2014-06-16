@@ -10,7 +10,7 @@ c = 7.5283;
 
 yvo3 = sw;
 yvo3.fileid(0)
-yvo3.genlattice('lat_const', [a/sqrt(2) b/sqrt(2) c]);
+yvo3.genlattice('lat_const', [a/sqrt(2) b/sqrt(2) c])
 yvo3.addatom('r',[0 0 0],'label','MV4','S',1/2,'color','gray')
 yvo3.addatom('r',[0 0 1/2],'label','MV4','S',1/2,'color','gray')
 yvo3.gencoupling
@@ -27,46 +27,29 @@ K1    = 0.90;
 K2    = 0.97;
 d     = 1.15;
 
-yvo3.addmatrix('labe','Jab','value',Jab,'color','b')
-yvo3.addmatrix('labe','Jc1','value',Jab,'color','b')
-yvo3.addmatrix('labe','Jc2','value',Jab,'color','b')
+Jc1mat = -Jc*(1+delta)*eye(3) + diag([K2 0 0]) - [0 0 d;0 0 0;-d 0 0];
+Jc2mat = -Jc*(1-delta)*eye(3) + diag([K2 0 0]) + [0 0 d;0 0 0;-d 0 0];
 
-Calculate the canting angle in the ac-plane:
-theta = 1/2*atan(2*d/(2*Jc-K1-K2));
-Define matrices for the Hamiltonian:
-sJab.mat = Jab*eye(3);
-sJab.label = {'Jab'};
-sJab.color = [0 0 255];
-
-sJc1.mat   = -Jc*(1+delta)*eye(3) + diag([K2 0 0]) - [0 0 d;0 0 0;-d 0 0];
-sJc1.label = {'Jc1'};
-sJc1.color = [0 128 128];
-
-sJc2.mat   = -Jc*(1-delta)*eye(3) + diag([K2 0 0]) + [0 0 d;0 0 0;-d 0 0];
-sJc2.label = {'Jc2'};
-sJc2.color = [128 0 128];
-
-sK1.mat   = -diag([K1 0 0]);
-sK1.label = {'K1'};
-sK1.color = [128 128 0];
-
-yvo3.addmatrix([sJab sJc1 sJc2 sK1])
-Assign the matrices to the magnetic atoms:
+yvo3.addmatrix('label','Jab','value',Jab,'color','b')
+yvo3.addmatrix('label','Jc1','value',Jc1mat,'color','YellowGreen')
+yvo3.addmatrix('label','Jc2','value',Jc2mat,'color','purple')
+yvo3.addmatrix('label','K1','value',-diag([K1 0 0]),'color','orange')
 yvo3.addcoupling('Jab',[1 3])
 yvo3.addcoupling('Jc1',2,2)
 yvo3.addcoupling('Jc2',2,1)
-Add K1 matrix to the single-ion anisotropy:
-yvo3.addaniso('K1')
-Create test magnetic structure, G-type antiferromagnet:
-par_ms.mode = 'helical';
-par_ms.S    = [1;0;0];
-par_ms.nExt = [2 2 1];
-par_ms.k    = [1/2 1/2 1];
-par_ms.n    = [0 1 0];
 
-yvo3.genmagstr(par_ms);
-Plotting magnetic structure with anisotropy ellipsoids:
+yvo3.addaniso('K1')
+plot(yvo3)
+
+%theta = 1/2*atan(2*d/(2*Jc-K1-K2));
+
+%% Magnetic structure
+% We define G-type antiferromagnetic structure.
+
+yvo3.genmagstr('mode','helical','S',[1 0 0],'nExt',[2 2 1],'k',[1/2 1/2 1],'n',[0 1 0])
 plot(yvo3,'ellAniso',1.5)
+
+%%
 Optimising magnetic structure, assuming it is planar, the meaning of the x parameters are the following: (phi1, phi2, ... phiN, kx, ky kz, nTheta, nPhi):
 par_opt.xmin = [zeros(1,8)    , 0 0 0, 0  0 ];
 par_opt.xmax = [ones(1,8)*2*pi, 0 0 0, pi pi];

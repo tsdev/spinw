@@ -1,6 +1,7 @@
 %% Spin wave spectrum of LiNiPO4
 % Spin wave model  from: T. Jensen, et al., PRB 79, 6 (2009)
-% http://arxiv.org/abs/0902.2288 or http://prb.aps.org/abstract/PRB/v79/i9/e092413
+% [[http://arxiv.org/abs/0902.2288]] or
+% [[http://prb.aps.org/abstract/PRB/v79/i9/e092413]]
 % We define only the magnetic atoms of LiNiPO4
 
 linipo = sw;
@@ -47,9 +48,15 @@ plot(linipo,'range',[2 2 1])
 linipo.genmagstr('mode','direct','S',[0 0 0 0; 0 0 0 0; 1 -1 -1 1])
 
 %% Spin wave spectrum
+<<<<<<< .mine
+% Calculating spin wave dispersion to compare with Fig. 1.(a-c) in the
+% paper. Number of Q point along the scan and number of energy bins for the
+% color plot.
+=======
 % We calculate spin wave dispersion to compare with Figure 1 (a-c) in the
 % paper. We use sw_omegasum() function to eliminate zero intensity spin
 % wave modes from the lineplots.
+>>>>>>> .r178
 
 linipoSpec = linipo.spinwave({[0 1 0] [2 1 0]});
 linipoSpec = sw_egrid(linipoSpec);

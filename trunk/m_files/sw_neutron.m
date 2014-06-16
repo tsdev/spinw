@@ -10,15 +10,20 @@ function spectra = sw_neutron(spectra, varargin)
 %
 % Options:
 %
+% uv        Cell, that contains two vectors, that define the scattering 
+%           plane in r.l.u. For example: {[1 0 0] [0 1 0]} for the hk
+%           plane.
 % n         Normal vector to the scattering plane, in real space (xyz
 %           coordinate system), dimensions are [1 3]. Default is [0 0 1].
 % pol       Whether to calculate cross sections in the Blume-Maleev
 %           coordinate system (inP, Pab and Mab fields of spectra). Default
-%           is true.
+%           is false.
 %
 % Output:
 %
 % the spectra output has the following additional fields:
+% param     Input parameters.
+%
 % Sperp     Sperp(mode,Q) unpolarised neutron scattering cross section,
 %           dimensions are [nMode nHkl].
 % intP      intP(Pi,mode,Q) polarised scattering cross section, dimensions
@@ -43,7 +48,7 @@ function spectra = sw_neutron(spectra, varargin)
 %           yBM     perpendicular to Px in the scattering plane,
 %           zBM     perpendicular to the scattering plane.
 %
-% See also SW, SW.SPINWAVE, SW.SWINC.
+% See also SW, SW.SPINWAVE.
 %
 
 if nargin == 0
@@ -51,13 +56,29 @@ if nargin == 0
     return;
 end
 
-inpForm.fname  = {'n'     'pol'};
-inpForm.defval = {[0 0 1] true };
-inpForm.size   = {[1 3]   [1 1]};
+inpForm.fname  = {'n'     'pol' 'uv'  };
+inpForm.defval = {[0 0 1] false  {}    };
+inpForm.size   = {[1 3]   [1 1] [1 2] };
+inpForm.soft   = {false   false true  };
 
 param = sw_readparam(inpForm,varargin{:});
 
-n = param.n;
+% normal to the scattering plane in xyz coordinate system
+if numel(param.uv) == 0
+    n = param.n;
+else
+    bv = spectra.obj.basisvector;
+    u = param.uv{1};
+    v = param.uv{2};
+    if (numel(u)~=3) || (numel(v)~=3)
+        error('sw_neutron:WrongInput','The u and v vectors of the scattering plane are wrong!');
+    end
+    n = cross(u*2*pi*inv(bv),v*2*pi*inv(bv)); %#ok<MINV>
+    n = round(n*1e12)/1e12;
+    n = n/norm(n);
+end
+
+
 
 % input paramters extracted from spectra
 % swSpec.Sab   3 x 3 x nMode x nHkl
@@ -90,6 +111,16 @@ for ii = 1:nTwin
     % Normalized scattering wavevector in xyz coordinate system.
     hklAN = bsxfun(@rdivide,hklA,sqrt(sum(hklA.^2,1)));
     
+    % avoid NaN for Q=0
+    NaNidx = find(any(isnan(hklAN)));
+    for jj = 1:numel(NaNidx)
+        if NaNidx(jj) < size(hklAN,2)
+            hklAN(:,NaNidx(jj)) = hklAN(:,NaNidx(jj)+1);
+        else
+            hklAN(:,NaNidx(jj)) = [1;0;0];
+        end
+    end
+    
     hkla = repmat(permute(hklAN,[1 3 2]),[1 3 1]);
     hklb = repmat(permute(hklAN,[3 1 2]),[3 1 1]);
     
@@ -114,7 +145,7 @@ for ii = 1:nTwin
             warning('sw:sw_polar:ScatteringPlaneProblem','The normal to the scattering plane is not perpendiculat to Q!');
         end
         
-        yBM = cross(xBM,zBM);
+        yBM = cross(zBM,xBM);
         yBM = bsxfun(@rdivide,yBM,sqrt(sum(yBM.^2,1)));
         
         % matrix of incoming polarisation
@@ -166,9 +197,16 @@ for ii = 1:nTwin
         % Pab first dimension is in real space --> change to (Pfx,Pfy,Pfz) coordinate
         Pf = permute(Pi,[1 3 2]);
         % invPf converts (x,y,z) --> (Pfx,Pfy,Pfz) coordinates
+        % (x;y;z)_BM = invPf * (x;y;z)
         invPf = arrayfun(@(ii)(inv(Pf(:,:,ii))), 1:size(Pf,3),'UniformOutput',false);
         invPf = cat(3,invPf{:});
         % invPf: 3(Pfx,Pfy,Pfz) x 3(x,y,z) x 3(Pix,Piy,Piz) x nMode x nHkl
+        
+        % Convert Sab from (x,y,z) coordinates to (xBM,yBM,zBM) coordinates
+        % invPf * Sab * invPf'
+        invPfM = repmat(permute(invPf,[1 2 4 3]),[1 1 nMode 1]);
+        Mab    = mmat(mmat(invPfM,Sab),permute(invPfM,[2 1 3 4]));
+
         invPf = repmat(permute(invPf,[1 2 4 5 3]),[1 1 3 nMode 1]);
         
         % Pab : 3(Pfx,Pfy,Pfz) x 3(Pix,Piy,Piz) x nMode x nHkl
@@ -177,9 +215,11 @@ for ii = 1:nTwin
         
         % Convert Sab from (x,y,z) coordinates to (xBM,yBM,zBM) coordinates
         % convert (x,y,z) --> (Pfx,Pfy,Pfz)
-        Mab = permute(sum(invPf.*repmat(permute(Sab,[5 1 2 3 4]),[3 1 1 1 1]),2),[1 3 4 5 2]);
+        %Mab = permute(sum(invPf.*repmat(permute(Sab,[5 1 2 3 4]),[3 1 1 1 1]),2),[1 3 4 5 2]);
         % convert (x,y,z) --> (Pix,Piy,Piz)
-        Mab = permute(sum(invPf.*repmat(permute(Mab,[5 2 1 3 4]),[3 1 1 1 1]),2),[3 1 4 5 2]);
+        %Mab = permute(sum(invPf.*repmat(permute(Mab,[5 2 1 3 4]),[3 1 1 1 1]),2),[3 1 4 5 2]);
+        
+       
         % save all neutron cross sections in spectra
         spectra.intP{ii}  = intP;
         spectra.Pab{ii}   = Pab;
@@ -197,6 +237,10 @@ if nTwin == 1
     spectra.Sab   = spectra.Sab{1};
     spectra.Sperp = spectra.Sperp{1};
 end
+
+spectra.param.n   = n;
+spectra.param.uv  = param.uv;
+spectra.param.pol = param.pol;
 
 end
 

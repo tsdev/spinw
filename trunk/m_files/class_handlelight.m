@@ -1,4 +1,7 @@
 classdef class_handlelight < handle
+% CLASS_HANDLELIGHT is a temporary class, to hide useless methods
+%
+
     methods(Hidden)
         function lh = addlistener(varargin)
             lh = addlistener@handle(varargin{:});

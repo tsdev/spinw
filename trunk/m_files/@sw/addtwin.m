@@ -1,19 +1,40 @@
-function obj = addtwin(obj,varargin)
+function addtwin(obj,varargin)
 % adds new twins to an sw object
 %
-% obj = ADDTWIN(obj,'Option', Value,...)
+% ADDTWIN(obj,'Option', Value,...)
+%
+% Input:
+%
+% obj       sw class object.
 %
 % Options:
 %
 % axis      Defines axis of rotation to generate twins in the xyz
 %           coordinate system, dimensions are [1 3].
-% phi       Defines the angle of rotation to generte twins in radian,
-%           several twins can be defined parallel if phi is a vector.
-%           Dimensions are [1 nTwin].
+% phi       Defines the angle of rotation to generate twins in radian
+%           units, several twins can be defined parallel if phi is a
+%           vector. Dimensions are [1 nTwin].
+% phid      Defines the angle of rotation to generate twins in degree
+%           units, several twins can be defined parallel if phi is a
+%           vector. Dimensions are [1 nTwin].
 % rotC      Rotation matrices, that define crystallographic twins, can be
 %           given directly, dimensions are [3 3 nTwin].
-% vol       Volume fractions of the twins, dimensions are [1 nTwin] default
-%           value is ones(1,nTwin).
+% vol       Volume fractions of the twins, dimensions are [1 nTwin].
+%           Default value is ones(1,nTwin).
+%
+% Output:
+%
+% The function adds extra entries in the 'twin' field of the obj sw object.
+%
+% Example:
+%
+% ...
+% cryst.addtwin('axis',[0 0 1],'phid',[60 120],'vol',[1 1])
+%
+% This will add two extra crystallographic twins to the crystal, with the
+% original orientation there are will be three twins with equal volumes.
+%
+% See also SW, SW.TWINQ.
 %
 
 if nargin == 1
@@ -21,11 +42,15 @@ if nargin == 1
     return;
 end
 
-inpForm.fname  = {'axis'  'phi'  'rotC'   'vol' };
-inpForm.defval = {[0 0 0] 0      zeros(3) 1     };
-inpForm.size   = {[1 3]   [1 -1] [3 3 -2] [1 -3]};
+inpForm.fname  = {'axis'  'phi'  'rotC'   'vol'  'phid'};
+inpForm.defval = {[0 0 0] 0      zeros(3) 1      0     };
+inpForm.size   = {[1 3]   [1 -1] [3 3 -2] [1 -3] [1 -4]};
 
 param = sw_readparam(inpForm, varargin{:});
+
+if numel(param.phid)>1 || param.phid~=0
+    param.phi = param.phid *pi/180;
+end
 
 % prefer axis definition over matrix
 if any(param.axis)

@@ -12,6 +12,11 @@ function [handle] = sw_circlesurf(r0, n, R, N)
 % See also SW_CIRCLE, SW_CONE, SW_CYLINDER.
 %
 
+if nargin == 0
+    help sw_circlesurf;
+    return
+end
+
 if any(cross(n,[0; 0; 1]))
     a = cross(n,[0; 0; 1]);
 else

@@ -15,6 +15,11 @@ function cGraph = sw_fsub(conn, ~)
 % See also SW.ANNEAL.
 %
 
+if nargin == 0
+    help sw_fsub;
+    return
+end
+
 nEdge  = max(max(conn));
 cGraph = zeros(1,nEdge);
 

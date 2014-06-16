@@ -1,5 +1,5 @@
 function fitsp = fitspec(obj, varargin)
-% fits spin wave spectra to experimental data
+% fits spin wave spectra to experimental spectral data
 %
 % fitsp = FITSPEC(obj, 'Option1', Value1, ...)
 %
@@ -20,6 +20,25 @@ function fitsp = fitspec(obj, varargin)
 % xmax      Maximum limit of the optimisation parameters, optional.
 % x0        Starting value of the optimisation parameters. If empty
 %           or undefined, then random values are used.
+% nRun      Number of consecutive fitting runs, each result is saved in the
+%           output fitsp.x and R arrays. If the Hamiltonian given by the
+%           random x parameters is incompatible with the ground state,
+%           those x values will be skipped and new random x values will be
+%           generated. Default is 1.
+% nMax      Maximum number of runs, including the ones that produce error
+%           (due to incompatible ground state). Default is 1000.
+% hermit    Method for matrix diagonalization:
+%                  true      J.H.P. Colpa, Physica 93A (1978) 327, 
+%                  false     R.M. White, PR 139 (1965) A450.
+%           Colpa: the grand dynamical matrix is converted into another
+%                  Hermitian matrix, that will give the real eigenvalues.
+%           White: the non-Hermitian g*H matrix will be diagonalised,
+%                  that is not the elegant method.
+%           Advise: 
+%           Always use Colpa's method that is faster, except when small
+%           imaginary eigenvalues are expected. In this case only White's
+%           method work.
+%           Default is true.
 %
 % Optimisation options:
 %
@@ -32,18 +51,20 @@ function fitsp = fitspec(obj, varargin)
 %
 % Output:
 %
-% Output is struct type with the following fields:
-% obj       Copy of the input sw class object, with the fitted Hamiltonian.
-% x         Final values of the fitted parameters.
-% R         R-value, goodness of the fit.
+% Output fitsp is struct type with the following fields:
+% obj       Copy of the input sw class object, with the best fitted
+%           Hamiltonian.
+% x         Final values of the fitted parameters, dimensions are 
+%           [nRun nPar]. The rows of x are sorted according to increasing R
+%           values.
+% R         R-value, goodness of the fit, dimensions are [nRun 1], sorted
+%           in increasing order. 
 % exitflag  Exit flag of the fminsearch command.
 % output    Output of the fminsearch command.
 %
-% All other options be used that SPINWAVE or SWINC functions accept. For
-% the calculation of the spectra the SPINWAVE function is called, unless
-% the magnetic ordering wave vector is incommensurate.
+% Any option used by SW.SPINWAVE function are also accepted.
 %
-% See also SW.SWINC, SW.SPINWAVE, SW_CONV, SW_NEUTRON, SW_READSPEC, FMINSEARCH.
+% See also SW.SPINWAVE, SW_EGRID, SW_NEUTRON, SW_READSPEC, FMINSEARCH.
 %
 
 inpForm.fname  = {'epsilon' 'datapath' 'xmin'   'xmax'  'x0'    'func' 'plot'};
@@ -51,28 +72,35 @@ inpForm.defval = {1e-5      ' '        []       []      []      []     true  };
 inpForm.size   = {[1 1]     [1 -1]     [1 -3]   [1 -4]  [1 -5]  [1 1]  [1 1] };
 inpForm.soft   = {1         0          1        1       1       0      0     };
 
-inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'Evect'}];
-inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           []     }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 -6] }];
-inpForm.soft   = [inpForm.soft   {0      0        0             0      }];
+inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'Evect' 'nRun'}];
+inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           []      1     }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 -6]  [1 1] }];
+inpForm.soft   = [inpForm.soft   {0      0        0             0       0     }];
+
+inpForm.fname  = [inpForm.fname  {'nMax' 'hermit'}];
+inpForm.defval = [inpForm.defval {1e3    true    }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]   }];
+inpForm.soft   = [inpForm.soft   {0      0       }];
 
 param = sw_readparam(inpForm, varargin{:});
 
 % number of parameters (length of x)
 nPar = max(max(length(param.xmin),length(param.xmax)),length(param.x0));
+nRun = param.nRun;
 
 % Initial parameters are random if param.x0 is undefined.
 if ~isempty(param.x0)
-    x0 = param.x0;
-elseif isempty(param.xmax) && isempty(param.xmin)
-    x0 = rand(1,nPar);
-elseif isempty(param.xmax)
-    x0 = param.xmin + rand(1,nPar);
-elseif isempty(param.xmin)
-    x0 = param.xmax - rand(1,nPar);
-else
-    x0 = rand(1,nPar).*(param.xmax-param.xmin)+param.xmin;
+    nRun = 1;
 end
+% elseif isempty(param.xmax) && isempty(param.xmin)
+%     x0 = rand(nRun,nPar);
+% elseif isempty(param.xmax)
+%     x0 = repmat(param.xmin,[nRun 1]) + rand(nRun,nPar);
+% elseif isempty(param.xmin)
+%     x0 = repmat(param.xmax,[nRun 1]) - rand(nRun,nPar);
+% else
+%     x0 = bsxfun(@times,rand(nRun,nPar),(param.xmax-param.xmin))+repmat(param.xmin,[nRun 1]);
+% end
 
 % Read experimental data
 data = sw_readspec(param.datapath);
@@ -80,19 +108,63 @@ data = sw_readspec(param.datapath);
 param0      = param;
 param0.plot = false;
 
+x = zeros(nRun,nPar);
+R = zeros(nRun,1);
+%exitflag = zeros(nRun,1);
+%output   = struct;
 
-[x, ~, exitflag, output] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0,param.xmin,param.xmax,...
-    optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
+sw_status(0,1);
+
+idx = 1;
+idxAll = 1;
+
+while idx <= nRun
+    try
+        if ~isempty(param.x0)
+            x0 = param.x0;
+        elseif isempty(param.xmax) && isempty(param.xmin)
+            x0 = rand(1,nPar);
+        elseif isempty(param.xmax)
+            x0 = param.xmin + rand(1,nPar);
+        elseif isempty(param.xmin)
+            x0 = param.xmax - rand(1,nPar);
+        else
+            x0 = rand(1,nPar).*(param.xmax-param.xmin)+param.xmin;
+        end
+        
+        [x(idx,:), R(idx), exitflag(idx), output(idx)] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0,param.xmin,param.xmax,...
+            optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'),struct('hermit',param.hermit));
+        idx = idx + 1;
+    catch
+        warning('Hamiltonian is not compatible with the magnetic ground state!');
+        if ~isempty(param.x0)
+            error('sw:fitspec:WrongInput','x0 input incompatible with ground state!');
+        end
+        
+        if idxAll >= param.nMax
+            warning('sw:fitspec:WrongInput','Maximum number of wrong runs (param.nMax) reached, calculation is terminated!');
+            break;
+        end
+    end
+    idxAll = idxAll + 1;
+    sw_status(idx/nRun*100);
+end
+sw_status(100,2);
+
+% Sort results
+[R, sortIdx] = sort(R);
+x = x(sortIdx,:);
 
 % Draw plot of the final result if requested
 if param.plot
     figure;
     param0.plot = true;
+    % plot the best result if requested
+    sw_fitfun(obj, data, param.func, x(1,:), param0);
 end
 
-R = sw_fitfun(obj, data, param.func, x, param0);
-
-obj = param.func(obj,x);
+% set the best fit to the sw object
+obj = param.func(obj,x(1,:));
 
 % Store all output in a struct variable.
 fitsp.obj      = copy(obj);
@@ -103,7 +175,7 @@ fitsp.output   = output;
 
 end
 
-function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param)
+function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param,sw_param)
 % [R, pHandle] = SW_FITFUN(obj, data, param, swfunc, x) calculates the
 % agreement factor between simulated and measured data.
 %
@@ -111,9 +183,7 @@ function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param)
 %               Hamiltonian for the spin wave calculation.
 % data          Structure contains the experimental data, read by
 %               sw_readspec.
-% param         Paramters for the spin wave calculation (sw_swinc or
-%               sw_spinwave depending on whether the structure commensurate
-%               or incommensurate).
+% param         Paramters for the spinwave function.
 % swfunc        Function to change the Hamiltonian in obj, has the
 %               following form:
 %                   obj = swfunc(obj,x);
@@ -126,15 +196,7 @@ param.nPoints = 50;
 
 obj = parfunc(obj,x);
 
-nExt = double(obj.mag_str.N_ext);
-
-% Choose spin wave calculation code based on the ordering wave vector.
-kExt = obj.mag_str.k.*nExt;
-if any(abs(kExt-round(kExt))>param.epsilon)
-    swfunc = @obj.swinc;
-else
-    swfunc = @obj.spinwave;
-end
+%nExt = double(obj.mag_str.N_ext);
 
 % Number of different correlation functions measured.
 nConv = numel(dataCell);
@@ -148,11 +210,11 @@ for ii = 1:nConv
     data = dataCell{ii};
     
     % calculate spin-spin correlation function
-    spec = swfunc(data.Q,'fitmode',true);
+    spec = obj.spinwave(data.Q,'fitmode',true,'fid',0,'hermit',sw_param.hermit);
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy
-    spec = sw_conv(spec,'convmode',data.corr,'Evect',param.Evect);
+    spec = sw_egrid(spec,'component',data.corr,'Evect',param.Evect);
     
     nQ = size(data.Q,2);
     pHandle = [];
@@ -169,16 +231,20 @@ for ii = 1:nConv
         idx       = idx(1:sim.nMode);
         sim.I     = swConv(idx);
         sim.E     = Evect(idx);
+        % sort calculated magnon energies in increasing order
+        [sim.E, idx2] = sort(sim.E);
+        sim.I     = sim.I(idx2);
         
         data.Eii  = data.E(1:data.nii,jj)';
         data.Iii  = data.I(1:data.nii,jj)';
         data.wii  = data.w(1:data.nii,jj)';
-        
+
         simVect   = [repmat(data.minE(jj),[1 data.nii]) sim.E repmat(data.maxE(jj),[1 data.nii])];
         
         nSlip     = (data.nii+sim.nMode+1);
         d = zeros(1,nSlip);
         for kk = 1:nSlip
+            % R-value calculated as width(Data)*(E(simulation)-E(Data))^2
             d(kk) = sum(data.wii.*(simVect((1:data.nii)+kk-1)-data.Eii).^2);
         end
         R = R + min(d);

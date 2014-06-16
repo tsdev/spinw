@@ -1,14 +1,16 @@
 function varargout = field(obj,varargin)
 % get/set magnetic field value
 %
-% {obj} = SW.FIELD(obj, B)
+% SW.FIELD(obj, B)
 %
 % If B is defined, it sets the magnetic field stored in sw object to B,
 % where B is a 1x3 vector.
 %
-% B = SW.FIELD
+% B = FIELD(obj)
 %
-% It returns the actual B field value.
+% The function returns the current B field value stored in obj.
+%
+% See also SW, SW.TEMPERATURE.
 %
 
 if nargin == 1
@@ -16,11 +18,21 @@ if nargin == 1
 elseif nargin == 2
     B = varargin{1};
     if numel(B) == 3
-        obj.single_ion.field = B(:)';
+        if obj.symbolic
+            if isa(B,'sym')
+                obj.single_ion.field = B(:)';
+            else
+                obj.single_ion.field = B(:)'*sym('B','real');
+            end
+        else
+            obj.single_ion.field = B(:)';
+        end
     else
         error('sw:magfield:ArraySize','Input magnetic field has to be a 3 element vector!');
     end
-    varargout{1} = obj;
+    if nargout > 0
+        varargout{1} = obj;
+    end
 end
 
-end % .magfield
+end % .field

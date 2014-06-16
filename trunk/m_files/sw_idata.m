@@ -20,6 +20,10 @@ function [omega, swConv] = sw_idata(spectrum, varargin)
 %               for Q and E.
 %
 
+if nargin == 0
+    help sw_idata;
+    return;
+end
 
 inpForm.fname  = {'fwhmE' 'fwhmQ' 'nInterp'};
 inpForm.defval = {0.1     0.01    1        };

@@ -1,36 +1,81 @@
-function obj = gencoupling(obj, varargin)
+function gencoupling(obj, varargin)
 % generates the COUPLING property of sw object
 %
-% obj = GENCOUPLING(obj, 'option1', value, ...)
+% GENCOUPLING(obj, 'option1', value, ...)
 %
-% It calculates the shortest distances between magnetic ions and sort them
-% according to increasing distance. Two couplings are regarded to be
-% equivalent if the interion distances are equal within a defined
-% tolerance. This function should be called after the lattice and atomic
-% positions are defined.
+% The function calculates equivalent bonds between magnetic atoms. These
+% are determined either based on crystal symmetry or bond length (with
+% tolDist tolerance). If the space group index of 0 is defined
+% (obj.lattice.sym=0), the equivalent bonds will be based on bond length.
+% For space group index larger than 0, the symmetry equivalent bonds will
+% be determined. This can ve overwritten by the forceNoSym parameter to
+% consider bond length.
+%
+% IMPORTANT!
+%   This function has to be used after the crystal structure is defined.
+%   The SW.ADDCOUPLING, SW.COUPLINGTABLE functions will only work
+%   afterwards.
+%
+% Input:
+%
+% obj           sw class object.
 %
 % Options:
 %
-% sym           If true, simmetry equivalent pairs of atoms are calculated.
-%               If false, equivalent pairs will be identified based on
-%               distance. Default is false.
-% nUnitCell     Edge length of the parallelepiped withing the
-%               algorithm searches for neares neighbours in lattice
-%               units. Default is 3.
-% maxDistance   Maximum inter-ion distance that will be stored in the
-%               obj.coupling property in units of Angstrom. Default
-%               is 6.
-% tolDistance   Tolerance of distance, within two couplings are regarded
-%               equivalent, default is 1e-5.
+% forceNoSym    If true, equivalent bonds are generated based on
+%               bond length with .tolDist tolerance. If false symmetry
+%               operators will be used if they are given
+%               (obj.lattice.sym>0).
+% nUnitCell     Edge length of the parallelepiped (same along a,b and c)
+%               withing the algorithm searches for neares neighbours in
+%               lattice units. Default is 3.
+% maxDistance   Maximum bond length that will be stored in the
+%               obj.coupling property in units of Angstrom. Default is 8.
+% maxBond       Maximum number of generated inequivalent bonds. If
+%               zero, maxDistance is considered to limit the longest
+%               bond. Default is zero.
+% tolDist       Tolerance of distance, within two bonds are regarded
+%               equivalent, default is 1e-3 Angstrom. Only used, when no
+%               space group is defined.
+% dMin          Minimum bond length, below which an error is triggered.
+%               Default value is 0.5 Angstrom.
 %
-% See also SW.
+% Output:
+%
+% The obj.coupling field will be filled with values, depending on the
+% crystal geometry.
+%
+% Example:
+%
+% cryst = sw;
+% cryst.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
+% cryst.addatom('r',[0 0 0])
+% cryst.gencoupling
+% cryst.couplingtable(1:3)
+%
+% A triangular lattice is created in cryst and after using gencoupling()
+% the couplingtable() function lists the 1st, 2nd and 3rd neighbor bonds.
+%
+% See also SW, SW.SYMMETRY, SW.NOSYM.
 %
 
-inpForm.fname  = {'sym' 'nUnitCell' 'maxDistance' 'tolDistance'};
-inpForm.defval = {false 3           6             1e-5         };
-inpForm.size   = {[1 1] [1 1]       [1 1]         [1 1]        };
+isSym = obj.lattice.sym > 0;
+
+inpForm.fname  = {'forceNoSym' 'nUnitCell' 'maxDistance' 'tol' 'tolDist' 'dMin' 'maxBond'};
+inpForm.defval = {false        3           8             1e-5  1e-3      0.5    0        };
+inpForm.size   = {[1 1]        [1 1]       [1 1]         [1 1] [1 1]     [1 1]  [1 1]    };
 
 param = sw_readparam(inpForm, varargin{:});
+tol   = param.tol;
+tolD  = param.tolDist;
+
+% force no symmetry operator mode
+if param.forceNoSym
+    isSym = false;
+end
+
+% save the sym/nosym method into obj
+obj.sym = isSym;
 
 % Number of unit cells along any direction to find nearest neighbours.
 nUnitCell = param.nUnitCell;
@@ -81,14 +126,8 @@ if nMagAtom > 0
     
     % Number of elements in the neighbour list.
     nDist = size(atIndex,2)*nMagAtom + nMagAtom*(nMagAtom-1)/2;
-    
-    coupling.dist    = zeros(1,nDist);
-    coupling.dl      = zeros(3,nDist);
-    coupling.atom1   = zeros(1,nDist);
-    coupling.atom2   = zeros(1,nDist);
-    coupling.mat_idx = zeros(3,nDist);
-    coupling.idx     = zeros(1,nDist);
-    
+    % matrix stores [dlx dly dlz matom1 matom2 idx atom1 atom2 cx cy cz dist dx dy dz]
+    sortM = zeros(7,nDist);
     
     % Atomic position [Angstrom] of the magnetic atoms.
     atcoords       = obj.basisvector*atPos;
@@ -98,10 +137,10 @@ if nMagAtom > 0
     index=1;
     for ii=1:nMagAtom
         for jj=1:nHalfCube
-            coupling.dist(index)  = norm(basis_atcoords(:,ii)-atcoords(:,jj));
-            coupling.dl(:,index)  = atTr(:,jj);
-            coupling.atom1(index) = ii;
-            coupling.atom2(index) = atIndex(jj);
+            sortM(7,index)  = norm(basis_atcoords(:,ii)-atcoords(:,jj));
+            sortM(1:3,index) = atTr(:,jj);
+            sortM(4,index)   = ii;
+            sortM(5,index)   = atIndex(jj);
             index = index+1;
         end
     end
@@ -109,71 +148,103 @@ if nMagAtom > 0
     % Couplings inside origin unit cell.
     for ii=1:(nMagAtom-1)
         for jj=(ii+1):nMagAtom
-            coupling.dist(index)  = norm(basis_atcoords(:,ii)-basis_atcoords(:,jj));
-            coupling.dl(:,index)  = [0 0 0];
-            coupling.atom1(index) = ii;
-            coupling.atom2(index) = jj;
+            sortM(7,index)   = norm(basis_atcoords(:,ii)-basis_atcoords(:,jj));
+            sortM(1:3,index) = [0 0 0];
+            sortM(4,index)   = ii;
+            sortM(5,index)   = jj;
             index = index+1;
         end
     end
+    % sort according to distance and cut away large distances
+    sortM = sortrows(sortM(:,sortM(7,:)<=param.maxDistance)',7)';
     
-    [~, newindex]  = sort(coupling.dist);
-    coupling.dist  = coupling.dist(newindex);
-    coupling.dl    = coupling.dl(:,newindex);
-    coupling.atom1 = coupling.atom1(newindex);
-    coupling.atom2 = coupling.atom2(newindex);
+    % Finds the equivalent distances and index them in coupling.idx
+    sortM(6,:) = cumsum([1 (sortM(7,2:end)-sortM(7,1:(end-1))) > tolD]);
     
-    % Clear couplings larger than maxDistance [Angstrom].
-    index = coupling.dist<param.maxDistance;
-    coupling.dist    = coupling.dist(index);
-    coupling.dl      = int32(coupling.dl(:,index));
-    coupling.atom1   = int32(coupling.atom1(index));
-    coupling.atom2   = int32(coupling.atom2(index));
-    coupling.idx     = int32(coupling.idx(index));
-    coupling.mat_idx = int32(coupling.mat_idx(:,index));
-    
-    % New number of couplings.
-    nDist = size(coupling.dist,2);
-    
-    % Finds the equivalent distances.
-    runVal = coupling.dist(1);
-    
-    index = 1;
-    for ii=1:nDist
-        if abs(coupling.dist(ii)-runVal)>param.tolDistance
-            index = index+1;
-            runVal = coupling.dist(ii);
-        end
-        coupling.idx(ii) = index;
+    % check whether some atoms are too close
+    if sortM(7,1)<param.dMin
+        error('sw:gencoupling:AtomPos',['Some atoms are too close (Dmin=' num2str(sortM(7,1)) '<' num2str(param.dMin) '), check your crystal structure!']);
     end
     
-    aniso = int32(zeros(1,nMagAtom));
     % symmetry equivalent couplings
-    if param.sym
-        sortM = double([coupling.idx; mAtom.idx(coupling.atom1); mAtom.idx(coupling.atom2)]');
-        sortM(:,2:3) = sort(sortM(:,2:3),2);
-        sortM = sortrows(sortM,1:3);
-        sortM = sum(bsxfun(@times,sortM, [1e6 1e3 1]),2);
-        sortM = [1; cumsum(sortM(2:end)~=sortM(1:end-1))+1];
-        coupling.idx = int32(sortM');
+    if isSym
+        % get the symmetry operators
+        [symOp, symTr] = sw_gencoord(obj.lattice.sym);
+        % store the final sorted couoplings in newM
+        newM = zeros(6,0);
+        ii  = 1;
+        idx = 1;
+        while (ii <= max(sortM(6,:)))
+            % select columns from sorM with a certain idx value
+            sortMs = sortM(:,sortM(6,:) == ii);
+            while (size(sortMs,2)>0)
+                [genC, unC] = sw_gensymcoupling(obj, sortMs(:,1), {symOp, symTr}, tol, true);
+                genCAll = [genC [-genC(1:3,:);genC([5 4],:)]];
+                % remove from sortMs the identical couplings
+                iNew = isnew(genCAll(1:5,:),sortMs(1:5,:),tol);
+                sortMs(:,~iNew) = [];
+                % remove identical couplings from the symmetry generated
+                % list
+                genC(:,~unC) = [];
+                if sum(~iNew) ~= sum(unC)
+                    error('sw:gencoupling:SymProblem','Symmetry error! ii=%d, idx=%d. Try to change ''tol'' parameter.',ii,idx);
+                end
+                % move the non-unique (not new) couplings (symmetry equivalent ones)
+                newM = [newM [genC;ones(1,size(genC,2))*idx]]; %#ok<AGROW>
+                idx  = idx + 1;
+            end
+            ii = ii + 1;
+        end
+    else
+        newM = sortM;
     end
+    
+    % cut the number of bonds
+    if param.maxBond > 0
+        newM = newM(:,newM(6,:)<=param.maxBond);
+    end
+    % default anisotropy and g-tensor values
+    aniso = int32(zeros(1,nMagAtom));
+    g     = int32(zeros(1,nMagAtom));
+    
 else
     % If there is no magnetic atom the coupling and anisotropy are empty.
-    coupling.dist    = [];
-    coupling.dl      = int32(zeros(3,0));
-    coupling.atom1   = int32(zeros(1,0));
-    coupling.atom2   = int32(zeros(1,0));
-    coupling.mat_idx = int32(zeros(3,0));
-    coupling.idx     = int32(zeros(1,0));
-    
-    aniso            = int32(zeros(1,0));
+    newM  = zeros(7,0);
+    aniso = int32(zeros(1,0));
+    g     = int32(zeros(1,0));
     
 end
 
-coupling             = rmfield(coupling,'dist');
+coupling.dl      = int32(newM(1:3,:));
+coupling.atom1   = int32(newM(4,:));
+coupling.atom2   = int32(newM(5,:));
+coupling.idx     = int32(newM(6,:));
+coupling.mat_idx = int32(zeros(3,size(coupling.idx,2)));
+
 obj.coupling         = coupling;
 obj.single_ion.aniso = aniso;
+obj.single_ion.g     = g;
 
 validate(obj);
+
+end
+
+
+function [isnew, symIdx] = isnew(A,B, tol)
+% selects the new vectors from B. Dimensions of A and B have to be [3 nA]
+% and [3 nB] respectively.
+% A vector in B is considered new, if d(mod(vA-vB,1))<tol.
+%
+
+nA = size(A,2);
+nB = size(B,2);
+
+notequal = sum(abs(repmat(permute(A,[2 3 1]),[1 nB 1]) - repmat(permute(B,[3 2 1]),[nA 1 1])).^2,3) > tol;
+
+isnew = all(notequal,1);
+
+idx = 1:nB;
+
+symIdx = arrayfun(@(idx)find(~notequal(:,idx),1,'first'),idx(~isnew));
 
 end

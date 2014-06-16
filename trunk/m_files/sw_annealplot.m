@@ -1,14 +1,19 @@
-function sw_annealplot(T, E, rate, param)
-% SW_ANNEALPLOT(T, E, rate, param) displays information about the annealing
+function sw_annealplot(T, E, rate, param,fid)
+% SW_ANNEALPLOT(T, E, rate, param,fid) displays information about the annealing
 % procedure.
 %
+
+if nargin == 0
+    help sw_annealplot;
+    return
+end
 
 if  (param.verbosity > 0) && ~any(any(E))
     tic;
     dateStr = date;
     clockV  = clock;
     timeStr = sprintf('%02d:%02d:%02d',floor(clockV(4:6)));
-    fprintf('Starting time: %s %s.\n',dateStr,timeStr);
+    fprintf0(fid,'Starting time: %s %s.\n',dateStr,timeStr);
 end
 
 if (param.verbosity > 0) && ~isempty(E)
@@ -16,11 +21,11 @@ if (param.verbosity > 0) && ~isempty(E)
     % Display current temperature, system energy, acceptance rate and number of
     % steps per temperature per spin.
     if size(E,2) == 1
-        fprintf('  T = %11.6f, E = %10.5f per moment, acc\\rej=%10.5f, Steps=%6d, Time=%10.3f s\n',T(end),...
+        fprintf0(fid,'  T = %11.6f, E = %10.5f per moment, acc\\rej=%10.5f, Steps=%6d, Time=%10.3f s\n',T(end),...
             E(end),sum(rate)/length(rate),param.nMC,MCTime);
     else
         % Output for parallel tempering.
-        fprintf('  Time=%7.0f s\n',MCTime*param.nCycle);
+        fprintf0(fid,'  Time=%7.0f s\n',MCTime*param.nCycle);
     end
     
     if param.verbosity > 1
@@ -106,7 +111,7 @@ if (param.verbosity > 0) && ~isempty(E)
         dateStr = date;
         clockV  = clock;
         timeStr = sprintf('%02d:%02d:%02d',floor(clockV(4:6)));
-        fprintf('End time: %s %s.\n',dateStr,timeStr);
+        fprintf0(fid,'End time: %s %s.\n',dateStr,timeStr);
     end
     
 end

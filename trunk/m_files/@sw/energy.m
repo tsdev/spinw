@@ -16,15 +16,18 @@ function  E = energy(obj, varargin)
 % is equivalent to the crystallographic unit cell, this is equivalent to
 % the standard definition of the k vector.
 %
+% Input:
+%
+% obj       sw class object.
+%
 % Options:
 %
-% epsilon       The smalles value of incommensurability that is tolerated
-%               without warning. Default is 1e-5.
+% epsilon   The smallest value of incommensurability that is tolerated 
+%           without warning. Default is 1e-5.
 %
 % Output:
 %
-% E             Energy per moment (anisotropy, exchange and Zeeman
-%               energy).
+% E         Energy per moment (anisotropy, exchange and Zeeman energy).
 %
 %
 % WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
@@ -41,6 +44,16 @@ function  E = energy(obj, varargin)
 %
 % WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 %
+% Example:
+%
+% ...
+% cryst.optmagstr('nRun',10)
+% E = cryst.energy
+%
+% After optimising the magnetic structure (by minimizing the ground state 
+% energy), the energy per spin is calculated. This can be compared to
+% different ground state structures to decide which is the right classical
+% ground state of the magnetic model in cryst.
 %
 % See also SW, SW.ANNEAL, SW.EXTENDLATTICE.
 %
@@ -59,39 +72,46 @@ kExt = obj.mag_str.k.*nExt;
 % Incommenasurate structure in the extended unit cell.
 incomm = any(abs(kExt-round(kExt))>param.epsilon);
 
-% Anisotropy energy can be wrong.
-if  incomm && (any(any(any((SI.aniso)))) || (any(SI.field)))
-    warning('sw:energy:AnisoFieldIncomm','The calculated energy might be wrong due to incommensurate structure!');
-end
-
 M0      = obj.mag_str.S;
 nMagExt = size(M0,2);
 
-dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
-atom1 = [SS.all(4,:)   1:nMagExt];
-atom2 = [SS.all(5,:)   1:nMagExt];
-JJ    = cat(3,reshape(SS.all(6:end,:),3,3,[]),SI.aniso);
-
-M1 = M0(:,atom1);
-M2 = M0(:,atom2);
-
-% For incommensurate structures in the extended unit cell rotates M2
-% moments.
-if incomm && any(any(dR))
-    n = obj.mag_str.n;
-    dRIdx = find(any(dR));
-    for ii = 1:length(dRIdx)
-        M2(:,dRIdx(ii)) = sw_rot(n, kExt*dR(:,dRIdx(ii))*2*pi, M2(:,dRIdx(ii)));
-    end   
+% Anisotropy energy can be wrong.
+if  incomm && (any(any(any((SI.aniso)))) || (any(SI.field)) || (any(any(any(abs(SI.g-SI.g(1)*repmat(eye(3),[1 1 nMagExt]))>param.epsilon)))))
+    warning('sw:energy:AnisoFieldIncomm','The calculated energy might be wrong due to incommensurate structure!');
 end
 
-Ml = repmat(permute(M1,[1 3 2]),[1 3 1]);
-Mr = repmat(permute(M2,[3 1 2]),[3 1 1]);
+if nMagExt>0
 
-exchE   =  sum(sum(sum(Ml.*JJ.*Mr)));
-ZeemanE = -sum(SI.field*M0*obj.unit.gamma);
-
-% energy per spin
-E = (exchE + ZeemanE)/nMagExt;
+    dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
+    atom1 = [SS.all(4,:)   1:nMagExt];
+    atom2 = [SS.all(5,:)   1:nMagExt];
+    JJ    = cat(3,reshape(SS.all(6:end,:),3,3,[]),SI.aniso);
+    
+    M1 = M0(:,atom1);
+    M2 = M0(:,atom2);
+    
+    % For incommensurate structures in the extended unit cell rotates M2
+    % moments.
+    if incomm && any(any(dR))
+        n = obj.mag_str.n;
+        dRIdx = find(any(dR));
+        for ii = 1:length(dRIdx)
+            M2(:,dRIdx(ii)) = sw_rot(n, kExt*dR(:,dRIdx(ii))*2*pi, M2(:,dRIdx(ii)));
+        end
+    end
+    
+    Ml = repmat(permute(M1,[1 3 2]),[1 3 1]);
+    Mr = repmat(permute(M2,[3 1 2]),[3 1 1]);
+    
+    exchE   =  sumsym(sumsym(sumsym(Ml.*JJ.*Mr,3),2),1);
+    ZeemanE = -sumsym(SI.field*permute(mmat(SI.g,permute(M0,[1 3 2])),[1 3 2]),2)*obj.unit.muB;
+    
+    % energy per spin
+    E = (exchE + ZeemanE)/nMagExt;
+    
+else
+    % for undefined magnetic structure, energy returns NaN
+    E = NaN;
+end
 
 end

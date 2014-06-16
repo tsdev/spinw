@@ -1,0 +1,167 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>How to produce constant energy cut of spin wave spectrum?</title><meta name="generator" content="MATLAB 8.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-06-13"><meta name="DC.source" content="tutorial10.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>How to produce constant energy cut of spin wave spectrum?</h1><!--introduction--><p>This example shows how to calculate the spin wave spectrum of the square lattice Heisenberg antiferromagnet and to produce a constant energy cut of the spectrum.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Crystal &amp; magnetic structure</a></li><li><a href="#2">Spin wave</a></li><li><a href="#4">Spin wave spectrum</a></li><li><a href="#8">Plotting E=const cut</a></li></ul></div><h2>Crystal &amp; magnetic structure<a name="1"></a></h2><p>Using sw_model, the crystal and magnetic structure are readily available. Using the 'squareAF' option, a square lattice Heisenberg Antiferromagnet with S = 1 and J = 1 is created.</p><pre class="codeinput">sq = sw_model(<span class="string">'squareAF'</span>,1,0);
+plot(sq)
+</pre><img vspace="5" hspace="5" src="tutorial10_01.png" alt=""> <h2>Spin wave<a name="2"></a></h2><p>We need to define a grid in reciprocal space, here we use the (Qh, Qk, 0) square lattice plane by calling ndgrid() function.</p><pre class="codeinput">nQ = 101;
+nE = 200;
+Qhv = linspace(0,2,nQ);
+Qkv = linspace(0,2,nQ);
+Qlv = 0;
+[Qh, Qk, Ql] = ndgrid(Qhv,Qkv,Qlv);
+</pre><p>Create a list of Q point, with dimensions of [3 nQ^2].</p><pre class="codeinput">Q = [Qh(:) Qk(:) Ql(:)]';
+</pre><h2>Spin wave spectrum<a name="4"></a></h2><pre class="codeinput"><span class="comment">% We calculates the spin wave spectrum at the list of Q points.</span>
+spec = sq.spinwave(Q);
+</pre><p>Creates a grid along energy for color plot. The trace of the spin-spin correlation function (diagonal sum) will be plotted.</p><pre class="codeinput">Ev = linspace(0,5,nE);
+spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>,<span class="string">'Evect'</span>,Ev);
+</pre><p>Introduce a finite energy resolution in the spectru.</p><pre class="codeinput">spec = sw_instrument(spec,<span class="string">'dE'</span>,0.3,<span class="string">'ki'</span>,1e4);
+</pre><p>The calculated intensity map is stored in spec.swConv, we reshape it into a 3D matrix.</p><pre class="codeinput">spec3D = reshape(spec.swConv,nE,nQ,nQ);
+</pre><h2>Plotting E=const cut<a name="8"></a></h2><p>A constant energy cut takes the (Eidx,:,:) elements of the matrix and plots it using the Matlab function imagesc().</p><pre class="codeinput">Ecut = 3; <span class="comment">%meV</span>
+Eidx = find(abs(Ev-Ecut)==min(abs(Ev-Ecut)));
+figure;
+imagesc(Qhv,Qkv,squeeze(spec3D(Eidx,:,:)));
+set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>)
+xlabel(<span class="string">'(H 0 0) (r.l.u.)'</span>)
+ylabel(<span class="string">'(0 K 0) (r.l.u.)'</span>)
+title(<span class="string">'Spin wave spectrum at E = 3 meV, square lattice Heisenberg AF'</span>)
+caxis([0 12000])
+colormap <span class="string">jet</span>
+</pre><img vspace="5" hspace="5" src="tutorial10_02.png" alt=""> <pre>Written by
+Sandor Toth
+06-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% How to produce constant energy cut of spin wave spectrum?
+% This example shows how to calculate the spin wave spectrum of the square
+% lattice Heisenberg antiferromagnet and to produce a constant energy cut
+% of the spectrum.
+
+%% Crystal & magnetic structure
+% Using sw_model, the crystal and magnetic structure are readily available.
+% Using the 'squareAF' option, a square lattice Heisenberg Antiferromagnet
+% with S = 1 and J = 1 is created.
+
+sq = sw_model('squareAF',1,0);
+plot(sq)
+
+%% Spin wave
+% We need to define a grid in reciprocal space, here we use the (Qh, Qk, 0)
+% square lattice plane by calling ndgrid() function.
+
+nQ = 101;
+nE = 200;
+Qhv = linspace(0,2,nQ);
+Qkv = linspace(0,2,nQ);
+Qlv = 0;
+[Qh, Qk, Ql] = ndgrid(Qhv,Qkv,Qlv);
+
+%%
+% Create a list of Q point, with dimensions of [3 nQ^2].
+Q = [Qh(:) Qk(:) Ql(:)]';
+
+%% Spin wave spectrum
+
+% We calculates the spin wave spectrum at the list of Q points.
+spec = sq.spinwave(Q);
+
+%%
+% Creates a grid along energy for color plot. The trace of the spin-spin
+% correlation function (diagonal sum) will be plotted.
+
+Ev = linspace(0,5,nE);
+spec = sw_egrid(spec,'component','Sxx+Syy+Szz','Evect',Ev);
+
+%%
+% Introduce a finite energy resolution in the spectru.
+spec = sw_instrument(spec,'dE',0.3,'ki',1e4);
+
+%%
+% The calculated intensity map is stored in spec.swConv, we reshape it into
+% a 3D matrix.
+
+spec3D = reshape(spec.swConv,nE,nQ,nQ);
+
+%% Plotting E=const cut
+% A constant energy cut takes the (Eidx,:,:) elements of the matrix and
+% plots it using the Matlab function imagesc().
+
+Ecut = 3; %meV
+Eidx = find(abs(Ev-Ecut)==min(abs(Ev-Ecut)));
+figure;
+imagesc(Qhv,Qkv,squeeze(spec3D(Eidx,:,:)));
+set(gca,'YDir','normal')
+xlabel('(H 0 0) (r.l.u.)')
+ylabel('(0 K 0) (r.l.u.)')
+title('Spin wave spectrum at E = 3 meV, square lattice Heisenberg AF')
+caxis([0 12000])
+colormap jet
+
+%%
+%  Written by
+%  Sandor Toth
+%  06-June-2014
+##### SOURCE END #####
+--></body></html>

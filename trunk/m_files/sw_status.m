@@ -7,12 +7,12 @@ function sw_status(percent,varargin)
 % percent   Percentage of the calculation that is done.
 % mode      Determines the time estimation, optional parameter:
 %               1   Starts the time estimation.
-%               0 	Displays of the remaining time. (default)
-%               2 	Calculation finished.
+%               0   Displays of the remaining time. (default)
+%               2   Calculation finished.
 %
 
 if nargin == 0
-    doc sw_status;
+    help sw_status;
     return;
 end
 

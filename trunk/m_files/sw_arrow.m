@@ -11,21 +11,25 @@ function [handle] = sw_arrow(rStart, rEnd, R, alpha, lHead, N)
 % N       Number of the points of the surface mesh.
 %
 
+if nargin == 0
+    help sw_arrow;
+    return
+end
+
 rStart = rStart(:);
 rEnd   = rEnd(:);
 
 alpha    = alpha *pi/180;
 end_head = rStart+(1-lHead/norm(rEnd-rStart))*(rEnd-rStart);
 R_head   = lHead * tan(alpha);
-handle   = zeros(4,1);
 
 %body
-handle(1) = sw_cylinder(rStart,end_head+1e-2*(rEnd-rStart),R,N);
+handle = sw_cylinder(rStart,end_head+1e-2*(rEnd-rStart),R,N,0);
 %annulus for head
-handle(2) = sw_circlesurf(end_head, rEnd-rStart, R_head, N);
+handle(end+1) = sw_circlesurf(end_head, rEnd-rStart, R_head, N);
 %cone for head
-handle(3) = sw_cone(end_head, rEnd, R_head, N);
+handle(end+1) = sw_cone(end_head, rEnd, R_head, N);
 %closing the begin of body
-handle(4) = sw_circlesurf(rStart, rEnd-rStart, R, N);
+handle(end+1) = sw_circlesurf(rStart, rEnd-rStart, R, N);
 
 end

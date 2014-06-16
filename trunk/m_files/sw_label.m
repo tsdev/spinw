@@ -3,6 +3,11 @@ function [xLabel, xAxis] = sw_label(spectra)
 % the x-axis for momentum transfer scans linear in reciprocal space.
 %
 
+if nargin == 0
+    help sw_label;
+    return;
+end
+
 hkl = spectra.hkl';
 hklA = spectra.hklA';
 
@@ -48,7 +53,7 @@ switch linescan
         inA = sqrt(sum(((spectra.hklA(:,1) - spectra.hklA(:,end)).^2)))/abs(xAxis(end)-xAxis(1));
         xiLabel = cell(1,3);
         for ii = 1:3
-            if abs(k0(ii)) > 1e-3
+            if abs(k0(ii)) > 1e-5
                 if abs(dk(ii)) > 1e-3
                     if abs(dk(ii)-1)<1e-3
                         xiLabel{ii} = sprintf('%.4g+\\xi',k0(ii));

@@ -1,9 +1,15 @@
 function sym = sw_addsym(symStr, symName)
 % sym = SW_ADDSYM(symStr, {symName}) saves the symmetry generators in
-% symStr into the symmetry.dat file and returns the number of the space
-% group.
+% symStr into the symmetry.dat file and returns the line number of the
+% space group in the symmetry.dat file.
 %
-% See also SW_GENSYM.
+% Input:
+% symStr        String, that contains the operators of the space group. If
+%               not only the generators are given, a possible set of
+%               generators will be determined and only those will be saved.
+% symName       Label for the space group.
+%
+% See also SW_GENSYM, SW_SYMGETGEN.
 %
 
 if nargin == 0
@@ -29,9 +35,25 @@ if nargin == 1
     symName = ['sym' num2str(nLines+1)];
 end
 
+% determine the symmetry generators
+[symOp, symTr] = sw_gensym(symName, symStr);
+[~, ~, isG] = sw_symgetgen(symOp, symTr);
+% parse the input string
+idx = 1;
+parStr = {};
+while ~isempty(symStr)
+    [parStr{idx}, symStr] = strtok(symStr,';'); %#ok<STTOK,AGROW>
+    idx = idx + 1;
+end
+parStr = parStr(isG);
+parStr = parStr(:)';
+parStr = [parStr; repmat({';'},1,numel(parStr))];
+symStrG = [parStr{:}];
+symStrG = symStrG(1:end-1);
+
 % Write the file
 fid = fopen(symPath,'a');
-fprintf(fid,'\n%4d  %-11s: %s',nLines+1,symName,symStr);
+fprintf(fid,'\n%4d  %-11s: %s',nLines+1,symName,symStrG);
 fclose(fid);
 
 sym = nLines + 1;

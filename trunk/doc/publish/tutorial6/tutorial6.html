@@ -1,0 +1,295 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>tutorial6</title><meta name="generator" content="MATLAB 8.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-06-13"><meta name="DC.source" content="tutorial6.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Ferromagnetic kagome lattice</a></li><li><a href="#2">Define Hamiltonian</a></li><li><a href="#3">Magnetic structure</a></li><li><a href="#4">Spin wave dispersion</a></li><li><a href="#5">Powder averaged spectrum</a></li></ul></div><h2>Ferromagnetic kagome lattice<a name="1"></a></h2><p>We create the kagome lattice with up to 4th neighbor interactions. The symmetry related atoms are denoted by MCu1(i)_j, where i is the index of independent atomic positions, j is the index of the generated atomic positions of the i-th independent position.</p><pre class="codeinput">kagome4 = sw;
+kagome4.fileid(0)
+kagome4.genlattice(<span class="string">'lat_const'</span>,[6 6 40],<span class="string">'angled'</span>,[90 90 120],<span class="string">'sym'</span>,<span class="string">'P -3'</span>);
+kagome4.addatom(<span class="string">'r'</span>, [1/2 0 0],<span class="string">'S'</span>, 1,<span class="string">'label'</span>,<span class="string">'MCu1'</span>,<span class="string">'color'</span>,<span class="string">'r'</span>);
+display(<span class="string">'Atomic positions as columns:'</span>)
+kagome4.atom.r
+plot(kagome4)
+</pre><pre class="codeoutput">Atomic positions as columns:
+
+ans =
+
+    0.5000         0    0.5000
+         0    0.5000    0.5000
+         0         0         0
+
+</pre><img vspace="5" hspace="5" src="tutorial6_01.png" alt=""> <h2>Define Hamiltonian<a name="2"></a></h2><p>We add couplings up to 4th neighbor interactions. If the generation of the bond tables would depend on distance, J3 and Jd would be equivalent. However using the 'P -3' space group the two type of bonds are inequivalent, as physically expected in real systems (J3 goes through an intermediate magnetic atom, while Jd is not).</p><pre class="codeinput">kagome4.gencoupling(<span class="string">'maxDistance'</span>,7);
+display(<span class="string">'Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3'</span>)
+kagome4.couplingtable.table
+kagome4.coupling
+display(<span class="string">'Bond vectors (first three rows) and bond distances'</span>)
+kagome4.couplingtable.bondv
+
+kagome4.addmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>,<span class="string">'value'</span>,-1.00,<span class="string">'color'</span>,<span class="string">'g'</span>)
+kagome4.addmatrix(<span class="string">'label'</span>,<span class="string">'J2'</span>,<span class="string">'value'</span>, 0.10,<span class="string">'color'</span>,<span class="string">'r'</span>)
+kagome4.addmatrix(<span class="string">'label'</span>,<span class="string">'J3-'</span>,<span class="string">'value'</span>, 0.00,<span class="string">'color'</span>,<span class="string">'orange'</span>)
+kagome4.addmatrix(<span class="string">'label'</span>,<span class="string">'Jd'</span>,<span class="string">'value'</span>, 0.17,<span class="string">'color'</span>,<span class="string">'b'</span>)
+
+kagome4.addcoupling(<span class="string">'J1'</span>,1);
+kagome4.addcoupling(<span class="string">'J2'</span>,2);
+kagome4.addcoupling(<span class="string">'Jd'</span>,3);
+kagome4.addcoupling(<span class="string">'J3-'</span>,4);
+plot(kagome4,<span class="string">'range'</span>,[2 2 1],<span class="string">'zoom'</span>,-0.8)
+</pre><pre class="codeoutput">Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3
+
+ans =
+
+  Columns 1 through 6
+
+           1           0          -1           0           0           0
+           0           0           0           0          -1           1
+           0           0           0           0           0           0
+           3           1           2           3           1           2
+           2           3           1           2           3           1
+           1           1           1           1           1           1
+           0           0           0           0           0           0
+           0           0           0           0           0           0
+           0           0           0           0           0           0
+
+  Columns 7 through 12
+
+           1           0          -1           0          -1           1
+          -1           1           0           0          -1           1
+           0           0           0           0           0           0
+           1           2           3           1           2           3
+           2           3           1           2           3           1
+           2           2           2           2           2           2
+           0           0           0           0           0           0
+           0           0           0           0           0           0
+           0           0           0           0           0           0
+
+  Columns 13 through 18
+
+           1           0          -1           0          -1           1
+           0           1          -1           1          -1           0
+           0           0           0           0           0           0
+           1           2           3           1           2           3
+           1           2           3           1           2           3
+           3           3           3           4           4           4
+           0           0           0           0           0           0
+           0           0           0           0           0           0
+           0           0           0           0           0           0
+
+  Columns 19 through 21
+
+           1           0          -1
+           0           1          -1
+           0           0           0
+           2           3           1
+           2           3           1
+           5           5           5
+           0           0           0
+           0           0           0
+           0           0           0
+
+
+ans = 
+
+         dl: [3x21 int32]
+      atom1: [3 1 2 3 1 2 1 2 3 1 2 3 1 2 3 1 2 3 2 3 1]
+      atom2: [2 3 1 2 3 1 2 3 1 2 3 1 1 2 3 1 2 3 2 3 1]
+        idx: [1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 4 4 4 5 5 5]
+    mat_idx: [3x21 int32]
+
+Bond vectors (first three rows) and bond distances
+
+ans =
+
+  Columns 1 through 7
+
+    0.5000         0   -0.5000   -0.5000         0    0.5000    0.5000
+         0    0.5000   -0.5000         0   -0.5000    0.5000   -0.5000
+         0         0         0         0         0         0         0
+    3.0000    3.0000    3.0000    3.0000    3.0000    3.0000    5.1962
+
+  Columns 8 through 14
+
+    0.5000   -1.0000   -0.5000   -0.5000    1.0000    1.0000         0
+    1.0000   -0.5000    0.5000   -1.0000    0.5000         0    1.0000
+         0         0         0         0         0         0         0
+    5.1962    5.1962    5.1962    5.1962    5.1962    6.0000    6.0000
+
+  Columns 15 through 21
+
+   -1.0000         0   -1.0000    1.0000    1.0000         0   -1.0000
+   -1.0000    1.0000   -1.0000         0         0    1.0000   -1.0000
+         0         0         0         0         0         0         0
+    6.0000    6.0000    6.0000    6.0000    6.0000    6.0000    6.0000
+
+</pre><img vspace="5" hspace="5" src="tutorial6_02.png" alt=""> <h2>Magnetic structure<a name="3"></a></h2><p>For strong FM 1str neighbour and weak further neighbor interaction the ground state is ferromagnetic.</p><pre class="codeinput">kagome4.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'k'</span>,[0 0 0],<span class="string">'n'</span>,[0 1 0],<span class="string">'S'</span>,[0 1 0]);
+display(<span class="string">'Magnetic structure with spins 1 2 ... as columns, xyz as rows:'</span>)
+kagome4.mag_str
+kagome4.mag_str.S
+display(<span class="string">'Ground state energy (meV/spin)'</span>)
+kagome4.energy
+plot(kagome4)
+</pre><pre class="codeoutput">Magnetic structure with spins 1 2 ... as columns, xyz as rows:
+
+ans = 
+
+    N_ext: [1 1 1]
+        k: [0 0 0]
+        S: [3x3 double]
+        n: [0 1 0]
+
+
+ans =
+
+     0     0     0
+     1     1     1
+     0     0     0
+
+Ground state energy (meV/spin)
+
+ans =
+
+   -1.6300
+
+</pre><img vspace="5" hspace="5" src="tutorial6_03.png" alt=""> <h2>Spin wave dispersion<a name="4"></a></h2><pre class="codeinput">kag4Spec = kagome4.spinwave({[-1/2 0 0] [0 0 0] [1/2 1/2 0] 200},<span class="string">'hermit'</span>,false);
+kag4Spec = sw_neutron(kag4Spec);
+kag4Spec = sw_egrid(kag4Spec,<span class="string">'Evect'</span>,linspace(0,6.5,100)) ;
+sw_plotspec(kag4Spec,<span class="string">'mode'</span>,1,<span class="string">'axLim'</span>,[0 8],<span class="string">'colorbar'</span>,false,<span class="string">'colormap'</span>,[0 0 0])
+</pre><img vspace="5" hspace="5" src="tutorial6_04.png" alt=""> <h2>Powder averaged spectrum<a name="5"></a></h2><pre class="codeinput">kag4Pow = kagome4.powspec(linspace(0,2.5,100),<span class="string">'Evect'</span>,linspace(0,7,250),<span class="string">'nRand'</span>,1000,<span class="string">'hermit'</span>,false);
+figure;
+sw_plotspec(kag4Pow,<span class="string">'axLim'</span>,[0 0.2],<span class="string">'colorbar'</span>,true)
+</pre><img vspace="5" hspace="5" src="tutorial6_05.png" alt=""> <pre>Written by
+Bjorn Fak &amp; Sandor Toth
+06-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Ferromagnetic kagome lattice 
+% We create the kagome lattice with up to 4th neighbor interactions. The
+% symmetry related atoms are denoted by MCu1(i)_j, where i is the index of
+% independent atomic positions, j is the index of the generated atomic
+% positions of the i-th independent position.
+
+kagome4 = sw; 
+kagome4.fileid(0)
+kagome4.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3');
+kagome4.addatom('r', [1/2 0 0],'S', 1,'label','MCu1','color','r');
+display('Atomic positions as columns:') 
+kagome4.atom.r
+plot(kagome4)
+
+%% Define Hamiltonian
+% We add couplings up to 4th neighbor interactions. If the generation of
+% the bond tables would depend on distance, J3 and Jd would be equivalent.
+% However using the 'P -3' space group the two type of bonds are
+% inequivalent, as physically expected in real systems (J3 goes through an
+% intermediate magnetic atom, while Jd is not).
+
+kagome4.gencoupling('maxDistance',7); 
+display('Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3')
+kagome4.couplingtable.table 
+kagome4.coupling 
+display('Bond vectors (first three rows) and bond distances')
+kagome4.couplingtable.bondv 
+
+kagome4.addmatrix('label','J1','value',-1.00,'color','g')
+kagome4.addmatrix('label','J2','value', 0.10,'color','r')
+kagome4.addmatrix('label','J3-','value', 0.00,'color','orange')
+kagome4.addmatrix('label','Jd','value', 0.17,'color','b')
+
+kagome4.addcoupling('J1',1);
+kagome4.addcoupling('J2',2); 
+kagome4.addcoupling('Jd',3); 
+kagome4.addcoupling('J3-',4);
+plot(kagome4,'range',[2 2 1],'zoom',-0.8)
+
+%% Magnetic structure
+% For strong FM 1str neighbour and weak further neighbor interaction the
+% ground state is ferromagnetic.
+
+kagome4.genmagstr('mode','helical','k',[0 0 0],'n',[0 1 0],'S',[0 1 0]); 
+display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
+kagome4.mag_str
+kagome4.mag_str.S
+display('Ground state energy (meV/spin)')
+kagome4.energy
+plot(kagome4)
+
+%% Spin wave dispersion
+
+kag4Spec = kagome4.spinwave({[-1/2 0 0] [0 0 0] [1/2 1/2 0] 200},'hermit',false);
+kag4Spec = sw_neutron(kag4Spec);
+kag4Spec = sw_egrid(kag4Spec,'Evect',linspace(0,6.5,100)) ;
+sw_plotspec(kag4Spec,'mode',1,'axLim',[0 8],'colorbar',false,'colormap',[0 0 0])
+
+%% Powder averaged spectrum
+
+kag4Pow = kagome4.powspec(linspace(0,2.5,100),'Evect',linspace(0,7,250),'nRand',1000,'hermit',false);
+figure;
+sw_plotspec(kag4Pow,'axLim',[0 0.2],'colorbar',true)
+
+%%
+%  Written by
+%  Bjorn Fak & Sandor Toth
+%  06-June-2014
+##### SOURCE END #####
+--></body></html>

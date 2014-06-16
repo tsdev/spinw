@@ -106,14 +106,14 @@ for ii = indexFieldToValidate
             if isa(selectField,'cell')
                 if ~isempty(selectField)
                     selectField = selectField{1};
-                    valid = valid && isa(selectField,selectType);
+                    valid = valid && (isa(selectField,selectType) || isa(selectField,'sym'));
                     if ~errorType && ~valid
                         errorType = 2;
                         errorData = ['objS.' selectMainField '.' selectSubField];
                     end
                 end
             else
-                valid = valid && isa(selectField,selectType);
+                valid = valid && (isa(selectField,selectType) || isa(selectField,'sym'));
                 if ~errorType && ~valid
                     errorType = 2;
                     errorData = ['objS.' selectMainField '.' selectSubField];

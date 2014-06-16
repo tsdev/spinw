@@ -1,0 +1,216 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>tutorial13</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-06-16"><meta name="DC.source" content="tutorial13.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Spin wave spectrum of LiNiPO4</a></li><li><a href="#2">Magnetic Hamiltonian</a></li><li><a href="#3">Magnetic structure</a></li><li><a href="#4">Spin wave spectrum</a></li><li><a href="#5">Mode crossing</a></li></ul></div><h2>Spin wave spectrum of LiNiPO4<a name="1"></a></h2><p>Spin wave model  from: T. Jensen, et al., PRB 79, 6 (2009) <a href="http://arxiv.org/abs/0902.2288">http://arxiv.org/abs/0902.2288</a> or <a href="http://prb.aps.org/abstract/PRB/v79/i9/e092413">http://prb.aps.org/abstract/PRB/v79/i9/e092413</a> We define only the magnetic atoms of LiNiPO4</p><pre class="codeinput">linipo = sw;
+linipo.fileid(0)
+linipo.genlattice(<span class="string">'lat_const'</span>, [10.02 5.86 4.68],<span class="string">'sym'</span>,<span class="string">'P n m a'</span>);
+linipo.addatom(<span class="string">'r'</span>,[1/4 1/4 0],<span class="string">'S'</span>,1,<span class="string">'label'</span>,<span class="string">'MNi2'</span>,<span class="string">'color'</span>,<span class="string">'b'</span>)
+linipo.gencoupling
+plot(linipo,<span class="string">'zoom'</span>,2)
+</pre><img vspace="5" hspace="5" src="tutorial13_01.png" alt=""> <h2>Magnetic Hamiltonian<a name="2"></a></h2><p>Fitted parameters of the Hamiltonian taken from the paper at T = 1.5 K (the anisotropy values are wrong in the paper, they are corrected from the thesis of T. Jensen).</p><pre class="codeinput">Jbc =  1.036;
+Jb  =  0.6701;
+Jc  = -0.0469;
+Jac = -0.1121;
+Jab =  0.2977;
+Da  =  0.1969;
+Db  =  0.9097;
+Dc  =  0;
+
+linipo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jbc'</span>,<span class="string">'value'</span>,Jbc,<span class="string">'color'</span>,<span class="string">'red'</span>)
+linipo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jb'</span>, <span class="string">'value'</span>,Jb, <span class="string">'color'</span>,<span class="string">'green'</span>)
+linipo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jc'</span>, <span class="string">'value'</span>,Jc, <span class="string">'color'</span>,<span class="string">'blue'</span>)
+linipo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jab'</span>,<span class="string">'value'</span>,Jab,<span class="string">'color'</span>,<span class="string">'Turquoise'</span>)
+linipo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jac'</span>,<span class="string">'value'</span>,Jac,<span class="string">'color'</span>,<span class="string">'orange'</span>)
+linipo.addmatrix(<span class="string">'label'</span>,<span class="string">'D'</span>,  <span class="string">'value'</span>,diag([Da Db Dc]),<span class="string">'color'</span>,<span class="string">'purple'</span>)
+
+linipo.addcoupling(<span class="string">'Jbc'</span>,1)
+linipo.addcoupling(<span class="string">'Jc'</span> ,2)
+linipo.addcoupling(<span class="string">'Jb'</span> ,7)
+linipo.addcoupling(<span class="string">'Jab'</span>,[5 6])
+linipo.addcoupling(<span class="string">'Jac'</span>,[3 4])
+
+linipo.addaniso(<span class="string">'D'</span>)
+plot(linipo,<span class="string">'range'</span>,[2 2 1])
+</pre><img vspace="5" hspace="5" src="tutorial13_02.png" alt=""> <h2>Magnetic structure<a name="3"></a></h2><p>We define the antiferromagnetic structure along the c-axis by direct input of the moment components.</p><pre class="codeinput">linipo.genmagstr(<span class="string">'mode'</span>,<span class="string">'direct'</span>,<span class="string">'S'</span>,[0 0 0 0; 0 0 0 0; 1 -1 -1 1])
+</pre><h2>Spin wave spectrum<a name="4"></a></h2><p>We calculate spin wave dispersion to compare with Figure 1 (a-c) in the paper. We use sw_omegasum() function to eliminate zero intensity spin wave modes from the lineplots.</p><pre class="codeinput">linipoSpec = linipo.spinwave({[0 1 0] [2 1 0]});
+linipoSpec = sw_egrid(linipoSpec);
+linipoSpec = sw_omegasum(linipoSpec,<span class="string">'zeroint'</span>,1e-3);
+figure
+sw_plotspec(linipoSpec,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'axLim'</span>,[0 8],<span class="string">'colormap'</span>,[0 0 0],<span class="string">'colorbar'</span>,false)
+figure
+sw_plotspec(linipoSpec,<span class="string">'mode'</span>,<span class="string">'int'</span>,<span class="string">'axLim'</span>,[0 15],<span class="string">'colormap'</span>,[0 0 0],<span class="string">'colorbar'</span>,false)
+
+linipoSpec = linipo.spinwave({[0 0 0] [0 2 0]});
+linipoSpec = sw_egrid(linipoSpec);
+linipoSpec = sw_omegasum(linipoSpec,<span class="string">'zeroint'</span>,1e-5);
+figure
+sw_plotspec(linipoSpec,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'axLim'</span>,[0 8],<span class="string">'colormap'</span>,[0 0 0],<span class="string">'colorbar'</span>,false)
+figure
+sw_plotspec(linipoSpec,<span class="string">'mode'</span>,<span class="string">'int'</span>,<span class="string">'axLim'</span>,[0 15],<span class="string">'colormap'</span>,[0 0 0],<span class="string">'colorbar'</span>,false)
+
+linipoSpec = linipo.spinwave({[0 1 0] [0 1 2]});
+linipoSpec = sw_egrid(linipoSpec);
+linipoSpec = sw_omegasum(linipoSpec,<span class="string">'zeroint'</span>,1e-5);
+figure
+sw_plotspec(linipoSpec,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'axLim'</span>,[0 8],<span class="string">'colormap'</span>,[0 0 0],<span class="string">'colorbar'</span>,false)
+figure
+sw_plotspec(linipoSpec,<span class="string">'mode'</span>,<span class="string">'int'</span>,<span class="string">'axLim'</span>,[0 15],<span class="string">'colormap'</span>,[0 0 0],<span class="string">'colorbar'</span>,false)
+</pre><img vspace="5" hspace="5" src="tutorial13_03.png" alt=""> <img vspace="5" hspace="5" src="tutorial13_04.png" alt=""> <img vspace="5" hspace="5" src="tutorial13_05.png" alt=""> <img vspace="5" hspace="5" src="tutorial13_06.png" alt=""> <img vspace="5" hspace="5" src="tutorial13_07.png" alt=""> <img vspace="5" hspace="5" src="tutorial13_08.png" alt=""> <h2>Mode crossing<a name="5"></a></h2><p>On the last figure, the two spin wave mode cross each other, where the order of the modes are reversed. This is a general feature of numercial eigenvalue calculations, where it is hard to follow the eigenvalues and eigenvectors through accidental degeneracy points. However at every Q point the physical quantities (mode+assigned intensity) are always right.</p><pre>Written by
+Sandor Toth
+16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Spin wave spectrum of LiNiPO4
+% Spin wave model  from: T. Jensen, et al., PRB 79, 6 (2009)
+% http://arxiv.org/abs/0902.2288 or http://prb.aps.org/abstract/PRB/v79/i9/e092413
+% We define only the magnetic atoms of LiNiPO4
+
+linipo = sw;
+linipo.fileid(0)
+linipo.genlattice('lat_const', [10.02 5.86 4.68],'sym','P n m a');
+linipo.addatom('r',[1/4 1/4 0],'S',1,'label','MNi2','color','b')
+linipo.gencoupling
+plot(linipo,'zoom',2)
+
+%% Magnetic Hamiltonian
+% Fitted parameters of the Hamiltonian taken from the paper at T = 1.5 K
+% (the anisotropy values are wrong in the paper, they are corrected from
+% the thesis of T. Jensen).
+
+Jbc =  1.036;
+Jb  =  0.6701;
+Jc  = -0.0469;
+Jac = -0.1121;
+Jab =  0.2977;
+Da  =  0.1969;
+Db  =  0.9097;
+Dc  =  0;
+
+linipo.addmatrix('label','Jbc','value',Jbc,'color','red')
+linipo.addmatrix('label','Jb', 'value',Jb, 'color','green')
+linipo.addmatrix('label','Jc', 'value',Jc, 'color','blue')
+linipo.addmatrix('label','Jab','value',Jab,'color','Turquoise')
+linipo.addmatrix('label','Jac','value',Jac,'color','orange')
+linipo.addmatrix('label','D',  'value',diag([Da Db Dc]),'color','purple')
+
+linipo.addcoupling('Jbc',1)
+linipo.addcoupling('Jc' ,2)
+linipo.addcoupling('Jb' ,7)
+linipo.addcoupling('Jab',[5 6])
+linipo.addcoupling('Jac',[3 4])
+
+linipo.addaniso('D')
+plot(linipo,'range',[2 2 1])
+
+%% Magnetic structure
+% We define the antiferromagnetic structure along the c-axis by direct
+% input of the moment components.
+
+linipo.genmagstr('mode','direct','S',[0 0 0 0; 0 0 0 0; 1 -1 -1 1])
+
+%% Spin wave spectrum
+% We calculate spin wave dispersion to compare with Figure 1 (a-c) in the
+% paper. We use sw_omegasum() function to eliminate zero intensity spin
+% wave modes from the lineplots.
+
+linipoSpec = linipo.spinwave({[0 1 0] [2 1 0]});
+linipoSpec = sw_egrid(linipoSpec);
+linipoSpec = sw_omegasum(linipoSpec,'zeroint',1e-3);
+figure
+sw_plotspec(linipoSpec,'mode','disp','axLim',[0 8],'colormap',[0 0 0],'colorbar',false)
+figure
+sw_plotspec(linipoSpec,'mode','int','axLim',[0 15],'colormap',[0 0 0],'colorbar',false)
+
+linipoSpec = linipo.spinwave({[0 0 0] [0 2 0]});
+linipoSpec = sw_egrid(linipoSpec);
+linipoSpec = sw_omegasum(linipoSpec,'zeroint',1e-5);
+figure
+sw_plotspec(linipoSpec,'mode','disp','axLim',[0 8],'colormap',[0 0 0],'colorbar',false)
+figure
+sw_plotspec(linipoSpec,'mode','int','axLim',[0 15],'colormap',[0 0 0],'colorbar',false)
+
+linipoSpec = linipo.spinwave({[0 1 0] [0 1 2]});
+linipoSpec = sw_egrid(linipoSpec);
+linipoSpec = sw_omegasum(linipoSpec,'zeroint',1e-5);
+figure
+sw_plotspec(linipoSpec,'mode','disp','axLim',[0 8],'colormap',[0 0 0],'colorbar',false)
+figure
+sw_plotspec(linipoSpec,'mode','int','axLim',[0 15],'colormap',[0 0 0],'colorbar',false)
+
+%% Mode crossing
+% On the last figure, the two spin wave mode cross each other, where the
+% order of the modes are reversed. This is a general feature of numercial
+% eigenvalue calculations, where it is hard to follow the eigenvalues and
+% eigenvectors through accidental degeneracy points. However at every Q
+% point the physical quantities (mode+assigned intensity) are always right.
+
+%%
+%  Written by
+%  Sandor Toth
+%  16-June-2014
+##### SOURCE END #####
+--></body></html>

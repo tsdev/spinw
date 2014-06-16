@@ -17,6 +17,11 @@ function [n, collinear] = sw_nvect(S, epsilon)
 %             moments.
 %
 
+if nargin == 0
+    help sw_nvect;
+    return;
+end
+
 if nargin == 1
     epsilon = 0.1;
 end

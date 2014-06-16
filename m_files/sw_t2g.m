@@ -28,6 +28,11 @@ function hOrbital = sw_t2g(idx, varargin)
 % See also SW_ORBITAL, SW_DRAWPOLY, SW_ADDOBJECT.
 %
 
+if nargin == 0
+    help sw_t2g;
+    return;
+end
+
 inpForm.fname  = {'r0'    'v1'    'v2'    'scale' 'plotv'};
 inpForm.defval = {[0 0 0] [1 0 0] [0 1 0] 1       false  };
 inpForm.size   = {[1 3]   [1 3]   [1 3]   [1 1]   [1 1]  };

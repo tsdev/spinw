@@ -1,19 +1,23 @@
-function [rSym, aIdx, isMoved, symName] = sw_genatpos(sym, r, fid, tol)
-% [rSym, aIdx, isMoved, symName] = SW_GENATPOS(sym, r, {fid}, {tol})
+function [rSym, aIdx, isMoved, opMove, symName] = sw_genatpos(sym, r, fid, tol)
+% [rSym, aIdx, isMoved, opMove, symName] = SW_GENATPOS(sym, r, fid, tol)
 % generates all symmetry equivalent atomic positions from a given symmetry
-% number and coordinates of the input atoms. If print is defined, the
+% number and coordinates of the input atoms. If fid is defined, the
 % result is printed onto the command window.
 %
 % Input:
 %
 % sym           Line index in the symmetry.dat file or string of the
-%               symmetry operators.
+%               symmetry operators or a cell containing the output of
+%               sw_gencoord().
 % r             Atomic position in lattice units, dimensions are [3 nAtom].
-% {fid}         Optional input, the file identifier to print the result.
-%               To print onto the Command Window, use fid = 1; default is
-%               fid = 0, no print.
-% tol           Tolerance, distance within two atoms are considere, default
-%               is 0.05.
+% fid           Optional input, the file identifier to print the result.
+%                   0   No output printed (Default)
+%                   1   Output printed onto the screen (Command Window)
+%                   fid Use with the following command: fid = fopen(path)
+% tol           Tolerance, distance within two atoms are considered
+%               identical, default is 0.001 Angstrom. Necessary for badly
+%               defines atomic positions (when atoms are not exactly on the
+%               symmetry element) and to avoid numerical errors.
 %
 % Output:
 %
@@ -25,6 +29,8 @@ function [rSym, aIdx, isMoved, symName] = sw_genatpos(sym, r, fid, tol)
 %               given operator moved the atom or not. Each vector has a
 %               dimensions of [1 nSym], where the nSym is multiplicity of
 %               the general position.
+% opMove        The rotation operators for every moved atom, dimensions are
+%               [3 3 nGenAtom].
 % symName       String, the name of  the space group.
 %
 % See also SW, SW.ATOM, SW.MATOM, SW.GENCOUPLING, SW_GENCOORD, SW_GENSYM, SW_POINTSYM.
@@ -43,30 +49,40 @@ if nargin < 4
     tol = 1e-5;
 end
 
-[symOp, symTr, symName] = sw_gencoord(sym, fid);
+if ~iscell(sym)
+    [symOp, symTr, symName] = sw_gencoord(sym, fid);
+else
+    symOp = sym{1};
+    symTr = sym{2};
+end
 
-nAtom = size(r,2);
-nSym  = size(symOp,3);
-rSym  = zeros(3,0);
-aIdx  = [];
+nAtom  = size(r,2);
+rSym   = zeros(3,0);
+aIdx   = [];
 isMoved  = cell(1,nAtom);
+opMove = zeros(3,3,0);
 
 % loop over all input atoms
 for ii = 1:nAtom
     % generate all equivalent atomic positions, some might overlap
-    rTemp = mod(permute(sum(repmat(r(:,ii)',[3 1 nSym]).*symOp,2),[1 3 2])+symTr,1);
-    % take out the overlapping positions
-    isMoved{ii} = sum(bsxfun(@minus,rTemp,r(:,ii)).^2,1) > tol;
+    % corrected for R*pos+T
+    rTemp  = mod(permute(mmat(symOp,r(:,ii)),[1 3 2])+symTr,1);
+    % take out the overlapping positions, using modulo with tolerance
+    isMoved{ii} = sum(bsxfunsym(@minus,sw_cmod(rTemp,tol),sw_cmod(r(:,ii),tol)).^2,1) > tol^2;
     if numel(rTemp) > 3
-        [rTemp] = uniquetol(rTemp',tol,'rows')';
+        % select unique atomic positions and the indices
+        [rTemp, idxF] = sw_uniquetol(sw_cmod(rTemp,tol),tol);
+    else
+        idxF = 1;
     end
-    rSym  = [rSym rTemp]; %#ok<AGROW>
-    aIdx  = [aIdx ones(1,size(rTemp,2))*ii]; %#ok<AGROW>
+    rSym   = [rSym rTemp]; %#ok<AGROW>
+    aIdx   = [aIdx ones(1,size(rTemp,2))*ii]; %#ok<AGROW>
+    opMove = cat(3, opMove, symOp(:,:,idxF));
 end
 
 nGenAtom = numel(aIdx);
 
-if fid
+if fid ~= 0
     idx = 1;
     for ii = 1:nAtom
         fprintf(fid,'\nAtomic coordinates generated for: (%5.3f %5.3f %5.3f)\n',r(:,ii));

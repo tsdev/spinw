@@ -1,24 +1,28 @@
-function [symOp, symTr, symName] = sw_gencoord(sym, fid, tol)
-% [symOp, symTr] = SW_GENCOORD(sym, {fid}, {tol}) calculates the general
-% coordinates for a given space group.
+function [symOp, symTr, symName] = sw_gencoord(sym, fid)
+% [symOp, symTr, symName] = SW_GENCOORD(sym, fid) calculates all symmtery
+% operators for a given space group.
 %
 % Input:
 %
 % sym           Line index in the symmetry.dat file or string of the
-%               symmetry operators.
-% {fid}         For printing the symmetry operators:
-% {print}       Optional input, if true, the result will be plotted on the
-%               command window.
+%               symmetry operators or cell: {symOp, symTr}.
+%               For example:
+%                   sym = 'P b n m';
+% fid           For printing the symmetry operators:
+%                   0   no printed output (Default)
+%                   1   standard output (Command Line)
+%                   fid text file opened before with the fid = fopen(path)
 %
 % Output:
 %
 % symOp         The rotational part of the symmetry operators, dimensions
-%               are [3 3 nSym]. 
+%               are [3 3 nSym].
 % symTr       	The translation part of the symmetry operators, dimensions
 %               are [3 nSym].
 % symName       String, the name of  the space group.
 %
-% See also SW, SW.ATOM, SW.MATOM, SW_GENCOUPLING, SW_POINTSYM, SW_GENATPOS.
+% See also SW, SW.ATOM, SW.MATOM, SW.GENCOUPLING, SW_POINTSYM, SW_GENATPOS,
+% SW_GENSYM.
 %
 
 if nargin == 0
@@ -26,46 +30,55 @@ if nargin == 0
     return;
 end
 
-if nargin < 3
-    tol = 1e-5;
-end
+% tolerance for numerical error
+tol = 1e-5;
+
 if nargin < 2
     fid = 0;
 end
 
-[genOp, transl, symName] = sw_gensym(sym);
+if iscell(sym)
+    genOp  = sym{1};
+    transl = sym{2};
+    symName = '';
+else
+    [genOp, transl, symName] = sw_gensym(sym);
+end
+
 
 nGen  = size(genOp,3);
 symOp = eye(3);
 symTr = zeros(3,1);
 
 % determine the order of the generators
-N = zeros(1,nGen);
-M = zeros(1,nGen);
 P = zeros(1,nGen);
 
 % generate all symmetry elements
 for ii = 1:nGen
-    % order of the rotational matrix
-    N(ii) = sw_rotorder(genOp(:,:,ii));
-    % order of the translation
-    M(ii) = max(12./gcd(abs(transl(:,ii))*12,12));
-    if M(ii) == 0
-        M(ii) = 1;
-    end
-    % take the least common multiplier
-    P(ii) = lcm(M(ii),N(ii));
+    R0 = genOp(:,:,ii);
+    T0 = transl(:,ii);
+    % order of the symmetry operator
+    P(ii) = sw_symorder(R0,T0);
+    
+    R = eye(3);
+    T = zeros(3,1);
+    
     for jj = 1:(P(ii)-1)
-        R = genOp(:,:,ii)^jj;
+        R = R0*R;
+        T = R0*T + T0;
         
         nSym = size(symOp,3);
         for kk = 1:nSym
-            RS = symOp(:,:,kk)*R;
-            idx = permute(sum(sum(abs(bsxfun(@minus,symOp,RS)),1),2),[3 1 2]) > tol;
+            RS = R*symOp(:,:,kk);
+            TS = mod(R*symTr(:,kk) + T,1);
+            
+            idxR = permute(sum(sum(abs(bsxfun(@minus,symOp,RS)),1),2),[3 1 2]) > tol;
+            idxT = sum(abs(bsxfun(@minus,symTr,TS)),1)' > tol;
+            
             % adds new operator to the list if it differs from all
-            if all(idx)
+            if all(idxR | idxT)
                 symOp = cat(3,symOp,RS);
-                symTr = [symTr mod(transl(:,ii)*jj+symTr(:,kk),1)]; %#ok<AGROW>
+                symTr = [symTr TS]; %#ok<AGROW>
             end
             
         end

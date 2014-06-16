@@ -19,6 +19,11 @@ function Qm = sw_econtract(Q,varargin)
 % See also SW_CONVERTER.
 %
 
+if nargin == 0
+    help sw_econtract;
+    return
+end
+
 inpForm.fname  = {'omega' 'lambda' 'ki'  'sense'};
 inpForm.defval = {0       0        0     1      };
 inpForm.size   = {[1 1]   [1 1]    [1 1] [1 1]  };

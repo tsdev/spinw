@@ -16,6 +16,26 @@ function input = sw_readparam(format, varargin)
 %           value, defval is used without error message.
 %
 
+if nargin == 0
+    help sw_readparam;
+    return;
+end
+
+if nargin == 2 && ischar(varargin{1}) && varargin{1} == '-'
+    % return all variable strings onto the Command Window
+    varStr = sprintf('%s ',format.fname{:});
+    clipboard('copy',varStr(1:end-1));
+    error('sw_readparam:List','All input variable names are copied to the clipboard!');
+end
+
+% create a showWarn field to check whether to show warnings (default true)
+format.fname  = [format.fname  {'showWarn'}];
+format.defval = [format.defval {true      }];
+format.size   = [format.size   {[1 1]     }];
+if isfield(format,'soft')
+    format.soft   = [format.soft   {true      }];
+end
+
 if (nargin>2) && (mod(nargin,2) == 1)
     nPar = nargin-1;
     raw = struct;
@@ -35,6 +55,8 @@ rName     = fieldnames(raw);
 storeSize = zeros(20,1);
 input     = struct;
 
+usedField = false(1,numel(rName));
+
 % Go through all fields.
 for ii = 1:length(fName)
     
@@ -42,6 +64,8 @@ for ii = 1:length(fName)
     
     if any(rawIdx)
         rawIdx = rawIdx(1);
+        usedField(rawIdx) = true;
+        
         inputValid = true;
         
         % Go through all dimension of the selected field to check size.
@@ -79,5 +103,12 @@ for ii = 1:length(fName)
         end
     end
 end
+
+if input.showWarn && ~all(usedField)
+    wName = sprintf('%s, ',rName{~usedField});
+    warning('sw_readparam:UnreadInput','Invalid input parameter names: %s\b\b!',wName);
+end
+
+input = rmfield(input,'showWarn');
 
 end

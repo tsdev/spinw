@@ -1,33 +1,37 @@
-function [transf, transl, symName, symOp] = sw_gensym(varargin)
-% [transf, transl, symName, symOp] = SW_GENSYM({sym}) gives the symmetry elements
-% based on the space group number or given list of symmetry operators.
-% Without arguments, returns the name of all space groups stored in
-% symmetry.dat.
+function [symOp, symTr, symName, symStr, symNum] = sw_gensym(varargin)
+% [symOp, symTr, symName, symStr, symNum] = SW_GENSYM({sym}) gives the
+% symmetry elements based on the space group number or given list of
+% symmetry operators. Without arguments, returns the name of all space
+% groups stored in symmetry.dat file.
 %
 % Input:
 %
-% sym           It is either the name of the space group or the index from
+% sym           Either the label of the space group or the index from
 %               the International Tables of Crystallography.
 %
 % Output:
 %
-% tranf         Rotation matrices, dimensions are [3 3 nOp].
-% tranl         Translation vectors, dimensions are [3 nOp].
+% symOp         Rotation matrices, dimensions are [3 3 nOp].
+% symTr         Translation vectors, dimensions are [3 nOp].
 % symName       Name of the space group, stored in cells.
-% symOp         The string of the symmetry operations.
+% symStr        The string of the symmetry operations.
+% symNum        The index of the symmetry in the symmetry.dat file.
 %
-% See also SW_ADDSYM, SW, SW_GENCOUPLING.
+% See also SW_ADDSYM, SW, SW.GENCOUPLING, SW_GENCOORD.
 %
 
-if (nargin == 0) || (~ischar(varargin{1}))
-    % Open the symmetry definition file.
-    symPath = [sw_rootdir 'dat_files' filesep 'symmetry.dat'];
-    fid = fopen(symPath);
-    if fid == -1
-        
-        error('spinw:sw_gensym:FileNotFound',['Symmetry definition file not found: '...
-            regexprep(symPath,'\' , '\\\') '!']);
-    end
+if nargin == 0
+    help sw_gensym;
+    return;
+end
+
+% Open the symmetry definition file.
+symPath = [sw_rootdir 'dat_files' filesep 'symmetry.dat'];
+fid = fopen(symPath);
+if fid == -1
+    
+    error('spinw:sw_gensym:FileNotFound',['Symmetry definition file not found: '...
+        regexprep(symPath,'\' , '\\\') '!']);
 end
 
 % Just returns the name of all space groups.
@@ -39,47 +43,78 @@ if nargin == 0
         symName{ii} = [textLine(7:17) sprintf(' (%3i)',ii)]; %#ok<AGROW>
         ii = ii+1;
     end
-    transf = [];
-    transl = [];
-    symOp  = [];
+    symOp = [];
+    symTr = [];
+    symStr  = [];
     fclose(fid);
     return
-end
 
-if iscell(varargin{1})
-    varargin{1} = varargin{1}{1};
-end
-
-if ischar(varargin{1})
-    if isempty(varargin{1})
-        symOp = 'x,y,z';
-        symName = 'P 1';
-    else
-        symOp = varargin{1};
-        symName = 'user defined';
+elseif nargin == 1
+    
+    if iscell(varargin{1})
+        varargin{1} = varargin{1}{1};
     end
     
-else
-    symNumber = varargin{1};
-    if symNumber<0
+    if ischar(varargin{1})
+        if isempty(varargin{1})
+            symStr = 'x,y,z';
+            symName = 'P 1';
+        else
+            % find symmetry label
+            symName = varargin{1};
+            symName(end+1:11) = 32;
+            symIdx = 0;
+            ii     = 1;
+            while (symIdx == 0) && ~feof(fid)
+                textLine    = fgetl(fid);
+                if strfind(symName,textLine(7:17))
+                    symIdx = ii;
+                end
+                ii = ii+1;
+            end
+            fclose(fid);
+            if symIdx == 0
+                error('sw:sw_gensym:WrongInput','Symmetry name does not exists (case insensitive)!');
+            end
+            symNum = symIdx;
+            symStr     = textLine(20:end);
+        end
+        
+    else
+        symNum = varargin{1};
+        
+        if symNum<0
+            fclose(fid);
+            error('spinw:sw_gensym:WrongInput','Symmetry number has to be positive integer!');
+        elseif symNum == 0
+            fclose(fid);
+            symOp   = eye(3);
+            symTr   = [0 0 0]';
+            symName = 'No sym';
+            symStr  = 'x,y,z';
+            symNum  = 0;
+            return;
+        end
+        ii = 1;
+        while (ii<=symNum) && ~feof(fid)
+            textLine = fgetl(fid);
+            ii = ii+1;
+        end
         fclose(fid);
-        error('spinw:sw_gensym:WrongInput','Positive integer expected!');
+        if ii <= symNum
+            error('spinw:sw_gensym:WrongInput','Symmetry number not found!')
+        end
+        symStr   = textLine(20:end);
+        symName = textLine(7:17);
     end
-    ii = 1;
-    while (ii<=symNumber) && ~feof(fid)
-        textLine = fgetl(fid);
-        ii = ii+1;
-    end
-    fclose(fid);
-    if ii <= symNumber
-        error('spinw:sw_gensym:WrongInput','Symmetry number not found!')
-    end
-    symOp   = textLine(20:end);
-    symName = textLine(7:17);
+elseif nargin >= 2
+    symName = varargin{1};
+    symStr   = varargin{2};
+
 end
 
-transf = zeros(3,3,10);
-transl = zeros(3,10);
+symOp = zeros(3,3,30);
+symTr = zeros(3,30);
 vNew   = zeros(3,1);
 
 nNew  = 1;
@@ -87,38 +122,45 @@ nOp   = 1;
 nSign = 1;
 
 ii=1;
-while(ii<=length(symOp))
-    if symOp(ii)==','
-        transf(nNew,:,nOp) = vNew;
+while(ii<=length(symStr))
+    if symStr(ii)==','
+        symOp(nNew,:,nOp) = vNew;
         vNew  = vNew*0;
         nSign = 1;
         nNew  = mod(nNew,3)+1;
-    elseif symOp(ii)==';'
-        transf(nNew,:,nOp) = vNew;
+    elseif symStr(ii)==';'
+        symOp(nNew,:,nOp) = vNew;
         vNew = vNew*0;
         nSign = 1;
         nNew  = 1;
         nOp   = nOp+1;
-    elseif symOp(ii)=='x'
+    elseif symStr(ii)=='x'
         vNew(1) = nSign;
-    elseif symOp(ii)=='y'
+    elseif symStr(ii)=='y'
         vNew(2) = nSign;
-    elseif symOp(ii)=='z'
+    elseif symStr(ii)=='z'
         vNew(3) = nSign;
-    elseif symOp(ii)=='-'
+    elseif symStr(ii)=='-'
         nSign = -1;
-    elseif symOp(ii)=='+'
+    elseif symStr(ii)=='+'
         nSign = 1;
-    elseif (symOp(ii)=='1')||(symOp(ii)=='2')||(symOp(ii)=='3')
-        transl(nNew,nOp) = (symOp(ii)-'0')/(symOp(ii+2)-'0');
+    elseif (symStr(ii)=='1')||(symStr(ii)=='2')||(symStr(ii)=='3')
+        symTr(nNew,nOp) = (symStr(ii)-'0')/(symStr(ii+2)-'0');
         ii = ii+2;
     end
     ii = ii+1;
     
 end
 
-transf(nNew,:,nOp) = vNew;
-transf = transf(:,:,1:nOp);
-transl = transl(:,1:nOp);
+symOp(nNew,:,nOp) = vNew;
+symOp = symOp(:,:,1:nOp);
+symTr = symTr(:,1:nOp);
+
+% cut trailing spaces from symName
+if isnan(symName)
+    symName = '';
+else
+    symName = symName(1:find(diff([symName '  ']==32),1,'last'));
+end
 
 end

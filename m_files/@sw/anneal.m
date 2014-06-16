@@ -4,8 +4,8 @@ function stat = anneal(obj, varargin)
 % stat = ANNEAL(obj, 'option1', value1 ...)
 %
 % The function can deal only with single ion anisotropy and isotropic
-% exchange interactions in 1, 2 or 3 spin dimensions. General and DM
-% interactions are not supported.
+% exchange interactions in 1, 2 or 3 spin dimensions. 
+% General and antisymmetric exchage interactions are not supported yet!
 %
 % Input:
 %
@@ -30,20 +30,20 @@ function stat = anneal(obj, varargin)
 % cool      Generates a new temperature from the previous one.
 %           Any function handle that takes a scalar as input and
 %           returns a smaller but positive scalar as output.
-%           Default is @(T) (.9*T).
+%           Default is @(T) (.92*T).
 % random    Random initial conditions, if initial spin configuration
 %           is undefined (obj.mag_str.S is empty) the initial configuration
 %           is automaticly random independently of the value of random.
 %           Default is true.
 % nMC       Number of Monte-Carlo steps per spin at each temperature
-%           step. Default is 100.
+%           step to reach thermal equilibrium. Default is 100.
 % nORel     Number of over-relaxation steps after every Monte-Carlo
 %           steps. It rotates the spins around the direction of the local
 %           field by 180deg. It is reversible and microcanonical if the
 %           single ion anisotropy is zero. Default is 0.
-% nStat     Number of cycles at the end of the cooling to calculate
-%           statistical averages, has to be smaller than 'nMC'. Default is
-%           100.
+% nStat     Number of cycles at the last temperature to calculate
+%           statistical averages. It has to be smaller or equal nMC.
+%           Default is 100.
 % boundary  Boundary conditions of the extended unit cell.
 %               'free'  Free, interactions between extedned unit cells are
 %                       omitted.
@@ -80,6 +80,8 @@ function stat = anneal(obj, varargin)
 %           magnetic moment, size is (1,nMagExt). If undefined, the
 %           function defined in 'fSub' will be used to partition the
 %           lattice.
+% title     Gives a title string to the simulation that is saved in the
+%           output.
 %
 % Output:
 %
@@ -134,7 +136,15 @@ inpForm.defval = [inpForm.defval {@sw_fstat @sw_fsub true     {'per' 'per' 'per'
 inpForm.size   = [inpForm.size   {[1 1]     [1 1]    [1 1]    [1 3]              }];
 inpForm.soft   = [inpForm.soft   {0         0        0        0                  }];
 
+inpForm.fname  = [inpForm.fname  {'title'   }];
+inpForm.defval = [inpForm.defval {''        }];
+inpForm.size   = [inpForm.size   {[1 -2]	}];
+inpForm.soft   = [inpForm.soft   {1         }];
+
 param = sw_readparam(inpForm,varargin{:});
+
+% Text output file
+fid = obj.fid;
 
 % Creates random spin directions if param.random is true.
 mag_param = param;
@@ -144,6 +154,12 @@ else
     mag_param.mode = 'extend';
 end
 
+if param.nStat > param.nMC
+    warning('sw:anneal:wrongParam','nStat is larger than nMC, instead of the given value, nMC will be used!');
+    param.nStat = param.nMC;
+end
+
+mag_param.showWarn = false;
 obj.genmagstr(mag_param);
 M0  = obj.mag_str.S;
 
@@ -192,7 +208,7 @@ SS.gen(:, SS.gen(4,:)==SS.gen(5,:)) = [];
 % anisotropy matrix. B is in units of the couplings.
 switch spinDim
     case 1
-        B  = SI.field(1)*obj.unit.gamma;
+        B  = SI.field(1)*obj.unit.muB*2;
         AA = SI.aniso(1,1,:);
         Ax = squeeze(AA(:,1,:));
         Ay = Ax*0;
@@ -201,13 +217,13 @@ switch spinDim
             warning('sw:anneal:IsingAnisotropy','Anisotropy for Ising model is omitted.');
         end
     case 2
-        B  = SI.field(1:2)'*obj.unit.gamma;
+        B  = SI.field(1:2)'*obj.unit.muB*2;
         AA = SI.aniso(1:2,1:2,:);
         Ax = squeeze(AA(:,1,:));
         Ay = squeeze(AA(:,2,:));
         Az = Ay*0;
     case 3
-        B  = SI.field'*obj.unit.gamma;
+        B  = SI.field'*obj.unit.muB*2;
         AA = SI.aniso;
         Ax = squeeze(AA(:,1,:));
         Ay = squeeze(AA(:,2,:));
@@ -234,7 +250,7 @@ rate = zeros(nMC,1);
 E    = [];
 
 % Initialise plot.
-sw_annealplot(T,E,rate,param);
+sw_annealplot(T,E,rate,param,fid);
 
 % Assing moments to sublattices for parallel calculation. On any sublattice
 % there are no coupling between moments, thus annealing can be calculated
@@ -541,7 +557,7 @@ while 1
     % Calculates the system energy at the end of the temperature step.
     E(end+1,1) = ETemp/nMagExt; %#ok<AGROW>
     % Monitor annealing process.
-    sw_annealplot(T,E,rate,param);
+    sw_annealplot(T,E,rate,param,fid);
     % End annealing process if final temperature reached.
     if T(end) <= endT
         break;

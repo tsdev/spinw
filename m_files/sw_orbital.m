@@ -22,6 +22,11 @@ function hSurf = sw_orbital(qNum, varargin)
 %
 %
 
+if nargin == 0
+    help sw_orbital;
+    return;
+end
+
 inpForm.fname  = {'surfRes' 'rLim' 'P'   'rBohr' 'norm'};
 inpForm.defval = {30        32     1e-5  1       true  };
 inpForm.size   = {[1 1]     [1 1]  [1 1] [1 1]   [1 1] };

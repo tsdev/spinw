@@ -99,7 +99,7 @@ if iscell(cName)
 end
 
 if isempty(RGB)
-    error('sw_colorname:WrongInput','The given color name does not exists!')
+    error('sw_colorname:WrongInput','The given color name (''%s'') does not exists!',cName{1})
 end
 
 RGB = RGB';

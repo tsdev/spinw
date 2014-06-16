@@ -138,8 +138,13 @@ if obj.symb
     end
     
     if ~isa(hkl,'sym')
-        if ~param.fitmode
-            warning('hkl has to be symbolic, spin wave spectrum for general Q (h,k,l) will be calculated!');
+        inpForm.fname  = {'fitmode'};
+        inpForm.defval = {false    };
+        inpForm.size   = {[1 1]    };
+        param0 = sw_readparam(inpForm, varargin{:});
+        
+        if ~param0.fitmode
+            fprintf0(obj.fileid,'No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!');
         end
         spectra = obj.spinwavesym(varargin{:});
     else

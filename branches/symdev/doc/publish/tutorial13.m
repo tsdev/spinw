@@ -8,7 +8,7 @@ linipo.fileid(0)
 linipo.genlattice('lat_const', [10.02 5.86 4.68],'sym','P n m a');
 linipo.addatom('r',[1/4 1/4 0],'S',1,'label','MNi2','color','b')
 linipo.gencoupling
-plot(linipo)
+plot(linipo,'zoom',2)
 
 %% Magnetic Hamiltonian
 % Fitted parameters of the Hamiltonian taken from the paper at T = 1.5 K
@@ -47,9 +47,9 @@ plot(linipo,'range',[2 2 1])
 linipo.genmagstr('mode','direct','S',[0 0 0 0; 0 0 0 0; 1 -1 -1 1])
 
 %% Spin wave spectrum
-% Calculating spin wave dispersion to compare with Figure 1 (a-c) in the
-% paper. Number of Q point along the scan and number of energy bins for the
-% color plot:
+% We calculate spin wave dispersion to compare with Figure 1 (a-c) in the
+% paper. We use sw_omegasum() function to eliminate zero intensity spin
+% wave modes from the lineplots.
 
 linipoSpec = linipo.spinwave({[0 1 0] [2 1 0]});
 linipoSpec = sw_egrid(linipoSpec);
@@ -74,3 +74,15 @@ figure
 sw_plotspec(linipoSpec,'mode','disp','axLim',[0 8],'colormap',[0 0 0],'colorbar',false)
 figure
 sw_plotspec(linipoSpec,'mode','int','axLim',[0 15],'colormap',[0 0 0],'colorbar',false)
+
+%% Mode crossing
+% On the last figure, the two spin wave mode cross each other, where the
+% order of the modes are reversed. This is a general feature of numercial
+% eigenvalue calculations, where it is hard to follow the eigenvalues and
+% eigenvectors through accidental degeneracy points. However at every Q
+% point the physical quantities (mode+assigned intensity) are always right.
+
+%%
+%  Written by
+%  Sandor Toth
+%  16-June-2014

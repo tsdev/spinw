@@ -58,17 +58,26 @@ for ii = 1:numel(pubfiles)
         imIdx = strfind(htmlFile{jj},'src="');
         if ~isempty(imIdx)
             lineSel = htmlFile{jj};
-            switch numel(imIdx)
-                case 1
-                    htmlFile{jj} = [lineSel(1:imIdx+4) imgPath lineSel(imIdx+5:end)];
-                case 2
-                    htmlFile{jj} = [lineSel(1:imIdx(1)+4) imgPath lineSel(imIdx(1)+5:imIdx(2)+4) imgPath lineSel(imIdx(2)+5:end)];
-                case 3
-                    htmlFile{jj} = [lineSel(1:imIdx(1)+4) imgPath lineSel(imIdx(1)+5:imIdx(2)+4) imgPath lineSel(imIdx(2)+5:imIdx(3)+4) imgPath lineSel(imIdx(3)+5:end)];
-                otherwise
+            
+            %             switch numel(imIdx)
+            %                 case 1
+            %                     htmlFile{jj} = [lineSel(1:imIdx+4) imgPath lineSel(imIdx+5:end)];
+            %                 case 2
+            %                     htmlFile{jj} = [lineSel(1:imIdx(1)+4) imgPath lineSel(imIdx(1)+5:imIdx(2)+4) imgPath lineSel(imIdx(2)+5:end)];
+            %                 case 3
+            %                     htmlFile{jj} = [lineSel(1:imIdx(1)+4) imgPath lineSel(imIdx(1)+5:imIdx(2)+4) imgPath lineSel(imIdx(2)+5:imIdx(3)+4) imgPath lineSel(imIdx(3)+5:end)];
+            %                 otherwise
+            %             end
+            
+            htmlFile{jj} = [lineSel(1:imIdx(1)+4) imgPath];
+            idxSum = 1;
+            while idxSum < numel(imIdx)
+                htmlFile{jj} = [htmlFile{jj} lineSel(imIdx(idxSum)+5:imIdx(idxSum+1)+4) imgPath];
+                idxSum = idxSum + 1;
             end
+            htmlFile{jj} = [htmlFile{jj} lineSel(imIdx(end)+5:end)];
+            
         end
-        
         htmlOut{end+1,1} = htmlFile{jj}; %#ok<*AGROW>
         jj = jj+1;
         idx2 = strfind(htmlFile{jj},'</body>');

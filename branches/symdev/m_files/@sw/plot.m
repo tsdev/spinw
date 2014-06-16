@@ -699,10 +699,14 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         phi   = obj.mag_str.k*transl*2*pi;
                         selS  = obj.mag_str.S(:,llMagAtom+llSpin);
                         plotS = param.sSpin*sw_rot(obj.mag_str.n,phi,selS);
-                        
                         %plotS   = param.sSpin*obj.mag_str.S(:,llMagAtom+llSpin);
                         lengthS = norm(obj.mag_str.S(:,llMagAtom+llSpin));
                         
+                        if obj.symbolic
+                            plotS = double(subs(plotS,1));
+                            lengthS = double(subs(lengthS,1));
+                        end
+
                         if param.coplanar
                             % TODO
                             % Circle for planar structure and maybe cones :)
@@ -750,12 +754,12 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             set(hArrow,'LineStyle','none');
                             if intS
                                 if halfS
-                                    tooltip(hArrow,['S=' sprintf('%d',lengthS2) '/2 magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',obj.mag_str.S(:,llMagAtom+llSpin))])
+                                    tooltip(hArrow,['S=' sprintf('%d',lengthS2) '/2 magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',double(subs(obj.mag_str.S(:,llMagAtom+llSpin),1)))])
                                 else
-                                    tooltip(hArrow,['S=' sprintf('%d',lengthS) ' magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',obj.mag_str.S(:,llMagAtom+llSpin))])
+                                    tooltip(hArrow,['S=' sprintf('%d',lengthS) ' magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',double(subs(obj.mag_str.S(:,llMagAtom+llSpin),1)))])
                                 end
                             else
-                                tooltip(hArrow,['S=' sprintf('%4.2f',lengthS) ' magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',obj.mag_str.S(:,llMagAtom+llSpin))])
+                                tooltip(hArrow,['S=' sprintf('%4.2f',lengthS) ' magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',double(subs(obj.mag_str.S(:,llMagAtom+llSpin),1)))])
                             end
                         else
                             objid = sprintf('spinArrow%d',idxs);

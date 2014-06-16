@@ -1,6 +1,6 @@
 %% Spin wave disperion of YVO3
 % We compare our results with the model from: C. Ulrich, et al. PRL 91, 257202 (2003).
-% see http://prl.aps.org/abstract/PRL/v91/i25/e257202
+% see [[http://prl.aps.org/abstract/PRL/v91/i25/e257202]]
 % We create crystal structure of YVO3 in the pseudocubic unit cell, doubled
 % along c-axis. The magnetic atoms are V4+ with spin quantum number S=1/2.
 
@@ -14,6 +14,7 @@ yvo3.genlattice('lat_const', [a/sqrt(2) b/sqrt(2) c]);
 yvo3.addatom('r',[0 0 0],'label','MV4','S',1/2,'color','gray')
 yvo3.addatom('r',[0 0 1/2],'label','MV4','S',1/2,'color','gray')
 yvo3.gencoupling
+%yvo3.newcell({[1 1 0] [-1 1 0] [0 0 1]})
 plot(yvo3)
 
 %% Magnetic Hamiltonian
@@ -87,3 +88,8 @@ subplot(3,1,2);
 sw_plotspec(specYVO3,'mode',2,'aHandle',gca,'imag',true);
 subplot(3,1,3);
 sw_plotspec(specYVO3,'mode',3,'aHandle',gca);
+
+%%
+%  Written by
+%  Sandor Toth
+%  16-June-2014

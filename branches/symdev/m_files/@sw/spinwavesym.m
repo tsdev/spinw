@@ -267,7 +267,7 @@ if param.eig
     
     fprintf0(fid,'Calculating SYMBOLIC eigenvalues... ');
     [V, D] = eig(g*ham); % 3rd output P
-    fprintf0('ready!\n');
+    fprintf0(fid,'ready!\n');
     
     
     spectra.V0 = V;

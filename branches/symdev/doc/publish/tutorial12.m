@@ -77,3 +77,8 @@ horaceObj = d3d(tri.abc,[1 0 0 0],[0,0.01,1],[0 1 0 0],[0,0.01,1],[0 0 0 1],[0,0
 horaceObj = disp2sqw_eval(horaceObj,@tri.horace,{'component','Sperp'},dE);
 % cut1 = cut(horaceObj,[0,0.01,1],[0,0.01,1],[2 2.5]);
 % plot(cut1)
+
+%%
+%  Written by
+%  Sandor Toth
+%  16-June-2014

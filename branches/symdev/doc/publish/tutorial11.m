@@ -27,3 +27,8 @@ sw_plotspec(lacuoSpec,'mode',3,'axLim',[0 5],'dE',35,'dashed',true)
 figure
 lacuoSpec = sw_omegasum(lacuoSpec,'zeroint',1e-5,'tol',1e-3);
 sw_plotspec(lacuoSpec,'mode',2,'axLim',[0 20],'dashed',true,'colormap',[0 0 0])
+
+%%
+%  Written by
+%  Sandor Toth
+%  16-June-2014

@@ -41,6 +41,10 @@ function addg(obj, matrixIdx, varargin)
 mAtom    = obj.matom;
 nMagAtom = size(mAtom.idx,2);
 
+if nMagAtom==0
+    error('sw:addg:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+end
+
 cTemp = -1;
 if ischar(matrixIdx)
     for ii = length(obj.matrix.label):-1:1

@@ -39,6 +39,10 @@ function addcoupling(obj, matrixLabel, couplingIdx, varargin)
 % See also SW, SW.GENCOUPLING, SW.ADDMATRIX.
 %
 
+if ~any(obj.atom.mag)
+    error('sw:addcoupling:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+end
+
 if isnumeric(matrixLabel)
     matrixIdx = matrixLabel;
 else

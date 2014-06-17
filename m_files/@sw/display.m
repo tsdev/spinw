@@ -25,7 +25,12 @@ function varargout = display(obj, fid)
 %
 
 Datastruct = datastruct;
-swDescr = sprintf('sw object\n');
+
+choiceStr = {'off' 'on'};
+symbStr = choiceStr{obj.symbolic+1};
+symmStr = choiceStr{obj.symmetry+1};
+
+swDescr = sprintf('sw object (symbolic: %s, symmetry: %s, textoutput: %s)\n',symbStr,symmStr,fopen(obj.fileid));
 
 for ii = 1:length(Datastruct.mainfield)
     swDescr = [swDescr sprintf('%s\n', Datastruct.mainfield{ii})]; %#ok<*AGROW>

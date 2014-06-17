@@ -159,6 +159,10 @@ function genmagstr(obj, varargin)
 % See also SW, SW.ANNEAL, SW.OPTMAGSTR, GM_SPHERICAL3D, GM_PLANAR.
 %
 
+if ~any(obj.atom.mag)
+    error('sw:genmagstr:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+end
+
 inpForm.fname  = {'mode'   'nExt'            'k'           'n'           };
 inpForm.defval = {'extend' obj.mag_str.N_ext obj.mag_str.k obj.mag_str.n };
 inpForm.size   = {[1 -1]   [1 -4]            [1 3]         [1 3]         };
@@ -259,7 +263,7 @@ switch param.mode
         % Create random spin directions.
         S = randn(nMagExt,3);
         S = bsxfun(@rdivide,S,sqrt(sum(S.^2,2)));
-        S = bsxfun(@times,S,mAtom.Sext')';
+        S = bsxfunsym(@times,S,mAtom.Sext')';
         k = [0 0 0];
     case 'helical'
         S0 = param.S;

@@ -84,6 +84,10 @@ function optm = optmagstr(obj, varargin)
 % See also SW, SW.ANNEAL, GM_SPHERICAL3D, GM_PLANAR, FMINSEARCH.
 %
 
+if ~any(obj.atom.mag)
+    error('sw:optmagstr:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+end
+
 inpForm.fname  = {'epsilon' 'func'           'boundary'          'xmin'   'xmax'  'x0'   };
 inpForm.defval = {1e-5      @gm_spherical3d  {'per' 'per' 'per'} []       []      []     };
 inpForm.size   = {[1 1]     [1 1]            [1 3]               [1 -1]   [1 -2]  [1 -3] };

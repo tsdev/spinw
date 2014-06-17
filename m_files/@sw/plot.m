@@ -496,14 +496,24 @@ matrix   = obj.matrix;
 coupling = obj.coupling;
 nExt     = double(obj.mag_str.N_ext);
 
-coupling.dl      = SS.all(1:3,:);
-coupling.atom1   = SS.all(4,:);
-coupling.atom2   = SS.all(5,:);
-coupling.mat_idx = SS.all(15,:);
-coupling.idx     = SS.all(16,:);
-coupling.mat     = reshape(SS.all(6:14,:),3,3,[]);
-coupling.DM      = (coupling.mat-permute(coupling.mat,[2 1 3]))/2;
-coupling.DM      = cat(2,coupling.DM(2,3,:),coupling.DM(3,1,:),coupling.DM(1,2,:));
+if isempty(SS.all)
+    coupling.dl      = zeros(3,0);
+    coupling.atom1   = zeros(1,0);
+    coupling.atom2   = zeros(1,0);
+    coupling.mat_idx = zeros(1,0);
+    coupling.idx     = zeros(1,0);
+    coupling.mat     = zeros(3,3,0);
+    coupling.DM      = zeros(3,0);
+else
+    coupling.dl      = SS.all(1:3,:);
+    coupling.atom1   = SS.all(4,:);
+    coupling.atom2   = SS.all(5,:);
+    coupling.mat_idx = SS.all(15,:);
+    coupling.idx     = SS.all(16,:);
+    coupling.mat     = reshape(SS.all(6:14,:),3,3,[]);
+    coupling.DM      = (coupling.mat-permute(coupling.mat,[2 1 3]))/2;
+    coupling.DM      = cat(2,coupling.DM(2,3,:),coupling.DM(3,1,:),coupling.DM(1,2,:));
+end
 
 nCoupling        = size(coupling.idx,2);
 

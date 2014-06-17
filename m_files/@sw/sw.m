@@ -2,7 +2,7 @@ classdef (ConstructOnLoad) sw < class_handlelight
     % SW class defines data structure and methods to calculate spin wave
     % dispersion in magnetic crystals.
     %
-    % obj = SW() 
+    % obj = SW()
     %
     % constructs a new sw class object, with default parameters.
     %
@@ -12,7 +12,7 @@ classdef (ConstructOnLoad) sw < class_handlelight
     % its data integrity. If obj is struct type, it creates new sw object
     % and checks data integrity.
     %
-    % obj = SW(cif_path) 
+    % obj = SW(cif_path)
     %
     % construct new sw class object, where cif_path contains a string of a
     % .cif file path defining an input crystals structure.
@@ -295,7 +295,7 @@ classdef (ConstructOnLoad) sw < class_handlelight
             objC.Tlabel = obj.Tlabel;
             
         end % copy
-
+        
         function abc = abc(obj)
             % returns lattice parameters and angles
             %
@@ -385,7 +385,7 @@ classdef (ConstructOnLoad) sw < class_handlelight
             sym = obj.sym;
             
         end % .symmetry
-
+        
         function fidOut = fileid(obj,fid)
             % determines where the text out is written
             %
@@ -403,14 +403,13 @@ classdef (ConstructOnLoad) sw < class_handlelight
             %
             if nargin > 1
                 obj.fid = fid;
+                return
             end
             
-            if nargout > 0
-                fidOut = obj.fid;
-            end
+            fidOut = obj.fid;
             
         end % .fileid
-
+        
         function varargout = notwin(obj)
             % removes any twin added to the sw object
             %
@@ -426,113 +425,8 @@ classdef (ConstructOnLoad) sw < class_handlelight
                 varargout{1} = obj;
             end
         end
-            
-        function varargout = symbolic(obj, symb)
-            % true/false for symbolic/numerical calculation
-            %
-            % symb = SYMBOLIC(obj)
-            %
-            % If true, magnetic structure are spin wave dispersions are
-            % calculated symbolically.
-            %
-            % SYMBOLIC(obj, symb)
-            %
-            % symb sets whether the calculations are symbolic/numerical
-            % (true/false).
-            %
-            % See also SW, SW.SPINWAVESYM.
-            %
-            
-            if nargin == 1
-                symb = logical(obj.symb);
-                
-                if symb
-                    v = ver;
-                    if ~any(strcmp('Symbolic Math Toolbox', {v.Name}))
-                        symb = false;
-                        warning('You need Symbolic Math Toolbox installed to run symbolic calculations!')
-                    end
-                end
-                
-            else
-                if symb == true
-                    
-                    obj.mag_str.S = sym(obj.mag_str.S); %#ok<*CPROP>
-                    obj.mag_str.k = sym(obj.mag_str.k);
-                    obj.mag_str.n = sym(obj.mag_str.n);
-                    
-                    nMat = numel(obj.matrix.label);
-                    if isa(obj.matrix.mat,'sym')
-                        % matrices are already symbolic
-                    elseif nMat == 0
-                        obj.matrix.mat = sym(obj.matrix.mat);
-                    else
-                        mat0 = sym(obj.matrix.mat*0);
-                        for ii = 1:nMat
-                            symVar = sym(obj.matrix.label{ii},'real');
-                            mat0(:,:,ii) = obj.matrix.mat(:,:,ii)*symVar;
-                        end
-                        obj.matrix.mat = mat0;
-                    end
-                    
-                    if isa(obj.field,'sym')
-                    else
-                        obj.single_ion.field = obj.single_ion.field * sym('B','real');
-                    end
-                    
-                    obj.unit.kB = sym('kB');
-                    obj.unit.muB = sym('muB');
-                    
-                    obj.symb = true;
-                elseif obj.symb == true
-                    % create double type properties
-                    symVar1 = symvar(obj.mag_str.S);
-                    if ~isempty(symVar1)
-                        obj.mag_str.S = double(subs(obj.mag_str.S,symVar1,ones(1,numel(symVar1))));
-                    else
-                        obj.mag_str.S = double(obj.mag_str.S);
-                    end
-                    
-                    symVar1 = symvar(obj.mag_str.k);
-                    if ~isempty(symVar1)
-                        obj.mag_str.k = double(subs(obj.mag_str.k,symVar1,ones(1,numel(symVar1))));
-                    else
-                        obj.mag_str.k = double(obj.mag_str.k);
-                    end
-                    
-                    symVar1 = symvar(obj.mag_str.n);
-                    if ~isempty(symVar1)
-                        obj.mag_str.n = double(subs(obj.mag_str.n,symVar1,ones(1,numel(symVar1))));
-                    else
-                        obj.mag_str.n = double(obj.mag_str.n);
-                    end
-                    
-                    symVar1 = symvar(obj.matrix.mat);
-                    if ~isempty(symVar1)
-                        obj.matrix.mat = double(subs(obj.matrix.mat,symVar1,ones(1,numel(symVar1))));
-                    else
-                        obj.matrix.mat = double(obj.matrix.mat);
-                    end
-
-                    symVar1 = symvar(obj.single_ion.field);
-                    if ~isempty(symVar1)
-                        obj.single_ion.field = double(subs(obj.single_ion.field,symVar1,ones(1,numel(symVar1))));
-                    else
-                        obj.single_ion.field = double(obj.single_ion.field);
-                    end
-
-                    obj.unit.kB = 0.086173324;
-                    obj.unit.muB = 0.057883818066;
-                    
-                    obj.symb = false;
-                end
-            end
-            
-            if (nargin < 2) || (nargout > 0)
-                varargout = {logical(symb)};
-            end
-            
-        end % .symbolic
+        
+        
         
     end
     methods (Hidden=true)

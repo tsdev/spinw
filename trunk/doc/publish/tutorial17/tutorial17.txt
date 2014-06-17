@@ -1,4 +1,4 @@
-<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Symbolic spin wave dispersion of FM chain</a></li><li><a href="#2">Magnetic Hamiltonian</a></li><li><a href="#3">Magnetic structure</a></li><li><a href="#4">Spin wave dispersion</a></li><li><a href="#5">Plot spin wave spectrum</a></li></ul></div><h2>Symbolic spin wave dispersion of FM chain<a name="1"></a></h2><p>To prepare for symbolic calculation we will need the Matlab Symbolic Toolbox. The symbolic mode should be switched on just after the sw object is created using the sw.symbolic(true) function. The lattice (lattice constants, angles, atomic positions) will still have numerical values. However the spins will be symbolic automatically, see below. The sw.unit_cell.S variable will belong to the 'sym' class, that is defined by the Symbolic Toolbox.</p><pre class="codeinput">FMchain = sw;
+<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Symbolic spin wave dispersion of FM chain</a></li><li><a href="#2">Magnetic Hamiltonian</a></li><li><a href="#3">Magnetic structure</a></li><li><a href="#4">Ground state energy</a></li><li><a href="#5">Spin wave dispersion</a></li><li><a href="#6">Plot spin wave spectrum</a></li></ul></div><h2>Symbolic spin wave dispersion of FM chain<a name="1"></a></h2><p>To prepare for symbolic calculation we will need the Matlab Symbolic Toolbox. The symbolic mode should be switched on just after the sw object is created using the sw.symbolic(true) function. The lattice (lattice constants, angles, atomic positions) will still have numerical values. However the spins will be symbolic automatically, see below. The sw.unit_cell.S variable will belong to the 'sym' class, that is defined by the Symbolic Toolbox.</p><pre class="codeinput">FMchain = sw;
 FMchain.fileid(0)
 FMchain.symbolic(true)
 
@@ -49,7 +49,15 @@ ans =
  S_1
    0
  
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial17_02.png" alt=""> <h2>Spin wave dispersion<a name="4"></a></h2><p>For symbolic mode, only the spin wave dispersion can be calculated calling the sw.spinwave function. It produces the general dispersion withouth any additional input. We note that the final result is not in a nice form, but this is the limitation of the simplify() function of the symbolic  engine.</p><pre class="codeinput">FMspec = FMchain.spinwave();
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial17_02.png" alt=""> <h2>Ground state energy<a name="4"></a></h2><p>The ground state energy can be calculated for symbolic mode as well.</p><pre class="codeinput">disp(<span class="string">'Ground state energy meV/spin:'</span>)
+FMchain.energy
+</pre><pre class="codeoutput">Ground state energy meV/spin:
+ 
+ans =
+ 
+-J*S_1^2
+ 
+</pre><h2>Spin wave dispersion<a name="5"></a></h2><p>For symbolic mode, only the spin wave dispersion can be calculated calling the sw.spinwave function. It produces the general dispersion withouth any additional input. We note that the final result is not in a nice form, but this is the limitation of the simplify() function of the symbolic  engine.</p><pre class="codeinput">FMspec = FMchain.spinwave();
 pretty(FMspec.omega)
 </pre><pre class="codeoutput">/                                          2 \
 |  J S_1 exp(-pi h 2 i) (exp(pi h 2 i) - 1)  |
@@ -57,7 +65,7 @@ pretty(FMspec.omega)
 |                                          2 |
 \ -J S_1 exp(-pi h 2 i) (exp(pi h 2 i) - 1)  /
 
-</pre><h2>Plot spin wave spectrum<a name="5"></a></h2><p>For plotting we need to calculate the spin wave spectrum at given Q point, here along the (H,0,0) direction using the eval() function.</p><pre class="codeinput">h   = linspace(0,1,501);
+</pre><h2>Plot spin wave spectrum<a name="6"></a></h2><p>For plotting we need to calculate the spin wave spectrum at given Q point, here along the (H,0,0) direction using the eval() function.</p><pre class="codeinput">h   = linspace(0,1,501);
 J   = 1;
 S_1 = 1;
 w = real(eval(FMspec.omega(2)));
@@ -121,6 +129,12 @@ plot(FMchain,'range',[3 0.5 0.5])
 FMchain.genmagstr('mode','helical','S',[0 1 0])
 FMchain.magtable.M
 plot(FMchain,'range',[3 0.5 0.5],'zoom',1)
+
+%% Ground state energy
+% The ground state energy can be calculated for symbolic mode as well.
+
+disp('Ground state energy meV/spin:')
+FMchain.energy
 
 %% Spin wave dispersion
 % For symbolic mode, only the spin wave dispersion can be calculated

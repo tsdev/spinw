@@ -49,6 +49,12 @@ FMchain.genmagstr('mode','helical','S',[0 1 0])
 FMchain.magtable.M
 plot(FMchain,'range',[3 0.5 0.5],'zoom',1)
 
+%% Ground state energy
+% The ground state energy can be calculated for symbolic mode as well.
+
+disp('Ground state energy meV/spin:')
+FMchain.energy
+
 %% Spin wave dispersion
 % For symbolic mode, only the spin wave dispersion can be calculated
 % calling the sw.spinwave function. It produces the general dispersion

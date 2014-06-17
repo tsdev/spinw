@@ -1,0 +1,18 @@
+Examples.txt
+
+ex1 Ferromagnetic NN chain: energies and intensities (constant) OK
+ex2 AF NN chain: energies OK, 
+    intensities a bit wiggly when plotted by sw_plotspec(bfs, 'mode',2)
+ex3 Frustrated J1-J2 chain: some matlab warnings
+    did not check results in detail
+ex4 Square lattice: energies and intensities OK [Coldea01, Headings01]
+ex5 ferro kagome: energies OK, intensities OK except for spikes at 
+    crossing points
+ex6 ferro kagome w/ 4 exchanges: energies OK, intensities OK except for 
+    spikes at crossing points
+ex7 AF k=0 kagome: magnetic structure and ground state energy OK
+    dispersion OK [Fig 15 in Yildirim06]
+ex8 AF k=0 J1-DM kagome: OK for opposite sign convention of Dz
+    as compared to Fig 13 of Yildirim06
+ex9 AF sqrt3Xsqrt3 kagome: OK with Sylvain Petit
+    (despite that the gs is not unique for J1 only!)

@@ -1,0 +1,100 @@
+<div class="content"><h1>How to produce constant energy cut of spin wave spectrum?</h1><!--introduction--><p>This example shows how to calculate the spin wave spectrum of the square lattice Heisenberg antiferromagnet and to produce a constant energy cut of the spectrum.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Crystal &amp; magnetic structure</a></li><li><a href="#2">Spin wave</a></li><li><a href="#4">Spin wave spectrum</a></li><li><a href="#8">Plotting E=const cut</a></li></ul></div><h2>Crystal &amp; magnetic structure<a name="1"></a></h2><p>Using sw_model, the crystal and magnetic structure are readily available. Using the 'squareAF' option, a square lattice Heisenberg Antiferromagnet with S = 1 and J = 1 is created.</p><pre class="codeinput">sq = sw_model(<span class="string">'squareAF'</span>,1,0);
+plot(sq)
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial10_01.png" alt=""> <h2>Spin wave<a name="2"></a></h2><p>We need to define a grid in reciprocal space, here we use the (Qh, Qk, 0) square lattice plane by calling ndgrid() function.</p><pre class="codeinput">nQ = 101;
+nE = 200;
+Qhv = linspace(0,2,nQ);
+Qkv = linspace(0,2,nQ);
+Qlv = 0;
+[Qh, Qk, Ql] = ndgrid(Qhv,Qkv,Qlv);
+</pre><p>Create a list of Q point, with dimensions of [3 nQ^2].</p><pre class="codeinput">Q = [Qh(:) Qk(:) Ql(:)]';
+</pre><h2>Spin wave spectrum<a name="4"></a></h2><pre class="codeinput"><span class="comment">% We calculates the spin wave spectrum at the list of Q points.</span>
+spec = sq.spinwave(Q);
+</pre><p>Creates a grid along energy for color plot. The trace of the spin-spin correlation function (diagonal sum) will be plotted.</p><pre class="codeinput">Ev = linspace(0,5,nE);
+spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>,<span class="string">'Evect'</span>,Ev);
+</pre><p>Introduce a finite energy resolution in the spectru.</p><pre class="codeinput">spec = sw_instrument(spec,<span class="string">'dE'</span>,0.3,<span class="string">'ki'</span>,1e4);
+</pre><p>The calculated intensity map is stored in spec.swConv, we reshape it into a 3D matrix.</p><pre class="codeinput">spec3D = reshape(spec.swConv,nE,nQ,nQ);
+</pre><h2>Plotting E=const cut<a name="8"></a></h2><p>A constant energy cut takes the (Eidx,:,:) elements of the matrix and plots it using the Matlab function imagesc().</p><pre class="codeinput">Ecut = 3; <span class="comment">%meV</span>
+Eidx = find(abs(Ev-Ecut)==min(abs(Ev-Ecut)));
+figure;
+imagesc(Qhv,Qkv,squeeze(spec3D(Eidx,:,:)));
+set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>)
+xlabel(<span class="string">'(H 0 0) (r.l.u.)'</span>)
+ylabel(<span class="string">'(0 K 0) (r.l.u.)'</span>)
+title(<span class="string">'Spin wave spectrum at E = 3 meV, square lattice Heisenberg AF'</span>)
+caxis([0 12000])
+colormap <span class="string">jet</span>
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial10_02.png" alt=""> <pre>Written by
+Sandor Toth
+06-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+<literal>##### SOURCE BEGIN #####
+%% How to produce constant energy cut of spin wave spectrum?
+% This example shows how to calculate the spin wave spectrum of the square
+% lattice Heisenberg antiferromagnet and to produce a constant energy cut
+% of the spectrum.
+
+%% Crystal & magnetic structure
+% Using sw_model, the crystal and magnetic structure are readily available.
+% Using the 'squareAF' option, a square lattice Heisenberg Antiferromagnet
+% with S = 1 and J = 1 is created.
+
+sq = sw_model('squareAF',1,0);
+plot(sq)
+
+%% Spin wave
+% We need to define a grid in reciprocal space, here we use the (Qh, Qk, 0)
+% square lattice plane by calling ndgrid() function.
+
+nQ = 101;
+nE = 200;
+Qhv = linspace(0,2,nQ);
+Qkv = linspace(0,2,nQ);
+Qlv = 0;
+[Qh, Qk, Ql] = ndgrid(Qhv,Qkv,Qlv);
+
+%%
+% Create a list of Q point, with dimensions of [3 nQ^2].
+Q = [Qh(:) Qk(:) Ql(:)]';
+
+%% Spin wave spectrum
+
+% We calculates the spin wave spectrum at the list of Q points.
+spec = sq.spinwave(Q);
+
+%%
+% Creates a grid along energy for color plot. The trace of the spin-spin
+% correlation function (diagonal sum) will be plotted.
+
+Ev = linspace(0,5,nE);
+spec = sw_egrid(spec,'component','Sxx+Syy+Szz','Evect',Ev);
+
+%%
+% Introduce a finite energy resolution in the spectru.
+spec = sw_instrument(spec,'dE',0.3,'ki',1e4);
+
+%%
+% The calculated intensity map is stored in spec.swConv, we reshape it into
+% a 3D matrix.
+
+spec3D = reshape(spec.swConv,nE,nQ,nQ);
+
+%% Plotting E=const cut
+% A constant energy cut takes the (Eidx,:,:) elements of the matrix and
+% plots it using the Matlab function imagesc().
+
+Ecut = 3; %meV
+Eidx = find(abs(Ev-Ecut)==min(abs(Ev-Ecut)));
+figure;
+imagesc(Qhv,Qkv,squeeze(spec3D(Eidx,:,:)));
+set(gca,'YDir','normal')
+xlabel('(H 0 0) (r.l.u.)')
+ylabel('(0 K 0) (r.l.u.)')
+title('Spin wave spectrum at E = 3 meV, square lattice Heisenberg AF')
+caxis([0 12000])
+colormap jet
+
+%%
+%  Written by
+%  Sandor Toth
+%  06-June-2014
+##### SOURCE END #####</literal>
+-->

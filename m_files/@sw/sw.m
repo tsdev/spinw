@@ -229,7 +229,7 @@ classdef (ConstructOnLoad) sw < class_handlelight
                         aName = strword(name0{ii},2,true);
                         col0 = sw_atomdata(aName{1}(aName{1}>57),'color')';
                         col(:,ii) = col0;
-                        [~, ~, objS.unit_cell.S(ii)] = sw_mff(name0{ii});
+                        [~, ~, objS.unit_cell.S(ii)] = sw_mff(aName{1});
                     end
                     objS.unit_cell.color = int32(col);
                 end

@@ -57,6 +57,17 @@ if nField == 0
     revNum = str2double(revNum);
 end
 
+% Matlab version & Symbolic Toolbox
+v0 = ver;
+nSym = strcmp('Symbolic Math Toolbox', {v0.Name});
+nSym = find(nSym,1);
+if isempty(nSym)
+    strSym = 'No Symbolic Math Toolbox';
+else
+    strSym = [v0(nSym).Name ' installed'];
+end
+
+
 if nargout == 0
     if nField == 0
         
@@ -73,7 +84,10 @@ if nargout == 0
         else
             disp('You have the latest version of SpinW!')
         end
-    end    
+    end
+    fprintf(['MATLAB version: ' version '\n']);
+    fprintf([strSym '\n'])
+    
 else
     if nField == 0
         if any(revNum)

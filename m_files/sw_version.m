@@ -62,7 +62,7 @@ v0 = ver;
 nSym = strcmp('Symbolic Math Toolbox', {v0.Name});
 nSym = find(nSym,1);
 if isempty(nSym)
-    strSym = 'No Symbolic Math Toolbox';
+    strSym = 'no Symbolic Math Toolbox installed';
 else
     strSym = [v0(nSym).Name ' installed'];
 end
@@ -79,14 +79,13 @@ if nargout == 0
     else
         disp([verStruct.Name verStruct.Version ' (rev ' num2str(verStruct.Revision) ')']);
         onlineRev = sw_update;
-        if onlineRev > str2num(verStruct.Revision)
+        if onlineRev > str2num(verStruct.Revision) %#ok<ST2NM>
             disp(['Newer version of SpinW is available online (rev. num. ' num2str(onlineRev) '), use the sw_update() function to download it!']);
         else
             disp('You have the latest version of SpinW!')
         end
     end
-    fprintf(['MATLAB version: ' version '\n']);
-    fprintf([strSym '\n'])
+    fprintf(['MATLAB version: ' version ', ' strSym '\n']);
     
 else
     if nField == 0

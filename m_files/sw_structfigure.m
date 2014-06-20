@@ -31,7 +31,7 @@ if get(gca,'CameraViewAngle') == 0.6
 end;
 
 if feature('usehg2')
-    figNum = hFigure.number;
+    figNum = hFigure.Number;
 else
     figNum = hFigure;
 end
@@ -46,8 +46,16 @@ set(hFigure,...
     'DeleteFcn',     @closeSubFigs);
 %    'Position',      posFig,...
 
-hToolbar = get(hFigure,'children');
-hToolbar = hToolbar(end);
+hToolbarT = get(hFigure,'children');
+if feature('usehg2')
+    idx = 1;
+    while ~isa(hToolbarT(idx),'matlab.ui.container.Toolbar')
+        idx = idx + 1;
+    end
+    hToolbar = hToolbarT(idx);
+else
+    hToolbar = hToolbarT(end);
+end
 hButton  = get(hToolbar,'children');
 delete(hButton([1:(end-3) end-1 end]));
 
@@ -265,7 +273,11 @@ function closeSubFigs(hFigure, ~)
 % close all sub figures on plot window closing
 
 % close the "Set Range" window if it is open
-sub1 = findobj('Tag',['setRange_' num2str(hFigure)]);
+if feature('usehg2')
+    sub1 = findobj('Tag',['setRange_' num2str(hFigure.Number)]);
+else
+    sub1 = findobj('Tag',['setRange_' num2str(hFigure)]);
+end
 if ~isempty(sub1)
     close(sub1);
 end
@@ -297,8 +309,15 @@ parentPos = get(hFigure,'Position');
 fWidth    = 195;
 fHeight   = 240;
 
+% Figure number
+if feature('usehg2')
+    figNum = hFigure.Number;
+else
+    figNum = hFigure;
+end
+
 %    'WindowStyle',    'modal',...
-objMod = findobj('Tag',['setRange_' num2str(hFigure)']);
+objMod = findobj('Tag',['setRange_' num2str(figNum)']);
 
 if ~isempty(objMod)
     close(objMod)
@@ -311,11 +330,12 @@ objMod = figure(...
     'Name',           'Plot range',...
     'NumberTitle',    'off',...
     'DockControls',   'off',...
-    'Tag',            ['setRange_' num2str(hFigure)],...
+    'Tag',            ['setRange_' num2str(figNum)],...
     'MenuBar',        'none',...
     'Toolbar',        'none',...
     'Resize',         'off',...
     'Visible',        'on');
+
 handles.objMod = objMod;
 handles.panel(1) = uipanel(objMod,...
     'Position',       [0 0 1 1],...

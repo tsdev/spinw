@@ -1,5 +1,7 @@
 function rootdir = sw_rootdir()
-% rootdir = SW_ROOTDIR() gives the location of the spinW program.
+% gives the path to the SpinW code
+%
+% rootdir = SW_ROOTDIR()
 %
 % See also SW.
 %

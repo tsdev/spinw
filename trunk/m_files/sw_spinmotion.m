@@ -1,7 +1,10 @@
 function spectra = sw_spinmotion(spectra, varargin)
-% SW_SPINMOTION(spectra, 'option1', value1 ...) calculates the amplitude
-% and phase of the local spin precessions belonging to a selected normal
-% magnon mode.
+% calculates the amplitude and phase of spin motion
+%
+% SW_SPINMOTION(spectra, 'option1', value1 ...)
+%
+% It calculates the amplitude and phase of the local spin precessions
+% belonging to a selected normal magnon mode.
 %
 % Options:
 %

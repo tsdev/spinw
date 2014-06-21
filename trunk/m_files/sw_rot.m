@@ -1,6 +1,12 @@
 function [V, rotM] = sw_rot(rotAxis, rotAngle, V)
-% [V, rotM] = SW_ROT(rotAxis, rotAngle, {V}) rotates vectors in V around
-% rotAxis by rotAngle radian (positive angle is the right-hand direction).
+% rotates vectors around arbitrary axis in 3D
+%
+% [V, rotM] = SW_ROT(rotAxis, rotAngle, {V})
+%
+% It rotates vectors in V around rotAxis by rotAngle radian (positive angle
+% is the right-hand direction).
+%
+% Input:
 %
 % rotAxis   Axis of rotation, dimensions are [1 3].
 % rotAngle  Angle of rotation in radian (can be vector with dimensions of
@@ -8,6 +14,7 @@ function [V, rotM] = sw_rot(rotAxis, rotAngle, V)
 % V         Matrix of 3D vectors, dimensions are [3 N], optional.
 %
 % Output:
+%
 % V         Rotated vectors, dimensions are [3 N].
 % rotM      Rotation matrix, dimensions are [3 3]. If rotAngle is a vector,
 %           rotM contains rotation matrices for every angle, it's

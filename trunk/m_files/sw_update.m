@@ -1,5 +1,7 @@
 function onlineRev = sw_update(installDir)
-% SW_UPDATE updates the SpinW installation from the internet
+% updates the SpinW installation from the internet
+%
+% SW_UPDATE()
 %
 % {onlineRev} = SW_UPDATE(installDir)
 %

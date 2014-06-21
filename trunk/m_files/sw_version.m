@@ -1,5 +1,7 @@
 function varargout = sw_version()
-% SW_VERSION gives the current version of the SpinW code
+% returns the installed version of SpinW
+%
+% SW_VERSION()
 %
 
 % read file header from sw.m file

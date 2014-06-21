@@ -1,9 +1,12 @@
 function input = sw_readparam(format, varargin)
-% input = SW_READPARAM(format, raw) reads in parameters from input
-% structure. Lower and upper case insensitive, the output structure has the
-% names stored in format.fname. Instead of a struct type input, also a list
-% of parmeters can be given in a parameter name, value pairs. Where the
-% parameter name is a string.
+% parse input arguments (option, value pairs)
+%
+% input = SW_READPARAM(format, raw) 
+%
+% It reads in parameters from input structure. Lower and upper case
+% insensitive, the output structure has the names stored in format.fname.
+% Instead of a struct type input, also a list of parmeters can be given in
+% a parameter name, value pairs. Where the parameter name is a string.
 %
 % Input:
 %

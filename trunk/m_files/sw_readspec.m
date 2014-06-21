@@ -1,6 +1,10 @@
 function data = sw_readspec(path)
-% data = SW_READSPEC(datapath) reads experimental spin wave dispersion data
-% from text file, whose location is defined in path.
+% read spin wave dispersion data from file
+%
+% data = SW_READSPEC(datapath)
+%
+% It reads experimental spin wave dispersion data from text file, whose
+% location is defined in path.
 %
 % Format of the input data file:
 % Every line of the data file contains information about an energy scan at

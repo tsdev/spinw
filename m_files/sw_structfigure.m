@@ -1,6 +1,7 @@
 function hFigure = sw_structfigure
-% hFigure = SW_STRUCTFIGURE creates figure for crystal structure and
-% magnetic structure plots.
+% creates figure for crystal structure plot
+%
+% hFigure = SW_STRUCTFIGURE()
 %
 % See also SW.PLOT.
 %

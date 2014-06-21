@@ -1,6 +1,7 @@
 function [symOpG, symTrG, isGen] = sw_symgetgen(symOp, symTr)
-% [symOp, symTr, idx] = SW_SYMGETGEN(symOp, symTr) generates the generators
-% of a list of symmetry operators.
+% creates the generators from a list of symmetry operators
+%
+% [symOp, symTr, idx] = SW_SYMGETGEN(symOp, symTr)
 %
 % Input:
 %

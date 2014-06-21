@@ -1,5 +1,7 @@
 function hOrbital = sw_t2g(idx, varargin)
-% hOrbital = sw_t2g(idx, 'Option1',Value1,...) plots t2g orbital surface.
+% plots t2g electron orbital surfaces
+%
+% hOrbital = SW_T2G(idx, 'Option1',Value1,...)
 %
 % Input:
 %

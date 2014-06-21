@@ -1,6 +1,7 @@
 function sw_status(percent,varargin)
-% SW_STATUS(percent, {mode}) displays the remaining time of the execution
-% of any code.
+% timer function that displays also the remaining time
+%
+% SW_STATUS(percent, {mode})
 %
 % Input:
 %

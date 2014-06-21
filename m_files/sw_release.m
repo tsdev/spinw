@@ -1,5 +1,7 @@
 function sw_release(verNum, tempDir)
-% SW_RELEASE creates a release and packs it into a .zip file.
+% creates a SpinW release and packs it into a .zip file
+%
+% SW_RELEASE()
 %
 % SW_RELEASE(verNum, {tempDir})
 %

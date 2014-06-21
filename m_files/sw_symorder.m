@@ -1,8 +1,11 @@
 function N = sw_symorder(R, T)
-% N = SW_SYMORDER(R, T) determines the order of the (R,T) symmetry
-% operator, where R is a rotation matrix and T is a translation. Maximum
-% order is 10 if the matrix is not a rotation matrix of any
-% crystallographic point group.
+% determine the order of the symmetry operator
+%
+% N = SW_SYMORDER(R, T) 
+%
+% It determines the order of the (R,T) symmetry operator, where R is a
+% rotation matrix and T is a translation. Maximum order is 10 if the matrix
+% is not a rotation matrix of any crystallographic point group.
 %
 % Input:
 %
@@ -10,6 +13,7 @@ function N = sw_symorder(R, T)
 % T         Translation vector, dimensions are [3 1] optional.
 %
 % Example:
+%
 % R^sw_symorder(R) == eye(3);
 %
 % See also SW_GENATPOS, SW_BASISMAT.

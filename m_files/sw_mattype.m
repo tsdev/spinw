@@ -1,7 +1,10 @@
 function type = sw_mattype(mat, epsilon)
-% type = SW_MATTYPE(mat, {epsilon}) function determines the type of the mat
-% 3x3xN matrix and returns a vector with dimensions of [1 N]. The following
-% values are defined:
+% determines the type of square input matrix
+%
+% type = SW_MATTYPE(mat, {epsilon}) 
+%
+% The function determines the type of the mat 3x3xN matrix and returns a
+% vector with dimensions of [1 N].
 %
 % Input:
 %
@@ -15,6 +18,7 @@ function type = sw_mattype(mat, epsilon)
 %           2   Anisotropic exchange
 %           3   DM interaction
 %           4   General matrix
+%
 % Also works on symbolic matrices, but keep all symbols real for consistent
 % result!
 %

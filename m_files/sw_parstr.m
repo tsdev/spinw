@@ -1,6 +1,10 @@
 function parsed = sw_parstr(strIn, spectra)
-% parsed = sw_parstr(strIn) parses input string containing linear
-% expression of different cross sections in strIn.
+% parses input string
+%
+% parsed = SW_PARSTR(strIn)
+%
+% It parses input string containing linear expression of different cross
+% sections in strIn.
 %
 % Input:
 %

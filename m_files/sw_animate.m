@@ -1,5 +1,7 @@
 function sw_animate(spectra, varargin)
-% SW_ANIMATE(spectra, 'option1', value1 ...) animates normal magnon modes.
+% animates normal magnon modes
+%
+% SW_ANIMATE(spectra, 'option1', value1 ...)
 %
 % Animates the selected normal magnon mode on a structure plot. The
 % animation will run until the given number of full rotations or until it

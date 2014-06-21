@@ -1,6 +1,7 @@
 function out = sw_converter(value, unitIn, unitOut, particleName)
-% out = SW_CONVERTER(value, unitIn, unitOut, {particleName}) converts energy
-% and momentum units for a given particle.
+% converts energy and momentum units for a given particle
+%
+% out = SW_CONVERTER(value, unitIn, unitOut, {particleName}) 
 %
 % Input:
 %

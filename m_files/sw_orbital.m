@@ -1,6 +1,7 @@
 function hSurf = sw_orbital(qNum, varargin)
-% hSurf = SW_ORBITAL(qNum, 'Option1', Value1, ...) returns a polygon of the
-% hydrogen orbitals.
+% returns a polygon of selected hydrogen orbitals
+%
+% hSurf = SW_ORBITAL(qNum, 'Option1', Value1, ...)
 %
 % Input:
 %
@@ -19,7 +20,6 @@ function hSurf = sw_orbital(qNum, varargin)
 % norm      Whether to normalise the axes, default is true.
 %
 % Radius is normalised to 1.
-%
 %
 
 if nargin == 0

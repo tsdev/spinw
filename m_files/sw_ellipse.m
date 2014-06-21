@@ -1,6 +1,10 @@
 function points = sw_ellipse(r0, n, R, N, v1, v2)
-% points = SW_ELLIPE(r0, n, R, N, {v1, v2}) creates array containing the 3D
-% coordinates of the ellipse circumference line.
+% creates an array of the 3D coordinates of the ellipse circumference
+%
+% points = SW_ELLIPE(r0, n, R, N, {v1, v2})
+%
+% Input:
+%
 % r0    Center of ellipse, dimensions are [3 1].
 % n     Normal vector to the ellipse surface, dimensions are [3 1].
 % R     Minor and major radius of the ellipse, dimensions are [2 1].

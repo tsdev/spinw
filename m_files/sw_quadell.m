@@ -1,8 +1,11 @@
 function ellM = sw_quadell(M, toplot)
-% ellM = SW_QUADELL(M, plot) calculates the parameters of an ellipsoid belonging
-% to the input quadratic form and plots it.
+% calculates and plots the parameters of an ellipsoid from a quadratic form
 %
-% Tool to visualise anisotropy matrices, g-tensors, etc.
+% ellM = SW_QUADELL(M, plot)
+%
+% It calculates the parameters of an ellipsoid belonging to the input
+% quadratic form and plots it. Can be used as a tool to visualise
+% anisotropy matrices, g-tensors, etc.
 %
 % Input:
 %

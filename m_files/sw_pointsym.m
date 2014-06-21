@@ -1,7 +1,10 @@
 function pOp = sw_pointsym(sym, r)
-% pOp = SW_POINTSYM(sym, r) determines point group symmetry in an arbitrary
-% position in the unit cell in any space group. Returns all the generators
-% of the point group.
+% determines point group symmetry of a space group at a given position
+%
+% pOp = SW_POINTSYM(sym, r)
+%
+% It determines point group symmetry in an arbitrary position in the unit
+% cell in any space group. Returns all the generators of the point group.
 %
 % Input:
 %

@@ -1,10 +1,14 @@
 function hFigure = sw_getfighandle(tagLabel)
-% hFigure = SW_GETFIGHANDLE(tagLabel) gives the handle of an active figure
-% window that has the 'Tag' property identical to tagLabel. If possible, it
-% returns the handle of the current figure. hFigure is empty if no figure
-% with the necessary 'Tag' field is found.
+% returns the handle of the active structure plot window
 %
-% See also SW_ANNEALFIGURE.
+% hFigure = SW_GETFIGHANDLE(tagLabel) 
+%
+% It gives the handle of an active figure window that has the 'Tag'
+% property identical to tagLabel. If possible, it returns the handle of the
+% current figure. hFigure is empty if no figure with the necessary 'Tag'
+% field is found.
+%
+% See also SW_STRUCTFIGURE, SW.PLOT.
 %
 
 if nargin == 0

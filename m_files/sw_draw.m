@@ -1,8 +1,9 @@
 function polyDat = sw_draw(varargin)
-% polyDat = SW_DRAW(Option1, Value1, ...) extra plots onto the crystal
-% structure plot
+% plots additional object onto the crystal structure
 %
-% SW_DRAW plots extra things (bonds, polyhedra) onto the crystal structure
+% polyDat = SW_DRAW(Option1, Value1, ...) 
+%
+% It plots extra objects (bonds, polyhedra) onto the crystal structure
 % plot produced previously by sw.plot() function.
 %
 % Options:
@@ -53,7 +54,7 @@ function polyDat = sw_draw(varargin)
 % It will plot 6 bonds between every chromium atom and the 6 closes oxygen
 % atoms.
 %
-% See also SW, SW_T2G, SW_ORBITAL, SW_ADDOBJECT.
+% See also SW, SW.PLOT, SW_T2G, SW_ORBITAL, SW_ADDOBJECT.
 %
 
 if nargin == 0

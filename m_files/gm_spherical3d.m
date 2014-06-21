@@ -1,6 +1,10 @@
 function [M, k, n, name, pname, limit] = gm_spherical3d(M0, x)
-% [M, k, n, name, pname, limit] = GM_SPHERICAL3D(M0, x) generates magnetic
-% moments and normal vector from spherical (theta,phi) coordinates.
+% magnetic structure constraint function with spherical parameterisation
+%
+% [M, k, n, name, pname, limit] = GM_SPHERICAL3D(M0, x) 
+%
+% It generates the parameters of magnetic moments and normal vector from
+% spherical (theta,phi) coordinates.
 %
 % Input:
 %

@@ -1,6 +1,9 @@
 function sw_annealplot(T, E, rate, param,fid)
-% SW_ANNEALPLOT(T, E, rate, param,fid) displays information about the annealing
-% procedure.
+% displays information about the annealing simulation
+%
+% SW_ANNEALPLOT(T, E, rate, param,fid)
+%
+% See also SW.ANNEAL, SW_ANNEALFIGURE.
 %
 
 if nargin == 0

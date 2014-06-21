@@ -1,6 +1,7 @@
 function [handle] = sw_ellcylinder(r1,r2,R,N,v1,v2, cap)
-% [handle] = SW_ELLCYLINDER(r1,r2,R,N,{v1, v2, cap}) creates the surface of
-% an elliptic cylinder.
+% creates the surface of an elliptic cylinder
+%
+% [handle] = SW_ELLCYLINDER(r1,r2,R,N,{v1, v2, cap})
 %
 % Input:
 %

@@ -1,5 +1,7 @@
 function polyDat = sw_drawpoly(varargin)
-% polyDat = SW_DRAWPOLY(Option1, Value1, ...) draws polyhedra around atoms.
+% draws polyhedra around atoms on the structure plot
+%
+% polyDat = SW_DRAWPOLY(Option1, Value1, ...)
 %
 % Options:
 %

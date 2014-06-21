@@ -1,16 +1,12 @@
 function parOut = sw_fstat(state, parIn, T, E, M, ~)
-% parOut = SW_FSTAT(state, parIn, T, E, M, nExt) calculates statistical
-% properties of different physical variables over several sample state.
-% Called by sw.anneal.
+% calculates termodynamical averages during an annealing simulation
 %
-% parOut        Output parameter structure.
-% parOut.nStat  The number of evaluated states.
-% parOut.M      <M> summed over all magnetic moment, dimensions are
-%               [spinDim,nMagExt*nT].
-% parOut.M2     <M^2> summed over all magnetic moment, dimensions are
-%               [spinDim,nMagExt*nT].
-% parOut.E      <E> summed over all magnetic moment.
-% parOut.E2     <E^2> summed over all magnetic moment.
+% parOut = SW_FSTAT(state, parIn, T, E, M, nExt)
+%
+% It calculates statistical properties of different physical variables over
+% several sample state. Called by sw.anneal.
+%
+% Input:
 %
 % state         Defines the task of the function.
 %               1   Initialize the parOut structure.
@@ -23,6 +19,18 @@ function parOut = sw_fstat(state, parIn, T, E, M, ~)
 % M             Magnetic moment of every atom, size: [spinDim,nMagExt*nT].
 % nExt          Size of the magnetic cell, size: [3,1].
 % kB            Boltmann constant, units of temperature.
+%
+% Output:
+%
+% parOut        Output parameter structure.
+% parOut.nStat  The number of evaluated states.
+% parOut.M      <M> summed over all magnetic moment, dimensions are
+%               [spinDim,nMagExt*nT].
+% parOut.M2     <M^2> summed over all magnetic moment, dimensions are
+%               [spinDim,nMagExt*nT].
+% parOut.E      <E> summed over all magnetic moment.
+% parOut.E2     <E^2> summed over all magnetic moment.
+%
 %
 % For the final execution, the following parameters are calculated:
 %

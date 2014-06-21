@@ -1,6 +1,12 @@
 function [xLabel, xAxis] = sw_label(spectra)
-% [xLabel, xAxis] = SW_LABEL(spectra) returns the label and axis vector for
-% the x-axis for momentum transfer scans linear in reciprocal space.
+% returns axis labels for spectrum plot
+%
+% [xLabel, xAxis] = SW_LABEL(spectra) 
+%
+% It returns the label and axis vector for the x-axis for momentum transfer
+% scans linear in reciprocal space.
+%
+% See also SW_PLOTSPEC.
 %
 
 if nargin == 0

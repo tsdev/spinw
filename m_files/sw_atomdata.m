@@ -1,6 +1,7 @@
 function varargout = sw_atomdata(atomSymb, datType)
-% [data atomLabel] = SW_ATOMDATA(atomSymb, dataType) returns information about atoms
-% from the atom.dat file.
+% returns information on elements stored in the atom.dat file
+%
+% [data atomLabel] = SW_ATOMDATA(atomSymb, dataType) 
 %
 % Input:
 %

@@ -1,4 +1,4 @@
-function publish_PSI(fName)
+function publish_PSI(fName, DirName)
 % publishing all examples in the publish folder and convert it to PSI web format
 %
 % The online source can be imported to Matlab using the web address of the
@@ -10,8 +10,13 @@ function publish_PSI(fName)
 % creates .txt files for publishing on the PSI website
 %
 
-% list of files in the publish folder:
-pubfolder = [sw_rootdir 'doc' filesep 'publish'];
+if nargin < 2
+    % list of files in the publish folder:
+    pubfolder = [sw_rootdir 'doc' filesep 'publish'];
+else
+    pubfolder = DirName;
+end
+
 if nargin == 0
     pubfiles  = dir([pubfolder filesep '*.m']);
 else

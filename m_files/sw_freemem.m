@@ -1,5 +1,7 @@
 function mem = sw_freemem()
-% mem = SW_FREEMEM() gives the amount of free memory in bytes.
+% gives the amount of free RAM in bytes
+%
+% mem = SW_FREEMEM()
 %
 % If it cannot determine the size of the free memory, it returns zero.
 %

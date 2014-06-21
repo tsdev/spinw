@@ -1,6 +1,9 @@
 function Qm = sw_econtract(Q,varargin)
-% Qm = sw_flatcone(Q,'Option1', Value,...) converts (Q,omega) values to Qm
-% values for diffraction instrument.
+% converts (Q,omega) values to Qm values for diffraction instrument
+%
+% Qm = SW_FLATCONE(Q,'Option1', Value,...) 
+%
+% Input:
 %
 % Q         Input values in reciprocal space in the scattering plane in
 %           Angstrom^-1 units, dimensions are [2 nQ].

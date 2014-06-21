@@ -1,6 +1,10 @@
 function [mAtom, SSext] = sw_extendlattice(nExt, mAtom, varargin)
-% [mAtom AAext SSext] = SW_EXTENDLATTICE(nExt, mAtom, {SS}) produces
-% the extended lattice and interactions by tiling the unit cell.
+% creates superlattice
+%
+% [mAtom AAext SSext] = SW_EXTENDLATTICE(nExt, mAtom, {SS}) 
+%
+% It creates a superlattice and all redefines all given bond for the larger
+% superlattice.
 %
 % Input:
 %

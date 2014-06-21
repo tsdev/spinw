@@ -1,6 +1,7 @@
 function obj = sw_model(model, param, fid)
-% obj = SW_MODEL(model, param, {fid}) creates different predefined spin
-% models.
+% creates different predefined spin models
+%
+% obj = SW_MODEL(model, param, {fid}) 
 %
 % Input:
 %

@@ -1,6 +1,7 @@
 function [handle] = sw_circlesurf(r0, n, R, N)
-% [handle] = SW_CIRCLESURF(r0, n, R, N) creates the filled of a circle in 
-% 3 dimensions.
+% creates a circle surface in 3 dimensions
+%
+% [handle] = SW_CIRCLESURF(r0, n, R, N)
 %
 % Input:
 %
@@ -9,7 +10,7 @@ function [handle] = sw_circlesurf(r0, n, R, N)
 % R     Radius of the circle.
 % N     Number of points on the curve.
 %
-% See also SW_CIRCLE, SW_CONE, SW_CYLINDER.
+% See also SW_CIRCLE, SW_CONE, SW_CYLINDER, SW_ARROW.
 %
 
 if nargin == 0

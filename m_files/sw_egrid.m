@@ -1,7 +1,10 @@
 function spectra = sw_egrid(spectra, varargin)
-% spectra = SW_EGRID(spectra, 'Option1', Value1, ...) creates a grid along
-% energy and stores the requested correlation function component(s) binned
-% in energy using the grid.
+% creates energy for spectrum color plot
+%
+% spectra = SW_EGRID(spectra, 'Option1', Value1, ...) 
+%
+% It creates a grid along energy and stores the requested correlation
+% function component(s) binned in energy using the grid.
 %
 % Input:
 %

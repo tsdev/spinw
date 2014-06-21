@@ -1,6 +1,7 @@
 function sw_initialize()
-% SW_INITIALIZE initializes sw library and cleans symmetry.dat file from
-% user entries.
+% initializes sw library and cleans symmetry.dat file from user entries
+%
+% SW_INITIALIZE()
 %
 % See also SW.
 %

@@ -1,6 +1,7 @@
 function [symOp, symTr, symName] = sw_gencoord(sym, fid)
-% [symOp, symTr, symName] = SW_GENCOORD(sym, fid) calculates all symmtery
-% operators for a given space group.
+% calculates all symmetry operators for a given space group
+%
+% [symOp, symTr, symName] = SW_GENCOORD(sym, fid) 
 %
 % Input:
 %

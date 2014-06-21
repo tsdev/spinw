@@ -1,7 +1,10 @@
 function [M, k, n, name, pname, limit] = gm_planar(M0, x)
-% [M, k, n, name, pname, limit] = GM_PLANAR(M0, x) generates planar
-% magnetic structure from phi angles, ordering wave vector and spin plane
-% normal vector.
+% planar magnetic structure constraint function 
+%
+% [M, k, n, name, pname, limit] = GM_PLANAR(M0, x) 
+%
+% It generates the parameters of arbitrary planar magnetic structure from
+% phi angles, ordering wave vector and spin plane normal vector.
 %
 % Input:
 %

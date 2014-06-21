@@ -1,8 +1,11 @@
 function [symOp, symTr, symName, symStr, symNum] = sw_gensym(varargin)
-% [symOp, symTr, symName, symStr, symNum] = SW_GENSYM({sym}) gives the
-% symmetry elements based on the space group number or given list of
-% symmetry operators. Without arguments, returns the name of all space
-% groups stored in symmetry.dat file.
+% returns symmetry operators of a given space group
+%
+% [symOp, symTr, symName, symStr, symNum] = SW_GENSYM({sym}) 
+%
+% It gives the symmetry elements based on the space group number or given
+% list of symmetry operators. Without arguments, returns the name of all
+% space groups stored in symmetry.dat file.
 %
 % Input:
 %

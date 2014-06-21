@@ -1,6 +1,9 @@
 function [u, v] = sw_cartesian(n)
-% [u, v] = SW_CARTESIAN(n) creates an (n,u,v) right handed Cartesian
-% coordinate system.
+% creates a right handed Cartesian coordinate system
+%
+% [u, v] = SW_CARTESIAN(n) 
+%
+% It creates an (n,u,v) right handed Cartesian coordinate system.
 %
 % n         3 element vector, either row or column.
 %

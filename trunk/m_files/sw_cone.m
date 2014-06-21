@@ -1,6 +1,7 @@
 function [handle] = sw_cone(rBase, rTop, R, N)
-% [handle] = SW_CONE(rBase, rTop, R, N) creates the surface of a cone in
-% 3 dimension.
+% creates the surface of a cone in 3 dimension
+%
+% [handle] = SW_CONE(rBase, rTop, R, N)
 %
 % Input:
 %
@@ -9,7 +10,7 @@ function [handle] = sw_cone(rBase, rTop, R, N)
 % R        Radius of the base of the cone.
 % N        number of points of the surface mesh
 %
-% See also SW_CIRCLE, SW_CIRCLESURF, SW_CYLINDER.
+% See also SW_CIRCLE, SW_CIRCLESURF, SW_CYLINDER, SW_ARROW.
 %
 
 if nargin == 0

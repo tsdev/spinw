@@ -1,7 +1,10 @@
 function spectra = sw_omegasum(spectra, varargin)
-% spec = sw_omegasum(spec, 'Option1', Value1, ...) removes the degenerate
-% modes from the dispersion stored in spectra.omega and sorts omega
-% according to the energy.
+% removes degenerate and ghost magnon modes from spectrum
+%
+% spec = sw_omegasum(spec, 'Option1', Value1, ...)
+%
+% It removes the degenerate modes from the dispersion stored in
+% spectra.omega and sorts omega according to the energy.
 %
 % The degenerate dispersion energies are substituted with NaN values. Be
 % carefull, after this function sw_egrid() won't work properly on spectra.
@@ -12,6 +15,8 @@ function spectra = sw_omegasum(spectra, varargin)
 %           value is 1e-5.
 % zeroint   The minimum intensity value, below the mode is dropped. Default
 %           value is zero (no modes are dropped due to weak intensity).
+%
+% See also SW.SPINWAVE, SW_EGRID.
 %
 
 inpForm.fname  = {'tol' 'zeroint'};

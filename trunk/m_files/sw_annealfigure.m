@@ -1,6 +1,7 @@
 function hFigure = sw_annealfigure
-% hFigure = SW_ANNEALFIGURE() creates a figure for displaying the status of
-% the annealing calculation.
+% creates a figure for displaying the status of the annealing simulation
+%
+% hFigure = SW_ANNEALFIGURE()
 %
 % See also SW.ANNEAL.
 %

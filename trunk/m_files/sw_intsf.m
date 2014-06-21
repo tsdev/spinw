@@ -1,6 +1,7 @@
 function sFact = sw_intsf(sFact, varargin)
-% sFact = SW_INTSF(sFact, 'Option1', Value1, ...) integrates the structure
-% factor along specific directions.
+% integrates the structure factor along given Q directions
+%
+% sFact = SW_INTSF(sFact, 'Option1', Value1, ...) 
 %
 % Options:
 %

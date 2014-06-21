@@ -1,6 +1,7 @@
 function [formFactVal, coeff, S] = sw_mff(atomName, Q)
-% [formFactVal, coeff, S] = SW_MFF(atomName, {Q}) returns the magnetic
-%  form factor values and the coefficients.
+% returns the magnetic form factor values and the coefficients
+%
+% [formFactVal, coeff, S] = SW_MFF(atomName, {Q}) 
 %
 % Input:
 %

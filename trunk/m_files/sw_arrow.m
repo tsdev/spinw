@@ -1,5 +1,7 @@
 function [handle] = sw_arrow(rStart, rEnd, R, alpha, lHead, N)
-% [handle] = SW_ARROW(rStart, rEnd, R, alpha, lHead, N) plots a 3D arrow.
+% draws a 3D arrow
+%
+% [handle] = SW_ARROW(rStart, rEnd, R, alpha, lHead, N)
 %
 % Input:
 %

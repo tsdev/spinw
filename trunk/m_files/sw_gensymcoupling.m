@@ -1,5 +1,6 @@
 function [genCp, ugenCp] = sw_gensymcoupling(obj, coupling, sym, tol, fitmode)
 % generates all equivalent couplings, using space group symmetry
+%
 % [genCp ugenCp] = SW_GENSYMCOUPLING(obj, coupling, sym, {tol})
 %
 % Input:

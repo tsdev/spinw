@@ -1,8 +1,11 @@
 function [rSym, aIdx, isMoved, opMove, symName] = sw_genatpos(sym, r, fid, tol)
+% generates symmetry equivalent atomic positions
+%
 % [rSym, aIdx, isMoved, opMove, symName] = SW_GENATPOS(sym, r, fid, tol)
-% generates all symmetry equivalent atomic positions from a given symmetry
-% number and coordinates of the input atoms. If fid is defined, the
-% result is printed onto the command window.
+% 
+% It generates all symmetry equivalent atomic positions from a given
+% symmetry number and coordinates of the input atoms. If fid is defined,
+% the result is printed onto the command window.
 %
 % Input:
 %

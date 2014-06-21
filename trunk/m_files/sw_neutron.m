@@ -1,7 +1,10 @@
 function spectra = sw_neutron(spectra, varargin)
-% spectra = SW_NEUTRON(spectra, 'Option1', Value1' ...) calculates neutron
-% scattering intensity for polarised and unpolarised neutron scattering on
-% spin waves.
+% calculates neutron scattering intensity for spin wave spectrum
+%
+% spectra = SW_NEUTRON(spectra, 'Option1', Value1' ...)
+%
+% It calculates neutron scattering intensity for polarised and unpolarised
+% neutron scattering on spin waves.
 %
 % Input:
 %

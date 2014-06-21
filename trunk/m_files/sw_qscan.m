@@ -1,7 +1,10 @@
 function qOut = sw_qscan(qLim)
-% qOut = SW_QSCAN(qLim) creates linear scans between Q points in qLim.
+% creates linear scans between Q points in 3D
+%
+% qOut = SW_QSCAN(qLim)
 %
 % Example:
+%
 % qLim = {[0 1 0] [0 0 0]}
 % If the last element of qLim is a scalar, it defines the number of point
 % in each linear scan, by defult this value is 100.

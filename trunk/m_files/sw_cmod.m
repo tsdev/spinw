@@ -1,6 +1,12 @@
 function r = sw_cmod(r, tol)
-% modulo one with tolerance, numbers larger than 1-epsilon > 1-tol will be
-% converted to -epsilon.
+% modulo one with tolerance
+%
+% r = SW_CMOD(r, tol)
+%
+% It calculates modulo one with tolerance, numbers larger than 1-epsilon >
+% 1-tol will be converted to -epsilon.
+%
+% See also MOD.
 %
 
 if nargin == 0

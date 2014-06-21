@@ -1,7 +1,11 @@
 function [omega, swConv] = sw_idata(spectrum, varargin)
-% [omega, swConv] = SW_IDATA(spectrum, 'option1', value1 ...) creates iData object
-% (<a href=http://ifit.mccode.org>http://ifit.mccode.org</a>) and convolutes the spectra with a fixed
-% instrumental resolution, assuming the energy and Q axis are linear.
+% creates iData object
+%
+% [omega, swConv] = SW_IDATA(spectrum, 'option1', value1 ...) 
+%
+% It creates iData object (<a href=http://ifit.mccode.org>http://ifit.mccode.org</a>) 
+% and convolutes the spectra with a fixed instrumental resolution, assuming
+% the energy and Q axis are linear.
 %
 % Input:
 %

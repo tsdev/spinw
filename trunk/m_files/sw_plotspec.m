@@ -1,6 +1,7 @@
 function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
-% [fHandle, pHandle] = SW_PLOTSPEC(spectra, 'option1', value1 ...) plots
-% spin wave spectra.
+% plots spin wave spectrum
+%
+% [fHandle, pHandle] = SW_PLOTSPEC(spectra, 'option1', value1 ...)
 %
 % Options:
 %

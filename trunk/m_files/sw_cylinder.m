@@ -1,6 +1,7 @@
 function [handle] = sw_cylinder(r1,r2,R,N, dash)
-% [handle] = SW_CYLINDER(r1,r2,R,N, dash) creates the surface of a
-% cylinder.
+% creates the surface of a cylinder in 3D
+%
+% [handle] = SW_CYLINDER(r1,r2,R,N, dash) 
 %
 % Input:
 %

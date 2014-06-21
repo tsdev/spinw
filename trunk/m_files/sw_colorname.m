@@ -1,5 +1,7 @@
 function [RGB, nameOut] = sw_colorname(cName, invert)
-% RGB = SW_COLORNAME(cName) generates RGB code from color name string.
+% generates RGB code from color name string
+%
+% RGB = SW_COLORNAME(cName)
 %
 % Input:
 %

@@ -1,12 +1,14 @@
 function points = sw_circle(r0, n, R, N)
-% points = SW_CIRCLE(r0, n, R, N) creates array containing the 3D points of
-% the circle line.
+% creates an array of the 3D coordinates of the circle circumference
+%
+% points = SW_CIRCLE(r0, n, R, N) 
+%
 % r0    Center of circle, dimensions are [3 1].
 % n     Normal to the circle surface, dimensions are [3 1].
 % R     Radius of the circle.
 % N     Number of points on the curve.
 %
-% See also SW_CONE, SW_CIRCLESURF, SW_CYLINDER.
+% See also SW_CONE, SW_CIRCLESURF, SW_CYLINDER, SW_ARROW.
 %
 
 if nargin == 0

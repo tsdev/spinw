@@ -1,11 +1,18 @@
 function [V, mirM] = sw_mirror(n, V)
-% [V, mirM] = SW_MIRROR(n, {V}) mirrors the vectors in V to the mirror
-% plane that is defined by its normal vector mNorm.
+% mirrors a 3D vector
+%
+% [V, mirM] = SW_MIRROR(n, {V}) 
+%
+% It mirrors the vectors in V to the mirror plane that is defined by its
+% normal vector mNorm.
+%
+% Input:
 %
 % n         Vector, normal to the mirror plane, dimensions are [1 3].
 % V         Matrix of 3D vectors, dimensions are [3 N], optional.
 %
 % Output:
+%
 % V         Mirrored vectors, dimensions are [3 N].
 % mirM      Matrix of the mirror operation, dimensions are [3 3].
 %

@@ -1,7 +1,10 @@
 function oHandle = sw_getobject(tagName, fHandle)
-% oHandle = SW_GETOBJECT(tagName, {fHandle}) returns all graphical objects
-% those 'Tag' property string contains tagName string and is on figure
-% fHandle.
+% returns objects handles with given 'Tag' property
+%
+% oHandle = SW_GETOBJECT(tagName, {fHandle}) 
+%
+% It returns all graphical objects those 'Tag' property string contains
+% tagName string and is on figure fHandle.
 %
 % Input:
 %

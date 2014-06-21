@@ -1,7 +1,10 @@
 function spectra = sw_instrument(spectra, varargin)
-% spectra = SW_INSTRUMENT(spectra, 'option1','value1',...) includes
-% instrumental factors (resolution, energy transfer range, etc.) to the
-% convoluted spectrum.
+% includes instrumental factors into the calculated spectrum
+%
+% spectra = SW_INSTRUMENT(spectra, 'option1','value1',...)
+%
+% It includes instrumental factors (resolution, energy transfer range,
+% etc.) to the convoluted spectrum.
 %
 % Options:
 %

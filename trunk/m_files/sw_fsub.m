@@ -1,6 +1,10 @@
 function cGraph = sw_fsub(conn, ~)
-% cGraph = SW_FSUB(conn, nExt) simple graph vertex coloring, determines non
-% connected sublattices for Monte-Carlo calculation.
+% simple graph vertex coloring
+%
+% cGraph = SW_FSUB(conn, nExt)
+%
+% It creates a simple graph vertex coloring, determines non connected
+% sublattices for Monte-Carlo calculation.
 %
 % Input:
 %

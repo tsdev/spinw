@@ -1,7 +1,11 @@
 function [M, asym] = sw_basismat(symOp, r, tol)
-% [M, asym] = SW_BASISMAT(symOp, r, tol) determines the allowed matrix
-% elements compatible with a given point group symmetry. The matrix can
-% describe exchange interaction or single ion anisotropy.
+% determines allowed tensor components in a given point group symmetry
+%
+% [M, asym] = SW_BASISMAT(symOp, r, tol) 
+%
+% It determines the allowed matrix elements compatible with a given point
+% group symmetry. The matrix can describe exchange interaction or single
+% ion anisotropy.
 %
 % Input:
 % symOp     Generators of the point group symmetry, dimensions are
@@ -18,6 +22,8 @@ function [M, asym] = sw_basismat(symOp, r, tol)
 %           symmetry allowed matrices.
 % asym      Logical vector, for each 3x3 matrix in M, tells whether it is
 %           antisymmetric, dimensions are [1 nM].
+%
+% See also SW.GETMATRIX, SW.SETMATRIX.
 %
 
 if nargin == 0

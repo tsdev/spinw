@@ -1,5 +1,10 @@
 function sw_addobject(hFigure, hAdd)
-% SW_ADDOBJECT(hFigure, hAdd) adds a graphical object to a selected figure
+% adds a graphical object to a selected figure
+%
+% SW_ADDOBJECT(hFigure, hAdd) 
+%
+% It adds a graphical object to the hgtransform object of the figure for
+% continuous rotation.
 %
 % Input:
 %
@@ -7,7 +12,7 @@ function sw_addobject(hFigure, hAdd)
 % hAdd      Vector of struct, that contains the handles of the graphical
 %           objects, e.g. hAdd.objtype1 = [handle1 handle2 ...].
 %
-% See also SW.PLOT.
+% See also SW.PLOT, SW_STRUCTFIGURE, HGTRANSFORM.
 %
 
 if nargin == 0

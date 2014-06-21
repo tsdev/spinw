@@ -1,6 +1,7 @@
 function cMat = sw_multicolor(vMat, cMap, cLim, nCol, pflipud)
-% cMat = sw_multicolor(vMat, cMap, cLim, {nCol}, {flipud}) creates RGB color data for
-% multiple 2D overlapping plots.
+% creates RGB color data for multiple 2D overlapping plots
+%
+% cMat = sw_multicolor(vMat, cMap, cLim, {nCol}, {flipud})
 %
 % Input:
 %

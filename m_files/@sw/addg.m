@@ -57,7 +57,7 @@ if ischar(matrixIdx)
 end
 
 if matrixIdx == -1
-    error('sw:addaniso:WrongCouplingTypeIdx','Input matrix does not exists!');
+    error('sw:addg:WrongCouplingTypeIdx','Input matrix does not exists!');
 end
 
 if nargin > 3

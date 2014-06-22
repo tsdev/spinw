@@ -1,4 +1,4 @@
-classdef (ConstructOnLoad) sw < class_handlelight
+classdef (ConstructOnLoad) sw < sw_handlelight
     % SW class defines data structure and methods to calculate spin wave
     % dispersion in magnetic crystals.
     %

@@ -224,6 +224,10 @@ mAtom    = obj.matom;
 nMagAtom = size(mAtom.r,2);
 nMagExt  = nMagAtom*prod(nExt);
 
+if nMagAtom==0
+    error('sw:genmagstr:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+end
+
 % Create mAtom.Sext matrix.
 mAtom    = sw_extendlattice(nExt, mAtom);
 

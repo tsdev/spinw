@@ -71,7 +71,24 @@ for ii = 1:numel(pubfiles)
     end
     fclose(fid);
     
+    % Matlab output default style format
+    NL = sprintf('\n');
     htmlOut = {};
+    htmlOut{end+1,1} = ['<literal>' NL];
+    htmlOut{end+1,1} = ['<style type="text/css">' NL];
+    htmlOut{end+1,1} = ['pre, tt, code { font-size:12px; }' NL];
+    htmlOut{end+1,1} = ['pre.error { color:red; }' NL];
+    htmlOut{end+1,1} = ['pre.codeinput  { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }' NL];
+    htmlOut{end+1,1} = ['pre.codeoutput { padding:10px; border:1px solid #d3d3d3; background:#FFFFFF; }' NL];
+    htmlOut{end+1,1} = ['pre.language-matlab { padding:5px; border:0px solid #d3d3d3; background:#FFFFFF; }' NL];
+    htmlOut{end+1,1} = ['span.keyword { color:#0000FF }' NL];
+    htmlOut{end+1,1} = ['span.comment { color:#228B22 }' NL];
+    htmlOut{end+1,1} = ['span.string { color:#A020F0 }' NL];
+    htmlOut{end+1,1} = ['span.untermstring { color:#B20000 }' NL];
+    htmlOut{end+1,1} = ['span.syscmd { color:#B28C00 }' NL];
+    htmlOut{end+1,1} = ['</style>' NL];
+    htmlOut{end+1,1} = ['</literal>' NL NL];
+
     % starting <body> index and line
     jj = 1;
     idx1 = strfind(htmlFile{jj},'<body>');
@@ -96,6 +113,18 @@ for ii = 1:numel(pubfiles)
         htmlOut{end,1} = regexprep(htmlOut{end,1},'PATEX','</latex>');
         jj = jj+1;
     end
+    
+    % Google Analytics code
+    htmlOut{end+1,1} = [NL NL '<literal>' NL];
+    htmlOut{end+1,1} = ['<script>' NL];
+    htmlOut{end+1,1} = ['(function(i,s,o,g,r,a,m){i[''GoogleAnalyticsObject'']=r;i[r]=i[r]||function(){' NL];
+    htmlOut{end+1,1} = ['(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),' NL];
+    htmlOut{end+1,1} = ['m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)' NL];
+    htmlOut{end+1,1} = ['})(window,document,''script'',''//www.google-analytics.com/analytics.js'',''ga'');' NL];
+    htmlOut{end+1,1} = ['ga(''create'', ''UA-30000935-3'', ''psi.ch'');' NL];
+    htmlOut{end+1,1} = ['ga(''send'', ''pageview'');' NL];
+    htmlOut{end+1,1} = ['</script>' NL];
+    htmlOut{end+1,1} = ['</literal>' NL];
     
     % create a single line
     htmlLine=sprintf('%s',htmlOut{:});

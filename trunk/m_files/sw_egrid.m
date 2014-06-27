@@ -130,7 +130,14 @@ inpForm.soft   = {true    false false       false     false      false     };
 param = sw_readparam(inpForm, varargin{:});
 
 if isempty(param.Evect)
-    param.Evect = linspace(0,1.1*max(real(spectra.omega(:))),500);
+    if iscell(spectra.omega)
+        omegaTemp = cell2mat(spectra.omega);
+        Emax = max(real(omegaTemp(:)));
+        clear('omegaTemp');
+    else
+        Emax = max(real(spectra.omega(:)));
+    end
+    param.Evect = linspace(0,1.1*Emax,500);
 end
 
 % parse the component string

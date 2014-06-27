@@ -1,0 +1,55 @@
+function data=XMLaddString(str,data)
+n1=length(data.node);
+if(isfieldempty(data.node(n1),'node'))
+    n2=length(data.node(n1).node);
+    if(isfieldempty(data.node(n1).node(n2),'node'))
+        n3=length(data.node(n1).node(n2).node);
+        if(isfieldempty(data.node(n1).node(n2).node(n3),'node'))
+            n4=length(data.node(n1).node(n2).node(n3).node);
+            if(isfieldempty(data.node(n1).node(n2).node(n3).node(n4),'node'))
+                n5=length(data.node(n1).node(n2).node(n3).node(n4).node);
+                if(isfieldempty(data.node(n1).node(n2).node(n3).node(n4).node(n5),'node'))
+                    n6=length(data.node(n1).node(n2).node(n3).node(n4).node(n5).node);
+                    if(isfieldempty(data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6),'node'))
+                        n7=length(data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node);
+                        if(isfieldempty(data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node(n7),'node'))
+                            n8=length(data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node(n7).node);
+                            if(isfieldempty(data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node(n7).node(n8),'node'))
+                                n9=length(data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node(n7).node(n8).node);
+                                if(isfieldempty(data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node(n7).node(n8).node(n9),'node'))
+                                    n10=length(data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node(n7).node(n8).node(n9).node);
+                                    if(isfieldempty(data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node(n7).node(n8).node(n9).node(n10),'node'))
+                                        disp('reached maximum recursion limit');
+                                    else
+                                        data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node(n7).node(n8).node(n9).node(n10).string=str; 
+                                    end
+                                else
+                                    data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node(n7).node(n8).node(n9).string=str; 
+                                end
+                            else
+                                data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node(n7).node(n8).string=str; 
+                            end
+                        else
+                            data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).node(n7).string=str; 
+                        end
+                    else
+                        data.node(n1).node(n2).node(n3).node(n4).node(n5).node(n6).string=str; 
+                    end
+                else
+                    data.node(n1).node(n2).node(n3).node(n4).node(n5).string=str; 
+                end
+            else
+                data.node(n1).node(n2).node(n3).node(n4).string=str; 
+            end
+        else
+            data.node(n1).node(n2).node(n3).string=str; 
+        end
+    else
+        data.node(n1).node(n2).string=str; 
+    end
+else
+    data.node(n1).string=str; 
+end
+
+function a=isfieldempty(data,str)
+a=isfield(data,str)&&(~isempty(data.(str)));

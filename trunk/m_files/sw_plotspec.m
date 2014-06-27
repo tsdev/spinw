@@ -180,7 +180,7 @@ if param.mode == 4
             Eres = param.dE;
         end
         
-        [fHandle, pHandle] = sw_plotspec(spectra,'ahandle',gca,'mode',3,'dE',Eres,...
+        [fHandle, pHandle] = sw_plotspec(spectra,'mode',3,'dE',Eres,...
             'dashed',true,'colorbar',false,'axLim',param.axLim,'lineStyle',param.lineStyle,'maxPatch',param.maxPatch);
     end
     if ~powmode
@@ -191,8 +191,16 @@ if param.mode == 4
             cMap0 = 'auto';
         end
         
-        [fHandle, pHandle] = sw_plotspec(spectra,'mode',1,'ahandle',gca,'colorbar',~pColor,...
-            'dashed',false,'title',~pColor,'legend',~pColor,'imag',~pColor,'lineStyle',param.lineStyle,'colormap',cMap0,'axLim',[0 max(abs(spectra.omega(:)))*1.1]);
+        if iscell(spectra.omega)
+            omegaTemp = cell2mat(spectra.omega);
+            Emax = max(real(omegaTemp(:)));
+            clear('omegaTemp');
+        else
+            Emax = max(real(spectra.omega(:)));
+        end
+
+        [fHandle, pHandle] = sw_plotspec(spectra,'mode',1,'colorbar',~pColor,...
+            'dashed',false,'title',~pColor,'legend',~pColor,'imag',~pColor,'lineStyle',param.lineStyle,'colormap',cMap0,'axLim',[0 1.1*Emax]);
     end
     
     if nargout >0
@@ -221,7 +229,7 @@ end
 
 yLabel = 'Energy transfer (meV)';
 
-if isa(param.aHandle,'matlab.graphics.axis.Axes')
+if isa(param.aHandle,'matlab.graphics.axis.Axes') || ishandle(param.aHandle) 
     if any(strfind(get(get(param.aHandle,'Parent'),'Tag'),'sw_crystal'))
         % don't plot into the crystal structure window
         fHandle = figure;

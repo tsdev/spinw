@@ -8,3 +8,4 @@
 "sw.unit"                     "[[SwpropertiesEN#8][sw.unit]]"
 "sw class"                    "[[SwclassEN][sw class]]"
 "coordinate system"           "[[CoordinatesystemEN][coordinate system]]"
+"powder spectrum"             "[[PowderspectrumEN][powder spectrum]]"

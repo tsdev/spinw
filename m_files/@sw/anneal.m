@@ -7,6 +7,11 @@ function stat = anneal(obj, varargin)
 % exchange interactions in 1, 2 or 3 spin dimensions. 
 % General and antisymmetric exchage interactions are not supported yet!
 %
+% WARNING!
+% The calculated energies doesn't contain the self energy (moment coupled
+% to itself), thus the energies calculated here can differ from the
+% result of the sw.energy() function.
+%
 % Input:
 %
 % obj             Input object contains structural data, sw type.
@@ -136,10 +141,10 @@ inpForm.defval = [inpForm.defval {@sw_fstat @sw_fsub true     {'per' 'per' 'per'
 inpForm.size   = [inpForm.size   {[1 1]     [1 1]    [1 1]    [1 3]              }];
 inpForm.soft   = [inpForm.soft   {0         0        0        0                  }];
 
-inpForm.fname  = [inpForm.fname  {'title'   }];
-inpForm.defval = [inpForm.defval {''        }];
-inpForm.size   = [inpForm.size   {[1 -2]	}];
-inpForm.soft   = [inpForm.soft   {1         }];
+inpForm.fname  = [inpForm.fname  {'title'   'fineT' 'rate'}];
+inpForm.defval = [inpForm.defval {''        0       0.1   }];
+inpForm.size   = [inpForm.size   {[1 -2]	[1 1]   [1 1] }];
+inpForm.soft   = [inpForm.soft   {1         0       0     }];
 
 param = sw_readparam(inpForm,varargin{:});
 
@@ -173,11 +178,15 @@ kB      = obj.unit.kB;
 spinDim = param.spinDim;
 initT   = param.initT;
 endT    = param.endT;
+fineT   = param.fineT;
 cool    = param.cool;
 nMC     = param.nMC;
 nStat   = param.nStat;
 fStat   = param.fStat;
 nMagExt = size(M0,2);
+
+% multiplyer of the moment for T=0 ground state search
+Mmult = 1;
 
 % Calculate the initial energy of the system the extra zeros are for easy
 % indexing, size: (1,nMagExt+1).
@@ -491,6 +500,18 @@ while 1
                     % distribution of coordinates, then normalizing them.
                     randS  = randn(3,nElementSub(jsub));
                     MNew  = bsxfun(@times,randS,cS{jsub}./sqrt(sum(randS.^2)));
+                    
+                    % keep small S changes for T=0 ground state search
+                    if T(end) < fineT
+                        MNew = MOld + MNew*kB*T(end) / mean(sqrt(sum(F.^2,1)))*Mmult;
+                        MNew  = bsxfun(@times,MNew,cS{jsub}./sqrt(sum(MNew.^2)));
+                    end
+                    
+                    % doesn't work with anisotropy
+                    %if T(end) == 0
+                    %    MNew  = bsxfun(@times,-F,cS{jsub}./sqrt(sum(F.^2)));
+                    %end
+                    
                     if param.aniso
                         % Calculates old anisotropy field.
                         AOld = [sum(MOld.*cAx{jsub},1); sum(MOld.*cAy{jsub},1); sum(MOld.*cAz{jsub},1)];
@@ -504,6 +525,7 @@ while 1
                     end
                     % aidx stores the accepted spin indices in the sublattice.
                     aidx = rand(1,nElementSub(jsub)) < exp(-dE./(kB*T(end)));
+                    
                     % sidx stores the accepted spin indices in the whole spin list.
                     sidx = false(nMagExt+1,1);
                     sidx(sSindex) = aidx;
@@ -545,6 +567,7 @@ while 1
                 end
                 % Sotres the ratio of accepted spin flips.
                 rate(itry) = suc/nMagExt;
+                
                 suc = 0;
                 
                 if (T(end) <= endT) && (itry>(nMC-nStat))
@@ -552,8 +575,13 @@ while 1
                     statT = fStat(2, statT, T(end), ETemp/nMagExt, M, param.nExt);
                 end
             end
-            
     end
+    
+    if T(end) < fineT
+        % new multiplyer to keep the acceptance rate constant
+        Mmult = Mmult*(1+log(param.rate/mean(rate))/-mean(abs(dE./(kB*T(end)))));
+    end
+    
     % Calculates the system energy at the end of the temperature step.
     E(end+1,1) = ETemp/nMagExt; %#ok<AGROW>
     % Monitor annealing process.

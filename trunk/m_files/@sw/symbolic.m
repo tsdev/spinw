@@ -30,6 +30,9 @@ switch symb
             error('sw:symbolic:NoToolBox','You need Symbolic Math Toolbox installed to run symbolic calculations!');
         end
         
+        % Spin values
+        obj.unit_cell.S = sym(obj.unit_cell.S);
+
         % Magnetic structure
         obj.mag_str.S = sym(obj.mag_str.S);
         obj.mag_str.k = sym(obj.mag_str.k);
@@ -61,6 +64,14 @@ switch symb
         
     case false
         % Create double type properties
+        
+        % Spin values
+        symVar1 = symvar(obj.unit_cell.S);
+        if ~isempty(symVar1)
+            obj.unit_cell.S = double(subs(obj.unit_cell.S,symVar1,ones(1,numel(symVar1))));
+        else
+            obj.unit_cell.S = double(obj.unit_cell.S);
+        end
         
         % Magnetic structure
         symVar1 = symvar(obj.mag_str.S);

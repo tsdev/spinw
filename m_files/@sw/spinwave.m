@@ -144,7 +144,7 @@ if obj.symb
         param0 = sw_readparam(inpForm, varargin{:});
         
         if ~param0.fitmode
-            fprintf0(obj.fileid,'No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!');
+            fprintf0(obj.fileid,'No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!\n');
         end
         spectra = obj.spinwavesym(varargin{:});
     else

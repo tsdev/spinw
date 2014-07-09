@@ -139,6 +139,9 @@ function genmagstr(obj, varargin)
 %           [1 nx].
 % norm      Set the length of the generated magnetic moments to be equal to
 %           the spin of the magnetic atoms. Default is true.
+% r0        If true and only a single spin direction is given, the spin
+%           phases are determined by atomic position times k-vector, while
+%           if it is false, the first spin will have zero phase.
 %
 % Output:
 %
@@ -168,10 +171,10 @@ inpForm.defval = {'extend' obj.mag_str.N_ext obj.mag_str.k obj.mag_str.n };
 inpForm.size   = {[1 -1]   [1 -4]            [1 3]         [1 3]         };
 inpForm.soft   = {false    false             false         false         };
 
-inpForm.fname  = [inpForm.fname  {'func'          'x0'   'norm'}];
-inpForm.defval = [inpForm.defval {@gm_spherical3d []     true  }];
-inpForm.size   = [inpForm.size   {[1 1]           [1 -3] [1 1] }];
-inpForm.soft   = [inpForm.soft   {false           true   false }];
+inpForm.fname  = [inpForm.fname  {'func'          'x0'   'norm' 'r0' }];
+inpForm.defval = [inpForm.defval {@gm_spherical3d []     true   true }];
+inpForm.size   = [inpForm.size   {[1 1]           [1 -3] [1 1]  [1 1]}];
+inpForm.soft   = [inpForm.soft   {false           true   false  false}];
 
 inpForm.fname  = [inpForm.fname  {'S'     'phi' 'epsilon' 'unitS' 'Fk'      }];
 inpForm.defval = [inpForm.defval {[]      0     1e-5      'xyz'   cell(1,0) }];
@@ -285,7 +288,11 @@ switch param.mode
         
         if (nSpin~= nMagAtom) && (nSpin==1)
             % Single defined spin, use the atomic position.
-            r = mAtom.RRext;
+            if param.r0
+                r = mAtom.RRext;
+            else
+                r = bsxfun(@minus,mAtom.RRext,mAtom.RRext(:,1));
+            end
         elseif nSpin == nMagAtom
             % First crystallographic unit cell defined, use only unit cell
             % position.

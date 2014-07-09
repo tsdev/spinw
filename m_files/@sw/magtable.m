@@ -39,7 +39,13 @@ if obj.symbolic
     e3 = simplify(M0./[S0; S0; S0]);
     % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
     e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
-    e2(3,~any(isAlways(abs(e2)>0))) = 1;
+    % select zero vector and make them parallel to [0,0,1]
+    selidx = abs(e2)>0;
+    if isa(selidx,'sym')
+        e2(3,~any(isAlways(abs(e2)>0))) = 1;
+    else
+        e2(3,~any(abs(e2)>0)) = 1;
+    end
     E0 = sqrt(sum(e2.^2,1));
     e2  = simplify(e2./[E0; E0; E0]);
     % e1 = e2 x e3

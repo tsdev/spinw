@@ -1,7 +1,7 @@
 function [formFactVal, coeff, S] = sw_mff(atomName, Q)
 % returns the magnetic form factor values and the coefficients
 %
-% [formFactVal, coeff, S] = SW_MFF(atomName, {Q}) 
+% [formFactVal, coeff, S] = SW_MFF(atomName, {Q})
 %
 % Input:
 %
@@ -17,8 +17,9 @@ function [formFactVal, coeff, S] = sw_mff(atomName, Q)
 %               defined.
 % coeff         Form factor coefficients according to the following
 %               formula:
-%               <j0(Qs)> = A*exp(-a*Qs^2) + B*exp(-b*Qs^2) + C*exp(-c*Qs^2) + D,
+%               <j0(Qs)> = A*exp(-a*Qs^2) + B*exp(-b*Qs^2) + C*exp(-c*Qs^2) + D*exp(-d*Qs^2) + E,
 %               where Qs = Q/(4*pi) and A, a, B, ... are the coefficients.
+%               Optionally the (D,d) coefficients are zero.
 %
 % S             Value of the spin quantum number (last column in ion.dat).
 %
@@ -52,11 +53,14 @@ if ischar(atomName)
     
     % Read all line from file
     idx = 1;
+    formFact.coeff = zeros(0,15);
+    
     while ~feof(fid)
         fLine = fgets(fid);
         [formFact.name{idx,1}, ~, ~, nextIdx] = sscanf(fLine,'%s',1);
-        [formFact.coeff(idx,1:7), ~, ~, nextIdx2] = sscanf(fLine(nextIdx:end),'%f,',7);
-        formFact.S(idx) = sscanf(fLine(nextIdx+nextIdx2:end),'%f,',1);
+        [coeffTemp, ~, ~, nextIdx2] = sscanf(fLine(nextIdx:end),'%f ',inf);
+        formFact.coeff(idx,1:numel(coeffTemp)-1) = coeffTemp(1:end-1);
+        formFact.S(idx) = coeffTemp(end);
         idx = idx + 1;
     end
     fclose(fid);
@@ -74,6 +78,10 @@ if ischar(atomName)
     
     if flag
         coeff = formFact.coeff(idx,:);
+        % remove trailing zeros
+        cutIdx = find([diff(coeff==0) 0],1,'last');
+        coeff = coeff(1:cutIdx);
+        
         S     = formFact.S(idx);
     else
         coeff = [zeros(1,6) 1];
@@ -88,8 +96,12 @@ end
 
 if nargin > 1
     Qs = Q/(4*pi);
-    formFactVal = coeff(1)*exp(-coeff(2)*Qs.^2)+coeff(3)*exp(-coeff(4)*Qs.^2)+...
-        coeff(5)*exp(-coeff(6)*Qs.^2)+coeff(7);
+    
+    formFactVal = Qs*0;
+    for ii = 2:2:numel(coeff)
+        formFactVal = formFactVal + coeff(ii-1)*exp(-coeff(ii)*Qs.^2);
+    end
+    formFactVal = formFactVal + coeff(end);
 else
     formFactVal = [];
 end

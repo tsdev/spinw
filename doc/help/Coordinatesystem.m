@@ -1,5 +1,5 @@
 %% Coordinate systems
-% SpinW uses four coordinate systems.
+% SpinW uses three different coordinate systems.
 
 %% abc coordinate system
 % This is the lattice coordinate system, every vector, whose components are
@@ -39,15 +39,53 @@
 %
 % Also output of different functions are in xyz coordinate system:
 %
-% * spin-spin correlation function calculated by sw.spinwave method
-%   (spec.Sab matrices)
+% * spin-spin correlation function matrix elements calculated by
+%   sw.spinwave method (spec.Sab matrices)
 % * interaction matrices calculated by sw.couplingtable
 %
+% Also any vector in reciprocal space that is in Angstrom^-1 units:
+%
+% * momentum transfer values in Angstrom^-1 units of the calculated
+%   spectrum using sw.spinwave function (spec.hklA)
 
-%% reciprocal lattice coordinate system
+%% Reciprocal lattice coordinate system
 % The reciprocal lattice coordinate system is the dual vector space of the
 % lattice coordinate system. The three axis are the reciprocal lattice
-% vectors denoted by *a**, *b** and *c** LATEXf(x,y)=x^2+y^2PATEX.
+% vectors denoted by *a**, *b** and *c**. The following sw properties are
+% stored in r.l.u.:
+%
+% * magnetic ordering wave vector (sw.mag_str.k)
+%
+% Also several function takes input in r.l.u.:
+%
+% * the sw_neutron function takes the option 'uv', that defines the
+%   scattering plane by two vectors in r.l.u.
+% * the first input of the sw.spinwave function is a list of Q points in
+%   r.l. units
+% * the sw.genmagstr function can take magnetic moment components in r.l.
+%   units if the 'unitS' option is set to 'lu'
+%
+
+%% Transformation between coordinate systems
+% To transform between the above coordinate systems, the output of
+% sw.basisvector can be used:
+
+tri = sw;
+tri.genlattice('lat_const',[3 4 5],'angled',[90 90 120])
+BV = tri.basisvector
+
+%%
+% The BV 3x3 matrix contains the lattice vectors as column vectors: [a b
+% c]. To convert from abc coordinate system to the xyz, we need 3x1 column
+% vectors:
+
+r_abc = [1/2 1/2; 0];
+r_xyz = BV * r_abc
+
+%%
+% 
+
+
 
 
 

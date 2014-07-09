@@ -230,6 +230,7 @@ end
 yLabel = 'Energy transfer (meV)';
 
 if isa(param.aHandle,'matlab.graphics.axis.Axes') || ishandle(param.aHandle) 
+
     if any(strfind(get(get(param.aHandle,'Parent'),'Tag'),'sw_crystal'))
         % don't plot into the crystal structure window
         fHandle = figure;

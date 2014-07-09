@@ -56,6 +56,9 @@ inpForm.soft   = {false   true     true    true    };
 
 newAtom = sw_readparam(inpForm, varargin{:});
 
+% number of old atoms
+nOldAtom = numel(obj.unit_cell.S);
+
 % Generate atom labels.
 if ~isfield(newAtom,'label') || isempty([newAtom.label])
     idx = size(obj.unit_cell.r,2)+1;
@@ -110,7 +113,7 @@ for ii = 1:numel(newAtom)
             symS = sym('');
             for jj = 1:numel(newAtom(ii).r)/3
                 if newAtom(ii).S(jj) > 0
-                    symS(jj) = sym(['S_' num2str(jj)],'positive');
+                    symS(jj) = sym(['S_' num2str(jj+nOldAtom)],'positive');
                 else
                     symS(jj) = sym(0);
                 end

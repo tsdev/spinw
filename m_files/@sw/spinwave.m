@@ -34,6 +34,25 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % Options:
 %
+% formfact      Setting, that determines whether the magnetic form factor
+%               is included in the spin-spin correlation function
+%               calculation. Possible values:
+%                   false   No magnetic form factor is applied (default).
+%                   true    Magnetic form factors are applied, based on the
+%                           label string of the magnetic ions, see sw_mff()
+%                           function help.
+% formfactfun   Function that calculates the magnetic form factor for given
+%               Q value. Default value is @sw_mff(), that uses a tabulated
+%               coefficients for the form factor calculation. For
+%               anisotropic form factors a user defined function can be
+%               written that has the following header:
+%                   F = @formfactfun(atomLabel,Q)
+%               where the parameters are:
+%                   F   row vector containing the form factor for every
+%                       input Q value
+%                   atomLabel string, label of the selected magnetic atom
+%                   Q   matrix with dimensions of [3 nQ], where each column
+%                       contains a Q vector in Angstrom^-1 units.
 % fitmode       Speedup (for fitting mode only), default is false.
 % notwin        If true, the spectra of the twins won't be calculated.
 %               Default is false.
@@ -82,7 +101,8 @@ function spectra = spinwave(obj, hkl, varargin)
 %               atoms in the extended unit cell.
 % Sab           Dynamical structure factor, dimensins are
 %               [3 3 nMode nHkl]. Each (:,:,i,j) submatrix contains the
-%               9 correlation functions: Sxx, Sxy, Sxz, etc.
+%               9 correlation functions: Sxx, Sxy, Sxz, etc. If given,
+%               magnetic form factor is included.
 % H             Quadratic for mof the Hamiltonian.
 %               Only saved if saveH is true.
 % T             Transformation matrix from the normal magnon modes to the
@@ -167,6 +187,10 @@ inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]   };
 inpForm.fname  = [inpForm.fname  {'omega_tol' 'saveSabp' 'saveT' 'saveH'}];
 inpForm.defval = [inpForm.defval {1e-5        true       false   false  }];
 inpForm.size   = [inpForm.size   {[1 1]       [1 1]      [1 1]   [1 1]  }];
+
+inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun'}];
+inpForm.defval = [inpForm.defval {false       @sw_mff     }];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1]       }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -354,6 +378,14 @@ elseif nSlice > 1
     end
 end
 
+% message for magnetic form factor calculation
+if param.formfact
+    ffstrOut = 'The';
+else
+    ffstrOut = 'No';
+end
+fprintf0(fid,[ffstrOut ' magnetic form factor is included in the spin-spin correlation function.\n']);
+
 hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 
 % Empty omega dispersion of all spin wave modes, size: 2*nMagExt x nHkl.
@@ -506,23 +538,43 @@ for jj = 1:nSlice
     VExtR = repmat(permute(V  ,[4 5 1 2 3]),[3 3 1 1 1]);
     % V left: conjgate transpose of V
     VExtL = conj(permute(VExtR,[1 2 4 3 5]));
-    %VExtL = repmat(permute(conj(V),[4 5 2 1 3]),[3 3 1 1 1]);
     
     % Introduces the exp(-ikR) exponential factor.
     ExpF =  exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
     % Includes the sqrt(Si/2) prefactor.
     ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHklMEM]);
     
-    ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt         2]);
+    ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt 2]);
     % conj transpose of ExpFL
     ExpFR = conj(permute(ExpFL,[1 2 4 3 5]));
-    %ExpFR = conj(repmat(permute(ExpF,[1 4 2 5 3]),[3 3 2         2*nMagExt]));
     
-    zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1         nHklMEM]);
+    zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1 nHklMEM]);
     % conj transpose of zeda
     zedb = conj(permute(zeda,[2 1 4 3 5]));
-    %zedb = repmat(permute([conj(zed) zed],[3 1 2 4]),[3 1 1         2*nMagExt nHklMEM]);
     
+    % calculate magnetic structure factor using the hklExt0 Q-values
+    % since the S(Q+/-k,omega) correlation functions also belong to the
+    % F(Q)^2 form factor
+    
+    if param.formfact
+        % unique atom labels
+        uLabel = unique(obj.unit_cell.label(obj.unit_cell.S>0));
+        % all atom labels
+        aLabel = obj.unit_cell.label(obj.matom(param.fitmode));
+        
+        % stores the form factor values for each Q point and unique atom
+        % label
+        FF = zeros(nMagExt,nHkl);
+        for ii = 1:numel(uLabel)
+            lIdx = repmat(strcmp(aLabel,uLabel{ii}),[1 prod(nExt)]);
+            FF(lIdx,:) = repmat(param.formfactfun(uLabel{ii},hklExt0),[sum(lIdx) 1]);
+        end
+        
+        % include the form factor in the Z^alpha, Z^beta matrices
+        zeda = zeda.*repmat(permute(FF,[3 4 5 1 2]),[3 3 2*nMagExt 2 1]);
+        zedb = zedb.*repmat(permute(FF,[3 4 1 5 2]),[3 3 2 2*nMagExt 1]);
+    end
+        
     % Dynamical for factor from S^alpha^beta(k) correlation function.
     % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
     % Normalizes the intensity to single unit cell.

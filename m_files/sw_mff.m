@@ -9,7 +9,8 @@ function [formFactVal, coeff, S] = sw_mff(atomName, Q)
 %               notation (e.g. Cr^3+ --> 'MCR3' or 'Cr3'). It can be also a
 %               vector of the 7 coefficients, see below. If the string
 %               contains whitespace, the first word will be used as input.
-% Q             Momentum transfer in Angstrom^-1 units, optional.
+% Q             Momentum transfer in Angstrom^-1 units with dimensions of
+%               [1 nQ] or [3 nQ], optional.
 %
 % Output:
 %
@@ -95,6 +96,11 @@ end
 
 
 if nargin > 1
+    if all(size(Q)>1)
+        % if Q points are given as a list of Q vectors in Angstrom^-1
+        % units, calculate the absolute value of Q
+        Q = sqrt(sum(Q.^2,1));
+    end
     Qs = Q/(4*pi);
     
     formFactVal = Qs*0;

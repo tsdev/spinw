@@ -59,7 +59,7 @@ if ischar(atomName)
     while ~feof(fid)
         fLine = fgets(fid);
         [formFact.name{idx,1}, ~, ~, nextIdx] = sscanf(fLine,'%s',1);
-        [coeffTemp, ~, ~, nextIdx2] = sscanf(fLine(nextIdx:end),'%f ',inf);
+        coeffTemp = sscanf(fLine(nextIdx:end),'%f ',inf);
         formFact.coeff(idx,1:numel(coeffTemp)-1) = coeffTemp(1:end-1);
         formFact.S(idx) = coeffTemp(end);
         idx = idx + 1;
@@ -82,6 +82,9 @@ if ischar(atomName)
         % remove trailing zeros
         cutIdx = find([diff(coeff==0) 0],1,'last');
         coeff = coeff(1:cutIdx);
+        if isempty(coeff)
+            coeff = 0;
+        end
         
         S     = formFact.S(idx);
     else

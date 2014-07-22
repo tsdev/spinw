@@ -57,9 +57,9 @@ fid = obj.fid;
 hklA = hklA(:)';
 T0 = obj.single_ion.T;
 
-inpForm.fname  = {'nRand' 'Evect'           'T'   'formfact' 'Hermit'};
-inpForm.defval = {100     linspace(0,1,100) T0    false      true    };
-inpForm.size   = {[1 1]   [1 -1]            [1 1] [1 -2]     [1 1]   };
+inpForm.fname  = {'nRand' 'Evect'           'T'   'formfact' 'formfactfun' 'Hermit'};
+inpForm.defval = {100     linspace(0,1,100) T0    false      @sw_mff        true    };
+inpForm.size   = {[1 1]   [1 -1]            [1 1] [1 -2]     [1 1]          [1 1]   };
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -80,7 +80,8 @@ for ii = 1:nQ
     
     % no output from spinwave() function
     obj.fileid(0);
-    specQ = obj.spinwave(hkl,'fitmode',true,'notwin',true,'Hermit',param.Hermit);
+    specQ = obj.spinwave(hkl,'fitmode',true,'notwin',true,'Hermit',param.Hermit,...
+        'formfact',param.formfact,'formfactfun',param.formfactfun);
     
     % reset output to original value
     obj.fileid(fid);

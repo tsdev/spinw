@@ -29,7 +29,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %               For symbolic calculation at a general reciprocal space
 %               point use sym class input. For example to calculate the
 %               spectrum along (h,0,0): hkl = [sym('h') 0 0]. To
-%               do calculation at a specific point do for example 
+%               do calculation at a specific point do for example
 %               sym([0 1 0]), to calculate the spectrum at (0,1,0).
 %
 % Options:
@@ -41,6 +41,13 @@ function spectra = spinwave(obj, hkl, varargin)
 %                   true    Magnetic form factors are applied, based on the
 %                           label string of the magnetic ions, see sw_mff()
 %                           function help.
+%                   cell    Cell type that contains mixed labels and
+%                           numbers for every symmetry inequivalent atom in
+%                           the unit cell, the numbers are taken as
+%                           constants.
+%               For example: formfact = {0 'MCr3'}, this won't include
+%               correlations on the first atom and using the form factor of
+%               Cr3+ ion for the second atom.
 % formfactfun   Function that calculates the magnetic form factor for given
 %               Q value. Default value is @sw_mff(), that uses a tabulated
 %               coefficients for the form factor calculation. For
@@ -112,6 +119,8 @@ function spectra = spinwave(obj, hkl, varargin)
 % Sabp          Dynamical structure factor in the rotating frame,
 %               dimensions are [3 3 nMode nHkl], but the number of modes
 %               are equal to twice the number of magnetic atoms.
+% formfact      Cell containing the labels of the magnetic ions if form
+%               factor in included in the spin-spin correlation function.
 %
 % nMode is the number of magnetic mode. For commensurate structures it is
 % double the number of magnetic atoms in the magnetic cell/supercell. For
@@ -190,7 +199,7 @@ inpForm.size   = [inpForm.size   {[1 1]       [1 1]      [1 1]   [1 1]  }];
 
 inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff     }];
-inpForm.size   = [inpForm.size   {[1 1]       [1 1]       }];
+inpForm.size   = [inpForm.size   {[1 -1]      [1 1]       }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -213,10 +222,10 @@ tol = param.tol*2;
 helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
 
 if incomm
-   if ~helical
-       error('sw:spinwave:Twokm',['The two times the magnetic ordering '...
-           'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
-   end
+    if ~helical
+        error('sw:spinwave:Twokm',['The two times the magnetic ordering '...
+            'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
+    end
     % without the k_m: (k, k, k)
     hkl0 = repmat(hkl,[1 3]);
     % calculate dispersion for (k-km, k, k+km)
@@ -286,8 +295,8 @@ if fid ~= 0
     end
 end
 
-% Local (e1,e2,e3) coordinate system fixed to the moments, 
-% e3||Si, 
+% Local (e1,e2,e3) coordinate system fixed to the moments,
+% e3||Si,
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 % e1 = e2 x e3
 magTab = obj.magtable;
@@ -379,7 +388,7 @@ elseif nSlice > 1
 end
 
 % message for magnetic form factor calculation
-if param.formfact
+if iscell(param.formfact) || param.formfact
     ffstrOut = 'The';
 else
     ffstrOut = 'No';
@@ -409,6 +418,40 @@ if fid == 1
 end
 
 warn1 = false;
+
+% precalculate all magnetic form factors
+if iscell(param.formfact) || param.formfact
+    if ~iscell(param.formfact)
+        % unique atom labels
+        uLabel = unique(obj.unit_cell.label(obj.unit_cell.S>0));
+        % all atom labels
+        aLabel = obj.unit_cell.label(obj.matom(param.fitmode).idx);
+        
+        % save the form factor information in the output
+        spectra.formfact = obj.unit_cell.label(obj.unit_cell.S>0);
+    else
+        % use the labels given as a cell input for all symmetry
+        % inequivalent atom
+        uLabel = param.formfact;
+        aLabel = uLabel(obj.matom(param.fitmode).idx);
+        % convert numerical values to char() type
+        aLabel = cellfun(@char,aLabel,'UniformOutput', false);
+        
+        % save the form factor information in the output
+        spectra.formfact = uLabel;
+    end
+    
+    % stores the form factor values for each Q point and unique atom
+    % label
+    FF = zeros(nMagExt,nHkl);
+    % Angstrom^-1 units for Q
+    hklA0 = 2*pi*(hkl0'/obj.basisvector)';
+    
+    for ii = 1:numel(uLabel)
+        lIdx = repmat(strcmp(aLabel,char(uLabel{ii})),[1 prod(nExt)]);
+        FF(lIdx,:) = repmat(param.formfactfun(uLabel{ii},hklA0),[sum(lIdx) 1]);
+    end
+end
 
 for jj = 1:nSlice
     % q indices selected for every chunk
@@ -556,25 +599,12 @@ for jj = 1:nSlice
     % since the S(Q+/-k,omega) correlation functions also belong to the
     % F(Q)^2 form factor
     
-    if param.formfact
-        % unique atom labels
-        uLabel = unique(obj.unit_cell.label(obj.unit_cell.S>0));
-        % all atom labels
-        aLabel = obj.unit_cell.label(obj.matom(param.fitmode));
-        
-        % stores the form factor values for each Q point and unique atom
-        % label
-        FF = zeros(nMagExt,nHkl);
-        for ii = 1:numel(uLabel)
-            lIdx = repmat(strcmp(aLabel,uLabel{ii}),[1 prod(nExt)]);
-            FF(lIdx,:) = repmat(param.formfactfun(uLabel{ii},hklExt0),[sum(lIdx) 1]);
-        end
-        
+    if iscell(param.formfact) || param.formfact
         % include the form factor in the Z^alpha, Z^beta matrices
-        zeda = zeda.*repmat(permute(FF,[3 4 5 1 2]),[3 3 2*nMagExt 2 1]);
-        zedb = zedb.*repmat(permute(FF,[3 4 1 5 2]),[3 3 2 2*nMagExt 1]);
+        zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 2*nMagExt 2 1]);
+        zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 2*nMagExt 1]);
     end
-        
+    
     % Dynamical for factor from S^alpha^beta(k) correlation function.
     % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
     % Normalizes the intensity to single unit cell.

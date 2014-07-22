@@ -30,15 +30,6 @@ function spectra = sw_instrument(spectra, varargin)
 %               true, tre resolution will be plotted, default is true.
 % ki            Momentum of the incident neutrons in A^-1 units.
 % Ei            Energy of the incident neutrons in meV.
-% formFact      String, contains the name of the magnetic ion in FullProf
-%               notation (e.g. Cr^{3+} --> 'MCR3' or 'Cr3'), see sw_mff. It
-%               can be also a vector of the 7 coefficients according to the
-%               following formula:
-%               j0(Qs)> = A*exp(-a*Qs^2) + B*exp(-b*Qs^2) + C*exp(-c*Qs^2) + D,
-%               where Qs = Q/(4*pi) and A, a, B, ... are the 7
-%               coefficients. Default is 'auto', when the name of the
-%               magnetic ion is determined by the first magnetic atom in
-%               the crystal.
 % norm          If true, the data is normalized to mbarn units. Default is
 %               true. g-factor of two is assumed.
 %
@@ -47,8 +38,6 @@ function spectra = sw_instrument(spectra, varargin)
 % spectra       Struct variable, same as input with following additional
 %               fields:
 %
-% formFactor    Magnetic ion name string, or the values of the form factor
-%               coefficients, depending on input.
 % norm          True, if the spectrum is normalised to mbarn units.
 % ki            Incident neutron wave vector as given in the input.
 % dE            Energy resolution polynomial as given in the input.
@@ -57,7 +46,7 @@ function spectra = sw_instrument(spectra, varargin)
 %               instrumental factors.
 %
 %
-% See also SW_MFF, POLYFIT, POLYVAL.
+% See also POLYFIT, POLYVAL.
 %
 
 if nargin == 0
@@ -230,41 +219,6 @@ if ki > 0
     end
     fprintf0(fid,'Energy transfer is limited to instrument, using ki=%5.3f A-1.\n',ki);
 end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% magnetic form factor
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-if strcmp(param.formFact,'auto')
-    obj = spectra.obj;
-    if any(obj.unit_cell.S>0)
-        mLabel = obj.unit_cell.label(obj.unit_cell.S>0);
-        param.formFact = mLabel{1};
-    else
-        param.formFact = '';
-    end
-elseif numel(param.formFact) == 1 && param.formFact==0
-    param.formFact = '';
-end
-
-% form factor of the given ion
-hklA = sqrt(sum(spectra.hklA.^2,1));
-[formFactCalc, formFactCoeff] = sw_mff(param.formFact,hklA);
-
-if any(formFactCoeff(1:end-1))
-    for jj = 1:nPlot
-        spectra.swConv{jj} = bsxfun(@times,spectra.swConv{jj},formFactCalc.^2);
-    end
-    if ischar(param.formFact)
-        fprintf0(fid,'Magnetic form factor of %s is applied.\n',param.formFact);
-    else
-        fprintf0(fid,'Magnetic form factor with given coefficients is applied.\n');
-    end
-else
-    fprintf0(fid,'No magnetic form factor applied.\n');
-end
-
-spectra.formFact = param.formFact;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % normalise spectrum to mbarn/meV

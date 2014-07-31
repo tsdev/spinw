@@ -145,6 +145,20 @@ end
 disp('Removing unnecessary files... ')
 delete([installDir updateName]);
 
+% remove files aren't needed for new Matlab versions
+if ~verLessThan('matlab', '8.1')
+    % strjoin()
+    fList = dir([folName filesep 'external' filesep 'strjoin*']);
+    for ii = 1:numel(fList)
+        delete([folName filesep 'external' filesep fList(ii).name]);
+    end
+    % strsplit
+    fList = dir([folName filesep 'external' filesep 'strsplit*']);
+    for ii = 1:numel(fList)
+        delete([folName filesep 'external' filesep fList(ii).name]);
+    end
+end
+
 disp('In oder to load the new class definitions, issue a ''clear classes'' command before using SpinW!');
 disp('In order to reach SpinW after every restart of Matlab, add the following line to your startup.m file:');
 fprintf('addpath(genpath(''%s''));\n',folName);

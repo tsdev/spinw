@@ -34,7 +34,7 @@ aDir = pwd;
 cd(sw_rootdir);
 
 %[statSys, revNum] = system('svn info |grep Revision: |cut -c11-');
-[statSys, revNum] = system('svn up');
+[statSys, revNum] = system('svn up --trust-server-cert --non-interactive');
 
 revNum = strtrim(revNum);
 strIdx = strfind(revNum,' ');

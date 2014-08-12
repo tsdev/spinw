@@ -174,7 +174,11 @@ if obj.sym
     end
     
     if nzeroA
-        [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
+        if obj.symbolic
+            [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,isAlways(obj.unit_cell.S>0)));
+        else
+            [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
+        end
         % convert rotation operators to xyz Cartesian coordinate system
         rotOp = mmat(A,mmat(rotOp,inv(A)));
         % rotate the matrices: R*M*R'
@@ -241,7 +245,11 @@ if param.fitmode < 2
     
     
     %idx = sum(SS.ani(6:end,:).^2,1)~=0;
-    idx = any(SS.ani(6:end,:));
+    if obj.symbolic
+        idx = any(~sw_always(SS.ani(6:end,:)==0));
+    else
+        idx = any(SS.ani(6:end,:));
+    end
     SS.ani = SS.ani(:,idx);
     
     % Select DM interactions. Remove zero value elements.

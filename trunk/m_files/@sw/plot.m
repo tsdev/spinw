@@ -575,7 +575,7 @@ if param.sEll>0
             
             % Calculates the main radiuses of the ellipsoid.
             %[V, R] = eig(single_ion.mat(:,:,ll));
-            [V, R0] = eigorth(single_ion.mat(:,:,ll),1e-5);
+            [V, R0] = eigorth(sw_sub1(single_ion.mat(:,:,ll)),1e-5);
             % Creates positive definite matrix by adding constant to all
             % eigenvalues.
             %R0      = diag(R);
@@ -638,7 +638,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                     % Draw anisotropy semi-transparent ellipsoid.
                     if atom.mag(ll) && param.sEll>0
                         aIdx = single_ion.idx(llMagAtom);
-                        if any(aIdx) && (norm(obj.matrix.mat(:,:,aIdx))>0)
+                        if any(aIdx) && (norm(sw_sub1(obj.matrix.mat(:,:,aIdx)))>0)
                             
                             if plotmode
                                 ell.xyz = single_ion.ell(:,:,llMagAtom)*[sp.x(:) sp.y(:) sp.z(:)]';
@@ -722,17 +722,8 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         lengthS = norm(obj.mag_str.S(:,llMagAtom+llSpin));
                         
                         if obj.symbolic
-                            symVar1 = symvar(plotS);
-                            symVar2 = symvar(lengthS);
-                            if ~isempty(symVar1)
-                                plotS = double(subs(plotS,symVar1,ones(1,numel(symVar1))));
-                            end
-                            if ~isempty(symVar2)
-                                lengthS = double(subs(lengthS,symVar2,ones(1,numel(symVar2))));
-                            end
-
-                            %plotS = double(subs(plotS,1));
-                            %lengthS = double(subs(lengthS,1));
+                            plotS   = sw_sub1(plotS);
+                            lengthS = sw_sub1(lengthS);
                         end
                         
                         if param.coplanar
@@ -783,26 +774,16 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             if intS
                                 if halfS
                                     str0 = ['S=' sprintf('%d',lengthS2) '/2'];
-                                    %tooltip(hArrow,['S=' sprintf('%d',lengthS2) '/2 magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',double(subs(obj.mag_str.S(:,llMagAtom+llSpin),1)))])
                                 else
                                     str0 = ['S=' sprintf('%d',lengthS)];
-                                    %tooltip(hArrow,['S=' sprintf('%d',lengthS) ' magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',double(subs(obj.mag_str.S(:,llMagAtom+llSpin),1)))])
                                 end
                             else
                                 str0 = ['S=' sprintf('%4.2f',lengthS)];
-                                %tooltip(hArrow,['S=' sprintf('%4.2f',lengthS) ' magnetic moment \nxyz components:  \n' sprintf('[%6.3f, %6.3f, %6.3f]',double(subs(obj.mag_str.S(:,llMagAtom+llSpin),1)))])
                             end
-                            if obj.symbolic
-                                symVar1 = symvar(obj.mag_str.S(:,llMagAtom+llSpin));
-                                
-                                if ~isempty(symVar1)
-                                    spin0 = double(subs(obj.mag_str.S(:,llMagAtom+llSpin),symVar1,ones(1,numel(symVar1))));
-                                end
-
-                                str1 = sprintf('[%6.3f, %6.3f, %6.3f]',double(spin0));
-                            else
-                                str1 = sprintf('[%6.3f, %6.3f, %6.3f]',double(obj.mag_str.S(:,llMagAtom+llSpin)));
-                            end
+                            
+                            spin0 = sw_sub1(obj.mag_str.S(:,llMagAtom+llSpin));
+                            str1 = sprintf('[%6.3f, %6.3f, %6.3f]',double(spin0));
+                            
                             tooltip(hArrow,[str0 ' magnetic moment \nxyz components:  \n' str1]);
                         else
                             objid = sprintf('spinArrow%d',idxs);

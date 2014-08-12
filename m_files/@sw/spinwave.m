@@ -161,7 +161,7 @@ else
 end
 
 % calculate symbolic spectrum if obj is in symbolic mode
-if obj.symb
+if obj.symbolic
     if numel(hkl) == 3
         hkl = sym(hkl);
     end
@@ -451,6 +451,8 @@ if iscell(param.formfact) || param.formfact
         lIdx = repmat(strcmp(aLabel,char(uLabel{ii})),[1 prod(nExt)]);
         FF(lIdx,:) = repmat(param.formfactfun(uLabel{ii},hklA0),[sum(lIdx) 1]);
     end
+else
+    spectra.formfact = [];
 end
 
 for jj = 1:nSlice

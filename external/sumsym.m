@@ -1,4 +1,4 @@
-function sumA = sumsym(A,dim)
+function sumA = sumsym(varargin)
 % sumA = SUMSYM(A,dim) sums up matrices containing symbolic variables in
 % arbitrary dimensions, for any other input type it calls the standard sum
 % function.
@@ -6,7 +6,19 @@ function sumA = sumsym(A,dim)
 % See also sym, syms.
 %
 
+A = varargin{1};
+
 if isa(A,'sym')
+    if nargin > 1
+        dim = varargin{2};
+    else
+        dim = find(size(A)>1,1,'first');
+        if isempty(dim)
+            sumA = A;
+            return
+        end
+    end
+    
     nSum = size(A,dim);
     
     nA = ndims(A);
@@ -33,7 +45,7 @@ if isa(A,'sym')
     sumA = permute(sumA,dimA);
     
 else
-    sumA = sum(A,dim);
+    sumA = sum(varargin{:});
 end
 
 end

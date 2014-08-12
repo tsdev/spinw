@@ -122,10 +122,10 @@ else
     E0 = [];
 end
 
-inpForm.fname  = {'Evect' 'T'   'component' 'sumtwin' 'formfact' 'modeIdx' };
-inpForm.defval = {E0      T0    'Sperp'     true      false      zeros(1,0)};
-inpForm.size   = {[1 -1]  [1 1] [1 -2]      [1 1]     [1 -3]     [1 -4]    };
-inpForm.soft   = {true    false false       false     false      false     };
+inpForm.fname  = {'Evect' 'T'   'component' 'sumtwin' 'modeIdx' };
+inpForm.defval = {E0      T0    'Sperp'     true      zeros(1,0)};
+inpForm.size   = {[1 -1]  [1 1] [1 -2]      [1 1]     [1 -4]    };
+inpForm.soft   = {true    false false       false     false     };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -277,36 +277,6 @@ for tt = 1:nTwin
     end
 end
 
-% % Include magnetic form factor
-% if numel(param.formfact == 1) && param.formfact
-%     % abolute value of Q in Angstrom^-1
-%     QA = sqrt(sum(spectra.hklA.^2,1));
-%
-%     if ischar(param.formfact)
-%         % name of magnetic atom is given
-%         formfact = sw_mff(param.formfact,QA);
-%     elseif numel(param.formfact) == 1
-%         % get magnetic atom's names from the crystal
-%         aLabel = spectra.obj.unit_cell.label(spectra.obj.unit_cell.S>0);
-%         if all(strcmp(aLabel,aLabel{1}))
-%             formfact = sw_mff(aLabel{1},QA);
-%         else
-%             formfact = [];
-%         end
-%     else
-%         % prefactors are directly given
-%         formfact = sw_mff(param.formfact,QA);
-%     end
-%     if isempty(formfact)
-%         error('sw_egrid:FormFactorError','Form factor is wrong!')
-%     end
-%
-%     for ii = 1:numel(DSF)
-%         DSF{ii} = bsxfun(@times,DSF{ii},formfact.^2);
-%     end
-% end
-
-
 if isfield(spectra,'omega')
     % Create vector for energy values, and put extra value below minimum and
     % above maximum for easy indexing swConv.
@@ -402,6 +372,5 @@ else
 end
 
 spectra.param.sumtwin  = param.sumtwin;
-spectra.param.formfact = param.formfact;
 
 end

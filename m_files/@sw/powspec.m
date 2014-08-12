@@ -97,6 +97,7 @@ if fid
     sw_status(100,2);
 end
 
+% save different field into spectra
 spectra.swConv   = powSpec;
 spectra.hklA     = hklA;
 spectra.Evect    = param.Evect;
@@ -105,5 +106,11 @@ spectra.nRand    = param.nRand;
 spectra.T        = param.T;
 spectra.obj      = copy(obj);
 spectra.norm     = false;
+spectra.formfact = specQ.formfact;
+spectra.incomm   = specQ.incomm;
+spectra.helical  = specQ.helical;
+
+% save all input parameters of spinwave into spectra
+spectra.param    = specQ.param;
 
 end

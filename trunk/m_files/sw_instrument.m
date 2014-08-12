@@ -9,18 +9,23 @@ function spectra = sw_instrument(spectra, varargin)
 % Options:
 %
 % dE            Defines the energy resolution of the instrument. It can be
-%               a string, single number or vector.
-%                   String  File name, that contains the FWHM energy
+%               a string, single number, vector of function hangle:
+%                 String    File name, that contains the FWHM energy
 %                           resolution values as a function of energy
 %                           transfer. The file has to contain two columns,
 %                           first is the energy values, the second is the
 %                           FWHM resolution at the given energy transfer
 %                           value.
-%                   Number  Constant FWHM energy resolution as a function
+%                 Number    Constant FWHM energy resolution as a function
 %                           of energy transfer.
-%                   Vector  Fitted polynomial of the energy resolution as a
+%                 Vector    Fitted polynomial of the energy resolution as a
 %                           function of energy transfer, see polyfit and
 %                           polyval.
+%                 Function  Function handle of a resolution function
+%                           with the following header:
+%                               E_FWHM = res_fun(E)
+%                           where E_FWHM is the FWHM energy resolution and
+%                           E is the energy transfer value.
 % polDeg        Degree of the fitted polynomial to the instrumental
 %               resolution data. Default is 5.
 % dQ            Momentum transfer resolution of the instrument, FWHM is
@@ -32,6 +37,9 @@ function spectra = sw_instrument(spectra, varargin)
 % Ei            Energy of the incident neutrons in meV.
 % norm          If true, the data is normalized to mbarn units. Default is
 %               true. g-factor of two is assumed.
+% useRaw        If false, the already modified spectra.swConv field is
+%               modified further instead of the original powder spectrum
+%               stored in spectra.swRaw. Default is true.
 %
 % Output:
 %
@@ -54,9 +62,9 @@ if nargin == 0
     return;
 end
 
-inpForm.fname  = {'dE'  'ki'  'Ei' 'plot' 'polDeg' 'ThetaMin' 'formFact' 'dQ'  'norm'};
-inpForm.defval = {0      0     0     true  5        0          'auto'    0     true  };
-inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1]    [1 1]      [1 -2]    [1 1] [1 1] };
+inpForm.fname  = {'dE'  'ki'  'Ei' 'plot' 'polDeg' 'ThetaMin' 'formFact' 'dQ'  'norm' 'useRaw'};
+inpForm.defval = {0      0     0     true  5        0          'auto'    0     true    true   };
+inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1]    [1 1]      [1 -2]    [1 1] [1 1]   [1 1]  };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -64,8 +72,10 @@ param = sw_readparam(inpForm, varargin{:});
 fid = spectra.obj.fileid;
 
 if isfield(spectra,'swRaw')
-    % take raw convoluted spectra if exists
-    spectra.swConv = spectra.swRaw;
+    % take raw convoluted spectra if exists and request
+    if param.useRaw
+        spectra.swConv = spectra.swRaw;
+    end
 else
     % otherwise saw the spectra into swRaw field for future use
     spectra.swRaw = spectra.swConv;
@@ -88,7 +98,17 @@ end
 % energy resolution
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if ischar(param.dE)
+% determine whether to include resolution
+calcres = true;
+try %#ok<TRYNC>
+if ~any(param.dE)
+    calcres = false;
+end
+end
+    
+if isa(param.dE,'function_handle')
+    % do nothing
+elseif ischar(param.dE)
     
     % load file and read values
     fid = fopen(param.dE);
@@ -118,36 +138,37 @@ if ischar(param.dE)
     
 end
 
-if ~any(param.dE)
-    param.dE = 1e-8;
-else
-    spectra.dE = param.dE;
+% include resolution
+if calcres
+    for jj = 1:nPlot
+        
+        swConv = spectra.swConv{jj};
+        
+        swConvTemp = swConv * 0;
+        
+        % convolute gaussian to the convoluted spectra
+        E = spectra.Evect;
+        
+        for ii = 1:numel(E)
+            % standard deviation of the energy resolution Gaussian
+            if isa(param.dE,'function_handle')
+                stdG = param.dE(E(ii))/2.35482;
+            else
+                stdG = polyval(param.dE,E(ii))/2.35482;
+            end
+            
+            % Gaussian with intensity normalised to 1, centered on E(ii)
+            fG = exp(-((E-E(ii))/stdG).^2/2);
+            fG = fG/sum(fG);
+            
+            swConvTemp = swConvTemp + fG' * swConv(ii,:);
+            
+        end
+        spectra.swConv{jj} = swConvTemp;
+    end
     fprintf0(fid,'Finite instrumental energy resolution is applied.\n');
 end
-
-
-for jj = 1:nPlot
-    
-    swConv = spectra.swConv{jj};
-    
-    swConvTemp = swConv * 0;
-    
-    % convolute gaussian to the convoluted spectra
-    E = spectra.Evect;
-    
-    for ii = 1:numel(E)
-        % standard deviation of the energy resolution Gaussian
-        stdG = polyval(param.dE,E(ii))/2.35482;
-        
-        % Gaussian with intensity normalised to 1, centered on E(ii)
-        fG = exp(-((E-E(ii))/stdG).^2/2);
-        fG = fG/sum(fG);
-        
-        swConvTemp = swConvTemp + fG' * swConv(ii,:);
-        
-    end
-    spectra.swConv{jj} = swConvTemp;
-end
+spectra.dE = param.dE;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Q resolution
@@ -177,10 +198,10 @@ if param.dQ > 0
         spectra.swConv{jj} = swConvTemp;
     end
     
-    spectra.dQ = param.dQ;
-    
     fprintf0(fid,'Finite instrumental momentum resolution of %5.3f A-1 is applied.\n',param.dQ);
 end
+
+spectra.dQ = param.dQ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % energy transfer range

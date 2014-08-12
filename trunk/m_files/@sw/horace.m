@@ -61,10 +61,10 @@ if nargin <= 1
 end
 
 inpForm.fname  = {'component'};
-inpForm.defval = {'Sperp'   };
-inpForm.size   = {[1 -2]    };
+inpForm.defval = {'Sperp'    };
+inpForm.size   = {[1 -2]     };
 
-param = sw_readparam(inpForm, varargin{:});
+param = sw_readparam(inpForm, varargin{:},'showWarn',false);
 
 % calculate spin wave spectrum
 if nargin > 5

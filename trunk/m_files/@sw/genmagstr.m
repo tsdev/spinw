@@ -403,6 +403,13 @@ if param.norm
     
 end
 
+% simplify expressions
+if obj.symbolic
+    S = simplify(S);
+    k = simplify(k);
+    n = simplify(n);
+end
+
 mag_str.N_ext = int32(nExt(:))';
 mag_str.k     = k(:)';
 mag_str.S     = S;

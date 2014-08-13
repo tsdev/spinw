@@ -70,7 +70,12 @@ nExt = double(obj.mag_str.N_ext);
 kExt = obj.mag_str.k.*nExt;
 
 % Incommenasurate structure in the extended unit cell.
-incomm = any(abs(kExt-round(kExt))>param.epsilon);
+if obj.symbolic
+    kTest = sw_sub1(kExt,0.452524243);
+else
+    kTest = kExt;
+end
+incomm = any(abs(kTest-round(kTest))>param.epsilon);
 
 M0      = obj.mag_str.S;
 nMagExt = size(M0,2);

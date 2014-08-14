@@ -351,7 +351,11 @@ switch param.mode
         S = mAtom.S;
         S = repmat(S,[prod(nExt) 1]);
         
-        [S, k, n] = param.func(sym(S), sym(param.x0));
+        if obj.symbolic
+            [S, k, n] = param.func(sym(S), sym(param.x0));
+        else
+            [S, k, n] = param.func(S,param.x0);
+        end
     case 'fourier'
         % generate supercell from Fourier components
         % keeps the final k-vector zero

@@ -305,7 +305,7 @@ switch param.mode
         
         % Spin in the extended unit cell.
         S = zeros(3,nMagExt);
-        if obj.symb
+        if obj.symbolic
             S = sym(S);
         end
         
@@ -351,7 +351,7 @@ switch param.mode
         S = mAtom.S;
         S = repmat(S,[prod(nExt) 1]);
         
-        [S, k, n] = param.func(S, param.x0);
+        [S, k, n] = param.func(sym(S), sym(param.x0));
     case 'fourier'
         % generate supercell from Fourier components
         % keeps the final k-vector zero
@@ -405,9 +405,9 @@ end
 
 % simplify expressions
 if obj.symbolic
-    S = simplify(S);
-    k = simplify(k);
-    n = simplify(n);
+    S = simplify(sym(S));
+    k = simplify(sym(k));
+    n = simplify(sym(n));
 end
 
 mag_str.N_ext = int32(nExt(:))';

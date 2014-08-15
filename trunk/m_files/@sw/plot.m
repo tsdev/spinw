@@ -502,6 +502,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 matrix   = obj.matrix;
+mColor   = double(matrix.color)/255;
 coupling = obj.coupling;
 nExt     = double(obj.mag_str.N_ext);
 
@@ -514,7 +515,7 @@ if isempty(SS.all)
     coupling.mat     = zeros(3,3,0);
     coupling.DM      = zeros(3,0);
 else
-    coupling.dl      = SS.all(1:3,:);
+    coupling.dl      = double(SS.all(1:3,:));
     coupling.atom1   = SS.all(4,:);
     coupling.atom2   = SS.all(5,:);
     coupling.mat_idx = SS.all(15,:);
@@ -652,7 +653,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                                 handle.aniso(atom.idx(ll),end+1) = sAniso;
                                 set(sAniso,'LineStyle','none');
                                 set(sAniso,'FaceAlpha',param.aEll);
-                                set(sAniso,'FaceColor',double(obj.matrix.color(:,aIdx))/255);
+                                set(sAniso,'FaceColor',mColor(:,aIdx));
                                 set(sAniso,'Tag',['aniso_' atom.label{ll}]);
                                 
                                 tooltip(sAniso,[single_ion.label{llMagAtom} ' anisotropy\n' strmat(single_ion.mat(:,:,llMagAtom))]);
@@ -675,7 +676,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             else
                                 objid = sprintf('anisotropy%d',idxe);
                                 idxe = idxe + 1;
-                                jmol_command('ellipsoid',objid,rPlot,ell.xyz(:,1),ell.xyz(:,2),ell.xyz(:,3),obj.matrix.color(:,aIdx));
+                                jmol_command('ellipsoid',objid,rPlot,ell.xyz(:,1),ell.xyz(:,2),ell.xyz(:,3),mColor(:,aIdx)*255);
                             end
                             
                         end
@@ -813,18 +814,18 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
             for ll = 1:nCoupling
                 if coupling.mat_idx(ll)
                     rLat1 = mAtom.r(:,coupling.atom1(ll)) + dCell;
-                    rLat2 = mAtom.r(:,coupling.atom2(ll)) + double(coupling.dl(:,ll)) + dCell;
+                    rLat2 = mAtom.r(:,coupling.atom2(ll)) + coupling.dl(:,ll) + dCell;
                     
                     if all((rLat1<=param.range(:,2))&(rLat1>=param.range(:,1))&(rLat2<=param.range(:,2))&(rLat2>=param.range(:,1)))
                         rPlot1    = basisVector*rLat1;
                         rPlot2    = basisVector*rLat2;
                         if strcmpi(param.cCoupling,'auto')
-                            cColor    = double(matrix.color(:,coupling.mat_idx(ll)))/255;
+                            cColor    = mColor(:,coupling.mat_idx(ll));
                         else
                             cColor    = param.cCoupling/255;
                         end
                         if strcmpi(param.cDM,'auto')
-                            DMColor    = double(matrix.color(:,coupling.mat_idx(ll)))/255;
+                            DMColor    = mColor(:,coupling.mat_idx(ll));
                         else
                             DMColor    = param.cDM/255;
                         end
@@ -955,14 +956,14 @@ if (param.legend) && size(matrix.mat,3)>0
         if dashList(ii)
             % legend for dashed matrices
             handle.lRect(end+1) = rectangle('Position',[6 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5]);
-            set(handle.lRect(end),'FaceColor',double(matrix.color(:,ii))/255);
-            set(handle.lRect(end),'EdgeColor',double(matrix.color(:,ii))/255);
+            set(handle.lRect(end),'FaceColor',mColor(:,ii));
+            set(handle.lRect(end),'EdgeColor',mColor(:,ii));
             
             handle.lRect(end+1) = rectangle('Position',[5+sRadius*2/3*2 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5]);
-            set(handle.lRect(end),'FaceColor',double(matrix.color(:,ii))/255);
-            set(handle.lRect(end),'EdgeColor',double(matrix.color(:,ii))/255);
+            set(handle.lRect(end),'FaceColor',mColor(:,ii));
+            set(handle.lRect(end),'EdgeColor',mColor(:,ii));
         else
-            set(handle.lRect(end),'FaceColor',double(matrix.color(:,ii))/255);
+            set(handle.lRect(end),'FaceColor',mColor(:,ii));
         end
         
         if dashList(ii)

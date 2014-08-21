@@ -243,7 +243,8 @@ n = (param.n)/norm(param.n);
 % If the magnetic structure is not initialized start with a random one.
 if strcmp(param.mode,'extend') && (nMagAtom > size(param.S,2))
     param.mode = 'random';
-    warning('sw:genmagstr:WrongInitialStructure','No magnetic structure is defined, random structure is created instead!')
+    % this warning is not necessary
+    %warning('sw:genmagstr:WrongInitialStructure','No magnetic structure is defined, random structure is created instead!')
 end
 
 if obj.symb

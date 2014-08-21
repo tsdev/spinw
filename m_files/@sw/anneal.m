@@ -58,8 +58,8 @@ function stat = anneal(obj, varargin)
 %           Default is {'per' 'per' 'per'}.
 % verbosity Controls output to the screen.
 %               0   suppresses all output
-%               1   gives final report only [default]
-%               2   plots temperature changes and final report
+%               1   gives final report only
+%               2   plots temperature changes and final report [default]
 % nExt      The size of the magnetic cell in number of unit cells, to
 %           provide input information to 'fStat'.
 %           Default is from obj.mag_str.N_ext.

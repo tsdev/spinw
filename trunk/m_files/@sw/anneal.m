@@ -6,6 +6,7 @@ function stat = anneal(obj, varargin)
 % The function can deal only with single ion anisotropy and isotropic
 % exchange interactions in 1, 2 or 3 spin dimensions. 
 % General and antisymmetric exchage interactions are not supported yet!
+% Also the g-tensor is fixed to 2.
 %
 % WARNING!
 % The calculated energies doesn't contain the self energy (moment coupled
@@ -136,40 +137,50 @@ inpForm.defval = [inpForm.defval {3         0       nExt   []           }];
 inpForm.size   = [inpForm.size   {[1 1]     [1 1]   [1 3]  [1 -1]       }];
 inpForm.soft   = [inpForm.soft   {0         0       0      1            }];
 
-inpForm.fname  = [inpForm.fname  {'fStat'   'fSub'   'random' 'boundary'         }];
-inpForm.defval = [inpForm.defval {@sw_fstat @sw_fsub true     {'per' 'per' 'per'}}];
-inpForm.size   = [inpForm.size   {[1 1]     [1 1]    [1 1]    [1 3]              }];
-inpForm.soft   = [inpForm.soft   {0         0        0        0                  }];
+inpForm.fname  = [inpForm.fname  {'fStat'   'fSub'   'random' 'title'   }];
+inpForm.defval = [inpForm.defval {@sw_fstat @sw_fsub true     ''        }];
+inpForm.size   = [inpForm.size   {[1 1]     [1 1]    [1 1]    [1 -2]	}];
+inpForm.soft   = [inpForm.soft   {0         0        0        1         }];
 
-inpForm.fname  = [inpForm.fname  {'title'   'fineT' 'rate'}];
-inpForm.defval = [inpForm.defval {''        0       0.1   }];
-inpForm.size   = [inpForm.size   {[1 -2]	[1 1]   [1 1] }];
-inpForm.soft   = [inpForm.soft   {1         0       0     }];
+inpForm.fname  = [inpForm.fname  {'fineT' 'rate' 'boundary'         }];
+inpForm.defval = [inpForm.defval {0       0.1    {'per' 'per' 'per'}}];
+inpForm.size   = [inpForm.size   {[1 1]   [1 1]  [1 3]              }];
+inpForm.soft   = [inpForm.soft   {0       0      0                  }];
 
 param = sw_readparam(inpForm,varargin{:});
-
-% Text output file
-fid = obj.fid;
-
-% Creates random spin directions if param.random is true.
-mag_param = param;
-if param.random
-    mag_param.mode = 'random';
-else
-    mag_param.mode = 'extend';
-end
 
 if param.nStat > param.nMC
     warning('sw:anneal:wrongParam','nStat is larger than nMC, instead of the given value, nMC will be used!');
     param.nStat = param.nMC;
 end
 
-mag_param.showWarn = false;
+% Text output file
+fid = obj.fid;
+
+% Creates random spin directions if param.random is true.
+mag_param = struct;
+if param.random
+    mag_param.mode = 'random';
+else
+    mag_param.mode = 'extend';
+end
+mag_param.nExt = param.nExt;
+
 obj.genmagstr(mag_param);
 M0  = obj.mag_str.S;
 
 % Produce the interaction matrices
 [SS, SI] = obj.intmatrix;
+% Save DM, anisotropic and general interactions into the SS.gen matrix
+% Add SS.ani
+zAni   = zeros(3,size(SS.ani,2));
+SS.gen = [SS.gen [SS.ani(1:5,:);SS.ani(6,:);zAni;SS.ani(7,:);zAni;SS.ani(8,:)]];
+% Add SS.dm
+zDM    = zeros(1,size(SS.dm,2));
+SS.gen = [SS.gen [SS.dm(1:5,:);zDM;-SS.dm(8,:);SS.dm(7,:);SS.dm(8,:);zDM;-SS.dm(6,:);-SS.dm(7,:);SS.dm(6,:);zDM]];
+
+SS     = rmfield(SS,{'ani' 'dm'});
+
 
 % Boltzmann constant.
 kB      = obj.unit.kB;
@@ -185,11 +196,11 @@ nStat   = param.nStat;
 fStat   = param.fStat;
 nMagExt = size(M0,2);
 
-% multiplyer of the moment for T=0 ground state search
+% Multiplyer of the moment for T=0 ground state search
 Mmult = 1;
 
-% Calculate the initial energy of the system the extra zeros are for easy
-% indexing, size: (1,nMagExt+1).
+% Initial moment directions, the extra zeros are for easy indexing, size of
+% M is (1,nMagExt+1).
 M     = [M0 [0;0;0]];
 S     = sqrt(sum(M.^2,1));
 normM = [sqrt(sum(M0(1:spinDim,:).^2,1)) 1];
@@ -199,18 +210,14 @@ M     = M(1:spinDim,:).*repmat(S./normM,[spinDim 1]);
 for ii = 1:3
     if strcmp('free',param.boundary{ii})
         SS.iso(:,SS.iso(ii,:)~=0) = [];
-        SS.ani(:,SS.ani(ii,:)~=0) = [];
-        SS.dm (:,SS.dm(ii,:) ~=0) = [];
         SS.gen(:,SS.gen(ii,:)~=0) = [];
     end
 end
 
 % Since k_m=(0,0,0) the spins that are coupled to themself contribute with
-% a constant self-energy, by removing self energy, for large cells this will
-% give only a small modification to the final energy.
+% a constant self-energy, removing this doesn't change thermodynamical
+% behaviour just shifts the zero energy.
 SS.iso(:, SS.iso(4,:)==SS.iso(5,:)) = [];
-SS.ani(:, SS.ani(4,:)==SS.ani(5,:)) = [];
-SS.dm (:, SS.dm (4,:)==SS.dm (5,:)) = [];
 SS.gen(:, SS.gen(4,:)==SS.gen(5,:)) = [];
 
 % Calculates the energy of the initial configuration and prepares the
@@ -238,18 +245,25 @@ switch spinDim
         Ay = squeeze(AA(:,2,:));
         Az = squeeze(AA(:,3,:));
     otherwise
-        error('sw:anneal:WrongData','The dimension of the spin variable is wrong (spinDim = {1,2,3})!');
+        error('sw:anneal:WrongData',['The dimension of the spin variable'...
+            ' is wrong (spinDim = {1,2,3})!']);
 end
 
+% Checks whether there is any external field
+param.isfield = any(B(:));
+
 % Checks whether anisotropy is non-zero.
-if any(any(Ax)) || any(any(Ay)) || any(any(Az))
+if any(AA(:))
     param.aniso = true;
 else
     param.aniso = false;
 end
 
 if param.aniso && param.nORel>0
-    warning('sw:anneal:OverRelaxationWarning','Performing over-relaxation and having non-zero single ion anisotropy can destroy detailed balance.');
+    warning('sw:anneal:OverRelaxationWarning',['Performing over-relaxation'...
+        'and having non-zero single ion anisotropy would destroy detailed '...
+        'balance, over-relaxation is disabled.']);
+    param.nORel = 0;
 end
 
 % Initializes counters.
@@ -261,65 +275,112 @@ E    = [];
 % Initialise plot.
 sw_annealplot(T,E,rate,param,fid);
 
-% Assing moments to sublattices for parallel calculation. On any sublattice
-% there are no coupling between moments, thus annealing can be calculated
-% parallel. SSc stores the index of the sublattice, size: (1,nMagExt)
+% Assing moments to sublattices for parallel calculation. There are no
+% coupling between moments on the same sublattice, thus annealing can be
+% calculated parallel. SSc stores the index of the sublattice, size:
+% (1,nMagExt)
+
 if isempty(param.subLat)
-    SSc  = param.fSub(SS.iso(4:5,:),param.nExt);
+    SSc  = param.fSub(SS.all(4:5,:),param.nExt);
     param.subLat = SSc;
 else
     SSc  = param.subLat;
 end
 nSub = max(SSc);
 
-% Counts the number of neighbours of each moment.
-nNeigh = zeros(nMagExt,1);
-for ii = 1:nMagExt
-    nNeigh(ii) = sum((SS.iso(4,:) == ii)|(SS.iso(5,:) == ii));
+% Counts the number of neighbours of each moment taking into account only
+% the isotropic exchanges.
+param.isoexc = ~isempty(SS.iso);
+
+if param.isoexc
+    nNeigh = zeros(nMagExt,1);
+    for ii = 1:nMagExt
+        nNeigh(ii) = sum((SS.iso(4,:) == ii)|(SS.iso(5,:) == ii));
+    end
+    
+    % Maximum number of neighbours
+    maxNeigh = max(nNeigh);
+    
+    
+    % Creates the SSi neigbour list of the moments in each sublattice, by
+    % default it points to the last moment which is always zero. Also SSJ the
+    % list of isotropic exchange values are created.
+    SSi = zeros(maxNeigh,nMagExt) + (nMagExt+1);
+    SSJ = zeros(maxNeigh,nMagExt);
+    
+    for ii = 1:nMagExt
+        SSi(1:nNeigh(ii),ii) = [SS.iso(5,(SS.iso(4,:) == ii)) SS.iso(4,(SS.iso(5,:) == ii))]';
+        SSJ(1:nNeigh(ii),ii) = [SS.iso(6,(SS.iso(4,:) == ii)) SS.iso(6,(SS.iso(5,:) == ii))]';
+    end
 end
-% Maximum number of neighbours
-maxNeigh = max(nNeigh);
 
-% Creates the neigbour list of the moments in each sublattice, by default
-% it points to the last moment which is always zero.
-SSi = zeros(maxNeigh,nMagExt)+nMagExt+1;
-SSJ = zeros(maxNeigh,nMagExt);
+% For general exchange values all elements of the 3x3 J-matrices has to be
+% stored, the anisotropic and DM interactions are also included.
+param.genexc = ~isempty(SS.gen);
 
-for ii = 1:nMagExt
-    SSi(1:nNeigh(ii),ii) = [SS.iso(5,(SS.iso(4,:) == ii)) SS.iso(4,(SS.iso(5,:) == ii))]';
-    SSJ(1:nNeigh(ii),ii) = [SS.iso(6,(SS.iso(4,:) == ii)) SS.iso(6,(SS.iso(5,:) == ii))]';
+if param.genexc
+    nNeighG = zeros(nMagExt,1);
+    for ii = 1:nMagExt
+        nNeighG(ii) = sum((SS.gen(4,:) == ii)|(SS.gen(5,:) == ii));
+    end
+    
+    % Maximum number of neighbours
+    maxNeighG = max(nNeighG);
+    
+    % Interaction matrices and neigbor indices
+    SSiG = zeros(maxNeighG,nMagExt) + (nMagExt+1);
+    SSJG = zeros(9,maxNeighG,nMagExt);
+    
+    % Indexes for transposing J for exchanged spins in the interaction.
+    % Default is Si * J * Sj, or Sj * J' * Si has to be used.
+    trIdx = reshape(reshape(1:9,[3 3])',[9 1])+5;
+    for ii = 1:nMagExt
+        SSiG(1:nNeighG(ii),ii) = [SS.gen(5,(SS.gen(4,:) == ii))    SS.gen(4,(SS.gen(5,:) == ii))    ]';
+        SSJG(:,1:nNeighG(ii),ii) = [SS.gen(6:14,(SS.gen(4,:) == ii)) SS.gen(trIdx,(SS.gen(5,:) == ii))];
+    end
+    
 end
-
 
 % Store spin indices of each sublattice for speedup.
 Sindex = zeros(nSub,nMagExt);
-for ii = 1:nSub
-    Sindex(ii,:) = (SSc == ii);
-end
+%for ii = 1:nSub
+%    Sindex(ii,:) = (SSc == ii);
+%end
+Sindex(nSub*(0:nMagExt-1)+SSc) = 1;
 Sindex      = logical(Sindex);
 
 % Number of moments on each sublattice.
 nElementSub = sum(Sindex,2);
 
 % Speeds up the code by storing every sublattice data in different cells
-csSSJ = cell(nSub,1);
-csSSi = cell(nSub,1);
-cAx   = cell(nSub,1);
-cAy   = cell(nSub,1);
-cAz   = cell(nSub,1);
-cS    = cell(nSub,1);
-cB    = cell(nSub,1);
+csSSJ  = cell(nSub,1);
+csSSi  = cell(nSub,1);
+csSSiG = cell(nSub,1);
+csSSJG = cell(nSub,1);
+cAx    = cell(nSub,1);
+cAy    = cell(nSub,1);
+cAz    = cell(nSub,1);
+cS     = cell(nSub,1);
+cB     = cell(nSub,1);
 
 for ii = 1:nSub
-    sSindex   = Sindex(ii,:);
-    csSSJ{ii} = repmat(reshape(SSJ(:,sSindex),1,[]),spinDim,1);
-    csSSi{ii} = reshape(SSi(:,sSindex),1,[]);
+    sSindex    = Sindex(ii,:);
+    cS{ii}    = S(sSindex);
+    
+    if param.isoexc
+        csSSi{ii}  = reshape(SSi(:,sSindex),1,[]);
+        csSSJ{ii}  = repmat(reshape(SSJ(:,sSindex),1,[]),spinDim,1);
+    end
     if param.aniso
         cAx{ii}   = Ax(:,sSindex);
         cAy{ii}   = Ay(:,sSindex);
         cAz{ii}   = Az(:,sSindex);
     end
-    cS{ii}    = S(sSindex);
+    if param.genexc
+        csSSiG{ii} = reshape(SSiG(:,sSindex),1,[]);
+        csSSJG{ii} = reshape(SSJG(:,:,sSindex),3,3,[]);
+    end
+    
     cB{ii}    = repmat(B,[1 nElementSub(ii)]);
 end
 
@@ -493,9 +554,21 @@ while 1
                     % F stores the molecular field acting on the moments of
                     % the jsub sublattice (exchange+external field).
                     % F [3, nElementSub(jsub)]
-                    F = squeeze(sum(reshape(M(:,sSSi).*sSSJ,3, maxNeigh,[]),2));
+                    if param.isoexc
+                        F = squeeze(sum(reshape(sSSJ.*M(:,sSSi),3, maxNeigh,[]),2));
+                    else
+                        F = 0;
+                    end
+                    % Adds general exchange molecular field
+                    if param.genexc
+                        sSSJG = csSSJG{jsub};
+                        F = F + squeeze(sum(reshape(permute(mmat(sSSJG,permute(M(:,csSSiG{jsub}),[1 3 2])),[1 3 2]),3, maxNeighG,[]),2));
+                    end
                     % Adds external magnetic field.
-                    F = F - cB{jsub};
+                    if param.isfield
+                        F = F - cB{jsub};
+                    end
+                    
                     % Generate new spin directions, creating normal
                     % distribution of coordinates, then normalizing them.
                     randS  = randn(3,nElementSub(jsub));
@@ -557,7 +630,16 @@ while 1
                         % F stores the molecular field acting on the moments of
                         % the jsub sublattice (exchange+external field).
                         % F [3, nElementSub(jsub)]
-                        F = squeeze(sum(reshape(M(:,sSSi).*sSSJ,3, maxNeigh,[]),2));
+                        if param.isoexc
+                            F = squeeze(sum(reshape(sSSJ.*M(:,sSSi),3, maxNeigh,[]),2));
+                        else
+                            F = 0;
+                        end
+                        % Adds general exchange molecular field
+                        if param.genexc
+                            sSSJG = csSSJG{jsub};
+                            F = F + squeeze(sum(reshape(permute(mmat(sSSJG,permute(M(:,csSSiG{jsub}),[1 3 2])),[1 3 2]),3, maxNeighG,[]),2));
+                        end
                         % Adds external magnetic field.
                         F = F - cB{jsub};
                         % Flip the spins around the local field.
@@ -633,8 +715,6 @@ spinDim = size(M,1);
 nMagExt = size(M,2)-1;
 
 iM  = M(:,1:nMagExt);
-M1  = iM(:,SS.iso(4,:));
-M2  = iM(:,SS.iso(5,:));
 
 % Calculates anisotropy energy for XY and Heisenberg models.
 if spinDim > 1
@@ -647,8 +727,22 @@ end
 
 fieldE = -sum(B'*iM);
 
-excE   =  sum(SS.iso(6,:).*sum(M1.*M2,1),2);
+if ~isempty(SS.iso)
+    M1  = iM(:,SS.iso(4,:));
+    M2  = iM(:,SS.iso(5,:));
+    excEiso   =  sum(SS.iso(6,:).*sum(M1.*M2,1),2);
+else
+    excEiso = 0;
+end
 
-E = excE + sum(anisoE(:)) + fieldE;
+if ~isempty(SS.gen)
+    M1  = iM(:,SS.gen(4,:));
+    M2  = iM(:,SS.gen(5,:));
+    excEgen   =  sum(mmat(mmat(permute(M1,[3 1 2]),reshape(SS.gen(6:end,:),3,3,[])),permute(M2,[1 3 2])),3);
+else
+    excEgen = 0;
+
+end
+E = excEiso + excEgen + sum(anisoE(:)) + fieldE;
 
 end

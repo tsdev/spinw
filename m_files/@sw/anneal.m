@@ -40,7 +40,7 @@ function stat = anneal(obj, varargin)
 % random    Random initial conditions, if initial spin configuration
 %           is undefined (obj.mag_str.S is empty) the initial configuration
 %           is automaticly random independently of the value of random.
-%           Default is true.
+%           Default is false.
 % nMC       Number of Monte-Carlo steps per spin at each temperature
 %           step to reach thermal equilibrium. Default is 100.
 % nORel     Number of over-relaxation steps after every Monte-Carlo
@@ -138,7 +138,7 @@ inpForm.size   = [inpForm.size   {[1 1]     [1 1]   [1 3]  [1 -1]       }];
 inpForm.soft   = [inpForm.soft   {0         0       0      1            }];
 
 inpForm.fname  = [inpForm.fname  {'fStat'   'fSub'   'random' 'title'   }];
-inpForm.defval = [inpForm.defval {@sw_fstat @sw_fsub true     ''        }];
+inpForm.defval = [inpForm.defval {@sw_fstat @sw_fsub false    ''        }];
 inpForm.size   = [inpForm.size   {[1 1]     [1 1]    [1 1]    [1 -2]	}];
 inpForm.soft   = [inpForm.soft   {0         0        0        1         }];
 
@@ -293,6 +293,7 @@ nSub = max(SSc);
 param.isoexc = ~isempty(SS.iso);
 
 if param.isoexc
+    
     nNeigh = zeros(nMagExt,1);
     for ii = 1:nMagExt
         nNeigh(ii) = sum((SS.iso(4,:) == ii)|(SS.iso(5,:) == ii));
@@ -319,6 +320,11 @@ end
 param.genexc = ~isempty(SS.gen);
 
 if param.genexc
+    
+    if param.spinDim < 3
+        warning('sw:anneal:DimProblem','Anisotropic exchange only works for spinDim==3!')
+    end
+    
     nNeighG = zeros(nMagExt,1);
     for ii = 1:nMagExt
         nNeighG(ii) = sum((SS.gen(4,:) == ii)|(SS.gen(5,:) == ii));

@@ -78,6 +78,8 @@ function stat = annealloop(obj, varargin)
 %           magnetic moment, size is (1,nMagExt). If undefined, the
 %           function defined in 'fSub' will be used to partition the
 %           lattice.
+% saveObj   If true, the sw object is saved after every annealing step for
+%           debugging purposes. Default is false.
 % title     Gives a title string to the simulation that is saved in the
 %           output.
 %
@@ -140,10 +142,10 @@ inpForm.defval = [inpForm.defval {0       0.1    {'per' 'per' 'per'}}];
 inpForm.size   = [inpForm.size   {[1 1]   [1 1]  [1 3]              }];
 inpForm.soft   = [inpForm.soft   {0       0      0                  }];
 
-inpForm.fname  = [inpForm.fname  {'x'     'func' }];
-inpForm.defval = [inpForm.defval {1       func0  }];
-inpForm.size   = [inpForm.size   {[-3 -4] [1 1]  }];
-inpForm.soft   = [inpForm.soft   {0       0      }];
+inpForm.fname  = [inpForm.fname  {'x'     'func' 'saveObj' }];
+inpForm.defval = [inpForm.defval {1       func0  true      }];
+inpForm.size   = [inpForm.size   {[-3 -4] [1 1]  [1 1]     }];
+inpForm.soft   = [inpForm.soft   {0       0      0         }];
 
 param = sw_readparam(inpForm,varargin{:});
 param.showWarn = false;
@@ -170,6 +172,13 @@ for ii = 1:nLoop
     param.endT  = obj.temperature;
     
     aRes{ii} = obj.anneal(param);
+    % remove the duplicate object
+    if ~param.saveObj
+        % remove sw object from the output to free up memory
+        delete(aRes{ii}.obj);
+        aRes{ii} = rmfield(aRes{ii},'obj');
+    end
+    
     % save sublattice list
     param.subLat = aRes{ii}.param.subLat;
     
@@ -206,6 +215,11 @@ for ii = 1:nLoop
     end
     
 end
+
+% save extra information
+stat.obj = copy(obj);
+stat.state = aRes;
+stat.param = param;
 
 if verbosity0 > 0
     sw_status(100,2);

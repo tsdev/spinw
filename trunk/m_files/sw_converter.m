@@ -12,9 +12,11 @@ function out = sw_converter(value, unitIn, unitOut, particleName)
 %                       'photon'
 % value             Numerical input value, can be arbitrary matrix.
 % unitIn            Units of the input value:
-%                       'k'         momentum in Angstrom^-1.
+%                       'A-1'       momentum in Angstrom^-1.
+%                       'k'         -||-
 %                       'Angstrom'  wavelength in Angstrom.
-%                       'A'         wavelength in Angstrom.
+%                       'lambda'    -||-
+%                       'A'         -||-
 %                       'Kelvin'    temperature in Kelvin.
 %                       'mps'       speed in m/s.
 %                       'meV'       energy in meV.
@@ -81,7 +83,7 @@ end
 % Conversions
 switch unitIn
     % convert everything into momentum in Angstrom^-1
-    case {'Angstrom' 'A'}
+    case {'Angstrom' 'A' 'lambda'}
         k = 2*pi./value;
     case 'nm'
         k = 2*pi./(value*10);
@@ -93,7 +95,7 @@ switch unitIn
         else
             k = value*EK2J/clight/1e10;
         end
-    case 'k'
+    case {'k' 'A-1'}
         k = value;
     case 'mps'
         if m~=0

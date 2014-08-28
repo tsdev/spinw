@@ -125,6 +125,10 @@ function varargout = plot(obj, varargin)
 %                   vectors to a uniform one.
 %   rCoupling       Radius of the cylinder of the couplings, default is
 %                   0.05 Angstrom.
+%   aCoupling       To plot couplings as arrows from atom1 to atom2 in
+%                   sw.couplingtable.table. If true arrows are plotted on
+%                   all bonds. Default is false is no DM interaction
+%                   present, otherwise true.
 %
 %   Other options =========================================================
 %
@@ -228,9 +232,9 @@ inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' 'hFigure
 inpForm.defval = [inpForm.defval {1      1       1      1                0        true  0      }];
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]            [1 1]    [1 1] [1 1]  }];
 
-inpForm.fname  = [inpForm.fname  {'centerS' }];
-inpForm.defval = [inpForm.defval {true      }];
-inpForm.size   = [inpForm.size   {[1 1]     }];
+inpForm.fname  = [inpForm.fname  {'centerS' 'aCoupling' }];
+inpForm.defval = [inpForm.defval {true      2           }];
+inpForm.size   = [inpForm.size   {[1 1]     [1 1]       }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -495,7 +499,9 @@ end
 % GENERATE HAMILTONIAN USING SYMMETRY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[SS, SI] = intmatrix(obj,'plotmode',true,'extend',false,'zeroC',param.pZeroCoupling);
+% don't sort the bonds on DM interactions
+[SS, SI] = intmatrix(obj,'plotmode',true,'extend',false,...
+    'sortDM',false,'zeroC',param.pZeroCoupling);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % COUPLINGS
@@ -523,6 +529,11 @@ else
     coupling.mat     = reshape(SS.all(6:14,:),3,3,[]);
     coupling.DM      = (coupling.mat-permute(coupling.mat,[2 1 3]))/2;
     coupling.DM      = cat(2,coupling.DM(2,3,:),coupling.DM(3,1,:),coupling.DM(1,2,:));
+end
+
+% auto select to plot arrows for couplings if DM interaction is present
+if param.aCoupling == 2
+    param.aCoupling = any(coupling.DM(:));
 end
 
 nCoupling        = size(coupling.idx,2);
@@ -834,16 +845,24 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         if param.pCoupling
                             if plotmode
                                 dashS = (param.dash*dashList(coupling.mat_idx(ll)));
-                                if dashS>0
-                                    cCylinder = sw_cylinder(rPlot1,rPlot2,param.rCoupling*1.2,param.surfRes,dashS);
+                                if param.aCoupling
+                                    % arrow end at the surface of atom2
+                                    % sphere
+                                    r2 = atom.rad(coupling.atom2(ll));
+                                    rPlot2 = rPlot2 - (rPlot2-rPlot1)/norm(rPlot2-rPlot1)*r2;
+                                    hBond  = sw_arrow(rPlot1,rPlot2,param.rCoupling,param.angHeadSpin,param.lHeadSpin,param.surfRes);
                                 else
-                                    cCylinder = sw_cylinder(rPlot1,rPlot2,param.rCoupling,param.surfRes,0);
+                                    if dashS>0
+                                        hBond = sw_cylinder(rPlot1,rPlot2,param.rCoupling*1.2,param.surfRes,dashS);
+                                    else
+                                        hBond = sw_cylinder(rPlot1,rPlot2,param.rCoupling,param.surfRes,0);
+                                    end
                                 end
-                                handle.coupling(coupling.idx(ll),end+(1:numel(cCylinder))) = cCylinder;
-                                set(cCylinder,'FaceColor',cColor);
-                                set(cCylinder,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
+                                handle.coupling(coupling.idx(ll),end+(1:numel(hBond))) = hBond;
+                                set(hBond,'FaceColor',cColor);
+                                set(hBond,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
                                 
-                                tooltip(cCylinder,[matrix.label{coupling.mat_idx(ll)} ' coupling\nValue:\n' strmat(matrix.mat(:,:,coupling.mat_idx(ll)))]);
+                                tooltip(hBond,[matrix.label{coupling.mat_idx(ll)} ' coupling\nValue:\n' strmat(matrix.mat(:,:,coupling.mat_idx(ll)))]);
                             else
                                 objid = sprintf('coupling_%s%d',matrix.label{coupling.mat_idx(ll)},idxc);
                                 idxc = idxc + 1;

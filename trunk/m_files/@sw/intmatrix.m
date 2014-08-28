@@ -15,11 +15,11 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %                   coupling matrices are summed up.
 %               2   Same as mode == 1, moreover only SS.all is calculated.
 % plotmode      If true, additional rows are added to SS.all, to identify
-%               the couplings for plotting and each coupling is sorted for
-%               consistent plotting of the DM interaction. Sorting is based
-%               on the dR distance vector, pointing from atom1 to atom2.
-%               Its components should fulfill the following rules in
-%               hierarchical order:
+%               the couplings for plotting.
+% sortDM        If tru each coupling is sorted for consistent plotting of
+%               the DM interaction. Sorting is based on the dR distance
+%               vector, pointing from atom1 to atom2. Its components should
+%               fulfill the following rules in hierarchical order:
 %                   1. dR(x) > 0
 %                   2. dR(y) > 0
 %                   3. dR(z) > 0.
@@ -68,9 +68,9 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 % See also SW.COUPLINGTABLE.
 %
 
-inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate' 'rotMat'};
-inpForm.defval = {0          false     false   true     false       true    };
-inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]   };
+inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate' 'rotMat' 'sortDM'};
+inpForm.defval = {0          false     false   true     false       true     false   };
+inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]    [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -297,24 +297,25 @@ if param.plotmode
     % in the bottom row
     SS.all   = [SS.all; double(JJ.idx'); idxTemp];
     
-    if ~isempty(SS.all)
-        % sort properly the atom1-atom2 pairs for the DM interaction
-        % based on the vector pointing from atom1 to atom2
-        % rv = r_atom2 + dl - r_atom1
-        rv = mAtom.r(:,SS.all(5,:)) + SS.all(1:3,:) - mAtom.r(:,SS.all(4,:));
-        rmax = max(max(double(rv)));
-        
-        multL = ceil(fliplr(cumprod([1 [1 1]*(rmax+1)])));
-        
-        % find the couplings that have to be flipped
-        flip = find(sum(bsxfunsym(@times,rv,multL'),1) < 0);
-        % flip the selected couplings
-        SS.all(1:3,flip)   = -SS.all(1:3,flip);
-        SS.all([4 5],flip) =  SS.all([5 4],flip);
-        % change the sign of the DM interaction (transpose J matrices)
-        SS.all(6:14,flip)  = SS.all([1 4 7 2 5 8 3 6 9]+5,flip);
-    end
     RR = mAtom.r;
+end
+
+if param.sortDM && (~isempty(SS.all))
+    % sort properly the atom1-atom2 pairs for the DM interaction
+    % based on the vector pointing from atom1 to atom2
+    % rv = r_atom2 + dl - r_atom1
+    rv = mAtom.r(:,SS.all(5,:)) + SS.all(1:3,:) - mAtom.r(:,SS.all(4,:));
+    rmax = max(max(double(rv)));
+    
+    multL = ceil(fliplr(cumprod([1 [1 1]*(rmax+1)])));
+    
+    % find the couplings that have to be flipped
+    flip = find(sum(bsxfunsym(@times,rv,multL'),1) < 0);
+    % flip the selected couplings
+    SS.all(1:3,flip)   = -SS.all(1:3,flip);
+    SS.all([4 5],flip) =  SS.all([5 4],flip);
+    % change the sign of the DM interaction (transpose J matrices)
+    SS.all(6:14,flip)  = SS.all([1 4 7 2 5 8 3 6 9]+5,flip);
 end
 
 if param.extend

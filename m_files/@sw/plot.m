@@ -127,7 +127,7 @@ function varargout = plot(obj, varargin)
 %                   0.05 Angstrom.
 %   aCoupling       To plot couplings as arrows from atom1 to atom2 in
 %                   sw.couplingtable.table. If true arrows are plotted on
-%                   all bonds. Default is false is no DM interaction
+%                   all bonds. Default is false if no DM interaction
 %                   present, otherwise true.
 %
 %   Other options =========================================================
@@ -261,7 +261,7 @@ if plotmode
     else
         hFigure = sw_getfighandle('sw_crystal');
     end
-    
+        
     if param.hg
         if isempty(hFigure)
             hFigure = sw_structfigure;
@@ -533,7 +533,7 @@ end
 
 % auto select to plot arrows for couplings if DM interaction is present
 if param.aCoupling == 2
-    param.aCoupling = any(coupling.DM(:));
+    param.aCoupling = any(abs(coupling.DM(:))>1e-10);
 end
 
 nCoupling        = size(coupling.idx,2);

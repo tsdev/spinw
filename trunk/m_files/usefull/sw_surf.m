@@ -65,9 +65,13 @@ if numel(C) < maxPatch
     
     for ii = 1:size(C,1)
         for jj = 1:size(C,2)
+            if ~isnan(floor(idxD(ii,jj)))
             patch([-1 1 1 -1]*dx(ii,jj)/2+X(ii,jj),[-1 -1 1 1]*dy(ii,jj)/2+Y(ii,jj),...
                 cMap(floor(idxD(ii,jj)),:),'edgecolor',cMap(idxD(ii,jj),:));
+            end
+            
         end
+        
     end
     
 else

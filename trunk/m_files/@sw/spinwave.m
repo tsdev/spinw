@@ -109,7 +109,8 @@ function spectra = spinwave(obj, hkl, varargin)
 % Sab           Dynamical structure factor, dimensins are
 %               [3 3 nMode nHkl]. Each (:,:,i,j) submatrix contains the
 %               9 correlation functions: Sxx, Sxy, Sxz, etc. If given,
-%               magnetic form factor is included.
+%               magnetic form factor is included. Intensity is in hBar
+%               units, normalized to the crystallographic unit cell.
 % H             Quadratic for mof the Hamiltonian.
 %               Only saved if saveH is true.
 % T             Transformation matrix from the normal magnon modes to the
@@ -430,6 +431,11 @@ if iscell(param.formfact) || param.formfact
         % save the form factor information in the output
         spectra.formfact = obj.unit_cell.label(obj.unit_cell.S>0);
     else
+        if numel(param.formfact) ~= numel(obj.matom.idx)
+            error('sw:spinwave:WrongInput',['Number of form factor '...
+                'parameters has to equal to the number of magnetic '...
+                'atoms in the unit cell!'])
+        end
         % use the labels given as a cell input for all symmetry
         % inequivalent atom
         uLabel = param.formfact;

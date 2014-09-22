@@ -54,6 +54,11 @@ end
 
 fid = obj.fid;
 
+% if function is terminated using Ctrl+C, the original fileid value is
+% restored
+c = onCleanup(@()obj.fileid(fid));
+
+
 hklA = hklA(:)';
 T0 = obj.single_ion.T;
 

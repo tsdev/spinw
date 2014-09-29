@@ -143,7 +143,7 @@ switch unitOut
         else
             out = k/EK2J*clight*1e10;
         end
-    case 'k'
+    case {'k' 'A-1'}
         out = k;
     case 'mps'
         if m~=0

@@ -33,8 +33,15 @@ function spectra = sw_instrument(spectra, varargin)
 % ThetaMin      Minimum scattering angle in degree, default is 0.
 % plot          If the resolution is read from file and plot option is
 %               true, tre resolution will be plotted, default is true.
+%
+% Fixed incident neutron energy:
 % ki            Momentum of the incident neutrons in A^-1 units.
 % Ei            Energy of the incident neutrons in meV.
+%
+% Fixed final neutron energy:
+% kf            Final momentum of the neutrons in A^-1 units.
+% Ef            Final neutron energy in meV.
+%
 % norm          If true, the data is normalized to mbarn units. Default is
 %               true. g-factor of two is assumed.
 % useRaw        If false, the already modified spectra.swConv field is
@@ -62,9 +69,9 @@ if nargin == 0
     return;
 end
 
-inpForm.fname  = {'dE'  'ki'  'Ei' 'plot' 'polDeg' 'ThetaMin' 'formFact' 'dQ'  'norm' 'useRaw'};
-inpForm.defval = {0      0     0     true  5        0          'auto'    0     true    true   };
-inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1]    [1 1]      [1 -2]    [1 1] [1 1]   [1 1]  };
+inpForm.fname  = {'dE'  'ki'  'Ei'  'kf'  'Ef'  'plot' 'polDeg' 'ThetaMin' 'formFact' 'dQ'  'norm' 'useRaw'};
+inpForm.defval = {0      0     0     0     0     true   5        0          'auto'    0     true    true   };
+inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]      [1 -2]    [1 1] [1 1]   [1 1]  };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -101,11 +108,11 @@ end
 % determine whether to include resolution
 calcres = true;
 try %#ok<TRYNC>
-if ~any(param.dE)
-    calcres = false;
+    if ~any(param.dE)
+        calcres = false;
+    end
 end
-end
-    
+
 if isa(param.dE,'function_handle')
     % do nothing
 elseif ischar(param.dE)
@@ -207,23 +214,52 @@ spectra.dQ = param.dQ;
 % energy transfer range
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if param.ki <= 0
-    param.ki = sw_converter(param.Ei,'meV','k');
+if (param.ki>0) || (param.Ei>0)
+    FX = 1;
+    param.k = param.ki;
+    param.E = param.Ei;
+elseif (param.kf>0) || (param.Ef>0)
+    FX = 2;
+    param.k = param.kf;
+    param.E = param.Ef;
+else
+    FX = 0;
 end
 
-ki = param.ki;
-spectra.ki = ki;
+if param.k == 0
+    param.k = sw_converter(param.E,'meV','k');
+end
 
-if ki > 0
+% save ki/kf value into the output
+switch FX
+    case 1
+        spectra.ki = param.k;
+        kstr = 'ki';
+    case 2
+        spectra.kf = param.k;
+        kstr = 'kf';
+end
+
+k0 = param.k;
+
+if FX > 0
     cosT = cosd(param.ThetaMin);
     sinT = sind(param.ThetaMin);
     
-    %Emax  =  spectra.hklA.*(2*param.ki-spectra.hklA) * sw_converter('k',1,'meV');
-    %Emin  = -spectra.hklA.*(2*param.ki+spectra.hklA) * sw_converter('k',1,'meV');
     
     for jj = 1:nPlot
-        Emax = (ki^2-(ki*cosT-sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter(1,'k','meV');
-        Emin = (ki^2-(ki*cosT+sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter(1,'k','meV');
+        switch FX
+            case 1
+                % fix ki
+                Emax = (k0^2-(k0*cosT-sqrt(Q.^2-k0^2*sinT^2)).^2) * sw_converter(1,'k','meV');
+                Emin = (k0^2-(k0*cosT+sqrt(Q.^2-k0^2*sinT^2)).^2) * sw_converter(1,'k','meV');
+            case 2
+                % fix kf
+                Emax = -(k0^2-(k0*cosT+sqrt(Q.^2-k0^2*sinT^2)).^2) * sw_converter(1,'k','meV');
+                Emin = -(k0^2-(k0*cosT-sqrt(Q.^2-k0^2*sinT^2)).^2) * sw_converter(1,'k','meV');
+        end
+        %Emax = (ki^2-(ki*cosT-sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter(1,'k','meV');
+        %Emin = (ki^2-(ki*cosT+sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter(1,'k','meV');
         
         Emax(abs(imag(Emax))>0) = 0;
         Emin(abs(imag(Emin))>0) = 0;
@@ -238,7 +274,7 @@ if ki > 0
         swConv(idx) = NaN;
         spectra.swConv{jj} = swConv;
     end
-    fprintf0(fid,'Energy transfer is limited to instrument, using ki=%5.3f A-1.\n',ki);
+    fprintf0(fid,['Energy transfer is limited to instrument, using ' kstr '=%5.3f A-1.\n'],k0);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

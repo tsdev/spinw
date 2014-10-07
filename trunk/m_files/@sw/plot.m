@@ -703,7 +703,8 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                                     'String',               sprintf('%s(%d)_{%d}',atom.label{ll},atom.idx(ll),ll),...
                                     'VerticalAlignment',    'bottom',...
                                     'Tag',                  ['atomText_' atom.label{ll} ' '],...
-                                    'fontSize',             param.fontSize);
+                                    'fontSize',             param.fontSize,...
+                                    'color',                'k');
                                 tooltip(handle.atomText(atom.idx(ll),end),[atom.label{ll} ' atom \nUnit cell: \n' sprintf('[%d, %d, %d]',dCell) '\nAtomic position: \n' sprintf('[%6.3f, %6.3f, %6.3f] ',atom.r(:,ll))]);
                             end
                             
@@ -987,10 +988,10 @@ if (param.legend) && size(matrix.mat,3)>0
         
         if dashList(ii)
             handle.lText(ii) = text(30,(lHeight-20*ii+10),matrix.label{ii}(1:end-1),...
-                'fontSize',param.fontSize);
+                'fontSize',param.fontSize,'color','k');
         else
             handle.lText(ii) = text(30,(lHeight-20*ii+10),matrix.label{ii},...
-                'fontSize',param.fontSize);
+                'fontSize',param.fontSize,'color','k');
         end
     end
     set(handle.lRect,'Tag','legend');

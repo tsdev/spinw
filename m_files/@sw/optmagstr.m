@@ -78,9 +78,9 @@ function optm = optmagstr(obj, varargin)
 %
 % The example determined the magnetic structure of the triangular lattice
 % antiferromagnet assuming planar magnetic structure and constraining the
-% moments into the [0 y z] plane (nTheta = 90 deg, nPhi = 0 deg or 
+% moments into the [0 y z] plane (nTheta = 90 deg, nPhi = 0 deg or
 % n = [1 0 0]). Then plots the magnetic structure.
-% 
+%
 % See also SW, SW.ANNEAL, GM_SPHERICAL3D, GM_PLANAR, FMINSEARCH.
 %
 
@@ -192,15 +192,18 @@ if fid == 1
     sw_status(0,1);
 end
 
+dx = param.xmax - param.xmin;
+
 % Loop over nRun times
 for ii = 1:param.nRun
     if xRand
-        x0 = rand(1,nPar).*(param.xmax-param.xmin)+param.xmin;
+        x0 = rand(1,nPar).*dx+param.xmin;
     else
         x0 = param.x0;
     end
     [X, E, exitflag, output] = sw_fminsearchbnd(@(x)efunc(x, S, dR, atom1, atom2, JJ, nExt, Bg, param.epsilon, param.func),x0,param.xmin,param.xmax,...
         optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'MaxIter',param.maxiter,'Display','off'));
+    
     if E < minE
         minE = E;
         minX = X;
@@ -208,7 +211,7 @@ for ii = 1:param.nRun
     if fid == 1
         sw_status(ii/param.nRun*100);
     end
-
+    
 end
 
 if fid == 1

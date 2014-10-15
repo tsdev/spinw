@@ -18,6 +18,7 @@ function out = sw_converter(value, unitIn, unitOut, particleName)
 %                       'lambda'    -||-
 %                       'A'         -||-
 %                       'Kelvin'    temperature in Kelvin.
+%                       'K'         -||-
 %                       'mps'       speed in m/s.
 %                       'meV'       energy in meV.
 %                       'THz'       frequency in Thz.
@@ -89,7 +90,7 @@ switch unitIn
         k = 2*pi./(value*10);
     case 'um'
         k = 2*pi./(value*1e4);
-    case 'Kelvin'
+    case {'Kelvin' 'K'}
         if m~=0
             k = sqrt((value*EK2J*2*m))/hBar/1e10;
         else
@@ -137,7 +138,7 @@ switch unitOut
         out = 2*pi./k*0.1;
     case 'um'
         out = 2*pi./k*1e-4;
-    case 'Kelvin'
+    case {'Kelvin' 'K'}
         if m~=0
             out = (k*hBar*1e10).^2/2/m/EK2J;
         else

@@ -140,8 +140,8 @@ DSF   = abs(cell2mat(DSF'));
 
 
 % dispersion in cell
-w = mat2cell(omega',nHkl,ones(nMode,1));
+w = mat2cell(omega',nHkl,ones(nMode*nTwin,1));
 % intensity in cell
-s = mat2cell(DSF' ,nHkl,ones(nMode,1));
+s = mat2cell(DSF' ,nHkl,ones(nMode*nTwin,1));
 
 end

@@ -218,7 +218,7 @@ if powmode
     xLabel  = 'Momentum transfer (A^-1)';
     xAxis   = spectra.hklA;
 else
-    [xLabel, xAxis] = sw_label(spectra);
+    [xLabel, xAxis] = sw_label(spectra.hkl,spectra.hklA);
 end
 
 if isfield(spectra,'Evect')

@@ -76,7 +76,7 @@ inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]      [1 -
 param = sw_readparam(inpForm, varargin{:});
 
 % Print output
-fid = spectra.obj.fileid;
+fid0 = spectra.obj.fileid;
 
 if isfield(spectra,'swRaw')
     % take raw convoluted spectra if exists and request
@@ -173,7 +173,7 @@ if calcres
         end
         spectra.swConv{jj} = swConvTemp;
     end
-    fprintf0(fid,'Finite instrumental energy resolution is applied.\n');
+    fprintf0(fid0,'Finite instrumental energy resolution is applied.\n');
 end
 spectra.dE = param.dE;
 
@@ -205,7 +205,7 @@ if param.dQ > 0
         spectra.swConv{jj} = swConvTemp;
     end
     
-    fprintf0(fid,'Finite instrumental momentum resolution of %5.3f A-1 is applied.\n',param.dQ);
+    fprintf0(fid0,'Finite instrumental momentum resolution of %5.3f A-1 is applied.\n',param.dQ);
 end
 
 spectra.dQ = param.dQ;
@@ -274,7 +274,11 @@ if FX > 0
         swConv(idx) = NaN;
         spectra.swConv{jj} = swConv;
     end
+<<<<<<< .mine
+    fprintf0(fid0,'Energy transfer is limited to instrument, using ki=%5.3f A-1.\n',ki);
+=======
     fprintf0(fid,['Energy transfer is limited to instrument, using ' kstr '=%5.3f A-1.\n'],k0);
+>>>>>>> .r210
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -303,7 +307,7 @@ if param.norm
     
     % set 'normalized units' switch on
     spectra.norm = true;
-    fprintf0(fid,'Intensity is converted to mbarn/meV units.\n');
+    fprintf0(fid0,'Intensity is converted to mbarn/meV units.\n');
 else
     spectra.norm = false;
 end

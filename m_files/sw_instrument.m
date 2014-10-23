@@ -274,11 +274,7 @@ if FX > 0
         swConv(idx) = NaN;
         spectra.swConv{jj} = swConv;
     end
-<<<<<<< .mine
-    fprintf0(fid0,'Energy transfer is limited to instrument, using ki=%5.3f A-1.\n',ki);
-=======
-    fprintf0(fid,['Energy transfer is limited to instrument, using ' kstr '=%5.3f A-1.\n'],k0);
->>>>>>> .r210
+    fprintf0(fid0,'Energy transfer is limited to instrument, using %s=%5.3f A-1.\n',kstr,k0);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

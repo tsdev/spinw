@@ -226,7 +226,7 @@ else
     FX = 0;
 end
 
-if param.k == 0
+if FX>0 && param.k == 0
     param.k = sw_converter(param.E,'meV','k');
 end
 
@@ -240,9 +240,8 @@ switch FX
         kstr = 'kf';
 end
 
-k0 = param.k;
-
 if FX > 0
+    k0 = param.k;
     cosT = cosd(param.ThetaMin);
     sinT = sind(param.ThetaMin);
     

@@ -99,6 +99,8 @@ function spectra = spinwave(obj, hkl, varargin)
 %               Default is false.
 % saveSabp      If true, the dynamical structure factorin the rotating
 %               frame is saved S'(k,omega). Default is false.
+% title         Gives a title string to the simulation that is saved in the
+%               output.
 %
 % Output:
 %
@@ -150,6 +152,9 @@ function spectra = spinwave(obj, hkl, varargin)
 % See also SW, SW.SPINWAVESYM, SW_NEUTRON, SW.POWSPEC, SW.OPTMAGSTR, SW.FILEID.
 %
 
+% save the time of the beginning of the calculation
+spectra.datestart = datetime;
+
 % for linear scans create the Q line(s)
 if nargin > 1
     if iscell(hkl)
@@ -190,6 +195,8 @@ if nargin==1
     return
 end
 
+title0 = 'Numerical LSWT spectrum';
+
 inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' 'hermit'};
 inpForm.defval = {false     false    true       0        1e-4  true    };
 inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]   };
@@ -198,9 +205,9 @@ inpForm.fname  = [inpForm.fname  {'omega_tol' 'saveSabp' 'saveT' 'saveH'}];
 inpForm.defval = [inpForm.defval {1e-5        true       false   false  }];
 inpForm.size   = [inpForm.size   {[1 1]       [1 1]      [1 1]   [1 1]  }];
 
-inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun'}];
-inpForm.defval = [inpForm.defval {false       @sw_mff     }];
-inpForm.size   = [inpForm.size   {[1 -1]      [1 1]       }];
+inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title'}];
+inpForm.defval = [inpForm.defval {false       @sw_mff      title0 }];
+inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2] }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -238,7 +245,6 @@ end
 % Print output into the following file
 fid = obj.fid;
 
-spectra = struct;
 nHkl    = size(hkl,2);
 
 
@@ -735,6 +741,8 @@ spectra.param.sortMode  = param.sortMode;
 spectra.param.tol       = param.tol;
 spectra.param.omega_tol = param.omega_tol;
 spectra.param.hermit    = param.hermit;
+spectra.dateend         = datetime;
+spectra.title           = param.title;
 
 if ~param.fitmode
     spectra.ff  = ones(nMagExt,nHkl0);

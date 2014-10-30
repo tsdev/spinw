@@ -11,6 +11,7 @@ function out = export(obj, varargin)
 % 'spt'     Creates a Jmol script, that reproduce the same plot as used the
 %           built in sw.plot() function. Any additional parameter of the
 %           sw.plot() function can be used.
+% 'MC'      Exports a proprietary file format for Monte Carlo simulations.
 %
 %
 % Other general options:
@@ -26,6 +27,14 @@ function out = export(obj, varargin)
 %
 % PCR format:
 % perm      Permutation of the xyz atomic positions, default is [1 2 3].
+%
+% MC format:
+% boundary  Boundary conditions of the extended unit cell.
+%                 'free'  Free, interactions between extedned unit cells are
+%                         omitted.
+%                 'per'   Periodic, interactions between extended unit cells
+%                         are retained.
+%             Default is {'per' 'per' 'per'}.
 %
 % If neither 'path' nor 'fid' is given, the 'out' will be a cell containing
 % strings for each line of the text output.
@@ -44,10 +53,10 @@ function out = export(obj, varargin)
 % FullProf:  https://www.ill.eu/sites/fullprof
 %
 
-inpForm.fname  = {'format' 'path' 'fid' 'perm' };
-inpForm.defval = {''       ''      []   [1 2 3]};
-inpForm.size   = {[1 -1]   [1 -2] [1 1] [1 3]  };
-inpForm.soft   = {true     true    true false  };
+inpForm.fname  = {'format' 'path' 'fid' 'perm'  'boundary'          };
+inpForm.defval = {''       ''      []   [1 2 3] {'per' 'per' 'per'} };
+inpForm.size   = {[1 -1]   [1 -2] [1 1] [1 3]   [1 3]               };
+inpForm.soft   = {true     true    true false   false               };
 
 if nargin == 1
     varargin{1}.showWarn = false;
@@ -75,6 +84,8 @@ switch param.format
     case 'pcr'
         % create .pcr text file
         outStr = createpcr(obj, param.perm);
+    case 'MC'
+        outStr = createmc(obj, param.boundary);
     case 'spt'
         % create Jmol script file
         if nargin == 2
@@ -87,7 +98,7 @@ switch param.format
             varargin{end+1} = 'jmol';
             
         end
-
+        
         outStr = plot(obj, varargin{:});
         
     case ''
@@ -188,5 +199,63 @@ for ii = 1:nAtom
     out = [out strT sprintf('%9.5f%9.5f%9.5f%9.5f%9.5f%4d%4d%4d%4d\n',uc.r(perm,ii)',0,mult(ii),[0 0 0 0])];
     out = [out sprintf('                  0.00     0.00     0.00     0.00      0.00\n')];
 end
+
+end
+
+
+function outStr = createmc(obj, boundary)
+
+% block1: boundary conditions
+block1 = zeros(1,3);
+for ii = 1:3
+    if strcmp('per',boundary{ii})
+        block1(ii) = 1;
+    end
+end
+
+% block2
+block2 = reshape(permute(obj.matrix.mat,[3 2 1]),[],9)';
+
+[SS, SI, RR] = obj.intmatrix('zeroC',false,'plotmode',true);
+% RR in lattice units
+r = bsxfun(@times,double(obj.mag_str.N_ext'),RR)';
+% atom index
+idx = (1:size(r,1))';
+% number of cells
+nCell = prod(double(obj.mag_str.N_ext));
+% spin of each atom
+spin = repmat(obj.matom.S,[1 nCell])';
+% block3
+block3 = [idx r spin]';
+
+% block4: anisotropy matrices
+block4 = reshape(permute(SI.aniso,[3 2 1]),[],9)';
+
+% remove coupling for free boundary conditions
+for ii = 1:3
+    if strcmp('free',boundary{ii})
+        SS.all(:,SS.all(ii,:)~=0) = [];
+    end
+end
+
+% Since k_m=(0,0,0) the spins that are coupled to themself contribute with
+% a constant self-energy, removing this doesn't change thermodynamical
+% behaviour just shifts the zero energy.
+SS.all(:, SS.all(4,:)==SS.all(5,:)) = [];
+
+% block5: coupling table
+block5 = SS.all([end-1 4 5],:);
+
+
+outStr = sprintf('# boundary conditions (free = 0, periodic = 1)\n');
+outStr = [outStr sprintf('%3d %3d %3d\n',block1)];
+outStr = [outStr sprintf('# exchange matrices Jxx, Jxy, Jxz, Jyx, ... [9 double per line]\n')];
+outStr = [outStr sprintf([repmat('%7.5f ',[1 9]) '\n'],block2)];
+outStr = [outStr sprintf('# atom_idx     r_x   r_y   r_z spin\n')];
+outStr = [outStr sprintf('%10d %7.3f %5.3f %5.3f %4d\n',block3)];
+outStr = [outStr sprintf('# anisotropy matrices Axx, Axy, Axz, Ayx, ... [9 double per line]\n')];
+outStr = [outStr sprintf([repmat('%7.5f ',[1 9]) '\n'],block4)];
+outStr = [outStr sprintf('# coupling table J_idx atom_idx1 atom_idx2\n')];
+outStr = [outStr sprintf('%22d %9d %9d\n',block5)];
 
 end

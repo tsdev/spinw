@@ -4,7 +4,7 @@ function stat = anneal(obj, varargin)
 % stat = ANNEAL(obj, 'option1', value1 ...)
 %
 % The function can deal only with single ion anisotropy and isotropic
-% exchange interactions in 1, 2 or 3 spin dimensions. 
+% exchange interactions in 1, 2 or 3 spin dimensions.
 % General and antisymmetric exchage interactions are not supported yet!
 % Also the g-tensor is fixed to 2.
 %
@@ -88,6 +88,9 @@ function stat = anneal(obj, varargin)
 %           lattice.
 % title     Gives a title string to the simulation that is saved in the
 %           output.
+% autoK     Bin length of the autocorrelation vector. Should be a few times
+%           smaller than nMC. Default is zero, no autocorrelation function
+%           is calculated.
 %
 % Output:
 %
@@ -124,8 +127,12 @@ function stat = anneal(obj, varargin)
 % See also SW, SW.OPTMAGSTR, SW_FSUB, SW_FSTAT.
 %
 
+% save the beginning of the calculation
+datestart = datetime;
 
 nExt   = double(obj.mag_str.N_ext);
+
+title0 = 'Simulated annealing stat.';
 
 inpForm.fname  = {'initT' 'endT' 'cool'        'nMC' 'nStat' 'verbosity' };
 inpForm.defval = {100     1e-2   @(T) (0.92*T) 100   100     2           };
@@ -138,7 +145,7 @@ inpForm.size   = [inpForm.size   {[1 1]     [1 1]   [1 3]  [1 -1]       }];
 inpForm.soft   = [inpForm.soft   {0         0       0      1            }];
 
 inpForm.fname  = [inpForm.fname  {'fStat'   'fSub'   'random' 'title'   }];
-inpForm.defval = [inpForm.defval {@sw_fstat @sw_fsub false    ''        }];
+inpForm.defval = [inpForm.defval {@sw_fstat @sw_fsub false    title0    }];
 inpForm.size   = [inpForm.size   {[1 1]     [1 1]    [1 1]    [1 -2]	}];
 inpForm.soft   = [inpForm.soft   {0         0        0        1         }];
 
@@ -146,6 +153,11 @@ inpForm.fname  = [inpForm.fname  {'fineT' 'rate' 'boundary'         }];
 inpForm.defval = [inpForm.defval {0       0.1    {'per' 'per' 'per'}}];
 inpForm.size   = [inpForm.size   {[1 1]   [1 1]  [1 3]              }];
 inpForm.soft   = [inpForm.soft   {0       0      0                  }];
+
+inpForm.fname  = [inpForm.fname  {'autoK' }];
+inpForm.defval = [inpForm.defval {0       }];
+inpForm.size   = [inpForm.size   {[1 1]   }];
+inpForm.soft   = [inpForm.soft   {0       }];
 
 param = sw_readparam(inpForm,varargin{:});
 
@@ -390,10 +402,21 @@ for ii = 1:nSub
     cB{ii}    = repmat(B,[1 nElementSub(ii)]);
 end
 
+% Initialize autocorrelation storage
+if param.autoK > 0
+    A = [];
+end
+
 % Initialise the statistical function
 statT = fStat(1, struct, 0, 0, M, param.nExt);
 % Monte Carlo loop until final temperature is reached.
 while 1
+    % Initialize autocorrelation storage
+    if param.autoK > 0
+        A = [A; zeros(1,param.autoK)]; %#ok<AGROW>
+        C = [];
+    end
+    
     ETemp = sw_energyanneal(M, SS, AA, B);
     switch spinDim
         % Ising model %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -444,7 +467,13 @@ while 1
                     % Save the statistics  of the parameters
                     statT = fStat(2, statT, T(end), ETemp, M, param.nExt);
                 end
-                
+                % calculate autocorrelation time
+                if param.autoK > 0
+                    % select a moment far from the boundary
+                    [C, dA] = sw_autocorr(C,M(:,ceil(end/2)),param.autoK);
+                    A(end,:) = A(end,:) + dA;
+                end
+
             end
             % XY model %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         case 2
@@ -536,6 +565,12 @@ while 1
                     statT = fStat(2, statT, T(end), ETemp, M, param.nExt);
                 end
                 
+                % calculate autocorrelation time
+                if param.autoK > 0
+                    % select a moment far from the boundary
+                    [C, dA] = sw_autocorr(C,M(:,ceil(end/2)),param.autoK);
+                    A(end,:) = A(end,:) + dA;
+                end
             end
             
             % Heisenberg model %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -653,7 +688,7 @@ while 1
                         M(:,sSindex) = 2*bsxfun(@times,sum(MOld.*FNorm,1),FNorm)-MOld;
                     end
                 end
-                % Sotres the ratio of accepted spin flips.
+                % Stores the ratio of accepted spin flips.
                 rate(itry) = suc/nMagExt;
                 
                 suc = 0;
@@ -662,6 +697,14 @@ while 1
                     % Save the statistics  of the parameters
                     statT = fStat(2, statT, T(end), ETemp/nMagExt, M, param.nExt);
                 end
+
+                % calculate autocorrelation time
+                if param.autoK > 0
+                    % select a moment far from the boundary
+                    [C, dA] = sw_autocorr(C,M(:,ceil(end/2)),param.autoK);
+                    A(end,:) = A(end,:) + dA;
+                end
+                
             end
     end
     
@@ -688,11 +731,19 @@ statT.kB = obj.unit.kB;
 stat = fStat(3, statT, T(end), E(end), M, param.nExt);
 
 % For anneal, the result is the average spin value.
-obj.mag_str.S = stat.M;
-stat.obj      = copy(obj);
-stat.param    = param;
-stat.T        = T(end);
-stat.E        = ETemp/nMagExt;
+obj.mag_str.S  = stat.M;
+stat.obj       = copy(obj);
+stat.param     = param;
+stat.T         = T(end);
+stat.E         = ETemp/nMagExt;
+stat.datestart = datestart;
+stat.dateend   = datetime;
+stat.title     = param.title;
+
+% save autocorrelation times
+if param.autoK > 0
+    stat.A        = A;
+end
 
 end
 
@@ -747,8 +798,24 @@ if ~isempty(SS.gen)
     excEgen   =  sum(mmat(mmat(permute(M1,[3 1 2]),reshape(SS.gen(6:end,:),3,3,[])),permute(M2,[1 3 2])),3);
 else
     excEgen = 0;
-
+    
 end
 E = excEiso + excEgen + sum(anisoE(:)) + fieldE;
+
+end
+
+
+function [C, dA] = sw_autocorr(C,q,autoK)
+% calculates the autocorrelation time
+
+if size(C,2) < autoK+1
+    C = [q C];
+end
+if size(C,2) == autoK+1
+    C = [q C(:,1:end-1)];
+    dA = sum(bsxfun(@times,q,C(:,2:end)),1);
+else
+    dA = 0;
+end
 
 end

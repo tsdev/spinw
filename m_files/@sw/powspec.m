@@ -114,6 +114,7 @@ spectra.norm     = false;
 spectra.formfact = specQ.formfact;
 spectra.incomm   = specQ.incomm;
 spectra.helical  = specQ.helical;
+spectra.date     = datetime;
 
 % save all input parameters of spinwave into spectra
 spectra.param    = specQ.param;

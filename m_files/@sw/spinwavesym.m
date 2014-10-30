@@ -39,6 +39,9 @@ function spectra = spinwavesym(obj, varargin)
 % norm          Whether to produce the normalized eigenvectors. It can be
 %               impossible for large matrices, in that case set it to
 %               false. Default is true.
+% title         Gives a title string to the simulation that is saved in the
+%               output.
+
 % Output:
 %
 % 'spectra' is a structure, with the following fields:
@@ -61,12 +64,12 @@ function spectra = spinwavesym(obj, varargin)
 % tri.symbolic(true)
 % tri.genmagstr('mode','direct','k',[1/3 1/3 0],'S',[1 0 0])
 % symSpec = tri.spinwave;
-% 
+%
 % J1 = 1;
 % h = linspace(0,1,500);
 % k = h;
 % omega = eval(symSpec.omega);
-% 
+%
 % p1 = plot(h,real(omega(1,:)),'ko');
 % hold on
 % plot(h,real(omega(2,:)),'ko')
@@ -79,18 +82,23 @@ function spectra = spinwavesym(obj, varargin)
 %
 % The first section calculates the symbolic spin wave spectrum.
 % Unfortunatelly the symbolic expression needs manipulations to bring it to
-% readable form. To check the solution, the second section converts the 
+% readable form. To check the solution, the second section converts the
 % symbolic expression into a numerical vector and the third section plots
 % the real and imaginary part of the solution.
 %
 % See also SW, SW.SPINWAVE, SW_NEUTRON, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
 %
 
+% save the begining time of the calculation
+spectra.datestart = datetime;
+
 hkl0 = [sym('h','real'); sym('k','real'); sym('l','real')];
 
-inpForm.fname  = {'tol' 'hkl'  'eig' 'norm'};
-inpForm.defval = {1e-4   hkl0   true true  };
-inpForm.size   = {[1 1] [3 1]  [1 1] [1 1] };
+title0 = 'Symbolical LSWT spectrum';
+
+inpForm.fname  = {'tol' 'hkl'  'eig' 'norm' 'title'};
+inpForm.defval = {1e-4   hkl0   true true   title0 };
+inpForm.size   = {[1 1] [3 1]  [1 1] [1 1]  [1 -1] };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -143,8 +151,8 @@ if fid ~= 0
     end
 end
 
-% Local (e1,e2,e3) coordinate system fixed to the moments, 
-% e3||Si, 
+% Local (e1,e2,e3) coordinate system fixed to the moments,
+% e3||Si,
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 % e1 = e2 x e3
 magTab = obj.magtable;
@@ -164,7 +172,7 @@ else
     dR    = zeros(3,nMagExt);
     atom1 = int32(1:nMagExt);
     atom2 = int32(1:nMagExt);
-
+    
     JJ = SI.aniso;
 end
 
@@ -288,6 +296,8 @@ if param.eig
     spectra.omega = simplify(diag(D));
 end
 
-
+spectra.obj      = copy(obj);
+spectra.dateend  = datenum;
+spectra.title    = param.title;
 
 end

@@ -204,6 +204,16 @@ end
 
 
 function outStr = createmc(obj, boundary)
+% CREATEMC(obj, boundary) creates an .mc file that contains all ncessary
+% parameter for a Monte Carlo simulation
+%
+% This function lists boundary conditions, all non-zero coupling matrices,
+% atomic positions, spin values, anisotropy matrices for each atom and a
+% bond list with the corresponding exchange value.
+%
+% boundary  Cell, contains 3 strings, either 'per' or 'free' denoting the
+%           boundary conditions.
+%
 
 % block1: boundary conditions
 block1 = zeros(1,3);

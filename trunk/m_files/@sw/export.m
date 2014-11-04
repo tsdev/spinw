@@ -256,7 +256,7 @@ SS.all(:, SS.all(4,:)==SS.all(5,:)) = [];
 % block5: coupling table
 block5 = SS.all([end-1 4 5],:);
 
-
+% print the output string
 outStr = sprintf('# boundary conditions (free = 0, periodic = 1)\n');
 outStr = [outStr sprintf('%3d %3d %3d\n',block1)];
 outStr = [outStr sprintf('# exchange matrices Jxx, Jxy, Jxz, Jyx, ... [9 double per line]\n')];

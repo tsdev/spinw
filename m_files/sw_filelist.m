@@ -71,8 +71,9 @@ for ii = 1:nVar
             idxDateEnd(idx)   = datenum(varDateEnd{idx});
             idxDateStart(idx) = datenum(varDateStart{idx});
         else
-            varDateEnd{idx} = '-';
-            idxDateEnd(idx) = datenum(oldDate);
+            varDateEnd{idx}   = '-';
+            varDateStart{idx} = '-';
+            idxDateEnd(idx)   = datenum(oldDate);
             idxDateStart(idx) = datenum(oldDate);
         end
         
@@ -101,8 +102,9 @@ for ii = 1:nVar
                     idxDateEnd(idx)   = datenum(varDateEnd{idx});
                     idxDateStart(idx) = datenum(varDateStart{idx});
                 else
-                    varDateEnd{idx} = '-';
-                    idxDateEnd(idx) = datenum(oldDate);
+                    varDateEnd{idx}   = '-';
+                    varDateStart{idx} = '-';
+                    idxDateEnd(idx)   = datenum(oldDate);
                     idxDateStart(idx) = datenum(oldDate);
                 end
                 

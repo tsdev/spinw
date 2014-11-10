@@ -60,6 +60,11 @@ function spectra = spinwave(obj, hkl, varargin)
 %                   atomLabel string, label of the selected magnetic atom
 %                   Q   matrix with dimensions of [3 nQ], where each column
 %                       contains a Q vector in Angstrom^-1 units.
+% gtensor       If true, the g-tensor will be included in the spin-spin
+%               correlation function. Including anisotropic g-tensor or
+%               different g-tensor for different ions is only possible
+%               here. Including a simple isotropic g-tensor is possible
+%               afterwards using the sw_instrument() function.
 % fitmode       Speedup (for fitting mode only), default is false.
 % notwin        If true, the spectra of the twins won't be calculated.
 %               Default is false.
@@ -149,7 +154,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % triangular lattice antiferromagnet (S=1, J=1) along the [H H 0] direction
 % in reciprocal space.
 %
-% See also SW, SW.SPINWAVESYM, SW_NEUTRON, SW.POWSPEC, SW.OPTMAGSTR, SW.FILEID.
+% See also SW, SW.SPINWAVESYM, SW_NEUTRON, SW.POWSPEC, SW.OPTMAGSTR, SW.FILEID, SW_INSTRUMENT.
 %
 
 % save the time of the beginning of the calculation
@@ -205,9 +210,9 @@ inpForm.fname  = [inpForm.fname  {'omega_tol' 'saveSabp' 'saveT' 'saveH'}];
 inpForm.defval = [inpForm.defval {1e-5        true       false   false  }];
 inpForm.size   = [inpForm.size   {[1 1]       [1 1]      [1 1]   [1 1]  }];
 
-inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title'}];
-inpForm.defval = [inpForm.defval {false       @sw_mff      title0 }];
-inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2] }];
+inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
+inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
+inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -402,6 +407,27 @@ else
 end
 fprintf0(fid,[ffstrOut ' magnetic form factor is included in the spin-spin correlation function.\n']);
 
+% message for g-tensor calculation
+if param.gtensor
+    gstrOut = 'The';
+else
+    gstrOut = 'No';
+end
+fprintf0(fid,[gstrOut ' g-tensor is included in the spin-spin correlation function.\n']);
+
+if param.gtensor
+    
+    gtensor = SI.g;
+    
+    if incomm
+        % keep the rotation invariant part of g-tensor
+        nx  = [0 -n(3) n(2);n(3) 0 -n(1);-n(2) n(1) 0];
+        nxn = n'*n;
+        m1  = eye(3);
+        gtensor = 1/2*gtensor - 1/2*mmat(mmat(nx,gtensor),nx) + 1/2*mmat(mmat(nxn-m1,gtensor),nxn) + 1/2*mmat(mmat(nxn,gtensor),2*nxn-m1);
+    end
+end
+
 hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 
 % Empty omega dispersion of all spin wave modes, size: 2*nMagExt x nHkl.
@@ -500,6 +526,7 @@ for jj = 1:nSlice
     
     ABCD   = ABCD';
     
+    % quadratic form of the boson Hamiltonian stored as a square matrix
     ham = accumarray(idxAll,ABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
     
     ham = ham + repmat(accumarray([idxA2; idxD2],2*[A20 D20],[1 1]*2*nMagExt),[1 1 nHklMEM]);
@@ -517,13 +544,17 @@ for jj = 1:nSlice
     
     ham = (ham + conj(permute(ham,[2 1 3])))/2;
     
-    g  = diag([ones(nMagExt,1); -ones(nMagExt,1)]);
-    gd = diag(g);
+    % diagonal of the boson commutator matrix
+    gCommd = [ones(nMagExt,1); -ones(nMagExt,1)];
+    % boson commutator matrix
+    gComm  = diag(gCommd);
+    %gd = diag(g);
     
     if param.hermit
         % All the matrix calculations are according to Colpa's paper
         % J.H.P. Colpa, Physica 93A (1978) 327-353
         
+        % basis functions of the magnon modes
         V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
         
         for ii = 1:nHklMEM
@@ -540,7 +571,7 @@ for jj = 1:nSlice
                 end
             end
             
-            K2 = K*g*K';
+            K2 = K*gComm*K';
             K2 = 1/2*(K2+K2');
             % Hermitian K2 will give orthogonal eigenvectors
             if param.sortMode
@@ -561,7 +592,7 @@ for jj = 1:nSlice
             omega(:,end+1) = D; %#ok<AGROW>
             
             % the inverse of the para-unitary transformation V
-            V(:,:,ii) = inv(K)*U*diag(sqrt(gd.*omega(:,end))); %#ok<MINV>
+            V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*omega(:,end))); %#ok<MINV>
         end
     else
         % All the matrix calculations are according to White's paper
@@ -569,7 +600,7 @@ for jj = 1:nSlice
         
         gham = 0*ham;
         for ii = 1:nHklMEM
-            gham(:,:,ii) = g*ham(:,:,ii);
+            gham(:,:,ii) = gComm*ham(:,:,ii);
         end
         
         [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
@@ -578,7 +609,7 @@ for jj = 1:nSlice
             % multiplication with g removed to get negative and positive
             % energies as well
             omega(:,end+1) = D(:,ii); %#ok<AGROW>
-            M           = diag(g*V(:,:,ii)'*g*V(:,:,ii));
+            M           = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
             V(:,:,ii)   = V(:,:,ii)*diag(sqrt(1./M));
         end
     end
@@ -614,16 +645,21 @@ for jj = 1:nSlice
     % F(Q)^2 form factor
     
     if iscell(param.formfact) || param.formfact
-        % include the form factor in the Z^alpha, Z^beta matrices
+        % include the form factor in the z^alpha, z^beta matrices
         zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 2*nMagExt 2 1]);
         zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 2*nMagExt 1]);
     end
     
+    if param.gtensor
+        % include the g-tensor
+        zeda = mmat(repmat(permute(gtensor,[1 2 4 3]),[1 1 1 2]),zeda);
+        zedb = mmat(zedb,repmat(gtensor,[1 1 2]));
+    end
     % Dynamical for factor from S^alpha^beta(k) correlation function.
     % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
     % Normalizes the intensity to single unit cell.
     Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
-    
+
     if fid == 1
         sw_status(jj/nSlice*100);
     end
@@ -743,6 +779,7 @@ spectra.param.omega_tol = param.omega_tol;
 spectra.param.hermit    = param.hermit;
 spectra.dateend         = datetime;
 spectra.title           = param.title;
+spectra.gtensor         = param.gtensor;
 
 if ~param.fitmode
     spectra.ff  = ones(nMagExt,nHkl0);

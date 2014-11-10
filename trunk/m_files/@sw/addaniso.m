@@ -9,10 +9,12 @@ function addaniso(obj, matrixIdx, varargin)
 %               obj.matrix.mat(:,:,matrixIdx), or a string identical to one
 %               of the previously defined matrix labels, stored in
 %               obj.matrix.label. Maximum value is nJ.
-% atomTypeIdx   A vector that contains integers, the index of the magnetic
-%               atoms in obj.unit_cell, with all symmetry equivalent atoms.
-%               Maximum value is nAtom, if undefined anisotropy is assigned
-%               to all magnetic atoms. Optional.
+% atomTypeIdx   String or cell of strings that select magnetic atoms by
+%               their label. Also can be a vector that contains integers,
+%               the index of the magnetic atoms in obj.unit_cell, with all
+%               symmetry equivalent atoms. Maximum value is nAtom, if
+%               undefined anisotropy is assigned to all magnetic atoms.
+%               Optional.
 %  atomIdx      A vector that contains indices selecting some of the
 %               symmetry equivalent atoms. Maximum value is the number of
 %               symmetry equivalent atoms generated. If crystal symmetry is
@@ -77,6 +79,20 @@ if nargin > 2
         addField.aniso = zeros(nMagAtom,1);
     end
     
+    % select atoms by label
+    if ischar(atomTypeIdx)
+        atomTypeIdx = {atomTypeIdx};
+    end
+    
+    if iscell(atomTypeIdx)
+        % loop over all atom labels
+        isSelectedAtom = zeros(1,nMagAtom);
+        for ii = 1:numel(atomTypeIdx)
+            isSelectedAtom = isSelectedAtom | strcmp(obj.unit_cell.label,atomTypeIdx{ii});
+        end
+        atomTypeIdx = find(isSelectedAtom);
+    end
+
     for ii = 1:length(atomTypeIdx)
         aTemp = addField.aniso(mAtom.idx == atomTypeIdx(ii));
         if nargin > 3

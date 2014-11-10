@@ -43,7 +43,8 @@ function spectra = sw_instrument(spectra, varargin)
 % Ef            Final neutron energy in meV.
 %
 % norm          If true, the data is normalized to mbarn units. Default is
-%               true. g-factor of two is assumed.
+%               true. If no g-tensor is included in the spin wave
+%               calculation, g-tensor = 2 is assumed here.
 % useRaw        If false, the already modified spectra.swConv field is
 %               modified further instead of the original powder spectrum
 %               stored in spectra.swRaw. Default is true.
@@ -282,8 +283,13 @@ end
 
 if param.norm
     % Lande' g-factor
-    % TODO
-    g  = 2;
+    if spectra.gtensor
+        % g-tensor is already included in the spinwave calculation
+        g = 1;
+    else
+        % use simple g=2 here
+        g = 2;
+    end
     % constant: p = gamma*r0/2
     % neutron magnetic moment constant: M = gamma*gammaN
     gamma = 1.91304272; % 1/s/T
@@ -303,6 +309,12 @@ if param.norm
     % set 'normalized units' switch on
     spectra.norm = true;
     fprintf0(fid0,'Intensity is converted to mbarn/meV units.\n');
+    if spectra.gtensor
+        fprintf0(fid0,'g-tensor was already included in the spin wave calculation.\n');
+    else
+        fprintf0(fid0,'Isotropic g-tensor of 2 assumed here.\n');
+    end
+    
 else
     spectra.norm = false;
 end

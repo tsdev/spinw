@@ -134,6 +134,7 @@ elseif ischar(param.dE)
     param.dE = polyRes;
     
     if param.plot
+        fig0 = gcf;
         figure;
         plot(xres,yres,'o-');
         hold all
@@ -142,6 +143,7 @@ elseif ischar(param.dE)
         ylabel('FWHM energy resolution (meV)');
         title('Polynomial fit the instrumental energy resolution');
         legend('Tabulated resolution',sprintf('Fitted polynomial (degree %d)',param.polDeg));
+        figure(fig0);
     end
     
 end

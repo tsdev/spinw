@@ -18,6 +18,8 @@ function spectra = powspec(obj, hklA, varargin)
 % T         Temperature to calculate the Bose factor in units
 %           depending on the Boltzmann constant. Default is taken from
 %           obj.single_ion.T value.
+% title     Gives a title string to the simulation that is saved in the
+%           output.
 %
 % Output:
 %
@@ -62,13 +64,15 @@ c = onCleanup(@()obj.fileid(fid));
 hklA = hklA(:)';
 T0 = obj.single_ion.T;
 
+title0 = 'Powder LSWT spectrum';
+
 inpForm.fname  = {'nRand' 'Evect'           'T'   'formfact' 'formfactfun'};
 inpForm.defval = {100     linspace(0,1,100) T0    false      @sw_mff      };
 inpForm.size   = {[1 1]   [1 -1]            [1 1] [1 -2]     [1 1]        };
 
-inpForm.fname  = [inpForm.fname  {'Hermit' 'gtensor'}];
-inpForm.defval = [inpForm.defval {true     false    }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]    }];
+inpForm.fname  = [inpForm.fname  {'Hermit' 'gtensor' 'title'}];
+inpForm.defval = [inpForm.defval {true     false     title0 }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3] }];
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -120,6 +124,7 @@ spectra.gtensor  = specQ.gtensor;
 spectra.incomm   = specQ.incomm;
 spectra.helical  = specQ.helical;
 spectra.date     = datetime;
+spectra.title    = param.title;
 
 % save all input parameters of spinwave into spectra
 spectra.param    = specQ.param;

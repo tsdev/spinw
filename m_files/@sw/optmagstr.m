@@ -34,6 +34,8 @@ function optm = optmagstr(obj, varargin)
 %           optimisation process will be rerun nRun times and the best
 %           result (lowest ground state energy per spin) will be saved in
 %           the result.
+% title     Gives a title string to the simulation that is saved in the
+%           output.
 %
 % Limits only on selected prameters:
 %
@@ -88,15 +90,20 @@ if ~any(obj.atom.mag)
     error('sw:optmagstr:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 
+% save the time of the beginning of the calculation
+optm.datestart  = datetime;
+
+title0 = 'Optimised magnetic structure';
+
 inpForm.fname  = {'epsilon' 'func'           'boundary'          'xmin'   'xmax'  'x0'   };
 inpForm.defval = {1e-5      @gm_spherical3d  {'per' 'per' 'per'} []       []      []     };
 inpForm.size   = {[1 1]     [1 1]            [1 3]               [1 -1]   [1 -2]  [1 -3] };
 inpForm.soft   = {0         0                0                   1        1       1      };
 
-inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'nRun' 'maxiter'}];
-inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           1      1e4      }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 1]  [1 1]    }];
-inpForm.soft   = [inpForm.soft   {0      0        0             0      0        }];
+inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'nRun' 'maxiter' 'title'}];
+inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           1      1e4       title0 }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 1]  [1 1]     [1 -4] }];
+inpForm.soft   = [inpForm.soft   {0      0        0             0      0         1      }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -240,6 +247,9 @@ if nargout > 0
     optm.param    = param;
     optm.fname    = fname;
     optm.xname    = pname;
+    optm.dateend  = datetime;
+    optm.title    = param.title;
+
 end
 
 end

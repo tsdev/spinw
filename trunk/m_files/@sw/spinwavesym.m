@@ -94,7 +94,7 @@ spectra.datestart = datetime;
 
 hkl0 = [sym('h','real'); sym('k','real'); sym('l','real')];
 
-title0 = 'Symbolical LSWT spectrum';
+title0 = 'Symbolic LSWT spectrum';
 
 inpForm.fname  = {'tol' 'hkl'  'eig' 'norm' 'title'};
 inpForm.defval = {1e-4   hkl0   true true   title0 };
@@ -297,7 +297,7 @@ if param.eig
 end
 
 spectra.obj      = copy(obj);
-spectra.dateend  = datenum;
+spectra.dateend  = datetime;
 spectra.title    = param.title;
 
 end

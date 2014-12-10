@@ -91,7 +91,9 @@ if ~any(obj.atom.mag)
 end
 
 % save the time of the beginning of the calculation
-optm.datestart  = datetime;
+if nargout > 0
+    optm.datestart  = datetime;
+end
 
 title0 = 'Optimised magnetic structure';
 

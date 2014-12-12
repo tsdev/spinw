@@ -28,17 +28,19 @@ function fitsp = fitspec(obj, varargin)
 % nMax      Maximum number of runs, including the ones that produce error
 %           (due to incompatible ground state). Default is 1000.
 % hermit    Method for matrix diagonalization:
-%                  true      J.H.P. Colpa, Physica 93A (1978) 327, 
+%                  true      J.H.P. Colpa, Physica 93A (1978) 327,
 %                  false     R.M. White, PR 139 (1965) A450.
 %           Colpa: the grand dynamical matrix is converted into another
 %                  Hermitian matrix, that will give the real eigenvalues.
 %           White: the non-Hermitian g*H matrix will be diagonalised,
 %                  that is not the elegant method.
-%           Advise: 
+%           Advise:
 %           Always use Colpa's method that is faster, except when small
 %           imaginary eigenvalues are expected. In this case only White's
 %           method work.
 %           Default is true.
+% plot      If true, the measured dispersion is plotted together with the
+%           fit. Default is true.
 %
 % Optimisation options:
 %
@@ -54,11 +56,11 @@ function fitsp = fitspec(obj, varargin)
 % Output fitsp is struct type with the following fields:
 % obj       Copy of the input sw class object, with the best fitted
 %           Hamiltonian.
-% x         Final values of the fitted parameters, dimensions are 
+% x         Final values of the fitted parameters, dimensions are
 %           [nRun nPar]. The rows of x are sorted according to increasing R
 %           values.
 % R         R-value, goodness of the fit, dimensions are [nRun 1], sorted
-%           in increasing order. 
+%           in increasing order.
 % exitflag  Exit flag of the fminsearch command.
 % output    Output of the fminsearch command.
 %
@@ -118,6 +120,9 @@ sw_status(0,1);
 idx = 1;
 idxAll = 1;
 
+fidSave = obj.fileid;
+obj.fileid (0);
+
 while idx <= nRun
     try
         if ~isempty(param.x0)
@@ -133,7 +138,8 @@ while idx <= nRun
         end
         
         [x(idx,:), R(idx), exitflag(idx), output(idx)] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0,param.xmin,param.xmax,...
-            optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'),struct('hermit',param.hermit));
+            optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
+
         idx = idx + 1;
     catch
         warning('Hamiltonian is not compatible with the magnetic ground state!');
@@ -166,6 +172,8 @@ end
 % set the best fit to the sw object
 obj = param.func(obj,x(1,:));
 
+obj.fileid(fidSave);
+
 % Store all output in a struct variable.
 fitsp.obj      = copy(obj);
 fitsp.x        = x;
@@ -175,7 +183,7 @@ fitsp.output   = output;
 
 end
 
-function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param,sw_param)
+function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param)
 % [R, pHandle] = SW_FITFUN(obj, data, param, swfunc, x) calculates the
 % agreement factor between simulated and measured data.
 %
@@ -193,7 +201,6 @@ function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param,sw_param)
 param.iFact   = 1/30;
 param.nPoints = 50;
 
-
 obj = parfunc(obj,x);
 
 %nExt = double(obj.mag_str.N_ext);
@@ -210,7 +217,7 @@ for ii = 1:nConv
     data = dataCell{ii};
     
     % calculate spin-spin correlation function
-    spec = obj.spinwave(data.Q,'fitmode',true,'fid',0,'hermit',sw_param.hermit);
+    spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit);
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy
@@ -238,7 +245,7 @@ for ii = 1:nConv
         data.Eii  = data.E(1:data.nii,jj)';
         data.Iii  = data.I(1:data.nii,jj)';
         data.wii  = data.w(1:data.nii,jj)';
-
+        
         simVect   = [repmat(data.minE(jj),[1 data.nii]) sim.E repmat(data.maxE(jj),[1 data.nii])];
         
         nSlip     = (data.nii+sim.nMode+1);

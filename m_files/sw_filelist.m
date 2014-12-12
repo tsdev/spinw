@@ -143,6 +143,16 @@ varDateStart = varDateStart(idxs);
 varName    = varName(idxs);
 varTitle   = varTitle(idxs);
 
+% no variable found
+if idx < 2
+    if isempty(param.fName)
+        fprintf('No SpinW variables have been found in the Matlab base workspace.\n');
+    else
+        fprintf('No SpinW variables stored in the "%s" file.\n',param.fName);
+    end
+    return
+end
+
 if nargout == 0
     if isempty(param.fName)
         fprintf('SpinW variables of the Matlab base workspace:\n');

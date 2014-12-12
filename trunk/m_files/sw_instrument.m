@@ -71,7 +71,7 @@ if nargin == 0
 end
 
 inpForm.fname  = {'dE'  'ki'  'Ei'  'kf'  'Ef'  'plot' 'polDeg' 'ThetaMin' 'formFact' 'dQ'  'norm' 'useRaw'};
-inpForm.defval = {0      0     0     0     0     true   5        0          'auto'    0     true    true   };
+inpForm.defval = {0      0     0     0     0     false   5        0          'auto'    0     true    true   };
 inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]      [1 -2]    [1 1] [1 1]   [1 1]  };
 
 param = sw_readparam(inpForm, varargin{:});
@@ -282,6 +282,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % normalise spectrum to mbarn/meV
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if ~isfield(spectra,'gtensor')
+    spectra.gtensor = false;
+end
 
 if param.norm
     % Lande' g-factor

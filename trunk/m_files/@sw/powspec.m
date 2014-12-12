@@ -20,6 +20,10 @@ function spectra = powspec(obj, hklA, varargin)
 %           obj.single_ion.T value.
 % title     Gives a title string to the simulation that is saved in the
 %           output.
+% specfun   Function handle of the spectrum calculation function. Default
+%           is @spinwave.
+% extrap    If true, arbitrary additional parameters are passed over to
+%           the spectrum calculation function.
 %
 % Output:
 %
@@ -70,9 +74,13 @@ inpForm.fname  = {'nRand' 'Evect'           'T'   'formfact' 'formfactfun'};
 inpForm.defval = {100     linspace(0,1,100) T0    false      @sw_mff      };
 inpForm.size   = {[1 1]   [1 -1]            [1 1] [1 -2]     [1 1]        };
 
-inpForm.fname  = [inpForm.fname  {'Hermit' 'gtensor' 'title'}];
-inpForm.defval = [inpForm.defval {true     false     title0 }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3] }];
+inpForm.fname  = [inpForm.fname  {'Hermit' 'gtensor' 'title' 'specfun' }];
+inpForm.defval = [inpForm.defval {true     false     title0  @spinwave }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]     }];
+
+inpForm.fname  = [inpForm.fname  {'extrap' }];
+inpForm.defval = [inpForm.defval {false    }];
+inpForm.size   = [inpForm.size   {[1 1]    }];
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -93,8 +101,14 @@ for ii = 1:nQ
     
     % no output from spinwave() function
     obj.fileid(0);
-    specQ = obj.spinwave(hkl,'fitmode',true,'notwin',true,'Hermit',param.Hermit,...
-        'formfact',param.formfact,'formfactfun',param.formfactfun,'gtensor',param.gtensor);
+    if param.extrap
+        % allow arbitrary additional parameters to pass to the spectral
+        % calculation function
+        specQ = param.specfun(obj,hkl,varargin{:},'showWarn',false);
+    else
+        specQ = param.specfun(obj,hkl,'fitmode',true,'notwin',true,'Hermit',param.Hermit,...
+            'formfact',param.formfact,'formfactfun',param.formfactfun,'gtensor',param.gtensor);
+    end
     
     % reset output to original value
     obj.fileid(fid);

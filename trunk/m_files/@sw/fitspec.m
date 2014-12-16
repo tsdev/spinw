@@ -39,8 +39,16 @@ function fitsp = fitspec(obj, varargin)
 %           imaginary eigenvalues are expected. In this case only White's
 %           method work.
 %           Default is true.
+%
+% Parameters for visualizing the fit results:
+%
 % plot      If true, the measured dispersion is plotted together with the
 %           fit. Default is true.
+% wFact     Factor of the width of the plotted data points (vertical lines).
+% iFact     Factor of the plotted simulated spin wave intensity (red
+%           ellipsoids).
+% lShift   Vertical shift of the Q point labels on the plot.
+%
 %
 % Optimisation options:
 %
@@ -79,10 +87,10 @@ inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           []      1     }]
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 -6]  [1 1] }];
 inpForm.soft   = [inpForm.soft   {0      0        0             0       0     }];
 
-inpForm.fname  = [inpForm.fname  {'nMax' 'hermit'}];
-inpForm.defval = [inpForm.defval {1e3    true    }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]   }];
-inpForm.soft   = [inpForm.soft   {0      0       }];
+inpForm.fname  = [inpForm.fname  {'nMax' 'hermit' 'wFact' 'iFact' 'lShift'}];
+inpForm.defval = [inpForm.defval {1e3    true     1       1/30     0      }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]   [1 1]    [1 1]  }];
+inpForm.soft   = [inpForm.soft   {0      0        0       0        0      }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -139,7 +147,7 @@ while idx <= nRun
         
         [x(idx,:), R(idx), exitflag(idx), output(idx)] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0,param.xmin,param.xmax,...
             optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
-
+        
         idx = idx + 1;
     catch
         warning('Hamiltonian is not compatible with the magnetic ground state!');
@@ -198,7 +206,6 @@ function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param)
 % x             Actual parameter values.
 %
 
-param.iFact   = 1/30;
 param.nPoints = 50;
 
 obj = parfunc(obj,x);
@@ -270,13 +277,13 @@ for ii = 1:nConv
                 cPoints = sw_circle([jj+Qc data.Eii(kk) 0]',[0 0 1]',sqrt(data.Eii(kk))*param.iFact,param.nPoints);
                 pHandle(end+1) = plot(cPoints(1,:),cPoints(2,:));
                 set(pHandle(end),'Color','r');
-                pHandle(end+1) = line([0 0]+jj+Qc,[-data.wii(kk)/2 data.wii(kk)/2]+data.Eii(kk),'Color','r','LineWidth',2);
+                pHandle(end+1) = line([0 0]+jj+Qc,[-data.wii(kk)/2 data.wii(kk)/2]*param.wFact+data.Eii(kk),'Color','r','LineWidth',2);
             end
             
             pHandle(end+1) = line([-0.2 0.2]+jj+Qc,data.minE(jj)*[1 1],'Color','g');
             pHandle(end+1) = line([-0.2 0.2]+jj+Qc,data.maxE(jj)*[1 1],'Color','g');
             qLabel = sprintf('(%4.2f,%5.2f,%5.2f)',spec.hkl(:,jj));
-            pHandle(end+1) = text(jj+Qc-0.1,(param.Evect(end)-param.Evect(1))*0.7+param.Evect(1),qLabel,'rotation',90,'fontsize',12);
+            pHandle(end+1) = text(jj+Qc-0.1,(param.Evect(end)-param.Evect(1))*0.7+param.Evect(1)+param.lShift,qLabel,'rotation',90,'fontsize',12);
         end
     end
     Qc = Qc + nQ;

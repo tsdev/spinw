@@ -44,7 +44,8 @@ function fitsp = fitspec(obj, varargin)
 %
 % plot      If true, the measured dispersion is plotted together with the
 %           fit. Default is true.
-% wFact     Factor of the width of the plotted data points (vertical lines).
+% wFact     Weigth of the spin wave enenergies, plotted as the width of the
+%           data points (vertical lines).
 % iFact     Factor of the plotted simulated spin wave intensity (red
 %           ellipsoids).
 % lShift   Vertical shift of the Q point labels on the plot.
@@ -258,7 +259,7 @@ for ii = 1:nConv
         nSlip     = (data.nii+sim.nMode+1);
         d = zeros(1,nSlip);
         for kk = 1:nSlip
-            % R-value calculated as width(Data)*(E(simulation)-E(Data))^2
+            % R-value calculated as weight(Data)*(E(simulation)-E(Data))^2
             d(kk) = sum(data.wii.*(simVect((1:data.nii)+kk-1)-data.Eii).^2);
         end
         R = R + min(d);

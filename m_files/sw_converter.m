@@ -94,7 +94,7 @@ switch unitIn
         if m~=0
             k = sqrt((value*EK2J*2*m))/hBar/1e10;
         else
-            k = value*EK2J/clight/1e10;
+            k = value*EK2J/clight/1e10/hBar;
         end
     case {'k' 'A-1'}
         k = value;
@@ -142,7 +142,7 @@ switch unitOut
         if m~=0
             out = (k*hBar*1e10).^2/2/m/EK2J;
         else
-            out = k/EK2J*clight*1e10;
+            out = k/EK2J*clight*1e10*hBar;
         end
     case {'k' 'A-1'}
         out = k;

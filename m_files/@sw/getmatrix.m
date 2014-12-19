@@ -1,4 +1,4 @@
-function [aMat, param] = getmatrix(obj, varargin)
+function [aMat, param, pOp] = getmatrix(obj, varargin)
 % gives the symmetry allowed matrices for a given coupling or anisotropy
 %
 % aMat = GETMATRIX(obj, 'Option1', Value1, ...)

@@ -111,10 +111,16 @@ function varargout = plot(obj, varargin)
 %
 %   pCoupling       Plot couplings. Default is true.
 %   pZeroCoupling   Plot couplings with zero value, default is true.
-%   pDM             If non-zero, Dzyaloshinskii-Moriya vectors are plotted
-%                   onto the middle of the bond. pDM value is used to
-%                   scale the length of the vector. Standard bond is
-%                   plotted if pDM is zero. Default is 1.
+%   sCoupling       Select, whether to plot the symmetric part of the
+%                   exchange as ellipsoid or a vector for the antisymmetric
+%                   part (DM vector):
+%                    0:     nothing on the bond
+%                    1:     DM vector (default)
+%                    2:     symmetric exchange.
+%   eCoupling       Minimum radius of the ellipsoid.
+%   scaleC          The numerical value is used to
+%                   scale the length of the DM vector or the radius of the
+%                   ellispoid. Default is 1.
 %   cCoupling       Color of different couplings. Default is 'auto', when
 %                   they are set to the color stored in the corresponding
 %                   obj.matrix. [R G B] will fix the color of all couplings
@@ -196,9 +202,9 @@ function varargout = plot(obj, varargin)
 %% input parameters
 
 range0 = [0 1;0 1;0 1];
-inpForm.fname  = {'range' 'pSpin'    'cAxis'    'pCell'     'pDM' 'format'};
-inpForm.defval = {range0  true       [0 0 0]     true       1     'plot'  };
-inpForm.size   = {[-5 -6] [1 1]      [1 3]       [1 1]      [1 1] [1 -9]  };
+inpForm.fname  = {'range' 'pSpin'    'cAxis'    'pCell'     'pCoupling' 'format'};
+inpForm.defval = {range0  true       [0 0 0]     true       true        'plot'  };
+inpForm.size   = {[-5 -6] [1 1]      [1 3]       [1 1]      [1 1]       [1 -9]  };
 
 inpForm.fname  = [inpForm.fname  {'angHeadAxis' 'lHeadAxis'     'rAxis'}];
 inpForm.defval = [inpForm.defval {15             0.5           0.06    }];
@@ -212,9 +218,9 @@ inpForm.fname  = [inpForm.fname  {'angHeadSpin' 'lHeadSpin'     'aPlaneSpin'}];
 inpForm.defval = [inpForm.defval {15             0.5           0.07         }];
 inpForm.size   = [inpForm.size   {[1 1]          [1 1]         [1 1]        }];
 
-inpForm.fname  = [inpForm.fname  {'labelAtom'  'cSpin' 'cCell' 'pCoupling' 'legend'}];
-inpForm.defval = [inpForm.defval {true         'auto'    [0 0 0]    true    true    }];
-inpForm.size   = [inpForm.size   {[1 1]        [1 -4]    [1 3]       [1 1]   [1 1]  }];
+inpForm.fname  = [inpForm.fname  {'labelAtom'  'cSpin' 'cCell'    'legend'}];
+inpForm.defval = [inpForm.defval {true         'auto'    [0 0 0]   true   }];
+inpForm.size   = [inpForm.size   {[1 1]        [1 -4]    [1 3]     [1 1]  }];
 
 inpForm.fname  = [inpForm.fname  {'lineStyleCell' 'dAxis'       'dText' 'wSpace' 'rAtomData'}];
 inpForm.defval = [inpForm.defval {'--'            [0.5;1.5;2.0] 0.2     10       false      }];
@@ -232,9 +238,9 @@ inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' 'hFigure
 inpForm.defval = [inpForm.defval {1      1       1      1                0        true  0      }];
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]            [1 1]    [1 1] [1 1]  }];
 
-inpForm.fname  = [inpForm.fname  {'centerS' 'aCoupling' }];
-inpForm.defval = [inpForm.defval {true      2           }];
-inpForm.size   = [inpForm.size   {[1 1]     [1 1]       }];
+inpForm.fname  = [inpForm.fname  {'centerS' 'aCoupling' 'sCoupling' 'eCoupling' 'scaleC'}];
+inpForm.defval = [inpForm.defval {true      2           1           0.1         1       }];
+inpForm.size   = [inpForm.size   {[1 1]     [1 1]       [1 1]       [1 1]       [1 1]   }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -261,7 +267,7 @@ if plotmode
     else
         hFigure = sw_getfighandle('sw_crystal');
     end
-        
+    
     if param.hg
         if isempty(hFigure)
             hFigure = sw_structfigure;
@@ -358,6 +364,7 @@ end
 
 
 handle.unitCell = [];
+handle.caniso = [];
 
 if param.pCell
     idx = 1;
@@ -527,8 +534,35 @@ else
     coupling.mat_idx = SS.all(15,:);
     coupling.idx     = SS.all(16,:);
     coupling.mat     = reshape(SS.all(6:14,:),3,3,[]);
+    % DM interaction
     coupling.DM      = (coupling.mat-permute(coupling.mat,[2 1 3]))/2;
+    % keep symmetric part of the interactions
+    coupling.mat     = (coupling.mat+permute(coupling.mat,[2 1 3]))/2;
     coupling.DM      = cat(2,coupling.DM(2,3,:),coupling.DM(3,1,:),coupling.DM(1,2,:));
+end
+
+% calculate ellipsoid parameters
+if param.sCoupling == 2
+    % Creates the anisotropy/g-tensor ellipsoids.
+    for ll = 1:size(coupling.mat,3)
+        
+        % Calculates the main radiuses of the ellipsoid.
+        [V, R0] = eigorth(sw_sub1(coupling.mat(:,:,ll)),1e-5);
+        % Creates positive definite matrix by adding constant to all
+        % eigenvalues.
+        epsilon = sqrt(sum(R0.^2))*param.eCoupling;
+        dR      = 1./(R0-min(R0)+epsilon);
+        dR0     = max(dR);
+        if dR0 ~= 0
+            dR = dR/dR0;
+        else
+            dR = [1 1 1];
+        end
+        
+        R = diag(dR)*param.scaleC;
+        
+        coupling.ell(:,:,ll) = V*R;
+    end
 end
 
 % auto select to plot arrows for couplings if DM interaction is present
@@ -870,36 +904,78 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                                 strOut = [strOut jmol_command('cylinder',objid,param.rCoupling,rPlot1,rPlot2,cColor*255)];
                             end
                         end
-                        % plot DM vector
-                        if param.pDM>0 && (norm(coupling.DM(1,:,ll))>1e-5)
-                            rCent = (rPlot1+rPlot2)/2;
-                            vDM   = coupling.DM(1,:,ll)'*param.pDM;
-                            if plotmode
-                                hDM   = sw_arrow(rCent,rCent+vDM,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
-                                handle.DMcoupling(coupling.idx(ll),end+(1:4)) = hDM;
-                                set(hDM,'FaceColor',DMColor);
-                                set(hDM,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
-                                
-                                tooltip(hDM,[matrix.label{coupling.mat_idx(ll)} ' DM coupling\nValue:\n' strmat(vDM')]);
-                            else
-                                objid = sprintf('coupling_%s%d',matrix.label{coupling.mat_idx(ll)},idxc);
-                                idxc = idxc + 1;
-                                strOut = [strOut jmol_command('arrow',objid,param.rSpin,rCent,rCent+vDM,DMColor*255)];
-                                
-                            end
-                            if ~param.pCoupling
-                                
+                        % plot exchange matrix on the bond
+                        switch param.sCoupling
+                            case 0
+                                % nothing
+                            case 1
+                                % DM interaction
+                                rCent = (rPlot1+rPlot2)/2;
+                                vDM   = coupling.DM(1,:,ll)'*param.scaleC;
                                 if plotmode
-                                    rPlot = [rPlot1 rPlot2];
-                                    hLine = line(rPlot(1,:),rPlot(2,:),rPlot(3,:),'LineStyle','--','LineWidth',2,'Color',[0 0 0]);
-                                    set(hLine,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
-                                    handle.DMcoupling(coupling.idx(ll),end+1) = hLine;
+                                    hDM   = sw_arrow(rCent,rCent+vDM,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
+                                    handle.DMcoupling(coupling.idx(ll),end+(1:4)) = hDM;
+                                    set(hDM,'FaceColor',DMColor);
+                                    set(hDM,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
+                                    
+                                    tooltip(hDM,[matrix.label{coupling.mat_idx(ll)} ' DM coupling\nValue:\n' strmat(vDM')]);
                                 else
                                     objid = sprintf('coupling_%s%d',matrix.label{coupling.mat_idx(ll)},idxc);
                                     idxc = idxc + 1;
-                                    strOut = [strOut jmol_command('line',objid,rPlot1,rPlot2,[0 0 0])];
+                                    strOut = [strOut jmol_command('arrow',objid,param.rSpin,rCent,rCent+vDM,DMColor*255)];
+                                    
                                 end
-                            end
+                                if ~param.pCoupling
+                                    % just plot a line for each bond for DM vectors
+                                    if plotmode
+                                        rPlot = [rPlot1 rPlot2];
+                                        hLine = line(rPlot(1,:),rPlot(2,:),rPlot(3,:),'LineStyle','--','LineWidth',2,'Color',[0 0 0]);
+                                        set(hLine,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
+                                        handle.DMcoupling(coupling.idx(ll),end+1) = hLine;
+                                    else
+                                        objid = sprintf('coupling_%s%d',matrix.label{coupling.mat_idx(ll)},idxc);
+                                        idxc = idxc + 1;
+                                        strOut = [strOut jmol_command('line',objid,rPlot1,rPlot2,[0 0 0])];
+                                    end
+                                end
+                                
+                            case 2
+                                % exchange ellipsoid
+                                rCent = (rPlot1+rPlot2)/2;
+                                
+                                ell.xyz = coupling.ell(:,:,ll)*[sp.x(:) sp.y(:) sp.z(:)]';
+                                
+                                ell.x = reshape(ell.xyz(1,:),[1 1]*param.surfRes+1);
+                                ell.y = reshape(ell.xyz(2,:),[1 1]*param.surfRes+1);
+                                ell.z = reshape(ell.xyz(3,:),[1 1]*param.surfRes+1);
+                                
+                                if plotmode
+                                    sAniso = surf(ell.x+rCent(1),ell.y+rCent(2),ell.z+rCent(3));
+                                    
+                                    handle.caniso(end+1) = sAniso;
+                                    set(sAniso,'LineStyle','none');
+                                    set(sAniso,'FaceAlpha',param.aEll);
+                                    set(sAniso,'FaceColor',DMColor);
+                                    set(sAniso,'Tag',['couplingellipse_' matrix.label{coupling.mat_idx(ll)}]);
+                                    
+                                    tooltip(sAniso,['symmetric exchange \n' strmat(coupling.mat(:,:,ll))]);
+                                else
+                                    % TODO
+                                end
+
+                                if ~param.pCoupling
+                                    % just plot a line for each bond for DM vectors
+                                    if plotmode
+                                        rPlot = [rPlot1 rPlot2];
+                                        hLine = line(rPlot(1,:),rPlot(2,:),rPlot(3,:),'LineStyle','--','LineWidth',2,'Color',[0 0 0]);
+                                        set(hLine,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
+                                        handle.DMcoupling(coupling.idx(ll),end+1) = hLine;
+                                    else
+                                        objid = sprintf('coupling_%s%d',matrix.label{coupling.mat_idx(ll)},idxc);
+                                        idxc = idxc + 1;
+                                        strOut = [strOut jmol_command('line',objid,rPlot1,rPlot2,[0 0 0])];
+                                    end
+                                end
                         end
                     end
                 end

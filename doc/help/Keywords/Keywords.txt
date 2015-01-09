@@ -1,10 +1,9 @@
 <literal>
 <style type="text/css">
 pre, tt, code { font-size:12px; }
-pre { margin:0px 0px 20px; }
 pre.error { color:red; }
-pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
-pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; background:#FFFFFF; }
+pre.codeinput  { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px; border:1px solid #d3d3d3; background:#FFFFFF; }
 pre.language-matlab { padding:5px; border:0px solid #d3d3d3; background:#FFFFFF; }
 span.keyword { color:#0000FF }
 span.comment { color:#228B22 }
@@ -14,7 +13,7 @@ span.syscmd { color:#B28C00 }
 </style>
 </literal>
 
-<div class="content"><h1>Keywords</h1><!--introduction--><!--/introduction--><p>You can search for keywords below, that describe different topics. If you have a question, this is a good starting point to search.</p><p><br></p><p><b>A, B, C</b></p><p><br></p><p>atom.dat, bond, cif class, cif file, constraint function, [[CoordinatesystemEN][coordinate system]], crystal structure</p><p><br></p><p><b>D, E, F</b></p><p><br></p><p>exchange coupling</p><p><br></p><p><b>G, H, I</b></p><p><br></p><p>g-matrix, ion.dat, help, Horace</p><p><br></p><p><b>J, K, L</b></p><p><br></p><p><b>M, N, O</b></p><p><br></p><p>list of sw methods, long range order, magnetic field, magnetic structure</p><p><br></p><p><b>P, Q, R</b></p><p><br></p><p>plotting crystal structure, list of sw properties, powder spectrum</p><p><br></p><p><b>S, T, U</b></p><p><br></p><p>simulated annealing, space group, spin, spin-spin correlation function, spin wave, symmetry.dat, [[SwclassEN][sw class]], temperature, twin, units</p><p><br></p><p><b>V, W, X, Y, Z</b></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div>
+<div class="content"><h1>Keywords</h1><!--introduction--><!--/introduction--><p>You can search for keywords below, that describe different topics. If you have a question, this is a good starting point to search.</p><p><br></p><p><b>A, B, C</b></p><p><br></p><p>[[AtomdatEN][atom.dat]], [[BondEN][bond]], cif class, cif file, constraint function, [[CoordinatesystemEN][coordinate system]], crystal structure</p><p><br></p><p><b>D, E, F</b></p><p><br></p><p>[[ExchangecouplingEN][exchange coupling]]</p><p><br></p><p><b>G, H, I</b></p><p><br></p><p>g-matrix, [[IondatEN][ion.dat]], help, Horace</p><p><br></p><p><b>J, K, L</b></p><p><br></p><p><b>M, N, O</b></p><p><br></p><p>list of sw methods, long range order, magnetic field, magnetic structure</p><p><br></p><p><b>P, Q, R</b></p><p><br></p><p>plotting crystal structure, list of sw properties, [[PowderspectrumEN][powder spectrum]]</p><p><br></p><p><b>S, T, U</b></p><p><br></p><p>simulated annealing, space group, spin, spin-spin correlation function, spin wave, symmetry.dat, [[SwclassEN][sw class]], temperature, twin, units</p><p><br></p><p><b>V, W, X, Y, Z</b></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div>
 
 <literal>
 <script>

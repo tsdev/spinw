@@ -1,0 +1,27 @@
+<literal>
+<style type="text/css">
+pre, tt, code { font-size:12px; }
+pre.error { color:red; }
+pre.codeinput  { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px; border:1px solid #d3d3d3; background:#FFFFFF; }
+pre.language-matlab { padding:5px; border:0px solid #d3d3d3; background:#FFFFFF; }
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+</style>
+</literal>
+
+<div class="content"><h1>Atom.dat</h1><p>The atom.dat file contains information about different elements/isotopes, where each row defines an element/isotope. The meaning of the columns are the following:</p><div><ul><li><b>Name</b> of element, string. These labels can be used in the [[SwpropertiesEN#2][sw.unit_cell]].label field to assign different atoms to crystallographic positions.</li><li><b>Radius</b> in Angstrom, double. This gives the atomic radius for plotting.</li><li><b>Color</b> RGB code, 3 integer. This gives the color for plottig the atom.</li><li><b>Mass</b>, double. The mass of the element/isotope for unit cell mass calculation.</li><li><b>Long name</b>, string. Long name of the element/isotope.</li></ul></div><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div>
+
+<literal>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-30000935-3', 'psi.ch');
+ga('send', 'pageview');
+</script>
+</literal>

@@ -1,0 +1,27 @@
+<literal>
+<style type="text/css">
+pre, tt, code { font-size:12px; }
+pre.error { color:red; }
+pre.codeinput  { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px; border:1px solid #d3d3d3; background:#FFFFFF; }
+pre.language-matlab { padding:5px; border:0px solid #d3d3d3; background:#FFFFFF; }
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+</style>
+</literal>
+
+<div class="content"><h1>Bond</h1><!--introduction--><p>Bonds are vectors connecting two magnetic ion.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Definition</a></li><li><a href="#2">Generating bonds</a></li><li><a href="#3">Listing bonds</a></li></ul></div><h2>Definition<a name="1"></a></h2><p>Bonds are defined on the crystal of magnetic ions using the positions within the unit cell. Each bond is defined by two atoms that are connected with direction. The bond points from atom1 to atom2 where atom1 is at the zeroth unit cell (cell at the origin of the lattice coordinate system), atom2 is in the unit cell defined by the <b>dl</b> translation vector (in lattice units). The equivalent bonds that are related by lattice vectors to the above defined one are not stored explicitly but assumed in the spin wave calculation. The list of bonds are stored in the [[SwpropertiesEN#6][sw.coupling]] field, where each column of dl, atom1 and atom2 subfields defines different bonds. Each bond has an identifier stored in the idx subfield. These identifiers let the user select certain set of bonds easily. If two bonds have the same identifier, they are regarded equivalent. Coupling matrix can be quickly assigned to multiple equivalent bonds using the sw.addcoupling command.</p><h2>Generating bonds<a name="2"></a></h2><p>Although the [[SwpropertiesEN#6][sw.coupling]] matrix can be filled manually, the sw.gencoupling command can generate the list of bonds automatically. The generated list of bonds sorted according to increasing length, however no particular order can be assumed between equal length bonds. If no symmetry operators are considered for the generation of bonds ('forceNoSym' option set to true) all bonds with equal length are assigned the same identifier, starting with 1 for the shortest bonds. If symmetry operators are considered, only symmetry equivalent bonds will have the same identifier.</p><h2>Listing bonds<a name="3"></a></h2><p>To list bonds in an easyer to read format, the sw.couplingtable command can be used. To list bonds with a set of identifiers use the sw.couplingtable(bond_id) command.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div>
+
+<literal>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-30000935-3', 'psi.ch');
+ga('send', 'pageview');
+</script>
+</literal>

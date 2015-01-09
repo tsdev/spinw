@@ -1,0 +1,27 @@
+<literal>
+<style type="text/css">
+pre, tt, code { font-size:12px; }
+pre.error { color:red; }
+pre.codeinput  { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px; border:1px solid #d3d3d3; background:#FFFFFF; }
+pre.language-matlab { padding:5px; border:0px solid #d3d3d3; background:#FFFFFF; }
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+</style>
+</literal>
+
+<div class="content"><h1>Ion.dat</h1><p>The ion.dat file contains information about different magnetic ions, where each row defines an ion. The meaning of the columns are the following:</p><div><ul><li><b>Name</b> of ion, string. These labels can be used in the [[SwpropertiesEN#2][sw.unit_cell]].label field to assign different ions to crystallographic positions, predefined names follow the [M][element name][charge] notation similarly to FullProf.</li><li><b>Magnetic form factor</b>, double. It is either 7 or 9 doubles the A, a, B, b, ... coefficients in the formula: <latex>\langle j_0(Q_s)\rangle = A\cdot exp(-a\cdot Q_s^2) + B\cdot exp(-b\cdot Q_s^2) + C* exp(-c\cdot Q_s^2)+D\cdot exp(-d\cdot Q_s^2) + E</latex>.</li><li><b>Spin quantum number</b>, double. This number defines the spin value that is used as default in the sw.addatom mathod if 'S' is undefined.</li></ul></div><p>See also [[AtomdatEN][atom.dat]], SW_MFF.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div>
+
+<literal>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-30000935-3', 'psi.ch');
+ga('send', 'pageview');
+</script>
+</literal>

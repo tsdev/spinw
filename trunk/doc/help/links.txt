@@ -9,3 +9,7 @@
 "sw class"                    "[[SwclassEN][sw class]]"
 "coordinate system"           "[[CoordinatesystemEN][coordinate system]]"
 "powder spectrum"             "[[PowderspectrumEN][powder spectrum]]"
+"exchange coupling"           "[[ExchangecouplingEN][exchange coupling]]"
+"atom.dat"                    "[[AtomdatEN][atom.dat]]"
+"ion.dat"                     "[[IondatEN][ion.dat]]"
+"bond"                        "[[BondEN][bond]]"

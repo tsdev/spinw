@@ -912,18 +912,20 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                                 % DM interaction
                                 rCent = (rPlot1+rPlot2)/2;
                                 vDM   = coupling.DM(1,:,ll)'*param.scaleC;
-                                if plotmode
-                                    hDM   = sw_arrow(rCent,rCent+vDM,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
-                                    handle.DMcoupling(coupling.idx(ll),end+(1:4)) = hDM;
-                                    set(hDM,'FaceColor',DMColor);
-                                    set(hDM,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
-                                    
-                                    tooltip(hDM,[matrix.label{coupling.mat_idx(ll)} ' DM coupling\nValue:\n' strmat(vDM')]);
-                                else
-                                    objid = sprintf('coupling_%s%d',matrix.label{coupling.mat_idx(ll)},idxc);
-                                    idxc = idxc + 1;
-                                    strOut = [strOut jmol_command('arrow',objid,param.rSpin,rCent,rCent+vDM,DMColor*255)];
-                                    
+                                if norm(vDM)>0
+                                    if plotmode
+                                        hDM   = sw_arrow(rCent,rCent+vDM,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
+                                        handle.DMcoupling(coupling.idx(ll),end+(1:4)) = hDM;
+                                        set(hDM,'FaceColor',DMColor);
+                                        set(hDM,'Tag',['coupling_' matrix.label{coupling.mat_idx(ll)}]);
+                                        
+                                        tooltip(hDM,[matrix.label{coupling.mat_idx(ll)} ' DM coupling\nValue:\n' strmat(vDM')]);
+                                    else
+                                        objid = sprintf('coupling_%s%d',matrix.label{coupling.mat_idx(ll)},idxc);
+                                        idxc = idxc + 1;
+                                        strOut = [strOut jmol_command('arrow',objid,param.rSpin,rCent,rCent+vDM,DMColor*255)];
+                                        
+                                    end
                                 end
                                 if ~param.pCoupling
                                     % just plot a line for each bond for DM vectors

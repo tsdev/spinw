@@ -15,7 +15,7 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %                   coupling matrices are summed up.
 %               2   Same as mode == 1, moreover only SS.all is calculated.
 % plotmode      If true, additional rows are added to SS.all, to identify
-%               the couplings for plotting.
+%               the couplings for plotting. Default is false.
 % sortDM        If tru each coupling is sorted for consistent plotting of
 %               the DM interaction. Sorting is based on the dR distance
 %               vector, pointing from atom1 to atom2. Its components should
@@ -23,6 +23,7 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %                   1. dR(x) > 0
 %                   2. dR(y) > 0
 %                   3. dR(z) > 0.
+%               Default is false.
 % zeroC         Whether to output bonds with assigned matrices that are
 %               zero. Default is false.
 % extend        If true, all bonds in the magnetic supercell will be
@@ -31,7 +32,8 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 % conjugate     Introduce the conjugate of the couplings (atom1 and atom2
 %               exchanged). Default is false.
 % rotMat        Rotate the J and A matrices according to the point group
-%               operations between symmetry equivalent sites.
+%               operations between symmetry equivalent sites. Default is
+%               true.
 %
 % Output:
 %

@@ -69,7 +69,7 @@ param = sw_readparam(inpForm,varargin{:});
 nExt = double(obj.mag_str.N_ext);
 kExt = obj.mag_str.k.*nExt;
 
-% Incommenasurate structure in the extended unit cell.
+% Incommensurate structure in the extended unit cell.
 if obj.symbolic
     kTest = sw_sub1(kExt,0.452524243);
 else
@@ -109,6 +109,8 @@ if nMagExt>0
     Mr = repmat(permute(M2,[3 1 2]),[3 1 1]);
     
     exchE   =  sumsym(sumsym(sumsym(Ml.*JJ.*Mr,3),2),1);
+    % TODO
+    % correct energy for twins
     ZeemanE = -sumsym(SI.field*permute(mmat(SI.g,permute(M0,[1 3 2])),[1 3 2]),2)*obj.unit.muB;
     
     % energy per spin

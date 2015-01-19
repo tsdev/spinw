@@ -252,6 +252,7 @@ switch spinDim
         Az = Ay*0;
     case 3
         B  = SI.field'*obj.unit.muB*2;
+        % TODO set g-tensor
         AA = SI.aniso;
         Ax = squeeze(AA(:,1,:));
         Ay = squeeze(AA(:,2,:));
@@ -609,6 +610,7 @@ while 1
                     if param.isfield
                         F = F - cB{jsub};
                     end
+                    
                     
                     % Generate new spin directions, creating normal
                     % distribution of coordinates, then normalizing them.

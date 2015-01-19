@@ -15,12 +15,14 @@ function spectra = sw_instrument(spectra, varargin)
 %                           transfer. The file has to contain two columns,
 %                           first is the energy values, the second is the
 %                           FWHM resolution at the given energy transfer
-%                           value.
+%                           value, see sw_res() function for details.
 %                 Number    Constant FWHM energy resolution as a function
 %                           of energy transfer.
-%                 Vector    Fitted polynomial of the energy resolution as a
-%                           function of energy transfer, see polyfit and
-%                           polyval.
+%                 Matrix    Dimensions of Nx2, first column contains the
+%                           energy transfer values, second column contains
+%                           the FWHM resolution values. These values will
+%                           be fitted using a polynomial with a fixed
+%                           degree, see sw_res() function for details.
 %                 Function  Function handle of a resolution function
 %                           with the following header:
 %                               E_FWHM = res_fun(E)
@@ -62,7 +64,7 @@ function spectra = sw_instrument(spectra, varargin)
 %               instrumental factors.
 %
 %
-% See also POLYFIT, POLYVAL.
+% See also POLYFIT, POLYVAL, SW_RES.
 %
 
 if nargin == 0
@@ -116,35 +118,10 @@ end
 
 if isa(param.dE,'function_handle')
     % do nothing
-elseif ischar(param.dE)
+elseif inumel(param.dE)>1
     
-    % load file and read values
-    fid = fopen(param.dE);
-    res = fscanf(fid,'%f',[2 inf]);
-    fclose(fid);
-    
-    xres = res(1,:);
-    yres = res(2,:);
-    
-    % fit polynom to instrument energy resolution
-    polyRes = polyfit(xres,yres,param.polDeg);
-    xnew = linspace(min(xres),max(xres),500);
-    ynew = polyval(polyRes,xnew);
-    
-    param.dE = polyRes;
-    
-    if param.plot
-        fig0 = gcf;
-        figure;
-        plot(xres,yres,'o-');
-        hold all
-        plot(xnew,ynew,'r-');
-        xlabel('Energy Transfer (meV)');
-        ylabel('FWHM energy resolution (meV)');
-        title('Polynomial fit the instrumental energy resolution');
-        legend('Tabulated resolution',sprintf('Fitted polynomial (degree %d)',param.polDeg));
-        figure(fig0);
-    end
+    % determine the energy resolution curve from a file or the given matrix
+    param.dE = sw_res(param.dE,param.polDeg,param.plot);
     
 end
 

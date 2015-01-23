@@ -1,17 +1,11 @@
 function varargout = optmagsteep(obj, varargin)
-% performs simulated annealing on the magnetic structure
+% optimise magnetic structure using the steepest descendend method
 %
 % OPTMAGSTEEP(obj, 'option1', value1 ...)
 %
-% The function can deal only with single ion anisotropy and isotropic
-% exchange interactions in 1, 2 or 3 spin dimensions.
-% General and antisymmetric exchage interactions are not supported yet!
-% Also the g-tensor is fixed to 2.
+% The function cannot deal with single ion anisotropy and incommensurate
+% structures at the present state. These features will come soon.
 %
-% WARNING!
-% The calculated energies doesn't contain the self energy (moment coupled
-% to itself), thus the energies calculated here can differ from the
-% result of the sw.energy() function.
 %
 % Input:
 %
@@ -45,8 +39,8 @@ function varargout = optmagsteep(obj, varargin)
 %
 % Output:
 %
-% E         Energy after every iteration, the calculation makes the script
-%           very slow.
+% E         If requested, calculates the energy after every iteration, the
+%           calculation makes the script very slow.
 %
 %
 % See also SW, SW.ANNEAL, SW_FSUB, SW_FSTAT.

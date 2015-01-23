@@ -15,7 +15,7 @@ function [V, rotM] = sw_rot(rotAxis, rotAngle, V)
 %
 % Output:
 %
-% V         Rotated vectors, dimensions are [3 N].
+% V         Rotated vectors, dimensions are [3 N nAng].
 % rotM      Rotation matrix, dimensions are [3 3]. If rotAngle is a vector,
 %           rotM contains rotation matrices for every angle, it's
 %           dimensions are [3 3 nAng].
@@ -50,7 +50,7 @@ nx  = [0 -rotAxis(3) rotAxis(2); rotAxis(3) 0 -rotAxis(1); -rotAxis(2) rotAxis(1
 rotM = bsxfunsym(@times,eye(3),cos(rotAngle)) + bsxfunsym(@times,nx,sin(rotAngle)) + bsxfunsym(@times,(rotAxis')*rotAxis,1-cos(rotAngle));
 
 if nargin > 2
-    V = rotM*V;
+    V = mmat(rotM,V);
 else
     V = [];
 end

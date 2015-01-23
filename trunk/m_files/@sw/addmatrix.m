@@ -11,7 +11,10 @@ function addmatrix(obj, varargin)
 %
 % value     The value of the matrix, dimensions are  [3 3 nJ], default is
 %           eye(3). If the given value is scalar, a diagonal matrix is
-%           generated with the given value in its diagonal.
+%           generated with the given value in its diagonal. If the given
+%           value is a 3 element vector, a DM interaction matrix is created
+%           according to the following rule:
+%           DM = [0 Dz -Dy;-Dz 0 Dx;Dy -Dx 0].
 % mat       Alternative option name to 'value'.
 % label     Label for plotting, strings in a cell, dimensions are [1 nJ],
 %           default is 'matI', where I is the index of the matrix.
@@ -40,7 +43,7 @@ end
 
 inpForm.fname  = {'value'    'mat'      'label' 'color' };
 inpForm.defval = {[]         []         {}      []      };
-inpForm.size   = {[-1 -1 -2] [-3 -3 -4] [-5 -6] [-7 -8] };
+inpForm.size   = {[-1 -2 -3] [-4 -5 -6] [-7 -8] [-9 -10] };
 inpForm.soft   = {true       true       true    true    };
 
 newMat = sw_readparam(inpForm, varargin{:});
@@ -53,6 +56,10 @@ if numel(newMat.mat) == 1
     newMat.mat = newMat.mat*eye(3);
 end
 
+if numel(newMat.mat) == 3
+    M = newMat.mat;
+    newMat.mat = [0 M(3) -M(2);-M(3) 0 M(1);M(2) -M(1) 0];
+end
 
 
 % Defult Heisenberg matrix.

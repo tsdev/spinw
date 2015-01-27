@@ -114,9 +114,14 @@ param.showWarn = false;
 obj.genmagstr(param);
 
 % starting magnetic structure from sw object
+if isempty(obj.mag_str.S)
+    obj.genmagstr('mode','random');
+end
+
 S       = sqrt(sum(obj.mag_str.S.^2,1));
 nExt    = double(obj.mag_str.N_ext);
 nMagExt = length(S);
+
 
 % determine the limits from the constraint function
 if nargout(param.func) == 6

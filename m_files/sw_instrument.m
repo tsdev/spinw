@@ -118,7 +118,7 @@ end
 
 if isa(param.dE,'function_handle')
     % do nothing
-elseif inumel(param.dE)>1
+elseif numel(param.dE)>1
     
     % determine the energy resolution curve from a file or the given matrix
     param.dE = sw_res(param.dE,param.polDeg,param.plot);

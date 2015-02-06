@@ -52,7 +52,7 @@ varName  = {};
 idxDateEnd   = [];
 idxDateStart = [];
 
-oldDate = datetime('01-Jan-1900  0:00:01');
+oldDate = '01-Jan-1900 0:00:01';
 
 for ii = 1:nVar
     if ws

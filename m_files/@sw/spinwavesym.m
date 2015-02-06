@@ -90,7 +90,7 @@ function spectra = spinwavesym(obj, varargin)
 %
 
 % save the begining time of the calculation
-spectra.datestart = datetime;
+spectra.datestart = datestr(now);
 
 hkl0 = [sym('h','real'); sym('k','real'); sym('l','real')];
 
@@ -297,7 +297,7 @@ if param.eig
 end
 
 spectra.obj      = copy(obj);
-spectra.dateend  = datetime;
+spectra.dateend  = datestr(now);
 spectra.title    = param.title;
 
 end

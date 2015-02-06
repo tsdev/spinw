@@ -910,10 +910,11 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                                 % nothing
                             case 1
                                 % DM interaction
-                                rCent = (rPlot1+rPlot2)/2;
                                 vDM   = coupling.DM(1,:,ll)'*param.scaleC;
                                 % TODO
                                 if norm(vDM)>1e-10
+                                    rCent = (rPlot1+rPlot2)/2;
+                                    
                                     if plotmode
                                         hDM   = sw_arrow(rCent,rCent+vDM,param.rSpin,param.angHeadSpin,param.lHeadSpin,param.surfRes);
                                         handle.DMcoupling(coupling.idx(ll),end+(1:4)) = hDM;
@@ -965,7 +966,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                                 else
                                     % TODO
                                 end
-
+                                
                                 if ~param.pCoupling
                                     % just plot a line for each bond for DM vectors
                                     if plotmode

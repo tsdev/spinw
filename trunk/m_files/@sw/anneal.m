@@ -128,7 +128,7 @@ function stat = anneal(obj, varargin)
 %
 
 % save the beginning of the calculation
-datestart = datetime;
+datestart = datestr(now);
 
 nExt   = double(obj.mag_str.N_ext);
 
@@ -739,7 +739,7 @@ stat.param     = param;
 stat.T         = T(end);
 stat.E         = ETemp/nMagExt;
 stat.datestart = datestart;
-stat.dateend   = datetime;
+stat.dateend   = datestr(now);
 stat.title     = param.title;
 
 % save autocorrelation times

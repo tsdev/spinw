@@ -137,7 +137,7 @@ spectra.formfact = specQ.formfact;
 spectra.gtensor  = specQ.gtensor;
 spectra.incomm   = specQ.incomm;
 spectra.helical  = specQ.helical;
-spectra.date     = datetime;
+spectra.date     = datestr(now);
 spectra.title    = param.title;
 
 % save all input parameters of spinwave into spectra

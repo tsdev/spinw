@@ -92,7 +92,7 @@ end
 
 % save the time of the beginning of the calculation
 if nargout > 0
-    optm.datestart  = datetime;
+    optm.datestart  = datestr(now);
 end
 
 title0 = 'Optimised magnetic structure';
@@ -254,7 +254,7 @@ if nargout > 0
     optm.param    = param;
     optm.fname    = fname;
     optm.xname    = pname;
-    optm.dateend  = datetime;
+    optm.dateend  = datestr(now);
     optm.title    = param.title;
 
 end

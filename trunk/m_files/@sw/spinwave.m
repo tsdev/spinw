@@ -158,7 +158,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 
 % save the time of the beginning of the calculation
-spectra.datestart = datetime;
+spectra.datestart = datestr(now);
 
 % for linear scans create the Q line(s)
 if nargin > 1
@@ -777,7 +777,7 @@ spectra.param.sortMode  = param.sortMode;
 spectra.param.tol       = param.tol;
 spectra.param.omega_tol = param.omega_tol;
 spectra.param.hermit    = param.hermit;
-spectra.dateend         = datetime;
+spectra.dateend         = datestr(now);
 spectra.title           = param.title;
 spectra.gtensor         = param.gtensor;
 

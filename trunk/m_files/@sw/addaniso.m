@@ -86,7 +86,7 @@ if nargin > 2
     
     if iscell(atomTypeIdx)
         % loop over all atom labels
-        isSelectedAtom = zeros(1,nMagAtom);
+        isSelectedAtom = zeros(1,max(mAtom.idx));
         for ii = 1:numel(atomTypeIdx)
             isSelectedAtom = isSelectedAtom | strcmp(obj.unit_cell.label,atomTypeIdx{ii});
         end

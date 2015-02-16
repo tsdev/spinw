@@ -200,7 +200,14 @@ classdef (ConstructOnLoad) sw < sw_handlelight
                 ang0 = [cif0.cell_angle_alpha cif0.cell_angle_beta cif0.cell_angle_gamma];
                 sym0 = cif0.('symmetry_space_group_name_H-M');
                 %symi0 = cif0.symmetry_Int_Tables_number;
-                xyz0 = cif0.symmetry_equiv_pos_as_xyz; xyz0 = sprintf('%s; ',xyz0{:}); xyz0 = xyz0(1:end-2);
+                
+                if ~isempty(cif0.symmetry_equiv_pos_as_xyz)
+                    xyz0 = cif0.symmetry_equiv_pos_as_xyz; 
+                else
+                    xyz0 = cif0.space_group_symop_operation_xyz;
+                end
+                
+                xyz0 = sprintf('%s; ',xyz0{:}); xyz0 = xyz0(1:end-2);
                 %name0 = cif0.atom_site_type_symbol';
                 cell0=[cif0.atom_site_label cif0.atom_site_type_symbol];
                 name0 = cellfun(@(x,y)strjoin({x y}),cell0(:,1),cell0(:,2),'UniformOutput',false)';

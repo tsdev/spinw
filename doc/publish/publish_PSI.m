@@ -83,11 +83,18 @@ for ii = 1:numel(pubfiles)
             htmlFile{jj} = [htmlFile{jj} lineSel(imIdx(end)+5:end)];
             
         end
+        
+        % latex formatting
+        htmlOut{end,1} = regexprep(htmlOut{end,1},'LATEX','<latex>');
+        htmlOut{end,1} = regexprep(htmlOut{end,1},'PATEX','</latex>');
+
         htmlOut{end+1,1} = htmlFile{jj}; %#ok<*AGROW>
+        
         jj = jj+1;
         idx2 = strfind(htmlFile{jj},'</body>');
     end
     htmlOut{end+1,1} = htmlFile{jj}(1:idx2-1);
+    
     % create a single line
     htmlLine=sprintf('%s',htmlOut{:});
     %htmlLine = [];

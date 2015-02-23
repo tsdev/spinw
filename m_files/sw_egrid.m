@@ -67,6 +67,8 @@ function spectra = sw_egrid(spectra, varargin)
 % modeIdx   Select certain spin wave modes from the 2*nMagAtom number of
 %           modes to include in the output. Default is 1:2*nMagAtom to
 %           include all modes.
+% epsilon   Error limit, within two energy bin width regarded equal.
+%           Default is 1e-5.
 %
 % The Blume-Maleev coordinate system is a cartesian coordinate system
 % with (xBM, yBM and zBM) basis vectors as follows:
@@ -122,10 +124,10 @@ else
     E0 = [];
 end
 
-inpForm.fname  = {'Evect' 'T'   'component' 'sumtwin' 'modeIdx' };
-inpForm.defval = {E0      T0    'Sperp'     true      zeros(1,0)};
-inpForm.size   = {[1 -1]  [1 1] [1 -2]      [1 1]     [1 -4]    };
-inpForm.soft   = {true    false false       false     false     };
+inpForm.fname  = {'Evect' 'T'   'component' 'sumtwin' 'modeIdx'  'epsilon'};
+inpForm.defval = {E0      T0    'Sperp'     true      zeros(1,0) 1e-5     };
+inpForm.size   = {[1 -1]  [1 1] [1 -2]      [1 1]     [1 -4]     [1 1]    };
+inpForm.soft   = {true    false false       false     false      false    };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -300,7 +302,21 @@ if isfield(spectra,'omega')
         % put the modes that are not in the modeIdx parameter above the
         % energy bin vector
         omega{tt}(~ismember(1:nMode,param.modeIdx),:) = Evect(end);
-        [~, idxE{tt}] = min(abs(repmat(real(omega{tt}),[1 1 nE])-repmat(permute(Evect,[2 3 1]),[nMode nHkl 1])),[],3);
+        
+        % if the energy bin is equally spaced a faster intexing of the
+        % modes can be used
+        dE = diff(Evect(2:end-1));
+        isequalE = sum(abs(dE-dE(1))<param.epsilon) == (nE-3);
+        if isequalE
+            dE = dE(1);
+            E0 = Evect(2);
+            idxE{tt} = floor((real(omega{tt})-E0)/dE)+2;
+            idxE{tt}(idxE{tt}<2) = 1;
+            idxE{tt}(idxE{tt}>nE) = nE;
+        else
+            % memory intensive binnin, bad for large numel(omega)
+            [~, idxE{tt}] = min(abs(repmat(real(omega{tt}),[1 1 nE])-repmat(permute(Evect,[2 3 1]),[nMode nHkl 1])),[],3);
+        end
         
         % Creates indices in the swConv matrix.
         idxE{tt} = idxE{tt} + repmat((0:nHkl-1).*nE,[nMode 1]);

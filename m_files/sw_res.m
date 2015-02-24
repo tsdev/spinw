@@ -1,4 +1,4 @@
-function polyRes = sw_res(fid,polDeg,toplot)
+function [polyRes, yout] = sw_res(fid,polDeg,toplot,varargin)
 % reads a tabulated energy resolution from a file and fits with polynomial
 %
 % p = SW_RES(fid,polDeg,{plot})
@@ -49,9 +49,13 @@ polyRes = polyfit(xres,yres,polDeg);
 xnew = linspace(min(xres),max(xres),500);
 ynew = polyval(polyRes,xnew);
 
+if nargin > 3
+    yout = polyval(polyRes,varargin{1});
+end
+
 if toplot
     fig0 = gcf;
-    figure;
+    figure(fig0);
     plot(xres,yres,'o-');
     hold all
     plot(xnew,ynew,'r-');

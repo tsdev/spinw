@@ -331,6 +331,31 @@ classdef (ConstructOnLoad) sw < sw_handlelight
             
             nMagExt = size(obj.mag_str.S,2);
         end
+        function nAtom = natom(obj)
+            % gives the number of symmetry unrelated atoms in the unit cell
+            %
+            % nAtom = NATOM(obj)
+            %
+            
+            nAtom = size(obj.unit_cell.r,2);
+        end
+        function nBond = nbond(obj)
+            % gives the number of bonds defined in the sw object
+            %
+            % nBond = NBOND(obj)
+            %
+            
+            nBond = size(obj.coupling.idx,2);
+        end
+
+        function nMat = nmat(obj)
+            % gives the number of matrices defined in an sw object
+            %
+            % nMat = NMAT(obj)
+            %
+            
+            nMat = size(obj.matrix.mat,3);
+        end
         function nTwin = ntwin(obj)
             % gives the number of twins
             %

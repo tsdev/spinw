@@ -1,10 +1,9 @@
-function varargout = optmagsteep(obj, varargin)
+function optm = optmagsteep(obj, varargin)
 % optimise magnetic structure using the steepest descendend method
 %
 % OPTMAGSTEEP(obj, 'option1', value1 ...)
 %
-% The function cannot deal with single ion anisotropy and incommensurate
-% structures at the present state. These features will come soon.
+% The function works only for magnetic structures with zero k-vector.
 %
 %
 % Input:
@@ -36,6 +35,8 @@ function varargout = optmagsteep(obj, varargin)
 %           is undefined (obj.mag_str.S is empty) the initial configuration
 %           is automaticly random independently of the value of random.
 %           Default is false.
+% TolX      Minimum change of the magnetic moment when the algorithm stops.
+% saveAll   Save moment directions for every loop, default is false.
 %
 % Output:
 %
@@ -46,17 +47,23 @@ function varargout = optmagsteep(obj, varargin)
 % See also SW, SW.ANNEAL, SW_FSUB, SW_FSTAT.
 %
 
+% save the time of the beginning of the calculation
+if nargout > 0
+    optm.datestart  = datestr(now);
+end
+
 nExt   = double(obj.mag_str.N_ext);
+title0 = 'Optimised magnetic structure using steepest descendent';
 
 inpForm.fname  = {'nRun' 'epsilon' 'random' 'boundary'          'subLat'};
 inpForm.defval = {100     1e-5      false   {'per' 'per' 'per'}  []     };
 inpForm.size   = {[1 1]   [1 1]     [1 1]   [1 3]                [1 -1] };
 inpForm.soft   = {0       0         0       0                    1      };
 
-inpForm.fname  = [inpForm.fname  {'nExt' 'fSub'   }];
-inpForm.defval = [inpForm.defval {nExt   @sw_fsub }];
-inpForm.size   = [inpForm.size   {[1 3]  [1 1]    }];
-inpForm.soft   = [inpForm.soft   {0      0        }];
+inpForm.fname  = [inpForm.fname  {'nExt' 'fSub'   'TolX' 'title' 'saveAll'}];
+inpForm.defval = [inpForm.defval {nExt   @sw_fsub 1e-10  title0  false    }];
+inpForm.size   = [inpForm.size   {[1 3]  [1 1]    [1 1]  [1 -2]  [1 1]    }];
+inpForm.soft   = [inpForm.soft   {0      0        0      0        0        }];
 
 
 param = sw_readparam(inpForm,varargin{:});
@@ -74,18 +81,16 @@ end
 mag_param.nExt = param.nExt;
 
 obj.genmagstr(mag_param);
-M0  = obj.mag_str.S;
+M  = obj.mag_str.S;
 
 % Produce the interaction matrices
 [SS, SI] = obj.intmatrix;
 
 % Function options.
 nRun    = param.nRun;
-nMagExt = size(M0,2);
+nMagExt = size(M,2);
 
-% Initial moment directions, the extra zeros are for easy indexing, size of
-% M is (1,nMagExt+1).
-M     = [M0 [0;0;0]];
+% Spin length for normalization.
 S     = sqrt(sum(M.^2,1));
 
 % Modify the interaction matrices according to the boundary conditions.
@@ -156,12 +161,7 @@ Sindex = zeros(nSub,nMagExt);
 Sindex(nSub*(0:nMagExt-1)+SSc) = 1;
 Sindex      = logical(Sindex);
 
-% Number of moments on each sublattice.
-nElementSub = sum(Sindex,2);
-
 % Speeds up the code by storing every sublattice data in different cells
-%csSSJ  = cell(nSub,1);
-%csSSi  = cell(nSub,1);
 csSSiG = cell(nSub,1);
 csSSJG = cell(nSub,1);
 cAx    = cell(nSub,1);
@@ -189,26 +189,23 @@ if fid == 1
 end
 
 if nargout == 1
-    E = zeros(1,nRun);
+    E   = zeros(1,nRun);
+    if param.saveAll
+        Msave = zeros(3,nMagExt);
+    end
 end
 
-for ii = 1:nRun
+% Initial step size is infinite, to make at least 1 cycle.
+dM = inf;
+% Initial index.
+rIdx = 0;
+
+while (rIdx < nRun) && (dM>param.TolX)
+    Mold = M;
     for jsub = 1:nSub
         % Logical vector, selecting the moments on a given
         % sublattice [1,nMagExt]
         sSindex = Sindex(jsub,:);
-        % Stores the interaction strength
-        % SSJ(:,sSindex) [maxNeigh, nElementSub(jsub)]
-        % --> reshape into [1, maxNeigh*nElementSub(jsub)] size
-        % --> repmat into nSpinDim vertically
-        % --> final size [nSpinDim, maxNeigh*nElementSub(jsub)]
-        %sSSJ = csSSJ{jsub};
-        % Stores the indices of neighbouring magnetic moments.
-        % SSi(:,sSindex) [maxNeigh, nElementSub(jsub)]
-        % --> reshape into [1, maxNeigh*nElementSub(jsub)] size
-        %sSSi = csSSi{jsub};
-        % Previous moment directions of the given sublattice.
-        %MOld = M(:,sSindex);
         % F stores the molecular field acting on the moments of
         % the jsub sublattice (exchange+external field).
         % F [3, nElementSub(jsub)]
@@ -220,38 +217,34 @@ for ii = 1:nRun
             F = F - cB{jsub};
         end
         
-        % Generate new spin directions, creating normal
-        % distribution of coordinates, then normalizing them.
-        if ~param.aniso
-            MNew  = -bsxfun(@times,F,cS{jsub}./sqrt(sum(F.^2)));
-        else
-            % Calculates old anisotropy field.
-            %AOld = [sum(MOld.*cAx{jsub},1); sum(MOld.*cAy{jsub},1); sum(MOld.*cAz{jsub},1)];
-            % Calculates new anisotropy field.
-            %ANew = [sum(MNew.*cAx{jsub},1); sum(MNew.*cAy{jsub},1); sum(MNew.*cAz{jsub},1)];
-            % Calculates the energy difference on each spin.
-            %dE = sum((MNew-MOld).*F+MNew.*ANew-MOld.*AOld,1);
+        % Adds anisotropy field.
+        if param.aniso
+            % Select the moment vectors on the sublattice.
+            Ms = M(:,sSindex);
+            Fa = 2*[sum(Ms.*cAx{jsub},1); sum(Ms.*cAy{jsub},1); sum(Ms.*cAz{jsub},1)];
+            F = F + Fa;
         end
         
-        aidx = true(1,nElementSub(jsub));
-        % sidx stores the accepted spin indices in the whole spin list.
-        sidx = false(nMagExt+1,1);
-        sidx(sSindex) = aidx;
-        
-        M(:,sidx) = MNew(:,aidx);
+        M(:,sSindex) = -bsxfun(@times,F,cS{jsub}./sqrt(sum(F.^2)));
         
     end
     
-    
     % Calculates the system energy at the end of the temperature step.
-    obj.mag_str.S = M(:,1:end-1);
-    if nargout == 1
-        E(ii) = obj.energy;
+    if nargout > 0
+        obj.mag_str.S = M;
+        E(rIdx+1) = obj.energy;
+        if param.saveAll
+            Msave(:,:,rIdx+1) = M;
+        end
     end
     
     if fid == 1
-        sw_status(ii/param.nRun*100);
+        sw_status(rIdx/param.nRun*100);
     end
+    
+    % Check stopping condition, give the dM limit.
+    dM = sum(sqrt(sum((Mold - M).^2,1)))/nMagExt;
+    rIdx = rIdx + 1;
     
 end
 
@@ -263,10 +256,22 @@ else
     end
 end
 
-obj.mag_str.S = M(:,1:end-1);
+% Save optimised magnetic structure into the sw object.
+obj.mag_str.S = M;
 
-if nargout == 1
-    varargout{1} = E;
+% Create output structure.
+if nargout > 0
+    optm.obj      = copy(obj);
+    if param.saveAll
+        optm.M = Msave;
+    else
+        optm.M = M;
+    end
+    optm.e        = E(1:rIdx);
+    optm.param    = param;
+    optm.nRun     = rIdx;
+    optm.dateend  = datestr(now);
+    optm.title    = param.title;
 end
 
 end

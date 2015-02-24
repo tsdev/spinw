@@ -95,7 +95,7 @@ if nargout > 0
     optm.datestart  = datestr(now);
 end
 
-title0 = 'Optimised magnetic structure';
+title0 = 'Optimised magnetic structure using simplex search';
 
 inpForm.fname  = {'epsilon' 'func'           'boundary'          'xmin'   'xmax'  'x0'   };
 inpForm.defval = {1e-5      @gm_spherical3d  {'per' 'per' 'per'} []       []      []     };

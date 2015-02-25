@@ -1,7 +1,7 @@
 function optm = optmagsteep(obj, varargin)
 % optimise magnetic structure using the steepest descendend method
 %
-% OPTMAGSTEEP(obj, 'option1', value1 ...)
+% optm = OPTMAGSTEEP(obj, 'option1', value1 ...)
 %
 % The function works only for magnetic structures with zero k-vector.
 %
@@ -40,9 +40,19 @@ function optm = optmagsteep(obj, varargin)
 %
 % Output:
 %
-% E         If requested, calculates the energy after every iteration, the
-%           calculation makes the script very slow.
-%
+% 'optm' is a struct type variable with the following fields:
+% obj       sw object that contains the optimised magnetic structure.
+% M         Magnetic moment directions with dimensions [3 nMagExt], if
+%           'saveAll' parameter is true, it contains the magnetic structure
+%           after every loop in a matrix with dimensions [3 nMagExt nLoop].
+% dM     	The change of magnetic moment vector averaged over all moments
+%           in the last loop.
+% e         Energy per spin in the optimised structure.
+% param     Input parameters, stored in a struct.
+% nRun      Number of loops executed.
+% datestart Starting time of the function.
+% dateend   End time of the function.
+% title     Title of the simulation, given in the input.
 %
 % See also SW, SW.ANNEAL, SW_FSUB, SW_FSTAT.
 %
@@ -267,6 +277,7 @@ if nargout > 0
     else
         optm.M = M;
     end
+    optm.dM       = dM;
     optm.e        = E(1:rIdx);
     optm.param    = param;
     optm.nRun     = rIdx;

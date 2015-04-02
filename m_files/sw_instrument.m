@@ -128,31 +128,9 @@ end
 % include resolution
 if calcres
     for jj = 1:nPlot
-        
-        swConv = spectra.swConv{jj};
-        
-        swConvTemp = swConv * 0;
-        
-        % convolute gaussian to the convoluted spectra
-        E = spectra.Evect;
-        
-        for ii = 1:numel(E)
-            % standard deviation of the energy resolution Gaussian
-            if isa(param.dE,'function_handle')
-                stdG = param.dE(E(ii))/2.35482;
-            else
-                stdG = polyval(param.dE,E(ii))/2.35482;
-            end
-            
-            % Gaussian with intensity normalised to 1, centered on E(ii)
-            fG = exp(-((E-E(ii))/stdG).^2/2);
-            fG = fG/sum(fG);
-            
-            swConvTemp = swConvTemp + fG' * swConv(ii,:);
-            
-        end
-        spectra.swConv{jj} = swConvTemp;
+        spectra.swConv{jj} = sw_resconv(spectra.swConv{jj},spectra.Evect',param.dE);
     end
+    
     fprintf0(fid0,'Finite instrumental energy resolution is applied.\n');
 end
 spectra.dE = param.dE;

@@ -38,10 +38,10 @@ elseif abs(dk0(3))>1e-5
 end
 
 % parse curve into straight lines
-qStep = hkl(2:end,:)-hkl(1:(end-1),:);
-qStep = bsxfun(@rdivide,qStep,sqrt(sum(qStep.^2,2)));
+qStep  = hkl(2:end,:)-hkl(1:(end-1),:);
+qStep  = bsxfun(@rdivide,qStep,sqrt(sum(qStep.^2,2)));
 qCurve = sum(qStep(2:end,:).*qStep(1:end-1,:),2);
-qIdx = find(qCurve<0.97)+1;
+qIdx   = find(qCurve<0.97)+1;
 
 if numel(qIdx) == 0
     linescan = 0;

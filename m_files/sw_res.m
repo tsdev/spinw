@@ -8,7 +8,7 @@ function [polyRes, yout] = sw_res(fid,polDeg,toplot,varargin)
 % (positive is energy loss), the second is the FWHM of the Gaussian
 % resolution at the given energy transfer value.
 %
-% Options:
+% Input:
 %
 % fid           String, path to the resolution file or a matrix with the
 %               same format as the data file.
@@ -35,8 +35,8 @@ end
 
 % load file and read values
 if ischar(fid)
-    res = fscanf(fid,'%f',[2 inf]);
-    fclose(fid);
+    res = importdata(fid,' ');
+    res = res(:,[1 2])';
 else
     res = fid';
 end

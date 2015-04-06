@@ -1,5 +1,8 @@
 # SW Class
 
+$a^2$
+$$a^2$$
+
 To perform calculation using the SpinW library, we need to create an sw object Matlab. This object stores all the necessary values for the calculation (crystal structure, bonds, magnetic structure, etc.). These information are called the properties of the object. Beside the data, the object also has assigned functions that perform different computations on the object data. These functions are called methods and they take the object as first input argument. To create an sw class object you can simply type:
 
 `model1 = sw`

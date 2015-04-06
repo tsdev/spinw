@@ -4,3 +4,5 @@ pages:
 - [about.md, About]
 theme: readthedocs
 repo_url: https://github.com/tsdev/spinw/
+markdown_extensions: [mathjax]
+extra_javascript: ['https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML','js/mathjaxhelper.js']

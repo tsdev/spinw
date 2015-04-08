@@ -1,11 +1,43 @@
-function res = fourier(obj,hkl)
+function res = fourier(obj,hkl,varargin)
 % calculates the Fourier transformation of the Hamiltonian
 %
-% res = FOURIER(obj,hkl)
+% res = FOURIER(obj,hkl,'option1', value1 ...)
 %
+% Input:
+%
+% obj           Input structure, sw class object.
+% hkl           Defines the Q points where the Fourier transform is
+%               calculated, in reciprocal lattice units, size is [3 nHkl].
+%               Q can be also defined by several linear scan in reciprocal
+%               space. In this case hkl is cell type, where each element of
+%               the cell defines a point in Q space. Linear scans are
+%               assumed between consecutive points. Also the number of Q
+%               points can be specified as a last element, it is 100 by
+%               defaults. For example: hkl = {[0 0 0] [1 0 0]  50}, defines
+%               a scan along (h,0,0) from 0 to 1 and 50 Q points are
+%               calculated along the scan.
+%
+%               For symbolic calculation at a general reciprocal space
+%               point use sym class input. For example to calculate the
+%               spectrum along (h,0,0): hkl = [sym('h') 0 0]. To do
+%               calculation at a specific point do for example sym([0 1
+%               0]), to calculate the spectrum at (0,1,0).
+%
+% Options:
+%
+% fitmode       Speedup (for fitting mode only), default is false.
+%
+%
+% See also SW.TISZA.
 %
 
 % TODO: test for magnetic supercell
+
+%inpForm.fname  = {'fitmode' };
+%inpForm.defval = {false     };
+%inpForm.size   = {[1 1]     };
+%
+%param = sw_readparam(inpForm, varargin{:});
 
 % for linear scans create the Q line(s)
 if nargin > 1
@@ -18,8 +50,31 @@ else
     hkl = [];
 end
 
+% calculate symbolic Fourier transformation if obj is in symbolic mode
+if obj.symbolic
+    if numel(hkl) == 3
+        hkl = sym(hkl);
+    end
+    
+    if ~isa(hkl,'sym')
+        inpForm.fname  = {'fitmode'};
+        inpForm.defval = {false    };
+        inpForm.size   = {[1 1]    };
+        param0 = sw_readparam(inpForm, varargin{:});
+        
+        if ~param0.fitmode
+            fprintf0(obj.fileid,['No symbolic hkl value was given, Fourier'...
+                ' transformation for general Q (h,k,l) will be calculated!\n']);
+        end
+        res = obj.fouriersym(varargin{:});
+    else
+        res = obj.fouriersym(varargin{:},'hkl',hkl);
+    end
+    return
+end
+
 % generate exchange couplings
-[SS, ~, RR] = obj.intmatrix('fitmode',2,'extend',true,'conjugate',false);
+[SS, ~, RR] = obj.intmatrix('fitmode',2,'extend',true,'conjugate',true);
 
 % list of magnetic atoms in the unit cell
 matom = obj.matom;
@@ -42,7 +97,7 @@ JJ = bsxfun(@times,SS.all(6:14,:),matom.S(atom1).*matom.S(atom2));
 dR = SS.all(1:3,:)+RR(:,SS.all(5,:))-RR(:,SS.all(4,:));
 
 % exponents, dimension: 1 x nHkl x nBond
-ExpF = permute(sum(exp(1i*2*pi*bsxfun(@times,hkl',permute(dR,[3 1 2]))),2),[2 1 3]);
+ExpF = permute(exp(1i*2*pi*sum(bsxfun(@times,hkl',permute(dR,[3 1 2])),2)),[2 1 3]);
 
 % J*exp(ikr), dimensions 9 x nHkl x nBond
 Jexp = permute(bsxfun(@times,permute(JJ,[1 3 2]),ExpF),[1 3 2]);
@@ -66,11 +121,6 @@ ft = accumarray(idxAll,Jexp(:)',[9 nMagExt nMagExt nHkl]);
 
 % reshape into 3 x 3 x nMagExt x nMagExt x nHkl
 ft = reshape(ft,[3 3 nMagExt nMagExt nHkl]);
-
-% add complex conjugate
-ft = ft + conj(permute(ft,[1 2 4 3 5]));
-%ft = real(ft);
-%ft = ft + conj(permute(ft,[1 3 2 4]));
 
 % save results in a struct
 res.ft  = ft;

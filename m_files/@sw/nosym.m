@@ -30,6 +30,8 @@ function nosym(obj, varargin)
 % See also SW, SW.NEWCELL.
 %
 
+% TODO keep bonds when removing symmetry
+
 obj.newcell({[1 0 0] [0 1 0] [0 0 1]});
 obj.lattice.sym = int32(0);
 obj.sym = false;

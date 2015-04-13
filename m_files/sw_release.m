@@ -34,7 +34,11 @@ aDir = pwd;
 cd(sw_rootdir);
 
 %[statSys, revNum] = system('svn info |grep Revision: |cut -c11-');
-[statSys, revNum] = system('svn up --trust-server-cert --non-interactive');
+
+% svn revision number
+%[statSys, revNum] = system('svn up --trust-server-cert --non-interactive');
+% Git "revision" number
+[statSys, revNum] = system('git rev-list --count HEAD');
 
 revNum = strtrim(revNum);
 strIdx = strfind(revNum,' ');

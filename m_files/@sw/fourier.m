@@ -74,7 +74,7 @@ if obj.symbolic
 end
 
 % generate exchange couplings
-[SS, ~, RR] = obj.intmatrix('fitmode',2,'extend',true,'conjugate',true);
+[SS, SI, RR] = obj.intmatrix('fitmode',2,'extend',true,'conjugate',true);
 
 % list of magnetic atoms in the unit cell
 matom = obj.matom;
@@ -94,12 +94,12 @@ atom2 = SS.all(5,:);
 JJ = bsxfun(@times,SS.all(6:14,:),matom.S(atom1).*matom.S(atom2));
 
 % distance vector between interacting atoms in l.u.
-dR = SS.all(1:3,:)+RR(:,SS.all(5,:))-RR(:,SS.all(4,:));
+dR = SS.all(1:3,:)+RR(:,atom2)-RR(:,atom1);
 
 % exponents, dimension: 1 x nHkl x nBond
 ExpF = permute(exp(1i*2*pi*sum(bsxfun(@times,hkl',permute(dR,[3 1 2])),2)),[2 1 3]);
 
-% J*exp(ikr), dimensions 9 x nHkl x nBond
+% J*exp(ikr), dimensions 9 x nBond x nHkl
 Jexp = permute(bsxfun(@times,permute(JJ,[1 3 2]),ExpF),[1 3 2]);
 
 % J^\alpha^\beta component indices in numbers 1:9

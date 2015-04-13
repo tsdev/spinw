@@ -146,6 +146,7 @@ disp('Removing unnecessary files... ')
 delete([installDir updateName]);
 
 % remove files aren't needed for new Matlab versions
+% functions introduced in R2014a
 if ~verLessThan('matlab', '8.1')
     % strjoin()
     fList = dir([folName filesep 'external' filesep 'strjoin*']);
@@ -154,6 +155,15 @@ if ~verLessThan('matlab', '8.1')
     end
     % strsplit
     fList = dir([folName filesep 'external' filesep 'strsplit*']);
+    for ii = 1:numel(fList)
+        delete([folName filesep 'external' filesep fList(ii).name]);
+    end
+end
+
+% functions introduced in R2015a
+if ~verLessThan('matlab', '8.5')
+    % uniquetol()
+    fList = dir([folName filesep 'external' filesep 'uniquetol*']);
     for ii = 1:numel(fList)
         delete([folName filesep 'external' filesep fList(ii).name]);
     end

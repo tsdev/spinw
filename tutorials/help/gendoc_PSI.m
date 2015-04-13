@@ -7,7 +7,7 @@ function gendoc_PSI(fName, DirName)
 
 if nargin < 2
     % list of files in the publish folder:
-    pubfolder = [sw_rootdir 'doc' filesep 'help'];
+    pubfolder = [sw_rootdir 'tutorials' filesep 'help'];
 else
     pubfolder = DirName;
 end
@@ -55,8 +55,11 @@ for ii = 1:numel(pubfiles)
     fclose(fidOut);
     fclose(fidIn);
     
-    % use the non documented antialiasing option
-    opts.figureSnapMethod = 'antialiased';
+    use the non documented antialiasing option
+    if verLessThan('Matlab','8.5')
+        % doesn't work for R2015a or above
+        opts.figureSnapMethod = 'antialiased';
+    end
     opts.createThumbnail = false;
     opts.stylesheet = 'noCode.xsl';
     opts.outputDir = [pubfolder filesep pubfiles(ii).name(1:end-2)];

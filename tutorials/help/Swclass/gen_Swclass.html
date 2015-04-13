@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>SW Class</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-06-23"><meta name="DC.source" content="gen_Swclass.m"><style type="text/css">
+      --><title>SW Class</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-12"><meta name="DC.source" content="gen_Swclass.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -80,20 +80,20 @@ twin
            vol: [1xnTwin double]  nTwin=1
           rotc: [3x3xnTwin double]
 matrix
-           mat: [3x3xnJ double]  nJ=0
-         color: [3xnJ integer]
-         label: [1xnJ char]
+           mat: [3x3xnMat double]  nMat=0
+         color: [3xnMat integer]
+         label: [1xnMat char]
 single_ion
          aniso: [1xnMagAtom integer]  nMagAtom=0
              g: [1xnMagAtom integer]
          field: [1x3 double]
              T: [1x1 double]
 coupling
-            dl: [3xnCoupling integer]  nCoupling=0
-         atom1: [1xnCoupling integer]
-         atom2: [1xnCoupling integer]
-       mat_idx: [3xnCoupling integer]
-           idx: [1xnCoupling integer]
+            dl: [3xnBond integer]  nBond=0
+         atom1: [1xnBond integer]
+         atom2: [1xnBond integer]
+       mat_idx: [3xnBond integer]
+           idx: [1xnBond integer]
 mag_str
          N_ext: [1x3 integer]
              k: [1x3 double]
@@ -133,4 +133,4 @@ ans =
 </pre><p>By the way this function is one of the most usefull ones. It can show effectively all information stored in the sw object by plotting crystal structure, couplings, magnetic structure etc. Calling it on an empty object shows only the unit cell:</p><pre class="codeinput">plot(model1)
 </pre><img vspace="5" hspace="5" src="gen_Swclass_01.png" alt=""> <p>As you might noticed, there is an alternative calling of any method function: obj.function(...), this is just equivalent to the previous argument structures.</p><h2>Copy<a name="11"></a></h2><p>The sw class belong to the so called handle class. It means in short that the model1 variable is just a pointer to the memory where the class is stored. Thus doing the following:</p><pre class="language-matlab">model2 = model1;
 </pre><p>It only copies the pointer. Thus if I change something on model1, model2 will change as well. Thus to clone the object (the equivalent of the usual '=' operation in Matlab) is the copy() function:</p><pre class="language-matlab">model2 = copy(model1);
-</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div></body></html>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div></body></html>

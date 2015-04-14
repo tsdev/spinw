@@ -1,11 +1,11 @@
-function [M, k, n, name, pname, limit] = gm_planar(M0, x)
+function [M, k, n, name, pname, limit] = gm_planard(M0, x)
 % planar magnetic structure constraint function 
 %
 % [M, k, n, name, pname, limit] = GM_PLANAR(M0, x) 
 %
 % It generates the parameters of arbitrary planar magnetic structure from
 % phi angles, ordering wave vector and spin plane normal vector. All angles
-% are in radian.
+% are in degree.
 %
 % Input:
 %
@@ -32,7 +32,7 @@ function [M, k, n, name, pname, limit] = gm_planar(M0, x)
 % limit     Default limits on the input parameters, dimensions are [2 nX].
 %           Every column contains a lower and upper limit on the parameter.
 %
-% See also GM_SPHERICAL3D, GM_PLANARD.
+% See also GM_SPHERICAL3D.
 %
 
 if nargin == 0
@@ -51,21 +51,21 @@ if nargout <= 3
     % Normal to the spin rotation plane.
     nTheta  = x(end-1);
     nPhi    = x(end);
-    n = [sin(nTheta)*[cos(nPhi) sin(nPhi)] cos(nTheta)];
+    n = [sind(nTheta)*[cosd(nPhi) sind(nPhi)] cosd(nTheta)];
     % Angles in the spin plane.
     phi = x(1:nMagExt);
     
     [u, v] = sw_cartesian(n');
     
     if numel(M0)==1
-        M = (u*cos(phi) + v*sin(phi))*M0;
+        M = (u*cosd(phi) + v*sind(phi))*M0;
     else
         % Check that the number of magnetic atoms is right
         if length(phi)~=length(M0)
             error('sw:gm_planar:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
         end
         % Magnetic moments in orthogonal coordinate sysyem.
-        M = bsxfunsym(@times,u*cos(phi) + v*sin(phi),M0);
+        M = bsxfunsym(@times,u*cosd(phi) + v*sind(phi),M0);
     end
 else
     nMagExt = size(M0,2);
@@ -74,11 +74,11 @@ else
     % parameter names
     pname = {};
     for ii = 1:nMagExt
-        pname = [pname {sprintf('Phi%d(rad)',ii)}]; %#ok<AGROW>
+        pname = [pname {sprintf('Phi%d(deg)',ii)}]; %#ok<AGROW>
     end
-    pname = [pname {'kx(rlu)' 'ky(rlu)' 'kz(rlu)' 'nTheta(rad)' 'nPhi(rad)'}];
+    pname = [pname {'kx(rlu)' 'ky(rlu)' 'kz(rlu)' 'nTheta(deg)' 'nPhi(deg)'}];
     % limits on input parameters
-    limit = [zeros(1,nMagExt+5); [2*pi*ones(1, nMagExt) 1 1 1 pi 2*pi]];
+    limit = [zeros(1,nMagExt+5); [360*ones(1, nMagExt) 1 1 1 180 360]];
     % garbage
     M = []; k = []; n = [];
 end

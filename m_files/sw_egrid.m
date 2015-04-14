@@ -334,9 +334,9 @@ if isfield(spectra,'omega')
     
     % Calculate Bose temperature factor for magnons
     if param.T==0
-        nBose = double(Evect(2:(end-1))>0);
+        nBose = double(Evect(2:(end-1))>=0);
     else
-        nBose = 1./(exp(abs(Evect(2:(end-1)))./(spectra.obj.unit.kB*param.T))-1)+double(Evect(2:(end-1))>0);
+        nBose = 1./(exp(abs(Evect(2:(end-1)))./(spectra.obj.unit.kB*param.T))-1)+double(Evect(2:(end-1))>=0);
     end
     
     % Multiply the intensities with the Bose factor.

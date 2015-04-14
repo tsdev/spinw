@@ -25,10 +25,10 @@ end
 kB   = 0.086173324; %    Boltzmann constant: k_B [meV/K]
 
 % Bose factor for the original temperature
-oldN = 1./(exp(abs(E)/(kB*oldT))-1) + double(E>0);
+oldN = 1./(exp(abs(E)/(kB*oldT))-1) + double(E>=0);
 oldN(isinf(oldN)) = 1;
 % Bose factor for the new temperature
-newN = 1./(exp(abs(E)/(kB*newT))-1) + double(E>0);
+newN = 1./(exp(abs(E)/(kB*newT))-1) + double(E>=0);
 newN(isinf(newN)) = 1;
 % conversion factor
 C = newN./oldN;

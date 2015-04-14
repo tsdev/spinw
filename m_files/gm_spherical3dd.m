@@ -1,4 +1,4 @@
-function [M, k, n, name, pname, limit] = gm_spherical3d(M0, x)
+function [M, k, n, name, pname, limit] = gm_spherical3dd(M0, x)
 % magnetic structure constraint function with spherical parameterisation
 %
 % [M, k, n, name, pname, limit] = GM_SPHERICAL3D(M0, x) 
@@ -48,20 +48,20 @@ if nargout <= 3
     
     if numel(M0) == 1
         % Magnetic moments in orthogonal coordinate sysyem.
-        M = [sin(MTheta).*cos(MPhi); sin(MTheta).*sin(MPhi); cos(MTheta)]*M0;
+        M = [sind(MTheta).*cosd(MPhi); sind(MTheta).*sind(MPhi); cosd(MTheta)]*M0;
     else
         % Check that the number of magnetic atoms is right
         if length(MTheta)~=length(M0)
             error('sw:gm_spherical3d:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
         end
         % Magnetic moments in orthogonal coordinate sysyem.
-        M = bsxfun(@times,[sin(MTheta).*cos(MPhi); sin(MTheta).*sin(MPhi); cos(MTheta)],M0);
+        M = bsxfun(@times,[sind(MTheta).*cosd(MPhi); sind(MTheta).*sind(MPhi); cosd(MTheta)],M0);
     end
     
     % Normal to the spin rotation plane.
     nTheta  = x(end-1);
     nPhi    = x(end);
-    n = [sin(nTheta)*[cos(nPhi) sin(nPhi)] cos(nTheta)];
+    n = [sind(nTheta)*[cosd(nPhi) sind(nPhi)] cosd(nTheta)];
     % Magnetic ordering wave vector in the crystallographic unit cell!
     k = x(end+(-4:-2));
     
@@ -72,11 +72,11 @@ else
     % parameter names
     pname = {};
     for ii = 1:nMagExt
-        pname = [pname {sprintf('Theta%d(rad)',ii) sprintf('Phi%d(rad)',ii)}]; %#ok<AGROW>
+        pname = [pname {sprintf('Theta%d(deg)',ii) sprintf('Phi%d(deg)',ii)}]; %#ok<AGROW>
     end
-    pname = [pname {'kx(rlu)' 'ky(rlu)' 'kz(rlu)' 'nTheta(rad)' 'nPhi(rad)'}];
+    pname = [pname {'kx(rlu)' 'ky(rlu)' 'kz(rlu)' 'nTheta(deg)' 'nPhi(deg)'}];
     % limits on input parameters
-    limit = [zeros(1,nMagExt*2+5); [repmat([pi 2*pi],[1 nMagExt]) 1 1 1 pi 2*pi]];
+    limit = [zeros(1,nMagExt*2+5); [repmat([180 360],[1 nMagExt]) 1 1 1 180 360]];
     % garbage
     M = []; k = []; n = [];
 end

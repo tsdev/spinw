@@ -40,7 +40,7 @@ switch symb
         
         % Interaction matrices
         nMat = numel(obj.matrix.label);
-        if isa(obj.matrix.mat,'sym')
+        if ~isa(obj.matrix.mat,'sym')
             % matrices are already symbolic
             %elseif nMat == 0
             %    obj.matrix.mat = sym(obj.matrix.mat);

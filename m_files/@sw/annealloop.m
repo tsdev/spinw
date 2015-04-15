@@ -148,7 +148,6 @@ inpForm.size   = [inpForm.size   {[-3 -4] [1 1]  [1 1]     }];
 inpForm.soft   = [inpForm.soft   {0       0      0         }];
 
 param = sw_readparam(inpForm,varargin{:});
-param.showWarn = false;
 
 % check output
 verbosity0 = param.verbosity;
@@ -171,7 +170,10 @@ for ii = 1:nLoop
     param.initT = obj.temperature;
     param.endT  = obj.temperature;
     
+    % do the annealing procedure
+    warnState = warning('off','sw_readparam:UnreadInput');
     aRes{ii} = obj.anneal(param);
+    warning(warnState);
     % remove the duplicate object
     if ~param.saveObj
         % remove sw object from the output to free up memory

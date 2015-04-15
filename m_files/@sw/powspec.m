@@ -104,7 +104,10 @@ for ii = 1:nQ
     if param.extrap
         % allow arbitrary additional parameters to pass to the spectral
         % calculation function
-        specQ = param.specfun(obj,hkl,varargin{:},'showWarn',false);
+        warnState = warning('off','sw_readparam:UnreadInput');
+        specQ = param.specfun(obj,hkl,varargin{:});
+        warning(warnState);
+
     else
         specQ = param.specfun(obj,hkl,'fitmode',true,'notwin',true,'Hermit',param.Hermit,...
             'formfact',param.formfact,'formfactfun',param.formfactfun,'gtensor',param.gtensor);

@@ -57,6 +57,9 @@ function optm = optmagsteep(obj, varargin)
 % See also SW, SW.ANNEAL, SW_FSUB, SW_FSTAT.
 %
 
+% disable warning in sw.energy
+warnStruct = warning('off','sw:energy:AnisoFieldIncomm');
+
 % save the time of the beginning of the calculation
 if nargout > 0
     optm.datestart  = datestr(now);
@@ -85,16 +88,17 @@ fid = obj.fid;
 mag_param = struct;
 if param.random
     mag_param.mode = 'random';
-else
-    mag_param.mode = 'extend';
+    mag_param.nExt = param.nExt;
+    obj.genmagstr(mag_param);
 end
-mag_param.nExt = param.nExt;
 
-obj.genmagstr(mag_param);
-M  = obj.mag_str.S;
+M = obj.mag_str.S;
 
 % Produce the interaction matrices
 [SS, SI] = obj.intmatrix;
+
+% express translations in the original unit cell
+SS.all(1:3,:) = bsxfun(@times,SS.all(1:3,:),double(obj.mag_str.N_ext'));
 
 % Function options.
 nRun    = param.nRun;
@@ -110,10 +114,13 @@ for ii = 1:3
     end
 end
 
-% Since k_m=(0,0,0) the spins that are coupled to themself contribute with
-% a constant self-energy, removing this doesn't change thermodynamical
-% behaviour just shifts the zero energy.
-SS.all(:, SS.all(4,:)==SS.all(5,:)) = [];
+% Spins are not allowed to be coupled to themselves. Remove these couplings
+% and give a warning.
+idxSelf = SS.all(4,:)==SS.all(5,:);
+if any(idxSelf)
+    warning('sw:optmagsteep:SelfCoupling','Some spins are coupled to themselves in the present magnetic cell!');
+    SS.all(:,idxSelf) = [];
+end
 
 % Calculates the energy of the initial configuration and prepares the
 % anisotropy matrix. B is in units of the couplings.
@@ -148,7 +155,8 @@ nSub = max(SSc);
 
 nNeighG = zeros(nMagExt,1);
 for ii = 1:nMagExt
-    nNeighG(ii) = sum((SS.all(4,:) == ii)|(SS.all(5,:) == ii));
+    %nNeighG(ii) = sum((SS.all(4,:) == ii)|(SS.all(5,:) == ii));
+    nNeighG(ii) = sum(SS.all(4,:) == ii) + sum(SS.all(5,:) == ii);
 end
 
 % Maximum number of neighbours
@@ -158,12 +166,39 @@ maxNeighG = max(nNeighG);
 SSiG = zeros(maxNeighG,nMagExt) + (nMagExt+1);
 SSJG = zeros(9,maxNeighG,nMagExt);
 
+% indices of the transpose of the J matrix in a column of SS.all
+% indices are between 6-14
+trIdx = reshape(reshape(1:9,[3 3])',[9 1])+5;
+
+% magnetic ordering wave vector
+km = obj.mag_str.k;
+
+% for non-zero km, rotate the exchange matrices that couple spins between
+% different unit cell
+if any(km)
+    % Rotate the coupling matrices that couple spins in different unit cells
+    % Si * Jij * Sj' = Si * Jij * R * Sj
+    % Sj' = R(km,dl) * Sj
+    [~,R] = sw_rot(obj.mag_str.n,km*SS.all(1:3,:)*2*pi);
+    Jrot  = mmat(reshape(SS.all(6:14,:),3,3,[]),R);
+    JJR   = reshape(Jrot,9,[]);
+    [~,R] = sw_rot(obj.mag_str.n,-km*SS.all(1:3,:)*2*pi);
+    Jrot  = mmat(reshape(SS.all(trIdx,:),3,3,[]),R);
+    JJTR  = reshape(Jrot,9,[]);
+else
+    JJR   = SS.all(6:14,:);
+    JJTR  = SS.all(trIdx,:);
+end
+
 % Indexes for transposing J for exchanged spins in the interaction.
 % Default is Si * J * Sj, or Sj * J' * Si has to be used.
-trIdx = reshape(reshape(1:9,[3 3])',[9 1])+5;
+%trIdx = reshape(reshape(1:9,[3 3])',[9 1])+5;
 for ii = 1:nMagExt
-    SSiG(1:nNeighG(ii),ii)   = [SS.all(5,(SS.all(4,:) == ii))    SS.all(4,(SS.all(5,:) == ii))    ]';
-    SSJG(:,1:nNeighG(ii),ii) = [SS.all(6:14,(SS.all(4,:) == ii)) SS.all(trIdx,(SS.all(5,:) == ii))];
+    idx1 = SS.all(4,:) == ii;
+    idx2 = (SS.all(5,:) == ii);
+    SSiG(1:nNeighG(ii),ii)   = [SS.all(5,idx1)    SS.all(4,idx2)    ]';
+    %SSJG(:,1:nNeighG(ii),ii) = [SS.all(6:14,idx1) SS.all(trIdx,idx2)];
+    SSJG(:,1:nNeighG(ii),ii) = [JJR(:,idx1) JJTR(:,idx2)];
 end
 
 % Store spin indices of each sublattice for speedup.
@@ -284,5 +319,8 @@ if nargout > 0
     optm.dateend  = datestr(now);
     optm.title    = param.title;
 end
+
+% restore warnings
+warning(warnStruct);
 
 end

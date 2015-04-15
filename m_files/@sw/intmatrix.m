@@ -280,9 +280,7 @@ if ~param.zeroC
     if obj.symb
         nzeroJ = sum(SS.all(6:end,:).^2,1)==0;
         if ~isa(nzeroJ,'logical')
-            wState = warning('off','symbolic:sym:isAlways:TruthUnknown');
             nzeroJ = isAlways(nzeroJ);
-            warning(wState);
         end
         nzeroJ = ~nzeroJ;
     else

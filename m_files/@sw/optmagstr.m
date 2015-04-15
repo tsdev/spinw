@@ -110,7 +110,7 @@ inpForm.soft   = [inpForm.soft   {0      0        0             0      0        
 param = sw_readparam(inpForm, varargin{:});
 
 % creat initial magnetic structure
-param.showWarn = false;
+warnState = warning('off','sw_readparam:UnreadInput');
 obj.genmagstr(param);
 
 % starting magnetic structure from sw object
@@ -143,14 +143,8 @@ if nargout(param.func) == 6
     inpForm.size   = repmat({[1 2]},1,nPar);
     inpForm.soft   = repmat({1},1,nPar);
     % test input parameters
-    if nargin == 2
-        varargin{1}.showWarn = false;
-    else
-        varargin{end+1} = 'showWarn';
-        varargin{end+1} = false;
-    end
     fparam = sw_readparam(inpForm, varargin{:});
-    
+    warning(warnState);
     for ii = 1:nPar
         if ~isempty(fparam.(inpForm.fname{ii}))
             param.xmin(ii) = fparam.(inpForm.fname{ii})(1);

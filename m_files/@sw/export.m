@@ -58,17 +58,11 @@ inpForm.defval = {''       ''      []   [1 2 3] {'per' 'per' 'per'} };
 inpForm.size   = {[1 -1]   [1 -2] [1 1] [1 3]   [1 3]               };
 inpForm.soft   = {true     true    true false   false               };
 
-if nargin == 1
-    varargin{1}.showWarn = false;
-elseif nargin>1
-    varargin{end+1} = 'showWarn';
-    varargin{end+1} = false;
-end
-
+warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});
+warning(warnState);
 
 % produce the requested output
-
 if isempty(param.path) && isempty(param.fid)
     % dialog to get a filename
     [fName, fDir] = uiputfile({'*.pcr','FullProf file (*.pcr)';'*.spt','Jmol script (*.spt)';'*.*' 'All Files (*.*)'}, 'Select an output filename');
@@ -89,17 +83,16 @@ switch param.format
     case 'spt'
         % create Jmol script file
         if nargin == 2
-            varargin{1}.showWarn = false;
             varargin{1}.format = 'jmol';
         else
-            varargin{end+1} = 'showWarn';
-            varargin{end+1} = false;
             varargin{end+1} = 'format';
             varargin{end+1} = 'jmol';
             
         end
         
+        warnState = warning('off','sw_readparam:UnreadInput');
         outStr = plot(obj, varargin{:});
+        warning(warnState);
         
     case ''
         warning('sw:export:NoInput','No ''format'' option was given, no output is produced!');

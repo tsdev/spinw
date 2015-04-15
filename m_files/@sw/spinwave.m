@@ -224,6 +224,7 @@ end
 nExt    = double(obj.mag_str.N_ext);
 % magnetic ordering wavevector in the extended magnetic unit cell
 km = obj.mag_str.k.*nExt;
+
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
 
@@ -235,17 +236,27 @@ tol = param.tol*2;
 helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
 
 if incomm
+    % TODO
     if ~helical
         error('sw:spinwave:Twokm',['The two times the magnetic ordering '...
             'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
     end
     % without the k_m: (k, k, k)
     hkl0 = repmat(hkl,[1 3]);
+    
+    % for wavevectors in the extended unit cell km won't be multiplied by
+    % nExt (we devide here to cancel the multiplication later)
+    kme = km./nExt;
+    hklExt  = [bsxfun(@minus,hkl,kme') hkl bsxfun(@plus,hkl,kme')];
+    
     % calculate dispersion for (k-km, k, k+km)
     hkl  = [bsxfun(@minus,hkl,km') hkl bsxfun(@plus,hkl,km')];
+
 else
     hkl0 = hkl;
+    hklExt = hkl;
 end
+
 
 % Print output into the following file
 fid = obj.fid;
@@ -263,7 +274,8 @@ nHkl0 = nHkl;
 if nTwin>1
     % In the abc coordinate system of the selected twin the scan is
     % rotated opposite direction to rotC.
-    hkl  = cell2mat(obj.twinq(hkl));
+    hkl    = cell2mat(obj.twinq(hkl));
+    hklExt = cell2mat(obj.twinq(hklExt));
     % without the +/- k_m value
     hkl0 = cell2mat(obj.twinq(hkl0));
     nHkl = nHkl*nTwin;
@@ -282,7 +294,7 @@ else
 end
 
 % Converts wavevctor list into the extended unit cell
-hklExt  = bsxfun(@times,hkl,nExt')*2*pi;
+hklExt  = bsxfun(@times,hklExt,nExt')*2*pi;
 % q values without the +/-k_m value
 hklExt0 = bsxfun(@times,hkl0,nExt')*2*pi;
 
@@ -308,7 +320,7 @@ if fid ~= 0
 end
 
 % Local (e1,e2,e3) coordinate system fixed to the moments,
-% e3||Si,
+% e3||Si,ata
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 % e1 = e2 x e3
 magTab = obj.magtable;
@@ -624,7 +636,7 @@ for jj = 1:nSlice
     % Calculates correlation functions.
     % V right
     VExtR = repmat(permute(V  ,[4 5 1 2 3]),[3 3 1 1 1]);
-    % V left: conjgate transpose of V
+    % V left: conjugate transpose of V
     VExtL = conj(permute(VExtR,[1 2 4 3 5]));
     
     % Introduces the exp(-ikR) exponential factor.

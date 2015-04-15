@@ -64,14 +64,16 @@ inpForm.fname  = {'component'};
 inpForm.defval = {'Sperp'    };
 inpForm.size   = {[1 -2]     };
 
-param = sw_readparam(inpForm, varargin{:},'showWarn',false);
+warnState = warning('off','sw_readparam:UnreadInput');
+param = sw_readparam(inpForm, varargin{:});
 
 % calculate spin wave spectrum
 if nargin > 5
-    spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'showWarn',false);
+    spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:});
 else
     spectra = obj.spinwave([qh(:) qk(:) ql(:)]');
 end
+warning(warnState);
 
 % calculate Sperp
 spectra = sw_neutron(spectra,'pol',false);

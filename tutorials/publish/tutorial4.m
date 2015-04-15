@@ -42,7 +42,7 @@ plot(AFsq,'range',[2 2 0.5],'zoom',-1)
 % supercell.Note that the sw.genmagstr() automatically normalizes the spin
 % vectors to the spin value of the magnetic atoms.
 
-AFsq.genmagstr('mode','helical','k',[1/2 1/2 0],'n',[0 0 1], 'S',[1; 0; 0],'nExt',[2 2 1]);  
+AFsq.genmagstr('mode','helical','k',[1/2 1/2 0],'n',[0 0 1], 'S',[1; 0; 0],'nExt',[1 1 1]);  
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
 AFsq.mag_str 
 AFsq.mag_str.S
@@ -64,8 +64,9 @@ Qcorner = {[1/4 3/4 0] [1/2 1/2 0] [1/2 0 0] [3/4 1/4 0] [1 0 0] [3/2 0 0] 100};
 sqSpec = AFsq.spinwave(Qcorner, 'hermit', false);
 sqSpec = sw_neutron(sqSpec); 
 sqSpec = sw_egrid(sqSpec,'Evect',linspace(0,6.5,500));
+figure
 sw_plotspec(sqSpec,'mode',3,'dashed',true,'dE',0.25)
-
+caxis([0 4])
 %%
 %  Written by
 %  Bjorn Fak & Sandor Toth

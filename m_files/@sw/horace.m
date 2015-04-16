@@ -29,6 +29,10 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %           'Sxx+2*Syy' convolutes the linear combination of the xx
 %           component of the spin-spin correlation function and the yy
 %           component.
+% norm      If true the spin wave intensity is normalized to mbarn/meV/(unit
+%           cell) units. Default is false.
+% dE        Energy bin size, for intensity normalization. Use 1 for no
+%           division by dE in the intensity.
 %
 % Output:
 %
@@ -60,12 +64,17 @@ if nargin <= 1
     return;
 end
 
-inpForm.fname  = {'component'};
-inpForm.defval = {'Sperp'    };
-inpForm.size   = {[1 -2]     };
+inpForm.fname  = {'component' 'norm' 'dE' };
+inpForm.defval = {'Sperp'     false  0    };
+inpForm.size   = {[1 -2]      [1 1]  [1 1]};
 
 warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});
+
+if param.norm && param.dE == 0
+    error('sw:horace:WrongInput',['To convert spin wave intensity to mbarn/meV/cell/sr'...
+        ' units, give the energy bin step.'])
+end
 
 % calculate spin wave spectrum
 if nargin > 5
@@ -146,6 +155,35 @@ end
 % use only the real part of the dispersion
 omega = real(cell2mat(omega'));
 DSF   = abs(cell2mat(DSF'));
+
+% normalize intensities
+if param.norm
+    % Lande' g-factor
+    if spectra.gtensor
+        % g-tensor is already included in the spinwave calculation
+        g = 1;
+    else
+        % use simple g=2 here
+        g = 2;
+    end
+    % constant: p = gamma*r0/2
+    % neutron magnetic moment constant: M = gamma*gammaN
+    gamma = 1.91304272; % 1/s/T
+    % classical radius of the electron
+    r0 = 2.8179403267e-15; % m
+    % cross section constant in mbarn
+    p2 = (g*gamma*r0/2)^2*1e28*1e3; % mbarn
+    
+    % convert intensity to mbarn/meV units using the energy bin size
+    DSF = DSF*p2/param.dE;
+    
+    fprintf0(fid0,'Intensity is converted to mbarn/meV units.\n');
+    if spectra.gtensor
+        fprintf0(fid0,'g-tensor was already included in the spin wave calculation.\n');
+    else
+        fprintf0(fid0,'Isotropic g-tensor of 2 assumed here.\n');
+    end
+end
 
 % dispersion in cell
 w = mat2cell(omega',nHkl,ones(nMode*nTwin,1));

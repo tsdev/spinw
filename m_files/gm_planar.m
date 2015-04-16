@@ -74,9 +74,9 @@ else
     % parameter names
     pname = {};
     for ii = 1:nMagExt
-        pname = [pname {sprintf('Phi%d(rad)',ii)}]; %#ok<AGROW>
+        pname = [pname {sprintf('Phi%d_rad',ii)}]; %#ok<AGROW>
     end
-    pname = [pname {'kx(rlu)' 'ky(rlu)' 'kz(rlu)' 'nTheta(rad)' 'nPhi(rad)'}];
+    pname = [pname {'kx_rlu' 'ky_rlu' 'kz_rlu' 'nTheta_rad' 'nPhi_rad'}];
     % limits on input parameters
     limit = [zeros(1,nMagExt+5); [2*pi*ones(1, nMagExt) 1 1 1 pi 2*pi]];
     % garbage

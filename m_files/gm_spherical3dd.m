@@ -35,7 +35,7 @@ function [M, k, n, name, pname, limit] = gm_spherical3dd(M0, x)
 %
 
 if nargin == 0
-    help gm_spherical3d;
+    help gm_spherical3dd;
     return
 end
 
@@ -72,9 +72,9 @@ else
     % parameter names
     pname = {};
     for ii = 1:nMagExt
-        pname = [pname {sprintf('Theta%d(deg)',ii) sprintf('Phi%d(deg)',ii)}]; %#ok<AGROW>
+        pname = [pname {sprintf('Theta%d_deg',ii) sprintf('Phi%d_deg',ii)}]; %#ok<AGROW>
     end
-    pname = [pname {'kx(rlu)' 'ky(rlu)' 'kz(rlu)' 'nTheta(deg)' 'nPhi(deg)'}];
+    pname = [pname {'kx_rlu' 'ky_rlu' 'kz_rlu' 'nTheta_deg' 'nPhi_deg'}];
     % limits on input parameters
     limit = [zeros(1,nMagExt*2+5); [repmat([180 360],[1 nMagExt]) 1 1 1 180 360]];
     % garbage

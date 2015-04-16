@@ -588,7 +588,7 @@ if param.mode == 3
             
         else
             % hSurf = param.plotf(X,Y,imageDisp');
-            param.plotf(X,Y,imageDisp',axLim,cMap,param.maxPatch);
+            param.plotf (X,Y,imageDisp',axLim,cMap,param.maxPatch);
         end
         %view(2);
         %if all(ishandle(hSurf))

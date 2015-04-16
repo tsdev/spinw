@@ -36,7 +36,7 @@ function [M, k, n, name, pname, limit] = gm_planard(M0, x)
 %
 
 if nargin == 0
-    help gm_planar;
+    help gm_planard;
     return
 end
 
@@ -74,9 +74,9 @@ else
     % parameter names
     pname = {};
     for ii = 1:nMagExt
-        pname = [pname {sprintf('Phi%d(deg)',ii)}]; %#ok<AGROW>
+        pname = [pname {sprintf('Phi%d_deg',ii)}]; %#ok<AGROW>
     end
-    pname = [pname {'kx(rlu)' 'ky(rlu)' 'kz(rlu)' 'nTheta(deg)' 'nPhi(deg)'}];
+    pname = [pname {'kx_rlu' 'ky_rlu' 'kz_rlu' 'nTheta_deg' 'nPhi_deg'}];
     % limits on input parameters
     limit = [zeros(1,nMagExt+5); [360*ones(1, nMagExt) 1 1 1 180 360]];
     % garbage

@@ -1,0 +1,239 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>List of functions &mdash; SpinW documentation 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="SpinW documentation 0.1 documentation" href="index.html"/>
+        <link rel="prev" title="Crystal structure" href="cryst.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> SpinW documentation</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to SpinW</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#features">Features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="swclass.html">sw class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="swclass.html#properties">Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="swclass.html#list-of-properties">List of properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="swclass.html#methods">Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="swclass.html#copy">Copy</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cryst.html">Crystal structure</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">List of functions</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">SpinW documentation</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>List of functions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/funclist.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="list-of-functions">
+<h1>List of functions<a class="headerlink" href="#list-of-functions" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="sw">
+<em class="property">class </em><code class="descname">sw</code><a class="headerlink" href="#sw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sw.genlattice">
+<code class="descclassname">sw.</code><code class="descname">genlattice</code><span class="sig-paren">(</span><em>obj</em>, <em>'option1'</em>, <em>value1</em>, <em>'option2'</em>, <em>value2...</em><span class="sig-paren">)</span><a class="headerlink" href="#sw.genlattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates crystal lattice from given parameters.</p>
+<p><strong>Input</strong></p>
+<dl class="docutils">
+<dt>obj</dt>
+<dd>sw class object.</dd>
+</dl>
+<p><strong>Options</strong></p>
+<dl class="docutils">
+<dt>angled</dt>
+<dd><span class="math">\(\alpha, \beta, \gamma\)</span> angles in degree, row vector with three elements.</dd>
+<dt>angle</dt>
+<dd><span class="math">\(\alpha, \beta, \gamma\)</span> angles in radian, row vector with three elements.</dd>
+<dt>lat_const</dt>
+<dd><span class="math">\(a, b, c\)</span> lattice parameters, row vector with three elements.</dd>
+<dt>sym</dt>
+<dd>Space group index, or space group name (string).</dd>
+</dl>
+<p><strong>Description</strong></p>
+<p>Alternatively the lattice parameters can be given directly when the sw
+object is created using: sw(inpStr), where struct contains the fields
+with initial parameters, e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre>inpStr.lattice.lat_const = [3 3 4];
+</pre></div>
+</div>
+<p>The sym option points to the appropriate line in the symmetry.dat file,
+where every line defines a space group by its generators. The first 230
+lines contains all crystallographic space groups with standard setting
+from the International Tables of Crystallography. Additional lines
+can be added to the symmetry.dat file using the <code class="xref mat mat-func docutils literal"><span class="pre">sw_addsym()</span></code> function.
+Every line in the symmetry.dat file can be referenced by either its line
+index or by its label (string).</p>
+<p>If the sym option is 0, no symmetry will be used. The <code class="xref mat mat-meth docutils literal"><span class="pre">gencoupling()</span></code>
+method will determine the equivalent bonds based on bond length.</p>
+<p><strong>Output</strong></p>
+<p>The <a class="reference internal" href="swclass.html#sw.lattice" title="sw.lattice"><code class="xref mat mat-attr docutils literal"><span class="pre">lattice</span></code></a> field will be changed based on the input, the lattice
+constants stored directly and the optional space group string is
+converted to the integer type index.</p>
+<p><strong>Example</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>crystal = sw;
+crystal.genlattice(&#39;lat_const&#39;,[3 3 4],&#39;angled&#39;,[90 90 120],&#39;sym&#39;,&#39;P 6&#39;)
+crystal.genlattice(&#39;lat_const&#39;,[3 3 4],&#39;angled&#39;,[90 90 120],&#39;sym&#39;,168)
+</pre></div>
+</div>
+<p>The two lines are equivalent, both will create hexagonal lattice, with
+<em>P 6</em> space group.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="cryst.html" class="btn btn-neutral" title="Crystal structure"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Tóth Sándor.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

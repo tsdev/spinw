@@ -1,0 +1,462 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>SW Class &mdash; SpinW documentation 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="SpinW documentation 0.1 documentation" href="index.html"/>
+        <link rel="next" title="Crystal structure" href="cryst.html"/>
+        <link rel="prev" title="Introduction to SpinW" href="intro.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> SpinW documentation</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to SpinW</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#features">Features</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">sw class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#properties">Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#list-of-properties">List of properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#methods">Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#copy">Copy</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cryst.html">Crystal structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="funclist.html">List of functions</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">SpinW documentation</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>SW Class</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/swclass.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="sw-class">
+<h1>SW Class<a class="headerlink" href="#sw-class" title="Permalink to this headline">¶</a></h1>
+<p>To perform calculation using the SpinW library, we need to create an
+object (sw class type). It stores all the necessary parameters for the
+calculation (crystal structure, interactions, magnetic structure, etc.).
+In the object oriented programming dictionary, the data stored in an object,
+are called properties. Beside the data, the object also has assigned
+functions that perform different computations on the object data. These
+functions are called methods and they take the object as first input
+argument. To create an sw class object you can simply type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">model1</span> <span class="o">=</span> <span class="n">sw</span>
+</pre></div>
+</div>
+<div class="section" id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
+<p>The output of the previous command shows all the data fields of model1.
+Each data field has an initial value and any of them can be modified
+directly:</p>
+<div class="highlight-python"><div class="highlight"><pre>model1.lattice.lat_const = [3 5 5];
+</pre></div>
+</div>
+<p>The above command directly modifies the lattice parameters of the
+lattice. Modifying propoerties directly is quick and very flexible but
+prone to error. The most common mistake is that the new values are not
+the same data type as the original ones. For example the field that
+stores the lattice space group is integer type:</p>
+<div class="highlight-python"><div class="highlight"><pre>class(model1.lattice.sym)
+</pre></div>
+</div>
+<p>Thus if we want to change it directly, we need an integer number:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">model1</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">sym</span> <span class="o">=</span> <span class="n">int32</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This will change the crystal space group to &#8216;C 2&#8217;. To avoid most common
+mistakes, there are several methods (functions) for modifying the above
+properties that also perform additional error checking and makes certain
+input conversions. For example all lattice related properties can be
+modified using the genlattice() function:</p>
+<div class="highlight-python"><div class="highlight"><pre>model1.genlattice(&#39;lat_const&#39;,[3 5 5],&#39;sym&#39;,&#39;C 2&#39;,&#39;angled&#39;,[90 90 90])
+</pre></div>
+</div>
+<p>The alternative usage of the above function is the following:</p>
+<div class="highlight-python"><div class="highlight"><pre>genlattice(model1,&#39;lat_const&#39;,[3 5 5],&#39;sym&#39;,&#39;C 2&#39;,&#39;angled&#39;,[90 90 90])
+</pre></div>
+</div>
+<p>This reflects better the input argument structure. The first argument is
+the sw object &#8216;model1&#8217;. After the first argument comes option name and
+value pairs. The first options is &#8216;lat_const&#8217; and the value it expects
+is a vector with 3 elements if the input vector has different length, the
+function throws an error. The second option is &#8216;sym&#8217; that also accepts
+string input (name of the space group) that is automatically converted to
+the index of the space group and stored in model1:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">model1</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">sym</span>
+</pre></div>
+</div>
+<p>The last option is &#8216;angled&#8217; that requires a vector with three elements
+and defines the alpha, beta, gamma lattice angles in degree. This will be
+converted into radian and stored:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">model1</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">angle</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="list-of-properties">
+<h2>List of properties<a class="headerlink" href="#list-of-properties" title="Permalink to this headline">¶</a></h2>
+<p>The sw object properties store all the information necessary for the spin
+wave calculation. There are eight public properties of the sw class each with several subfields:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#sw.lattice" title="sw.lattice"><code class="xref mat mat-attr docutils literal"><span class="pre">sw.lattice</span></code></a></li>
+<li><a class="reference internal" href="#sw.unit_cell" title="sw.unit_cell"><code class="xref mat mat-attr docutils literal"><span class="pre">sw.unit_cell</span></code></a></li>
+<li><a class="reference internal" href="#sw.twin" title="sw.twin"><code class="xref mat mat-attr docutils literal"><span class="pre">sw.twin</span></code></a></li>
+<li><a class="reference internal" href="#sw.matrix" title="sw.matrix"><code class="xref mat mat-attr docutils literal"><span class="pre">sw.matrix</span></code></a></li>
+<li><a class="reference internal" href="#sw.single_ion" title="sw.single_ion"><code class="xref mat mat-attr docutils literal"><span class="pre">sw.single_ion</span></code></a></li>
+<li><a class="reference internal" href="#sw.coupling" title="sw.coupling"><code class="xref mat mat-attr docutils literal"><span class="pre">sw.coupling</span></code></a></li>
+<li><a class="reference internal" href="#sw.mag_str" title="sw.mag_str"><code class="xref mat mat-attr docutils literal"><span class="pre">sw.mag_str</span></code></a></li>
+<li><a class="reference internal" href="#sw.unit" title="sw.unit"><code class="xref mat mat-attr docutils literal"><span class="pre">sw.unit</span></code></a></li>
+</ul>
+</div></blockquote>
+<dl class="attribute">
+<dt id="sw.lattice">
+<code class="descclassname">sw.</code><code class="descname">lattice</code><a class="headerlink" href="#sw.lattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <strong>lattice</strong> field stores the lattice parameters and space group information. The subfields are:</p>
+<dl class="docutils">
+<dt>lat_const</dt>
+<dd>Lattice constants in a row vector with three elements (<span class="math">\(a\)</span>, <span class="math">\(b\)</span> and <span class="math">\(c\)</span>) in Å units.</dd>
+<dt>angle</dt>
+<dd><span class="math">\(\alpha\)</span>, <span class="math">\(\beta\)</span> and <span class="math">\(\gamma\)</span> angles in a row vector with three elements in radian units.</dd>
+<dt>sym</dt>
+<dd>Crystal space group, single integer (int32 type) that gives the line number in the symmetry.dat file. This file stores the generators of the space group and by default contains the 230 crystallographic space groups with standard settings.</dd>
+</dl>
+<p>See also <a class="reference internal" href="funclist.html#sw.genlattice" title="sw.genlattice"><code class="xref mat mat-meth docutils literal"><span class="pre">sw.genlattice()</span></code></a>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.abc()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.basisvector()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.nosym()</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sw.unit_cell">
+<code class="descclassname">sw.</code><code class="descname">unit_cell</code><a class="headerlink" href="#sw.unit_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <strong>unit_cell</strong> field stores the information on the atoms in the crystallographic unit cell. Subfields are:</p>
+<dl class="docutils">
+<dt>r</dt>
+<dd>Atomic positions in lattice units, matrix with dimensions of [3 nAtom], in lattice units.</dd>
+<dt>S</dt>
+<dd>Spin (or angular momentum) quantum number of the atoms, row vector with nAtom number of elements. Non-magnetic atoms have <span class="math">\(S=0\)</span>.</dd>
+<dt>label</dt>
+<dd>String label of the atoms in a cell with dimensions of [1 nAtom].</dd>
+<dt>color</dt>
+<dd>Color of the atoms for plotting. Stored in a matrix with dimensions of [3 nAtom], every column is an RGB code (int32 numbers between 0-255).</dd>
+</dl>
+<p>See also <code class="xref mat mat-meth docutils literal"><span class="pre">sw.addatom()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.atom()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.matom()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.newcell()</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sw.twin">
+<code class="descclassname">sw.</code><code class="descname">twin</code><a class="headerlink" href="#sw.twin" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <strong>twin</strong> field stores information on crystallographic twins. The subfields are:</p>
+<dl class="docutils">
+<dt>rotc</dt>
+<dd>Rotation matrices in the xyz coordinate system for every twin, stored in a matrix with dimensions of [3 3 nTwin].</dd>
+<dt>vol</dt>
+<dd>Relative volume of the twins, stored in a row vector with nTwin elements.</dd>
+</dl>
+<p>See also <code class="xref mat mat-meth docutils literal"><span class="pre">sw.addtwin()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.twinq()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.ntwin()</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sw.matrix">
+<code class="descclassname">sw.</code><code class="descname">matrix</code><a class="headerlink" href="#sw.matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <strong>matrix</strong> field stores 3x3 matrices that can be referenced in the magnetic Hailtonian. The subfields are:</p>
+<dl class="docutils">
+<dt>mat</dt>
+<dd>It stores the actual values of 3x3 matrices stacked along the third dimension with dimensions of [3 3 nMat].</dd>
+<dt>color</dt>
+<dd>RGB color codes assigned for every matrix, stored in a matrix with dimensions of [3 nMatrix], each column is an [R;G;B] code with int32 numbers between 0 and 255.</dd>
+<dt>label</dt>
+<dd>Label for every matrix, stored as strings in a cell with dimensions of [1 nCell].</dd>
+</dl>
+<p>See also <code class="xref mat mat-meth docutils literal"><span class="pre">sw.addmatrix()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.getmatrix()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.setmatrix()</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sw.single_ion">
+<code class="descclassname">sw.</code><code class="descname">single_ion</code><a class="headerlink" href="#sw.single_ion" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <strong>single_ion</strong> field stores the single ion expression of the Hamiltonian. The subfields are:</p>
+<dl class="docutils">
+<dt>aniso</dt>
+<dd>Row vector contains nMagAtom integers, each integer assignes one of the matrices from the <a class="reference internal" href="#sw.matrix" title="sw.matrix"><code class="xref mat mat-attr docutils literal"><span class="pre">sw.matrix</span></code></a> field to a magnetic atom in the <code class="xref mat mat-meth docutils literal"><span class="pre">sw.matom()</span></code> list as a single ion anisotropy. Zero means no assigned anisotropy matrix.</dd>
+<dt>g</dt>
+<dd>Row vector of nMagAtom integers, each integer assignes one of the matrices from the <a class="reference internal" href="#sw.matrix" title="sw.matrix"><code class="xref mat mat-attr docutils literal"><span class="pre">sw.matrix</span></code></a> field to a magnetic atom in the <code class="xref mat mat-meth docutils literal"><span class="pre">sw.matom()</span></code> list as a g-tensor.</dd>
+<dt>field</dt>
+<dd>External magnetic field stored in a row vector with the 3 components in the xyz coordinate system, default unit is Tesla.</dd>
+<dt>T</dt>
+<dd>Temperature, scalar, default unit is Kelvin.</dd>
+</dl>
+<p>See also <code class="xref mat mat-meth docutils literal"><span class="pre">sw.addaniso()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.addg()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.getmatrix()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.setmatrix()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.intmatrix()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.field()</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sw.coupling">
+<code class="descclassname">sw.</code><code class="descname">coupling</code><a class="headerlink" href="#sw.coupling" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <strong>coupling</strong> field stores the list of bonds. Where each bond is defined between two magnetic atom. Each bond has a direction, it points from atom 1 to atom 2. In the subfiels every column defines a bond, the subfields are:</p>
+<dl class="docutils">
+<dt>dl</dt>
+<dd>Translation vector between the unit cells of the two interacting spins, stored in a matrix of integer numbers with dimensions of [3 nCoupling].</dd>
+<dt>atom1</dt>
+<dd>Stores the index of atom 1 for every bond pointing to the list of magnetic atoms in <code class="xref mat mat-meth docutils literal"><span class="pre">sw.matom()</span></code> list, stored in a row vector with nCoupling elements.</dd>
+<dt>atom2</dt>
+<dd>Index of atom 2 for each bond.</dd>
+<dt>mat_idx</dt>
+<dd>Integer indices selecting  exchange matrices from <a class="reference internal" href="#sw.matrix" title="sw.matrix"><code class="xref mat mat-attr docutils literal"><span class="pre">sw.matrix</span></code></a> field for every bond, stored in a matrix with dimensions of [3 nCoupling]. Maximum three matrices per bond can be assigned (zeros for no coupling).</dd>
+<dt>idx</dt>
+<dd>An integer index for every bond, an increasing number with bond length. Symmetry equivalent bonds have the same index.</dd>
+</dl>
+<p>See also <code class="xref mat mat-meth docutils literal"><span class="pre">sw.gencoupling()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.addcoupling()</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sw.mag_str">
+<code class="descclassname">sw.</code><code class="descname">mag_str</code><a class="headerlink" href="#sw.mag_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <strong>mag_str</strong> field stores the magnetic structure. It can store single-Q structures or multi-Q structures on a magnetic supercell. Strictly speaking it stores the expectation value of the spin of each magnetic atom. The magnetic moment directions are given by <span class="math">\(g_i\cdot \langle S_i\rangle\)</span>. The subfields are:</p>
+<dl class="docutils">
+<dt>S</dt>
+<dd><p class="first">It stores the spin directions for every magnetic atom either in the crystallographic unit cell or in a magnetic supercell in a matrix with dimensions of [3 nMagExt]. Every column stores <span class="math">\(\langle S_x\rangle, \langle S_y\rangle, \langle S_z\rangle\)</span> spin components in the xyz coordinate system. The number of spins in the supercell is:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="n">nMagExt</span> <span class="o">=</span> <span class="n">nMagAtom</span><span class="o">*</span><span class="n">prod</span><span class="p">(</span><span class="n">mag_str</span><span class="o">.</span><span class="n">N_ext</span><span class="p">);</span>
+</pre></div>
+</div>
+</dd>
+<dt>k</dt>
+<dd>Magnetic ordering wave vector stored in a row vector with 3 components in reciprocal lattice units. Default value is [0 0 0].</dd>
+<dt>n</dt>
+<dd>Normal vector to the rotation of the moments in case of non-zero ordering wave vector (single-Q magnetic structures), row vector with three elements. The components are in the xyz coordinate system. Default value is [0 0 1].</dd>
+<dt>N_ext</dt>
+<dd>Dimensions of the magnetic supercell in lattice units stored in a row vector with three elements. Default value is [1 1 1] if the magnetic cell is identical to the crystallographic cell. The three elements extends the cell along the <span class="math">\(a, b, c\)</span> axes.</dd>
+</dl>
+<p>See also <code class="xref mat mat-meth docutils literal"><span class="pre">sw.genmagstr()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.optmagstr()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.anneal()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.nmagext()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.structfact()</span></code>, <code class="xref mat mat-meth docutils literal"><span class="pre">sw.optmagsteep()</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sw.unit">
+<code class="descclassname">sw.</code><code class="descname">unit</code><a class="headerlink" href="#sw.unit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <strong>unit</strong> field stores the conversion factors between energy, magnetic field and temeprature units in the Hamiltonian. Defaults units are meV, Tesla and Kelvin for energy, magnetic field and temperature respectively. To use identical units for energy, magnetic field and temperature use 1 for each subfields. The subfields are:</p>
+<dl class="docutils">
+<dt>kB</dt>
+<dd>Boltzmann constant, default value is 0.0862 meV/K.</dd>
+<dt>muB</dt>
+<dd>Bohr magneton, default value is 0.0579 meV/T.</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<p>In line with the above example the general argument structure of the
+method functions is one of the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">function</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">&#39;Option1&#39;</span><span class="p">,</span><span class="n">Value1</span><span class="p">,</span><span class="s">&#39;Option2&#39;</span><span class="p">,</span><span class="n">Value2</span><span class="p">,</span><span class="o">...</span><span class="p">)</span>
+<span class="n">function</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="n">Value1</span><span class="p">,</span><span class="n">Value2</span><span class="p">,</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first type of argument list is used for functions that require
+variable number of input parameters with default values. The second type
+of argument structure is used for functions that require maximum up to
+three fixed input parameter. Every method has help that can be called by
+one of the following methods:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">selecting the function name in the Editor/Command Window and pressing F1</p>
+</li>
+<li><p class="first">in the Command Window typing for example:</p>
+<div class="highlight-python"><div class="highlight"><pre>help sw.genlattice
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+<p>This shows the help of the genlattice() function in the Command Window.
+To open the help in a separate window you need to write:</p>
+<div class="highlight-python"><div class="highlight"><pre>doc sw.genlattice
+</pre></div>
+</div>
+<p>To unambiguously identify the functions it is usefull to refer them as
+sw.function() this way matlab knows which function to select from several
+that has the same name. For example the plot() funcion is also defined
+for the sw class. However by writing:</p>
+<div class="highlight-python"><div class="highlight"><pre>help plot
+</pre></div>
+</div>
+<p>we get the help for the standard Matlab plot function. To get what we
+want use:</p>
+<div class="highlight-python"><div class="highlight"><pre>help sw.plot
+</pre></div>
+</div>
+<p>By the way this function is one of the most usefull ones. It can show
+effectively all information stored in the sw object by plotting crystal
+structure, couplings, magnetic structure etc. Calling it on an empty
+object shows only the unit cell:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">plot</span><span class="p">(</span><span class="n">model1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="_images/swclass1.png"><img alt="_images/swclass1.png" src="_images/swclass1.png" style="width: 50%;" /></a>
+<p class="caption"><span class="caption-text"><em>Plot of empty sw object.</em></span></p>
+</div>
+<p>As you might noticed, there is an alternative calling of any method
+function: obj.function(...), this is just equivalent to the previous
+argument structures.</p>
+</div>
+<div class="section" id="copy">
+<h2>Copy<a class="headerlink" href="#copy" title="Permalink to this headline">¶</a></h2>
+<p>The sw class belong to the so called handle class. It means in short that
+the model1 variable is just a pointer to the memory where the class is
+stored. Thus by doing the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">model2</span> <span class="o">=</span> <span class="n">model1</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>will only duplicate the pointer but not the values stored in the sw object. Thus if I change something in model1, model2 will change as well. To clone the object (the equivalent of the usual &#8216;=&#8217; operation in Matlab) the <code class="xref mat mat-meth docutils literal"><span class="pre">sw.copy()</span></code> function is necessary:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">model2</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">model1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cryst.html" class="btn btn-neutral float-right" title="Crystal structure">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="intro.html" class="btn btn-neutral" title="Introduction to SpinW"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Tóth Sándor.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

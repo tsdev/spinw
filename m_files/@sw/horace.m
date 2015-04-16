@@ -134,12 +134,18 @@ for tt = 1:nTwin
     end
 end
 
+% normalised volume fractions of the twins
+vol = spectra.obj.twin.vol/sum(spectra.obj.twin.vol);
+for tt = 1:nTwin
+    for ii = 1:size(DSF,1)
+        DSF{ii,tt}    = DSF{ii,tt}*vol(tt);
+    end
+end
 
 % add all modes for different twins
 % use only the real part of the dispersion
 omega = real(cell2mat(omega'));
 DSF   = abs(cell2mat(DSF'));
-
 
 % dispersion in cell
 w = mat2cell(omega',nHkl,ones(nMode*nTwin,1));

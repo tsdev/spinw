@@ -235,34 +235,12 @@ hklA = 2*pi*(hkl'/obj.basisvector)';
 tol = param.tol*2;
 helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
 
-if incomm
-    % TODO
-    if ~helical
-        error('sw:spinwave:Twokm',['The two times the magnetic ordering '...
-            'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
-    end
-    % without the k_m: (k, k, k)
-    hkl0 = repmat(hkl,[1 3]);
-    
-    % for wavevectors in the extended unit cell km won't be multiplied by
-    % nExt (we devide here to cancel the multiplication later)
-    kme = km./nExt;
-    hklExt  = [bsxfun(@minus,hkl,kme') hkl bsxfun(@plus,hkl,kme')];
-    
-    % calculate dispersion for (k-km, k, k+km)
-    hkl  = [bsxfun(@minus,hkl,km') hkl bsxfun(@plus,hkl,km')];
-
-else
-    hkl0 = hkl;
-    hklExt = hkl;
-end
-
 
 % Print output into the following file
 fid = obj.fid;
 
-nHkl    = size(hkl,2);
-
+% number of Q points
+nHkl0 = size(hkl,2);
 
 % define Q scans for the twins
 nTwin = size(obj.twin.vol,2);
@@ -270,16 +248,53 @@ if param.notwin
     nTwin = 1;
 end
 
-nHkl0 = nHkl;
-if nTwin>1
+% if the single twin has no rotation set param.notwin true
+rotc1 = obj.twin.rotc(:,:,1)-eye(3);
+if (nTwin == 1) && norm(rotc1(:))==0
+    param.notwin = true;
+end
+
+if ~param.notwin
     % In the abc coordinate system of the selected twin the scan is
     % rotated opposite direction to rotC.
-    hkl    = cell2mat(obj.twinq(hkl));
-    hklExt = cell2mat(obj.twinq(hklExt));
-    % without the +/- k_m value
-    hkl0 = cell2mat(obj.twinq(hkl0));
-    nHkl = nHkl*nTwin;
+    hkl  = obj.twinq(hkl);
+    nHkl = nHkl0*nTwin;
+else
+    nHkl = nHkl0;
+    hkl  = {hkl};
 end
+
+if incomm
+    % TODO
+    if ~helical
+        error('sw:spinwave:Twokm',['The two times the magnetic ordering '...
+            'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
+    end
+    hkl0 = cell(1,nTwin);
+    hklExt = cell(1,nTwin);
+    
+    for tt = 1:nTwin
+        % without the k_m: (k, k, k)
+        hkl0{tt} = repmat(hkl{tt},[1 3]);
+        
+        % for wavevectors in the extended unit cell km won't be multiplied by
+        % nExt (we devide here to cancel the multiplication later)
+        kme = km./nExt;
+        hklExt{tt}  = [bsxfun(@minus,hkl{tt},kme') hkl{tt} bsxfun(@plus,hkl{tt},kme')];
+        
+        % calculate dispersion for (k-km, k, k+km)
+        hkl{tt}  = [bsxfun(@minus,hkl{tt},km') hkl{tt} bsxfun(@plus,hkl{tt},km')];
+    end
+    nHkl  = nHkl*3;
+    nHkl0 = nHkl0*3;
+else
+    hkl0   = hkl;
+    hklExt = hkl;
+end
+
+hkl    = cell2mat(hkl);
+hkl0   = cell2mat(hkl0);
+hklExt = cell2mat(hklExt);
 
 % determines a twin index for every q point
 twinIdx = repmat(1:nTwin,[nHkl 1]);
@@ -737,7 +752,7 @@ else
     helical = false;
 end
 
-if nTwin>1
+if ~param.notwin
     % Rotate the calculated correlation function into the twin coordinate
     % system using rotC
     SabAll = cell(1,nTwin);
@@ -759,7 +774,13 @@ if nTwin>1
         SabAll{ii} = reshape(SabRot,sSabT);
     end
     Sab = SabAll;
-    omega = mat2cell(omega,size(omega,1),repmat(nHkl0,[1 nTwin]));
+    
+    if nTwin == 1
+        Sab = Sab{1};
+    else
+        omega = mat2cell(omega,size(omega,1),repmat(nHkl0,[1 nTwin]));
+    end
+    
 end
 
 % Creates output structure with the calculated values.

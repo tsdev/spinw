@@ -3,8 +3,6 @@ function optm = optmagsteep(obj, varargin)
 %
 % optm = OPTMAGSTEEP(obj, 'option1', value1 ...)
 %
-% The function works only for magnetic structures with zero k-vector.
-%
 %
 % Input:
 %

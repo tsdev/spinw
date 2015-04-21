@@ -65,7 +65,9 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           downwards by 1 figure window height, [1,2] is shifted right by
 %           1 figure window width relative to the [1,1] position. Default
 %           is [0,0] where the figure window will not be moved from the
-%           original position.
+%           original position. If 4 element vector, the screen is divided
+%           up to a grid, with horizontally figPos(3) tiles, vertically
+%           figPos(4) tiles.
 %
 % Output:
 %
@@ -97,8 +99,8 @@ inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
 inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
 
 inpForm.fname  = [inpForm.fname  {'log' 'plotf'  'maxPatch' 'figPos'}];
-inpForm.defval = [inpForm.defval {false @sw_surf 1000       [0 0]   }];
-inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      [1 2]   }];
+inpForm.defval = [inpForm.defval {false @sw_surf 1000       [0  0]   }];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      [1 -7]  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -251,9 +253,21 @@ end
 if all(param.figPos>0)
     fUnit = get(fHandle,'Units');
     set(fHandle,'Units','pixels');
-    fPos = get(fHandle,'outerPosition');
-    fWidth  = fPos(3);
-    fHeight = fPos(4);
+    if numel(param.figPos==4)
+        % get screen size
+        unit0 = get(0,'units');
+        set(0,'units','pixels');
+        scSize = get(0,'screensize');
+        set(0,'units',unit0);
+        
+        fWidth  = scSize(3)/param.figPos(4);
+        fHeight = scSize(4)/param.figPos(3);
+    else
+        fPos = get(fHandle,'outerPosition');
+        fWidth  = fPos(3);
+        fHeight = fPos(4);
+    end
+        
     % Display size in pixel
     dSize = get(0,'ScreenSize');
     set(fHandle,'outerPosition',[(param.figPos(2)-1)*fWidth dSize(4)-20-param.figPos(1)*fHeight fWidth fHeight]);

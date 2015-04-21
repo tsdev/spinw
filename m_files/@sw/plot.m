@@ -72,6 +72,9 @@ function varargout = plot(obj, varargin)
 %                   atom it belongs to.
 %   sSpin           Scaling factor for the lenght of the magnetic moments,
 %                   default is 1.
+%   nSpin           If true all spin length normalized to 1, usefull to
+%                   visualize magnetic moment directions for atoms with
+%                   very different moment sizes. Default is false.
 %   rSpin           Radius of the cylinder of the spins, default is 0.06.
 %   angHeadSpin     Angle of the spin arrow head, default is 15 deg.
 %   lHeadSpin       Length of the spin arrow head, default is 0.5
@@ -150,6 +153,15 @@ function varargout = plot(obj, varargin)
 %                   number gives zoom in, negative numbers give zoom out.
 %                   One step equal to the (+/-) button press on the figure
 %                   toolbar. Default is zero.
+%   figPos          Position of the figure window on the screen. The [1,1]
+%                   position is the upper left corner of the screen, [2,1]
+%                   is shifted downwards by 1 figure window height, [1,2]
+%                   is shifted right by 1 figure window width relative to
+%                   the [1,1] position. Default is [0,0] where the figure
+%                   window will not be moved from the original position. If
+%                   4 element vector, the screen is divided up to a grid,
+%                   with horizontally figPos(3) tiles, vertically figPos(4)
+%                   tiles.
 %
 % Output:
 %
@@ -214,9 +226,9 @@ inpForm.fname  = [inpForm.fname  {'pMultCell'    'pAxis'   'surfRes' 'rCoupling'
 inpForm.defval = [inpForm.defval {false          true       30        0.05        1        0.06  }];
 inpForm.size   = [inpForm.size   {[1 1]          [1 1]      [1 1]     [1 1]       [1 1]    [1 1] }];
 
-inpForm.fname  = [inpForm.fname  {'angHeadSpin' 'lHeadSpin'     'aPlaneSpin'}];
-inpForm.defval = [inpForm.defval {15             0.5           0.07         }];
-inpForm.size   = [inpForm.size   {[1 1]          [1 1]         [1 1]        }];
+inpForm.fname  = [inpForm.fname  {'angHeadSpin' 'lHeadSpin'     'aPlaneSpin' 'nSpin'}];
+inpForm.defval = [inpForm.defval {15             0.5           0.07          false  }];
+inpForm.size   = [inpForm.size   {[1 1]          [1 1]         [1 1]         [1 1]  }];
 
 inpForm.fname  = [inpForm.fname  {'labelAtom'  'cSpin' 'cCell'    'legend'}];
 inpForm.defval = [inpForm.defval {true         'auto'    [0 0 0]   true   }];
@@ -238,9 +250,9 @@ inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' 'hFigure
 inpForm.defval = [inpForm.defval {1      1       1      1                0        true  0      }];
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]            [1 1]    [1 1] [1 1]  }];
 
-inpForm.fname  = [inpForm.fname  {'centerS' 'aCoupling' 'sCoupling' 'eCoupling' 'scaleC'}];
-inpForm.defval = [inpForm.defval {true      2           1           0.1         1       }];
-inpForm.size   = [inpForm.size   {[1 1]     [1 1]       [1 1]       [1 1]       [1 1]   }];
+inpForm.fname  = [inpForm.fname  {'centerS' 'aCoupling' 'sCoupling' 'eCoupling' 'scaleC' 'figPos'}];
+inpForm.defval = [inpForm.defval {true      2           1           0.1         1         0      }];
+inpForm.size   = [inpForm.size   {[1 1]     [1 1]       [1 1]       [1 1]       [1 1]    [1 -10] }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -268,6 +280,31 @@ if plotmode
         hFigure = sw_getfighandle('sw_crystal');
     end
     
+    % Position figure window on the screen
+    if all(param.figPos>0)
+        fUnit = get(hFigure,'Units');
+        set(hFigure,'Units','pixels');
+        if numel(param.figPos==4)
+            % get screen size
+            unit0 = get(0,'units');
+            set(0,'units','pixels');
+            scSize = get(0,'screensize');
+            set(0,'units',unit0);
+            
+            fWidth  = scSize(3)/param.figPos(4);
+            fHeight = scSize(4)/param.figPos(3);
+        else
+            fPos = get(hFigure,'outerPosition');
+            fWidth  = fPos(3);
+            fHeight = fPos(4);
+        end
+        
+        % Display size in pixel
+        dSize = get(0,'ScreenSize');
+        set(hFigure,'outerPosition',[(param.figPos(2)-1)*fWidth dSize(4)-20-param.figPos(1)*fHeight fWidth fHeight]);
+        set(hFigure,'Units',fUnit);
+    end
+
     if param.hg
         if isempty(hFigure)
             hFigure = sw_structfigure;
@@ -764,6 +801,9 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         % angles of rotation of the moment
                         phi   = obj.mag_str.k*transl*2*pi;
                         selS  = obj.mag_str.S(:,llMagAtom+llSpin);
+                        if param.nSpin
+                            selS = selS/norm(selS);
+                        end
                         plotS = param.sSpin*sw_rot(obj.mag_str.n,phi,selS);
                         %plotS   = param.sSpin*obj.mag_str.S(:,llMagAtom+llSpin);
                         lengthS = norm(obj.mag_str.S(:,llMagAtom+llSpin));

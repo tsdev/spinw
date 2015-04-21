@@ -20,6 +20,15 @@ function addcoupling(obj, matrixLabel, couplingIdx, varargin)
 %               crystal symmetry is not P1, bondIdx is not allowed, since
 %               each equivalent coupling matrix will be calculated using
 %               the symmetry operators of the space group. Optional.
+% atom1         If several bonds have the same length but couple different
+%               type of atoms, atom1 can restrict the selected bonds to the
+%               bonds where atom1 is given by the atom label or index in
+%               the sw.unit_cell list. Can be a row vector of indices or
+%               cell with strings. Only works if space group is 0 (P0).
+%               Default is [].
+% atom2         Same as atom1, but defines the second atom in the bond.
+%
+% TODO
 %
 % Output:
 %

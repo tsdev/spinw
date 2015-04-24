@@ -1,4 +1,4 @@
-classdef (ConstructOnLoad) sw < sw_handlelight
+classdef (ConstructOnLoad) sw < handle
     % SW class defines data structure and methods to calculate spin wave
     % dispersion in magnetic crystals.
     %
@@ -202,7 +202,7 @@ classdef (ConstructOnLoad) sw < sw_handlelight
                 %symi0 = cif0.symmetry_Int_Tables_number;
                 
                 if ~isempty(cif0.symmetry_equiv_pos_as_xyz)
-                    xyz0 = cif0.symmetry_equiv_pos_as_xyz; 
+                    xyz0 = cif0.symmetry_equiv_pos_as_xyz;
                 else
                     xyz0 = cif0.space_group_symop_operation_xyz;
                 end
@@ -251,78 +251,6 @@ classdef (ConstructOnLoad) sw < sw_handlelight
             
         end % .sw
         
-        function objC = copy(obj)
-            % clones sw object with all data
-            %
-            % newObj = COPY(obj)
-            %
-            % Use this command instead of the '=' sign if you want to
-            % create an independent duplicate of an sw class object.
-            %
-            % Input:
-            %
-            % obj       sw class object.
-            %
-            % Output:
-            %
-            % newObj    New sw class object that contains all the data of
-            %           obj.
-            %
-            % Example:
-            %
-            % cryst = sw;
-            % cryst.addmatrix('label','J1','value',3.1415)
-            %
-            % cryst1 = cryst;
-            % cryst2 = cryst.copy;
-            %
-            % cryst.addmatrix('label','J1','value',1)
-            % J1a = cryst1.matrix.mat;
-            % J1b = cryst2.matrix.mat;
-            %
-            % Where J1a will be a matrix with 1 in the diagonal, while J1b
-            % has 3.1415 in the diagonal. If cryst is changed, cryst1 will
-            % be changed as well and viece versa, since they point to the
-            % same object. However cryst2 is independent of cryst.
-            %
-            % See also SW, SW.STRUCT.
-            %
-            
-            objS = struct(obj);
-            objC = sw(objS);
-            
-            % copy the private properties
-            objC.sym    = obj.sym;
-            objC.symb   = obj.symb;
-            objC.fid    = obj.fid;
-            objC.Elabel = obj.Elabel;
-            objC.Qlabel = obj.Qlabel;
-            objC.Rlabel = obj.Rlabel;
-            objC.Blabel = obj.Blabel;
-            objC.Tlabel = obj.Tlabel;
-            
-        end % copy
-        
-        function abc = abc(obj)
-            % returns lattice parameters and angles
-            %
-            % latVect = ABC(obj)
-            %
-            % Input:
-            %
-            % obj       sw class object
-            %
-            % Output:
-            %
-            % latVect   Vetor with elements [a, b, c, alpha, beta, gamma],
-            %           contains the lattice parameters and angles in
-            %           Angstrom and degree units respectively.
-            %
-            % See also SW.HORACE.
-            %
-            
-            abc = [obj.lattice.lat_const obj.lattice.angle*180/pi];
-        end
         function nMagExt = nmagext(obj)
             % gives the number of magnetic atoms in the magnetic supercell
             %
@@ -347,7 +275,7 @@ classdef (ConstructOnLoad) sw < sw_handlelight
             
             nBond = size(obj.coupling.idx,2);
         end
-
+        
         function nMat = nmat(obj)
             % gives the number of matrices defined in an sw object
             %
@@ -365,103 +293,41 @@ classdef (ConstructOnLoad) sw < sw_handlelight
             nTwin = size(obj.twin.vol,2);
         end
         
-        function varargout = temperature(obj,varargin)
-            % get/set stored temperature value
-            %
-            % TEMPERATURE(obj, T)
-            %
-            % If T is defined, it sets the temperature stored in obj object
-            % to T, where T is scalar. The units of temerature is
-            % determined by the sw.unit.kB value, default is Kelvin.
-            %
-            % T = TEMPERATURE(obj)
-            %
-            % The function returns the current temperature value stored in
-            % obj.
-            %
-            
-            if nargin == 1
-                varargout{1} = obj.single_ion.T;
-            elseif nargin == 2
-                T = varargin{1};
-                if numel(T) == 1
-                    obj.single_ion.T = T;
-                else
-                    error('sw:temperature:ArraySize','Input temperature has to be scalar!');
-                end
-                if nargout > 0
-                    varargout{1} = obj;
-                end
-            end
-            
-        end % .temperature
         
-        function sym = symmetry(obj)
-            % true if space group is used to generate couplings
-            %
-            % sym = SYMMETRY(obj)
-            %
-            % If true, equivalent couplings are generated based on the
-            % crystal space group and all matrices (interaction, anisotropy
-            % and g-tensor) are transformed according to the symmetry
-            % operators. If false, equivalent couplings are generated based
-            % on bond length, equivalent matrices won't be transformed
-            % (all identical).
-            %
-            % To change it use sw.gencoupling with the forceNoSym option.
-            % To remove all symmetry operators use sw.nosym.
-            %
-            % See also SW, SW.NOSYM, SW.GENCOUPLING.
-            %
-            
-            sym = obj.sym;
-            
-        end % .symmetry
-        
-        function fidOut = fileid(obj,fid)
-            % determines where the text out is written
-            %
-            % FILEID(obj,fid)
-            %
-            % Determines the text output of all sw class methods. Default
-            % is 1, where all output is printed onto the MATLAB Command
-            % Window.
-            %
-            % fidOut = FILEID(obj)
-            %
-            % Outputs the stored fileID value.
-            %
-            % See also SW, SW.DISPLAY.
-            %
-            if nargin > 1
-                obj.fid = fid;
-                return
-            end
-            
-            fidOut = obj.fid;
-            
-        end % .fileid
-        
-        function varargout = notwin(obj)
-            % removes any twin added to the sw object
-            %
-            % NOTWIN(obj)
-            %
-            % The function keeps only the original twin.
-            %
-            
-            obj.twin.vol = 1;
-            obj.twin.rotc = eye(3);
-            
-            if nargout >0
-                varargout{1} = obj;
-            end
-        end
-        
-        
-        
+               
     end
-    methods (Hidden=true)
+    
+    methods(Hidden=true)
+        function lh = addlistener(varargin)
+            lh = addlistener@handle(varargin{:});
+        end
+        function notify(varargin)
+            notify@handle(varargin{:});
+        end
+        function Hmatch = findobj(varargin)
+            Hmatch = findobj@handle(varargin{:});
+        end
+        function p = findprop(varargin)
+            p = findprop@handle(varargin{:});
+        end
+        function TF = eq(varargin)
+            TF = eq@handle(varargin{:});
+        end
+        function TF = ne(varargin)
+            TF = ne@handle(varargin{:});
+        end
+        function TF = lt(varargin)
+            TF = lt@handle(varargin{:});
+        end
+        function TF = le(varargin)
+            TF = le@handle(varargin{:});
+        end
+        function TF = gt(varargin)
+            TF = gt@handle(varargin{:});
+        end
+        function TF = ge(varargin)
+            TF = ge@handle(varargin{:});
+        end
         function obj = addmagfield(obj, B)
             warning('sw:addmagfield:Obsolete','addmagfield is obsolete, use sw.field([Bx By Bz]) instead!');
             obj.single_ion.field = B;

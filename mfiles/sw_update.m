@@ -161,13 +161,13 @@ if ~verLessThan('matlab', '8.1')
 end
 
 % functions introduced in R2015a
-if ~verLessThan('matlab', '8.5')
-    % uniquetol()
-    fList = dir([folName filesep 'external' filesep 'uniquetol*']);
-    for ii = 1:numel(fList)
-        delete([folName filesep 'external' filesep fList(ii).name]);
-    end
-end
+% if ~verLessThan('matlab', '8.5')
+%     % uniquetol()
+%     fList = dir([folName filesep 'external' filesep 'uniquetol*']);
+%     for ii = 1:numel(fList)
+%         delete([folName filesep 'external' filesep fList(ii).name]);
+%     end
+% end
 
 disp('In oder to load the new class definitions, issue a ''clear classes'' command before using SpinW!');
 disp('In order to reach SpinW after every restart of Matlab, add the following line to your startup.m file:');

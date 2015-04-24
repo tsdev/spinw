@@ -1,4 +1,4 @@
-function hFigure = sw_structfigure
+function hFigure = sw_structfigure()
 % creates figure for crystal structure plot
 %
 % hFigure = SW_STRUCTFIGURE()

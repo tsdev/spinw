@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>List of functions &mdash; SpinW documentation 0.1 documentation</title>
+  <title>List of functions &mdash; SpinW documentation 103 documentation</title>
   
 
   
@@ -30,8 +30,8 @@
   
 
   
-    <link rel="top" title="SpinW documentation 0.1 documentation" href="index.html"/>
-        <link rel="prev" title="Crystal structure" href="cryst.html"/> 
+    <link rel="top" title="SpinW documentation 103 documentation" href="index.html"/>
+        <link rel="prev" title="Calculation of the spin-spin correlation function" href="spinwave.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -75,7 +75,19 @@
 <li class="toctree-l2"><a class="reference internal" href="swclass.html#copy">Copy</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="coord.html">Coordinate systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="coord.html#lattice-units-lu-coordinate-system">Lattice units (lu) coordinate system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coord.html#xyz-coordinate-system">xyz coordinate system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coord.html#reciprocal-lattice-rlu-coordinate-system">Reciprocal lattice (rlu) coordinate system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coord.html#transformation-between-coordinate-systems">Transformation between coordinate systems</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="cryst.html">Crystal structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ham.html">Definition of the magnetic Hamiltonian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mag.html">Magnetic structures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optmag.html">Determination of magnetic structure from Hamiltonian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spinwave.html">Calculation of the spin-spin correlation function</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">List of functions</a></li>
 </ul>
 
@@ -104,69 +116,63 @@
     <li>List of functions</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/funclist.txt" rel="nofollow"> View page source</a>
-        
       </li>
   </ul>
   <hr/>
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="list-of-functions">
-<h1>List of functions<a class="headerlink" href="#list-of-functions" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="sw">
-<em class="property">class </em><code class="descname">sw</code><a class="headerlink" href="#sw" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="sw.genlattice">
-<code class="descclassname">sw.</code><code class="descname">genlattice</code><span class="sig-paren">(</span><em>obj</em>, <em>'option1'</em>, <em>value1</em>, <em>'option2'</em>, <em>value2...</em><span class="sig-paren">)</span><a class="headerlink" href="#sw.genlattice" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates crystal lattice from given parameters.</p>
-<p><strong>Input</strong></p>
-<dl class="docutils">
-<dt>obj</dt>
-<dd>sw class object.</dd>
-</dl>
-<p><strong>Options</strong></p>
-<dl class="docutils">
-<dt>angled</dt>
-<dd><span class="math">\(\alpha, \beta, \gamma\)</span> angles in degree, row vector with three elements.</dd>
-<dt>angle</dt>
-<dd><span class="math">\(\alpha, \beta, \gamma\)</span> angles in radian, row vector with three elements.</dd>
-<dt>lat_const</dt>
-<dd><span class="math">\(a, b, c\)</span> lattice parameters, row vector with three elements.</dd>
-<dt>sym</dt>
-<dd>Space group index, or space group name (string).</dd>
-</dl>
-<p><strong>Description</strong></p>
-<p>Alternatively the lattice parameters can be given directly when the sw
-object is created using: sw(inpStr), where struct contains the fields
-with initial parameters, e.g.:</p>
-<div class="highlight-python"><div class="highlight"><pre>inpStr.lattice.lat_const = [3 3 4];
-</pre></div>
+  <div class="section" id="module-mfiles">
+<span id="list-of-functions"></span><h1>List of functions<a class="headerlink" href="#module-mfiles" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="mfiles.gm_planar">
+<code class="descname">gm_planar</code><span class="sig-paren">(</span><em>absS</em>, <em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#mfiles.gm_planar" title="Permalink to this definition">¶</a></dt>
+<dd><p>planar magnetic structure constraint function</p>
+<p><code class="code docutils literal"><span class="pre">[S,</span> <span class="pre">k,</span> <span class="pre">n,</span> <span class="pre">name,</span> <span class="pre">pname,</span> <span class="pre">limit]</span> <span class="pre">=</span> <span class="pre">GM_PLANAR(M0,</span> <span class="pre">x)</span></code></p>
+<p>The function generates the parameters of arbitrary planar magnetic
+structure from phi angles (radian), ordering wave vector (rlu) and spin
+plane normal vector (xyz).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> &#8211; Input parameters in the following order:
+<span class="math">\((\varphi_1, \varphi_2, ... , k_x, k_y, k_z, n_\theta, n_\phi)\)</span>.</li>
+<li><strong>absS</strong> &#8211; Size of the spins: <span class="math">\((S_1, S_2, ...)\)</span> or scalar if all
+moments are equal.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>S</em> &#8211;
+Array, containing the spin orientations with dimensions of [3 nMagExt].
+Every column contain the <span class="math">\([S_x; S_y; S_z]\)</span> magnetic moment components of
+a magnetic atom in the xyz coordinate system.</li>
+<li><em>k</em> &#8211;
+Magnetic ordering wavevector in rlu units in a row vector.</li>
+<li><em>n</em> &#8211;
+Normal vector around which the spins are rotating for non-zero
+k-vector in a row vector.</li>
+<li><em>name</em> &#8211;
+String, storing the name of the function. Optional.</li>
+<li><em>pname</em> &#8211;
+Name of the input parameters in a cell: {&#8216;Phi1_rad&#8217;, ...}.
+Optional.</li>
+<li><em>limit</em> &#8211;
+Limits on the input parameters, dimensions are [2 nParam]. Every
+column contains a lower and upper limit on the corresponding
+parameter. Optional.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><code class="xref mat mat-func docutils literal"><span class="pre">gm_spherical3d()</span></code>, <code class="xref mat mat-func docutils literal"><span class="pre">gm_planard.()</span></code></p>
 </div>
-<p>The sym option points to the appropriate line in the symmetry.dat file,
-where every line defines a space group by its generators. The first 230
-lines contains all crystallographic space groups with standard setting
-from the International Tables of Crystallography. Additional lines
-can be added to the symmetry.dat file using the <code class="xref mat mat-func docutils literal"><span class="pre">sw_addsym()</span></code> function.
-Every line in the symmetry.dat file can be referenced by either its line
-index or by its label (string).</p>
-<p>If the sym option is 0, no symmetry will be used. The <code class="xref mat mat-meth docutils literal"><span class="pre">gencoupling()</span></code>
-method will determine the equivalent bonds based on bond length.</p>
-<p><strong>Output</strong></p>
-<p>The <a class="reference internal" href="swclass.html#sw.lattice" title="sw.lattice"><code class="xref mat mat-attr docutils literal"><span class="pre">lattice</span></code></a> field will be changed based on the input, the lattice
-constants stored directly and the optional space group string is
-converted to the integer type index.</p>
-<p><strong>Example</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>crystal = sw;
-crystal.genlattice(&#39;lat_const&#39;,[3 3 4],&#39;angled&#39;,[90 90 120],&#39;sym&#39;,&#39;P 6&#39;)
-crystal.genlattice(&#39;lat_const&#39;,[3 3 4],&#39;angled&#39;,[90 90 120],&#39;sym&#39;,168)
-</pre></div>
-</div>
-<p>The two lines are equivalent, both will create hexagonal lattice, with
-<em>P 6</em> space group.</p>
 </dd></dl>
 
 </div>
@@ -178,7 +184,7 @@ crystal.genlattice(&#39;lat_const&#39;,[3 3 4],&#39;angled&#39;,[90 90 120],&#39
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="cryst.html" class="btn btn-neutral" title="Crystal structure"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="spinwave.html" class="btn btn-neutral" title="Calculation of the spin-spin correlation function"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -187,7 +193,7 @@ crystal.genlattice(&#39;lat_const&#39;,[3 3 4],&#39;angled&#39;,[90 90 120],&#39
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Tóth Sándor.
+        &copy; Copyright 2015, Sándor Tóth.
     </p>
   </div>
 
@@ -208,7 +214,7 @@ crystal.genlattice(&#39;lat_const&#39;,[3 3 4],&#39;angled&#39;,[90 90 120],&#39
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1',
+            VERSION:'103',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -1,4 +1,4 @@
-function hFigure = sw_annealfigure
+function hFigure = sw_annealfigure()
 % creates a figure for displaying the status of the annealing simulation
 %
 % hFigure = SW_ANNEALFIGURE()

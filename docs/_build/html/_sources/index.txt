@@ -11,6 +11,7 @@ SpinW documentation
 
     Introduction to SpinW <intro>
     sw class <swclass>
+    Coordinate systems <coord>
     Crystal structure <cryst>
     Definition of the magnetic Hamiltonian <ham>
     Magnetic structures <mag>
@@ -20,6 +21,15 @@ SpinW documentation
     List of functions <funclist>
 
 TEST2.
+
+.. automodule:: mfiles
+
+.. autofunction:: doctest2
+
+.. automodule:: mfiles.@sw
+
+.. autofunction:: doctest
+
 
 Indices and tables
 ==================

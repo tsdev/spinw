@@ -11,9 +11,6 @@ classdef sw_handlelight < handle
         function notify(varargin)
             notify@handle(varargin{:});
         end
-        %function delete(varargin)
-        %    delete@handle(varargin{:});
-        %end
         function Hmatch = findobj(varargin)
             Hmatch = findobj@handle(varargin{:});
         end

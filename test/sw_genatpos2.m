@@ -50,7 +50,7 @@ for ii = 1:nAtom
     % generate all equivalent atomic positions, some might overlap
     rTemp = mod(permute(sum(repmat(r(:,ii)',[3 1 nSym]).*symOp,2),[1 3 2])+symTr,1);
     % take out the overlapping positions
-    %rSym{ii} = uniquetol(rTemp,tol);
+    %rSym{ii} = sw_uniquetol(rTemp,tol);
     rSym{ii} = consolidator(rTemp',[],[],tol)';
 end
 

@@ -13,7 +13,7 @@ argument. To create an sw class object you can simply type::
 	model1 = sw
 
 Properties
--------------
+------------
 
 The output of the previous command shows all the data fields of model1.
 Each data field has an initial value and any of them can be modified

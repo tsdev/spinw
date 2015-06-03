@@ -75,10 +75,6 @@ function sFact = structfact(obj, hkl, varargin)
 % See also SW_PLOTSF, SW_INTSF, SW.ANNEAL, SW.GENMAGSTR.
 %
 
-% $Name: SpinW$ ($Version: 2.0forTao$)
-% $Author: S. Toth$ ($Contact: sandor.toth@psi.ch$)
-% $Revision: 116 $ ($Date: 03-Jun-2015 $)
-% $License: GNU GENERAL PUBLIC LICENSE$
 
 inpF.fname  = {'gtensor' 'tol' 'formfact' 'formfactfun'};
 inpF.defval = {false     1e-4  false       @sw_mff     };

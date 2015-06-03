@@ -89,9 +89,12 @@ if nargin > 2
         isSelectedAtom = zeros(1,obj.natom);
         for ii = 1:numel(atomTypeIdx)
             % atom index
-            sAIdx = find(strcmp(obj.unit_cell.label,atomTypeIdx{ii}));
+            %sAIdx = find(strcmp(obj.unit_cell.label,atomTypeIdx{ii}));
+            findRes = strfind(obj.unit_cell.label,atomTypeIdx{ii});
+            sAIdx = find(~cellfun(@(C)isempty(C),findRes));
+            
             if numel(sAIdx) == 0
-                error('sw:addaniso:WrongString','Atom label doesn''t exists!')
+                error('sw:addaniso:WrongString','Atom label doesn''t exist!')
             %elseif numel(sAIdx) > 1
             %    error('sw:addaniso:WrongString','Multiple atoms have the same label!')
             end

@@ -84,7 +84,7 @@ fid = obj.fid;
 
 % Creates random spin directions if param.random is true.
 mag_param = struct;
-if param.random
+if param.random || isempty(obj.mag_str.S)
     mag_param.mode = 'random';
     mag_param.nExt = param.nExt;
     obj.genmagstr(mag_param);

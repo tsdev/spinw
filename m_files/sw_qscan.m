@@ -7,7 +7,7 @@ function qOut = sw_qscan(qLim)
 %
 % qLim = {[0 1 0] [0 0 0]}
 % If the last element of qLim is a scalar, it defines the number of point
-% in each linear scan, by defult this value is 100.
+% in each linear scan, by default this value is 100.
 % qLim = {[0 1 0] [0 0 0] 50}
 %
 

@@ -78,4 +78,5 @@ for jj = 1:nStack
         warning('eigorth:Error','Eigenvectors of defective eigenvalues cannot be orthogonalised!');
     end
 end
+
 end

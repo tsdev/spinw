@@ -28,8 +28,18 @@ function [polyRes, yout] = sw_res(fid,polDeg,toplot,varargin)
 % See also POLYFIT, SW_INSTRUMENT.
 %
 
+if nargin == 0
+    help sw_res;
+    return
+end
+
+% default polynom degree
+if nargin == 1
+    polDeg = 5;
+end
+
 % plot the fit by default
-if nargin == 2
+if nargin < 3
     toplot = true;
 end
 

@@ -266,10 +266,10 @@ end
 
 if incomm
     % TODO
-    if ~helical
-        error('sw:spinwave:Twokm',['The two times the magnetic ordering '...
-            'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
-    end
+%     if ~helical
+%         error('sw:spinwave:Twokm',['The two times the magnetic ordering '...
+%             'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
+%     end
     hkl0 = cell(1,nTwin);
     hklExt = cell(1,nTwin);
     
@@ -625,10 +625,11 @@ for jj = 1:nSlice
         % All the matrix calculations are according to White's paper
         % R.M. White, et al., Physical Review 139, A450?A454 (1965)
         
-        gham = 0*ham;
-        for ii = 1:nHklMEM
-            gham(:,:,ii) = gComm*ham(:,:,ii);
-        end
+        %gham = 0*ham;
+        %for ii = 1:nHklMEM
+        %    gham(:,:,ii) = gComm*ham(:,:,ii);
+        %end
+        gham = mmat(gComm,ham);
         
         [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
         

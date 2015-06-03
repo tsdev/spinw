@@ -41,8 +41,8 @@ cd(sw_rootdir);
 [statSys, revNum] = system('git rev-list --count HEAD');
 
 revNum = strtrim(revNum);
-strIdx = strfind(revNum,' ');
-revNum = revNum(strIdx(end):(end-1));
+%strIdx = strfind(revNum,' ');
+%revNum = revNum(strIdx(end):(end-1));
 
 if ~statSys
     

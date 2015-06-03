@@ -177,11 +177,11 @@ if param.norm
     % convert intensity to mbarn/meV units using the energy bin size
     DSF = DSF*p2/param.dE;
     
-    fprintf0(fid0,'Intensity is converted to mbarn/meV units.\n');
+    fprintf0(obj.fileid,'Intensity is converted to mbarn/meV units.\n');
     if spectra.gtensor
-        fprintf0(fid0,'g-tensor was already included in the spin wave calculation.\n');
+        fprintf0(obj.fileid,'g-tensor was already included in the spin wave calculation.\n');
     else
-        fprintf0(fid0,'Isotropic g-tensor of 2 assumed here.\n');
+        fprintf0(obj.fileid,'Isotropic g-tensor of 2 assumed here.\n');
     end
 end
 

@@ -298,8 +298,6 @@ if param.plotmode
     % Saves all coupling matrix indices in SS.all in case of non-fitting mode
     % in the bottom row
     SS.all   = [SS.all; double(JJ.idx'); idxTemp];
-    
-    RR = mAtom.r;
 end
 
 if param.sortDM && (~isempty(SS.all))
@@ -329,6 +327,8 @@ if param.extend
     
     % Save the position of all atoms
     RR = mAtom.RRext;
+else
+    RR = mAtom.r;
 end
 
 if param.conjugate

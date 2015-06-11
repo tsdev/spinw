@@ -289,12 +289,19 @@ if isfield(spectra,'omega')
     Evect   = sort(param.Evect);
     epsilon = 1e-8;
     
+    % if the energy bin is equally spaced a faster intexing of the
+    % modes can be used
+    nE       = numel(Evect);
+    dE       = diff(Evect);
+    isequalE = sum(abs(dE-dE(1))<param.epsilon) == (nE-1);
+    dE = dE(1);
+    E0 = Evect(1);
+    
     if ~isempty(Evect)
-        Evect = [Evect(1)-epsilon; Evect(:); Evect(end)+epsilon];
+        Evect = [Evect(1)-dE-epsilon; Evect(:); Evect(end)+dE+epsilon];
     else
         Evect = [-epsilon; epsilon];
     end
-    nE      = numel(Evect);
     
     % Create indices in the matrix by searching for the closest value, size
     % nMode x nHkl. Put all the modes to the positive side for magnon creation.
@@ -302,28 +309,24 @@ if isfield(spectra,'omega')
     % for non-zero temperature.
     idxE = cell(1,nTwin);
     
+
     for tt = 1:nTwin
         % put the modes that are not in the modeIdx parameter above the
         % energy bin vector
         omega{tt}(~ismember(1:nMode,param.modeIdx),:) = Evect(end);
         
-        % if the energy bin is equally spaced a faster intexing of the
-        % modes can be used
-        dE = diff(Evect(2:end-1));
-        isequalE = sum(abs(dE-dE(1))<param.epsilon) == (nE-3);
+        % faster binning
         if isequalE
-            dE = dE(1);
-            E0 = Evect(2);
             idxE{tt} = floor((real(omega{tt})-E0)/dE)+2;
             idxE{tt}(idxE{tt}<2) = 1;
-            idxE{tt}(idxE{tt}>nE) = nE;
+            idxE{tt}(idxE{tt}>nE+2) = nE+2;
         else
             % memory intensive binnin, bad for large numel(omega)
-            [~, idxE{tt}] = min(abs(repmat(real(omega{tt}),[1 1 nE])-repmat(permute(Evect,[2 3 1]),[nMode nHkl 1])),[],3);
+            [~, idxE{tt}] = min(abs(repmat(real(omega{tt}),[1 1 nE+2])-repmat(permute(Evect,[2 3 1]),[nMode nHkl 1])),[],3);
         end
         
         % Creates indices in the swConv matrix.
-        idxE{tt} = idxE{tt} + repmat((0:nHkl-1).*nE,[nMode 1]);
+        idxE{tt} = idxE{tt} + repmat((0:nHkl-1).*(nE+2),[nMode 1]);
         idxE{tt} = idxE{tt}(:);
     end
     
@@ -332,7 +335,7 @@ if isfield(spectra,'omega')
     
     for tt = 1:nTwin
         for ii = 1:nConv
-            swConv{ii,tt} = reshape(accumarray(idxE{tt},DSF{ii,tt}(:),[nE*nHkl 1]),[nE nHkl]);
+            swConv{ii,tt} = reshape(accumarray(idxE{tt},DSF{ii,tt}(:),[(nE+2)*nHkl 1]),[(nE+2) nHkl]);
         end
     end
     

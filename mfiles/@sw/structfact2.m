@@ -1,33 +1,20 @@
-function sFact = structfact2(obj, hkl, varargin)
+function sFact = structfact2(obj, varargin)
 % calculates magnetic structure factor using FFT
 %
-% sFact = STRUCTFACT(obj, k, option1, value1, ...)
+% sFact = STRUCTFACT(obj, Option1, Value1, ...)
 %
 % Input:
 %
 % obj       Input sw object, contains positions of the magnetic atoms,
-%           size of the magnetic supercell and the vector components of the
-%           spins anf g-tensors.
-% hkl       Defines the reciprocal lattice vectors where the magnetic
-%           intensity is calculated. For commensurate structures these are
-%           the possible positions of the magnetic Bragg peaks. For
-%           incommensurate helical/conical structures 3 Bragg peaks
-%           positions are possible: (k-km,k,k+km) around every reciprocal
-%           lattice vector. In this case still the integer positions have
-%           to be given and the code calculates the intensities at all
-%           three points.
+%           nExt parameter and the direction of the magnetic spins.
 %
 % Options:
 %
-% gtensor   If true, the g-tensor will be included in the static spin
-%           correlation function. Including anisotropic g-tensor or
-%           different g-tensor for different ions is only possible here.
-%           Including a simple isotropic g-tensor is possible afterwards
-%           using the sw_instrument() function.
-% tol       Tolerance of the incommensurability of the magnetic
-%           ordering wavevector. Deviations from integer values of the
-%           ordering wavevector smaller than the tolerance are considered
-%           to be commensurate. Default value is 1e-4.
+% fExt      Number of reciprocal lattice cells, to calculate form
+%           factor, dimensions are [1 3].
+%           Default value is [1 1 1].
+% S         Optional magnetic structure to use instead of the one stored
+%           in obj.
 %
 % Output:
 %
@@ -49,92 +36,55 @@ function sFact = structfact2(obj, hkl, varargin)
 % See also SW_PLOTSF, SW_INTSF, SW.ANNEAL, SW.GENMAGSTR.
 %
 
-inpF.fname  = {'gtensor' 'tol'};
-inpF.defval = {false     1e-4 };
-inpF.size   = {[1 1]     [1 1]};
-
-if iscell(hkl)
-    if numel(hkl) ~= 3
-        error('sw:structfact:WrongInput','To create a Q grid, give 3 vectors in a cell!');
-    end
-    % create grid from 3 grid vectors
-    [hkl1,hkl2,hkl3] = ndgrid(hkl{:});
-    hkl = [hkl1(:);hkl2(:);hkl3(:)];
-
-end
-    
-% check whether all hkl are integer
-if sum(abs(hkl(:)-round(hkl(:))))/numel(hkl) > 1e-10
-    error('sw:structfact:WrongInput','All hkl values have to be integers.')
-end
+inpF.fname  = {'fExt'  'S'           };
+inpF.defval = {[1 1 1] obj.mag_str.S };
+inpF.size   = {[1 3]   [3 -1]        };
 
 param    = sw_readparam(inpF, varargin{:});
 
+fExt     = param.fExt;
 matom    = obj.matom;
 mAtPos   = matom.r;
+M        = param.S;
 nExt     = double(obj.mag_str.N_ext);
 nMagAtom = size(mAtPos,2);
-km       = obj.mag_str.km;
-n        = obj.mag_str.n;
-
-% whether the structure is incommensurate
-incomm = any(abs(km-round(km)) > param.tol);
-
-if incomm
-    % list of Q-points 
-    k = [bsxfun(@minus,hkl,km) hkl bsxfun(@plus,hkl,km)];
-end
-
 
 mMatk = zeros([nExt.*fExt 3]);
 
+k  = cell(3,1);
+kk = cell(3,1);
+
+% Create grid in reciprocal space.
+for ii = 1:3
+    k{ii} = linspace(0,fExt(ii),nExt(ii)*fExt(ii)+1);
+    if numel(k{ii}) == 2
+        k{ii} = 0;
+    else
+        k{ii} = k{ii}(1:end-1);
+    end
+end
+
+[kk{1}, kk{2}, kk{3}] = ndgrid(k{1},k{2},k{3});
 
 % Save magnetic moment directions into the 3D matrices.
 mMatX = zeros([nMagAtom nExt]);
 mMatY = zeros([nMagAtom nExt]);
 mMatZ = zeros([nMagAtom nExt]);
 
-mMatX(:) = obj.mag_str.S(1,:);
-mMatY(:) = obj.mag_str.S(2,:);
-mMatZ(:) = obj.mag_str.S(3,:);
-
-mMat = reshape(obj.mag_str.S,[3 nExt]);
+mMatX(:) = M(1,:);
+mMatY(:) = M(2,:);
+mMatZ(:) = M(3,:);
 
 % Fourier transform + phase in the unit cell.
 for ii = 1:nMagAtom
-    phiA = exp(-1i*2*pi*sum(hkl.*mAtPos,1));
     
-    
-    
+    phiA = exp(-1i*2*pi*(kk{1}*mAtPos(1,ii)+kk{2}*mAtPos(2,ii)+kk{3}*mAtPos(3,ii)));
     mMatk(:,:,:,1) = mMatk(:,:,:,1) + repmat(fftn(shiftdim(mMatX(ii,:,:,:),1)),fExt).*phiA;
     mMatk(:,:,:,2) = mMatk(:,:,:,2) + repmat(fftn(shiftdim(mMatY(ii,:,:,:),1)),fExt).*phiA;
     mMatk(:,:,:,3) = mMatk(:,:,:,3) + repmat(fftn(shiftdim(mMatZ(ii,:,:,:),1)),fExt).*phiA;
     
 end
 
-
-nx  = [0 -n(3) n(2); n(3) 0 -n(1); -n(2) n(1) 0];
-nxn = n'*n;
-K1 = 1/2*(eye(3) - nxn - 1i*nx);
-K2 = nxn;
-
-% keep the rotation invariant part of Sab
-%nx  = [0 -n(3) n(2);n(3) 0 -n(1);-n(2) n(1) 0];
-%nxn = n'*n;
-m1  = eye(3);
-
-% if the 2*km vector is integer, the magnetic structure is not a true
-% helix
-%tol = param.tol*2;
-%helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
-
-if helical
-    % integrating out the arbitrary initial phase of the helix
-    Sab = 1/2*Sab - 1/2*mmat(mmat(nx,Sab),nx) + 1/2*mmat(mmat(nxn-m1,Sab),nxn) + 1/2*mmat(mmat(nxn,Sab),2*nxn-m1);
-end
-    
-
-    
 % Correction for intensity.
 fFact = (nMagAtom*prod(nExt));
 mMatk = mMatk/fFact;
@@ -163,4 +113,5 @@ mMatM(:,:,:,3) = sFact.xyz{3}-sFactqq.*qq{3}./qqNorm;
 sFact.perp = sum(abs(mMatM).^2,4);
 
 sFact.obj = copy(obj);
+
 end

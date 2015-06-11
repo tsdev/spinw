@@ -139,6 +139,10 @@ if isempty(param.Evect)
     else
         Emax = max(real(spectra.omega(:)));
     end
+    if Emax == 0
+        Emax = 1;
+    end
+    
     param.Evect = linspace(0,1.1*Emax,500);
 end
 

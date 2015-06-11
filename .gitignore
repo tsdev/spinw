@@ -2,3 +2,5 @@ docs/_build/
 *.mat
 
 dat_files/symmetry.dat
+
+dat_files/symmetry.dat

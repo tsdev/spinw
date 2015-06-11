@@ -141,7 +141,7 @@ classdef (ConstructOnLoad) sw < handle
     
     properties (Access = private)
         matomstore = [];
-        sym  = true;  % stores whether the couplings are generated under symmetry constraints
+        sym  = false; % stores whether the couplings are generated under symmetry constraints
         symb = false; % stores whether the calculation are done symbolically
         fid  = 1;     % stores the file ID of the text output, default is the Command Window
         Elabel = 'meV';

@@ -278,11 +278,12 @@ SS.all = [SS.all; shiftdim(reshape(JJ.mat,1,9,size(JJ.mat,3)),1)];
 % Cut out zero valued interactions
 if ~param.zeroC
     if obj.symb
-        nzeroJ = sum(SS.all(6:end,:).^2,1)==0;
-        if ~isa(nzeroJ,'logical')
-            nzeroJ = isAlways(nzeroJ);
-        end
-        nzeroJ = ~nzeroJ;
+        %nzeroJ = sum(SS.all(6:end,:).^2,1)==0;
+        %if ~isa(nzeroJ,'logical')
+        %    nzeroJ = isAlways(nzeroJ);
+        %end
+        %nzeroJ = ~nzeroJ;
+        nzeroJ = ~sw_is(sum(SS.all(6:end,:).^2,1)==0);
     else
         nzeroJ  = sum(SS.all(6:end,:).^2,1) > 1e-10;
     end

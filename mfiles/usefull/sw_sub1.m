@@ -20,13 +20,13 @@ end
 
 if isa(inp,'sym')
     
-symVar = symvar(inp);
-
-if ~isempty(symVar)
-    out = double(subs(inp,symVar,dnum*ones(1,numel(symVar))));
-else
-    out = double(inp);
-end
+    symVar = symvar(inp);
+    
+    if ~isempty(symVar)
+        out = double(subs(inp,symVar,dnum*ones(1,numel(symVar))));
+    else
+        out = double(inp);
+    end
 else
     out = inp;
 end

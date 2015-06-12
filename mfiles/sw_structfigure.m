@@ -31,11 +31,17 @@ if get(gca,'CameraViewAngle') == 0.6
     camva('auto');
 end;
 
-if feature('usehg2')
-    figNum = hFigure.Number;
-else
+if verLessThan('matlab','8.4.0')
     figNum = hFigure;
+else
+    figNum = hFigure.Number;
 end
+
+% if feature('usehg2')
+%     figNum = hFigure.Number;
+% else
+%     figNum = hFigure;
+% end
 
 set(hFigure,...
     'Name',          sprintf('Figure %d: SpinW : Crystal structure',figNum),...
@@ -48,15 +54,27 @@ set(hFigure,...
 %    'Position',      posFig,...
 
 hToolbarT = get(hFigure,'children');
-if feature('usehg2')
+
+if verLessThan('matlab','8.4.0')
+    hToolbar = hToolbarT(end);
+else
     idx = 1;
     while ~isa(hToolbarT(idx),'matlab.ui.container.Toolbar')
         idx = idx + 1;
     end
     hToolbar = hToolbarT(idx);
-else
-    hToolbar = hToolbarT(end);
 end
+
+% if feature('usehg2')
+%     idx = 1;
+%     while ~isa(hToolbarT(idx),'matlab.ui.container.Toolbar')
+%         idx = idx + 1;
+%     end
+%     hToolbar = hToolbarT(idx);
+% else
+%     hToolbar = hToolbarT(end);
+% end
+
 hButton  = get(hToolbar,'children');
 delete(hButton([1:(end-3) end-1 end]));
 
@@ -274,11 +292,18 @@ function closeSubFigs(hFigure, ~)
 % close all sub figures on plot window closing
 
 % close the "Set Range" window if it is open
-if feature('usehg2')
-    sub1 = findobj('Tag',['setRange_' num2str(hFigure.Number)]);
-else
+if verLessThan('matlab','8.4.0')
     sub1 = findobj('Tag',['setRange_' num2str(hFigure)]);
+else
+    sub1 = findobj('Tag',['setRange_' num2str(hFigure.Number)]);
 end
+
+% if feature('usehg2')
+%     sub1 = findobj('Tag',['setRange_' num2str(hFigure.Number)]);
+% else
+%     sub1 = findobj('Tag',['setRange_' num2str(hFigure)]);
+% end
+
 if ~isempty(sub1)
     close(sub1);
 end
@@ -311,12 +336,18 @@ fWidth    = 195;
 fHeight   = 240;
 
 % Figure number
-if feature('usehg2')
-    figNum = hFigure.Number;
-else
+if verLessThan('matlab','8.4.0')
     figNum = hFigure;
+else
+    figNum = hFigure.Number;
 end
 
+% if feature('usehg2')
+%     figNum = hFigure.Number;
+% else
+%     figNum = hFigure;
+% end
+ 
 %    'WindowStyle',    'modal',...
 objMod = findobj('Tag',['setRange_' num2str(figNum)']);
 

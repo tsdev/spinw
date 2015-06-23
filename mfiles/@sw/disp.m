@@ -1,4 +1,4 @@
-function varargout = display(obj, fid)
+function varargout = disp(obj, fid)
 % prints the sw data structure in readable format onto the Command Window
 %
 % {swDescr} = DISPLAY(obj, {fid})

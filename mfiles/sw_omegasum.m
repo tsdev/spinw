@@ -8,6 +8,7 @@ function spectra = sw_omegasum(spectra, varargin)
 %
 % The degenerate dispersion energies are substituted with NaN values. Be
 % carefull, after this function sw_egrid() won't work properly on spectra.
+% It doesn't work for spectra with multiple twins.
 %
 % Options:
 %
@@ -18,6 +19,10 @@ function spectra = sw_omegasum(spectra, varargin)
 %
 % See also SW.SPINWAVE, SW_EGRID.
 %
+
+if iscell(spectra.omega)
+    error('sw_omegasum:NoTwin','The sw_omegasum() function doesn''t work for spectra calculated for multiple twins!');
+end
 
 inpForm.fname  = {'tol' 'zeroint'};
 inpForm.defval = {1e-5  0        };

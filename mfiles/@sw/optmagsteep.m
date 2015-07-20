@@ -243,6 +243,9 @@ dM = inf;
 % Initial index.
 rIdx = 0;
 
+% add extra zero moment as a placeholder
+M = [M zeros(3,1)];
+
 while (rIdx < nRun) && (dM>param.TolX)
     Mold = M;
     for jsub = 1:nSub
@@ -263,21 +266,21 @@ while (rIdx < nRun) && (dM>param.TolX)
         % Adds anisotropy field.
         if param.aniso
             % Select the moment vectors on the sublattice.
-            Ms = M(:,sSindex);
+            Ms = M(:,[sSindex 0]);
             Fa = 2*[sum(Ms.*cAx{jsub},1); sum(Ms.*cAy{jsub},1); sum(Ms.*cAz{jsub},1)];
             F = F + Fa;
         end
         
-        M(:,sSindex) = -bsxfun(@times,F,cS{jsub}./sqrt(sum(F.^2)));
+        M(:,[sSindex false]) = -bsxfun(@times,F,cS{jsub}./sqrt(sum(F.^2)));
         
     end
     
     % Calculates the system energy at the end of the temperature step.
     if nargout > 0
-        obj.mag_str.S = M;
+        obj.mag_str.S = M(:,1:end-1);
         E(rIdx+1) = obj.energy;
         if param.saveAll
-            Msave(:,:,rIdx+1) = M;
+            Msave(:,:,rIdx+1) = M(:,1:end-1);
         end
     end
     
@@ -300,7 +303,7 @@ else
 end
 
 % Save optimised magnetic structure into the sw object.
-obj.mag_str.S = M;
+obj.mag_str.S = M(:,1:end-1);
 
 % Create output structure.
 if nargout > 0
@@ -308,7 +311,7 @@ if nargout > 0
     if param.saveAll
         optm.M = Msave;
     else
-        optm.M = M;
+        optm.M = M(1:end-1);
     end
     optm.dM       = dM;
     optm.e        = E(1:rIdx);

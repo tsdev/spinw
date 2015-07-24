@@ -266,7 +266,7 @@ while (rIdx < nRun) && (dM>param.TolX)
         % Adds anisotropy field.
         if param.aniso
             % Select the moment vectors on the sublattice.
-            Ms = M(:,[sSindex 0]);
+            Ms = M(:,[sSindex false]);
             Fa = 2*[sum(Ms.*cAx{jsub},1); sum(Ms.*cAy{jsub},1); sum(Ms.*cAz{jsub},1)];
             F = F + Fa;
         end

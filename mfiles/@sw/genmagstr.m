@@ -367,6 +367,7 @@ switch param.mode
         
         % number of moments for the Fourier components are defined
         nFourier = size(Fk{1},2);
+        nQ = numel(Fk)/2;
         
         if (nFourier~= nMagAtom) && (nFourier==1)
             % Single defined moment, use the atomic position in l.u.
@@ -384,15 +385,24 @@ switch param.mode
         % number of cells in the supercell
         nCell = prod(nExt);
         
-        for ii = 1:2:numel(Fk)
+        % multiply the Fourier components with the spin quantum number
+        % TODO
+        
+        
+        for ii = 1:2:(2*nQ)
             % F(k)
-            S = S + bsxfun(@times,repmat(Fk{ii},[1 nCell*nMagAtom/nFourier]),exp(1i*Fk{ii+1}*RR*2*pi));
+            S = S + bsxfunsym(@times,repmat(Fk{ii},[1 nCell*nMagAtom/nFourier]),exp(1i*Fk{ii+1}*RR*2*pi))/2;
             % conj(F(k))
-            S = S + bsxfun(@times,repmat(conj(Fk{ii}),[1 nCell*nMagAtom/nFourier]),exp(-1i*Fk{ii+1}*RR*2*pi));
+            S = S + bsxfunsym(@times,repmat(conj(Fk{ii}),[1 nCell*nMagAtom/nFourier]),exp(-1i*Fk{ii+1}*RR*2*pi))/2;
             
         end
         S = real(S);
+
         k = [0 0 0];
+        
+        warning('sw:genmagstr:Approximation',['The generated magnetic '...
+            'structure is only an approximation of the input multi-q'...
+            ' structure on a supercell!'])
         n = [0 0 1];
         
     otherwise

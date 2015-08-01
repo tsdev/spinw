@@ -42,7 +42,7 @@ if obj.symbolic
     % select zero vector and make them parallel to [0,0,1]
     selidx = abs(e2)>0;
     if isa(selidx,'sym')
-        e2(3,~any(isAlways(abs(e2)>0))) = 1;
+        e2(3,~any(~sw_always(abs(e2)==0))) = 1;
     else
         e2(3,~any(abs(e2)>0)) = 1;
     end

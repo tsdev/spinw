@@ -3,9 +3,11 @@ function out = sw_always(inp)
 %
 % out = SW_ALWAYS(inp)
 %
+% Use carefully, for undecided results return false without warning!
+%
 % Input:
 %
-% inp   Any symbolic/logical type matrix.
+% inp   Any symbolic/logical or numeric type matrix.
 %
 % Output:
 %
@@ -13,7 +15,7 @@ function out = sw_always(inp)
 %
 
 if isa(inp,'sym')
-    out = isAlways(inp);
+    out = isAlways(inp,'Unknown','false');
 else
     out = logical(inp);
 end

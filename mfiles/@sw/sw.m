@@ -112,6 +112,9 @@ classdef (ConstructOnLoad) sw < handle
         %               coupling (zeros for no coupling)
         %   'idx'       increasing indices for the symmetry equivalent
         %               couplings, starting with 1,2,3...
+        %   'type'      Type of coupling corresponding to mat_idx matrices.
+        %               Default is 0 for quadratic exchange. type = 1 for
+        %               biquadratic exchange.
         %
         % See also SW.GENCOUPLING, SW.ADDCOUPLING, SW.FIELD.
         coupling

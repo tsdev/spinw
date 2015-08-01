@@ -46,7 +46,7 @@ for ii = indexFieldToValidate
     for jj = 1:size(subfield,2)
         selectSubField = subfield{ii,jj};
         if ~isempty(selectSubField)
-            validT = isfield(eval(['objS.' selectMainField]),selectSubField);
+            validT = isfield(objS.(selectMainField),selectSubField);
             if valid && ~validT
                 fieldM = [selectMainField '.' selectSubField];
             end
@@ -72,7 +72,7 @@ for ii = indexFieldToValidate
         selectSize = sizefield{ii,jj};
         
         if ~isempty(selectSubField)
-            selectField = eval(['objS.' selectMainField '.' selectSubField]);
+            selectField = objS.(selectMainField).(selectSubField);
             
             % Check the dimension of the selected field.
             objsize = size(selectField);

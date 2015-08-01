@@ -107,12 +107,7 @@ nExt    = double(obj.mag_str.N_ext);
 % magnetic ordering wavevector in the extended magnetic unit cell
 km = obj.mag_str.k.*nExt;
 % whether the structure is incommensurate
-incomm = abs(km-round(km)) <= param.tol;
-if islogical(incomm)
-    incomm = any(~incomm);
-else
-    incomm = any(~isAlways(incomm));
-end
+incomm = any(~sw_always(abs(km-round(km)) <= param.tol));
 
 % symbolic wavevectors
 hkl = param.hkl;
@@ -177,31 +172,13 @@ else
 end
 
 % remove zero anisotropy matrices
-anyIdx = squeeze(sumsym(sumsym(abs(JJ),1),2)) == 0;
-if ~isa(anyIdx,'logical')
-    anyIdx = isAlways(anyIdx);
-end
-anyIdx = ~anyIdx;
+anyIdx = ~sw_always(squeeze(sumsym(sumsym(abs(JJ),1),2)) == 0);
 
 dR    = dR(:,anyIdx);
 atom1 = atom1(1,anyIdx);
 atom2 = atom2(1,anyIdx);
 JJ    = JJ(:,:,anyIdx);
-%idxM  = idxM(1,anyIdx);
 
-% create symbolic variables from matrix labels
-%nMat = size(obj.matrix.mat,3);
-
-%for ii = 1:nMat
-%    JS(ii) = sym(obj.matrix.label{ii},'real'); %#ok<AGROW>
-%end
-
-% normalize JJ to the maximum value
-%JJ = JJ./repmat(max(max(abs(JJ))),[3 3 1]);
-
-
-% create symbolic matrices
-%JJ = JJ.*repmat(permute(JS(idxM),[3 1 2]),[3 3 1]);
 
 if incomm
     % transform JJ due to the incommensurate wavevector

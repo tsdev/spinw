@@ -1,7 +1,7 @@
 function type = sw_mattype(mat, epsilon)
 % determines the type of square input matrix
 %
-% type = SW_MATTYPE(mat, {epsilon}) 
+% type = SW_MATTYPE(mat, {epsilon})
 %
 % The function determines the type of the mat 3x3xN matrix and returns a
 % vector with dimensions of [1 N].
@@ -36,11 +36,11 @@ end
 type = zeros(1,mSize(3));
 
 if any(mSize(1:2)-[3 3])
-    error('sw:sw_mattype:InputError','Input matrix is not 3x3xN!');
+    error('sw:sw_mattype:InputError','Dimensions of the Input matrix is not 3x3xN!');
 end
 
 if ~isreal(mat) && ~isa(mat,'sym')
-    error('sw:sw_mattype:InputError','Input matrix is not real!');
+    error('sw:sw_mattype:InputError','Input matrix is not real or symbolic!');
 end
 
 if ~isa(mat,'sym')
@@ -89,6 +89,5 @@ else
         type(ii) = typeT;
     end
 end
-
 
 end

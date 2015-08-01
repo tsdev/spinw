@@ -32,15 +32,37 @@ function basisVector = basisvector(obj, varargin)
 % See also SW, SW.ABC.
 %
 
-if nargin == 1
+if nargin < 2
     norm = false;
 else
     norm = varargin{1};
 end
 
-alpha = obj.lattice.angle(1);
-beta  = obj.lattice.angle(2);
-gamma = obj.lattice.angle(3);
+if nargin < 3
+    symbolic = false;
+else
+    symbolic = varargin{2};
+end
+
+if symbolic
+    ang = obj.lattice.angle;
+
+    % check for special angles (multiples of 30)
+    specIdx = abs(round(ang*180/pi/30)-ang*180/pi/30)<1e-8;
+    angSym = sym([0 0 0]);
+    angSym(specIdx) = sym(round(ang(specIdx)*180/pi))*pi/180;
+    
+    symAng0 = [sym('alpha','positive') sym('beta','positive') sym('gamma','positive')];
+    angSym(~specIdx) = symAng0(~specIdx);
+    
+    alpha = angSym(1);
+    beta  = angSym(2);
+    gamma = angSym(3);
+else
+    alpha = obj.lattice.angle(1);
+    beta  = obj.lattice.angle(2);
+    gamma = obj.lattice.angle(3);
+end
 
 v1 = [1          0          0];
 v2 = [cos(gamma) sin(gamma) 0];

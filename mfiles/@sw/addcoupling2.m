@@ -1,7 +1,7 @@
 function addcoupling2(obj, varargin)
 % assigns a predefined matrix as exchange coupling on selected bonds
 %
-% ADDCOUPLING(obj, 'option1', value1, ...)
+% ADDCOUPLING2(obj, 'option1', value1, ...)
 %
 % Input:
 %
@@ -28,6 +28,11 @@ function addcoupling2(obj, varargin)
 %               bonds, using subIdx bonds can be selected one-by-one from
 %               the list of bonds that fulfill the above options. Only
 %               works if the space group is P0.
+% type          Type of the coupling. Possible values:
+%                   0       Quadratic exchange, default.
+%                   1       Biquadratic exchange.
+%               Can be also one of the following string: 'quadratic',
+%               'biquadratic'.
 %
 % Output:
 %
@@ -51,15 +56,43 @@ if ~any(obj.atom.mag)
     error('sw:addcoupling:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 
-inpForm.fname  = {'matrix' 'bond' 'atom' 'subIdx'};
-inpForm.defval = {[]       []     []      []     };
-inpForm.size   = {[1 -1]   [1 -2] [-3 -4] [1 -5] };
-inpForm.soft   = {false    false  true    true   };
+inpForm.fname  = {'matrix' 'bond' 'atom' 'subIdx' 'type'};
+inpForm.defval = {[]       []     []      []      []    };
+inpForm.size   = {[1 -1]   [1 -2] [-3 -4] [1 -5]  [1 -6]};
+inpForm.soft   = {false    false  true    true    true  };
 
 param = sw_readparam(inpForm, varargin{:});
 
 if ~isnumeric(param.matrix)
     param.matrix = find(ismember(obj.matrix.label,param.matrix));
+end
+
+if isempty(param.type)
+    param.type = 0*param.matrix;
+end
+
+if ischar(param.type)
+    param.type = {param.type};
+end
+
+if iscell(param.type)
+    % check string input for the coupling type
+    qSel  = strcmp(param.type,'quadratic');
+    bqSel = strcmp(param.type,'biquadratic');
+    param.type = nan(size(param.type));
+    param.type(qSel)  = 0;
+    param.type(bqSel) = 1;
+    if any(isnan(param.type))
+        error(['sw:addcoupling:WrongInput','Wrong coupling type, '...
+            'currently only quadratic and biquadratic exchanges '...
+            'are supported!']);
+    end
+    
+end
+
+if any(size(param.matrix)~=size(param.type))
+    error('sw:addcoupling:WrongInput',['A coupling type has to be '...
+        'provided for each input matrix!'])
 end
 
 % select atoms
@@ -122,8 +155,10 @@ if isempty(idx)
 end
 
 Jmod = obj.coupling.mat_idx(:,idx);
+Tmod = obj.coupling.type(:,idx);
 
 param.matrix = int32(param.matrix);
+param.type   = int32(param.type);
 
 if any(ismember(Jmod(:),param.matrix))
     warning('sw:addcoupling:CouplingIdxWarning',['Same matrix already '...
@@ -132,13 +167,16 @@ end
 
 if any(Jmod(3,:))
     error('sw:addcoupling:TooManyCoupling',['The maximum '...
-        'number of allowed couplings (3) between 2 spins are reached!']);
+        'number of allowed couplings (3) per bond is reached!']);
 end
 
 for ii = 1:numel(param.matrix)
-    Jmod(sub2ind(size(Jmod),sum(Jmod>0,1)+1,1:size(Jmod,2))) = param.matrix(ii);
+    idxSel = sub2ind(size(Jmod),sum(Jmod>0,1)+1,1:size(Jmod,2));
+    Jmod(idxSel) = param.matrix(ii);
+    Tmod(idxSel) = param.type(ii);
 end
 
 obj.coupling.mat_idx(:,idx) = Jmod;
+obj.coupling.type(:,idx)    = Tmod;
 
 end

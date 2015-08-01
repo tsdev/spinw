@@ -266,10 +266,11 @@ end
 
 if incomm
     % TODO
-%     if ~helical
-%         error('sw:spinwave:Twokm',['The two times the magnetic ordering '...
-%             'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
-%     end
+    if ~helical
+        warning('sw:spinwave:Twokm',['The two times the magnetic ordering '...
+            'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
+    end
+    
     hkl0 = cell(1,nTwin);
     hklExt = cell(1,nTwin);
     
@@ -306,6 +307,21 @@ if param.fitmode
     [SS, SI, RR] = obj.intmatrix('fitmode',2,'conjugate',true);
 else
     [SS, SI, RR] = obj.intmatrix('conjugate',true);
+end
+
+% is there any biquadratic exchange
+biq = any(SS.all(15,:)==1);
+
+% Biquadratic exchange only supported for commensurate structures
+if incomm && biq
+    error('sw:spinwave:Biquadratic','Biquadratic exchange can be only calculated for k=0 structures!');
+end
+
+if biq
+    % Separate the biquadratic couplings
+    QQ = SS.all(1:14,SS.all(15,:)==1);
+    % Keep only the quadratic exchange couplings
+    SS.all = SS.all(1:14,SS.all(15,:)==0);
 end
 
 % Converts wavevctor list into the extended unit cell
@@ -347,7 +363,7 @@ dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
 atom1 = [SS.all(4,:)   1:nMagExt];
 atom2 = [SS.all(5,:)   1:nMagExt];
 % magnetic couplings, 3x3xnJ
-JJ = cat(3,reshape(SS.all(6:end,:),3,3,[]),SI.aniso);
+JJ = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
 
 if incomm
     % transform JJ due to the incommensurate wavevector
@@ -393,6 +409,41 @@ idxC  = [atom2'+nMagExt atom1'         ];
 idxD1 = idxA1+nMagExt;
 idxD2 = [atom2'+nMagExt atom2'+nMagExt ];
 idxMF = [(1:2*nMagExt)' (1:2*nMagExt)' ];
+
+% Calculate matrix elements for biquadratic exchange
+if biq
+    dR       = QQ(1:3,:);
+    biqAtom1 = QQ(4,:);
+    biqAtom2 = QQ(5,:);
+
+    % matrix elements: M,N,P,Q
+    BQM = sum(eta(:,biqAtom1).*eta(:,biqAtom2),1);
+    BQN = sum(eta(:,biqAtom1).*zed(:,biqAtom2),1);
+    BQO = sum(zed(:,biqAtom1).*zed(:,biqAtom2),1);
+    BQP = sum(conj(zed(:,biqAtom1)).*zed(:,biqAtom2),1);
+    BQQ = sum(zed(:,biqAtom1).*eta(:,biqAtom2),1);
+    
+    Si = S0(biqAtom1);
+    Sj = S0(biqAtom2);
+    % C_ij matrix elements
+    CijD = (Si.*Sj).^(3/2).*(BQM.*BQP + BQN.*conj(BQQ));
+    CijA = conj(CijD);
+    CijB = (Si.*Sj).^(3/2).*(BQM.*BQO + BQN.*BQQ);
+    CijC = conj(CijB);
+    CijE = Si.*Sj.^2.*(conj(BQQ).*BQQ - 2*BQM.*BQM);
+    CijF = Si.^2.*Sj.*(conj(BQN).*BQN - 2*BQM.*BQM);
+    CijG = 0.5*Si.*Sj.^2.*BQP.^2;
+    % Creates the serial indices for every matrix element in ham matrix.
+    idxbqA = [biqAtom1' biqAtom2'];
+    idxbqB = [biqAtom1' biqAtom2'+nMagExt];
+    idxbqC = idxbqB(:,[2 1]); % transpose 
+    idxbqD = idxA1+nMagExt;
+    idxbqE = [biqAtom1' biqAtom1']; % also for 
+    idxbqE = [biqAtom2' biqAtom2']; 
+    idxbqG = [];
+
+end
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

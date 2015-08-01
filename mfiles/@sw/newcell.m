@@ -116,7 +116,7 @@ obj.sym = false;
 % new unit cell defined
 obj.unit_cell.r     = rNew;
 obj.unit_cell.S     = Sext;
-obj.unit_cell.label = obj.unit_cell.label(idxExt);
+obj.unit_cell.label = obj.unit_cell.label(1,idxExt);
 obj.unit_cell.color = obj.unit_cell.color(:,idxExt);
 obj.mag_str.N_ext   = int32([1 1 1]);
 

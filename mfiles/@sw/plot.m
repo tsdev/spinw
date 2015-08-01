@@ -604,7 +604,11 @@ end
 
 % auto select to plot arrows for couplings if DM interaction is present
 if param.aCoupling == 2
-    param.aCoupling = any(abs(coupling.DM(:))>1e-10);
+    if obj.symbolic
+        param.aCoupling = any(~sw_always(coupling.DM(:)==0));
+    else
+        param.aCoupling = any(abs(coupling.DM(:))>1e-10);
+    end
 end
 
 nCoupling        = size(coupling.idx,2);
@@ -951,6 +955,9 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             case 1
                                 % DM interaction
                                 vDM   = coupling.DM(1,:,ll)'*param.scaleC;
+                                if obj.symbolic
+                                    vDM = sw_sub1(vDM);
+                                end
                                 % TODO
                                 if norm(vDM)>1e-10
                                     rCent = (rPlot1+rPlot2)/2;

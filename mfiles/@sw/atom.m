@@ -44,7 +44,7 @@ function atomList = atom(obj)
 [atomList.r, atomList.idx] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r);
 
 if obj.symbolic
-    atomList.mag = isAlways(obj.unit_cell.S(atomList.idx)>0);
+    atomList.mag = ~sw_always(obj.unit_cell.S(atomList.idx)==0);
 else
     atomList.mag = obj.unit_cell.S(atomList.idx)>0;
 end

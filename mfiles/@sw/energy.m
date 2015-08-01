@@ -90,7 +90,7 @@ if nMagExt>0
     dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
     atom1 = [SS.all(4,:)   1:nMagExt];
     atom2 = [SS.all(5,:)   1:nMagExt];
-    JJ    = cat(3,reshape(SS.all(6:end,:),3,3,[]),SI.aniso);
+    JJ    = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
     
     M1 = M0(:,atom1);
     M2 = M0(:,atom2);

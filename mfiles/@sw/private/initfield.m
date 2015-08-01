@@ -13,7 +13,7 @@ for ii = 1:length(mainfield)
     for jj = 1:size(subfield,2)
         if ~isempty(subfield{ii,jj})
             if ~isfield(obj,mainfield{ii}) || ~isfield(eval(['obj.' mainfield{ii}]),subfield{ii,jj})
-                obj.(mainfield{ii}).(subfield{ii,jj}) = eval(defval{ii,jj});
+                obj.(mainfield{ii}).(subfield{ii,jj}) = defval{ii,jj};
             end
         end
     end

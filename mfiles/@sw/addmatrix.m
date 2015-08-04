@@ -148,7 +148,12 @@ for ii = 1:size(newMat.mat,3)
         % Add the coupling type to the list.
         if (obj.symb) && ~isa(newObj.matrix.mat,'sym')
             for jj = 1:size(newObj.matrix.mat,3)
-                obj.matrix.mat = cat(3,obj.matrix.mat,newObj.matrix.mat(:,:,jj)*sym(newObj.matrix.label{jj},'real'));
+                if newObj.matrix.label{jj}(end) == '-'
+                    symVar = sym(newObj.matrix.label{jj}(1:(end-1)),'real');
+                else
+                    symVar = sym(newObj.matrix.label{jj},'real');
+                end
+                obj.matrix.mat = cat(3,obj.matrix.mat,newObj.matrix.mat(:,:,jj)*symVar);
             end
         else
             obj.matrix.mat = cat(3,obj.matrix.mat,newObj.matrix.mat);

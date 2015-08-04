@@ -6,11 +6,12 @@ function spectra = spinwave(obj, hkl, varargin)
 % Spin wave dispersion and spin-spin correlation function is calculated at
 % the reciprocal space points k. The function can deal with arbitrary
 % magnetic structure and magnetic interactions as well as single ion
-% anisotropy and magnetic field.
+% anisotropy and magnetic field. Biquadratic exchange interactions are also
+% implemented, however only for k=0 magnetic structures.
 %
 % If the magnetic ordering wavevector is non-integer, the dispersion is
 % calculated using a coordinate system rotating from cell to cell. In this
-% case the Hamiltonian has to fulfill this extra rotational symmetry.
+% case the spin Hamiltonian has to fulfill this extra rotational symmetry.
 %
 % Input:
 %

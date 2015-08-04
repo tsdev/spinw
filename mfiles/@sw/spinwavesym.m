@@ -6,7 +6,8 @@ function spectra = spinwavesym(obj, varargin)
 % Symbolic spin wave dispersion is calculated as a function of reciprocal
 % space points. The function can deal with arbitrary magnetic structure and
 % magnetic interactions as well as single ion anisotropy and magnetic
-% field.
+% field. Biquadratic exchange interactions are also implemented, however
+% only for k=0 magnetic structures.
 %
 % If the magnetic ordering wavevector is non-integer, the dispersion is
 % calculated using a coordinate system rotating from cell to cell. In this
@@ -124,6 +125,24 @@ fid = obj.fid;
 %[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true,'rotMat',false);
 [SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true);
 
+% is there any biquadratic exchange
+bq = SS.all(15,:)==1;
+
+% Biquadratic exchange only supported for commensurate structures
+if incomm && any(bq)
+    error('sw:spinwavesym:Biquadratic','Biquadratic exchange can be only calculated for k=0 structures!');
+end
+
+if any(bq)
+    % Separate the biquadratic couplings
+    % Just use the SS.bq matrix produced by intmatrix(), it won't contain
+    % the transpose matrices (not necessary for biquadratic exchange)
+    % TODO check whether to keep the transposed matrices to be sure
+    SS.bq = SS.all(1:6,bq);
+    % Keep only the quadratic exchange couplings
+    SS.all = SS.all(1:14,SS.all(15,:)==0);
+end
+
 % Converts wavevctor list into the extended unit cell
 hklExt  = hkl.*nExt'*2*pi;
 
@@ -233,10 +252,66 @@ idxAll = [idxA1; idxB1; idxB2; idxA2; idxC1; idxC2; idxMF];
 % Store all matrix elements
 ABCD   = [A1     B1     B2     A2     C1     C2     MF   ];
 
+% Calculate matrix elements for biquadratic exchange
+if any(bq)
+    bqdR    = SS.bq(1:3,:);
+    bqAtom1 = int32(SS.bq(4,:));
+    bqAtom2 = int32(SS.bq(5,:));
+    bqJJ    = SS.bq(6,:);
+
+    % matrix elements: M,N,P,Q
+    bqM = sum(eta(:,bqAtom1).*eta(:,bqAtom2),1);
+    bqN = sum(eta(:,bqAtom1).*zed(:,bqAtom2),1);
+    bqO = sum(zed(:,bqAtom1).*zed(:,bqAtom2),1);
+    bqP = sum(conj(zed(:,bqAtom1)).*zed(:,bqAtom2),1);
+    bqQ = sum(zed(:,bqAtom1).*eta(:,bqAtom2),1);
+    
+    Si = S0(bqAtom1);
+    Sj = S0(bqAtom2);
+    % C_ij matrix elements
+    bqA0 = (Si.*Sj).^(3/2).*(bqM.*conj(bqP) + bqQ.*conj(bqN)).*bqJJ;
+    bqB0 = (Si.*Sj).^(3/2).*(bqM.*bqO + bqQ.*bqN).*bqJJ;
+    bqC  = Si.*Sj.^2.*(conj(bqQ).*bqQ - 2*bqM.^2).*bqJJ;
+    bqD  = Si.*Sj.^2.*(bqQ).^2.*bqJJ;
+
+    % Creates the serial indices for every matrix element in ham matrix.
+    % Aij(k) matrix elements (b^+ b)
+    idxbqA  = [bqAtom1' bqAtom2'];
+    % b b^+ elements
+    idxbqA2 = [bqAtom1' bqAtom2']+nMagExt;
+    
+    % Bij(k) matrix elements (b^+ b^+)
+    idxbqB  = [bqAtom1' bqAtom2'+nMagExt];
+    % transpose of B (b b)
+    %idxbqB2 = [bqAtom2'+nMagExt bqAtom1']; % SP2
+    
+    idxbqC  = [bqAtom1' bqAtom1'];
+    idxbqC2 = [bqAtom1' bqAtom1']+nMagExt;
+    
+    idxbqD  = [bqAtom1' bqAtom1'+nMagExt];
+    %idxbqD2 = [bqAtom1'+nMagExt bqAtom1]; % SP2
+
+end
+
 ham = sym(zeros(2*nMagExt));
 
 for ii = 1:size(idxAll,1)
     ham(idxAll(ii,1),idxAll(ii,2)) = ham(idxAll(ii,1),idxAll(ii,2)) + ABCD(ii);
+end
+
+if any(bq)
+    bqExpF = exp(1i*hklExt'*bqdR);
+
+    bqA  = bqA0.*bqExpF;
+    bqA2 = conj(bqA0).*bqExpF;
+    bqB  = bqB0.*bqExpF;
+
+    idxbqAll = [idxbqA; idxbqA2; idxbqB; idxbqC; idxbqC2; idxbqD];
+    bqABCD = [bqA bqA2 2*bqB bqC bqC 2*bqD];
+    
+    for ii = 1:size(idxbqAll,1)
+        ham(idxbqAll(ii,1),idxbqAll(ii,2)) = ham(idxbqAll(ii,1),idxbqAll(ii,2)) + bqABCD(ii);
+    end
 end
 
 ham = simplify((ham + conj(permute(ham,[2 1 3])))/2);

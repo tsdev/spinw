@@ -310,16 +310,19 @@ else
 end
 
 % is there any biquadratic exchange
-biq = any(SS.all(15,:)==1);
+bq = SS.all(15,:)==1;
 
 % Biquadratic exchange only supported for commensurate structures
-if incomm && biq
+if incomm && any(bq)
     error('sw:spinwave:Biquadratic','Biquadratic exchange can be only calculated for k=0 structures!');
 end
 
-if biq
+if any(bq)
     % Separate the biquadratic couplings
-    QQ = SS.all(1:14,SS.all(15,:)==1);
+    % Just use the SS.bq matrix produced by intmatrix(), it won't contain
+    % the transpose matrices (not necessary for biquadratic exchange)
+    % TODO check whether to keep the transposed matrices to be sure
+    SS.bq = SS.all(1:6,bq);
     % Keep only the quadratic exchange couplings
     SS.all = SS.all(1:14,SS.all(15,:)==0);
 end
@@ -405,42 +408,50 @@ idxA1 = [atom1'         atom2'         ];
 idxA2 = [atom1'         atom1'         ];
 idxB  = [atom1'         atom2'+nMagExt ];
 % transpose of idxB
-idxC  = [atom2'+nMagExt atom1'         ];
+%idxC  = [atom2'+nMagExt atom1'         ]; % SP1
 idxD1 = idxA1+nMagExt;
 idxD2 = [atom2'+nMagExt atom2'+nMagExt ];
 idxMF = [(1:2*nMagExt)' (1:2*nMagExt)' ];
 
 % Calculate matrix elements for biquadratic exchange
-if biq
-    dR       = QQ(1:3,:);
-    biqAtom1 = QQ(4,:);
-    biqAtom2 = QQ(5,:);
+if any(bq)
+    bqdR    = SS.bq(1:3,:);
+    bqAtom1 = SS.bq(4,:);
+    bqAtom2 = SS.bq(5,:);
+    bqJJ    = SS.bq(6,:);
+    nbqCoupling = numel(bqJJ);
 
     % matrix elements: M,N,P,Q
-    BQM = sum(eta(:,biqAtom1).*eta(:,biqAtom2),1);
-    BQN = sum(eta(:,biqAtom1).*zed(:,biqAtom2),1);
-    BQO = sum(zed(:,biqAtom1).*zed(:,biqAtom2),1);
-    BQP = sum(conj(zed(:,biqAtom1)).*zed(:,biqAtom2),1);
-    BQQ = sum(zed(:,biqAtom1).*eta(:,biqAtom2),1);
+    bqM = sum(eta(:,bqAtom1).*eta(:,bqAtom2),1);
+    bqN = sum(eta(:,bqAtom1).*zed(:,bqAtom2),1);
+    bqO = sum(zed(:,bqAtom1).*zed(:,bqAtom2),1);
+    bqP = sum(conj(zed(:,bqAtom1)).*zed(:,bqAtom2),1);
+    bqQ = sum(zed(:,bqAtom1).*eta(:,bqAtom2),1);
     
-    Si = S0(biqAtom1);
-    Sj = S0(biqAtom2);
+    Si = S0(bqAtom1);
+    Sj = S0(bqAtom2);
     % C_ij matrix elements
-    CijD = (Si.*Sj).^(3/2).*(BQM.*BQP + BQN.*conj(BQQ));
-    CijA = conj(CijD);
-    CijB = (Si.*Sj).^(3/2).*(BQM.*BQO + BQN.*BQQ);
-    CijC = conj(CijB);
-    CijE = Si.*Sj.^2.*(conj(BQQ).*BQQ - 2*BQM.*BQM);
-    CijF = Si.^2.*Sj.*(conj(BQN).*BQN - 2*BQM.*BQM);
-    CijG = 0.5*Si.*Sj.^2.*BQP.^2;
+    bqA0 = (Si.*Sj).^(3/2).*(bqM.*conj(bqP) + bqQ.*conj(bqN)).*bqJJ;
+    bqB0 = (Si.*Sj).^(3/2).*(bqM.*bqO + bqQ.*bqN).*bqJJ;
+    bqC  = Si.*Sj.^2.*(conj(bqQ).*bqQ - 2*bqM.^2).*bqJJ;
+    bqD  = Si.*Sj.^2.*(bqQ).^2.*bqJJ;
+
     % Creates the serial indices for every matrix element in ham matrix.
-    idxbqA = [biqAtom1' biqAtom2'];
-    idxbqB = [biqAtom1' biqAtom2'+nMagExt];
-    idxbqC = idxbqB(:,[2 1]); % transpose 
-    idxbqD = idxA1+nMagExt;
-    idxbqE = [biqAtom1' biqAtom1']; % also for 
-    idxbqE = [biqAtom2' biqAtom2']; 
-    idxbqG = [];
+    % Aij(k) matrix elements (b^+ b)
+    idxbqA  = [bqAtom1' bqAtom2'];
+    % b b^+ elements
+    idxbqA2 = [bqAtom1' bqAtom2']+nMagExt;
+    
+    % Bij(k) matrix elements (b^+ b^+)
+    idxbqB  = [bqAtom1' bqAtom2'+nMagExt];
+    % transpose of B (b b)
+    %idxbqB2 = [bqAtom2'+nMagExt bqAtom1']; % SP2
+    
+    idxbqC  = [bqAtom1' bqAtom1'];
+    idxbqC2 = [bqAtom1' bqAtom1']+nMagExt;
+    
+    idxbqD  = [bqAtom1' bqAtom1'+nMagExt];
+    %idxbqD2 = [bqAtom1'+nMagExt bqAtom1]; % SP2
 
 end
 
@@ -591,24 +602,49 @@ for jj = 1:nSlice
     A1 = bsxfun(@times,     AD0 ,ExpF);
     B  = bsxfun(@times,     BC0 ,ExpF);
     D1 = bsxfun(@times,conj(AD0),ExpF);
-    
+
+
+        
     % Store all indices
-    idxAll = [idxA1; idxB; idxC; idxD1];
+    % SP1: speedup for creating the matrix elements
+    %idxAll = [idxA1; idxB; idxC; idxD1]; % SP1
+    idxAll   = [idxA1; idxB; idxD1];
     % Store all matrix elements
-    ABCD   = [A1     B     conj(B)  D1];
+    %ABCD   = [A1     B     conj(B)  D1]; % SP1
+    ABCD   = [A1     2*B      D1];
     
     % Stores the matrix elements in ham.
-    idx3   = repmat(1:nHklMEM,[4*nCoupling 1]);
+    %idx3   = repmat(1:nHklMEM,[4*nCoupling 1]); % SP1
+    idx3   = repmat(1:nHklMEM,[3*nCoupling 1]);
     idxAll = [repmat(idxAll,[nHklMEM 1]) idx3(:)];
     idxAll = idxAll(:,[2 1 3]);
-    
+
     ABCD   = ABCD';
+
     
     % quadratic form of the boson Hamiltonian stored as a square matrix
     ham = accumarray(idxAll,ABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
     
     ham = ham + repmat(accumarray([idxA2; idxD2],2*[A20 D20],[1 1]*2*nMagExt),[1 1 nHklMEM]);
     
+    if any(bq)
+        bqExpF = exp(1i*permute(sum(repmat(bqdR,[1 1 nHklMEM]).*repmat(...
+            permute(hklExtMEM,[1 3 2]),[1 nbqCoupling 1]),1),[2 3 1]))';
+        bqA  = bsxfun(@times,     bqA0, bqExpF);
+        bqA2 = bsxfun(@times,conj(bqA0),bqExpF);
+        bqB  = bsxfun(@times,     bqB0, bqExpF);
+        idxbqAll = [idxbqA; idxbqA2; idxbqB];
+        bqABCD = [bqA bqA2 2*bqB];
+        bqidx3   = repmat(1:nHklMEM,[3*nbqCoupling 1]);
+        idxbqAll = [repmat(idxbqAll,[nHklMEM 1]) bqidx3(:)];
+        idxbqAll = idxbqAll(:,[2 1 3]);
+        bqABCD = bqABCD';
+        % add biquadratic exchange
+        ham = ham + accumarray(idxbqAll,bqABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
+        % add diagonal terms
+        ham = ham + repmat(accumarray([idxbqC; idxbqC2; idxbqD],[bqC bqC 2*bqD],[1 1]*2*nMagExt),[1 1 nHklMEM]);
+
+    end
     if any(SI.field)
         % different field for different twin
         for ii = min(twinIdxMEM):max(twinIdxMEM)

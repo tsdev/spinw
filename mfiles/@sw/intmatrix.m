@@ -37,7 +37,7 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %
 % Output:
 %
-% SS            Structure with  fields {iso,aniso,dm,gen,biq}. It describes
+% SS            Structure with  fields {iso,aniso,dm,gen,bq}. It describes
 %               the interactions between spins. Every field is a matrix,
 %               where every column is a coupling between two spins. The
 %               first 3 rows contain the unit cell translation vector
@@ -267,11 +267,11 @@ if param.fitmode < 2
     end
     
     % Select only the isotropic exchange. Remove zero value elements.
-    JJ.biq = squeeze(JJ.mat(1,1,:))';
-    SS.biq = [SS.all(:,JJ.type == 5); JJ.iso(1,JJ.type == 5)];
+    JJ.bq = squeeze(JJ.mat(1,1,:))';
+    SS.bq = [SS.all(:,JJ.type == 5); JJ.iso(1,JJ.type == 5)];
     
-    if ~isempty(SS.biq)
-        SS.biq = SS.biq(:,SS.biq(6,:)~=0);
+    if ~isempty(SS.bq)
+        SS.bq = SS.bq(:,SS.bq(6,:)~=0);
     end
     
     % Select only the anisotropic exchange. Remove zero value elements.
@@ -365,6 +365,8 @@ if param.conjugate
     % Introduce the opposite couplings.
     % (i-->j) and (j-->i)
     % transpose the JJ matrix as well [1 2 3 4 5 6 7 8 9] --> [6 9 12 7 10 13 8 11 14]
+    % this step is not necessary for diagonal exchange matrices and
+    % biquadratic exchange
     if numel(SS.all) > 0
         new         = [SS.all(1:3,:)   -SS.all(1:3,:)  ];
         new(4:5,:)  = [SS.all([4 5],:)  SS.all([5 4],:)];

@@ -16,6 +16,9 @@ function spectra = sw_omegasum(spectra, varargin)
 %           value is 1e-5.
 % zeroint   The minimum intensity value, below the mode is dropped. Default
 %           value is zero (no modes are dropped due to weak intensity).
+% emptyval  Value that is assigned to modes, that are removed due to the
+%           summation. Default value is NaN (good for plotting). Zero can
+%           be used for further numerical treatmen.
 %
 % See also SW.SPINWAVE, SW_EGRID.
 %
@@ -24,9 +27,9 @@ if iscell(spectra.omega)
     error('sw_omegasum:NoTwin','The sw_omegasum() function doesn''t work for spectra calculated for multiple twins!');
 end
 
-inpForm.fname  = {'tol' 'zeroint'};
-inpForm.defval = {1e-5  0        };
-inpForm.size   = {[1 1] [1 1]    };
+inpForm.fname  = {'tol' 'zeroint' 'emptyval'};
+inpForm.defval = {1e-5  0         NaN       };
+inpForm.size   = {[1 1] [1 1]     [1 1]     };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -34,7 +37,7 @@ tol = param.tol;
 omega    = real(spectra.omega);
 omega(isnan(omega)) = 0;
 omega(omega<0) = 0;
-omegaCol = omega*NaN;
+omegaCol = omega*0+param.emptyval(1);
 intCol   = omegaCol;
 
 nQ = size(omega,2);

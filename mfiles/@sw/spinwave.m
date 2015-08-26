@@ -553,10 +553,10 @@ if iscell(param.formfact) || param.formfact
         % save the form factor information in the output
         spectra.formfact = obj.unit_cell.label(obj.unit_cell.S>0);
     else
-        if numel(param.formfact) ~= numel(obj.matom.idx)
+        if numel(param.formfact) ~= unique(obj.matom.idx)
             error('sw:spinwave:WrongInput',['Number of form factor '...
-                'parameters has to equal to the number of magnetic '...
-                'atoms in the unit cell!'])
+                'parameters has to equal to the number of symmetry inequivalent '...
+                'magnetic atoms in the unit cell!'])
         end
         % use the labels given as a cell input for all symmetry
         % inequivalent atom

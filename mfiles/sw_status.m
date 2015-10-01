@@ -33,11 +33,11 @@ if start == 0
     rtime = rtime-hou*60^2;
     min = floor(rtime/60);
     sec = floor(rtime - min*60);
-    fprintf([repmat('\b',[1 40]) '%6.2f%%, remained: %02d:%02d:%02d (HH:MM:SS).\n'],...
+    fprintf([repmat('\b',[1 41]) '%6.2f%%, remained: %03d:%02d:%02d (HH:MM:SS).\n'],...
         percent,hou,min,sec);
 elseif start == 1
     tic
-    fprintf([repmat(' ',[1 39]) '\n']);
+    fprintf([repmat(' ',[1 40]) '\n']);
 elseif start == 2
     etime = double(toc);
     fprintf(repmat('\b',1,40));

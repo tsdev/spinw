@@ -12,7 +12,7 @@ function publish_PSI(fName, DirName)
 
 if nargin < 2
     % list of files in the publish folder:
-    pubfolder = [sw_rootdir 'doc' filesep 'publish'];
+    pubfolder = [sw_rootdir 'tutorials' filesep 'publish'];
 else
     pubfolder = DirName;
 end

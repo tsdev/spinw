@@ -24,6 +24,11 @@ function spectra = powspec(obj, hklA, varargin)
 %           is @spinwave.
 % extrap    If true, arbitrary additional parameters are passed over to
 %           the spectrum calculation function.
+% fibo      If true, instead of random sampling of the unit sphere the
+%           Fibonacci numerical integration is implemented as described in:
+%           J. Phys. A: Math. Gen. 37 (2004) 11591
+%           The number of points on the sphere is given by the largest
+%           Fibonacci number below nRand. Default is false.
 %
 % Output:
 %
@@ -78,9 +83,9 @@ inpForm.fname  = [inpForm.fname  {'Hermit' 'gtensor' 'title' 'specfun' }];
 inpForm.defval = [inpForm.defval {true     false     title0  @spinwave }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'extrap' }];
-inpForm.defval = [inpForm.defval {false    }];
-inpForm.size   = [inpForm.size   {[1 1]    }];
+inpForm.fname  = [inpForm.fname  {'extrap' 'fibo'}];
+inpForm.defval = [inpForm.defval {false    false }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1] }];
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -94,9 +99,34 @@ if fid
     sw_status(0,1);
 end
 
+if param.fibo
+    % apply the Fibonacci numerical integration on a sphere
+    % according to J. Phys. A: Math. Gen. 37 (2004) 11591
+    % create QF points on the unit sphere
+    
+    [F,F1] = sw_fibo(param.nRand);
+    param.nRand = F;
+    
+    QF = zeros(3,F);
+    
+    j = 0:(F-1);
+    QF(3,:) = j*2/F-1;
+    
+    theta = asin(QF(3,:));
+    phi   = 2*pi*F1/F*j;
+    
+    QF(1,:) = cos(theta).*sin(phi);
+    QF(2,:) = cos(theta).*cos(phi);
+    
+end
+
 for ii = 1:nQ
-    rQ  = randn(3,param.nRand);
-    Q   = bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2)))*hklA(ii);
+    if param.fibo
+        Q = QF*hklA(ii);
+    else
+        rQ  = randn(3,param.nRand);
+        Q   = bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2)))*hklA(ii);
+    end
     hkl = (Q'*obj.basisvector)'/2/pi;
     
     % no output from spinwave() function
@@ -107,7 +137,7 @@ for ii = 1:nQ
         warnState = warning('off','sw_readparam:UnreadInput');
         specQ = param.specfun(obj,hkl,varargin{:});
         warning(warnState);
-
+        
     else
         specQ = param.specfun(obj,hkl,'fitmode',true,'notwin',true,'Hermit',param.Hermit,...
             'formfact',param.formfact,'formfactfun',param.formfactfun,'gtensor',param.gtensor);

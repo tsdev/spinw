@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tutorial11</title><meta name="generator" content="MATLAB 8.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-06-13"><meta name="DC.source" content="tutorial11.m"><style type="text/css">
+      --><title>tutorial11</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-08-24"><meta name="DC.source" content="tutorial11.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -38,11 +38,12 @@ ol li ul li { list-style:square; }
 
 .content { font-size:1.2em; line-height:140%; padding: 20px; }
 
-pre, tt, code { font-size:12px; }
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
 pre { margin:0px 0px 20px; }
-pre.error { color:red; }
 pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
 pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
 
 @media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
 
@@ -70,11 +71,15 @@ Jp  = 2;
 Jpp = 2;
 Jc  = 38;
 
-lacuo = sw_model(<span class="string">'squareAF'</span>,[J-Jc/2 Jp-Jc/4 Jpp],0);
+lacuo = sw_model(<span class="string">'squareAF'</span>,[J-Jc/2 Jp-Jc/4 Jpp]/2,0);
 lacuo.unit_cell.S = 1/2;
 plot(lacuo,<span class="string">'range'</span>,[2 2 1],<span class="string">'zoom'</span>,-1)
-</pre><img vspace="5" hspace="5" src="tutorial11_01.png" alt=""> <h2>Magnon dispersion and intensity<a name="2"></a></h2><p>We plot the magnon dispersion and the neutron scattering intensity that can be directly compared to the paper.</p><pre class="codeinput">Qlist = {[3/4 1/4 0] [1/2 1/2 0] [1/2 0 0] [3/4 1/4 0] [1 0 0] [1/2 0 0] 100};
+</pre><img vspace="5" hspace="5" src="tutorial11_01.png" alt=""> <h2>Magnon dispersion and intensity<a name="2"></a></h2><p>We plot the magnon dispersion and the neutron scattering intensity that can be directly compared to the paper. We manually apply the quantum renormalization factor on the energies.</p><pre class="codeinput">Zc = 1.18;
+
+Qlist = {[3/4 1/4 0] [1/2 1/2 0] [1/2 0 0] [3/4 1/4 0] [1 0 0] [1/2 0 0] 100};
 lacuoSpec = lacuo.spinwave(Qlist,<span class="string">'hermit'</span>,false);
+lacuoSpec.omega = lacuoSpec.omega*Zc;
+
 lacuoSpec = sw_neutron(lacuoSpec);
 lacuoSpec = sw_egrid(lacuoSpec,<span class="string">'component'</span>,<span class="string">'Sperp'</span>);
 figure
@@ -82,7 +87,9 @@ sw_plotspec(lacuoSpec,<span class="string">'mode'</span>,3,<span class="string">
 figure
 lacuoSpec = sw_omegasum(lacuoSpec,<span class="string">'zeroint'</span>,1e-5,<span class="string">'tol'</span>,1e-3);
 sw_plotspec(lacuoSpec,<span class="string">'mode'</span>,2,<span class="string">'axLim'</span>,[0 20],<span class="string">'dashed'</span>,true,<span class="string">'colormap'</span>,[0 0 0])
-</pre><img vspace="5" hspace="5" src="tutorial11_02.png" alt=""> <img vspace="5" hspace="5" src="tutorial11_03.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="tutorial11_02.png" alt=""> <img vspace="5" hspace="5" src="tutorial11_03.png" alt=""> <pre>Written by
+Sandor Toth
+16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Spin wave spectrum of La2CuO4
 % Crystal structure of La2CuO4 contains Cu2+ atoms with S = 1/2 spin on a
@@ -96,16 +103,21 @@ Jp  = 2;
 Jpp = 2;
 Jc  = 38;
 
-lacuo = sw_model('squareAF',[J-Jc/2 Jp-Jc/4 Jpp],0);
+lacuo = sw_model('squareAF',[J-Jc/2 Jp-Jc/4 Jpp]/2,0);
 lacuo.unit_cell.S = 1/2;
 plot(lacuo,'range',[2 2 1],'zoom',-1)
 
 %% Magnon dispersion and intensity
 % We plot the magnon dispersion and the neutron scattering intensity that
-% can be directly compared to the paper.
+% can be directly compared to the paper. We manually apply the quantum
+% renormalization factor on the energies.
+
+Zc = 1.18;
 
 Qlist = {[3/4 1/4 0] [1/2 1/2 0] [1/2 0 0] [3/4 1/4 0] [1 0 0] [1/2 0 0] 100};
 lacuoSpec = lacuo.spinwave(Qlist,'hermit',false);
+lacuoSpec.omega = lacuoSpec.omega*Zc;
+
 lacuoSpec = sw_neutron(lacuoSpec);
 lacuoSpec = sw_egrid(lacuoSpec,'component','Sperp');
 figure
@@ -113,5 +125,10 @@ sw_plotspec(lacuoSpec,'mode',3,'axLim',[0 5],'dE',35,'dashed',true)
 figure
 lacuoSpec = sw_omegasum(lacuoSpec,'zeroint',1e-5,'tol',1e-3);
 sw_plotspec(lacuoSpec,'mode',2,'axLim',[0 20],'dashed',true,'colormap',[0 0 0])
+
+%%
+%  Written by
+%  Sandor Toth
+%  16-June-2014
 ##### SOURCE END #####
 --></body></html>

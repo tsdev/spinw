@@ -635,6 +635,7 @@ for jj = 1:nSlice
         bqA2 = bsxfun(@times,conj(bqA0),bqExpF);
         bqB  = bsxfun(@times,     bqB0, bqExpF);
         idxbqAll = [idxbqA; idxbqA2; idxbqB];
+        %bqABCD = [bqA bqA2 2*bqB];
         bqABCD = [bqA bqA2 2*bqB];
         bqidx3   = repmat(1:nHklMEM,[3*nbqCoupling 1]);
         idxbqAll = [repmat(idxbqAll,[nHklMEM 1]) bqidx3(:)];

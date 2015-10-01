@@ -10,16 +10,21 @@ Jp  = 2;
 Jpp = 2;
 Jc  = 38;
 
-lacuo = sw_model('squareAF',[J-Jc/2 Jp-Jc/4 Jpp],0);
+lacuo = sw_model('squareAF',[J-Jc/2 Jp-Jc/4 Jpp]/2,0);
 lacuo.unit_cell.S = 1/2;
 plot(lacuo,'range',[2 2 1],'zoom',-1)
 
 %% Magnon dispersion and intensity
 % We plot the magnon dispersion and the neutron scattering intensity that
-% can be directly compared to the paper.
+% can be directly compared to the paper. We manually apply the quantum
+% renormalization factor on the energies.
+
+Zc = 1.18;
 
 Qlist = {[3/4 1/4 0] [1/2 1/2 0] [1/2 0 0] [3/4 1/4 0] [1 0 0] [1/2 0 0] 100};
 lacuoSpec = lacuo.spinwave(Qlist,'hermit',false);
+lacuoSpec.omega = lacuoSpec.omega*Zc;
+
 lacuoSpec = sw_neutron(lacuoSpec);
 lacuoSpec = sw_egrid(lacuoSpec,'component','Sperp');
 figure

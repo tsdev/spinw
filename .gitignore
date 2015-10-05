@@ -4,3 +4,5 @@ docs/_build/
 dat_files/symmetry.dat
 
 dat_files/symmetry.dat
+
+.DS_Store

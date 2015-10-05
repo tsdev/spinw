@@ -107,10 +107,10 @@ inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           1      1e4      
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 1]  [1 1]     [1 -4] }];
 inpForm.soft   = [inpForm.soft   {0      0        0             0      0         1      }];
 
-param = sw_readparam(inpForm, varargin{:});
-
 % creat initial magnetic structure
 warnState = warning('off','sw_readparam:UnreadInput');
+param = sw_readparam(inpForm, varargin{:});
+
 obj.genmagstr(param);
 
 % starting magnetic structure from sw object

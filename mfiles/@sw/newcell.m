@@ -103,7 +103,7 @@ rExt = bsxfun(@plus,rExt,bshift);
 rNew = inv(Tn_o)*rExt; %#ok<MINV>
 
 % cut atoms outside of the unit cell
-idxCut = any((rNew<0) | (rNew>=1),1);
+idxCut = any((rNew<0) | (rNew>=(1-eps)),1);
 rNew(:,idxCut) = [];
 idxExt(idxCut) = [];
 Sext(idxCut)   = [];

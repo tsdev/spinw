@@ -9,7 +9,7 @@ function addcoupling2(obj, varargin)
 %
 % Options:
 %
-% matrix        Label or index of the matrix that will be assigned to
+% mat           Label or index of the matrix that will be assigned to
 %               selected bonds.
 % bond          Selects the interacting atom pairs through the
 %               obj.coupling.idx number. The coupling.idx numbers are in
@@ -56,19 +56,19 @@ if ~any(obj.atom.mag)
     error('sw:addcoupling:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 
-inpForm.fname  = {'matrix' 'bond' 'atom' 'subIdx' 'type'};
-inpForm.defval = {[]       []     []      []      []    };
-inpForm.size   = {[1 -1]   [1 -2] [-3 -4] [1 -5]  [1 -6]};
-inpForm.soft   = {false    false  true    true    true  };
+inpForm.fname  = {'mat'  'bond' 'atom' 'subIdx' 'type'};
+inpForm.defval = {[]     []     []      []      []    };
+inpForm.size   = {[1 -1] [1 -2] [-3 -4] [1 -5]  [1 -6]};
+inpForm.soft   = {false  false  true    true    true  };
 
 param = sw_readparam(inpForm, varargin{:});
 
-if ~isnumeric(param.matrix)
-    param.matrix = find(ismember(obj.matrix.label,param.matrix));
+if ~isnumeric(param.mat)
+    param.mat = find(ismember(obj.matrix.label,param.mat));
 end
 
 if isempty(param.type)
-    param.type = 0*param.matrix;
+    param.type = 0*param.mat;
 end
 
 if ischar(param.type)
@@ -90,7 +90,7 @@ if iscell(param.type)
     
 end
 
-if any(size(param.matrix)~=size(param.type))
+if any(size(param.mat)~=size(param.type))
     error('sw:addcoupling:WrongInput',['A coupling type has to be '...
         'provided for each input matrix!'])
 end
@@ -157,10 +157,10 @@ end
 Jmod = obj.coupling.mat_idx(:,idx);
 Tmod = obj.coupling.type(:,idx);
 
-param.matrix = int32(param.matrix);
+param.mat = int32(param.mat);
 param.type   = int32(param.type);
 
-if any(ismember(Jmod(:),param.matrix))
+if any(ismember(Jmod(:),param.mat))
     warning('sw:addcoupling:CouplingIdxWarning',['Same matrix already '...
         'assigned on some coupling!']);
 end
@@ -170,9 +170,9 @@ if any(Jmod(3,:))
         'number of allowed couplings (3) per bond is reached!']);
 end
 
-for ii = 1:numel(param.matrix)
+for ii = 1:numel(param.mat)
     idxSel = sub2ind(size(Jmod),sum(Jmod>0,1)+1,1:size(Jmod,2));
-    Jmod(idxSel) = param.matrix(ii);
+    Jmod(idxSel) = param.mat(ii);
     Tmod(idxSel) = param.type(ii);
 end
 

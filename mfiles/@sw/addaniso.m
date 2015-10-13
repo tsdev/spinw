@@ -40,6 +40,8 @@ function addaniso(obj, matrixIdx, varargin)
 % See also SW, SW.ADDCOUPLING, SW.ADDG, SW.ADDMATRIX.
 %
 
+% TODO
+
 mAtom    = obj.matom;
 nMagAtom = size(mAtom.idx,2);
 

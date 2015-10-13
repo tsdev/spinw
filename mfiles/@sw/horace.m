@@ -1,9 +1,9 @@
 function [w, s] = horace(obj, qh, qk, ql, varargin)
 % calculates spin wave dispersion/correlation functions to be called from Horace
 %
-% [w, s] = HORACE(obj, qh, qk, ql, p) 
+% [w, s] = HORACE(obj, qh, qk, ql, p)
 %
-% The function produces spin wave dispersion and intensity for Horace 
+% The function produces spin wave dispersion and intensity for Horace
 % (<a href=http://horace.isis.rl.ac.uk>http://horace.isis.rl.ac.uk</a>).
 %
 % Input:
@@ -33,6 +33,14 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %           cell) units. Default is false.
 % dE        Energy bin size, for intensity normalization. Use 1 for no
 %           division by dE in the intensity.
+% param     Input parameters for using within Tobyfit. Additional options
+%           ('mat','selector') might be necessary, for details see
+%           sw.matparser function. All extra parameters of sw.horace
+%           function will be forwarded to the sw.matparser function before
+%           calculating the spin wave spectrum (or any user written parser
+%           function).
+% func      Parser function of the 'param' input. Default is
+%           @sw.matparser. Used for Tobyfit.
 %
 % Output:
 %
@@ -56,7 +64,7 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 % scattering intensity of the spin wave model stored in cryst and plots it
 % using sliceomatic.
 %
-% See also SW, SW.SPINWAVE.
+% See also SW, SW.SPINWAVE, SW.MATPARSER.
 %
 
 if nargin <= 1
@@ -64,12 +72,18 @@ if nargin <= 1
     return;
 end
 
-inpForm.fname  = {'component' 'norm' 'dE' };
-inpForm.defval = {'Sperp'     false  0    };
-inpForm.size   = {[1 -2]      [1 1]  [1 1]};
+inpForm.fname  = {'component' 'norm' 'dE'  'func'        'param'};
+inpForm.defval = {'Sperp'     false  0     @sw.matparser []     };
+inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]         [1 -2] };
+inpForm.soft   = {false       false  false false         true   };
 
 warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});
+
+if ~isempty(param.param)
+    % change matrix values for Horace data fitting
+    param.func(obj,varargin{:});
+end
 
 if param.norm && param.dE == 0
     error('sw:horace:WrongInput',['To convert spin wave intensity to mbarn/meV/cell/sr'...

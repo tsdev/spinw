@@ -72,16 +72,10 @@ if nargin <= 1
     return;
 end
 
-<<<<<<< Updated upstream
 inpForm.fname  = {'component' 'norm' 'dE'  'func'        'param'};
 inpForm.defval = {'Sperp'     false  0     @sw.matparser []     };
 inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]         [1 -2] };
 inpForm.soft   = {false       false  false false         true   };
-=======
-inpForm.fname  = {'component' 'norm' 'dE'  'parser'      'fitpar' 'fitopt'};
-inpForm.defval = {'Sperp'     false  0     @sw.chgmatrix []       []      };
-inpForm.size   = {[1 -2]      [1 1]  [1 1] [1 1]         [1 -3]   [1 -3]};
->>>>>>> Stashed changes
 
 warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});

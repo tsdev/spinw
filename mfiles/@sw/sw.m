@@ -152,6 +152,7 @@ classdef (ConstructOnLoad) sw < handle
         Rlabel = 'Angstrom';
         Blabel = 'T';
         Tlabel = 'K';
+        ver    = sw_version;
     end
     
     methods

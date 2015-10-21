@@ -41,6 +41,7 @@ cd(sw_rootdir);
 [statSys, revNum] = system('git rev-list --count HEAD');
 
 revNum = strtrim(revNum);
+
 %strIdx = strfind(revNum,' ');
 %revNum = revNum(strIdx(end):(end-1));
 
@@ -50,6 +51,10 @@ if ~statSys
 else
     revNum = 1;
 end
+
+% add 1000 to the revision number due to the switch to git from svn
+% and keep the monotonity of revision numbers
+revNum = revNum + 1000;
 
 cd(aDir);
 
@@ -102,7 +107,7 @@ sw_initialize;
 copyfile([sw_rootdir '*'],tempDirName);
 
 % include extra comment to all m files
-mFiles = rdir([tempDirName filesep 'm_files' filesep '**' filesep '*.m']);
+mFiles = rdir([tempDirName filesep 'mfiles' filesep '**' filesep '*.m']);
 
 % go through all files and add comments
 for ii = 1:numel(mFiles)

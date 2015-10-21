@@ -47,5 +47,6 @@ objC.Qlabel = obj.Qlabel;
 objC.Rlabel = obj.Rlabel;
 objC.Blabel = obj.Blabel;
 objC.Tlabel = obj.Tlabel;
+objC.ver    = obj.ver;
 
 end

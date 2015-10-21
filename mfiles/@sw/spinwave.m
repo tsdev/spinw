@@ -465,7 +465,7 @@ end
 if param.optmem == 0
     freeMem = sw_freemem;
     if freeMem > 0
-        nSlice = ceil(nMagExt^2*nHkl*6912/sw_freemem*2);
+        nSlice = ceil(nMagExt^2*nHkl*6912/freeMem*2);
     else
         nSlice = 1;
         if ~param.fitmode

@@ -79,13 +79,13 @@ inpForm.fname  = {'nRand' 'Evect'           'T'   'formfact' 'formfactfun'};
 inpForm.defval = {100     linspace(0,1,100) T0    false      @sw_mff      };
 inpForm.size   = {[1 1]   [1 -1]            [1 1] [1 -2]     [1 1]        };
 
-inpForm.fname  = [inpForm.fname  {'Hermit' 'gtensor' 'title' 'specfun' }];
+inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' }];
 inpForm.defval = [inpForm.defval {true     false     title0  @spinwave }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'extrap' 'fibo'}];
-inpForm.defval = [inpForm.defval {false    false }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1] }];
+inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem'}];
+inpForm.defval = [inpForm.defval {false    false  0       }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]   }];
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -139,8 +139,10 @@ for ii = 1:nQ
         warning(warnState);
         
     else
-        specQ = param.specfun(obj,hkl,'fitmode',true,'notwin',true,'Hermit',param.Hermit,...
-            'formfact',param.formfact,'formfactfun',param.formfactfun,'gtensor',param.gtensor);
+        specQ = param.specfun(obj,hkl,'fitmode',true,'notwin',true,...
+            'Hermit',param.hermit,'formfact',param.formfact,...
+            'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
+            'optmem',param.optmem);
     end
     
     % reset output to original value

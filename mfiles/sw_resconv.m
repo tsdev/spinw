@@ -8,13 +8,16 @@ function M = sw_resconv(M,x,dx)
 % M     Arbitrary matrix with dimensions of (m1,m2).
 % x     Column vector of coordinates along the first dimension of the
 %       matrix.
-% dx    Standard deviation as a function of dx. Either a function handle
-%       with a header:
-%           stdG = dx(xVal)
+% dx    Full width at half maximum (FWHM) value of the Gaussian as a
+%       function of dx. Either a function handle with a header:
+%           fwhmG = dx(xVal)
 %       or a vector of polynomial coefficients that produces the right
 %       standard deviation. In this case in the function the following line
 %       will be executed:
-%           stdG = polyval(dx,xVal)
+%           fwhmG = polyval(dx,xVal)
+%       The standard deviation of the Gaussian is calculated from the given
+%       dx value using the following formula:
+%           stdG = fwhmG/2/sqrt(2*log(2)) ~ fwhmG/2.35482
 %
 % Output:
 %

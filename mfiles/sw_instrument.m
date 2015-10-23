@@ -8,8 +8,8 @@ function spectra = sw_instrument(spectra, varargin)
 %
 % Options:
 %
-% dE            Defines the energy resolution of the instrument. It can be
-%               a string, single number, vector of function hangle:
+% dE            Defines the FWHM energy resolution of the instrument. It
+%               can be a string, single number, vector of function hangle:
 %                 String    File name, that contains the FWHM energy
 %                           resolution values as a function of energy
 %                           transfer. The file has to contain two columns,
@@ -72,9 +72,13 @@ if nargin == 0
     return;
 end
 
-inpForm.fname  = {'dE'  'ki'  'Ei'  'kf'  'Ef'  'plot' 'polDeg' 'ThetaMin' 'formFact' 'dQ'  'norm' 'useRaw'};
-inpForm.defval = {0      0     0     0     0     false   5        0          'auto'    0     true    true   };
-inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]      [1 -2]    [1 1] [1 1]   [1 1]  };
+inpForm.fname  = {'dE'  'ki'  'Ei'  'kf'  'Ef'  'plot' 'polDeg' 'ThetaMin'};
+inpForm.defval = {0      0     0     0     0     false   5        0       };
+inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]    };
+
+inpForm.fname  = [inpForm.fname  {'formFact' 'dQ'  'norm' 'useRaw'}];
+inpForm.defval = [inpForm.defval { 'auto'    0     true    true   }];
+inpForm.size   = [inpForm.size   { [1 -2]    [1 1] [1 1]   [1 1]  }];
 
 param = sw_readparam(inpForm, varargin{:});
 

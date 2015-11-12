@@ -72,17 +72,17 @@ if nargin <= 1
     return;
 end
 
-inpForm.fname  = {'component' 'norm' 'dE'  'func'        'param'};
-inpForm.defval = {'Sperp'     false  0     @sw.matparser []     };
-inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]         [1 -2] };
-inpForm.soft   = {false       false  false false         true   };
+inpForm.fname  = {'component' 'norm' 'dE'  'func'         'param'};
+inpForm.defval = {'Sperp'     false  0     @obj.matparser []     };
+inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2] };
+inpForm.soft   = {false       false  false false          true   };
 
 warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});
 
 if ~isempty(param.param)
     % change matrix values for Horace data fitting
-    param.func(obj,varargin{:});
+    param.func(varargin{:});
 end
 
 if param.norm && param.dE == 0

@@ -129,6 +129,8 @@ button.setRange = uipushtool(hToolbar,'CData',icon.setRange,'TooltipString','Set
     'ClickedCallback',{@setrange hFigure},'Separator','on');
 button.figActive = uipushtool(hToolbar,'CData',icon.active,'TooltipString','Keep figure',...
     'Separator','on');
+button.ver = uipushtool(hToolbar,'CData',icon.ver,'TooltipString','Show SpinW version',...
+    'Separator','on','ClickedCallback',{@sw_logo ''});
 set(button.figActive,'ClickedCallback',{@activatefigure hFigure button.figActive icon});
 
 set(hFigure, 'WindowButtonMotionFcn', @motion_callback);

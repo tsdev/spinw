@@ -1,4 +1,4 @@
-function varargout = formula(obj)
+function varargout = formula(obj,fid)
 % returns chemical formula, mass, volume, etc.
 %
 % formula = FORMULA(obj)
@@ -26,6 +26,10 @@ function varargout = formula(obj)
 % onto the Command Window.
 %
 
+if nargin < 2
+    fid = obj.fid;
+end
+
 atom = obj.atom;
 
 m = zeros(1,numel(atom.idx));
@@ -42,13 +46,6 @@ end
 % aVogadro number (1/mol)
 nA = 6.02214129e23;
 
-% mass in gramms
-formula.m = sum(m);
-% volume in Angstrom^3
-formula.V = prod(obj.lattice.lat_const);
-% density in g/cm^3
-formula.rho = formula.m/formula.V/nA*1e24;
-
 % find fomula
 diffLabel = unique(aLabel);
 
@@ -60,6 +57,22 @@ for ii = 1:numel(diffLabel)
     numAtom{2*ii} = temp;
 end
 
+% find greates commond divider
+nForm = gcdv([numAtom{2:2:end}]);
+
+% number of formula in cell
+formula.N = nForm;
+% formula mass in gramms
+formula.m = sum(m)/nForm;
+% cell volume in Angstrom^3
+formula.V = prod(obj.lattice.lat_const);
+% density in g/cm^3
+formula.rho = formula.m/formula.V/nA*1e24;
+
+
+% divide the number of atoms in formula
+numAtom(2:2:end) = num2cell([numAtom{2:2:end}]/nForm);
+
 formula.chemform = sprintf('%s_%d ',numAtom{:});
 formula.chemlabel = numAtom(1:2:end);
 formula.chemnum = [numAtom{2:2:end}];
@@ -68,11 +81,12 @@ if nargout > 0
     varargout{1} = formula;
 end
 
-fid = obj.fid;
-
-fprintf0(fid,'Chemical formula: %s\n',formula.chemform);
-fprintf0(fid,'Mass:             %8.3f g/mol\n',formula.m);
-fprintf0(fid,'Volume:           %8.3f Angstrom^3\n',formula.V);
-fprintf0(fid,'Density:          %8.3f g/cm^3\n',formula.rho);
+if nargout == 0
+    fprintf0(fid,'Chemical formula:  %s\n',formula.chemform);
+    fprintf0(fid,'Formula mass:      %8.3f g/mol\n',formula.m);
+    fprintf0(fid,'Formula in cell:   %8d units\n',formula.N);
+    fprintf0(fid,'Cell volume:       %8.3f Angstrom^3\n',formula.V);
+    fprintf0(fid,'Density:           %8.3f g/cm^3\n',formula.rho);
+end
 
 end

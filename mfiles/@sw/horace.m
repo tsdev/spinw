@@ -158,7 +158,7 @@ for tt = 1:nTwin
 end
 
 % normalised volume fractions of the twins
-vol = spectra.obj.twin.vol/sum(spectra.obj.twin.vol);
+vol = obj.twin.vol/sum(obj.twin.vol);
 for tt = 1:nTwin
     for ii = 1:size(DSF,1)
         DSF{ii,tt}    = DSF{ii,tt}*vol(tt);

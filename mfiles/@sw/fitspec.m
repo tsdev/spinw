@@ -44,8 +44,6 @@ function fitsp = fitspec(obj, varargin)
 %
 % plot      If true, the measured dispersion is plotted together with the
 %           fit. Default is true.
-% wFact     Weigth of the spin wave enenergies, plotted as the width of the
-%           data points (vertical lines).
 % iFact     Factor of the plotted simulated spin wave intensity (red
 %           ellipsoids).
 % lShift   Vertical shift of the Q point labels on the plot.
@@ -88,10 +86,10 @@ inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           []      1     }]
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 -6]  [1 1] }];
 inpForm.soft   = [inpForm.soft   {0      0        0             0       0     }];
 
-inpForm.fname  = [inpForm.fname  {'nMax' 'hermit' 'wFact' 'iFact' 'lShift'}];
-inpForm.defval = [inpForm.defval {1e3    true     1       1/30     0      }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]   [1 1]    [1 1]  }];
-inpForm.soft   = [inpForm.soft   {0      0        0       0        0      }];
+inpForm.fname  = [inpForm.fname  {'nMax' 'hermit' 'iFact' 'lShift'}];
+inpForm.defval = [inpForm.defval {1e3    true     1/30     0      }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]    [1 1]  }];
+inpForm.soft   = [inpForm.soft   {0      0        0        0      }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -115,6 +113,12 @@ end
 
 % Read experimental data
 data = sw_readspec(param.datapath);
+
+% if any sigma is zero make it 1
+for ii = 1:numel(data)
+    data{ii}.sigma(data{ii}.sigma==0) = 1;
+end
+
 
 param0      = param;
 param0.plot = false;
@@ -252,7 +256,7 @@ for ii = 1:nConv
         
         data.Eii  = data.E(1:data.nii,jj)';
         data.Iii  = data.I(1:data.nii,jj)';
-        data.wii  = data.w(1:data.nii,jj)';
+        data.wii  = 1./(data.sigma(1:data.nii,jj).^2)';
         
         simVect   = [repmat(data.minE(jj),[1 data.nii]) sim.E repmat(data.maxE(jj),[1 data.nii])];
         
@@ -278,7 +282,7 @@ for ii = 1:nConv
                 cPoints = sw_circle([jj+Qc data.Eii(kk) 0]',[0 0 1]',sqrt(data.Eii(kk))*param.iFact,param.nPoints);
                 pHandle(end+1) = plot(cPoints(1,:),cPoints(2,:));
                 set(pHandle(end),'Color','r');
-                pHandle(end+1) = line([0 0]+jj+Qc,[-data.wii(kk)/2 data.wii(kk)/2]*param.wFact+data.Eii(kk),'Color','r','LineWidth',2);
+                pHandle(end+1) = line([0 0]+jj+Qc,[-1 1]*data.wii(kk)+data.Eii(kk),'Color','r','LineWidth',2);
             end
             
             pHandle(end+1) = line([-0.2 0.2]+jj+Qc,data.minE(jj)*[1 1],'Color','g');

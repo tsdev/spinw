@@ -38,6 +38,7 @@ axis(ax*2)
 wSize = get(gcf,'position');
 set(gcf,'position',[wSize(1:2) 560 420*0.8])
 view(3)
+set(gcf,'color','w')
 
 % add name
 text(-2.3,-1.3,2.35,'Spin','fontsize',110,'fontname','Krungthep')

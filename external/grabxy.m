@@ -1,7 +1,7 @@
-function pts = grabxy(fName, ax)
+function pts = grabxy(fName, ax, logax)
 % reads coordinates from raster image
 %
-% pts = GRABXY(fName, ax)
+% pts = GRABXY(fName, ax, {logax})
 %
 % Input:
 %
@@ -9,6 +9,11 @@ function pts = grabxy(fName, ax)
 % ax            (x,y) coordinates of the three axis points, with dimensions
 %               of 2x3. If ax is omitted or empty, GRABXY just shows the
 %               image.
+% logax         Optional input string, cn be used if the axis is in
+%               logaritmic units, possible options:
+%                   'logx'
+%                   'logy'
+%                   'logxy'
 %
 % Output:
 %
@@ -30,6 +35,10 @@ function pts = grabxy(fName, ax)
 if nargin == 0
     help grabxy
     return
+end
+
+if nargin < 3
+    logax = '';
 end
 
 % open image file
@@ -115,6 +124,28 @@ if idx>4
     pts = bsxfun(@plus,T*pts0(:,4:end),x0);
 else
     pts = zeros(2,0);
+end
+
+% convert values into logaritmic units
+switch logax
+    case 'logx'
+        idx = 1;
+    case 'logy'
+        idx = 2;
+    case 'logxy'
+        idx = [1 2];
+    case ''
+        idx = [];
+end
+
+for ii = 1:numel(idx)
+        idx0 = idx(ii);
+        coo = pts(idx0,:);
+        % limiting points
+        aLim = [min(ax(idx0,:)) max(ax(idx0,:))];
+        A = aLim(1)-aLim(2)/log(aLim(1)/aLim(2));
+        B = aLim(1)-A*log(aLim(1));
+        pts(idx0,:) = exp((coo-B)/A);
 end
 
 % close figure

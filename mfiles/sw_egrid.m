@@ -53,22 +53,36 @@ function spectra = sw_egrid(spectra, varargin)
 %           each containing any linear combination of cross sections as
 %           above, the cell array needs to have size [1 nCell].
 %
-% Evect     Vector, defined the center of the energy bins of the calculated
-%           output, dimensions ar is [1 nE]. The energy units are defined
-%           by the unit.kB property of the sw object. Default is
-%           linspace(0,1.1*maxOmega,500).
-% T         Temperature to calculate the Bose factor in units
+% Evect     Vector, defines the center/edge of the energy bins of the
+%           calculated output, dimensions are is [1 nE]. The energy units
+%           are defined by the unit.kB property of the sw object. Default
+%           value is an edge bin: linspace(0,1.1*maxOmega,501).
+% binType   String, determines the type of bin give, possible options:
+%               'cbin'    Center bin, the center of each energy bin is given.
+%               'ebin'    Edge bin, the edges of each bin is given.
+%           Default is 'ebin'.
+% T         Temperature, used to calculate the Bose factor in units
 %           depending on the Boltzmann constant (sw.unit.kB). Default
 %           temperature is taken from obj.single_ion.T. The Bose factor is
-%           includec in swConv field of the output.
+%           included in swConv field of the output.
 % sumtwin   If true, the spectra of the different twins will be summed
 %           together weighted with the normalized volume fractions. Default
 %           is true.
 % modeIdx   Select certain spin wave modes from the 2*nMagAtom number of
 %           modes to include in the output. Default is 1:2*nMagAtom to
 %           include all modes.
-% epsilon   Error limit, within two energy bin width regarded equal.
-%           Default is 1e-5.
+% epsilon   Error limit, used to determine whether a given energy bin is
+%           uniform or not. Default is 1e-5.
+% autoEmin  Due to the finite numerical precision, the spin wave energies
+%           can contain small imaginary energies. These can ruin the
+%           convoluted spectrum at low energies. To improve the spectrum,
+%           the lowest energy bin should start above the imaginary part of
+%           the spin wave energy. If 'autoEmin' is set to true, it
+%           calculates the bottom of the first energy bin automatically and
+%           overwrites the given value. Only works if the input energy bin
+%           starts with zero. Default is false.
+% imagChk   Checks that the imaginary part of the spin wave dispersion is
+%           smaller than the energy bin size. Default is true.
 %
 % The Blume-Maleev coordinate system is a cartesian coordinate system
 % with (xBM, yBM and zBM) basis vectors as follows:
@@ -87,7 +101,8 @@ function spectra = sw_egrid(spectra, varargin)
 %           [nMode nHkl].
 % T         Input temperature.
 % component Cell that contains the input component selector strings.
-% Evect     Input energy bin vector.
+% Evect     Input energy bin vector, defines the energy bin edge positions
+%           (converted from the given bin centers if necessary).
 % param     All the other input parameters.
 %
 % If 'component' parameter is a cell array or the spectra of multiple
@@ -129,7 +144,23 @@ inpForm.defval = {E0      T0    'Sperp'     true      zeros(1,0) 1e-5     };
 inpForm.size   = {[1 -1]  [1 1] [1 -2]      [1 1]     [1 -4]     [1 1]    };
 inpForm.soft   = {true    false false       false     false      false    };
 
+inpForm.fname  = [inpForm.fname  {'autoEmin' 'imagChk' 'binType'}];
+inpForm.defval = [inpForm.defval {false       true       'ebin'  }];
+inpForm.size   = [inpForm.size   {[1 1]      [1 1]      [1 -5]  }];
+inpForm.soft   = [inpForm.soft   {false      false      false   }];
+
 param = sw_readparam(inpForm, varargin{:});
+
+switch param.binType
+    case 'ebin'
+        eBin = true;
+        param.binType = 1;
+    case 'cbin'
+        eBin = false;
+        param.binType = 2;
+    otherwise
+        error('sw_egrid:WrongInput','Wrong energy bin type!')
+end
 
 if isempty(param.Evect)
     if iscell(spectra.omega)
@@ -143,7 +174,8 @@ if isempty(param.Evect)
         Emax = 1;
     end
     
-    param.Evect = linspace(0,1.1*Emax,500);
+    param.Evect = linspace(0,1.1*Emax,501);
+    eBin = true;
 end
 
 % parse the component string
@@ -283,25 +315,61 @@ for tt = 1:nTwin
     end
 end
 
+% save the edge bins
+Evect   = sort(param.Evect);
+if eBin
+    eEvect = Evect;
+else
+    dE = diff(Evect);
+    eEvect = [Evect-[dE(1) dE]/2 Evect(end)+dE(end)/2];
+end
+
 if isfield(spectra,'omega')
     % Create vector for energy values, and put extra value below minimum and
     % above maximum for easy indexing swConv.
-    Evect   = sort(param.Evect);
     epsilon = 1e-8;
+    
+    if eBin
+        Evect  = (Evect(2:end)+Evect(1:(end-1)))/2; 
+    end
+    % energy bin parameters
+    nE       = numel(Evect);
+    dE       = diff(Evect);
+    
+    if param.imagChk
+        % find the maximum of the imaginary part of the spin wave energies
+        % checks only the first twin!
+        ioMax = max(abs(imag(omega{1}(:))));
+        
+        if ioMax > max(abs(dE(:)))
+            error('sw:egrid:BadSolution',['The imaginary part of the spin '...
+                'wave energes is larger than the bin size! Improve '...
+                'your calculation or disable imagChk option!']);
+        end
+    end
+    
+    if param.autoEmin && abs(Evect(1)-dE(1)/2)<epsilon
+        if ~exist('ioMax','var')
+            ioMax = max(abs(imag(omega{1}(:))));
+        end
+        Evect(1) = Evect(1)+ioMax+2*epsilon;
+        eEvect(1)= eEvect(1)+ioMax+2*epsilon;
+        dE(1)    = dE(1)-(ioMax+2*epsilon);
+    end
+    
     
     % if the energy bin is equally spaced a faster intexing of the
     % modes can be used
-    nE       = numel(Evect);
-    dE       = diff(Evect);
     isequalE = sum(abs(dE-dE(1))<param.epsilon) == (nE-1);
-    dE = dE(1);
     E0 = Evect(1);
     
     if ~isempty(Evect)
-        Evect = [Evect(1)-dE-epsilon; Evect(:); Evect(end)+dE+epsilon];
+        Evect = [Evect(1)-dE(1)-epsilon; Evect(:); Evect(end)+dE(end)+epsilon];
     else
         Evect = [-epsilon; epsilon];
     end
+    
+    dE = dE(1);
     
     % Create indices in the matrix by searching for the closest value, size
     % nMode x nHkl. Put all the modes to the positive side for magnon creation.
@@ -381,16 +449,16 @@ if param.sumtwin
 end
 
 
-spectra.T        = param.T;
-spectra.Evect    = param.Evect;
+spectra.T     = param.T;
+spectra.Evect = eEvect;
 
 if numel(swConv) == 1
-    spectra.swConv   = swConv{1};
-    spectra.swInt    = DSF{1};
+    spectra.swConv    = swConv{1};
+    spectra.swInt     = DSF{1};
     spectra.component = param.component{1};
 else
-    spectra.swConv   = swConv;
-    spectra.swInt    = DSF;
+    spectra.swConv    = swConv;
+    spectra.swInt     = DSF;
     spectra.component = param.component;
 end
 

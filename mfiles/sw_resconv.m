@@ -3,6 +3,11 @@ function M = sw_resconv(M,x,dx)
 %
 % M = SW_RESCONV(M,x,dx)
 %
+% This convolution keeps the integrated intensity (sum(I*dx)) constant. It
+% assumes the x vector contains the center points of the bins and the
+% distances between the generated bin edges is calculated by interpolating
+% from the distances between the given x bin center positions.
+%
 % Input:
 %
 % M     Arbitrary matrix with dimensions of (m1,m2).
@@ -29,6 +34,10 @@ function M = sw_resconv(M,x,dx)
 
 Mtemp = M * 0;
 
+% calculate bin size from center bins (x)
+bin = diff(x(:))';
+bin = [bin(1) (bin(1:(end-1))+bin(2:end))/2 bin(end)];
+
 for ii = 1:numel(x)
     % standard deviation of the energy resolution Gaussian
     if isa(dx,'function_handle')
@@ -39,7 +48,9 @@ for ii = 1:numel(x)
     
     % Gaussian with intensity normalised to 1, centered on E(ii)
     fG = exp(-((x-x(ii))/stdG).^2/2);
-    fG = fG/sum(fG);
+    % proper normalization should work for unequal bins
+    %fG = fG/sum(fG);
+    fG = fG/sqrt(2*pi)/stdG*bin(ii);
     
     Mtemp = Mtemp + fG * M(ii,:);
     

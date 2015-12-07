@@ -42,6 +42,10 @@ nStack = size(M,3);
 if sortMode
     [V, D] = eigenshuffle(M);
     
+% Use OpenMP parallelised mex file if it exists
+elseif exist('eig_omp')==3
+    [V, D] = eig_omp(M);
+    
 else
     V = zeros(nMat,nMat,nStack);
     D = zeros(nMat,nStack);

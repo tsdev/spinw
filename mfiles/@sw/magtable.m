@@ -1,4 +1,4 @@
-function moments = magtable(obj)
+function moments = magtable(obj, restore)
 % creates tabulated list of all magnetic moments stored in obj
 %
 % moments = MAGTABLE(obj)
@@ -29,6 +29,9 @@ function moments = magtable(obj)
 % See also SW.GENMAGSTR.
 %
 
+if nargin==1
+  restore=0;
+end
 
 M0 = obj.mag_str.S;
 S0 = sqrt(sum(M0.^2,1));
@@ -68,7 +71,7 @@ moments.e1 = e1;
 moments.e2 = e2;
 moments.e3 = e3;
 
-mAtom = obj.matom;
+mAtom = obj.matom(restore);
 nExt  = double(obj.mag_str.N_ext);
 
 % Create mAtom.Sext matrix.

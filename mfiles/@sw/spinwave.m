@@ -304,7 +304,9 @@ twinIdx = twinIdx(:);
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
-if param.fitmode
+if param.fitmode==3
+    [SS, SI, RR] = obj.intmatrix('fitmode',3,'conjugate',true);
+elseif param.fitmode
     [SS, SI, RR] = obj.intmatrix('fitmode',2,'conjugate',true);
 else
     [SS, SI, RR] = obj.intmatrix('conjugate',true);
@@ -358,7 +360,7 @@ end
 % e3||Si,ata
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 % e1 = e2 x e3
-magTab = obj.magtable;
+magTab = obj.magtable(param.fitmode==3);
 
 zed = magTab.e1 + 1i*magTab.e2;
 eta = magTab.e3;
@@ -463,13 +465,29 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if param.optmem == 0
-    freeMem = sw_freemem;
-    if freeMem > 0
-        nSlice = ceil(nMagExt^2*nHkl*6912/freeMem*2);
+    if param.fitmode == 3
+        if ~isfield(obj.lattice,'nSlice')
+            freeMem = sw_freemem;
+            nSlice = 1;
+            if freeMem > 0
+                nSlice = ceil(nMagExt^2*nHkl*6912/freeMem*2);
+            end
+            obj.lattice.nSlice = nSlice;
+        else
+            nSlice = obj.lattice.nSlice;
+        end
     else
-        nSlice = 1;
-        if ~param.fitmode
-            warning('sw:spinwave:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
+        freeMem = sw_freemem;
+        if freeMem > 0
+            nSlice = ceil(nMagExt^2*nHkl*6912/freeMem*2);
+        else
+            nSlice = 1;
+            if ~param.fitmode
+                warning('sw:spinwave:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
+            end
+        if isfield(obj.lattice,'nSlice')
+            rmfield(obj.lattice,'nSlice');
+        end
         end
     end
 else
@@ -714,11 +732,11 @@ for jj = 1:nSlice
         % All the matrix calculations are according to White's paper
         % R.M. White, et al., Physical Review 139, A450?A454 (1965)
         
-        %gham = 0*ham;
-        %for ii = 1:nHklMEM
-        %    gham(:,:,ii) = gComm*ham(:,:,ii);
-        %end
-        gham = mmat(gComm,ham);
+        gham = 0*ham;
+        for ii = 1:nHklMEM
+            gham(:,:,ii) = gComm*ham(:,:,ii);
+        end
+        %gham = mmat(gComm,ham);
         
         [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
         

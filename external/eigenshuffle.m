@@ -152,16 +152,25 @@ end
 Vseq = zeros(p,p,n);
 Dseq = zeros(p,n);
 
-for i = 1:n
-    [V,D] = eig(Asequence(:,:,i));
-    D = diag(D);
-    % initial ordering is purely in decreasing order.
-    % If any are complex, the sort is in terms of the
-    % real part.
-    [~,tags] = sort(real(D),1,'descend');
+if n>1 && exist('eig_omp')==3
+    [Vseq,Dseq] = eig_omp(Asequence);
+    for i = 1:n
+        [~,tags] = sort(real(Dseq(:,i)),1,'descend');
+        Dseq(:,i) = Dseq(tags,i);
+        Vseq(:,:,i) = Vseq(:,tags,i);
+    end
+else
+    for i = 1:n
+        [V,D] = eig(Asequence(:,:,i));
+        D = diag(D);
+        % initial ordering is purely in decreasing order.
+        % If any are complex, the sort is in terms of the
+        % real part.
+        [~,tags] = sort(real(D),1,'descend');
     
-    Dseq(:,i) = D(tags);
-    Vseq(:,:,i) = V(:,tags);
+        Dseq(:,i) = D(tags);
+        Vseq(:,:,i) = V(:,tags);
+    end
 end
 
 % was there only one eigenvalue problem?

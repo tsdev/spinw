@@ -45,7 +45,7 @@ function spectra = sw_instrument(spectra, varargin)
 % Ef            Final neutron energy in meV.
 %
 % norm          If true, the data is normalized to mbarn units. Default is
-%               true. If no g-tensor is included in the spin wave
+%               false. If no g-tensor is included in the spin wave
 %               calculation, g-tensor = 2 is assumed here.
 % useRaw        If false, the already modified spectra.swConv field is
 %               modified further instead of the original powder spectrum
@@ -77,7 +77,7 @@ inpForm.defval = {0      0     0     0     0     false   5        0       };
 inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]    };
 
 inpForm.fname  = [inpForm.fname  {'formFact' 'dQ'  'norm' 'useRaw'}];
-inpForm.defval = [inpForm.defval { 'auto'    0     true    true   }];
+inpForm.defval = [inpForm.defval { 'auto'    0     false   true   }];
 inpForm.size   = [inpForm.size   { [1 -2]    [1 1] [1 1]   [1 1]  }];
 
 param = sw_readparam(inpForm, varargin{:});
@@ -129,10 +129,14 @@ elseif numel(param.dE)>1
     
 end
 
+% center bin positions
+cEvect = (spectra.Evect(1:(end-1))+spectra.Evect(2:end))/2;
+
 % include resolution
 if calcres
     for jj = 1:nPlot
-        spectra.swConv{jj} = sw_resconv(spectra.swConv{jj},spectra.Evect',param.dE);
+        %spectra.swConv{jj} = sw_resconv(spectra.swConv{jj},cEvect',param.dE);
+        spectra.swConv{jj} = sw_resconv(real(spectra.swConv{jj}),cEvect',param.dE);
     end
     
     fprintf0(fid0,'Finite instrumental energy resolution is applied.\n');
@@ -225,7 +229,7 @@ if FX > 0
         Emax(abs(imag(Emax))>0) = 0;
         Emin(abs(imag(Emin))>0) = 0;
         
-        Elist = repmat(spectra.Evect',[1 size(spectra.swConv{jj},2)]);
+        Elist = repmat(cEvect',[1 size(spectra.swConv{jj},2)]);
         Emin  = repmat(Emin,[size(spectra.swConv{jj},1) 1]);
         Emax  = repmat(Emax,[size(spectra.swConv{jj},1) 1]);
         
@@ -265,7 +269,8 @@ if param.norm
     
     % convert intensity to mbarn/meV units using the energy bin size
     dE = diff(spectra.Evect);
-    dE = [dE(1) (dE(2:end)+dE(1:end-1))/2 dE(end)];
+    % the new Evect is in edge bin mode
+    %dE = [dE(1) (dE(2:end)+dE(1:end-1))/2 dE(end)];
     
     for jj = 1:nPlot
         spectra.swConv{jj} = spectra.swConv{jj}*p2./repmat(dE',[1 size(spectra.swConv{jj},2)]);

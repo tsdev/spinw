@@ -204,6 +204,15 @@ Sindex = zeros(nSub,nMagExt);
 Sindex(nSub*(0:nMagExt-1)+SSc) = 1;
 Sindex      = logical(Sindex);
 
+% Remove uncoupled moments, they have should keep their original
+% orientation
+fSpin = squeeze(sum(sum(abs(AA),1),2))==0 & nNeighG==0 & sum(abs(Bloc'),2)==0;
+Sindex(:,fSpin) = false;
+
+if ~any(Sindex)
+    error('sw:optmagsteep:NoField','No spin Hamiltonian is defined!');
+end
+
 % Speeds up the code by storing every sublattice data in different cells
 csSSiG = cell(nSub,1);
 csSSJG = cell(nSub,1);

@@ -11,7 +11,7 @@ function data = sw_readspec(path)
 % constant Q. Data consists of floating point numbers separated by space
 % (first line can be a header line):
 %
-%   QH QK QL minE maxE I1 E1 w1 I2 E2 w2 ...
+%   QH QK QL minE maxE I1 E1 s1 I2 E2 s2 ...
 %       where:
 %
 % QH        H index of the Q point,
@@ -22,7 +22,7 @@ function data = sw_readspec(path)
 % In        intensity of the n-th spin wave mode,
 % En        center of the n-th spin wave mode, has to be in increasing
 %           order,
-% wn        weight of the n-th spin wave mode.
+% sn        errorbar of the corresponding energy (standard deviation)
 %
 % The number of modes in a single line of the data file is unlimited,
 % however in every line the number of modes have to be the same. Scans with
@@ -41,7 +41,7 @@ function data = sw_readspec(path)
 %
 % Example input data file (polarised scans in the (0KL) plane):
 %
-% QH    QK        QL      ENlim1  ENlim2  I1  EN1       W1    I2  EN2       W2
+% QH    QK        QL      ENlim1  ENlim2  I1  EN1       s1    I2  EN2       s2
 % [Mxx] [1 0 0]
 % 0     1        2.9992   0       15      1    3.7128   1.0   1   8.6778    1.0
 % 0     1        2.8993   0       15      1    7.0000   1.0   1   11.1249   1.0
@@ -111,7 +111,7 @@ while ~feof(fid)
         data{polIdx}.maxE  = dTemp(:,5)';
         data{polIdx}.E     = dTemp(:,7:3:end)';
         data{polIdx}.I     = dTemp(:,6:3:end)';
-        data{polIdx}.w     = dTemp(:,8:3:end)';
+        data{polIdx}.sigma = dTemp(:,8:3:end)';
         data{polIdx}.nMode = sum(data{polIdx}.I~=0,1);
         data{polIdx}.corr  = sw_parstr(modeStr{polIdx});
         

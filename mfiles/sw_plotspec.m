@@ -227,7 +227,9 @@ else
 end
 
 if isfield(spectra,'Evect')
-    yAxis = spectra.Evect;
+    % create center bin
+    Evect = spectra.Evect;
+    yAxis = (Evect(2:end)+Evect(1:(end-1)))/2;
 else
     yAxis = [min(spectra.omega(:)) max(spectra.omega(:))];
 end
@@ -508,7 +510,8 @@ if param.mode == 3
     % Gaussian energy convolution kern
     if param.dE>0
         sG = param.dE/2.35482;
-        x0 = spectra.Evect;
+        %x0 = spectra.Evect;
+        x0 = yAxis;
         dx = (x0(end)-x0(1))/(length(x0)-1);
         nG = ceil(3*sG/dx);
         xG = (-nG*dx):dx:(nG*dx);

@@ -103,7 +103,29 @@ rExt = bsxfun(@plus,rExt,bshift);
 rNew = inv(Tn_o)*rExt; %#ok<MINV>
 
 % cut atoms outside of the unit cell
-idxCut = any((rNew<0) | (rNew>=(1-eps)),1);
+%idxCut = any((rNew<0) | (rNew>=(1-eps)),1);
+idxCut = any((rNew<0) | (rNew>=1),1);
+rNew(:,idxCut) = [];
+idxExt(idxCut) = [];
+Sext(idxCut)   = [];
+
+% find equivalent positions for dubious border atoms
+idxB = find(any(rNew>=(1-eps),1));
+% find the axis which is problematic
+idxA = rNew(:,idxB)>=(1-eps);
+% loop over and check whether the atom exists already
+idxCut = [];
+for ii = 1:numel(idxB)
+    rTemp = rNew(:,idxB(ii));
+    rTemp(idxA(:,ii)) = 0;
+    % atoms indices in rNew that are equivalent to the bad atom
+    if any(sum(bsxfun(@minus,rNew,rTemp).^2,1)<eps)
+        % remove the bad behaving atom
+        idxCut = [idxCut idxB(ii)]; %#ok<AGROW>
+    end
+end
+
+% remove the necessary bad behaving atoms
 rNew(:,idxCut) = [];
 idxExt(idxCut) = [];
 Sext(idxCut)   = [];

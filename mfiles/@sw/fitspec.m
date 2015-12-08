@@ -5,9 +5,6 @@ function fitsp = fitspec(obj, varargin)
 %
 % Options:
 %
-% epsilon   Small number that controls wether the magnetic structure is
-%           incommensurate or commensurate, default value is 1e-5.
-%
 % func      Function to change the Hamiltonian in obj, it has the following
 %           header:
 %                    obj = @func(obj, x);
@@ -39,6 +36,8 @@ function fitsp = fitspec(obj, varargin)
 %           imaginary eigenvalues are expected. In this case only White's
 %           method work.
 %           Default is true.
+% epsilon   Small number that controls wether the magnetic structure is
+%           incommensurate or commensurate, default value is 1e-5.
 %
 % Parameters for visualizing the fit results:
 %

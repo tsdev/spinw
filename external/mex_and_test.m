@@ -1,15 +1,17 @@
-%clear all
-%{ 
+clear all
+% { 
 if ispc
     mex('-v','-largeArrayDims','eig_omp.cpp','-lmwlapack','COMPFLAGS=$COMPFLAGS /openmp','LINKFLAGS=$LINKFLAGS /nodefaultlib:vcomp "$MATLABROOT\bin\win64\libiomp5md.lib"')
+    mex('-v','-largeArrayDims','chol_omp.cpp','-lmwlapack','-lmwblas','COMPFLAGS=$COMPFLAGS /openmp','LINKFLAGS=$LINKFLAGS /nodefaultlib:vcomp "$MATLABROOT\bin\win64\libiomp5md.lib"')
 else
     mex('-g','-v','-largeArrayDims','eig_omp.cpp','-lmwlapack','COMPFLAGS=$COMPFLAGS -fopenmp -pthread')
+    mex('-g','-v','-largeArrayDims','chol_omp.cpp','-lmwlapack','-lmwblas','COMPFLAGS=$COMPFLAGS -fopenmp -pthread')
 end
 %}
 
 % Parameters
-%n = 50;  % Matrix size == n x n
-%nb = 500;  % Number of matrices nb
+n  = 50;   % Matrix size == n x n
+nb = 500;  % Number of matrices nb
 
 % Test matrices (real nonsymmetric, complex nonhermitian, real symmetric, complex hermitian)
 dge = rand(n);
@@ -18,7 +20,7 @@ dsy = rand(n); dsy = triu(dsy)+triu(dsy,1)';
 zhe = rand(n)+1i*rand(n); zhe = triu(zhe,1)+triu(zhe,1)'+diag(real(diag(zhe)));
 
 % Functionality tests - should not give any errors, just want to check that correct number of outputs given.
-%{
+% {
 [V,E]=eig_omp(zhe);
 D=eig_omp(zhe);
 eig_omp(zhe);
@@ -125,3 +127,57 @@ disp(sprintf('Real general     \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 
 disp(sprintf('Complex general  \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g',t1(4),t2(4),t2(4)/t1(4),abs(check3(4)),abs(check1(4,1)),abs(check1(4,2))));
 %}
 
+% Test of Cholesky factorisation routines
+% {
+chlfn{1} = @(a,b) triu(a)+eye(size(a,1))*size(a,1);
+chlfn{2} = @(a,b) triu(a)+1i*triu(b,1)+eye(size(a,1))*size(a,1);
+chlfn{3} = @(a,b) tril(a)+eye(size(a,1))*size(a,1);
+chlfn{4} = @(a,b) tril(a)+1i*tril(b,-1)+eye(size(a,1))*size(a,1); 
+chlfn{5} = @(a,b) triu(a);
+chlfn{6} = @(a,b) triu(a)+1i*triu(b,1);
+chlfn{7} = @(a,b) tril(a);
+chlfn{8} = @(a,b) tril(a)+1i*tril(b,-1);
+
+clear mm; clear K1;
+for tp=1:4
+  % These matrices should be positive definite (with large diagonal elements)
+  for ii=1:nb; mm(:,:,ii) = chlfn{tp}(rand(n),rand(n)); end
+  tic; for ii=1:nb; if(tp>2); K1(:,:,ii) = chol(mm(:,:,ii),'lower'); else; K1(:,:,ii) = chol(mm(:,:,ii)); end; end; t1(tp)=toc;
+  tic; if(tp>2); K2 = chol_omp(mm,'lower'); else; K2 = chol_omp(mm); end; t2(tp)=toc;
+  ch(tp) = sum(sum(sum(abs(K1-K2))));
+end
+for tp=5:8
+  % These matrices should not be positive definite
+  for ii=1:nb; mm(:,:,ii) = chlfn{tp}(rand(n),rand(n)); end
+  tic; for ii=1:nb; if(tp>6); [~,p1(ii)] = chol(mm(:,:,ii),'lower'); else; [~,p1(ii)] = chol(mm(:,:,ii)); end; end; t1(tp)=toc;
+  tic; if(tp>6); [~,p2] = chol_omp(mm,'lower'); else; [~,p2] = chol_omp(mm); end; t2(tp)=toc;
+  ch(tp) = sum(sum(p1-p2));
+end
+disp(sprintf('\nCholesky Test:  \tTime(chol_omp)\t   Time(chol)\t   Speedup    CholFactor diffs   PositiveDef diffs'));
+disp(sprintf('------------------------------------------------------------------------------------------------------------------'));
+disp(sprintf('Real upper       \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g',t2(1)+t2(5),t1(1)+t1(5),(t1(1)+t1(5))/(t2(1)+t2(5)),ch(1),ch(5)));
+disp(sprintf('Real lower       \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g',t2(2)+t2(6),t1(2)+t1(6),(t1(2)+t1(6))/(t2(2)+t2(6)),ch(2),ch(6)));
+disp(sprintf('Complex upper    \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g',t2(3)+t2(7),t1(3)+t1(7),(t1(3)+t1(7))/(t2(3)+t2(7)),ch(3),ch(7)));
+disp(sprintf('Complex lower    \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g',t2(4)+t2(8),t1(4)+t1(8),(t1(4)+t1(8))/(t2(4)+t2(8)),ch(4),ch(8)));
+
+if(mod(n,2)==1); n=n+1; end; 
+clear mm; clear K1; clear inv1;
+g=diag([ones(1,n/2) -ones(1,n/2)]);
+for tp=1:4
+  % These matrices should be positive definite (with large diagonal elements)
+  for ii=1:nb; mm(:,:,ii) = chlfn{tp}(rand(n),rand(n)); end
+  tic; for ii=1:nb; 
+    if(tp>2); K = chol(mm(:,:,ii),'lower'); else; K = chol(mm(:,:,ii)); end; 
+    inv1(:,:,ii)=inv(K); K1(:,:,ii)=K*g*K';
+  end; t1(tp)=toc;
+  tic; if(tp>2); [K2,inv2] = chol_omp(mm,'Colpa','lower'); else; [K2,inv2] = chol_omp(mm,'Colpa'); end; t2(tp)=toc;
+  ch(tp) = sum(sum(sum(abs(K1-K2))));
+  ch(tp+4) = sum(sum(sum(abs(inv1-inv2))));
+end
+disp(sprintf('\nColpa Test:     \tTime(chol_omp)\t   Time(chol+eig)  Speedup    K*g*K'' diffs\t inv(K) diffs'));
+disp(sprintf('------------------------------------------------------------------------------------------------------------------'));
+disp(sprintf('Real upper       \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g',t2(1),t1(1),t1(1)/t2(1),ch(1),ch(5)));
+disp(sprintf('Real lower       \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g',t2(2),t1(2),t1(2)/t2(2),ch(2),ch(6)));
+disp(sprintf('Complex upper    \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g',t2(3),t1(3),t1(3)/t2(3),ch(3),ch(7)));
+disp(sprintf('Complex lower    \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g',t2(4),t1(4),t1(4)/t2(4),ch(4),ch(8)));
+ 

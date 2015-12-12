@@ -1,4 +1,4 @@
-function [Vseq,Dseq] = eigenshuffle(Asequence)
+function [Vseq,Dseq] = eigenshuffle(Asequence, useMex, doOrth)
 % eigenshuffle: Consistent sorting for an eigenvalue/vector sequence
 % [Vseq,Dseq] = eigenshuffle(Asequence)
 %
@@ -152,13 +152,15 @@ end
 Vseq = zeros(p,p,n);
 Dseq = zeros(p,n);
 
-if n>1 && exist('eig_omp')==3
-    [Vseq,Dseq] = eig_omp(Asequence);
-    for i = 1:n
-        [~,tags] = sort(real(Dseq(:,i)),1,'descend');
-        Dseq(:,i) = Dseq(tags,i);
-        Vseq(:,:,i) = Vseq(:,tags,i);
-    end
+if(nargin<2)
+    useMex = false;
+end
+if n>1 && useMex && exist('eig_omp')==3
+    if nargin>2
+        [Vseq,Dseq] = eig_omp(Asequence,'orth','sort','descend');
+    else
+        [Vseq,Dseq] = eig_omp(Asequence,'sort','descend');
+    end 
 else
     for i = 1:n
         [V,D] = eig(Asequence(:,:,i));

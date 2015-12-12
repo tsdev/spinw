@@ -33,14 +33,25 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %           cell) units. Default is false.
 % dE        Energy bin size, for intensity normalization. Use 1 for no
 %           division by dE in the intensity.
-% param     Input parameters for using within Tobyfit. Additional options
-%           ('mat','selector') might be necessary, for details see
+% param     Input parameters (can be used also within Tobyfit). Additional
+%           options ('mat','selector') might be necessary, for details see
 %           sw.matparser function. All extra parameters of sw.horace
 %           function will be forwarded to the sw.matparser function before
 %           calculating the spin wave spectrum (or any user written parser
-%           function).
+%           function). For user written functions defined with the
+%           following header:
+%               func(obj,param)
+%           the value of the param option will be forwarded. For user
+%           functions with variable number of arguments, all input options
+%           of sw.horace will be forwarded. In this case it is recommended
+%           to use sw_readparam() function to handle the variable number
+%           arguments within func().
 % func      Parser function of the 'param' input. Default is
-%           @sw.matparser. Used for Tobyfit.
+%           @sw.matparser which can be used directly by Tobyfit. For user
+%           defined functions the minimum header has to be:
+%               func(obj,param)
+%           where obj is an sw type object, param is the parameter values
+%           forwarded from sw.horace directly.
 %
 % Output:
 %
@@ -64,7 +75,7 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 % scattering intensity of the spin wave model stored in cryst and plots it
 % using sliceomatic.
 %
-% See also SW, SW.SPINWAVE, SW.MATPARSER.
+% See also SW, SW.SPINWAVE, SW.MATPARSER, SW_READPARAM.
 %
 
 if nargin <= 1
@@ -82,7 +93,13 @@ param = sw_readparam(inpForm, varargin{:});
 
 if ~isempty(param.param)
     % change matrix values for Horace data fitting
-    param.func(varargin{:});
+    if nargin(param.func) < 0
+        param.func(varargin{:});
+    elseif nargin(param.func) == 2
+        param.func(param.param);
+    else
+        error('sw:horace:WrongInput','User defined function with incompatible header!');
+    end
 end
 
 if param.norm && param.dE == 0
@@ -92,9 +109,15 @@ end
 
 % calculate spin wave spectrum
 if nargin > 5
-    spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:});
+    % include the fitmode option to speed up calculation
+    if numel(varargin) == 1
+        varargin{1}.fitmode = 2;
+        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{1});
+    else
+        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true);
+    end
 else
-    spectra = obj.spinwave([qh(:) qk(:) ql(:)]');
+    spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',true);
 end
 warning(warnState);
 

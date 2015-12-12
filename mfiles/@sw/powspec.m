@@ -12,9 +12,14 @@ function spectra = powspec(obj, hklA, varargin)
 % Options:
 %
 % nRand     Number of random orientations per Q value, default is 100.
-% Evect     Vector, defined the energy transfer values for the
-%           convoluted output in units of meV, dimensions are [1 nE].
-%           Default is linspace(0,1,100).
+% Evect     Vector, defines the center/edge of the energy bins of the
+%           calculated output, dimensions are is [1 nE]. The energy units
+%           are defined by the unit.kB property of the sw object. Default
+%           value is an edge bin: linspace(0,1.1,101).
+% binType   String, determines the type of bin give, possible options:
+%               'cbin'    Center bin, the center of each energy bin is given.
+%               'ebin'    Edge bin, the edges of each bin is given.
+%           Default is 'ebin'.
 % T         Temperature to calculate the Bose factor in units
 %           depending on the Boltzmann constant. Default is taken from
 %           obj.single_ion.T value.
@@ -41,6 +46,7 @@ function spectra = powspec(obj, hklA, varargin)
 %           [1 nE].
 % param     Contains all the input parameters.
 % obj       The copy of the input obj object.
+% Evect     Energy grid converted to edge bins.
 %
 % Example:
 %
@@ -75,22 +81,29 @@ T0 = obj.single_ion.T;
 
 title0 = 'Powder LSWT spectrum';
 
-inpForm.fname  = {'nRand' 'Evect'           'T'   'formfact' 'formfactfun'};
-inpForm.defval = {100     linspace(0,1,100) T0    false      @sw_mff      };
-inpForm.size   = {[1 1]   [1 -1]            [1 1] [1 -2]     [1 1]        };
+inpForm.fname  = {'nRand' 'Evect'             'T'   'formfact' 'formfactfun'};
+inpForm.defval = {100     linspace(0,1.1,101) T0    false      @sw_mff      };
+inpForm.size   = {[1 1]   [1 -1]              [1 1] [1 -2]     [1 1]        };
 
 inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' }];
 inpForm.defval = [inpForm.defval {true     false     title0  @spinwave }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem'}];
-inpForm.defval = [inpForm.defval {false    false  0       }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]   }];
+inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType'}];
+inpForm.defval = [inpForm.defval {false    false  0        'ebin'   }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]   }];
 
 param  = sw_readparam(inpForm, varargin{:});
 
-nQ      = length(hklA);
-nE      = length(param.Evect);
+% number of bins along energy 
+switch param.binType
+    case 'cbin'
+        nE      = numel(param.Evect);
+    case 'ebin'
+        nE      = numel(param.Evect) - 1;
+end
+
+nQ      = numel(hklA);
 powSpec = zeros(nE,nQ);
 
 fprintf0(fid,'Calculating powder spectra:\n');
@@ -149,7 +162,8 @@ for ii = 1:nQ
     obj.fileid(fid);
     specQ = sw_neutron(specQ,'pol',false);
     specQ.obj = obj;
-    specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T);
+    % use edge grid by default
+    specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T,'binType',param.binType);
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
     if fid
         sw_status(ii/nQ*100);

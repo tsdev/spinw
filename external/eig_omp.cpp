@@ -327,7 +327,7 @@ void orth(mwSignedIndex m, double *D, double *V, double *work, bool isreal)
             if(fabs(Dr[id[ii]]-Dr[id[ii+1]])<abstol) {
                 kk = ii;
                 while(true)
-                    if(fabs(Dr[id[ii]]-Dr[id[++kk]])>abstol) 
+                    if(fabs(Dr[id[ii]]-Dr[id[++kk]])>abstol || kk>=(int)(m-1)) 
                         break;
                 // Populates a complex matrix with the degenerate eigenvectors, taking care about interleaving
                 n = 0;

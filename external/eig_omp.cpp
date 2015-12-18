@@ -23,11 +23,6 @@
  * $Revision$ ($Date$)
  *=========================================================*/
 
-#if !defined(_WIN32)
-#define dsyevr dsyevr_
-#define zheevr zheevr_
-#endif
-
 #include <cfloat>
 #include <cstring>
 #include <cmath>
@@ -214,7 +209,7 @@ void sort(mwSignedIndex m, double *D, double *V, double *work, int sort_type)
 }
 
 // This is called for real general matrices - complex conjugate eigenvectors stored in consecutive columns
-void orth(mwSignedIndex m, double *Dr, double *Di, double *Vr, double *Vi, double *work, bool isreal)
+int orth(mwSignedIndex m, double *Dr, double *Di, double *Vr, double *Vi, double *work, bool isreal)
 {
     int *id, ii, jj, kk, nn;
     mwSignedIndex n, info;
@@ -252,7 +247,7 @@ void orth(mwSignedIndex m, double *Dr, double *Di, double *Vr, double *Vi, doubl
                 }
                 kk = ii;
                 while(true)
-                    if(fabs(Dr[id[ii]]-Dr[id[++kk]])>abstol) 
+                    if(fabs(Dr[id[ii]]-Dr[id[++kk]])>abstol || kk >= (int)(m - 1))
                         break;
                 // Populates a complex matrix with the degenerate eigenvectors, taking care about interleaving
                 n = 0;
@@ -281,7 +276,7 @@ void orth(mwSignedIndex m, double *Dr, double *Di, double *Vr, double *Vi, doubl
                     if(fabs(pS[nn])<0)
                         break;
                 if((n-nn)>1)
-                    mexErrMsgIdAndTxt("eig_omp:defectivematrix","Eigenvectors of defective eigenvalues cannot be orthogonalised.");
+                    return 1;
                 // Re-interleave to Matlab output complex matrix format
                 n = 0;
                 for(jj=ii; jj<kk; jj++) {
@@ -294,10 +289,11 @@ void orth(mwSignedIndex m, double *Dr, double *Di, double *Vr, double *Vi, doubl
                 ii = jj-1;
             }
     }
+    return 0;
 }
 
 // This is called for complex general matrices - both eigenvalues and eigenvectors are actually complex
-void orth(mwSignedIndex m, double *D, double *V, double *work, bool isreal)
+int orth(mwSignedIndex m, double *D, double *V, double *work, bool isreal)
 {
     int *id, ii, jj, kk, nn;
     mwSignedIndex n, info;
@@ -341,7 +337,7 @@ void orth(mwSignedIndex m, double *D, double *V, double *work, bool isreal)
                     if(fabs(pS[nn])<0)
                         break;
                 if((n-nn)>1)
-                    mexErrMsgIdAndTxt("eig_omp:defectivematrix","Eigenvectors of defective eigenvalues cannot be orthogonalised.");
+                    return 1;
                 // Permutes back
                 n = 0;
                 for(jj=ii; jj<kk; jj++)
@@ -349,6 +345,7 @@ void orth(mwSignedIndex m, double *D, double *V, double *work, bool isreal)
                 ii = jj;
             }
     }
+    return 0;
 }
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -358,10 +355,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     int ib, nblock, nb, do_sort=0;
     int *blkid, valint;
     char jobz, *parstr, *valstr;
-    bool *issym, anynonsym=false, do_orth=false;
+    bool *issym, anynonsym=false, do_orth=false, do_Colpa=false;
     // Tolerance on whether matrix is symmetric/hermitian
     double tolsymm = sqrt(DBL_EPSILON);
     int nthread = omp_get_max_threads();
+    int err_code;
 //  mexPrintf("Number of threads = %d\n",nthread);
 
     // Checks inputs
@@ -431,6 +429,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 }
                 else
                     do_sort = 1;
+            }
+            else if(strcmp(parstr,"Colpa")==0) {
+                if((nrhs-1)>ib) {
+                    if(!mxIsChar(prhs[ib+1]) && (mxGetM(prhs[ib+1])*mxGetN(prhs[ib+1]))>0) {
+                        if(mxIsLogical(prhs[ib+1]))
+                            valint = *(int*)mxGetData(prhs[ib+1]);
+                        else 
+                            valint = (int)(*(double*)mxGetData(prhs[ib+1]));
+                        do_Colpa = (valint!=0) ? true : false;
+                        ib++;
+                    }
+                    else
+                        do_Colpa = true;
+                }
+                else {
+                    do_Colpa = true;
+                }
             }
         }
     }
@@ -551,7 +566,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
     }
 
-#pragma omp parallel default(none) shared(plhs,prhs) \
+#pragma omp parallel default(none) shared(plhs,prhs,err_code) \
     firstprivate(nthread, m, nlhs, nd, ib, blkid, jobz, anynonsym, issym, do_orth, do_sort)
     {
 #pragma omp for
@@ -632,7 +647,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                             else 
                                 sort(m, D, 0, work, do_sort);
                         if(do_orth)
-                            orth(m, D, V, work, 0);
+                            if(orth(m, D, V, work, 0)==1) {
+                                #pragma omp critical
+                                {
+                                    err_code = 1;
+                                }
+                                break;
+                            }
                     }
                     else {
                         zheevr(&jobz, &range, &uplo, &m, M, &lda, &vl, &vu, &il, &iu, &abstol, &numfind, 
@@ -677,7 +698,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                             else
                                 sort(m, D, Di, 0, work, do_sort);
                         if(nlhs>1 && do_orth)
-                            orth(m, D, Di, V, mxGetPi(plhs[0])+ib*m2, work, 1);
+                            if(orth(m, D, Di, V, mxGetPi(plhs[0])+ib*m2, work, 1)==1) {
+                                #pragma omp critical
+                                {
+                                    err_code = 1;
+                                }
+                                break;
+                            }
                     }
                     else {
                         dsyevr(&jobz, &range, &uplo, &m, M, &lda, &vl, &vu, &il, &iu, &abstol, &numfind, 
@@ -742,6 +769,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                     for(ii=0; ii<m; ii++) 
                         *(E+ii) = *(D+2*ii+1);
                 }
+                if(err_code!=0)
+                    break;     // One of the threads has a defective matrix error - break loop here.
             }
             // Free memory...
             delete[]work; delete[]iwork; delete[]isuppz; delete[]M;
@@ -752,7 +781,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             }
             if(nlhs>1 && nd==2)
                 delete[]D;
+            #ifndef _OPENMP
+                if(err_code!=0)
+                    break;
+            #endif
         }
     }
     delete[]blkid; delete[]issym;
+    if(err_code==1)
+        mexErrMsgIdAndTxt("eig_omp:defectivematrix","Eigenvectors of defective eigenvalues cannot be orthogonalised.");
 }

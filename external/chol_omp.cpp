@@ -29,11 +29,6 @@
  * $Revision$ ($Date$)
  *=========================================================*/
 
-//#if !defined(_WIN32)
-//#define dsyevr dsyevr_
-//#define zheevr zheevr_
-//#endif
-
 #include <cfloat>
 #include <cstring>
 #include <cmath>
@@ -55,7 +50,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     mwSignedIndex m, n, nd;
     const size_t *dims;
-    int ib, nblock, nb;
+    int ib, nblock, nb, err_code=0;
     bool do_Colpa = false;
     int *blkid;
     char uplo = 'U', *parstr;
@@ -155,7 +150,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
     }
 
-#pragma omp parallel default(none) shared(plhs,prhs) \
+#pragma omp parallel default(none) shared(plhs,prhs,err_code) \
     firstprivate(nthread, m, nlhs, nd, ib, blkid, uplo, tol, do_Colpa)
     {
 #pragma omp for
@@ -229,7 +224,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 }
                 if(info>0) {
                     if(nlhs<=1 || do_Colpa) {
-                        mexErrMsgIdAndTxt("chol_omp:notposdef","The input matrix is not positive definite.");
+                        #pragma omp critical 
+                        {
+                            err_code = 1;
+                        }
+                        break;
                     }
                     else {
                         ptr_I = mxGetPr(plhs[1]) + ib;
@@ -275,8 +274,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                     memcpy(M+ii*m+ii, ptr_M+ii*m+ii, (m-ii)*sizeof(double));
                             dtrtri(&uplo, &diag, &m, M, &lda, &info);
                         }
-                        if(info>0)
-                            mexErrMsgIdAndTxt("chol_omp:singular","The input matrix is singular.");
+                        if(info>0) {
+                            #pragma omp critical 
+                            {
+                                err_code = 2;
+                            }
+                            break;
+                        }
                         if(mxIsComplex(prhs[0])) {
                             ptr_M = mxGetPr(plhs[1]) + ib*m2;
                             ptr_Mi = mxGetPi(plhs[1]) + ib*m2;
@@ -309,14 +313,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                     ptr_M = mxGetPr(plhs[0]) + ib*m2;
                     ptr_Mi = mxGetPi(plhs[0]) + ib*m2;
                     for(ii=0; ii<m; ii++) {
-                      //for(jj=(uplo=='U'?ii:0); jj<(uplo=='U'?m:ii+1); jj++) {
+                      //for(jj=(uplo=='U'?ii:0); jj<(uplo=='U'?m:ii+1); jj++) { }
                         for(jj=0; jj<m; jj++) {
                             *ptr_M++ = M[ii*2*m+jj*2];
                             *ptr_Mi++ = M[ii*2*m+jj*2+1];
                         }
                     }
                 }
-
+                if(err_code!=0)
+                    break;     // One of the threads got a singular or not pos def error - break loop here.
             }
             // Free memory...
             if(mxIsComplex(prhs[0]))
@@ -324,7 +329,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             if(do_Colpa) {
                 delete[]Mp; delete[]alpha;
             }
+            #ifndef _OPENMP
+                if(err_code!=0)
+                    break;
+            #endif
         }
     }
     delete[]blkid;
+    if(err_code==1) 
+        mexErrMsgIdAndTxt("chol_omp:notposdef","The input matrix is not positive definite.");
+    else if(err_code==2) 
+        mexErrMsgIdAndTxt("chol_omp:singular","The input matrix is singular.");
 }

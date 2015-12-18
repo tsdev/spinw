@@ -4,8 +4,8 @@ if ispc
     mex('-v','-largeArrayDims','eig_omp.cpp','-lmwlapack','COMPFLAGS=$COMPFLAGS /openmp','LINKFLAGS=$LINKFLAGS /nodefaultlib:vcomp "$MATLABROOT\bin\win64\libiomp5md.lib"')
     mex('-v','-largeArrayDims','chol_omp.cpp','-lmwlapack','-lmwblas','COMPFLAGS=$COMPFLAGS /openmp','LINKFLAGS=$LINKFLAGS /nodefaultlib:vcomp "$MATLABROOT\bin\win64\libiomp5md.lib"')
 else
-    mex('-g','-v','-largeArrayDims','eig_omp.cpp','-lmwlapack','COMPFLAGS=$COMPFLAGS -fopenmp -pthread')
-    mex('-g','-v','-largeArrayDims','chol_omp.cpp','-lmwlapack','-lmwblas','COMPFLAGS=$COMPFLAGS -fopenmp -pthread')
+    mex('-v','-largeArrayDims','eig_omp.cpp','-lmwlapack','CXXFLAGS=$CXXFLAGS -fopenmp -pthread','LDFLAGS=$LDFLAGS -liomp5')
+    mex('-v','-largeArrayDims','chol_omp.cpp','-lmwlapack','-lmwblas','CXXFLAGS=$CXXFLAGS -fopenmp -pthread','LDFLAGS=$LDFLAGS -liomp5')
 end
 %}
 

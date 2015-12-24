@@ -56,6 +56,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     char uplo = 'U', *parstr;
     int nthread = omp_get_max_threads();
     double tol = 0.;
+    int warn1 = 0;
 //  mexPrintf("Number of threads = %d\n",nthread);
 
     // Checks inputs
@@ -150,7 +151,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
     }
 
-#pragma omp parallel default(none) shared(plhs,prhs,err_code) \
+#pragma omp parallel default(none) shared(plhs,prhs,err_code,warn1) \
     firstprivate(nthread, m, nlhs, nd, ib, blkid, uplo, tol, do_Colpa)
     {
 #pragma omp for
@@ -210,9 +211,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                 memcpy(M+ii*m+ii, ptr_M+ii*m+ii, (m-ii)*sizeof(double));
                     }
                     // Matrix not positive definite - try adding a small number to the diagonal.
-                    if(kk==1)
+                    if(kk==1) {
+                        #pragma omp critical 
+                        {
+                            warn1 = 1;
+                        }
                         for(ii=0; ii<m; ii++)
                             M[ii*m*f+ii*f] += tol; 
+                    }
                     // Calls the actual Lapack algorithm for real or complex input.
                     if(mxIsComplex(prhs[0]))
                         zpotrf(&uplo, &m, M, &lda, &info);
@@ -340,4 +346,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgIdAndTxt("chol_omp:notposdef","The input matrix is not positive definite.");
     else if(err_code==2) 
         mexErrMsgIdAndTxt("chol_omp:singular","The input matrix is singular.");
+    if(warn1==1)
+        mexWarnMsgIdAndTxt("chol_omp:NonPosDefHamiltonian","To make the Hamiltonian positive definite, a small omega_tol value was added to its diagonal!");
 }

@@ -694,10 +694,10 @@ for jj = 1:nSlice
         V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
         
         % Use mex files to parallelise over hkl-points if available
-        if param.useMex && nHklMEM>1 && exist('chol_omp','file')==3 && exist('eig_omp','file')==3 && exist('mtimesx','file')==3
+        if param.useMex && nHklMEM>1 && exist('chol_thr','file')==3 && exist('eig_thr','file')==3 && exist('mtimesx','file')==3
             % Mex file will return an error if the matrix is not positive definite.
-            [K2, invK] = chol_omp(ham,'Colpa','tol',param.omega_tol);
-            [V, omega(:,hklIdxMEM)] = eig_omp(K2,'sort','descend');
+            [K2, invK] = chol_thr(ham,'Colpa','tol',param.omega_tol);
+            [V, omega(:,hklIdxMEM)] = eig_thr(K2,'sort','descend');
             % the inverse of the para-unitary transformation V
             for ii = 1:nHklMEM
                 V(:,:,ii) = V(:,:,ii)*diag(sqrt(gCommd.*omega(:,hklIdxMEM(ii))));

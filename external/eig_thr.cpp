@@ -30,14 +30,61 @@
 #include "matrix.h"
 #include "lapack.h"
 
-#ifndef _OPENMP
-void omp_set_num_threads(int nThreads) {};
-#define omp_get_num_threads() 1
-#define omp_get_max_threads() 1
-#define omp_get_thread_num()  0
+#define _THREADS
+#if defined(__linux__)
+#include <sys/sysinfo.h>
+#elif defined(__FreeBSD__) || defined(__APPLE__)
+#include <sys/types.h>
+#include <sys/sysctl.h>
 #else
-#include <omp.h>
+#include <windows.h>
 #endif
+
+//#ifndef _OPENMP
+//void omp_set_num_threads(int nThreads) {};
+//#define omp_get_num_threads() 1
+//#define omp_get_max_threads() 1
+//#define omp_get_thread_num()  0
+//#else
+//#include <omp.h>
+//#endif
+
+#ifdef _THREADS
+// We have to use threads directly rather than OpenMP because the Matlab included
+//   Blas/Lapack libraries are compiles with OpenMP and are not compatible
+#ifdef _WIN32
+#include <windows.h>
+#define MUTEX_LOCK     EnterCriticalSection
+#define MUTEX_UNLOCK   LeaveCriticalSection
+#define MUTEX_TYPE     CRITICAL_SECTION
+#define MUTEX_INIT(m)  InitializeCriticalSection (&m)
+#define EVENT_TYPE     HANDLE
+#define EVENT_INIT(e)  e = CreateEvent (NULL, TRUE, FALSE, NULL)
+#define EVENT_SIG(e)   SetEvent(e)
+#define THRLC_TYPE     DWORD
+#define THRLC_INIT(k)  k = TlsAlloc()
+#define THRLC_FREE(k)  TlsFree(k)
+#define THRLC_SET(k,v) TlsSetValue (k,v)
+#define THRLC_GET(v)   TlsGetValue (v)
+#define THRLC_GET_FAIL 0
+#else
+#include <pthread.h>
+#define MUTEX_LOCK     pthread_mutex_lock
+#define MUTEX_UNLOCK   pthread_mutex_unlock
+#define MUTEX_TYPE     pthread_mutex_t
+#define MUTEX_INIT(m)  pthread_mutex_init (&m, NULL)
+#define EVENT_TYPE     pthread_cond_t
+#define EVENT_INIT(e)  pthread_cond_init (&e, NULL)
+#define EVENT_SIG(e)   pthread_cond_signal (&e)
+#define THRLC_TYPE     pthread_key_t
+#define THRLC_INIT(k)  pthread_key_create(&k, dataDestructor)
+#define THRLC_FREE(k)  pthread_key_delete(k)
+#define THRLC_SET(k,v) pthread_setspecific (k,v)
+#define THRLC_GET(v)   pthread_getspecific (v)
+#define THRLC_GET_FAIL NULL
+void dataDestructor(void *data) { }
+#endif   // _WIN32
+#endif   // _THREADS
 
 // Flips a (column-major) matrix by columns, like the matlab function.
 void fliplr(double *M, mwSignedIndex m, mwSignedIndex n, double *vec, bool isreal)
@@ -348,229 +395,61 @@ int orth(mwSignedIndex m, double *D, double *V, double *work, bool isreal)
     return 0;
 }
 
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
-{
-    mwSignedIndex m, n, nd;
-    const size_t *dims;
-    int ib, nblock, nb, do_sort=0;
-    int *blkid, valint;
-    char jobz, *parstr, *valstr;
-    bool *issym, anynonsym=false, do_orth=false, do_Colpa=false;
-    // Tolerance on whether matrix is symmetric/hermitian
-    double tolsymm = sqrt(DBL_EPSILON);
-    int nthread = omp_get_max_threads();
-    int err_code=0;
-//  mexPrintf("Number of threads = %d\n",nthread);
+// ----------------------------------------------------------------------------------- //
+// Define a struct containing all required inputs to the threads which do not change.
+// ----------------------------------------------------------------------------------- //
+typedef struct {
+    mwSignedIndex m;
+    int nlhs;
+    int nd;
+    int *blkid;
+    char jobz;
+    bool anynonsym;
+    bool *issym;
+    bool do_orth;
+    int do_sort;
+    mxArray **plhs; 
+    const mxArray **prhs;
+    int *err_code;
+} global_thread_data;
+// ----------------------------------------------------------------------------------- //
+// Class for inputs which differ from thread to thread.
+// ----------------------------------------------------------------------------------- //
+class thread_input {
+    public:
+        int nt;
+        thread_input(int _nt)
+        {
+            nt = _nt;
+        }
+};
 
-    // Checks inputs
-//  if(nrhs!=1) {
-//      mexErrMsgIdAndTxt("eig_omp:nargin","Number of input argument must be 1.");
-//  }
-    if(!mxIsNumeric(prhs[0])) {
-        mexErrMsgIdAndTxt("eig_omp:notnumeric","Input matrix must be a numeric array.");
-    }
-    nd = mxGetNumberOfDimensions(prhs[0]);
-    if(nd<2 || nd>3) {
-        mexErrMsgIdAndTxt("eig_omp:wrongdims","Only 2D or 3D arrays are supported.");
-    }
-    dims = mxGetDimensions(prhs[0]);
-    m = dims[0];
-    n = dims[1];
-    if(m!=n) {
-        mexErrMsgIdAndTxt("eig_omp:notsquare","Input matrix is not square.");
-    }
-    if(nd==3)
-        nblock = (int)dims[2];
-    else
-        nblock = 1;
-    // Checks for optional arguments
-    for(ib=1; ib<nrhs; ib++)
+// ----------------------------------------------------------------------------------- //
+// Declares these variables global, so all threads can see them
+// ----------------------------------------------------------------------------------- //
+global_thread_data gtd;
+#define NUM_THREADS 64          // Can support up to a maximum of 64 threads
+thread_input *tin[NUM_THREADS]; //   - hard coded because global variable.
+#ifdef _THREADS
+MUTEX_TYPE mutex_error;
+EVENT_TYPE checkfinish;
+THRLC_TYPE threadSpecificKey;
+#endif
+
+//#pragma omp parallel default(none) shared(plhs,prhs,err_code) \
+//    firstprivate(nthread, m, nlhs, nd, blkid, jobz, anynonsym, issym, do_orth, do_sort)
+#ifdef _THREADS
+  #ifdef _WIN32
+    DWORD WINAPI thread_iteration(void *input)
+  #else
+    void *thread_iteration(void *input)
+  #endif
+#else
+    int thread_iteration(mwSignedIndex m, int nlhs, int nd, int *blkid, char jobz, bool anynonsym, bool *issym, bool do_orth, int do_sort, int nt, mxArray **plhs, const mxArray **prhs, int *err_code)
+#endif
     {
-        if(mxIsChar(prhs[ib])) {
-            parstr = mxArrayToString(prhs[ib]);
-            if(strcmp(parstr,"orth")==0) {
-                if((nrhs-1)>ib) {
-                    if(!mxIsChar(prhs[ib+1]) && (mxGetM(prhs[ib+1])*mxGetN(prhs[ib+1]))>0) {
-                        if(mxIsLogical(prhs[ib+1]))
-                            valint = *(int*)mxGetData(prhs[ib+1]);
-                        else 
-                            valint = (int)(*(double*)mxGetData(prhs[ib+1]));
-                        do_orth = (valint!=0) ? true : false;
-                        ib++;
-                    }
-                    else
-                        do_orth = true;
-                }
-                else {
-                    do_orth = true;
-                }
-            }
-            else if(strcmp(parstr,"sort")==0) {
-                if((nrhs-1)>ib) {
-                    if(mxIsChar(prhs[ib+1])) {
-                        valstr = mxArrayToString(prhs[ib+1]);
-                        if(strcmp(valstr,"orth")==0)
-                            continue;
-                        else if(strcmp(valstr,"ascend")==0)
-                            do_sort = 1;
-                        else if(strcmp(valstr,"descend")==0)
-                            do_sort = -1;
-                        else 
-                            mexErrMsgIdAndTxt("eig_omp:badsortarg","Arguments to 'sort' keyword must be either 'ascend' or 'descend'.");
-                    }
-                    else {
-                        if(mxIsLogical(prhs[ib+1]))
-                            valint = *(int*)mxGetData(prhs[ib+1]);
-                        else 
-                            valint = (int)(*(double*)mxGetData(prhs[ib+1]));
-                        do_sort = (valint==-1||valint==0) ? valint : 1;
-                    }
-                    ib++;
-                }
-                else
-                    do_sort = 1;
-            }
-            else if(strcmp(parstr,"Colpa")==0) {
-                if((nrhs-1)>ib) {
-                    if(!mxIsChar(prhs[ib+1]) && (mxGetM(prhs[ib+1])*mxGetN(prhs[ib+1]))>0) {
-                        if(mxIsLogical(prhs[ib+1]))
-                            valint = *(int*)mxGetData(prhs[ib+1]);
-                        else 
-                            valint = (int)(*(double*)mxGetData(prhs[ib+1]));
-                        do_Colpa = (valint!=0) ? true : false;
-                        ib++;
-                    }
-                    else
-                        do_Colpa = true;
-                }
-                else {
-                    do_Colpa = true;
-                }
-            }
-        }
-    }
-//  mexPrintf("do_orth = %d; do_sort = %d\n",do_orth,do_sort);
-
-    // More efficient to group blocks together to run in a single thread than to spawn one thread per matrix.
-    if(nblock<nthread) {
-        nthread = nblock;
-    }
-    blkid = new int[nthread+1];
-    blkid[0] = 0;
-    blkid[nthread] = nblock;
-    nb = nblock/nthread;
-    for(int nt=1; nt<nthread; nt++) {
-       blkid[nt] = blkid[nt-1]+nb;
-    }
-
-    // Checks if all matrices are symmetric / hermitian.
-    issym = new bool[nblock];
-    // Initially assume all matrices symmetric 
-    memset(issym,true,nblock*sizeof(bool));
-#pragma omp parallel default(none) shared(issym,prhs) firstprivate(nthread, m, tolsymm, ib, blkid)
-    if(mxIsComplex(prhs[0])) {
-        double *A = mxGetPr(prhs[0]);
-        double *Ai = mxGetPi(prhs[0]);
-#pragma omp for
-        for(int nt=0; nt<nthread; nt++) {
-            for(ib=blkid[nt]; ib<blkid[nt+1]; ib++) {
-                for(int ii=0; ii<m; ii++) {
-                    // Just need to iterate over upper triangle
-                    for(int jj=ii; jj<m; jj++) {
-                        if(fabs( *(A+ii+jj*m) - *(A+jj+ii*m) ) > tolsymm
-                         ||fabs( *(Ai+ii+jj*m) + *(Ai+jj+ii*m) ) > tolsymm) {
-                            issym[ib] = false;
-                            break;
-                        }
-                    }
-                    if(!issym[ib])
-                        break;
-                }
-                A += m*m;
-                Ai += m*m;
-            }
-        }
-    }
-    else {
-        double *A = mxGetPr(prhs[0]);
-#pragma omp for
-        for(int nt=0; nt<nthread; nt++) {
-            for(ib=blkid[nt]; ib<blkid[nt+1]; ib++) {
-                for(int ii=0; ii<m; ii++) {
-                    for(int jj=ii; jj<m; jj++) {
-                        if(fabs( *(A+ii+jj*m) - *(A+jj+ii*m) ) > tolsymm) {
-                            issym[ib] = false;
-                            break;
-                        }
-                    }
-                    if(!issym[ib])
-                        break;
-                }
-                A += m*m;
-            }
-        }
-    }
-    for(ib=0; ib<nblock; ib++)
-        if(!issym[ib]) {
-            anynonsym = true;
-            break;
-        }
-
-    // Creates outputs
-    if(nlhs<=1) {
-        jobz = 'N';
-        // Some matrices are not symmetric, use [ZD]GEEV algorithm, get complex eigenvalues
-        if(anynonsym) {    
-            if(nd==2)
-                plhs[0] = mxCreateDoubleMatrix(m, 1, mxCOMPLEX);
-            else
-                plhs[0] = mxCreateDoubleMatrix(m, nblock, mxCOMPLEX);
-        }
-        else {
-            if(nd==2)
-                plhs[0] = mxCreateDoubleMatrix(m, 1, mxREAL);
-            else
-                plhs[0] = mxCreateDoubleMatrix(m, nblock, mxREAL);
-        }
-    }
-    else {
-        jobz = 'V';
-        if(anynonsym) {    
-            if(nd==2)
-                plhs[1] = mxCreateDoubleMatrix(m, m, mxCOMPLEX);
-            else
-                plhs[1] = mxCreateDoubleMatrix(m, nblock, mxCOMPLEX);
-        }
-        else {
-            if(nd==2)
-                plhs[1] = mxCreateDoubleMatrix(m, m, mxREAL);
-            else
-                plhs[1] = mxCreateDoubleMatrix(m, nblock, mxREAL);
-        }
-    }
-    // If some matrices are not symmetric, will get complex conjugate eigenpairs
-    if(mxIsComplex(prhs[0]) || anynonsym) {
-        if(nlhs>1) {
-            if(nd==2)
-                plhs[0] = mxCreateDoubleMatrix(m, m, mxCOMPLEX);
-            else
-                plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxCOMPLEX);
-        }
-    }
-    else {
-        if(nlhs>1) {
-            if(nd==2)
-                plhs[0] = mxCreateDoubleMatrix(m, m, mxREAL);
-            else
-                plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
-        }
-    }
-
-#pragma omp parallel default(none) shared(plhs,prhs,err_code) \
-    firstprivate(nthread, m, nlhs, nd, ib, blkid, jobz, anynonsym, issym, do_orth, do_sort)
-    {
-#pragma omp for
-        for(int nt=0; nt<nthread; nt++) {
+//#pragma omp for
+//      for(int nt=0; nt<nthread; nt++) {
             // These variables must be declared within the loop to make them local (and private)
             //   or we get memory errors.
             double *M, *E, *V=0, *D, *Di, *ptr_M, *ptr_Mi, *ptr_V, *ptr_Vi;
@@ -586,7 +465,24 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             mwSignedIndex info, lwork, liwork, lzwork;
             mwSignedIndex *isuppz, *iwork;
             double *work, *zwork;
-            int ii, jj;
+            int ii, jj, ib;
+#ifdef _THREADS
+            thread_input *td;
+            mwSignedIndex m = gtd.m;
+            int nlhs = gtd.nlhs;
+            int nd = gtd.nd;
+            int *blkid = gtd.blkid;
+            char jobz = gtd.jobz;
+            bool anynonsym = gtd.anynonsym;
+            bool *issym = gtd.issym;
+            bool do_orth = gtd.do_orth;
+            int do_sort = gtd.do_sort;
+            mxArray **plhs = gtd.plhs;
+            const mxArray **prhs = gtd.prhs;
+            int *err_code = gtd.err_code;
+            td = (thread_input*)input;
+            int nt = td->nt;
+#endif
             lda = m;
             ldz = m;
             iu = m;
@@ -648,10 +544,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                 sort(m, D, 0, work, do_sort);
                         if(do_orth)
                             if(orth(m, D, V, work, 0)==1) {
-                                #pragma omp critical
+                              //#pragma omp critical
+                                MUTEX_LOCK(&mutex_error);
                                 {
-                                    err_code = 1;
+                                    *err_code = 1;
                                 }
+                                MUTEX_UNLOCK(&mutex_error);
                                 break;
                             }
                     }
@@ -699,10 +597,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                 sort(m, D, Di, 0, work, do_sort);
                         if(nlhs>1 && do_orth)
                             if(orth(m, D, Di, V, mxGetPi(plhs[0])+ib*m2, work, 1)==1) {
-                                #pragma omp critical
+                              //#pragma omp critical
+                                MUTEX_LOCK(&mutex_error);
                                 {
-                                    err_code = 1;
+                                    *err_code = 1;
                                 }
+                                MUTEX_UNLOCK(&mutex_error);
                                 break;
                             }
                     }
@@ -769,7 +669,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                     for(ii=0; ii<m; ii++) 
                         *(E+ii) = *(D+2*ii+1);
                 }
-                if(err_code!=0)
+                if(*err_code!=0)
                     break;     // One of the threads has a defective matrix error - break loop here.
             }
             // Free memory...
@@ -782,11 +682,317 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             if(nlhs>1 && nd==2)
                 delete[]D;
             #ifndef _OPENMP
-                if(err_code!=0)
+                if(*err_code!=0)
                     break;
             #endif
+//      }
+    }
+
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    mwSignedIndex m, n, nd;
+    const size_t *dims;
+    int ii, nblock, nb, nt, do_sort=0;
+    int *blkid, valint;
+    char jobz, *parstr, *valstr;
+    bool *issym, anynonsym=false, do_orth=false, do_Colpa=false;
+    // Tolerance on whether matrix is symmetric/hermitian
+    double tolsymm = sqrt(DBL_EPSILON);
+    int nthread; // = omp_get_max_threads();
+    int err_code=0;
+//  mexPrintf("Number of threads = %d\n",nthread);
+
+    // System-dependent calls to find number of processors (from GotoBLAS)
+    {
+    #if defined(__linux__)
+        nthread = get_nprocs();
+    #elif defined(__FreeBSD__) || defined(__APPLE__)
+        int m[2], count; size_t len;
+        m[0] = CTL_HW; m[1] = HW_NCPU; len = sizeof(int);
+        sysctl(m, 2, &nthread, &len, NULL, 0);
+    #else
+        SYSTEM_INFO sysinfo; GetSystemInfo(&sysinfo);
+        nthread = sysinfo.dwNumberOfProcessors;
+    #endif
+    }
+    if(nthread>NUM_THREADS) nthread=NUM_THREADS;
+
+    // Checks inputs
+//  if(nrhs!=1) {
+//      mexErrMsgIdAndTxt("eig_omp:nargin","Number of input argument must be 1.");
+//  }
+    if(!mxIsNumeric(prhs[0])) {
+        mexErrMsgIdAndTxt("eig_omp:notnumeric","Input matrix must be a numeric array.");
+    }
+    nd = mxGetNumberOfDimensions(prhs[0]);
+    if(nd<2 || nd>3) {
+        mexErrMsgIdAndTxt("eig_omp:wrongdims","Only 2D or 3D arrays are supported.");
+    }
+    dims = mxGetDimensions(prhs[0]);
+    m = dims[0];
+    n = dims[1];
+    if(m!=n) {
+        mexErrMsgIdAndTxt("eig_omp:notsquare","Input matrix is not square.");
+    }
+    if(nd==3)
+        nblock = (int)dims[2];
+    else
+        nblock = 1;
+    // Checks for optional arguments
+    for(ii=1; ii<nrhs; ii++)
+    {
+        if(mxIsChar(prhs[ii])) {
+            parstr = mxArrayToString(prhs[ii]);
+            if(strcmp(parstr,"orth")==0) {
+                if((nrhs-1)>ii) {
+                    if(!mxIsChar(prhs[ii+1]) && (mxGetM(prhs[ii+1])*mxGetN(prhs[ii+1]))>0) {
+                        if(mxIsLogical(prhs[ii+1]))
+                            valint = *(int*)mxGetData(prhs[ii+1]);
+                        else 
+                            valint = (int)(*(double*)mxGetData(prhs[ii+1]));
+                        do_orth = (valint!=0) ? true : false;
+                        ii++;
+                    }
+                    else
+                        do_orth = true;
+                }
+                else {
+                    do_orth = true;
+                }
+            }
+            else if(strcmp(parstr,"sort")==0) {
+                if((nrhs-1)>ii) {
+                    if(mxIsChar(prhs[ii+1])) {
+                        valstr = mxArrayToString(prhs[ii+1]);
+                        if(strcmp(valstr,"orth")==0)
+                            continue;
+                        else if(strcmp(valstr,"ascend")==0)
+                            do_sort = 1;
+                        else if(strcmp(valstr,"descend")==0)
+                            do_sort = -1;
+                        else 
+                            mexErrMsgIdAndTxt("eig_omp:badsortarg","Arguments to 'sort' keyword must be either 'ascend' or 'descend'.");
+                    }
+                    else {
+                        if(mxIsLogical(prhs[ii+1]))
+                            valint = *(int*)mxGetData(prhs[ii+1]);
+                        else 
+                            valint = (int)(*(double*)mxGetData(prhs[ii+1]));
+                        do_sort = (valint==-1||valint==0) ? valint : 1;
+                    }
+                    ii++;
+                }
+                else
+                    do_sort = 1;
+            }
+            else if(strcmp(parstr,"Colpa")==0) {
+                if((nrhs-1)>ii) {
+                    if(!mxIsChar(prhs[ii+1]) && (mxGetM(prhs[ii+1])*mxGetN(prhs[ii+1]))>0) {
+                        if(mxIsLogical(prhs[ii+1]))
+                            valint = *(int*)mxGetData(prhs[ii+1]);
+                        else 
+                            valint = (int)(*(double*)mxGetData(prhs[ii+1]));
+                        do_Colpa = (valint!=0) ? true : false;
+                        ii++;
+                    }
+                    else
+                        do_Colpa = true;
+                }
+                else {
+                    do_Colpa = true;
+                }
+            }
         }
     }
+//  mexPrintf("do_orth = %d; do_sort = %d\n",do_orth,do_sort);
+
+    // More efficient to group blocks together to run in a single thread than to spawn one thread per matrix.
+    if(nblock<nthread) {
+        nthread = nblock;
+    }
+    blkid = new int[nthread+1];
+    blkid[0] = 0;
+    blkid[nthread] = nblock;
+    nb = nblock/nthread;
+    for(int nt=1; nt<nthread; nt++) {
+       blkid[nt] = blkid[nt-1]+nb;
+    }
+
+    // Checks if all matrices are symmetric / hermitian.
+    issym = new bool[nblock];
+    // Initially assume all matrices symmetric 
+    memset(issym,true,nblock*sizeof(bool));
+//#pragma omp parallel default(none) shared(issym,prhs) firstprivate(nthread, m, tolsymm, blkid)
+    {
+        int ib;
+        if(mxIsComplex(prhs[0])) {
+            double *A = mxGetPr(prhs[0]);
+            double *Ai = mxGetPi(prhs[0]);
+//#pragma omp for
+            for(int nt=0; nt<nthread; nt++) {
+                for(ib=blkid[nt]; ib<blkid[nt+1]; ib++) {
+                    for(int ii=0; ii<m; ii++) {
+                        // Just need to iterate over upper triangle
+                        for(int jj=ii; jj<m; jj++) {
+                            if(fabs( *(A+ii+jj*m) - *(A+jj+ii*m) ) > tolsymm
+                             ||fabs( *(Ai+ii+jj*m) + *(Ai+jj+ii*m) ) > tolsymm) {
+                                issym[ib] = false;
+                                break;
+                            }
+                        }
+                        if(!issym[ib])
+                            break;
+                    }
+                    A += m*m;
+                    Ai += m*m;
+                }
+            }
+        }
+        else {
+            double *A = mxGetPr(prhs[0]);
+//#pragma omp for
+            for(int nt=0; nt<nthread; nt++) {
+                for(ib=blkid[nt]; ib<blkid[nt+1]; ib++) {
+                    for(int ii=0; ii<m; ii++) {
+                        for(int jj=ii; jj<m; jj++) {
+                            if(fabs( *(A+ii+jj*m) - *(A+jj+ii*m) ) > tolsymm) {
+                                issym[ib] = false;
+                                break;
+                            }
+                        }
+                        if(!issym[ib])
+                            break;
+                    }
+                    A += m*m;
+                }
+            }
+        }
+        for(ib=0; ib<nblock; ib++)
+            if(!issym[ib]) {
+                anynonsym = true;
+                break;
+            }
+    }
+
+    // Creates outputs
+    if(nlhs<=1) {
+        jobz = 'N';
+        // Some matrices are not symmetric, use [ZD]GEEV algorithm, get complex eigenvalues
+        if(anynonsym) {    
+            if(nd==2)
+                plhs[0] = mxCreateDoubleMatrix(m, 1, mxCOMPLEX);
+            else
+                plhs[0] = mxCreateDoubleMatrix(m, nblock, mxCOMPLEX);
+        }
+        else {
+            if(nd==2)
+                plhs[0] = mxCreateDoubleMatrix(m, 1, mxREAL);
+            else
+                plhs[0] = mxCreateDoubleMatrix(m, nblock, mxREAL);
+        }
+    }
+    else {
+        jobz = 'V';
+        if(anynonsym) {    
+            if(nd==2)
+                plhs[1] = mxCreateDoubleMatrix(m, m, mxCOMPLEX);
+            else
+                plhs[1] = mxCreateDoubleMatrix(m, nblock, mxCOMPLEX);
+        }
+        else {
+            if(nd==2)
+                plhs[1] = mxCreateDoubleMatrix(m, m, mxREAL);
+            else
+                plhs[1] = mxCreateDoubleMatrix(m, nblock, mxREAL);
+        }
+    }
+    // If some matrices are not symmetric, will get complex conjugate eigenpairs
+    if(mxIsComplex(prhs[0]) || anynonsym) {
+        if(nlhs>1) {
+            if(nd==2)
+                plhs[0] = mxCreateDoubleMatrix(m, m, mxCOMPLEX);
+            else
+                plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxCOMPLEX);
+        }
+    }
+    else {
+        if(nlhs>1) {
+            if(nd==2)
+                plhs[0] = mxCreateDoubleMatrix(m, m, mxREAL);
+            else
+                plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
+        }
+    }
+
+#ifdef _THREADS
+    // Sets values of the shared variables, accessible through the global struct gtd
+    gtd.m = m;
+    gtd.nlhs = nlhs;
+    gtd.nd = nd;
+    gtd.blkid = blkid;  //
+    gtd.jobz = jobz;
+    gtd.anynonsym = anynonsym;
+    gtd.issym = &issym[0];  //
+    gtd.do_orth = do_orth;
+    gtd.do_sort = do_sort;
+    gtd.plhs = plhs;    //
+    gtd.prhs = prhs;    //
+    gtd.err_code = &err_code;  //
+    MUTEX_INIT(mutex_error);
+    EVENT_INIT(checkfinish);
+    THRLC_INIT(threadSpecificKey);
+    #if defined  (__linux__) || defined (__APPLE__)
+        pthread_t threads[NUM_THREADS]; int rc; void *status;
+        pthread_attr_t attr;
+        pthread_attr_init(&attr);
+        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+    #else
+        HANDLE threads[NUM_THREADS];
+        DWORD tid[NUM_THREADS], dwError;
+    #endif
+#endif
+    // Starts threads or run through blocks of matrices in serial
+    for(nt=0; nt<nthread; nt++) {
+#ifdef _THREADS
+        tin[nt] = new thread_input(nt);
+    #if defined  (__linux__) || defined (__APPLE__)
+        rc = pthread_create(&threads[nt], &attr, thread_iteration, (void *)tin[nt]);
+        if(rc) { 
+            mexErrMsgIdAndTxt("eig_omp:threadcreate","Cannot create thread.");
+        }
+    #else
+        threads[nt] = CreateThread(NULL, 0, thread_iteration, (void *)tin[nt], 0, &tid[nt]);
+        if(threads[nt]==NULL) { 
+          //dwError=GetLastError(); printf("Error code %i from thread %i\n",dwError,nt+1);
+            mexErrMsgIdAndTxt("eig_omp:threadcreate","Cannot create thread.");
+        }
+    #endif
+#else
+        thread_iteration(m, nlhs, nd, blkid, jobz, anynonsym, issym, do_orth, do_sort, nt, plhs, prhs, err_code);
+#endif
+    }
+    // Wait for all threads to finish and clean up
+#ifdef _THREADS
+    for(nt=0; nt<nthread; nt++) {
+    #if defined  (__linux__) || defined (__APPLE__)
+        rc = pthread_join(threads[nt], &status);
+        if(rc) { 
+            mexErrMsgIdAndTxt("eig_omp:threadjoin","Cannot end/join thread.");
+        }
+    #else
+        if(WaitForSingleObject(threads[nt],INFINITE)==0xFFFFFFFF) { 
+            mexErrMsgIdAndTxt("eig_omp:threadjoin","Cannot end/join thread.");
+        }
+    #endif
+        delete[]tin[nt];
+    }
+    #if defined (__linux__) || defined (__APPLE__)
+    pthread_attr_destroy(&attr);
+    pthread_mutex_destroy(&mutex_error);
+    #endif
+    THRLC_FREE(threadSpecificKey);
+#endif
+
     delete[]blkid; delete[]issym;
     if(err_code==1)
         mexErrMsgIdAndTxt("eig_omp:defectivematrix","Eigenvectors of defective eigenvalues cannot be orthogonalised.");

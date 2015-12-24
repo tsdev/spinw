@@ -34,6 +34,9 @@ function spectra = powspec(obj, hklA, varargin)
 %           J. Phys. A: Math. Gen. 37 (2004) 11591
 %           The number of points on the sphere is given by the largest
 %           Fibonacci number below nRand. Default is false.
+% useMex        If true, the code will use compiled mex files (if they
+%               exist) to speed up the calculation, for details see
+%               sw_mex() function. Default is false.
 %
 % Output:
 %
@@ -89,9 +92,9 @@ inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' }];
 inpForm.defval = [inpForm.defval {true     false     title0  @spinwave }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType'}];
-inpForm.defval = [inpForm.defval {false    false  0        'ebin'   }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]   }];
+inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType' 'useMex'}];
+inpForm.defval = [inpForm.defval {false    false  0        'ebin'    false   }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]    [1 1]   }];
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -155,7 +158,7 @@ for ii = 1:nQ
         specQ = param.specfun(obj,hkl,'fitmode',true,'notwin',true,...
             'Hermit',param.hermit,'formfact',param.formfact,...
             'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-            'optmem',param.optmem);
+            'optmem',param.optmem,'useMex',param.useMex);
     end
     
     % reset output to original value
@@ -176,7 +179,7 @@ end
 % save different field into spectra
 spectra.swConv   = powSpec;
 spectra.hklA     = hklA;
-spectra.Evect    = param.Evect;
+spectra.Evect    = specQ.Evect;
 spectra.component = 'Sperp';
 spectra.nRand    = param.nRand;
 spectra.T        = param.T;

@@ -6,3 +6,5 @@ dat_files/symmetry.dat
 .DS_Store
 
 *.m~
+
+external/tensordot.m~

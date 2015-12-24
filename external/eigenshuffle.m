@@ -1,6 +1,6 @@
-function [Vseq,Dseq] = eigenshuffle(Asequence)
+function [Vseq,Dseq] = eigenshuffle(Asequence, useMex, varargin)
 % eigenshuffle: Consistent sorting for an eigenvalue/vector sequence
-% [Vseq,Dseq] = eigenshuffle(Asequence)
+% [Vseq,Dseq] = eigenshuffle(Asequence, useMex, varargin)
 %
 % Includes munkres.m (by gracious permission from Yi Cao)
 % to choose the appropriate permutation. This greatly
@@ -152,16 +152,27 @@ end
 Vseq = zeros(p,p,n);
 Dseq = zeros(p,n);
 
-for i = 1:n
-    [V,D] = eig(Asequence(:,:,i));
-    D = diag(D);
-    % initial ordering is purely in decreasing order.
-    % If any are complex, the sort is in terms of the
-    % real part.
-    [~,tags] = sort(real(D),1,'descend');
+if(nargin<2)
+    useMex = false;
+end
+if n>1 && useMex && exist('eig_omp','file')==3
+    if nargin>2
+        [Vseq,Dseq] = eig_omp(Asequence,'orth','sort','descend');
+    else
+        [Vseq,Dseq] = eig_omp(Asequence,'sort','descend');
+    end 
+else
+    for i = 1:n
+        [V,D] = eig(Asequence(:,:,i));
+        D = diag(D);
+        % initial ordering is purely in decreasing order.
+        % If any are complex, the sort is in terms of the
+        % real part.
+        [~,tags] = sort(real(D),1,'descend');
     
-    Dseq(:,i) = D(tags);
-    Vseq(:,:,i) = V(:,tags);
+        Dseq(:,i) = D(tags);
+        Vseq(:,:,i) = V(:,tags);
+    end
 end
 
 % was there only one eigenvalue problem?

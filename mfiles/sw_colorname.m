@@ -23,6 +23,11 @@ function [RGB, nameOut] = sw_colorname(cName, invert)
 %   the output RGB will be [211; 211; 211].
 %
 
+if nargin == 0
+    help sw_colorname
+    return
+end
+
 if nargin < 2
     invert = false;
 end

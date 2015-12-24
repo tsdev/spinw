@@ -67,7 +67,7 @@ formula.m = sum(m)/nForm;
 % cell volume in Angstrom^3
 formula.V = prod(obj.lattice.lat_const);
 % density in g/cm^3
-formula.rho = formula.m/formula.V/nA*1e24;
+formula.rho = formula.m/formula.V/nA*1e24*nForm;
 
 
 % divide the number of atoms in formula

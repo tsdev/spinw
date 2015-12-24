@@ -107,6 +107,9 @@ function spectra = spinwave(obj, hkl, varargin)
 %               frame is saved S'(k,omega). Default is false.
 % title         Gives a title string to the simulation that is saved in the
 %               output.
+% useMex        If true, the code will use compiled mex files (if they
+%               exist) to speed up the calculation, for details see
+%               sw_mex() function. Default is false.
 %
 % Output:
 %
@@ -215,10 +218,19 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
+inpForm.fname  = [inpForm.fname  {'useMex'}];
+inpForm.defval = [inpForm.defval {false   }];
+inpForm.size   = [inpForm.size   {[1 1]   }];
+
 param = sw_readparam(inpForm, varargin{:});
 
 if param.fitmode
     param.sortMode = false;
+end
+
+if ~(param.useMex && exist('chol_omp','file')==3 && ...
+        exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
+    param.useMex = false;
 end
 
 % size of the extended magnetic unit cell
@@ -673,42 +685,55 @@ for jj = 1:nSlice
         % basis functions of the magnon modes
         V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
         
-        for ii = 1:nHklMEM
-            [K, posDef]  = chol(ham(:,:,ii));
-            if posDef > 0
-                try
-                    K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
-                    warn1 = true;
-                catch PD
-                    error('sw:spinwave:NonPosDefHamiltonian',...
-                        ['Hamiltonian matrix is not positive definite, probably'...
-                        ' the magnetic structure is wrong! For approximate'...
-                        ' diagonalization try the param.hermit=false option']);
-                end
-            end
-            
-            K2 = K*gComm*K';
-            K2 = 1/2*(K2+K2');
-            % Hermitian K2 will give orthogonal eigenvectors
-            if param.sortMode
-                [U, D] = eigenshuffle(K2);
-            else
-                [U, D] = eig(K2);
-                D = diag(D);
-            end
-            
-            % sort eigenvalues to decreasing order this contradicts with
-            % eigenshuffle
-            
-            % TODO
-            [D, idx] = sort(D,'descend');
-            U = U(:,idx);
-            
-            % omega dispersion
-            omega(:,end+1) = D; %#ok<AGROW>
-            
+        if param.useMex && nHklMEM>1
+            % use mex files to speed up the calculation
+            % mex file will return an error if the matrix is not positive definite.
+            [K2, invK] = chol_omp(ham,'Colpa','tol',param.omega_tol);
+            [V, omega(:,hklIdxMEM)] = eig_omp(K2,'sort','descend');
             % the inverse of the para-unitary transformation V
-            V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*omega(:,end))); %#ok<MINV>
+            for ii = 1:nHklMEM
+                V(:,:,ii) = V(:,:,ii)*diag(sqrt(gCommd.*omega(:,hklIdxMEM(ii))));
+            end
+            V = mtimesx(invK,V);
+            %V = bsxfun(@times,invK,V);
+        else
+            for ii = 1:nHklMEM
+                [K, posDef]  = chol(ham(:,:,ii));
+                if posDef > 0
+                    try
+                        K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
+                        warn1 = true;
+                    catch PD
+                        error('sw:spinwave:NonPosDefHamiltonian',...
+                            ['Hamiltonian matrix is not positive definite, probably'...
+                            ' the magnetic structure is wrong! For approximate'...
+                            ' diagonalization try the param.hermit=false option']);
+                    end
+                end
+                
+                K2 = K*gComm*K';
+                K2 = 1/2*(K2+K2');
+                % Hermitian K2 will give orthogonal eigenvectors
+                if param.sortMode
+                    [U, D] = eigenshuffle(K2);
+                else
+                    [U, D] = eig(K2);
+                    D = diag(D);
+                end
+                
+                % sort eigenvalues to decreasing order this contradicts with
+                % eigenshuffle
+                
+                % TODO
+                [D, idx] = sort(D,'descend');
+                U = U(:,idx);
+                
+                % omega dispersion
+                omega(:,end+1) = D; %#ok<AGROW>
+                
+                % the inverse of the para-unitary transformation V
+                V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*omega(:,end))); %#ok<MINV>
+            end
         end
     else
         % All the matrix calculations are according to White's paper
@@ -718,16 +743,18 @@ for jj = 1:nSlice
         %for ii = 1:nHklMEM
         %    gham(:,:,ii) = gComm*ham(:,:,ii);
         %end
-        gham = mmat(gComm,ham);
         
-        [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
+        %gham = mmat(gComm,ham);
+        gham = mtimesx(gComm,ham);
+        
+        [V, D] = eigorth(gham,param.omega_tol, param.sortMode,param.useMex);
         
         for ii = 1:nHklMEM
             % multiplication with g removed to get negative and positive
             % energies as well
             omega(:,end+1) = D(:,ii); %#ok<AGROW>
-            M           = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
-            V(:,:,ii)   = V(:,:,ii)*diag(sqrt(1./M));
+            M              = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
+            V(:,:,ii)      = V(:,:,ii)*diag(sqrt(1./M));
         end
     end
     

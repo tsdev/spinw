@@ -401,7 +401,7 @@ int orth(mwSignedIndex m, double *D, double *V, double *work, bool isreal)
 typedef struct {
     mwSignedIndex m;
     int nlhs;
-    int nd;
+    mwSignedIndex nd;
     int *blkid;
     char jobz;
     bool anynonsym;
@@ -470,7 +470,7 @@ THRLC_TYPE threadSpecificKey;
             thread_input *td;
             mwSignedIndex m = gtd.m;
             int nlhs = gtd.nlhs;
-            int nd = gtd.nd;
+            mwSignedIndex nd = gtd.nd;
             int *blkid = gtd.blkid;
             char jobz = gtd.jobz;
             bool anynonsym = gtd.anynonsym;
@@ -681,11 +681,10 @@ THRLC_TYPE threadSpecificKey;
             }
             if(nlhs>1 && nd==2)
                 delete[]D;
-            #ifndef _OPENMP
-                if(*err_code!=0)
-                    break;
-            #endif
 //      }
+        #if !defined(_THREADS) || defined(_WIN32)
+        return 0;
+        #endif
     }
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -968,7 +967,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
     #endif
 #else
-        thread_iteration(m, nlhs, nd, blkid, jobz, anynonsym, issym, do_orth, do_sort, nt, plhs, prhs, err_code);
+        thread_iteration(m, nlhs, nd, blkid, jobz, anynonsym, issym, do_orth, do_sort, nt, plhs, prhs, &err_code);
+        if(err_code!=0)
+            break;
 #endif
     }
     // Wait for all threads to finish and clean up

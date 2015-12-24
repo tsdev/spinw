@@ -1,13 +1,6 @@
 clear all
-% { 
-if ispc
-    mex('-v','-largeArrayDims','eig_thr.cpp','-lmwlapack','COMPFLAGS=$COMPFLAGS /openmp','LINKFLAGS=$LINKFLAGS /nodefaultlib:vcomp "$MATLABROOT\bin\win64\libiomp5md.lib"')
-    mex('-v','-largeArrayDims','chol_thr.cpp','-lmwlapack','-lmwblas','COMPFLAGS=$COMPFLAGS /openmp','LINKFLAGS=$LINKFLAGS /nodefaultlib:vcomp "$MATLABROOT\bin\win64\libiomp5md.lib"')
-else
-%   mex('-v','-largeArrayDims','eig_thr.cpp','-lmwlapack')
-    mex('-v','-largeArrayDims','chol_thr.cpp','-lmwlapack','-lmwblas')
-end
-%}
+mex('-v','-largeArrayDims','eig_thr.cpp','-lmwlapack')
+mex('-v','-largeArrayDims','chol_thr.cpp','-lmwlapack','-lmwblas')
 
 % Parameters
 n  = 50;   % Matrix size == n x n

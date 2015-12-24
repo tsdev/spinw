@@ -102,7 +102,7 @@ void dataDestructor(void *data) { }
 typedef struct {
     mwSignedIndex m;
     int nlhs;
-    int nd;
+    mwSignedIndex nd;
     int *blkid;
     char uplo;
     double tol;
@@ -155,7 +155,7 @@ THRLC_TYPE threadSpecificKey;
             thread_input *td;
             mwSignedIndex m = gtd.m;
             int nlhs = gtd.nlhs;
-            int nd = gtd.nd;
+            mwSignedIndex nd = gtd.nd;
             int *blkid = gtd.blkid;
             char uplo = gtd.uplo;
             double tol = gtd.tol;
@@ -353,11 +353,10 @@ THRLC_TYPE threadSpecificKey;
             if(do_Colpa) {
                 delete[]Mp; delete[]alpha;
             }
-            #ifndef _OPENMP
-                if(*err_code!=0)
-                    break;
-            #endif
 //      }
+        #if !defined(_THREADS) || defined(_WIN32)
+        return 0;
+        #endif
     }
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -525,6 +524,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     #endif
 #else
         thread_iteration(nt, m, nlhs, nd, blkid, uplo, tol, do_Colpa, plhs, prhs, &err_code, &warn1);
+        if(err_code!=0)
+            break;
 #endif
     }
     // Wait for all threads to finish and clean up

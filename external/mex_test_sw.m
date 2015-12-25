@@ -20,16 +20,24 @@ AFsq.addmatrix('label','J2','value',-0.1,'color','green'); AFsq.addcoupling('J2'
 AFsq.genmagstr('mode','helical','k',[1/2 1/2 0],'n',[0 0 1], 'S',[1; 0; 0],'nExt',[1 1 1]);  
 %plot(AFsq,'range',[2 2 0.5],'zoom',-1)
 
+itst=1;
 % Runs test
-hkl = {[1/4 3/4 0] [1/2 1/2 0] [1/2 0 0] [3/4 1/4 0] [1 0 0] [3/2 0 0] 50000};
+hkl = {[1/4 3/4 0] [1/2 1/2 0] [1/2 0 0] [3/4 1/4 0] [1 0 0] [3/2 0 0] 10000};
 nm = 5;   % Ensure same number of slices for all tests
-tic; linespec_herm_mex = AFsq.spinwave(hkl,'hermit',true,'useMex',true,'optmem',nm); t1=toc; 
-tic; linespec_herm_nomex = AFsq.spinwave(hkl,'hermit',true,'useMex',false,'optmem',nm); t2=toc; 
-tic; linespec_nonherm_mex = AFsq.spinwave(hkl,'hermit',false,'useMex',true,'optmem',nm); t3=toc; 
-tic; linespec_nonherm_nomex = AFsq.spinwave(hkl,'hermit',false,'useMex',false,'optmem',nm); t4=toc; 
+tic; linespec_herm_mex = AFsq.spinwave(hkl,'hermit',true,'useMex',true,'optmem',nm); t1=toc; linespec_herm_mex = sw_egrid(sw_neutron(linespec_herm_mex));
+tic; linespec_herm_nomex = AFsq.spinwave(hkl,'hermit',true,'useMex',false,'optmem',nm); t2=toc; linespec_herm_nomex = sw_egrid(sw_neutron(linespec_herm_nomex));
+tic; linespec_nonherm_mex = AFsq.spinwave(hkl,'hermit',false,'useMex',true,'optmem',nm); t3=toc; linespec_nonherm_mex = sw_egrid(sw_neutron(linespec_nonherm_mex));
+tic; linespec_nonherm_nomex = AFsq.spinwave(hkl,'hermit',false,'useMex',false,'optmem',nm); t4=toc; linespec_nonherm_nomex = sw_egrid(sw_neutron(linespec_nonherm_nomex));
+tt{itst}=[t1 t2 t3 t4]; 
+ch1(itst,:)=[sum(abs(linespec_herm_mex.omega(:)-linespec_herm_nomex.omega(:))) sum(abs(linespec_nonherm_mex.omega(:))-abs(linespec_nonherm_nomex.omega(:)))];
+ch2(itst,:)=[sum(abs(linespec_herm_mex.swConv(:)-linespec_herm_nomex.swConv(:))) sum(abs(linespec_nonherm_mex.swConv(:)-linespec_nonherm_nomex.swConv(:)))];
 
+disp('---------------------------------------------------------------------------------------');
 disp(sprintf('             %16s  %16s  %16s  %16s','Hermitian Mex','Hermitian NoMex','NonHermitian Mex','NonHermitian NoMex')); 
-disp(sprintf('Run Time(s)  % 16.6f  % 16.6f  % 16.6f    % 16.6f',t1,t2,t3,t4)); 
+disp(sprintf('Run Time(s)  % 16.6f  % 16.6f  % 16.6f    % 16.6f',tt{itst}));
+disp(sprintf('Check omega  %13s     % 16.6g  %13s       % 16.6g',' ',ch1(itst,1),' ',ch1(itst,2)));
+disp(sprintf('Check intensities %13s% 16.6g  %13s       % 16.6g',' ',ch2(itst,1),' ',ch2(itst,2)));
+disp('---------------------------------------------------------------------------------------');
 
 % Times
 %   ndlt811:         43.7453   72.0950  406.1366  611.1799
@@ -58,15 +66,25 @@ kOpt = hK.mag_str.k;
 hK.genmagstr('mode','helical','n',[0 0 1],'S',[1 0 0]','k',kOpt,'next',[1 1 1]);
 %plot(hK,'range',[2 2 0.3],'sSpin',2)
 
+itst=2;
 % Runs test
 hkl = {[0 0 0] [1 0 0] 50000};
 nm = 10;  % Ensure same number of slices for all tests
-tic; linespec_herm_mex = hK.spinwave(hkl,'hermit',true,'useMex',true,'optmem',nm); t1=toc; 
-tic; linespec_herm_nomex = hK.spinwave(hkl,'hermit',true,'useMex',false,'optmem',nm); t2=toc; 
-tic; linespec_nonherm_mex = hK.spinwave(hkl,'hermit',false,'useMex',true,'optmem',nm); t3=toc; 
-tic; linespec_nonherm_nomex = hK.spinwave(hkl,'hermit',false,'useMex',false,'optmem',nm); t4=toc; 
+
+tic; linespec_herm_mex = hK.spinwave(hkl,'hermit',true,'useMex',true,'optmem',nm); t1=toc; linespec_herm_mex = sw_egrid(sw_neutron(linespec_herm_mex));
+tic; linespec_herm_nomex = hK.spinwave(hkl,'hermit',true,'useMex',false,'optmem',nm); t2=toc; linespec_herm_nomex = sw_egrid(sw_neutron(linespec_herm_nomex));
+tic; linespec_nonherm_mex = hK.spinwave(hkl,'hermit',false,'useMex',true,'optmem',nm); t3=toc; linespec_nonherm_mex = sw_egrid(sw_neutron(linespec_nonherm_mex));
+tic; linespec_nonherm_nomex = hK.spinwave(hkl,'hermit',false,'useMex',false,'optmem',nm); t4=toc; linespec_nonherm_nomex = sw_egrid(sw_neutron(linespec_nonherm_nomex));
+tt{itst}=[t1 t2 t3 t4]; 
+ch1(itst,:)=[sum(abs(linespec_herm_mex.omega(:)-linespec_herm_nomex.omega(:))) sum(abs(linespec_nonherm_mex.omega(:))-abs(linespec_nonherm_nomex.omega(:)))];
+ch2(itst,:)=[sum(abs(linespec_herm_mex.swConv(:)-linespec_herm_nomex.swConv(:))) sum(abs(linespec_nonherm_mex.swConv(:)-linespec_nonherm_nomex.swConv(:)))];
+
+disp('---------------------------------------------------------------------------------------');
 disp(sprintf('             %16s  %16s  %16s  %16s','Hermitian Mex','Hermitian NoMex','NonHermitian Mex','NonHermitian NoMex')); 
-disp(sprintf('Run Time(s)  % 16.6f  % 16.6f  % 16.6f    % 16.6f',t1,t2,t3,t4)); 
+disp(sprintf('Run Time(s)  % 16.6f  % 16.6f  % 16.6f    % 16.6f',tt{itst}));
+disp(sprintf('Check omega  %13s     % 16.6g  %13s       % 16.6g',' ',ch1(itst,1),' ',ch1(itst,2)));
+disp(sprintf('Check intensities %13s% 16.6g  %13s       % 16.6g',' ',ch2(itst,1),' ',ch2(itst,2)));
+disp('---------------------------------------------------------------------------------------');
 
 %{
 [~,nSuperlat] = rat(hK.mag_str.k,0.01);
@@ -111,17 +129,28 @@ out = optmagsteep(bfof,'nRun',200);
 %plot(out.obj,'range',[0 2; 0 2; 0.0 1.0]); view([45 90]);
 bfof = out.obj;
 
+itst=3;
 % Runs test
-nm = 60;  % For laptops with 16GB memory, to have the same number of slices
 nm = 6;   % For the workstation with 50GB.
+nm = 60;  % For laptops with 16GB memory, to have the same number of slices
 hkl={[0 0 0] [1 1 0] [1 1 1] [0 0 1] 2000};
-tic; linespec_herm_mex = bfof.spinwave(hkl,'hermit',true,'useMex',true,'optmem',nm); t1=toc; 
-tic; linespec_herm_nomex = bfof.spinwave(hkl,'hermit',true,'useMex',false,'optmem',nm); t2=toc; 
-tic; linespec_nonherm_mex = bfof.spinwave(hkl,'hermit',false,'useMex',true,'optmem',nm); t3=toc; 
-tic; linespec_nonherm_nomex = bfof.spinwave(hkl,'hermit',false,'useMex',false,'optmem',nm); t4=toc; 
+tic; linespec_herm_mex = bfof.spinwave(hkl,'hermit',true,'useMex',true,'optmem',nm); t1=toc; linespec_herm_mex = sw_egrid(sw_neutron(linespec_herm_mex)); 
+tic; linespec_herm_nomex = bfof.spinwave(hkl,'hermit',true,'useMex',false,'optmem',nm); t2=toc; linespec_herm_nomex = sw_egrid(sw_neutron(linespec_herm_nomex)); 
+tic; linespec_nonherm_mex = bfof.spinwave(hkl,'hermit',false,'useMex',true,'optmem',nm); t3=toc; linespec_nonherm_mex = sw_egrid(sw_neutron(linespec_nonherm_mex)); 
+tic; linespec_nonherm_nomex = bfof.spinwave(hkl,'hermit',false,'useMex',false,'optmem',nm); t4=toc; linespec_nonherm_nomex = sw_egrid(sw_neutron(linespec_nonherm_nomex)); 
+tt{itst}=[t1 t2 t3 t4]; 
+ch1(itst,:)=[sum(abs(linespec_herm_mex.omega(:)-linespec_herm_nomex.omega(:))) sum(abs(linespec_nonherm_mex.omega(:))-abs(linespec_nonherm_nomex.omega(:)))];
+ch2(itst,:)=[sum(abs(linespec_herm_mex.swConv(:)-linespec_herm_nomex.swConv(:))) sum(abs(linespec_nonherm_mex.swConv(:)-linespec_nonherm_nomex.swConv(:)))];
 
+for itst=1:3
+disp('---------------------------------------------------------------------------------------');
 disp(sprintf('             %16s  %16s  %16s  %16s','Hermitian Mex','Hermitian NoMex','NonHermitian Mex','NonHermitian NoMex')); 
-disp(sprintf('Run Time(s)  % 16.6f  % 16.6f  % 16.6f    % 16.6f',t1,t2,t3,t4)); 
+disp(sprintf('Run Time(s)  % 16.6f  % 16.6f  % 16.6f    % 16.6f',tt{itst}));
+disp(sprintf('Check omega  %13s     % 16.6g  %13s       % 16.6g',' ',ch1(itst,1),' ',ch1(itst,2)));
+disp(sprintf('Check intensities %13s% 16.6g  %13s       % 16.6g',' ',ch2(itst,1),' ',ch2(itst,2)));
+disp('---------------------------------------------------------------------------------------');
+end
+
 % Times
 %   ndlt811:        123.6812  139.6476  197.1951  363.2818
 %   eryenyo:        127.4535  135.8621  220.9112  389.4686

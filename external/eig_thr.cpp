@@ -1,13 +1,16 @@
 /*===========================================================
- * eig_omp.cpp - Diagonalises a stack of matrices using
- *               Lapack calls and OpenMP.
+ * eig_thr.cpp - Diagonalises a stack of matrices using
+ *               Lapack calls and pthreads / windows threads.
  *
- * [V,E]=eig_omp(H,'orth','sort');
+ * [V,E]=eig_thr(H,'orth','sort');
  *     where H is n x n x l, 
  *           V is n x n x l 
  *       and E is n x l
  *
- * 'orth' and 'sort' are options. See eig_omp.m for full info
+ * 'orth' and 'sort' are options. See eig_thr.m for full info
+ *
+ * Unlike the matlab built-in this mex does not handle sparse
+ * matrices. 
  *
  * This is a MEX-file for MATLAB.
  *
@@ -30,7 +33,6 @@
 #include "matrix.h"
 #include "lapack.h"
 
-#define _THREADS
 #if defined(__linux__)
 #include <sys/sysinfo.h>
 #elif defined(__FreeBSD__) || defined(__APPLE__)
@@ -40,51 +42,79 @@
 #include <windows.h>
 #endif
 
-//#ifndef _OPENMP
-//void omp_set_num_threads(int nThreads) {};
-//#define omp_get_num_threads() 1
-//#define omp_get_max_threads() 1
-//#define omp_get_thread_num()  0
-//#else
-//#include <omp.h>
-//#endif
-
-#ifdef _THREADS
 // We have to use threads directly rather than OpenMP because the Matlab included
 //   Blas/Lapack libraries are compiles with OpenMP and are not compatible
 #ifdef _WIN32
-#include <windows.h>
-#define MUTEX_LOCK     EnterCriticalSection
-#define MUTEX_UNLOCK   LeaveCriticalSection
-#define MUTEX_TYPE     CRITICAL_SECTION
-#define MUTEX_INIT(m)  InitializeCriticalSection (&m)
-#define EVENT_TYPE     HANDLE
-#define EVENT_INIT(e)  e = CreateEvent (NULL, TRUE, FALSE, NULL)
-#define EVENT_SIG(e)   SetEvent(e)
-#define THRLC_TYPE     DWORD
-#define THRLC_INIT(k)  k = TlsAlloc()
-#define THRLC_FREE(k)  TlsFree(k)
-#define THRLC_SET(k,v) TlsSetValue (k,v)
-#define THRLC_GET(v)   TlsGetValue (v)
-#define THRLC_GET_FAIL 0
+    #include <windows.h>
+    #define MUTEX_LOCK     EnterCriticalSection
+    #define MUTEX_UNLOCK   LeaveCriticalSection
+    #define MUTEX_TYPE     CRITICAL_SECTION
+    #define MUTEX_INIT(m)  InitializeCriticalSection (&m)
+    #define EVENT_TYPE     HANDLE
+    #define EVENT_INIT(e)  e = CreateEvent (NULL, TRUE, FALSE, NULL)
+    #define EVENT_SIG(e)   SetEvent(e)
+    #define THRLC_TYPE     DWORD
+    #define THRLC_INIT(k)  k = TlsAlloc()
+    #define THRLC_FREE(k)  TlsFree(k)
+    #define THRLC_SET(k,v) TlsSetValue (k,v)
+    #define THRLC_GET(v)   TlsGetValue (v)
+    #define THRLC_GET_FAIL 0
 #else
-#include <pthread.h>
-#define MUTEX_LOCK     pthread_mutex_lock
-#define MUTEX_UNLOCK   pthread_mutex_unlock
-#define MUTEX_TYPE     pthread_mutex_t
-#define MUTEX_INIT(m)  pthread_mutex_init (&m, NULL)
-#define EVENT_TYPE     pthread_cond_t
-#define EVENT_INIT(e)  pthread_cond_init (&e, NULL)
-#define EVENT_SIG(e)   pthread_cond_signal (&e)
-#define THRLC_TYPE     pthread_key_t
-#define THRLC_INIT(k)  pthread_key_create(&k, dataDestructor)
-#define THRLC_FREE(k)  pthread_key_delete(k)
-#define THRLC_SET(k,v) pthread_setspecific (k,v)
-#define THRLC_GET(v)   pthread_getspecific (v)
-#define THRLC_GET_FAIL NULL
-void dataDestructor(void *data) { }
-#endif   // _WIN32
-#endif   // _THREADS
+    #include <pthread.h>
+    #define MUTEX_LOCK     pthread_mutex_lock
+    #define MUTEX_UNLOCK   pthread_mutex_unlock
+    #define MUTEX_TYPE     pthread_mutex_t
+    #define MUTEX_INIT(m)  pthread_mutex_init (&m, NULL)
+    #define EVENT_TYPE     pthread_cond_t
+    #define EVENT_INIT(e)  pthread_cond_init (&e, NULL)
+    #define EVENT_SIG(e)   pthread_cond_signal (&e)
+    #define THRLC_TYPE     pthread_key_t
+    #define THRLC_INIT(k)  pthread_key_create(&k, dataDestructor)
+    #define THRLC_FREE(k)  pthread_key_delete(k)
+    #define THRLC_SET(k,v) pthread_setspecific (k,v)
+    #define THRLC_GET(v)   pthread_getspecific (v)
+    #define THRLC_GET_FAIL NULL
+    void dataDestructor(void *data) { }
+#endif
+
+// ----------------------------------------------------------------------------------- //
+// Define a struct containing all required inputs to the threads which do not change.
+// ----------------------------------------------------------------------------------- //
+typedef struct {
+    mwSignedIndex m;
+    int nlhs;
+    mwSignedIndex nd;
+    int *blkid;
+    char jobz;
+    bool anynonsym;
+    bool *issym;
+    bool do_orth;
+    int do_sort;
+    mxArray **plhs; 
+    const mxArray **prhs;
+    int *err_code;
+} global_thread_data;
+// ----------------------------------------------------------------------------------- //
+// Class for inputs which differ from thread to thread.
+// ----------------------------------------------------------------------------------- //
+class thread_input {
+    public:
+        int nt;
+        thread_input(int _nt)
+        {
+            nt = _nt;
+        }
+};
+
+// ----------------------------------------------------------------------------------- //
+// Declares these variables global, so all threads can see them
+// ----------------------------------------------------------------------------------- //
+global_thread_data gtd;
+#define NUM_THREADS 64          // Can support up to a maximum of 64 threads
+thread_input *tin[NUM_THREADS]; //   - hard coded because global variable.
+MUTEX_TYPE mutex_error;
+EVENT_TYPE checkfinish;
+THRLC_TYPE threadSpecificKey;
 
 // Flips a (column-major) matrix by columns, like the matlab function.
 void fliplr(double *M, mwSignedIndex m, mwSignedIndex n, double *vec, bool isreal)
@@ -279,7 +309,7 @@ int orth(mwSignedIndex m, double *Dr, double *Di, double *Vr, double *Vi, double
     // Check for warning
 //  for(ii=0; ii<(int)m; ii++)
 //      if(fabs(Di[ii])>abstol) {
-//          mexWarnMsgIdAndTxt("eig_omp:notdefinite","matrix contains complex eigenvalues, othogonalisation will not be accurate");
+//          mexWarnMsgIdAndTxt("eig_thr:notdefinite","matrix contains complex eigenvalues, othogonalisation will not be accurate");
 //          break;
 //      }
 
@@ -395,297 +425,243 @@ int orth(mwSignedIndex m, double *D, double *V, double *work, bool isreal)
     return 0;
 }
 
-// ----------------------------------------------------------------------------------- //
-// Define a struct containing all required inputs to the threads which do not change.
-// ----------------------------------------------------------------------------------- //
-typedef struct {
-    mwSignedIndex m;
-    int nlhs;
-    mwSignedIndex nd;
-    int *blkid;
-    char jobz;
-    bool anynonsym;
-    bool *issym;
-    bool do_orth;
-    int do_sort;
-    mxArray **plhs; 
-    const mxArray **prhs;
-    int *err_code;
-} global_thread_data;
-// ----------------------------------------------------------------------------------- //
-// Class for inputs which differ from thread to thread.
-// ----------------------------------------------------------------------------------- //
-class thread_input {
-    public:
-        int nt;
-        thread_input(int _nt)
-        {
-            nt = _nt;
-        }
-};
-
-// ----------------------------------------------------------------------------------- //
-// Declares these variables global, so all threads can see them
-// ----------------------------------------------------------------------------------- //
-global_thread_data gtd;
-#define NUM_THREADS 64          // Can support up to a maximum of 64 threads
-thread_input *tin[NUM_THREADS]; //   - hard coded because global variable.
-#ifdef _THREADS
-MUTEX_TYPE mutex_error;
-EVENT_TYPE checkfinish;
-THRLC_TYPE threadSpecificKey;
-#endif
-
-//#pragma omp parallel default(none) shared(plhs,prhs,err_code) \
-//    firstprivate(nthread, m, nlhs, nd, blkid, jobz, anynonsym, issym, do_orth, do_sort)
-#ifdef _THREADS
-  #ifdef _WIN32
-    DWORD WINAPI thread_iteration(void *input)
-  #else
-    void *thread_iteration(void *input)
-  #endif
+#ifdef _WIN32
+DWORD WINAPI thread_iteration(void *input)
 #else
-    int thread_iteration(mwSignedIndex m, int nlhs, int nd, int *blkid, char jobz, bool anynonsym, bool *issym, bool do_orth, int do_sort, int nt, mxArray **plhs, const mxArray **prhs, int *err_code)
+void *thread_iteration(void *input)
 #endif
-    {
-//#pragma omp for
-//      for(int nt=0; nt<nthread; nt++) {
-            // These variables must be declared within the loop to make them local (and private)
-            //   or we get memory errors.
-            double *M, *E, *V=0, *D, *Di, *ptr_M, *ptr_Mi, *ptr_V, *ptr_Vi;
-            mwSignedIndex m2, m22;
-            size_t msz;
-            char uplo = 'U';
-            char range = 'A';
-            char jobzn = 'N';
-            double vl = -DBL_MAX, vu = DBL_MAX;
-            mwSignedIndex il = 0, iu;
-            double abstol = sqrt(DBL_EPSILON);
-            mwSignedIndex lda, ldz, numfind;
-            mwSignedIndex info, lwork, liwork, lzwork;
-            mwSignedIndex *isuppz, *iwork;
-            double *work, *zwork;
-            int ii, jj, ib;
-#ifdef _THREADS
-            thread_input *td;
-            mwSignedIndex m = gtd.m;
-            int nlhs = gtd.nlhs;
-            mwSignedIndex nd = gtd.nd;
-            int *blkid = gtd.blkid;
-            char jobz = gtd.jobz;
-            bool anynonsym = gtd.anynonsym;
-            bool *issym = gtd.issym;
-            bool do_orth = gtd.do_orth;
-            int do_sort = gtd.do_sort;
-            mxArray **plhs = gtd.plhs;
-            const mxArray **prhs = gtd.prhs;
-            int *err_code = gtd.err_code;
-            td = (thread_input*)input;
-            int nt = td->nt;
-#endif
-            lda = m;
-            ldz = m;
-            iu = m;
-            m2 = m*m;
-            m22 = 2*m2;
-            msz = m2*sizeof(double);
-            lwork = do_orth ? ( (26*m>(2*m*(m+7))) ? 26*m : (2*m*(m+7)) )  
-                            : ( (26*m>(2*m*(m+3))) ? 26*m : (2*m*(m+3)) );
-            liwork = 10*m;
-            isuppz = new mwSignedIndex[2*m];
-            work = new double[lwork];
-            iwork = new mwSignedIndex[liwork];
-            if(mxIsComplex(prhs[0])) {
-                lzwork = 4*m;
-                M = new double[m22];
-                zwork = new double[lzwork*2];
-                if(nlhs>1)
-                    V = new double[m22];
-            }
-            else
-                M = new double[m2];
-            // The output of the _evr Lapack routines gives eigenvalues as vectors
-            // If we want it as a diagonal matrix, need to use a temporary array...
-            if(mxIsComplex(prhs[0]) && anynonsym) {
-                D = new double[2*m];
-            }
-            else if(nlhs>1 && nd==2) {
-                D = new double[m];
-                if(anynonsym)
-                    Di = new double[m];
-            }
-            // Actual loop over individual matrices start here
-            for(ib=blkid[nt]; ib<blkid[nt+1]; ib++) {
-                if(!(mxIsComplex(prhs[0]) && anynonsym)) {
-                    if(nlhs<=1)
-                        D = mxGetPr(plhs[0]) + ib*m;
-                    else if(nd==3)
-                        D = mxGetPr(plhs[1]) + ib*m;
-                }
-                if(mxIsComplex(prhs[0])) {
-                    ptr_M = mxGetPr(prhs[0]) + ib*m2;
-                    ptr_Mi = mxGetPi(prhs[0]) + ib*m2;
-                    // Interleaves complex matrices - Matlab stores complex matrix as an array of real
-                    //   values followed by an array of imaginary values; Fortran (and C++ std::complex)
-                    //   and hence Lapack stores it as arrays of pairs of values (real,imaginary).
-                    for(ii=0; ii<m; ii++) {
-                        for(jj=0; jj<m; jj++) {
-                            M[ii*2+jj*2*m] = *ptr_M++;
-                            M[ii*2+jj*2*m+1] = *ptr_Mi++;
-                        }
-                    }
-                    // This does the actual computation - call using Matlab-included Intel MKL.
-                    if(anynonsym) {
-                        zgeev(&jobz, &jobzn, &m, M, &lda, D, V, &ldz, V, &ldz, zwork, &lzwork, work, &info);
-                        if(do_sort)
-                            if(nlhs>1)
-                                sort(m, D, V, work, do_sort);
-                            else 
-                                sort(m, D, 0, work, do_sort);
-                        if(do_orth)
-                            if(orth(m, D, V, work, 0)==1) {
-                              //#pragma omp critical
-                                MUTEX_LOCK(&mutex_error);
-                                {
-                                    *err_code = 1;
-                                }
-                                MUTEX_UNLOCK(&mutex_error);
-                                break;
-                            }
-                    }
-                    else {
-                        zheevr(&jobz, &range, &uplo, &m, M, &lda, &vl, &vu, &il, &iu, &abstol, &numfind, 
-                                D, V, &ldz, isuppz, zwork, &lzwork, work, &lwork, iwork, &liwork, &info);
-                        // ZHEEVR outputs eigenvectors in ascending order by default.
-                        if(do_sort==-1) {
-                            fliplr(D,1,m,work,1);
-                            if(nlhs>1) 
-                                fliplr(V,m,m,work,0);
-                        }
-                    }
-                    if(nlhs>1) {
-                        ptr_V = mxGetPr(plhs[0]) + ib*m2;
-                        ptr_Vi = mxGetPi(plhs[0]) + ib*m2;
-                        for(ii=0; ii<m; ii++) {
-                            for(jj=0; jj<m; jj++) {
-                                *ptr_V++ = V[ii*2*m+jj*2];
-                                *ptr_Vi++ = -V[ii*2*m+jj*2+1];
-                            }
-                        }
-                    }
-                }
-                else {
-                    ptr_M = mxGetPr(prhs[0]) + ib*m2;
-                    V = mxGetPr(plhs[0]) + ib*m2;
-                    if(anynonsym) {
-                        if(nlhs<=1)
-                            Di = mxGetPi(plhs[0]) + ib*m;
-                        else if(nd==3)
-                            Di = mxGetPi(plhs[1]) + ib*m;
-                    }
-                    // We cannot pass the right-side argument directly to Lapack because the routine
-                    //   overwrites the input matrix to be diagonalised - so we create a copy
-                    //   Matlab uses column-major like Fortran/Lapack (unlike C++) so can just memcpy
-                    memcpy(M,ptr_M,msz);
-                    // This does the actual computation - call using Matlab-included Intel MKL.
-                    if(anynonsym) {
-                        dgeev(&jobzn, &jobz, &m, M, &lda, D, Di, V, &ldz, V, &ldz, work, &lwork, &info);
-                        if(do_sort)
-                            if(nlhs>1)
-                                sort(m, D, Di, V, work, do_sort);
-                            else
-                                sort(m, D, Di, 0, work, do_sort);
-                        if(nlhs>1 && do_orth)
-                            if(orth(m, D, Di, V, mxGetPi(plhs[0])+ib*m2, work, 1)==1) {
-                              //#pragma omp critical
-                                MUTEX_LOCK(&mutex_error);
-                                {
-                                    *err_code = 1;
-                                }
-                                MUTEX_UNLOCK(&mutex_error);
-                                break;
-                            }
-                    }
-                    else {
-                        dsyevr(&jobz, &range, &uplo, &m, M, &lda, &vl, &vu, &il, &iu, &abstol, &numfind, 
-                                D, V, &ldz, isuppz, work, &lwork, iwork, &liwork, &info);
-                        // DSYEVR outputs eigenvectors in ascending order by default.
-                        if(do_sort==-1) {
-                            fliplr(D,1,m,work,1);
-                            if(nlhs>1) 
-                                fliplr(V,m,m,work,1);
-                        }
-                    }
-                    // Need to account for complex conjugate eigenvalue/vector pairs (imaginary parts 
-                    //   of eigenvectors stored in consecutive columns)
-                    if(nlhs>1 && !issym[ib] && !do_orth) {
-                        ptr_V = mxGetPr(plhs[0]) + ib*m2;
-                        ptr_Vi = mxGetPi(plhs[0]) + ib*m2;
-                        // Complex conjugate pairs of eigenvalues appear consecutively with the eigenvalue
-                        //   having the positive imaginary part first.
-                        for(ii=0; ii<m; ii++) {
-                            if(*(Di+ii)>0.) {
-                                for(jj=0; jj<m; jj++) {
-                                    *(ptr_Vi+(ii+1)*m+jj) = -*(ptr_V+(ii+1)*m+jj);
-                                    *(ptr_Vi+ii*m+jj) = *(ptr_V+(ii+1)*m+jj);
-                                    *(ptr_V+(ii+1)*m+jj) = *(ptr_V+ii*m+jj);
-                                }
-                            }
-                        }
-                    }
-                }
-                // If the output needs eigenvalues as diagonal matrix, creates it.
-                if(nlhs>1 && nd==2) { 
-                    if(mxIsComplex(prhs[0]) && anynonsym) {
-                        E = mxGetPr(plhs[1]) + ib*m2;
-                        for(ii=0; ii<m; ii++) 
-                            *(E+ii+ii*m) = *(D+2*ii);
-                        E = mxGetPi(plhs[1]) + ib*m2;
-                        for(ii=0; ii<m; ii++) 
-                            *(E+ii+ii*m) = *(D+2*ii+1);
-                    }
-                    else {
-                        E = mxGetPr(plhs[1]) + ib*m2;
-                        for(ii=0; ii<m; ii++) 
-                            *(E+ii+ii*m) = *(D+ii);
-                        if(anynonsym) {
-                            E = mxGetPi(plhs[1]) + ib*m2; 
-                            for(ii=0; ii<m; ii++) 
-                                *(E+ii+ii*m) = *(Di+ii);
-                        }
-                    }
-                }
-                else if(mxIsComplex(prhs[0]) && anynonsym) {
-                    if(nlhs<=1)
-                        E = mxGetPr(plhs[0]) + ib*m;
-                    else if(nd==3)
-                        E = mxGetPr(plhs[1]) + ib*m;
-                    for(ii=0; ii<m; ii++) 
-                        *(E+ii) = *(D+2*ii);
-                    if(nlhs<=1)
-                        E = mxGetPi(plhs[0]) + ib*m;
-                    else if(nd==3)
-                        E = mxGetPi(plhs[1]) + ib*m;
-                    for(ii=0; ii<m; ii++) 
-                        *(E+ii) = *(D+2*ii+1);
-                }
-                if(*err_code!=0)
-                    break;     // One of the threads has a defective matrix error - break loop here.
-            }
-            // Free memory...
-            delete[]work; delete[]iwork; delete[]isuppz; delete[]M;
-            if(mxIsComplex(prhs[0]))  {
-                delete[]zwork;
-                if(nlhs>1)
-                    delete[]V;
-            }
-            if(nlhs>1 && nd==2)
-                delete[]D;
-//      }
-        #if !defined(_THREADS) || defined(_WIN32)
-        return 0;
-        #endif
+{
+    double *M, *E, *V=0, *D, *Di, *ptr_M, *ptr_Mi, *ptr_V, *ptr_Vi;
+    mwSignedIndex m2, m22;
+    size_t msz;
+    char uplo = 'U';
+    char range = 'A';
+    char jobzn = 'N';
+    double vl = -DBL_MAX, vu = DBL_MAX;
+    mwSignedIndex il = 0, iu;
+    double abstol = sqrt(DBL_EPSILON);
+    mwSignedIndex lda, ldz, numfind;
+    mwSignedIndex info, lwork, liwork, lzwork;
+    mwSignedIndex *isuppz, *iwork;
+    double *work, *zwork;
+    int ii, jj, ib;
+    thread_input *td;
+    mwSignedIndex m = gtd.m;
+    int nlhs = gtd.nlhs;
+    mwSignedIndex nd = gtd.nd;
+    int *blkid = gtd.blkid;
+    char jobz = gtd.jobz;
+    bool anynonsym = gtd.anynonsym;
+    bool *issym = gtd.issym;
+    bool do_orth = gtd.do_orth;
+    int do_sort = gtd.do_sort;
+    mxArray **plhs = gtd.plhs;
+    const mxArray **prhs = gtd.prhs;
+    int *err_code = gtd.err_code;
+    td = (thread_input*)input;
+    int nt = td->nt;
+    lda = m;
+    ldz = m;
+    iu = m;
+    m2 = m*m;
+    m22 = 2*m2;
+    msz = m2*sizeof(double);
+    lwork = do_orth ? ( (26*m>(2*m*(m+7))) ? 26*m : (2*m*(m+7)) )  
+                    : ( (26*m>(2*m*(m+3))) ? 26*m : (2*m*(m+3)) );
+    liwork = 10*m;
+    isuppz = new mwSignedIndex[2*m];
+    work = new double[lwork];
+    iwork = new mwSignedIndex[liwork];
+    if(mxIsComplex(prhs[0])) {
+        lzwork = 4*m;
+        M = new double[m22];
+        zwork = new double[lzwork*2];
+        if(nlhs>1)
+            V = new double[m22];
     }
+    else
+        M = new double[m2];
+    // The output of the _evr Lapack routines gives eigenvalues as vectors
+    // If we want it as a diagonal matrix, need to use a temporary array...
+    if(mxIsComplex(prhs[0]) && anynonsym) {
+        D = new double[2*m];
+    }
+    else if(nlhs>1 && nd==2) {
+        D = new double[m];
+        if(anynonsym)
+            Di = new double[m];
+    }
+    // Actual loop over individual matrices start here
+    for(ib=blkid[nt]; ib<blkid[nt+1]; ib++) {
+        if(!(mxIsComplex(prhs[0]) && anynonsym)) {
+            if(nlhs<=1)
+                D = mxGetPr(plhs[0]) + ib*m;
+            else if(nd==3)
+                D = mxGetPr(plhs[1]) + ib*m;
+        }
+        if(mxIsComplex(prhs[0])) {
+            ptr_M = mxGetPr(prhs[0]) + ib*m2;
+            ptr_Mi = mxGetPi(prhs[0]) + ib*m2;
+            // Interleaves complex matrices - Matlab stores complex matrix as an array of real
+            //   values followed by an array of imaginary values; Fortran (and C++ std::complex)
+            //   and hence Lapack stores it as arrays of pairs of values (real,imaginary).
+            for(ii=0; ii<m; ii++) {
+                for(jj=0; jj<m; jj++) {
+                    M[ii*2+jj*2*m] = *ptr_M++;
+                    M[ii*2+jj*2*m+1] = *ptr_Mi++;
+                }
+            }
+            // This does the actual computation - call using Matlab-included Intel MKL.
+            if(anynonsym) {
+                zgeev(&jobz, &jobzn, &m, M, &lda, D, V, &ldz, V, &ldz, zwork, &lzwork, work, &info);
+                if(do_sort)
+                    if(nlhs>1)
+                        sort(m, D, V, work, do_sort);
+                    else 
+                        sort(m, D, 0, work, do_sort);
+                if(do_orth)
+                    if(orth(m, D, V, work, 0)==1) {
+                      //#pragma omp critical
+                        MUTEX_LOCK(&mutex_error);
+                        {
+                            *err_code = 1;
+                        }
+                        MUTEX_UNLOCK(&mutex_error);
+                        break;
+                    }
+            }
+            else {
+                zheevr(&jobz, &range, &uplo, &m, M, &lda, &vl, &vu, &il, &iu, &abstol, &numfind, 
+                        D, V, &ldz, isuppz, zwork, &lzwork, work, &lwork, iwork, &liwork, &info);
+                // ZHEEVR outputs eigenvectors in ascending order by default.
+                if(do_sort==-1) {
+                    fliplr(D,1,m,work,1);
+                    if(nlhs>1) 
+                        fliplr(V,m,m,work,0);
+                }
+            }
+            if(nlhs>1) {
+                ptr_V = mxGetPr(plhs[0]) + ib*m2;
+                ptr_Vi = mxGetPi(plhs[0]) + ib*m2;
+                for(ii=0; ii<m; ii++) {
+                    for(jj=0; jj<m; jj++) {
+                        *ptr_V++ = V[ii*2*m+jj*2];
+                        *ptr_Vi++ = -V[ii*2*m+jj*2+1];
+                    }
+                }
+            }
+        }
+        else {
+            ptr_M = mxGetPr(prhs[0]) + ib*m2;
+            V = mxGetPr(plhs[0]) + ib*m2;
+            if(anynonsym) {
+                if(nlhs<=1)
+                    Di = mxGetPi(plhs[0]) + ib*m;
+                else if(nd==3)
+                    Di = mxGetPi(plhs[1]) + ib*m;
+            }
+            // We cannot pass the right-side argument directly to Lapack because the routine
+            //   overwrites the input matrix to be diagonalised - so we create a copy
+            //   Matlab uses column-major like Fortran/Lapack (unlike C++) so can just memcpy
+            memcpy(M,ptr_M,msz);
+            // This does the actual computation - call using Matlab-included Intel MKL.
+            if(anynonsym) {
+                dgeev(&jobzn, &jobz, &m, M, &lda, D, Di, V, &ldz, V, &ldz, work, &lwork, &info);
+                if(do_sort)
+                    if(nlhs>1)
+                        sort(m, D, Di, V, work, do_sort);
+                    else
+                        sort(m, D, Di, 0, work, do_sort);
+                if(nlhs>1 && do_orth)
+                    if(orth(m, D, Di, V, mxGetPi(plhs[0])+ib*m2, work, 1)==1) {
+                      //#pragma omp critical
+                        MUTEX_LOCK(&mutex_error);
+                        {
+                            *err_code = 1;
+                        }
+                        MUTEX_UNLOCK(&mutex_error);
+                        break;
+                    }
+            }
+            else {
+                dsyevr(&jobz, &range, &uplo, &m, M, &lda, &vl, &vu, &il, &iu, &abstol, &numfind, 
+                        D, V, &ldz, isuppz, work, &lwork, iwork, &liwork, &info);
+                // DSYEVR outputs eigenvectors in ascending order by default.
+                if(do_sort==-1) {
+                    fliplr(D,1,m,work,1);
+                    if(nlhs>1) 
+                        fliplr(V,m,m,work,1);
+                }
+            }
+            // Need to account for complex conjugate eigenvalue/vector pairs (imaginary parts 
+            //   of eigenvectors stored in consecutive columns)
+            if(nlhs>1 && !issym[ib] && !do_orth) {
+                ptr_V = mxGetPr(plhs[0]) + ib*m2;
+                ptr_Vi = mxGetPi(plhs[0]) + ib*m2;
+                // Complex conjugate pairs of eigenvalues appear consecutively with the eigenvalue
+                //   having the positive imaginary part first.
+                for(ii=0; ii<m; ii++) {
+                    if(*(Di+ii)>0.) {
+                        for(jj=0; jj<m; jj++) {
+                            *(ptr_Vi+(ii+1)*m+jj) = -*(ptr_V+(ii+1)*m+jj);
+                            *(ptr_Vi+ii*m+jj) = *(ptr_V+(ii+1)*m+jj);
+                            *(ptr_V+(ii+1)*m+jj) = *(ptr_V+ii*m+jj);
+                        }
+                    }
+                }
+            }
+        }
+        // If the output needs eigenvalues as diagonal matrix, creates it.
+        if(nlhs>1 && nd==2) { 
+            if(mxIsComplex(prhs[0]) && anynonsym) {
+                E = mxGetPr(plhs[1]) + ib*m2;
+                for(ii=0; ii<m; ii++) 
+                    *(E+ii+ii*m) = *(D+2*ii);
+                E = mxGetPi(plhs[1]) + ib*m2;
+                for(ii=0; ii<m; ii++) 
+                    *(E+ii+ii*m) = *(D+2*ii+1);
+            }
+            else {
+                E = mxGetPr(plhs[1]) + ib*m2;
+                for(ii=0; ii<m; ii++) 
+                    *(E+ii+ii*m) = *(D+ii);
+                if(anynonsym) {
+                    E = mxGetPi(plhs[1]) + ib*m2; 
+                    for(ii=0; ii<m; ii++) 
+                        *(E+ii+ii*m) = *(Di+ii);
+                }
+            }
+        }
+        else if(mxIsComplex(prhs[0]) && anynonsym) {
+            if(nlhs<=1)
+                E = mxGetPr(plhs[0]) + ib*m;
+            else if(nd==3)
+                E = mxGetPr(plhs[1]) + ib*m;
+            for(ii=0; ii<m; ii++) 
+                *(E+ii) = *(D+2*ii);
+            if(nlhs<=1)
+                E = mxGetPi(plhs[0]) + ib*m;
+            else if(nd==3)
+                E = mxGetPi(plhs[1]) + ib*m;
+            for(ii=0; ii<m; ii++) 
+                *(E+ii) = *(D+2*ii+1);
+        }
+        if(*err_code!=0)
+            break;     // One of the threads has a defective matrix error - break loop here.
+    }
+    // Free memory...
+    delete[]work; delete[]iwork; delete[]isuppz; delete[]M;
+    if(mxIsComplex(prhs[0]))  {
+        delete[]zwork;
+        if(nlhs>1)
+            delete[]V;
+    }
+    if(nlhs>1 && nd==2)
+        delete[]D;
+    #if !defined(_THREADS) || defined(_WIN32)
+    return 0;
+    #endif
+}
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -697,9 +673,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     bool *issym, anynonsym=false, do_orth=false, do_Colpa=false;
     // Tolerance on whether matrix is symmetric/hermitian
     double tolsymm = sqrt(DBL_EPSILON);
-    int nthread; // = omp_get_max_threads();
     int err_code=0;
-//  mexPrintf("Number of threads = %d\n",nthread);
+    int nthread;
 
     // System-dependent calls to find number of processors (from GotoBLAS)
     {
@@ -718,20 +693,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     // Checks inputs
 //  if(nrhs!=1) {
-//      mexErrMsgIdAndTxt("eig_omp:nargin","Number of input argument must be 1.");
+//      mexErrMsgIdAndTxt("eig_thr:nargin","Number of input argument must be 1.");
 //  }
     if(!mxIsNumeric(prhs[0])) {
-        mexErrMsgIdAndTxt("eig_omp:notnumeric","Input matrix must be a numeric array.");
+        mexErrMsgIdAndTxt("eig_thr:notnumeric","Input matrix must be a numeric array.");
     }
     nd = mxGetNumberOfDimensions(prhs[0]);
     if(nd<2 || nd>3) {
-        mexErrMsgIdAndTxt("eig_omp:wrongdims","Only 2D or 3D arrays are supported.");
+        mexErrMsgIdAndTxt("eig_thr:wrongdims","Only 2D or 3D arrays are supported.");
     }
     dims = mxGetDimensions(prhs[0]);
     m = dims[0];
     n = dims[1];
     if(m!=n) {
-        mexErrMsgIdAndTxt("eig_omp:notsquare","Input matrix is not square.");
+        mexErrMsgIdAndTxt("eig_thr:notsquare","Input matrix is not square.");
     }
     if(nd==3)
         nblock = (int)dims[2];
@@ -770,7 +745,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                         else if(strcmp(valstr,"descend")==0)
                             do_sort = -1;
                         else 
-                            mexErrMsgIdAndTxt("eig_omp:badsortarg","Arguments to 'sort' keyword must be either 'ascend' or 'descend'.");
+                            mexErrMsgIdAndTxt("eig_thr:badsortarg","Arguments to 'sort' keyword must be either 'ascend' or 'descend'.");
                     }
                     else {
                         if(mxIsLogical(prhs[ii+1]))
@@ -923,7 +898,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
     }
 
-#ifdef _THREADS
     // Sets values of the shared variables, accessible through the global struct gtd
     gtd.m = m;
     gtd.nlhs = nlhs;
@@ -949,40 +923,32 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         HANDLE threads[NUM_THREADS];
         DWORD tid[NUM_THREADS], dwError;
     #endif
-#endif
     // Starts threads or run through blocks of matrices in serial
     for(nt=0; nt<nthread; nt++) {
-#ifdef _THREADS
         tin[nt] = new thread_input(nt);
     #if defined  (__linux__) || defined (__APPLE__)
         rc = pthread_create(&threads[nt], &attr, thread_iteration, (void *)tin[nt]);
         if(rc) { 
-            mexErrMsgIdAndTxt("eig_omp:threadcreate","Cannot create thread.");
+            mexErrMsgIdAndTxt("eig_thr:threadcreate","Cannot create thread %i due to error code %i",nt+1,rc);
         }
     #else
         threads[nt] = CreateThread(NULL, 0, thread_iteration, (void *)tin[nt], 0, &tid[nt]);
         if(threads[nt]==NULL) { 
-          //dwError=GetLastError(); printf("Error code %i from thread %i\n",dwError,nt+1);
-            mexErrMsgIdAndTxt("eig_omp:threadcreate","Cannot create thread.");
+            dwError=GetLastError();
+            mexErrMsgIdAndTxt("eig_thr:threadcreate","Cannot create thread %i due to error code %i",nt+1,dwError);
         }
     #endif
-#else
-        thread_iteration(m, nlhs, nd, blkid, jobz, anynonsym, issym, do_orth, do_sort, nt, plhs, prhs, &err_code);
-        if(err_code!=0)
-            break;
-#endif
     }
     // Wait for all threads to finish and clean up
-#ifdef _THREADS
     for(nt=0; nt<nthread; nt++) {
     #if defined  (__linux__) || defined (__APPLE__)
         rc = pthread_join(threads[nt], &status);
         if(rc) { 
-            mexErrMsgIdAndTxt("eig_omp:threadjoin","Cannot end/join thread.");
+            mexErrMsgIdAndTxt("eig_thr:threadjoin","Cannot end/join thread %i due to error code %i.",nt+1,rc);
         }
     #else
         if(WaitForSingleObject(threads[nt],INFINITE)==0xFFFFFFFF) { 
-            mexErrMsgIdAndTxt("eig_omp:threadjoin","Cannot end/join thread.");
+            mexErrMsgIdAndTxt("eig_thr:threadjoin","Cannot end/join thread %i",nt+1);
         }
     #endif
         delete[]tin[nt];
@@ -992,9 +958,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     pthread_mutex_destroy(&mutex_error);
     #endif
     THRLC_FREE(threadSpecificKey);
-#endif
 
     delete[]blkid; delete[]issym;
     if(err_code==1)
-        mexErrMsgIdAndTxt("eig_omp:defectivematrix","Eigenvectors of defective eigenvalues cannot be orthogonalised.");
+        mexErrMsgIdAndTxt("eig_thr:defectivematrix","Eigenvectors of defective eigenvalues cannot be orthogonalised.");
 }

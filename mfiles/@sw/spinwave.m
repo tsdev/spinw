@@ -107,8 +107,9 @@ function spectra = spinwave(obj, hkl, varargin)
 %               frame is saved S'(k,omega). Default is false.
 % title         Gives a title string to the simulation that is saved in the
 %               output.
-% useMex        If true, use mex file for OpenMP parallelised eigenvalue
-%               decomposition and Cholesky factorisation (default:false)
+% useMex        If true, the code will use compiled mex files (if they
+%               exist) to speed up the calculation, for details see
+%               sw_mex() function. Default is false.
 %
 % Output:
 %
@@ -217,10 +218,19 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
+inpForm.fname  = [inpForm.fname  {'useMex'}];
+inpForm.defval = [inpForm.defval {false   }];
+inpForm.size   = [inpForm.size   {[1 1]   }];
+
 param = sw_readparam(inpForm, varargin{:});
 
 if param.fitmode
     param.sortMode = false;
+end
+
+if ~(param.useMex && exist('chol_omp','file')==3 && ...
+        exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
+    param.useMex = false;
 end
 
 % size of the extended magnetic unit cell
@@ -693,9 +703,9 @@ for jj = 1:nSlice
         % basis functions of the magnon modes
         V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
         
-        % Use mex files to parallelise over hkl-points if available
-        if param.useMex && nHklMEM>1 && exist('chol_thr','file')==3 && exist('eig_thr','file')==3 && exist('mtimesx','file')==3
-            % Mex file will return an error if the matrix is not positive definite.
+        if param.useMex && nHklMEM>1
+            % use mex files to speed up the calculation
+            % mex file will return an error if the matrix is not positive definite.
             [K2, invK] = chol_thr(ham,'Colpa','tol',param.omega_tol);
             [V, omega(:,hklIdxMEM)] = eig_thr(K2,'sort','descend');
             % the inverse of the para-unitary transformation V
@@ -703,6 +713,7 @@ for jj = 1:nSlice
                 V(:,:,ii) = V(:,:,ii)*diag(sqrt(gCommd.*omega(:,hklIdxMEM(ii))));
             end
             V = mtimesx(invK,V);
+            %V = bsxfun(@times,invK,V);
         else
             for ii = 1:nHklMEM
                 [K, posDef]  = chol(ham(:,:,ii));
@@ -758,9 +769,8 @@ for jj = 1:nSlice
             % multiplication with g removed to get negative and positive
             % energies as well
             omega(:,end+1) = D(:,ii); %#ok<AGROW>
-            M           = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
-            V(:,:,ii)   = V(:,:,ii)*diag(sqrt(1./M));
-           %V = mtimesx(V,sqrt(1./mtimesx(mtimesx(gComm,V,'C'),mtimesx(gComm,V))));
+            M              = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
+            V(:,:,ii)      = V(:,:,ii)*diag(sqrt(1./M));
         end
     end
     

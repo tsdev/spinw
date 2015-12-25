@@ -1,6 +1,6 @@
-function [Vseq,Dseq] = eigenshuffle(Asequence, useMex, doOrth)
+function [Vseq,Dseq] = eigenshuffle(Asequence, useMex, varargin)
 % eigenshuffle: Consistent sorting for an eigenvalue/vector sequence
-% [Vseq,Dseq] = eigenshuffle(Asequence)
+% [Vseq,Dseq] = eigenshuffle(Asequence, useMex, varargin)
 %
 % Includes munkres.m (by gracious permission from Yi Cao)
 % to choose the appropriate permutation. This greatly
@@ -155,7 +155,7 @@ Dseq = zeros(p,n);
 if(nargin<2)
     useMex = false;
 end
-if n>1 && useMex && exist('eig_thr')==3
+if n>1 && useMex && exist('eig_thr','file')==3
     if nargin>2
         [Vseq,Dseq] = eig_thr(Asequence,'orth','sort','descend');
     else

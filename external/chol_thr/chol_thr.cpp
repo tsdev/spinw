@@ -368,7 +368,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mxDestroyArray(thrptr);
     }
     if(nthread>NUM_THREADS) nthread=NUM_THREADS;
-    mexPrintf("Using %d threads.\n",nthread);
+//  mexPrintf("Using %d threads.\n",nthread);
 
     // Checks inputs
     if(!mxIsNumeric(prhs[0])) {

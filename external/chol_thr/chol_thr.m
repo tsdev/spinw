@@ -5,7 +5,7 @@
 % L     = CHOL_OMP(M,'lower');
 % [L,P] = CHOL_OMP(M,'lower');
 %
-% The code uses Lapack calls and OpenMP to speed up the calculation. Unlike
+% The code uses Lapack calls and threads to speed up the calculation. Unlike
 % the matlab built-in this mex does not handle sparse matrices.
 %
 % Input:

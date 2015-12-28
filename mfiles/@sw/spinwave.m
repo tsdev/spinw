@@ -228,8 +228,8 @@ if param.fitmode
     param.sortMode = false;
 end
 
-if ~(param.useMex && exist('chol_omp','file')==3 && ...
-        exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
+if ~(param.useMex && exist('chol_thr','file')==3 && ...
+        exist('eig_thr','file')==3 && exist('mtimesx','file')==3)
     param.useMex = false;
 end
 

@@ -19,6 +19,7 @@ AFsq.addmatrix('label','J1','value',1,'color','red');      AFsq.addcoupling('J1'
 AFsq.addmatrix('label','J2','value',-0.1,'color','green'); AFsq.addcoupling('J2',2)
 AFsq.genmagstr('mode','helical','k',[1/2 1/2 0],'n',[0 0 1], 'S',[1; 0; 0],'nExt',[1 1 1]);  
 %plot(AFsq,'range',[2 2 0.5],'zoom',-1)
+%AFsq.addmatrix('mat',rand(3),'label',{'g0'}); AFsq.addg('g0');
 
 itst=1;
 % Runs test

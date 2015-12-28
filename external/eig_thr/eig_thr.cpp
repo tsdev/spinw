@@ -676,7 +676,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     int err_code=0;
     int nthread;
 
+    // Checks if user specified number of threads in a global variable
+    mxArray *thrptr = mexGetVariable("global","sw_num_threads");
+
     // System-dependent calls to find number of processors (from GotoBLAS)
+    if(thrptr == NULL)
     {
     #if defined(__linux__)
         nthread = get_nprocs();
@@ -689,7 +693,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         nthread = sysinfo.dwNumberOfProcessors;
     #endif
     }
+    else {
+        nthread = (int)mxGetPr(thrptr)[0];
+        mxDestroyArray(thrptr);
+    }
     if(nthread>NUM_THREADS) nthread=NUM_THREADS;
+    mexPrintf("Using %d threads.\n",nthread);
 
     // Checks inputs
 //  if(nrhs!=1) {

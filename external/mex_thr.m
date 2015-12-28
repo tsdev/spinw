@@ -1,6 +1,8 @@
 clear all
-mex('-v','-largeArrayDims','eig_thr.cpp','-lmwlapack')
-mex('-v','-largeArrayDims','chol_thr.cpp','-lmwlapack','-lmwblas')
+mex('-v','-largeArrayDims','-outdir','eig_thr','eig_thr/eig_thr.cpp','-lmwlapack')
+mex('-v','-largeArrayDims','-outdir','chol_thr','chol_thr/chol_thr.cpp','-lmwlapack','-lmwblas')
+
+%global sw_num_threads; sw_num_threads=1;
 
 % Parameters
 n  = 50;   % Matrix size == n x n

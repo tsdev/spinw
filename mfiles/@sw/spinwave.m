@@ -206,9 +206,9 @@ end
 
 title0 = 'Numerical LSWT spectrum';
 
-inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' 'hermit'};
-inpForm.defval = {false     false    true       0        1e-4  true    };
-inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]   };
+inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' 'hermit' 'useMex'};
+inpForm.defval = {false     false    true       0        1e-4  true     false};
+inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]    [1 1]};
 
 inpForm.fname  = [inpForm.fname  {'omega_tol' 'saveSabp' 'saveT' 'saveH'}];
 inpForm.defval = [inpForm.defval {1e-5        true       false   false  }];
@@ -228,8 +228,8 @@ if param.fitmode
     param.sortMode = false;
 end
 
-if ~(param.useMex && exist('chol_omp','file')==3 && ...
-        exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
+if ~(param.useMex && exist('chol_thr','file')==3 && ...
+        exist('eig_thr','file')==3 && exist('mtimesx','file')==3)
     param.useMex = false;
 end
 
@@ -316,7 +316,9 @@ twinIdx = twinIdx(:);
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
-if param.fitmode
+if param.fitmode==3
+    [SS, SI, RR] = obj.intmatrix('fitmode',3,'conjugate',true);
+elseif param.fitmode
     [SS, SI, RR] = obj.intmatrix('fitmode',2,'conjugate',true);
 else
     [SS, SI, RR] = obj.intmatrix('conjugate',true);
@@ -370,7 +372,7 @@ end
 % e3||Si,ata
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 % e1 = e2 x e3
-magTab = obj.magtable;
+magTab = obj.magtable(param.fitmode==3);
 
 zed = magTab.e1 + 1i*magTab.e2;
 eta = magTab.e3;
@@ -475,13 +477,29 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if param.optmem == 0
-    freeMem = sw_freemem;
-    if freeMem > 0
-        nSlice = ceil(nMagExt^2*nHkl*6912/freeMem*2);
+    if param.fitmode == 3
+        if ~isfield(obj.lattice,'nSlice')
+            freeMem = sw_freemem;
+            nSlice = 1;
+            if freeMem > 0
+                nSlice = ceil(nMagExt^2*nHkl*6912/freeMem*2);
+            end
+            obj.lattice.nSlice = nSlice;
+        else
+            nSlice = obj.lattice.nSlice;
+        end
     else
-        nSlice = 1;
-        if ~param.fitmode
-            warning('sw:spinwave:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
+        freeMem = sw_freemem;
+        if freeMem > 0
+            nSlice = ceil(nMagExt^2*nHkl*6912/freeMem*2);
+        else
+            nSlice = 1;
+            if ~param.fitmode
+                warning('sw:spinwave:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
+            end
+        if isfield(obj.lattice,'nSlice')
+            rmfield(obj.lattice,'nSlice');
+        end
         end
     end
 else
@@ -536,7 +554,11 @@ hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 omega = zeros(2*nMagExt,0);
 
 % empty Sab
-Sab = zeros(3,3,2*nMagExt,0);
+if param.useMex && numel(S0)>5
+    Sab = zeros(3,3,2*nMagExt,nHkl);
+else
+    Sab = zeros(3,3,2*nMagExt,0);
+end
 
 % Empty matrices to save different intermediate results for further
 % analysis: Hamiltonian, eigenvectors, dynamical structure factor in the
@@ -688,8 +710,8 @@ for jj = 1:nSlice
         if param.useMex && nHklMEM>1
             % use mex files to speed up the calculation
             % mex file will return an error if the matrix is not positive definite.
-            [K2, invK] = chol_omp(ham,'Colpa','tol',param.omega_tol);
-            [V, omega(:,hklIdxMEM)] = eig_omp(K2,'sort','descend');
+            [K2, invK] = chol_thr(ham,'Colpa','tol',param.omega_tol);
+            [V, omega(:,hklIdxMEM)] = eig_thr(K2,'sort','descend');
             % the inverse of the para-unitary transformation V
             for ii = 1:nHklMEM
                 V(:,:,ii) = V(:,:,ii)*diag(sqrt(gCommd.*omega(:,hklIdxMEM(ii))));
@@ -739,15 +761,13 @@ for jj = 1:nSlice
         % All the matrix calculations are according to White's paper
         % R.M. White, et al., Physical Review 139, A450?A454 (1965)
         
-        %gham = 0*ham;
-        %for ii = 1:nHklMEM
-        %    gham(:,:,ii) = gComm*ham(:,:,ii);
-        %end
-        
+        gham = 0*ham;
+        for ii = 1:nHklMEM
+            gham(:,:,ii) = gComm*ham(:,:,ii);
+        end
         %gham = mmat(gComm,ham);
-        gham = mtimesx(gComm,ham);
         
-        [V, D] = eigorth(gham,param.omega_tol, param.sortMode,param.useMex);
+        [V, D] = eigorth(gham, param.omega_tol, param.sortMode, param.useMex);
         
         for ii = 1:nHklMEM
             % multiplication with g removed to get negative and positive
@@ -755,6 +775,7 @@ for jj = 1:nSlice
             omega(:,end+1) = D(:,ii); %#ok<AGROW>
             M              = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
             V(:,:,ii)      = V(:,:,ii)*diag(sqrt(1./M));
+           %V = mtimesx(V,sqrt(1./mtimesx(mtimesx(gComm,V,'C'),mtimesx(gComm,V))));
         end
     end
     
@@ -764,46 +785,73 @@ for jj = 1:nSlice
     if param.saveH
         Hsave(:,:,hklIdxMEM) = ham;
     end
-    
-    % Calculates correlation functions.
-    % V right
-    VExtR = repmat(permute(V  ,[4 5 1 2 3]),[3 3 1 1 1]);
-    % V left: conjugate transpose of V
-    VExtL = conj(permute(VExtR,[1 2 4 3 5]));
-    
-    % Introduces the exp(-ikR) exponential factor.
-    ExpF =  exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
-    % Includes the sqrt(Si/2) prefactor.
-    ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHklMEM]);
-    
-    ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt 2]);
-    % conj transpose of ExpFL
-    ExpFR = conj(permute(ExpFL,[1 2 4 3 5]));
-    
-    zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1 nHklMEM]);
-    % conj transpose of zeda
-    zedb = conj(permute(zeda,[2 1 4 3 5]));
-    
-    % calculate magnetic structure factor using the hklExt0 Q-values
-    % since the S(Q+/-k,omega) correlation functions also belong to the
-    % F(Q)^2 form factor
-    
-    if iscell(param.formfact) || param.formfact
-        % include the form factor in the z^alpha, z^beta matrices
-        zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 2*nMagExt 2 1]);
-        zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 2*nMagExt 1]);
-    end
-    
-    if param.gtensor
-        % include the g-tensor
-        zeda = mmat(repmat(permute(gtensor,[1 2 4 3]),[1 1 1 2]),zeda);
-        zedb = mmat(zedb,repmat(gtensor,[1 1 2]));
-    end
-    % Dynamical for factor from S^alpha^beta(k) correlation function.
-    % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
-    % Normalizes the intensity to single unit cell.
-    Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
 
+    % Calculates correlation functions.
+    if param.useMex && size(V,1)>10
+        ExpF = exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
+        ExpF = reshape(ExpF,[numel(S0) nHklMEM]).*repmat(sqrt(S0.'/2),[1 nHklMEM]);
+        ExpF = repmat(ExpF,[2 1]); 
+        if iscell(param.formfact) || param.formfact; 
+            ExpF = ExpF .* repmat(FF(:,hklIdxMEM),[2 1]); 
+        end
+        if param.gtensor; 
+            for i1=1:size(gtensor,3); 
+                z1(:,i1)=gtensor(:,:,i1)*zed(:,i1); 
+            end; 
+        else; 
+            z1=zed; 
+        end
+        z1=[z1 conj(z1)].'; 
+        zExp = zeros(numel(S0)*2,1,nHklMEM,3);
+        for i1=1:3; 
+            zExp(:,:,:,i1) = bsxfun(@times,z1(:,i1),ExpF);
+        end
+        for i1=1:3; 
+            for i2=1:3; 
+                Sab(i1,i2,:,hklIdxMEM) = mtimesx(V,'C',zExp(:,:,:,i1)).*conj(mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
+            end;
+        end;
+    else
+        % V right
+        VExtR = repmat(permute(V  ,[4 5 1 2 3]),[3 3 1 1 1]);
+        % V left: conjugate transpose of V
+        VExtL = conj(permute(VExtR,[1 2 4 3 5]));
+    
+        % Introduces the exp(-ikR) exponential factor.
+        ExpF =  exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
+        % Includes the sqrt(Si/2) prefactor.
+        ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHklMEM]);
+    
+        ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt 2]);
+        % conj transpose of ExpFL
+        ExpFR = conj(permute(ExpFL,[1 2 4 3 5]));
+    
+        zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1 nHklMEM]);
+        % conj transpose of zeda
+        zedb = conj(permute(zeda,[2 1 4 3 5]));
+    
+        % calculate magnetic structure factor using the hklExt0 Q-values
+        % since the S(Q+/-k,omega) correlation functions also belong to the
+        % F(Q)^2 form factor
+    
+        if iscell(param.formfact) || param.formfact
+            % include the form factor in the z^alpha, z^beta matrices
+            zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 2*nMagExt 2 1]);
+            zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 2*nMagExt 1]);
+        end
+    
+        if param.gtensor
+            % include the g-tensor
+            zeda = mmat(repmat(permute(gtensor,[1 2 4 3]),[1 1 1 2]),zeda);
+            zedb = mmat(zedb,repmat(gtensor,[1 1 2]));
+        end
+        % Dynamical for factor from S^alpha^beta(k) correlation function.
+        % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
+        % Normalizes the intensity to single unit cell.
+        Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
+    
+    end
+    
     if fid == 1
         sw_status(jj/nSlice*100);
     end
@@ -822,6 +870,8 @@ if warn1 && ~param.fitmode
     warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...
         'positive definite, a small omega_tol value was added to its diagonal!'])
 end
+
+%fprintf0(fid,'t/c: %g %g %g %e\n',[sum(t1) sum(t2b) sum(t2) sum(abs(Sab(:)-Sabt(:)))]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % END MEMORY MANAGEMENT LOOP

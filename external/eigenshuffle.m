@@ -155,11 +155,11 @@ Dseq = zeros(p,n);
 if(nargin<2)
     useMex = false;
 end
-if n>1 && useMex && exist('eig_omp','file')==3
+if n>1 && useMex && exist('eig_thr','file')==3
     if nargin>2
-        [Vseq,Dseq] = eig_omp(Asequence,'orth','sort','descend');
+        [Vseq,Dseq] = eig_thr(Asequence,'orth','sort','descend');
     else
-        [Vseq,Dseq] = eig_omp(Asequence,'sort','descend');
+        [Vseq,Dseq] = eig_thr(Asequence,'sort','descend');
     end 
 else
     for i = 1:n

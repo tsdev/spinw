@@ -14,6 +14,9 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %               1   Only atomic positions are precalculated and equivalent
 %                   coupling matrices are summed up.
 %               2   Same as mode == 1, moreover only SS.all is calculated.
+%               3   Same as mode == 2, but save symmetry information to sw
+%                   object to reuse on next call with fitmode 3 (if other
+%                   fitmode, or no fitmode used, recalculate this info).
 % plotmode      If true, additional rows are added to SS.all, to identify
 %               the couplings for plotting. Default is false.
 % sortDM        If true each coupling is sorted for consistent plotting of
@@ -190,13 +193,25 @@ if obj.sym
     end
     
     % generate the rotation matrices
-    if obj.symbolic
-        [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,~sw_always(obj.unit_cell.S==0)));
-        % try to convert the rotation matrices into symbolic (only works
-        % for matrices with 1s and 0s)
-        %rotOp = round(rotOp);
+    if param.fitmode == 3
+        if ~isfield(obj.lattice,'rotOp')
+            [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,~sw_always(obj.unit_cell.S==0)));
+            obj.lattice.rotOp = rotOp;
+        end
+        rotOp = obj.lattice.rotOp;
     else
-        [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
+        if obj.symbolic
+            [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,~sw_always(obj.unit_cell.S==0)));
+            % try to convert the rotation matrices into symbolic (only works
+            % for matrices with 1s and 0s)
+            %rotOp = round(rotOp);
+            obj.lattice.rotOp = rotOp;
+        else
+            [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
+        end
+        if isfield(obj.lattice,'rotOp')
+            rmfield(obj.lattice,'rotOp');
+        end
     end
     % convert rotation operators to xyz Cartesian coordinate system
     %if sum(abs((A-diag(diag(A)))/max(A))) > 1e-15
@@ -219,23 +234,41 @@ if obj.sym
         % generate the coupling matrices for the rest
         firstC = SS.all(1:5,[true logical(diff(SS.all(6,:)+100*SS.all(7,:)))]);
         % produce the space group symmetry operators
-        [symOp, symTr] = sw_gencoord(obj.lattice.sym);
-        rotOp = zeros(3,3,0);
-        % select rotation matrices for each generated coupling
-        for ii = 1:size(firstC,2)
-            [~, rotIdx] = sw_gensymcoupling(obj, firstC(:,ii), {symOp, symTr}, 1e-5, true);
-            rotOp = cat(3,rotOp,symOp(:,:,rotIdx));
+        if param.fitmode == 3
+            if isfield(obj.lattice,'symOp')
+                rotOp = obj.lattice.symOp;
+            else
+                [symOp, symTr] = sw_gencoord(obj.lattice.sym);
+                % select rotation matrices for each generated coupling
+                rotOp = zeros(3,3,0);
+                for ii = 1:size(firstC,2)
+                    [~, rotIdx] = sw_gensymcoupling(obj, firstC(:,ii), {symOp, symTr}, 1e-5, true);
+                    rotOp = cat(3,rotOp,symOp(:,:,rotIdx));
+                end
+        
+                %if obj.symbolic
+                %    rotOp = round(rotOp);
+                %end
+        
+                % convert rotation operators to xyz Cartesian coordinate system
+                %if sum(abs((A-diag(diag(A)))/max(A))) > 1e-15
+                rotOp = mmat(A,mmat(rotOp,inv(A)));
+                %end
+                obj.lattice.symOp = rotOp;
+            end
+        else
+            [symOp, symTr] = sw_gencoord(obj.lattice.sym);
+            % select rotation matrices for each generated coupling
+            rotOp = zeros(3,3,0);
+            for ii = 1:size(firstC,2)
+                [~, rotIdx] = sw_gensymcoupling(obj, firstC(:,ii), {symOp, symTr}, 1e-5, true);
+                rotOp = cat(3,rotOp,symOp(:,:,rotIdx));
+            end
+            rotOp = mmat(A,mmat(rotOp,inv(A)));
+            if isfield(obj.lattice,'symOp') 
+                rmfield(obj.lattice,'symOp');
+            end
         end
-        
-        %if obj.symbolic
-        %    rotOp = round(rotOp);
-        %end
-        
-        % convert rotation operators to xyz Cartesian coordinate system
-        %if sum(abs((A-diag(diag(A)))/max(A))) > 1e-15
-        rotOp = mmat(A,mmat(rotOp,inv(A)));
-        %end
-        
         % rotate the matrices: R*M*R'
         if param.rotMat
             JJ.mat = mmat(rotOp,mmat(JJ.mat,permute(rotOp,[2 1 3])));

@@ -93,6 +93,9 @@ if ischar(atomName)
         S     = formFact.S(idx);
     else
         coeff = [zeros(1,6) 1];
+        if nargout < 3
+            warning('sw_mff:WrongInput','The form factor for the given magnetic atom is undefined!')
+        end
     end
     
 else

@@ -83,10 +83,10 @@ if nargin <= 1
     return;
 end
 
-inpForm.fname  = {'component' 'norm' 'dE'  'func'         'param'};
-inpForm.defval = {'Sperp'     false  0     @obj.matparser []     };
-inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2] };
-inpForm.soft   = {false       false  false false          true   };
+inpForm.fname  = {'component' 'norm' 'dE'  'func'         'param' 'fitmode'};
+inpForm.defval = {'Sperp'     false  0     @obj.matparser []      4};
+inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1]};
+inpForm.soft   = {false       false  false false          true    false};
 
 warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});
@@ -107,24 +107,6 @@ if param.norm && param.dE == 0
         ' units, give the energy bin step.'])
 end
 
-% calculate spin wave spectrum
-if nargin > 5
-    % include the fitmode option to speed up calculation
-    if numel(varargin) == 1
-        varargin{1}.fitmode = 2;
-        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{1});
-    else
-        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true);
-    end
-else
-    spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',true);
-end
-warning(warnState);
-
-% calculate Sperp
-spectra = sw_neutron(spectra,'pol',false);
-
-
 % parse the component string
 if iscell(param.component)
     nConv = numel(param.component);
@@ -142,17 +124,52 @@ else
     param.component = {param.component};
 end
 
+% fitmode 4 calculates Sperp without saving Sab to save memory.
+if param.fitmode==4
+    for ii = 1:numel(param.component)
+        if any(cellfun(@(xx)xx(1)~=1, parsed{ii}.type))
+            param.fitmode = 3;
+            break;
+        end
+    end
+end
+
+% calculate spin wave spectrum
+% include the fitmode option to speed up calculation
+if nargin>5
+    % Removes parameters which we've used
+    id=[];
+    varlist = {inpForm.fname{:} 'mat'};
+    for ii=1:numel(varlist) 
+        id = [id find(strcmp(varargin,varlist{ii}))]; 
+    end
+    varargin([id id+1])=[];
+    spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',param.fitmode);
+else
+    spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',param.fitmode);
+end
+warning(warnState);
+
+% calculate Sperp if not calculated in fitmode 4
+if param.fitmode<4
+    spectra = sw_neutron(spectra,varargin{:});
+end
+
 % pack all cross section into a cell for easier looping
 if iscell(spectra.omega)
     nTwin = numel(spectra.omega);
     omega = spectra.omega;
-    Sab   = spectra.Sab;
+    if param.fitmode<4
+        Sab = spectra.Sab;
+    end
     Sperp = spectra.Sperp;
     
 else
     nTwin = 1;
     omega = {spectra.omega};
-    Sab   = {spectra.Sab};
+    if param.fitmode<4
+        Sab = {spectra.Sab};
+    end
     Sperp = {spectra.Sperp};
 end
 

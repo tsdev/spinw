@@ -206,9 +206,9 @@ end
 
 title0 = 'Numerical LSWT spectrum';
 
-inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' 'hermit' 'useMex'};
-inpForm.defval = {false     false    true       0        1e-4  true     false};
-inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]    [1 1]};
+inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' 'hermit'};
+inpForm.defval = {false     false    true       0        1e-4  true};
+inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]};
 
 inpForm.fname  = [inpForm.fname  {'omega_tol' 'saveSabp' 'saveT' 'saveH'}];
 inpForm.defval = [inpForm.defval {1e-5        true       false   false  }];
@@ -312,11 +312,11 @@ hklExt = cell2mat(hklExt);
 
 % determines a twin index for every q point
 twinIdx = repmat(1:nTwin,[nHkl 1]);
-twinIdx = twinIdx(:);
+twinIdx = int8(twinIdx(:));
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
-if param.fitmode==3
+if param.fitmode>=3
     [SS, SI, RR] = obj.intmatrix('fitmode',3,'conjugate',true);
 elseif param.fitmode
     [SS, SI, RR] = obj.intmatrix('fitmode',2,'conjugate',true);
@@ -372,7 +372,7 @@ end
 % e3||Si,ata
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 % e1 = e2 x e3
-magTab = obj.magtable(param.fitmode==3);
+magTab = obj.magtable(param.fitmode>=3);
 
 zed = magTab.e1 + 1i*magTab.e2;
 eta = magTab.e3;
@@ -477,7 +477,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if param.optmem == 0
-    if param.fitmode == 3
+    if param.fitmode >= 3
         if ~isfield(obj.lattice,'nSlice')
             freeMem = sw_freemem;
             nSlice = 1;
@@ -498,7 +498,7 @@ if param.optmem == 0
                 warning('sw:spinwave:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
             end
         if isfield(obj.lattice,'nSlice')
-            rmfield(obj.lattice,'nSlice');
+            obj.lattice = rmfield(obj.lattice,'nSlice');
         end
         end
     end
@@ -551,13 +551,17 @@ end
 hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 
 % Empty omega dispersion of all spin wave modes, size: 2*nMagExt x nHkl.
-omega = zeros(2*nMagExt,0);
+if param.useMex %&& numel(S0)>5
+    omega = zeros(2*nMagExt,nHkl);
+else
+    omega = zeros(2*nMagExt,0);
+end
 
 % empty Sab
-if param.useMex && numel(S0)>5
-    Sab = zeros(3,3,2*nMagExt,nHkl);
+if param.fitmode == 4
+    Sperp = zeros(2*nMagExt, nHkl);
 else
-    Sab = zeros(3,3,2*nMagExt,0);
+    Sab = zeros(3,3,2*nMagExt,nHkl);
 end
 
 % Empty matrices to save different intermediate results for further
@@ -637,8 +641,6 @@ for jj = 1:nSlice
     A1 = bsxfun(@times,     AD0 ,ExpF);
     B  = bsxfun(@times,     BC0 ,ExpF);
     D1 = bsxfun(@times,conj(AD0),ExpF);
-
-
         
     % Store all indices
     % SP1: speedup for creating the matrix elements
@@ -656,7 +658,6 @@ for jj = 1:nSlice
 
     ABCD   = ABCD';
 
-    
     % quadratic form of the boson Hamiltonian stored as a square matrix
     ham = accumarray(idxAll,ABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
     
@@ -688,7 +689,6 @@ for jj = 1:nSlice
             ham(:,:,twinIdxMEM==ii) = ham(:,:,twinIdxMEM==ii) + ...
                 repmat(accumarray(idxMF,MF(:,:,ii),[1 1]*2*nMagExt),[1 1 nTwinQ]);
         end
-        
         %ham = ham + repmat(accumarray(idxMF,MF,[1 1]*2*nMagExt),[1 1 nHklMEM]);
     end
     
@@ -787,30 +787,30 @@ for jj = 1:nSlice
     end
 
     % Calculates correlation functions.
-    if param.useMex && size(V,1)>10
+    if param.useMex %&& size(V,1)>10
         ExpF = exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
         ExpF = reshape(ExpF,[numel(S0) nHklMEM]).*repmat(sqrt(S0.'/2),[1 nHklMEM]);
         ExpF = repmat(ExpF,[2 1]); 
         if iscell(param.formfact) || param.formfact; 
             ExpF = ExpF .* repmat(FF(:,hklIdxMEM),[2 1]); 
         end
+        z1=zed;
         if param.gtensor; 
             for i1=1:size(gtensor,3); 
                 z1(:,i1)=gtensor(:,:,i1)*zed(:,i1); 
-            end; 
-        else; 
-            z1=zed; 
+            end
         end
         z1=[z1 conj(z1)].'; 
         zExp = zeros(numel(S0)*2,1,nHklMEM,3);
         for i1=1:3; 
             zExp(:,:,:,i1) = bsxfun(@times,z1(:,i1),ExpF);
         end
+        tSab = zeros(3,3,2*nMagExt,nHklMEM);
         for i1=1:3; 
             for i2=1:3; 
-                Sab(i1,i2,:,hklIdxMEM) = mtimesx(V,'C',zExp(:,:,:,i1)).*conj(mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
-            end;
-        end;
+                tSab(i1,i2,:,:) = mtimesx(V,'C',zExp(:,:,:,i1)).*conj(mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
+            end
+        end
     else
         % V right
         VExtR = repmat(permute(V  ,[4 5 1 2 3]),[3 3 1 1 1]);
@@ -848,9 +848,31 @@ for jj = 1:nSlice
         % Dynamical for factor from S^alpha^beta(k) correlation function.
         % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
         % Normalizes the intensity to single unit cell.
-        Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
-    
+        %Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
+        tSab = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
     end
+    
+    % Calculate the unpolarised neutron intensity directly to save memory
+    if param.fitmode == 4
+        tSab = (tSab + permute(tSab,[2 1 3 4]))/2;
+        hklAN = bsxfun(@rdivide,hklA(:,hklIdxMEM),sqrt(sum(hklA(:,hklIdxMEM).^2,1)));
+        NaNidx = find(any(isnan(hklAN)));
+        for kk = 1:numel(NaNidx)
+            if NaNidx(kk) < size(hklAN,2)
+                hklAN(:,NaNidx(kk)) = hklAN(:,NaNidx(kk)+1);
+            else
+                hklAN(:,NaNidx(kk)) = [1;0;0];
+            end
+        end
+        hkla = repmat(permute(hklAN,[1 3 2]),[1 3 1]);
+        hklb = repmat(permute(hklAN,[3 1 2]),[3 1 1]);
+        qPerp = repmat(eye(3),[1 1 nHklMEM])- hkla.*hklb;
+        qPerp = repmat(permute(qPerp,[1 2 4 3]),[1 1 size(tSab,3) 1]);
+        Sperp(:,hklIdxMEM) = permute(sum(sum(qPerp.*tSab,1),2),[3 4 1 2]);
+    else
+        Sab(:,:,:,hklIdxMEM) = tSab;
+    end;
+
     
     if fid == 1
         sw_status(jj/nSlice*100);
@@ -952,7 +974,11 @@ end
 
 % Creates output structure with the calculated values.
 spectra.omega   = omega;
-spectra.Sab     = Sab;
+if param.fitmode == 4
+    spectra.Sperp = Sperp;
+else
+    spectra.Sab = Sab;
+end
 spectra.hkl     = hkl(:,1:nHkl0);
 spectra.hklA    = hklA;
 spectra.incomm  = incomm;

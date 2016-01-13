@@ -141,13 +141,15 @@ function obj = horace_setpar(obj, varargin)
 %
 % ...
 % horace_on;
-% d3dobj = d3d(cryst.abc,[0 1 0 0],[0,0.01,1],[0 0 1 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
-% d3dobj = disp2sqw_eval(d3dobj,@cryst.horace,{'component','Sperp'},0.1);
+% tri = sw_model('triAF',2);
+% tri.horace_setpar('mapping',{'J1' 'J2'},'fwhm',0.2);
+% d3dobj = d3d(tri.abc,[0 1 0 0],[0,0.01,1],[0 0 1 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
+% d3dobj = disp2sqw_eval(d3dobj,@cryst.horace,[1 0.5 1.5 0.5 0.01]);
 % plot(d3dobj);
 %
 % This example creates a d3d object, a square in (h,k,0) plane and in
 % energy between 0 and 10 meV. Then calculates the inelastice neutron
-% scattering intensity of the spin wave model stored in cryst and plots it
+% scattering intensity of triagular lattice antiferromagnet and plots it
 % using sliceomatic.
 %
 % See also SW, SW.SPINWAVE, SW.MATPARSER, SW.HORACE, SW_READPARAM.

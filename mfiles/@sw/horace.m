@@ -25,13 +25,15 @@ function [w, s] = horace(obj, qh, qk, ql, p_in)
 %
 % ...
 % horace_on;
-% d3dobj = d3d(cryst.abc,[0 1 0 0],[0,0.01,1],[0 0 1 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
-% d3dobj = disp2sqw_eval(d3dobj,@cryst.horace,{'component','Sperp'},0.1);
+% tri = sw_model('triAF',2);
+% tri.horace_setpar('mapping',{'J1' 'J2'},'fwhm',0.2);
+% d3dobj = d3d(tri.abc,[0 1 0 0],[0,0.01,1],[0 0 1 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
+% d3dobj = disp2sqw_eval(d3dobj,@cryst.horace,[1 0.5 1.5 0.5 0.01]);
 % plot(d3dobj);
 %
 % This example creates a d3d object, a square in (h,k,0) plane and in
 % energy between 0 and 10 meV. Then calculates the inelastice neutron
-% scattering intensity of the spin wave model stored in cryst and plots it
+% scattering intensity of triagular lattice antiferromagnet and plots it
 % using sliceomatic.
 %
 % See also SW, SW.SPINWAVE, SW.MATPARSER, SW.HORACE_SETPAR, SW_READPARAM.
@@ -42,45 +44,15 @@ if nargin <= 1
     return;
 end
 
-%{
-if ~isempty(param.param)
-    % change matrix values for Horace data fitting
-    if nargin(param.func) < 0
-        param.func(varargin{:});
-    elseif nargin(param.func) == 2
-        param.func(param.param);
-    else
-        error('sw:horace:WrongInput','User defined function with incompatible header!');
-    end
-end
-
-if param.norm && param.dE == 0
-    error('sw:horace:WrongInput',['To convert spin wave intensity to mbarn/meV/cell/sr'...
-        ' units, give the energy bin step.'])
-end
-
-% calculate spin wave spectrum
-if nargin > 5
-    % include the fitmode option to speed up calculation
-    if numel(varargin) == 1
-        varargin{1}.fitmode = 2;
-        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{1});
-    else
-        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true);
-    end
-else
-    spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',true);
-end
-warning(warnState);
-%}
-
 % Set default parameters if the user has not already set them...
 if ~isfield(obj.matrix,'horace')
     obj.horace_setpar();
 end
+
 % Changes the parameters required.
 obj.matrix.horace.func('param',p_in,'mat',obj.matrix.horace.mapping, ...
       'selector',obj.matrix.horace.selector,'init',obj.matrix.horace.init);
+
 % Sets the other parameters from the stored field.
 fname = {'component' 'norm' 'dE'  'tol' 'hermit' 'notwin'}; % 'optmem'
 fname = [fname  {'formfact' 'formfactfun' 'gtensor' 'omega_tol' 'useMex'}];
@@ -115,6 +87,7 @@ for jj = 1:2*nMagExt
     w{jj} = zeros(nHkl,1);
     s{jj} = zeros(nHkl,1);
 end
+
 % Chunk the k-point list to save memory.
 for iSlice = 1:nSlice
     hklIdxMEM  = hklIdx(iSlice):(hklIdx(iSlice+1)-1);

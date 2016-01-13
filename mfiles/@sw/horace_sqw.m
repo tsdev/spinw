@@ -1,4 +1,4 @@
-function weight = horace(obj, qh, qk, ql, en, p_in)
+function weight = horace_sqw(obj, qh, qk, ql, en, p_in)
 % calculates spin wave dispersion/correlation functions to be called from Horace
 %
 % weight = HORACE_SQW(obj, qh, qk, ql, en, p)
@@ -60,63 +60,17 @@ if numel(p_in) > (nPar+2)
     bkgd = p_in(nPar+3);
 end
 
-%uhkl = unique([qh(:) qk(:) ql(:)],'rows');
-%[w, s] = obj.horace(uhkl(:,1),uhkl(:,2),uhkl(:,3),p_in);
 [e, sf] = obj.horace(qh,qk,ql,p_in(1:nPar));
 
 if ~exist('fwhh','var') || ~isnumeric(fwhh)
     fwhh = max(cellfun(@max,w))/100;
 end
 
-%for i=thread_id:numthreads:length(hh)
-%    nI = nI + Int(i)*exp( -( ((nH-hh(i)).^2./(2*wH^2)) + ((nL-ll(i)).^2./(2*wL^2)) + ((nE-en(i)).^2./(2*wE^2)) ) ); 
-%end
-
-% if ~expand_qe
-%     if ~isa(fwhh,'double')
-%         error('disp2sqw:WrongInput','The fwhh function has to be scalar since expand_qe option is false!');
-%     end
-    % TODO
-    % only work for constant energy resolution
-    sig = fwhh/sqrt(log(256));
-    weight = zeros(numel(qh),1);
-    for ii=1:numel(e)
-        weight = weight + sf{ii}(:).*exp(-(e{ii}(:)-en(:)).^2/(2*sig^2))/(sig*sqrt(2*pi));
-    end    
-    weight = I0*reshape(weight,size(qh)) + bkgd;
-% else
-%     nq = numel(q{1});
-%     ne = numel(en);
-%     weight = zeros(nq,ne);
-%     en_arr = repmat(en(:)',[nq,1]);
-%     
-%     for ii = 1:numel(e)
-%         %weight = weight + bsxfun(@times,sf{ii}(:),exp(-(bsxfun(@minus,e{ii}(:),en_arr)).^2/(2*sig.^2))./(sig*sqrt(2*pi)));
-%         weight = weight + bsxfun(@times,sf{ii}(:),resfun(en_arr,e{ii}(:)));
-%     end
-% end
+sig = fwhh/sqrt(log(256));
+weight = zeros(numel(qh),1);
+for ii=1:numel(e)
+    weight = weight + sf{ii}(:).*exp(-(e{ii}(:)-en(:)).^2/(2*sig^2))/(sig*sqrt(2*pi));
+end    
+weight = I0*reshape(weight,size(qh)) + bkgd;
 
 end
-
-% function G = gauss_internal(Emat,center,FWHMfun)
-% % 1D Gauss function
-% %
-% % G = gauss_internal(Emat,center,FWHMfun)
-% %
-% % Input:
-% %
-% % Emat      Matrix with energy bin values, dimensions of [nQ nE].
-% % center    Column vector of the center of the Gaussians with nQ elements.
-% % FWHMfun   Function handle: dE = resfun(E), works on vectors.
-% %
-% % Output:
-% %
-% % G         Output matrix, with Gaussians, dimensions are [nQ nE].
-% %
-% 
-% % resolution for every omega values
-% sig = repmat(FWHMfun(center)/sqrt(log(256)),[1 size(Emat,2)]);
-% % intensities
-% G = exp(-(bsxfun(@minus,center,Emat)).^2./(2*sig.^2))./(sig*sqrt(2*pi));
-% 
-% end

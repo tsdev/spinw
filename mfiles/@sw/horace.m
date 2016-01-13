@@ -1,4 +1,4 @@
-function [w, s] = horace(obj, qh, qk, ql, varargin)
+function [w, s] = horace(obj, qh, qk, ql, p_in)
 % calculates spin wave dispersion/correlation functions to be called from Horace
 %
 % [w, s] = HORACE(obj, qh, qk, ql, p)
@@ -10,48 +10,7 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %
 % obj           Input sw object.
 % qh, qk, ql    Reciprocal lattice components in reciprocal lattice units.
-% p             Parameters, currently unused.
-%
-% Options:
-%
-% component Selects the previously calculated intensity component to be
-%           convoluted. The possible options are:
-%               'Sperp' convolutes the magnetic neutron scattering
-%                       intensity (<Sperp * Sperp> expectation value).
-%                       Default.
-%               'Sab'   convolutes the selected components of the spin-spin
-%                       correlation function. Letter a and b can be 'x',
-%                       'y' or 'z'. For example: 'Sxx' will convolute the
-%                       xx component of the correlation function with the
-%                       dispersion. xyz is the standard coordinate system,
-%                       see online documentation of SpinW.
-%           Any linear combination of the above are allowed, for example:
-%           'Sxx+2*Syy' convolutes the linear combination of the xx
-%           component of the spin-spin correlation function and the yy
-%           component.
-% norm      If true the spin wave intensity is normalized to mbarn/meV/(unit
-%           cell) units. Default is false.
-% dE        Energy bin size, for intensity normalization. Use 1 for no
-%           division by dE in the intensity.
-% param     Input parameters (can be used also within Tobyfit). Additional
-%           options ('mat','selector') might be necessary, for details see
-%           sw.matparser function. All extra parameters of sw.horace
-%           function will be forwarded to the sw.matparser function before
-%           calculating the spin wave spectrum (or any user written parser
-%           function). For user written functions defined with the
-%           following header:
-%               func(obj,param)
-%           the value of the param option will be forwarded. For user
-%           functions with variable number of arguments, all input options
-%           of sw.horace will be forwarded. In this case it is recommended
-%           to use sw_readparam() function to handle the variable number
-%           arguments within func().
-% func      Parser function of the 'param' input. Default is
-%           @sw.matparser which can be used directly by Tobyfit. For user
-%           defined functions the minimum header has to be:
-%               func(obj,param)
-%           where obj is an sw type object, param is the parameter values
-%           forwarded from sw.horace directly.
+% p             Parameters, in the order defined by horace_setpar
 %
 % Output:
 %
@@ -75,7 +34,7 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 % scattering intensity of the spin wave model stored in cryst and plots it
 % using sliceomatic.
 %
-% See also SW, SW.SPINWAVE, SW.MATPARSER, SW_READPARAM.
+% See also SW, SW.SPINWAVE, SW.MATPARSER, SW.HORACE_SETPAR, SW_READPARAM.
 %
 
 if nargin <= 1
@@ -83,14 +42,7 @@ if nargin <= 1
     return;
 end
 
-inpForm.fname  = {'component' 'norm' 'dE'  'func'         'param' 'fitmode'};
-inpForm.defval = {'Sperp'     false  0     @obj.matparser []      4};
-inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1]};
-inpForm.soft   = {false       false  false false          true    false};
-
-warnState = warning('off','sw_readparam:UnreadInput');
-param = sw_readparam(inpForm, varargin{:});
-
+%{
 if ~isempty(param.param)
     % change matrix values for Horace data fitting
     if nargin(param.func) < 0
@@ -107,130 +59,168 @@ if param.norm && param.dE == 0
         ' units, give the energy bin step.'])
 end
 
-% parse the component string
-if iscell(param.component)
-    nConv = numel(param.component);
-    parsed = cell(1,nConv);
-    for ii = 1:numel(param.component)
-        parsed{ii} = sw_parstr(param.component{ii});
-    end
-elseif isstruct(param.component)
-    nConv  = 1;
-    parsed = {param.component};
-    param.component = {parsed{1}.string};
-else
-    nConv = 1;
-    parsed = {sw_parstr(param.component)};
-    param.component = {param.component};
-end
-
-% fitmode 4 calculates Sperp without saving Sab to save memory.
-if param.fitmode==4
-    for ii = 1:numel(param.component)
-        if any(cellfun(@(xx)xx(1)~=1, parsed{ii}.type))
-            param.fitmode = 3;
-            break;
-        end
-    end
-end
-
 % calculate spin wave spectrum
-% include the fitmode option to speed up calculation
-if nargin>5
-    % Removes parameters which we've used
-    id=[];
-    varlist = {inpForm.fname{:} 'mat'};
-    for ii=1:numel(varlist) 
-        id = [id find(strcmp(varargin,varlist{ii}))]; 
+if nargin > 5
+    % include the fitmode option to speed up calculation
+    if numel(varargin) == 1
+        varargin{1}.fitmode = 2;
+        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{1});
+    else
+        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true);
     end
-    varargin([id id+1])=[];
-    spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',param.fitmode);
 else
-    spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',param.fitmode);
+    spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',true);
 end
 warning(warnState);
+%}
 
-% calculate Sperp if not calculated in fitmode 4
-if param.fitmode<4
-    spectra = sw_neutron(spectra,varargin{:});
+% Set default parameters if the user has not already set them...
+if ~isfield(obj.matrix,'horace')
+    obj.horace_setpar();
 end
+% Changes the parameters required.
+obj.matrix.horace.func('param',p_in,'mat',obj.matrix.horace.mapping, ...
+      'selector',obj.matrix.horace.selector,'init',obj.matrix.horace.init);
+% Sets the other parameters from the stored field.
+fname = {'component' 'norm' 'dE'  'tol' 'hermit' 'notwin'}; % 'optmem'
+fname = [fname  {'formfact' 'formfactfun' 'gtensor' 'omega_tol' 'useMex'}];
+pars = {};
+for ifl = 1:numel(fname)
+    pars = [pars {fname{ifl} obj.matrix.horace.(fname{ifl})}];
+end
+param = obj.matrix.horace;
 
-% pack all cross section into a cell for easier looping
-if iscell(spectra.omega)
-    nTwin = numel(spectra.omega);
-    omega = spectra.omega;
-    if param.fitmode<4
-        Sab = spectra.Sab;
+% Determines the number of k-points
+hkl = [qh(:) qk(:) ql(:)]';
+nHkl = size(hkl,2);
+
+% Determines the optimum number of chunks
+nMagExt = size(obj.mag_str.S,2);
+if obj.matrix.horace.optmem == 0
+    freeMem = sw_freemem;
+    if freeMem > 0
+        nSlice = ceil(nMagExt^2*nHkl*4000/freeMem);
     end
-    Sperp = spectra.Sperp;
-    
 else
-    nTwin = 1;
-    omega = {spectra.omega};
-    if param.fitmode<4
-        Sab = {spectra.Sab};
-    end
-    Sperp = {spectra.Sperp};
+    nSlice = obj.matrix.horace.optmem;
 end
+hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
+nTwin = obj.matrix.horace.notwin;
+if nTwin==0
+    nTwin = 1;
+end
+w = cell(1,2*nMagExt*nTwin);
+s = cell(1,2*nMagExt*nTwin);
+for jj = 1:2*nMagExt
+    w{jj} = zeros(nHkl,1);
+    s{jj} = zeros(nHkl,1);
+end
+% Chunk the k-point list to save memory.
+for iSlice = 1:nSlice
+    hklIdxMEM  = hklIdx(iSlice):(hklIdx(iSlice+1)-1);
+    nHklMEM = numel(hklIdxMEM);
+    % calculate Sab
+    spectra = obj.spinwave(hkl(:,hklIdxMEM),'fitmode',3,pars{:},'optmem',1);
+    % calculate Sperp
+    spectra = sw_neutron(spectra);
+    nMode = size(spectra.omega,1);
 
-% extract the requested cross section
-nMode = size(omega{1},1);
-nHkl  = size(omega{1},2);
+    % parse the component string
+    if iscell(param.component)
+        nConv = numel(param.component);
+        parsed = cell(1,nConv);
+        for ii = 1:numel(param.component)
+            parsed{ii} = sw_parstr(param.component{ii});
+        end
+    elseif isstruct(param.component)
+        nConv  = 1;
+        parsed = {param.component};
+        param.component = {parsed{1}.string};
+    else
+        nConv = 1;
+        parsed = {sw_parstr(param.component)};
+        param.component = {param.component};
+    end
 
-% DSF stores the intensity that is going to be convoluted
-DSF = cell(nConv,nTwin);
-% select value from Sperp or Sab matrices
-for tt = 1:nTwin
-    for ii = 1:numel(parsed)
-        par0 = parsed{ii};
-        DSF{ii,tt} = zeros(nMode, nHkl);
-        for jj = 1:length(par0.type)
-            switch par0.type{jj}(1)
-                case 1
-                    DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*Sperp{tt};
-                case 2
-                    DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*permute(Sab{tt}(par0.type{jj}(2),par0.type{jj}(3),:,:),[3 4 1 2]);
-                otherwise
-                    error('sw:horace:WrongPar','Wrong ''component'' parameter!');
+    % pack all cross section into a cell for easier looping
+    if iscell(spectra.omega)
+        nTwin = numel(spectra.omega);
+        omega = spectra.omega;
+        Sab = spectra.Sab;
+        Sperp = spectra.Sperp;
+
+    else
+        nTwin = 1;
+        omega = {spectra.omega};
+        Sab = {spectra.Sab};
+        Sperp = {spectra.Sperp};
+    end
+
+    % extract the requested cross section
+    % DSF stores the intensity that is going to be convoluted
+    DSF = cell(nConv,nTwin);
+    % select value from Sperp or Sab matrices
+    for tt = 1:nTwin
+        for ii = 1:numel(parsed)
+            par0 = parsed{ii};
+            DSF{ii,tt} = zeros(nMode, nHklMEM);
+            for jj = 1:length(par0.type)
+                switch par0.type{jj}(1)
+                    case 1
+                        DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*Sperp{tt};
+                    case 2
+                        DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*permute(Sab{tt}(par0.type{jj}(2),par0.type{jj}(3),:,:),[3 4 1 2]);
+                    otherwise
+                        error('sw:horace:WrongPar','Wrong ''component'' parameter!');
+                end
             end
         end
     end
-end
 
-% normalised volume fractions of the twins
-vol = obj.twin.vol/sum(obj.twin.vol);
-for tt = 1:nTwin
-    for ii = 1:size(DSF,1)
-        DSF{ii,tt}    = DSF{ii,tt}*vol(tt);
+    % normalised volume fractions of the twins
+    vol = obj.twin.vol/sum(obj.twin.vol);
+    for tt = 1:nTwin
+        for ii = 1:size(DSF,1)
+            DSF{ii,tt}    = DSF{ii,tt}*vol(tt);
+        end
+    end
+
+    % add all modes for different twins
+    % use only the real part of the dispersion
+    omega = real(cell2mat(omega'));
+    DSF   = abs(cell2mat(DSF'));
+
+    % normalize intensities
+    if param.norm
+        % Lande' g-factor
+        if spectra.gtensor
+            % g-tensor is already included in the spinwave calculation
+            g = 1;
+        else
+            % use simple g=2 here
+            g = 2;
+        end
+        % constant: p = gamma*r0/2
+        % neutron magnetic moment constant: M = gamma*gammaN
+        gamma = 1.91304272; % 1/s/T
+        % classical radius of the electron
+        r0 = 2.8179403267e-15; % m
+        % cross section constant in mbarn
+        p2 = (g*gamma*r0/2)^2*1e28*1e3; % mbarn
+
+        % convert intensity to mbarn/meV units using the energy bin size
+        DSF = DSF*p2/param.dE;
+    end
+    
+    for jj = 1:2*nMagExt
+        % dispersion in cell
+        w{jj}(hklIdxMEM) = omega(jj,:);
+        % intensity in cell
+        s{jj}(hklIdxMEM) = DSF(jj,:);
     end
 end
 
-% add all modes for different twins
-% use only the real part of the dispersion
-omega = real(cell2mat(omega'));
-DSF   = abs(cell2mat(DSF'));
-
-% normalize intensities
 if param.norm
-    % Lande' g-factor
-    if spectra.gtensor
-        % g-tensor is already included in the spinwave calculation
-        g = 1;
-    else
-        % use simple g=2 here
-        g = 2;
-    end
-    % constant: p = gamma*r0/2
-    % neutron magnetic moment constant: M = gamma*gammaN
-    gamma = 1.91304272; % 1/s/T
-    % classical radius of the electron
-    r0 = 2.8179403267e-15; % m
-    % cross section constant in mbarn
-    p2 = (g*gamma*r0/2)^2*1e28*1e3; % mbarn
-    
-    % convert intensity to mbarn/meV units using the energy bin size
-    DSF = DSF*p2/param.dE;
-    
     fprintf0(obj.fileid,'Intensity is converted to mbarn/meV units.\n');
     if spectra.gtensor
         fprintf0(obj.fileid,'g-tensor was already included in the spin wave calculation.\n');
@@ -238,10 +228,5 @@ if param.norm
         fprintf0(obj.fileid,'Isotropic g-tensor of 2 assumed here.\n');
     end
 end
-
-% dispersion in cell
-w = mat2cell(omega',nHkl,ones(nMode*nTwin,1));
-% intensity in cell
-s = mat2cell(DSF' ,nHkl,ones(nMode*nTwin,1));
 
 end

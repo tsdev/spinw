@@ -553,15 +553,11 @@ hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 % Empty omega dispersion of all spin wave modes, size: 2*nMagExt x nHkl.
 if param.useMex %&& numel(S0)>5
     omega = zeros(2*nMagExt,nHkl);
+    Sab = zeros(3,3,2*nMagExt,nHkl);
 else
     omega = zeros(2*nMagExt,0);
-end
-
-% empty Sab
-if param.fitmode == 4
-    Sperp = zeros(2*nMagExt, nHkl);
-else
-    Sab = zeros(3,3,2*nMagExt,nHkl);
+    % empty Sab
+    Sab = zeros(3,3,2*nMagExt,0);
 end
 
 % Empty matrices to save different intermediate results for further
@@ -805,10 +801,10 @@ for jj = 1:nSlice
         for i1=1:3; 
             zExp(:,:,:,i1) = bsxfun(@times,z1(:,i1),ExpF);
         end
-        tSab = zeros(3,3,2*nMagExt,nHklMEM);
+        
         for i1=1:3; 
             for i2=1:3; 
-                tSab(i1,i2,:,:) = mtimesx(V,'C',zExp(:,:,:,i1)).*conj(mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
+                Sab(i1,i2,:,:) = mtimesx(V,'C',zExp(:,:,:,i1)).*conj(mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
             end
         end
     else
@@ -848,31 +844,8 @@ for jj = 1:nSlice
         % Dynamical for factor from S^alpha^beta(k) correlation function.
         % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
         % Normalizes the intensity to single unit cell.
-        %Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
-        tSab = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
+        Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     end
-    
-    % Calculate the unpolarised neutron intensity directly to save memory
-    if param.fitmode == 4
-        tSab = (tSab + permute(tSab,[2 1 3 4]))/2;
-        hklAN = bsxfun(@rdivide,hklA(:,hklIdxMEM),sqrt(sum(hklA(:,hklIdxMEM).^2,1)));
-        NaNidx = find(any(isnan(hklAN)));
-        for kk = 1:numel(NaNidx)
-            if NaNidx(kk) < size(hklAN,2)
-                hklAN(:,NaNidx(kk)) = hklAN(:,NaNidx(kk)+1);
-            else
-                hklAN(:,NaNidx(kk)) = [1;0;0];
-            end
-        end
-        hkla = repmat(permute(hklAN,[1 3 2]),[1 3 1]);
-        hklb = repmat(permute(hklAN,[3 1 2]),[3 1 1]);
-        qPerp = repmat(eye(3),[1 1 nHklMEM])- hkla.*hklb;
-        qPerp = repmat(permute(qPerp,[1 2 4 3]),[1 1 size(tSab,3) 1]);
-        Sperp(:,hklIdxMEM) = permute(sum(sum(qPerp.*tSab,1),2),[3 4 1 2]);
-    else
-        Sab(:,:,:,hklIdxMEM) = tSab;
-    end;
-
     
     if fid == 1
         sw_status(jj/nSlice*100);
@@ -974,11 +947,7 @@ end
 
 % Creates output structure with the calculated values.
 spectra.omega   = omega;
-if param.fitmode == 4
-    spectra.Sperp = Sperp;
-else
-    spectra.Sab = Sab;
-end
+spectra.Sab     = Sab;
 spectra.hkl     = hkl(:,1:nHkl0);
 spectra.hklA    = hklA;
 spectra.incomm  = incomm;

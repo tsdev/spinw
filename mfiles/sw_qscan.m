@@ -16,6 +16,14 @@ if nargin == 0
     return;
 end
 
+if ~iscell(qLim)
+    if size(qLim,1) > 3 || size(qLim,3)>1
+        error('sw_qscan:WrongInput','The dimensions of the q-vector list are wrong!')
+    end
+    qOut = qLim;
+    return
+end
+
 if numel(qLim{end}) == 1
     nQ = qLim{end};
     qLim = qLim(1:end-1);

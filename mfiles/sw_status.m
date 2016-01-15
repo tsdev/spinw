@@ -1,7 +1,7 @@
 function sw_status(percent,varargin)
 % timer function that displays also the remaining time
 %
-% SW_STATUS(percent, {mode})
+% SW_STATUS(percent, {mode},{fid})
 %
 % Input:
 %
@@ -10,6 +10,8 @@ function sw_status(percent,varargin)
 %               1   Starts the time estimation.
 %               0   Displays of the remaining time. (default)
 %               2   Calculation finished.
+% fid       File identifier to print the output. Only gives output if 
+%           fid == 1. Default is 1.
 %
 
 if nargin == 0
@@ -17,6 +19,16 @@ if nargin == 0
     return;
 end
 
+if nargin > 2
+    fid = varargin{2};
+else
+    fid = 1;
+end
+
+if fid ~= 1
+    return
+end
+    
 if nargin > 1
     start = varargin{1};
 else
@@ -40,7 +52,7 @@ elseif start == 1
     fprintf([repmat(' ',[1 40]) '\n']);
 elseif start == 2
     etime = double(toc);
-    fprintf(repmat('\b',1,40));
+    fprintf(repmat('\b',1,40+1));
     hou = floor(etime/60^2); 
     etime = etime-hou*60^2;
     min = floor(etime/60); 

@@ -71,6 +71,9 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           on. If m or n equal to zero, the original size of the figure
 %           window is used to determine the grid. If only a single number 
 %           p is given, it is converted to [0 0 p] type input.
+% x0        Vector with two numbers [x0_min x0_max]. By default the x range
+%           of the plots is [0 1] irrespective of the given Q points. To
+%           change this the lower and upper limits can be given here.
 %
 % Output:
 %
@@ -101,9 +104,9 @@ inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
 inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
 inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'log' 'plotf'  'maxPatch' 'figPos'}];
-inpForm.defval = [inpForm.defval {false @sw_surf 1000       0       }];
-inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      [1 -7]   }];
+inpForm.fname  = [inpForm.fname  {'log' 'plotf'  'maxPatch' 'figPos' 'x0'}];
+inpForm.defval = [inpForm.defval {false @sw_surf 1000       0       [0 1]}];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      [1 -7]  [1 2]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -224,6 +227,8 @@ if powmode
     xAxis   = spectra.hklA;
 else
     [xLabel, xAxis] = sw_label(spectra.hkl,spectra.hklA);
+    % shift the x-axis if requested
+    xAxis = xAxis*diff(param.x0)+param.x0(1);
 end
 
 if isfield(spectra,'Evect')

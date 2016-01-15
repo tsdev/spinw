@@ -1,6 +1,9 @@
-function sw_plotcell(dat,xLab,yLab,tLab,aRange)
+function varargout = sw_plotcell(dat,xLab,yLab,tLab,aRange,sc,depth)
 % plots cell structure with circles
 
+if nargin<7
+    depth = 0;
+end
 
 nDat = numel(dat.x);
 zMax = -inf;
@@ -29,18 +32,33 @@ else
 end
 
 % radius of circles
-rx = (xMax-xMin)/50;
-ry = (yMax-yMin)/50;
-
 C = sw_circle([0 0 0]',[0 0 1]',1,300);
-Cx = C(1,:)*rx/zMax;
-Cy = C(2,:)*ry/zMax;
+
+if nargin<6
+    sc = 0.02;
+    rx = (xMax-xMin)*sc;
+    ry = (yMax-yMin)*sc;
+    
+    Cx = C(1,:)*rx/zMax;
+    Cy = C(2,:)*ry/zMax;
+elseif numel(sc)==1
+    rx = (xMax-xMin)*sc;
+    ry = (yMax-yMin)*sc;
+    
+    Cx = C(1,:)*rx/zMax;
+    Cy = C(2,:)*ry/zMax;
+
+else
+    Cx = C(1,:)*sc(1);
+    Cy = C(2,:)*sc(2);
+    
+end
 
 % draw circles
 for ii = 1:nDat
     for jj = 1:numel(dat.y{ii})
         r = dat.z{ii}(jj);
-        p = patch(dat.x(ii)+Cx*r,dat.y{ii}(jj)+Cy*r,'k');
+        p(ii,jj) = patch(dat.x(ii)+Cx*r,dat.y{ii}(jj)+Cy*r,Cx*0+depth,'k');
         hold on
     end
 end
@@ -56,6 +74,10 @@ if nargin>2
 end
 if nargin>3
     title(tLab)
+end
+
+if nargout > 0
+    varargout{1} = p;
 end
 
 end

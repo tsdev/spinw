@@ -322,6 +322,9 @@ else
     [SS, SI, RR] = obj.intmatrix('conjugate',true);
 end
 
+% add the dipolar interactions to SS.all
+SS.all = [SS.all SS.dip];
+
 % is there any biquadratic exchange
 bq = SS.all(15,:)==1;
 
@@ -802,7 +805,7 @@ for jj = 1:nSlice
         zeda = mmat(repmat(permute(gtensor,[1 2 4 3]),[1 1 1 2]),zeda);
         zedb = mmat(zedb,repmat(gtensor,[1 1 2]));
     end
-    % Dynamical for factor from S^alpha^beta(k) correlation function.
+    % Dynamical structure factor from S^alpha^beta(k) correlation function.
     % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
     % Normalizes the intensity to single unit cell.
     Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));

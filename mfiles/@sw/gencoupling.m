@@ -218,6 +218,7 @@ coupling.atom2   = int32(newM(5,:));
 coupling.idx     = int32(newM(6,:));
 coupling.mat_idx = int32(zeros(3,size(coupling.idx,2)));
 coupling.type    = int32(zeros(3,size(coupling.idx,2)));
+coupling.rdip    = obj.coupling.rdip;
 
 obj.coupling         = coupling;
 obj.single_ion.aniso = aniso;

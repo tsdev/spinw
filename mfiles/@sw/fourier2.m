@@ -79,11 +79,15 @@ param = sw_readparam(inpForm, varargin{:});
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
+isconj = true;
 if param.fitmode
-    [SS, SI, RR] = obj.intmatrix('fitmode',2,'conjugate',true);
+    [SS, SI, RR] = obj.intmatrix('fitmode',2,'conjugate',isconj);
 else
-    [SS, SI, RR] = obj.intmatrix('conjugate',true);
+    [SS, SI, RR] = obj.intmatrix('conjugate',isconj);
 end
+
+% add dipolar interactions to the Hamiltonian
+SS.all = [SS.all SS.dip];
 
 % list of magnetic atoms in the unit cell
 matom = obj.matom;

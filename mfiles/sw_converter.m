@@ -20,6 +20,7 @@ function out = sw_converter(value, unitIn, unitOut, particleName)
 %                       'Kelvin'    temperature in Kelvin.
 %                       'K'         -||-
 %                       'mps'       speed in m/s.
+%                       'J'         energy in Joule.
 %                       'meV'       energy in meV.
 %                       'THz'       frequency in Thz.
 %                       'cm-1'      2*pi/lambda in cm^-1.
@@ -110,6 +111,13 @@ switch unitIn
         else
             k = value/hBar/clight*EmeV2J/1e10;
         end
+    case 'J'
+        if m~=0
+            k = sqrt((value*2*m))/hBar/1e10;
+        else
+            k = value/hBar/clight/1e10;
+        end
+        
     case 'eV'
         if m~=0
             k = sqrt((value*1e3*EmeV2J*2*m))/hBar/1e10;

@@ -37,10 +37,10 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %
 % Output:
 %
-% SS            Structure with  fields {iso,aniso,dm,gen,bq}. It describes
-%               the interactions between spins. Every field is a matrix,
-%               where every column is a coupling between two spins. The
-%               first 3 rows contain the unit cell translation vector
+% SS            Structure with  fields {iso,aniso,dm,gen,bq,dip}. It
+%               describes the interactions between spins. Every field is a
+%               matrix, where every column is a coupling between two spins.
+%               The first 3 rows contain the unit cell translation vector
 %               between the interacting spins, the 4th and 5th row contains
 %               the indices of the two interacting spins in the 'spin'
 %               variable. The following rows contains the strength of the
@@ -54,7 +54,8 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %               For plotmode true, two additional rows are added to SS.all,
 %               that contains the idx indices of the obj.matrix(:,:,idx)
 %               corresponding matrix for each coupling and the .idx values
-%               of the couplings.
+%               of the couplings. The dip field contains the dipolar
+%               interactions that are not added to the SS.all field.
 %
 % SI            Single ion energy, due to anisotropy and magnetic field.
 % SI.aniso      Matrix with dimensions of [3 3 nMagAtom] sized matrix,
@@ -294,7 +295,7 @@ if param.fitmode < 2
     else
         idx = any(SS.dm(6:8,:));
     end
-
+    
     %SS.dm = SS.dm(:,sum(SS.dm(6:end,:).^2,1)~=0);
     SS.dm = SS.dm(:,idx);
     
@@ -310,6 +311,36 @@ end
 
 % Saves the whole interaction matrices into SS.all
 SS.all = [SS.all; shiftdim(reshape(JJ.mat,1,9,size(JJ.mat,3)),1);mat_type];
+
+if obj.coupling.rdip > 0
+    % add dipolar interactions
+    
+    % calculate bond vectors in xyz coordinate system
+    dr   = double(coupling.dl)+mAtom.r(:,coupling.atom2)-mAtom.r(:,coupling.atom1);
+    drA  = obj.basisvector*dr;
+    lA   = sqrt(sum(drA.^2,1));
+    % calculate the matrices only for bond vector shorter than rdip
+    rSel = lA<obj.coupling.rdip;
+    nR   = sum(rSel);
+    % remove longer bonds
+    rAN  = bsxfun(@rdivide,drA(:,rSel),lA(1,rSel));
+    
+    rrmat = bsxfun(@times,permute(rAN,[1 3 2]),permute(rAN,[3 1 2])) - repmat(eye(3),[1 1 nR]);
+    
+    Edip = obj.unit.mu0*obj.unit.muB^2/4/pi;
+    % dipole-dipole interaction matrices
+    rrmat = bsxfun(@times,permute(Edip./lA(1,rSel).^3,[1 3 2]),rrmat);
+    % multiply with the g-tensors on the left and right sides
+    rrmat = mmat(permute(SI.g(:,:,coupling.atom1(rSel)),[2 1 3]),rrmat);
+    Jdip  = mmat(rrmat,SI.g(:,:,coupling.atom2(rSel)));
+    
+    % create the matrix for dipolar interaction list
+    SS.dip = double([coupling.dl(:,rSel); coupling.atom1(1,rSel); ...
+        coupling.atom2(1,rSel)]);
+    SS.dip = [SS.dip; reshape(Jdip,9,[]); zeros(1,nR)];
+else
+    SS.dip = zeros(15,0);
+end
 
 % Cut out zero valued interactions
 if ~param.zeroC
@@ -373,6 +404,14 @@ if param.conjugate
         new(6:14,:) = [SS.all(6:14,:)   SS.all([6 9 12 7 10 13 8 11 14],:)]/2;
         new(15,:)   = [SS.all(end,:)    SS.all(end,:)];
         SS.all      = new;
+    end
+    
+    if numel(SS.dip) > 0
+        new         = [SS.dip(1:3,:)   -SS.dip(1:3,:)  ];
+        new(4:5,:)  = [SS.dip([4 5],:)  SS.dip([5 4],:)];
+        new(6:14,:) = [SS.dip(6:14,:)   SS.dip([6 9 12 7 10 13 8 11 14],:)]/2;
+        new(15,:)   = [SS.dip(end,:)    SS.dip(end,:)];
+        SS.dip      = new;
     end
 end
 

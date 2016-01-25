@@ -133,7 +133,7 @@ for ii = 1:nTwin
     
     % Dynamical structure factor for neutron scattering
     % Sperp: nMode x nHkl.
-    Sperp = permute(sumdims(qPerp.*SabS,[1 2]),[3 4 1 2]);
+    Sperp = permute(sumn(qPerp.*SabS,[1 2]),[3 4 1 2]);
     
     if param.pol
         % polarised neutron scattering (without final polarisation analysis)
@@ -165,7 +165,7 @@ for ii = 1:nTwin
         mat2 = repmat(lcMat,[1 1 1 nHkl]);
         
         % mat3: 3 (gamma) x nMode x nHkl
-        mat3 = permute(sumdims(repmat(permute(2*mat1 + mat2,[2 3 5 4 1]),[1 1 nMode 1 1]).*repmat(SabA,[1 1 1 1 3]),[1 2]),[5 3 4 1 2]);
+        mat3 = permute(sumn(repmat(permute(2*mat1 + mat2,[2 3 5 4 1]),[1 1 nMode 1 1]).*repmat(SabA,[1 1 1 1 3]),[1 2]),[5 3 4 1 2]);
         Pgamma = repmat(permute(Pi,[1 4 2 3]),[1 nMode 1 1]);
         
         % B:  P * <Sperp x Sperp(t)>
@@ -186,7 +186,7 @@ for ii = 1:nTwin
         % Pab1: 3(x,y,z) x 3(Pix,Piy,Piz) x nMode x nHkl
         Pab1 = permute(sum(repmat(permute(mat4,[1 2 5 3 4]),[1 1 nMode 1 1]).*repmat(SabS,[1 1 1 1 3]),2),[1 5 3 4 2]);
         % Pab2: 3(x,y,z) x 3(Pix,Piy,Piz) x nMode x nHkl
-        Pab2 = repmat(permute(sumdims(repmat(permute(mat5,[1 2 5 3 4]),[1 1 nMode 1 1]).*repmat(SabS,[1 1 1 1 3]),[1 2]),[1 5 3 4 2]),[3 1 1 1 1]);
+        Pab2 = repmat(permute(sumn(repmat(permute(mat5,[1 2 5 3 4]),[1 1 nMode 1 1]).*repmat(SabS,[1 1 1 1 3]),[1 2]),[1 5 3 4 2]),[3 1 1 1 1]);
         Pab2 = Pab2.*repmat(permute(Qbeta,[1 3 4 2]),[1 1 nMode 1]);
         % Pi*Sperp
         % Pab3: 3(x,y,z) x 3(Pix,Piy,Piz) x nMode x nHkl
@@ -244,16 +244,5 @@ end
 spectra.param.n   = n;
 spectra.param.uv  = param.uv;
 spectra.param.pol = param.pol;
-
-end
-
-function out = sumdims(r,dims)
-% sum along multiple dimension
-
-out=r;
-
-for i=1:length(dims)
-    out=sum(out,dims(i));
-end
 
 end

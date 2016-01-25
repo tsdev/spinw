@@ -15,6 +15,11 @@ function subwin(h,w,p)
 % See also subplot().
 %
 
+if nargin == 0
+    help subwin
+    return
+end
+
 fUnit = get(gcf,'Units');
 set(gcf,'Units','pixels');
 

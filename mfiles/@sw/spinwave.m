@@ -1,7 +1,7 @@
 function spectra = spinwave(obj, hkl, varargin)
 % calculates dynamical spin-spin correlation function using linear spin wave theory
 %
-% spectra = SPINWAVE(obj, k, 'option1', value1 ...)
+% spectra = SPINWAVE(obj, hkl, 'option1', value1 ...)
 %
 % Spin wave dispersion and spin-spin correlation function is calculated at
 % the reciprocal space points k. The function can deal with arbitrary
@@ -166,11 +166,11 @@ spectra.datestart = datestr(now);
 
 % for linear scans create the Q line(s)
 if nargin > 1
-    if iscell(hkl)
-        hkl = sw_qscan(hkl);
-    elseif numel(hkl)==3
-        hkl = hkl(:);
-    end
+    %    if iscell(hkl)
+    hkl = sw_qscan(hkl);
+    %    elseif numel(hkl)==3
+    %        hkl = hkl(:);
+    %    end
 else
     hkl = [];
 end
@@ -323,6 +323,9 @@ elseif param.fitmode
 else
     [SS, SI, RR] = obj.intmatrix('conjugate',true);
 end
+
+% add the dipolar interactions to SS.all
+SS.all = [SS.all SS.dip];
 
 % is there any biquadratic exchange
 bq = SS.all(15,:)==1;
@@ -614,7 +617,7 @@ if iscell(param.formfact) || param.formfact
         FF(lIdx,:) = repmat(param.formfactfun(uLabel{ii},hklA0),[sum(lIdx) 1]);
     end
 else
-    spectra.formfact = [];
+    spectra.formfact = false;
 end
 
 for jj = 1:nSlice
@@ -630,9 +633,10 @@ for jj = 1:nSlice
     
     % Creates the matrix of exponential factors nCoupling x nHkl size.
     % Extends dR into 3 x 3 x nCoupling x nHkl
-    ExpF = exp(1i*permute(sum(repmat(dR,[1 1 nHklMEM]).*repmat(...
-        permute(hklExtMEM,[1 3 2]),[1 nCoupling 1]),1),[2 3 1]))';
-    
+    %     ExpF = exp(1i*permute(sum(repmat(dR,[1 1 nHklMEM]).*repmat(...
+    %         permute(hklExtMEM,[1 3 2]),[1 nCoupling 1]),1),[2 3 1]))';
+    ExpF = exp(1i*permute(sum(bsxfun(@times,dR,permute(hklExtMEM,[1 3 2])),1),[2 3 1]))';
+
     % Creates the matrix elements containing zed.
     A1 = bsxfun(@times,     AD0 ,ExpF);
     B  = bsxfun(@times,     BC0 ,ExpF);
@@ -660,8 +664,10 @@ for jj = 1:nSlice
     ham = ham + repmat(accumarray([idxA2; idxD2],2*[A20 D20],[1 1]*2*nMagExt),[1 1 nHklMEM]);
     
     if any(bq)
-        bqExpF = exp(1i*permute(sum(repmat(bqdR,[1 1 nHklMEM]).*repmat(...
-            permute(hklExtMEM,[1 3 2]),[1 nbqCoupling 1]),1),[2 3 1]))';
+        % bqExpF = exp(1i*permute(sum(repmat(bqdR,[1 1 nHklMEM]).*repmat(...
+        %     permute(hklExtMEM,[1 3 2]),[1 nbqCoupling 1]),1),[2 3 1]))';
+        bqExpF = exp(1i*permute(sum(bsxfun(@times,bqdR,permute(hklExtMEM,[1 3 2])),1),[2 3 1]))';
+
         bqA  = bsxfun(@times,     bqA0, bqExpF);
         bqA2 = bsxfun(@times,conj(bqA0),bqExpF);
         bqB  = bsxfun(@times,     bqB0, bqExpF);
@@ -846,7 +852,7 @@ for jj = 1:nSlice
         % Normalizes the intensity to single unit cell.
         Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     end
-    
+
     if fid == 1
         sw_status(jj/nSlice*100);
     end

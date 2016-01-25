@@ -131,6 +131,9 @@ classdef (ConstructOnLoad) sw < handle
         %               if the magnetic cell is identical to the
         %               crystallographic cell, the 1x3 vector extends the
         %               cell along the a, b and c axis
+        %   'rdip'      Maximum distance until the dipolar interaction is
+        %               calculated. Zero vlue means no dipolar interactions
+        %               are considered.
         %
         % See also SW.GENMAGSTR, SW.OPTMAGSTR, SW.ANNEAL, SW.MOMENT, SW.NMAGEXT, SW.STRUCTFACT.
         mag_str

@@ -1,4 +1,4 @@
-function res = fourier(obj,hkl,varargin)
+function res = fourier2(obj,hkl,varargin)
 % calculates the Fourier transformation of the Hamiltonian
 %
 % res = FOURIER(obj,hkl,'option1', value1 ...)
@@ -33,19 +33,9 @@ function res = fourier(obj,hkl,varargin)
 
 % TODO: test for magnetic supercell
 
-%inpForm.fname  = {'fitmode' };
-%inpForm.defval = {false     };
-%inpForm.size   = {[1 1]     };
-%
-%param = sw_readparam(inpForm, varargin{:});
-
 % for linear scans create the Q line(s)
 if nargin > 1
-    if iscell(hkl)
-        hkl = sw_qscan(hkl);
-    elseif numel(hkl)==3
-        hkl = hkl(:);
-    end
+    hkl = sw_qscan(hkl);
 else
     hkl = [];
 end
@@ -73,8 +63,31 @@ if obj.symbolic
     return
 end
 
-% generate exchange couplings
-[SS, SI, RR] = obj.intmatrix('fitmode',2,'extend',true,'conjugate',true);
+% help when executed without argument
+if nargin==1
+    help sw.fourier
+    res = [];
+    return
+end
+
+inpForm.fname  = {'fitmode'};
+inpForm.defval = {false    };
+inpForm.size   = {[1 1]    };
+
+param = sw_readparam(inpForm, varargin{:});
+
+
+% Create the interaction matrix and atomic positions in the extended
+% magnetic unit cell.
+isconj = true;
+if param.fitmode
+    [SS, SI, RR] = obj.intmatrix('fitmode',2,'conjugate',isconj);
+else
+    [SS, SI, RR] = obj.intmatrix('conjugate',isconj);
+end
+
+% add dipolar interactions to the Hamiltonian
+SS.all = [SS.all SS.dip];
 
 % list of magnetic atoms in the unit cell
 matom = obj.matom;
@@ -83,23 +96,31 @@ nHkl    = size(hkl,2);
 % number of magnetic atoms in the magnetic supercell
 nMagExt = prod(obj.mag_str.N_ext)*numel(matom.idx);
 % number of bonds
-nBond   = size(SS.all,2);
+nBond   = size(SS.all,2) + nMagExt;
+
+% % interacting atom1
+% atom1 = SS.all(4,:);
+% % interacting atom2
+% atom2 = SS.all(5,:);
+% % distance vector between interacting atoms in l.u.
+% dR = SS.all(1:3,:)+RR(:,atom2)-RR(:,atom1);
+% % exchange energy: J_ij*S_i*S_j
+% JJ = bsxfun(@times,SS.all(6:14,:),matom.S(atom1).*matom.S(atom2));
 
 % interacting atom1
-atom1 = SS.all(4,:);
-% interacting atom1
-atom2 = SS.all(5,:);
+atom1 = [SS.all(4,:)   1:nMagExt];
+% interacting atom2
+atom2 = [SS.all(5,:)   1:nMagExt];
+% distance vector in lu.
+dR    = [SS.all(1:3,:) zeros(3,nMagExt)]+RR(:,atom2)-RR(:,atom1);
 
 % magnetic couplings, 3x3xnJ
-JJ = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
-
-% exchange energy: J_ij*S_i*S_j
-JJ = bsxfun(@times,SS.all(6:14,:),matom.S(atom1).*matom.S(atom2));
-
-% distance vector between interacting atoms in l.u.
-dR = SS.all(1:3,:)+RR(:,atom2)-RR(:,atom1);
+JJ = [SS.all(6:14,:) reshape(SI.aniso,9,[])];
+% include the spin size in JJ
+JJ = bsxfun(@times,JJ,matom.S(atom1).*matom.S(atom2));
 
 % exponents, dimension: 1 x nHkl x nBond
+% calculate exponent based on the unit cell distance
 ExpF = permute(exp(1i*2*pi*sum(bsxfun(@times,hkl',permute(dR,[3 1 2])),2)),[2 1 3]);
 
 % J*exp(ikr), dimensions 9 x nBond x nHkl
@@ -128,5 +149,6 @@ ft = reshape(ft,[3 3 nMagExt nMagExt nHkl]);
 % save results in a struct
 res.ft  = ft;
 res.hkl = hkl;
+res.R   = RR;
 
 end

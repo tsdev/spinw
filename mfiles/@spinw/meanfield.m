@@ -167,7 +167,7 @@ else
             % unique atom labels
             uLabel = unique(obj.unit_cell.label(obj.unit_cell.S>0));
             % all atom labels
-            aLabel = obj.unit_cell.label(obj.matom(param.fitmode).idx);
+            aLabel = obj.unit_cell.label(obj.matom.idx);
             
             % save the form factor information in the output
             chi.formfact = obj.unit_cell.label(obj.unit_cell.S>0);
@@ -180,7 +180,7 @@ else
             % use the labels given as a cell input for all symmetry
             % inequivalent atom
             uLabel = param.formfact;
-            aLabel = uLabel(obj.matom(param.fitmode).idx);
+            aLabel = uLabel(obj.matom.idx);
             % convert numerical values to char() type
             aLabel = cellfun(@char,aLabel,'UniformOutput', false);
             

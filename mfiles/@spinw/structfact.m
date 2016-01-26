@@ -179,7 +179,7 @@ if iscell(param.formfact) || param.formfact
         % use the labels given as a cell input for all symmetry
         % inequivalent atom
         uLabel = param.formfact;
-        aLabel = uLabel(obj.matom(param.fitmode).idx);
+        aLabel = uLabel(obj.matom.idx);
         % convert numerical values to char() type
         aLabel = cellfun(@char,aLabel,'UniformOutput', false);
         

@@ -181,7 +181,7 @@ if isSym
         % select columns from sorM with a certain idx value
         sortMs = sortM(:,sortM(6,:) == ii);
         while (size(sortMs,2)>0)
-            [genC, unC] = sw_gensymcoupling(obj, sortMs(:,1), {symOp, symTr}, tol, true);
+            [genC, unC] = sw_gensymcoupling(obj, sortMs(:,1), {symOp, symTr}, tol);
             genCAll = [genC [-genC(1:3,:);genC([5 4],:)]];
             % remove from sortMs the identical couplings
             iNew = isnew(genCAll(1:5,:),sortMs(1:5,:),tol);

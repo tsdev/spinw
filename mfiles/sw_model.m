@@ -21,9 +21,9 @@ function obj = sw_model(model, param, fid)
 %
 % Output:
 %
-% obj       sw class object with the selected model.
+% obj       spinw class object with the selected model.
 %
-% See also SW.
+% See also SPINW.
 %
 
 if nargin == 0
@@ -37,7 +37,7 @@ end
 
 fprintf0(fid,'Preparing ''%s'' model ...\n',model);
 
-obj = sw;
+obj = spinw;
 fileid(obj,fid)
 
 switch model

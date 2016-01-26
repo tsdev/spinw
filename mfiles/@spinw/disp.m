@@ -1,11 +1,11 @@
 function varargout = disp(obj, fid)
-% prints the sw data structure in readable format onto the Command Window
+% prints the spinw data structure in readable format onto the Command Window
 %
 % {swDescr} = DISPLAY(obj, {fid})
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 % fid       File identifier (created by fopen function) where the output
 %           will be written. Default is stored in obj, the output will be
 %           written onto the Command Line. Optional.
@@ -18,10 +18,10 @@ function varargout = disp(obj, fid)
 %
 % Example:
 %
-% crystal = sw;
+% crystal = spinw;
 % swFields = display(crystal);
 %
-% See also SW.
+% See also SPINW.
 %
 
 Datastruct = datastruct;
@@ -32,7 +32,7 @@ symmStr = choiceStr{obj.symmetry+1};
 
 
 if nargout == 1
-    swDescr = sprintf('sw object (symbolic: %s, symmetry: %s, textoutput: %s)\n',symbStr,symmStr,fopen(obj.fileid));
+    swDescr = sprintf('spinw object (symbolic: %s, symmetry: %s, textoutput: %s)\n',symbStr,symmStr,fopen(obj.fileid));
     
     
     for ii = 1:length(Datastruct.mainfield)
@@ -96,10 +96,10 @@ else
     chem.chemform(chem.chemform == ' ') = [];
     chem.chemform(chem.chemform == '_') = [];
     abc  = obj.abc;
-    aa   = char(197);
+    aa   = symbol('angs');
     [~,~,symStr]=sw_gensym(obj.lattice.sym);
     
-    swDescr = ['\b<strong>SpinW</strong> object, <a href="matlab:doc @sw">sw</a> class:\n'...
+    swDescr = ['\b<strong>SpinW</strong> object, <a href="matlab:doc @spinw">spinw</a> class:\n'...
         sprintf('<strong>Chemical formula</strong>: %s\n',chem.chemform) ...
         sprintf('<strong>Space group</strong>:      %s\n',symStr)...
         sprintf(['<strong>Lattice</strong>:\n  a=%7.4f ' aa ', b=%7.4f ' aa ', c=%7.4f ' aa '\n'],abc(1),abc(2),abc(3))...

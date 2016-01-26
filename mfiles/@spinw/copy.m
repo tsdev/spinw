@@ -1,5 +1,5 @@
 function objC = copy(obj)
-% clones sw object with all data
+% clones spinw object with all data
 %
 % newObj = COPY(obj)
 %
@@ -8,16 +8,16 @@ function objC = copy(obj)
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 %
 % Output:
 %
-% newObj    New sw class object that contains all the data of
+% newObj    New spinw class object that contains all the data of
 %           obj.
 %
 % Example:
 %
-% cryst = sw;
+% cryst = spinw;
 % cryst.addmatrix('label','J1','value',3.1415)
 %
 % cryst1 = cryst;
@@ -32,11 +32,11 @@ function objC = copy(obj)
 % be changed as well and viece versa, since they point to the
 % same object. However cryst2 is independent of cryst.
 %
-% See also SW, SW.STRUCT.
+% See also SPINW, SPINW.STRUCT.
 %
 
 objS = struct(obj);
-objC = sw(objS);
+objC = spinw(objS);
 
 % copy the private properties
 objC.sym    = obj.sym;

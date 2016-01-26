@@ -89,7 +89,7 @@ inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]    [1 
 param = sw_readparam(inpForm, varargin{:});
 
 % Create parameters of magnetic atoms in the unit cell.
-mAtom    = obj.matom(param.fitmode);
+mAtom    = obj.matom;
 nMagAtom = size(mAtom.r,2);
 mat      = obj.matrix.mat;
 nMat     = size(mat,3);

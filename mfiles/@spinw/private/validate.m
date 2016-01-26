@@ -1,5 +1,5 @@
 function validate(varargin)
-% validates sw object properties
+% validates spinw object properties
 %
 % VALIDATE(obj, {fieldToValidate})
 %

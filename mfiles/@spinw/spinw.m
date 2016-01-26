@@ -1,56 +1,54 @@
-classdef (ConstructOnLoad) sw < handle
-    % SW class defines data structure and methods to calculate spin wave
+classdef (ConstructOnLoad) spinw < handle
+    % SPINW class defines data structure and methods to calculate spin wave
     % dispersion in magnetic crystals.
     %
-    % obj = SW()
+    % obj = SPINW()
     %
-    % constructs a new sw class object, with default parameters.
+    % constructs a new spinw class object, with default parameters.
     %
-    % obj = SW(obj)
+    % obj = SPINW(obj)
     %
-    % constructs new sw class object. If obj is sw class, it only checks
-    % its data integrity. If obj is struct type, it creates new sw object
-    % and checks data integrity.
+    % constructs new spinw class object. If obj is spinw class, it only
+    % checks its data integrity. If obj is struct type, it creates new
+    % spinw object and checks data integrity.
     %
-    % obj = SW(cif_path)
+    % obj = SPINW(cif_path)
     %
-    % construct new sw class object, where cif_path contains a string of a
-    % .cif file path defining an input crystals structure.
+    % construct new spinw class object, where cif_path contains a string of
+    % a .cif file path defining an input crystals structure.
     %
-    % The data structure behind the sw object can be accessed by using
-    % STRUCT(obj). All fields of the struct type data behind the sw object
-    % are accessible through the main field names of the obj object. For
-    % example the lattice parameters:
+    % The data structure behind the spinw object can be accessed by using
+    % STRUCT(obj). All fields of the struct type data behind the spinw
+    % object are accessible through the main field names of the obj object.
+    % For example the lattice parameters:
     %   abc = obj.unit_cell.lat_const;
     %
-    % sw is a handle class, that means that only the handle of the object
-    % is copied in a swobj1 = swobj2 command. To create a copy (clone) of
-    % an sw object use:
+    % spinw is a handle class, that means that only the handle of the
+    % object is copied in a swobj1 = swobj2 command. To create a copy
+    % (clone) of an spinw object use:
     %    swobj1 = swobj2.COPY;
     %
-    % See also: SW.COPY, SW.STRUCT,
+    % See also: SPINW.COPY, SPINW.STRUCT,
     % <a href='/Applications/MATLAB_R2012b.app/help/matlab/matlab_oop/comparing-handle-and-value-classes.html'>Comparing handle and value classes</a>.
     %
-    % Information in a blog form:
-    % <a href='http://spinw.tumblr.com'>http://spinw.tumblr.com</a>
-    % Documentation can be found here:
-    % <a href='https://wiki.helmholtz-berlin.de/spinw'>https://wiki.helmholtz-berlin.de/spinw</a>
+    % Tutorials and documentation can be found here:
+    % <a href='https://www.psi.ch/spinw'>https://www.psi.ch/spinw</a>
     % Forum for questions:
     % <a href='https://groups.google.com/forum/#!forum/spinwforum'>https://groups.google.com/forum/#!forum/spinwforum</a>
     % Lates version and bug reports/feature requests:
-    % <a href='http://code.google.com/p/spinw/'>http://code.google.com/p/spinw/</a>
+    % <a href='https://github.com/tsdev/spinw'>https://github.com/tsdev/spinw</a>
     %
     
-    properties
-        % Field stores the crystallographic unit cell parameters.
+    properties (SetObservable)
+        % Stores the unit cell parameters.
         % Sub fields are:
         %   'lat_const' lattice constants in a 1x3 vector in Angstrom units
         %   'angle'     (alpha,beta,gamma) angles in 1x3 vector in radian
         %   'sym'       crystal space group, line number in symmetry.dat file
         %
-        % See also SW.GENLATTICE, SW.ABC, SW.BASISVECTOR, SW.NOSYM.
+        % See also SPINW.GENLATTICE, SPINW.ABC, SPINW.BASISVECTOR, SPINW.NOSYM.
         lattice
-        % Field stores the atoms in the crystallographic unit cell.
+        % Stores the atoms in the crystallographic unit cell.
         % Sub fields are:
         %   'r'         pasitions of the atoms in the unit cell, in a
         %               3 x nAtom matrix, in lattice units
@@ -60,18 +58,18 @@ classdef (ConstructOnLoad) sw < handle
         %   'color'     color of the atom in 3 x nAtom matrix, where every
         %               column is an 0-255 RGB color
         %
-        % See also SW.ADDATOM, SW.ATOM, SW.MATOM, SW.NEWCELL, SW.PLOT.
+        % See also SPINW.ADDATOM, SPINW.ATOM, SPINW.MATOM, SPINW.NEWCELL, SPINW.PLOT.
         unit_cell
-        % Field stores crystallographic twins.
+        % Stores the crystallographic twin parameters.
         % Sub fields are:
         %   'rotc'      rotation matrices in the xyz coordinate system for
         %               every twin, stored in a 3 x 3 x nTwin matrix
         %   'vol'       volume ratio of the different twins, stored in a
         %               1 x nTwin vector
         %
-        % See also SW.ADDTWIN, SW.TWINQ, SW.UNIT_CELL.
+        % See also SPINW.ADDTWIN, SPINW.TWINQ, SPINW.UNIT_CELL.
         twin
-        % Field stores 3x3 matrices for using them in the Hailtonian.
+        % Stores 3x3 matrices for using them in the Hailtonian.
         % Sub fields are:
         %   'mat'       stores the actual values of 3x3 matrices, in a
         %               3 x 3 x nMatrix matrix, defult unit is meV
@@ -80,30 +78,30 @@ classdef (ConstructOnLoad) sw < handle
         %   'label'     label for every matrix, stored as string in a
         %               1 x nMatrix cell
         %
-        % See also SW.ADDMATRIX, SW.NTWIN.
+        % See also SPINW.ADDMATRIX, SPINW.NTWIN.
         matrix
-        % Field stores single ion terms of the Hamiltonian.
+        % Stores single ion terms of the Hamiltonian.
         % Sub fields are:
         %   'aniso'     vector contains 1 x nMagAtom integers, each integer
         %               assignes one of the nMatrix from the .matrix field
-        %               to a magnetic atom in the sw.matom list as a single
+        %               to a magnetic atom in the spinw.matom list as a single
         %               ion anisotropy (zeros for no anisotropy)
         %   'g'         vector contains 1 x nMagAtom integers, each integer
         %               assignes one of the nMatrix from the .matrix field
-        %               to a magnetic atom in the sw.matom list as a
+        %               to a magnetic atom in the spinw.matom list as a
         %               g-tensor
         %   'field'     external magnetic field stored in a 1x3 vector,
         %               default unit is Tesla
         %   'T'         temperature, scalar, default unit is Kelvin
         %
-        % See also SW.ADDANISO, SW.ADDG, SW.GETMATRIX, SW.SETMATRIX, SW.INTMATRIX.
+        % See also SPINW.ADDANISO, SPINW.ADDG, SPINW.GETMATRIX, SPINW.SETMATRIX, SPINW.INTMATRIX.
         single_ion
-        % Field stores the list of spin-spin couplings.
+        % Stores the list of spin-spin couplings.
         % Sub fields are:
         %   'dl'        distance between the unit cells of two interacting
         %               spins, stored in a 3 x nCoupling matrix
         %   'atom1'     first magnetic atom, pointing to the list of
-        %               magnetic atoms in sw.matom list, stored in a
+        %               magnetic atoms in spinw.matom list, stored in a
         %               1 x nCoupling vector
         %   'atom2'     second magnetic atom, stored in a  1 x nCoupling
         %               vector
@@ -116,9 +114,9 @@ classdef (ConstructOnLoad) sw < handle
         %               Default is 0 for quadratic exchange. type = 1 for
         %               biquadratic exchange.
         %
-        % See also SW.GENCOUPLING, SW.ADDCOUPLING, SW.FIELD.
+        % See also SPINW.GENCOUPLING, SPINW.ADDCOUPLING, SPINW.FIELD.
         coupling
-        % Field stores the magnetic structure.
+        % Stores the magnetic structure.
         % Sub fields are:
         %   'S'         stores the moment direction for every spin in the
         %               crystallographic or magnetic supercell in a
@@ -135,18 +133,20 @@ classdef (ConstructOnLoad) sw < handle
         %               calculated. Zero vlue means no dipolar interactions
         %               are considered.
         %
-        % See also SW.GENMAGSTR, SW.OPTMAGSTR, SW.ANNEAL, SW.MOMENT, SW.NMAGEXT, SW.STRUCTFACT.
+        % See also SPINW.GENMAGSTR, SPINW.OPTMAGSTR, SPINW.ANNEAL, SPINW.MOMENT, SPINW.NMAGEXT, SPINW.STRUCTFACT.
         mag_str
-        % Field stores the physical units in the Hamiltonian. Default are
-        % meV, Tesla and Kelvin.
+        % Stores the physical units in the Hamiltonian.
+        % Defaults are meV, Tesla Angstrom and Kelvin.
         % Sub fields are:
-        %   'kB'        Boltzmann constant, default is 0.0862
-        %   'muB'       Bohr magneton, default is 0.0579
+        %   'kB'        Boltzmann constant, default is 0.0862 [meV/K]
+        %   'muB'       Bohr magneton, default is 0.0579 [meV/T]
+        %   'mu0'       Vacuum permeability, 201.335431 [T^2*Angstrom^3/meV]
         unit
     end
     
     properties (Access = private)
-        matomstore = [];
+        matomstore = []; % stores the magnetic atoms
+        propl         % stores the property change listener handles
         sym  = false; % stores whether the couplings are generated under symmetry constraints
         symb = false; % stores whether the calculation are done symbolically
         fid  = 1;     % stores the file ID of the text output, default is the Command Window
@@ -159,8 +159,8 @@ classdef (ConstructOnLoad) sw < handle
     end
     
     methods
-        function obj = sw(varargin)
-            % SW constructor
+        function obj = spinw(varargin)
+            % SPINW constructor
             %
             
             if nargin==0
@@ -173,7 +173,7 @@ classdef (ConstructOnLoad) sw < handle
             end
             
             firstArg = varargin{1};
-            if isa(firstArg, 'sw') %  It is used when objects are passed as arguments.
+            if isa(firstArg, 'spinw') %  It is used when objects are passed as arguments.
                 obj = copy(firstArg);
                 return;
             end
@@ -256,7 +256,7 @@ classdef (ConstructOnLoad) sw < handle
             end
             
             
-        end % .sw
+        end % .spinw
         
         function nMagExt = nmagext(obj)
             % gives the number of magnetic atoms in the magnetic supercell
@@ -275,7 +275,7 @@ classdef (ConstructOnLoad) sw < handle
             nAtom = size(obj.unit_cell.r,2);
         end
         function nBond = nbond(obj)
-            % gives the number of bonds defined in the sw object
+            % gives the number of bonds defined in the spinw object
             %
             % nBond = NBOND(obj)
             %
@@ -284,7 +284,7 @@ classdef (ConstructOnLoad) sw < handle
         end
         
         function nMat = nmat(obj)
-            % gives the number of matrices defined in an sw object
+            % gives the number of matrices defined in an spinw object
             %
             % nMat = NMAT(obj)
             %
@@ -299,12 +299,19 @@ classdef (ConstructOnLoad) sw < handle
             
             nTwin = size(obj.twin.vol,2);
         end
-        
-        
-               
+                
     end
     
     methods(Hidden=true)
+        function modmatom(obj, ~, ~)
+            % listening to the change of the lattice or unit_cell fields
+            
+            % delete the stored magnetic atom positions
+            obj.matomstore = [];
+            % remove the listener
+            delete(obj.propl);
+            % fprintf('Property changed!\n')
+        end
         function lh = addlistener(varargin)
             lh = addlistener@handle(varargin{:});
         end
@@ -334,53 +341,6 @@ classdef (ConstructOnLoad) sw < handle
         end
         function TF = ge(varargin)
             TF = ge@handle(varargin{:});
-        end
-        function obj = addmagfield(obj, B)
-            warning('sw:addmagfield:Obsolete','addmagfield is obsolete, use sw.field([Bx By Bz]) instead!');
-            obj.single_ion.field = B;
-        end % .addmagfield
-        function obj = sw_gencoupling(obj, varargin)
-            warning('sw:sw_gencoupling:Obsolete','sw_gencoupling is obsolete, use gencoupling instead!')
-            obj = gencoupling(obj, varargin{:});
-        end % sw_gencoupling
-        
-        function obj = addjtype(obj, varargin)
-            warning('sw:addjtype:Obsolete','addjtype is obsolete, use addmatrix instead!')
-            obj = addmatrix(obj, varargin{:});
-        end
-        function obj = addj(obj, varargin)
-            warning('sw:addj:Obsolete','addj is obsolete, use addcoupling instead!')
-            obj = addcoupling(obj, varargin{:});
-        end
-        function obj = sw_magstr(obj, varargin)
-            warning('sw:sw_magstr:Obsolete','sw_magstr is obsolete, use genmagstr instead!')
-            if nargin == 2
-                param = varargin{1};
-                if isfield(param,'nExt')
-                    param.nExt = param.nExt';
-                end
-            end
-            obj = genmagstr(obj, param);
-        end
-        function [obj, stat] = sw_anneal(obj, varargin)
-            warning('sw:sw_anneal:Obsolete','sw_anneal is obsolete, use anneal instead!')
-            [obj, stat] = anneal(obj, varargin{:});
-        end
-        function E = sw_e(obj, varargin)
-            warning('sw:sw_e:Obsolete','sw_e is obsolete, use energy instead!')
-            E = energy(obj, varargin{:});
-        end
-        function F2 = sw_fsf(obj, varargin)
-            warning('sw:sw_fsf:Obsolete','sw_fsf is obsolete, use structfact instead!')
-            F2 = structfact(obj, varargin{:});
-        end
-        function spectraTri = sw_spinwave(hTri,hkl,varargin)
-            warning('sw:sw_spinwave:Obsolete','sw_spinwave is obsolete, use spinwave instead!')
-            spectraTri = spinwave(hTri,hkl,varargin{:});
-        end
-        function [obj, x, e, exitflag, output] = sw_optmagstr(obj, varargin)
-            warning('sw:sw_optmagstr:Obsolete','sw_optmagstr is obsolete, use optmagstr instead!')
-            [obj, x, e, exitflag, output] = optmagstr(obj, varargin{:});
         end
     end % classdef
     

@@ -1,5 +1,5 @@
 function Datastruct = datastruct()
-% DATASTRUCT defines the data structure used in sw object It defines the
+% DATASTRUCT defines the data structure used in spinw object It defines the
 % data structure with initial values all are necessary for valid data
 % structure.
 %

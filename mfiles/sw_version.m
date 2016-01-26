@@ -5,7 +5,7 @@ function varargout = sw_version()
 %
 
 % read file header from sw.m file
-fid = fopen('sw.m');
+fid = fopen('spinw.m');
 
 % first line
 fgets(fid);

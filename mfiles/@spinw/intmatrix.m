@@ -243,7 +243,7 @@ if obj.sym
                 % select rotation matrices for each generated coupling
                 rotOp = zeros(3,3,0);
                 for ii = 1:size(firstC,2)
-                    [~, rotIdx] = sw_gensymcoupling(obj, firstC(:,ii), {symOp, symTr}, 1e-5, true);
+                    [~, rotIdx] = sw_gensymcoupling(obj, firstC(:,ii), {symOp, symTr}, 1e-5);
                     rotOp = cat(3,rotOp,symOp(:,:,rotIdx));
                 end
         

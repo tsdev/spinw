@@ -375,7 +375,7 @@ end
 % e3||Si,ata
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 % e1 = e2 x e3
-magTab = obj.magtable(param.fitmode>=3);
+magTab = obj.magtable;
 
 zed = magTab.e1 + 1i*magTab.e2;
 eta = magTab.e3;

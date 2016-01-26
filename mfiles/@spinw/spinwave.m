@@ -554,12 +554,14 @@ end
 hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 
 % Empty omega dispersion of all spin wave modes, size: 2*nMagExt x nHkl.
-if param.useMex %&& numel(S0)>5
+if param.useMex && param.hermit
     omega = zeros(2*nMagExt,nHkl);
-    Sab = zeros(3,3,2*nMagExt,nHkl);
 else
     omega = zeros(2*nMagExt,0);
-    % empty Sab
+end
+if param.useMex
+    Sab = zeros(3,3,2*nMagExt,nHkl);
+else
     Sab = zeros(3,3,2*nMagExt,0);
 end
 

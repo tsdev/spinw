@@ -94,7 +94,7 @@ end
 
 if fid ~= 0
     fprintf0(fid,['Creating the bond list (maxDistance = %g ' symbol('ang')...
-        ', nCell = %dx%dx%d) ...\n'],param.maxDistance,nC);
+        ', nCell = %dx%dx%d) ...\n'],param.maxDistance-tol,nC);
 end
 
 % save the sym/nosym method into obj
@@ -154,7 +154,9 @@ cMat  = [dl(:,:);atom1(1,:);atom2(1,:);dRA(1,:)];
 % remove nan bonds
 cMat = cMat(:,~isnan(cMat(1,:)));
 % sort according to increasing distance
-cMat = sortrows(cMat',6)';
+% cMat = sortrows(cMat',6)'; too slow
+[~,cIdx] = sort(cMat(6,:));
+cMat     = cMat(:,cIdx);
 % cutoff at maximum distance
 cMat = cMat(:,cMat(6,:)<=param.maxDistance);
 % index the bonds
@@ -186,7 +188,7 @@ if isSym
         % select columns from sorM with a certain idx value
         sortMs = cMat(:,cMat(6,:) == ii);
         while size(sortMs,2)>0
-            [genC, unC] = sw_gensymcoupling(obj, sortMs(:,1), {symOp, symTr}, tol, true);
+            [genC, unC] = sw_gensymcoupling(obj, sortMs(:,1), {symOp, symTr}, tol);
             genCAll = [genC [-genC(1:3,:);genC([5 4],:)]];
             % remove from sortMs the identical couplings
             iNew = isnew(genCAll(1:5,:),sortMs(1:5,:),tol);
@@ -216,7 +218,7 @@ aniso = int32(zeros(1,nMagAtom));
 g     = int32(zeros(1,nMagAtom));
 
 if fid ~= 0
-    fprintf0(fid,'... %d bonds are generated!\n',size(cMat,2));
+    fprintf0(fid,'... %d bonds are retained out of %d generated!\n',size(cMat,2),nHalfCube*nMagAtom^2);
 end
 
 % save output structure

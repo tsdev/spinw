@@ -1,11 +1,11 @@
-function [genCp, ugenCp] = sw_gensymcoupling(obj, coupling, sym, tol, fitmode)
+function [genCp, ugenCp] = sw_gensymcoupling(obj, coupling, sym, tol)
 % generates all equivalent couplings, using space group symmetry
 %
 % [genCp ugenCp] = SW_GENSYMCOUPLING(obj, coupling, sym, {tol})
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 % coupling  Vector, contains the original coupling. Dimensions are [5 1].
 %           Elements are [dlx dly dlz atom1 atom2 idx dist].
 % sym       Cell, that contains the rotation and translation operators of
@@ -32,11 +32,7 @@ if nargin < 4
     tol = 1e-5;
 end
 
-if nargin == 5
-    mAtom = obj.matom(fitmode);
-else
-    mAtom = obj.matom;
-end
+mAtom = obj.matom;
 
 symOp = sym{1};
 symTr = sym{2};

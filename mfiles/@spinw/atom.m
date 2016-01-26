@@ -10,7 +10,7 @@ function atomList = atom(obj)
 %
 % Input:
 %
-% obj   sw class object.
+% obj       spinw class object.
 %
 % Output:
 %
@@ -27,7 +27,7 @@ function atomList = atom(obj)
 %
 % sw_addsym('x+1/2,y+1/2,z;x+1/2,y,z+1/2;x,y+1/2,z+1/2','FCC');
 % 
-% cryst = sw;
+% cryst = spinw;
 % cryst.genlattice('lat_const',[8 8 8],'sym','FCC')
 % cryst.addatom('r',[0 0 0],'label','Atom1')
 % atomList = cryst.atom;
@@ -37,7 +37,7 @@ function atomList = atom(obj)
 % The cryst.atom lists all 4 symmetry equivalent positions generated using
 % the 'FCC' symmetry operators.
 %
-% See also SW, SW.MATOM, SW_ADDSYM, SW.GENLATTICE, SW.ADDATOM.
+% See also SPINW, SPINW.MATOM, SW_ADDSYM, SPINW.GENLATTICE, SPINW.ADDATOM.
 %
 
 % Generate all symmetry equivalent atoms

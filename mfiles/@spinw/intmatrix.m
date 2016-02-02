@@ -193,16 +193,11 @@ if obj.sym
     % generate the rotation matrices
     if obj.symbolic
         [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,~sw_always(obj.unit_cell.S==0)));
-        % try to convert the rotation matrices into symbolic (only works
-        % for matrices with 1s and 0s)
-        %rotOp = round(rotOp);
     else
         [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
     end
     % convert rotation operators to xyz Cartesian coordinate system
-    %if sum(abs((A-diag(diag(A)))/max(A))) > 1e-15
     rotOp = mmat(A,mmat(rotOp,inv(A)));
-    %end
     
     if param.rotMat
         if nzeroA

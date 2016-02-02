@@ -19,6 +19,11 @@ function [symOpG, symTrG, isGen] = sw_symgetgen(symOp, symTr)
 %           the generators, dimensions are [1 nSym].
 %
 
+if nargin == 0
+    help sw_symgetgen
+    return
+end
+
 uIdx = 1:size(symOp,3);
 symOpG = zeros(3,3,0);
 symTrG = zeros(3,0);
@@ -67,5 +72,12 @@ uIdx = uIdx((nGen+1):end)-nGen;
 
 isGen = true(1,size(symOp,3));
 isGen(uIdx) = false;
+
+% P1
+if isempty(symOpG)
+    symOpG = eye(3);
+    symTrG = zeros(1,3);
+    isGen  = 1;
+end
 
 end

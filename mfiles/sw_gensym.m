@@ -20,12 +20,12 @@ function [symOp, symTr, symName, symStr, symNum] = sw_gensym(varargin)
 % symStr        The string of the symmetry operations.
 % symNum        The index of the symmetry in the symmetry.dat file.
 %
-% See also SW_ADDSYM, SW, SW.GENCOUPLING, SW_GENCOORD.
+% See also SW_ADDSYM, SPINW, SPINW.GENCOUPLING, SW_GENCOORD.
 %
 
 if nargin == 0
-    help sw_gensym;
-    return;
+    help sw_gensym
+    return
 end
 
 % Open the symmetry definition file.

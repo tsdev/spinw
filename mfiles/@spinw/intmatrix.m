@@ -353,7 +353,11 @@ end
 if param.plotmode
     % Saves all coupling matrix indices in SS.all in case of non-fitting mode
     % in the bottom row
-    SS.all   = [SS.all(1:14,:); double(JJ.idx'); idxTemp;SS.all(15,:)];
+    if ~isempty(SS.all)
+        SS.all   = [SS.all(1:14,:); double(JJ.idx'); idxTemp;SS.all(15,:)];
+    else
+        SS.all   = zeros(17,0);
+    end
 end
 
 if param.sortDM && (~isempty(SS.all))

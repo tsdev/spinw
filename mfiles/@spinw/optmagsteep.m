@@ -144,6 +144,9 @@ end
 % (1,nMagExt)
 
 if isempty(param.subLat)
+    % add anisotropies
+    %Aidx = (squeeze(sumn(abs(AA),[1 2]))>0)';
+    %SSc  = param.fSub([SS.all(4:5,:) [Aidx;Aidx]],param.nExt);
     SSc  = param.fSub(SS.all(4:5,:),param.nExt);
     param.subLat = SSc;
 else
@@ -206,7 +209,7 @@ Sindex      = logical(Sindex);
 
 % Remove uncoupled moments, they have should keep their original
 % orientation
-fSpin = squeeze(sum(sum(abs(AA),1),2))==0 & nNeighG==0 & sum(abs(Bloc'),2)==0;
+fSpin = squeeze(sumn(abs(AA),[1 2]))==0 & nNeighG==0 & sum(abs(Bloc'),2)==0;
 Sindex(:,fSpin) = false;
 
 if ~any(Sindex)

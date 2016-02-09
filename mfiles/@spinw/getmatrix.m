@@ -24,6 +24,7 @@ function [aMat, param, pOp] = getmatrix(obj, varargin)
 % g_idx         Value of the obj.matom.idx, that selects a magnetic atom,
 %               for which the symmetry allowed elemtns of the g-tensor
 %               have to be determined.
+% sub_idx       Select a certain bond. Default value is 1.
 %
 % Optional inputs:
 %
@@ -77,10 +78,10 @@ function [aMat, param, pOp] = getmatrix(obj, varargin)
 % See also SW.SETMATRIX.
 %
 
-inpForm.fname  = {'label' 'mat_idx' 'aniso_idx' 'coupling_idx' 'tol' 'pref' 'g_idx'};
-inpForm.defval = {zeros(1,0) 0       0          0              1e-5  []     0      };
-inpForm.size   = {[1 -1]  [1 1]      [1 1]      [1 1]          [1 1] [1 -2] [1 1]  };
-inpForm.soft   = {false   false      false      false          false true   false  };
+inpForm.fname  = {'label' 'mat_idx' 'aniso_idx' 'coupling_idx' 'tol' 'pref' 'g_idx' 'sub_idx'};
+inpForm.defval = {zeros(1,0) 0       0          0              1e-5  []     0       1        };
+inpForm.size   = {[1 -1]  [1 1]      [1 1]      [1 1]          [1 1] [1 -2] [1 1]   [1 1]    };
+inpForm.soft   = {false   false      false      false          false true   false   false    };
 
 param = sw_readparam(inpForm, varargin{:});
 tol = param.tol;
@@ -140,11 +141,16 @@ end
 
 if param.coupling_idx
     % Coupling is defined
-    iSel = obj.coupling.idx == param.coupling_idx;
-    if ~any(iSel)
+    iSel = find(obj.coupling.idx == param.coupling_idx);
+    
+    if isempty(iSel)
         error('sw:getmatrix:WrongInput','The given obj.coupling.idx does not existst, check your input!');
     end
-    
+
+    if param.sub_idx ~=1
+        iSel = iSel(param.sub_idx);
+    end
+
     mAtom = obj.matom;
     % indices of atoms in selected couplings
     atom1  = obj.coupling.atom1(iSel);
@@ -158,7 +164,7 @@ if param.coupling_idx
     dr     = r2 + dl - r1;
     % centers of the selected couplings
     center = mod((r1+r2+dl)/2,1);
-    mat_idx = obj.coupling.mat_idx(:,find(iSel,1,'first'));
+    mat_idx = obj.coupling.mat_idx(:,iSel(1));
     if sum(mat_idx>0) == 1
         param.mat_idx = sum(mat_idx);
     end
@@ -203,7 +209,9 @@ A   = obj.basisvector;
 pOp = mmat(A,mmat(pOp,inv(A)));
 
 % determine the allowed matrix elements for the first coupling/anisotropy
-[aMat, aSym] = sw_basismat(pOp,dr(:,1));
+% convert both dr and the symmetry operators into xyz coordinate system
+%[aMat, aSym] = sw_basismat(pOp,dr(:,1));
+[aMat, aSym] = sw_basismat(pOp,A*dr(:,1));
 
 aMatS = aMat(:,:,~aSym);
 if param.coupling_idx

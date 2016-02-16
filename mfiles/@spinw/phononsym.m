@@ -1,4 +1,4 @@
-function spectra = phonon(obj, hkl, varargin)
+function spectra = phononsym(obj, varargin)
 % calculates phonon dispersion based on a spring model
 %
 % spectra = PHONON(obj, hkl, 'option1', value1 ...)
@@ -29,35 +29,18 @@ function spectra = phonon(obj, hkl, varargin)
 % WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! 
 %
 
-% for linear scans create the Q line(s)
-if nargin > 1
-    hkl = sw_qscan(hkl);
-else
-    hkl = [];
-end
+hkl0 = [sym('h','real'); sym('k','real'); sym('l','real')];
 
-% calculate symbolic spectrum if obj is in symbolic mode
-if obj.symbolic
-    if numel(hkl) == 3
-        hkl = sym(hkl);
-    end
-    
-    if ~isa(hkl,'sym')
-        inpForm.fname  = {'fitmode'};
-        inpForm.defval = {false    };
-        inpForm.size   = {[1 1]    };
-        param0 = sw_readparam(inpForm, varargin{:});
-        
-        if ~param0.fitmode
-            fprintf0(obj.fileid,'No hkl value was given, phonon spectrum for general Q (h,k,l) will be calculated!\n');
-        end
-        spectra = obj.phononsym(varargin{:});
-    else
-        spectra = obj.phononsym(varargin{:},'hkl',hkl);
-    end
-    return
-end
+title0 = 'Symbolic phonon spectrum';
 
+inpForm.fname  = {'tol' 'hkl'  'eig' 'norm' 'title'};
+inpForm.defval = {1e-4   hkl0   true true   title0 };
+inpForm.size   = {[1 1] [3 1]  [1 1] [1 1]  [1 -1] };
+
+param = sw_readparam(inpForm, varargin{:});
+
+% symbolic wavevectors
+hkl = param.hkl;
 
 SS = obj.intmatrix('fitmode',2,'conjugate',true);
 
@@ -70,29 +53,29 @@ D     = mean(SS.all([6 10 14],:));
 % convert dR into xyz coordinate system (Angstrom)
 dRxyz = obj.basisvector*dR;
 %dRxyz = dR;
-dRxyz  = bsxfun(@rdivide,dRxyz,sqrt(sum(dRxyz.^2,1)));
+dRxyz  = bsxfunsym(@rdivide,dRxyz,sqrt(sum(dRxyz.^2,1)));
 
 % partial derivative of the distance vector between 2 interacting atoms
 % dimensions: [3 3 nBond] --> [alpha beta nBond]
 %phiab = bsxfun(@rdivide,bsxfun(@times,permute(dRxyz,[1 3 2]),permute(dRxyz,[3 1 2])),permute(dRl2,[1 3 2]));
-phiab = bsxfun(@times,permute(dRxyz,[1 3 2]),permute(dRxyz,[3 1 2]));
+phiab = bsxfunsym(@times,permute(dRxyz,[1 3 2]),permute(dRxyz,[3 1 2]));
 
 %phiab = permute(phiab,[2 1 3]);
 
 % include the spring constant
-phiab = bsxfun(@times,permute(D,[1 3 2]),phiab);
+phiab = bsxfunsym(@times,permute(D,[1 3 2]),phiab);
 
 % Furier transform exp(-i*2*pi*k*R) factor
-% dimensions [1 1 nBond nQ]
-dRQ = exp(-1i*2*pi*sum(bsxfun(@times,permute(dR,[4 5 2 3 1]),permute(hkl,[4 5 3 2 1])),5));
+% dimensions [1 1 nBond]
+dRQ = exp(-1i*2*pi*sumsym(bsxfunsym(@times,permute(dR,[3 4 2 1]),permute(hkl,[3 4 2 1])),4));
 
 % dynamical matrix
-% dimensions are [3 3 nQ]
-Dab = bsxfun(@plus,-permute(sum(bsxfun(@times,phiab,dRQ),3),[1 2 4 3]),sum(phiab,3));
+% dimensions are [3 3]
+Dab = bsxfunsym(@plus,-permute(sumsym(bsxfunsym(@times,phiab,dRQ),3),[1 2 4 3]),sumsym(phiab,3));
 
 % solve the eigenvalue problem
-[ea,om2] = eigenshuffle(Dab);
-om = sqrt(real(om2));
+[ea,om2] = eig(Dab);
+om = sqrt(om2);
 
 % % X-ray cross section
 hklA = (hkl'*2*pi*inv(obj.basisvector))';

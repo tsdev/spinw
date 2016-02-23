@@ -122,7 +122,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %               9 correlation functions: Sxx, Sxy, Sxz, etc. If given,
 %               magnetic form factor is included. Intensity is in hBar
 %               units, normalized to the crystallographic unit cell.
-% H             Quadratic for mof the Hamiltonian.
+% H             Quadratic form of the Hamiltonian.
 %               Only saved if saveH is true.
 % T             Transformation matrix from the normal magnon modes to the
 %               magnons localized on spins:

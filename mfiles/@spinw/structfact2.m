@@ -5,7 +5,7 @@ function sFact = structfact2(obj, varargin)
 %
 % Input:
 %
-% obj       Input sw object, contains positions of the magnetic atoms,
+% obj       Input spinw object, contains positions of the magnetic atoms,
 %           nExt parameter and the direction of the magnetic spins.
 %
 % Options:
@@ -33,7 +33,7 @@ function sFact = structfact2(obj, varargin)
 %           {h, k, l}.
 % obj       Copy of the input obj object.
 %
-% See also SW_PLOTSF, SW_INTSF, SW.ANNEAL, SW.GENMAGSTR.
+% See also SW_PLOTSF, SW_INTSF, SPINW.ANNEAL, SPINW.GENMAGSTR.
 %
 
 inpF.fname  = {'fExt'  'S'           };

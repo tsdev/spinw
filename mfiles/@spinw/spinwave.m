@@ -15,7 +15,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % Input:
 %
-% obj           Input structure, sw class object.
+% obj           Input structure, spinw class object.
 % hkl           Defines the Q points where the spectra is calculated, in
 %               reciprocal lattice units, size is [3 nHkl]. Q can be also
 %               defined by several linear scan in reciprocal space. In this
@@ -158,7 +158,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % triangular lattice antiferromagnet (S=1, J=1) along the [H H 0] direction
 % in reciprocal space.
 %
-% See also SW, SW.SPINWAVESYM, SW_NEUTRON, SW.POWSPEC, SW.OPTMAGSTR, SW.FILEID, SW_INSTRUMENT.
+% See also SPINW, SPINW.SPINWAVESYM, SW_NEUTRON, SPINW.POWSPEC, SPINW.OPTMAGSTR, SPINW.FILEID, SW_INSTRUMENT.
 %
 
 % save the time of the beginning of the calculation

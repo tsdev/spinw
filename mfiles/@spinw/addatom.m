@@ -45,7 +45,7 @@ function addatom(obj, varargin)
 %
 
 if nargin < 2
-    help sw.addatom;
+    help spinw.addatom;
     return;
 end
 

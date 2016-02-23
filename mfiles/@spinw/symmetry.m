@@ -13,7 +13,7 @@ function sym = symmetry(obj)
 % To change it use sw.gencoupling with the forceNoSym option.
 % To remove all symmetry operators use sw.nosym.
 %
-% See also SW, SW.NOSYM, SW.GENCOUPLING.
+% See also SPINW, SPINW.NOSYM, SPINW.GENCOUPLING.
 %
 
 sym = obj.sym;

@@ -102,7 +102,7 @@ function [omega, Vsave] = corespec(obj, hkl, varargin)
 
 % help when executed without argument
 if nargin==1
-    help sw.core
+    help spinw.core
     return
 end
 

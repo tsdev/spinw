@@ -22,7 +22,7 @@ function spectra = spinwavesym(obj, varargin)
 %
 % Input:
 %
-% obj           Input structure, sw class object.
+% obj           Input structure, spinw class object.
 %
 % Options:
 %

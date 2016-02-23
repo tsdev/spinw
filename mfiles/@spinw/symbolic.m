@@ -9,7 +9,7 @@ function varargout = symbolic(obj, symb)
 %
 % symb sets whether the calculations are symbolic/numeric (true/false).
 %
-% See also SW, SW.SPINWAVESYM.
+% See also SPINW, SPINW.SPINWAVESYM.
 %
 
 % Only returns symb value.

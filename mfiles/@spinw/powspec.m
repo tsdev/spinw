@@ -5,7 +5,7 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 % hklA      Vector containing the Q values in inverse Angstrom where powder
 %           spectra will be calculated, dimensions are [1 nQ].
 %
@@ -54,7 +54,7 @@ function spectra = powspec(obj, hklA, varargin)
 % Example:
 %
 % tri = sw_model('triAF',1);
-% E = linspace(0,3,100);
+% E = linspace(0,4,100);
 % Q = linspace(0,4,300);
 % triSpec = tri.powspec(Q,'Evect',E,'nRand',1e3);
 % sw_plotspec(triSpec);
@@ -68,7 +68,7 @@ function spectra = powspec(obj, hklA, varargin)
 
 % help when executed without argument
 if nargin==1
-    help sw.powspec
+    help spinw.powspec
     return
 end
 

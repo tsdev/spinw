@@ -9,7 +9,7 @@ function varargout = plot(obj, varargin)
 %
 % Input:
 %
-% obj               sw class object.
+% obj               spinw class object.
 %
 % Options:
 %

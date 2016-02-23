@@ -28,11 +28,11 @@ function [Qtwin, rotQout] = twinq(obj, Q0)
 % This example Calculates the [1 0 0] and [1 1 0] Bragg reflections
 % equivalent position in the twins.
 %
-% See also SW, SW.ADDTWIN.
+% See also SPINW, SPINW.ADDTWIN.
 %
 
 if nargin == 1
-    help sw.twinq;
+    help spinw.twinq;
     return
 end
 

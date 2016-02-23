@@ -5,7 +5,7 @@ function sFact = structfact(obj, hkl, varargin)
 %
 % Input:
 %
-% obj       Input sw object, contains positions of the magnetic atoms,
+% obj       Input spinw object, contains positions of the magnetic atoms,
 %           size of the magnetic supercell and the vector components of the
 %           spins anf g-tensors.
 % hkl       Defines the reciprocal lattice vectors where the magnetic
@@ -72,7 +72,7 @@ function sFact = structfact(obj, hkl, varargin)
 %               factor in included in the spin-spin correlation function.
 % obj           Copy of the input obj object.
 %
-% See also SW_PLOTSF, SW_INTSF, SW.ANNEAL, SW.GENMAGSTR.
+% See also SW_PLOTSF, SW_INTSF, SPINW.ANNEAL, SPINW.GENMAGSTR.
 %
 
 

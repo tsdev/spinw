@@ -5,7 +5,7 @@ function setmatrix(obj, varargin)
 %
 % Input:
 %
-% obj           sw class object.
+% obj           spinw class object.
 %
 % Options:
 %
@@ -65,12 +65,12 @@ function setmatrix(obj, varargin)
 % This will set 'J2' to antiferromagnetic Heisenberg exchange, with value
 % of 1.25 meV.
 %
-% See also SW, SW.GENCOUPLING, SW.GETMATRIX.
+% See also SPINW, SPINW.GENCOUPLING, SPINW.GETMATRIX.
 %
 
 if nargin == 1
-    help sw.setmatrix;
-    return;
+    help spinw.setmatrix
+    return
 end
 
 [aMat, param] = obj.getmatrix(varargin{:});

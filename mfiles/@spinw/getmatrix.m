@@ -88,7 +88,7 @@ tol = param.tol;
 fid = obj.fid;
 
 if nargin == 1
-    help getmatrix;
+    help spinw.getmatrix;
     return;
 end
 

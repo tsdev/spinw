@@ -5,7 +5,7 @@ function optm = optmagstr(obj, varargin)
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 %
 % Options:
 %
@@ -83,7 +83,7 @@ function optm = optmagstr(obj, varargin)
 % moments into the [0 y z] plane (nTheta = 90 deg, nPhi = 0 deg or
 % n = [1 0 0]). Then plots the magnetic structure.
 %
-% See also SW, SW.ANNEAL, GM_SPHERICAL3D, GM_PLANAR, FMINSEARCH.
+% See also SPINW, SPINW.ANNEAL, GM_SPHERICAL3D, GM_PLANAR, FMINSEARCH.
 %
 
 if ~any(obj.atom.mag)

@@ -1,5 +1,5 @@
 function spectra = phononsym(obj, varargin)
-% calculates phonon dispersion based on a spring model
+% calculates phonon dispersion symbolically based on a spring model
 %
 % spectra = PHONON(obj, hkl, 'option1', value1 ...)
 %

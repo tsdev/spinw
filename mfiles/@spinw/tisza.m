@@ -15,7 +15,7 @@ function optRes = tisza(obj,varargin)
 %           atoms in the magnetic supercell. Default value is 1:nMagExt,
 %           where each magnetic moment belongs to a different sublattice.
 %
-% See also SW.OPTMAGSTR, SW.OPTMAGSTEEP.
+% See also SPINW.OPTMAGSTR, SPINW.OPTMAGSTEEP.
 %
 
 % magnetic atoms in the unit cell

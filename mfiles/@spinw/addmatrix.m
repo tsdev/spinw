@@ -37,7 +37,7 @@ function addmatrix(obj, varargin)
 %
 
 if nargin < 2
-    help sw.addmatrix;
+    help spinw.addmatrix;
     return;
 end
 

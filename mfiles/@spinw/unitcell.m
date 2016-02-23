@@ -7,7 +7,7 @@ function unit_cell_info = unitcell(obj, idx)
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 % idx       Selects certain atoms. If undefined UNIT_CELL(obj) or
 %           obj.UNIT_CELL returns information on all atoms. The selection
 %           can be also done according to the atom labels, in this case
@@ -39,7 +39,7 @@ function unit_cell_info = unitcell(obj, idx)
 %
 % The example keeps only the Oxygen atoms in cryst object.
 %
-% See also SW.ADDTWIN, SW.TWINQ, SW.UNIT_CELL.
+% See also SPINW.ADDTWIN, SPINW.TWINQ, SPINW.UNIT_CELL.
 %
 
 if nargin == 1

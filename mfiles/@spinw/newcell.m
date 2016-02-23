@@ -44,8 +44,8 @@ function varargout = newcell(obj,bvect, bshift)
 %
 
 if nargin <= 1
-    help sw.newcell;
-    return;
+    help spinw.newcell
+    return
 end
 
 if ~iscell(bvect) || numel(bvect)~=3

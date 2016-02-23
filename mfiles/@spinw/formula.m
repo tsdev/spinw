@@ -5,7 +5,7 @@ function varargout = formula(obj,fid)
 %
 % Options:
 %
-% obj       sw class object.
+% obj       spinw class object.
 %
 % Output:
 %

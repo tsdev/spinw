@@ -5,7 +5,7 @@ function res = fourier(obj,hkl,varargin)
 %
 % Input:
 %
-% obj           Input structure, sw class object.
+% obj           Input structure, spinw class object.
 % hkl           Defines the Q points where the Fourier transform is
 %               calculated, in reciprocal lattice units, size is [3 nHkl].
 %               Q can be also defined by several linear scan in reciprocal
@@ -28,7 +28,7 @@ function res = fourier(obj,hkl,varargin)
 % fitmode       Speedup (for fitting mode only), default is false.
 %
 %
-% See also SW.TISZA.
+% See also SPINW.TISZA.
 %
 
 % TODO: test for magnetic supercell

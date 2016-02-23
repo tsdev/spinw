@@ -25,7 +25,7 @@ function addaniso(obj, matrixIdx, varargin)
 % Output:
 %
 % The function adds extra entries in the 'single_ion.aniso' field of the
-% obj sw object.
+% obj spinw object.
 %
 % Example:
 %
@@ -37,10 +37,8 @@ function addaniso(obj, matrixIdx, varargin)
 % This will add the 'A1' diagonal matrix to all magnetic atoms as
 % anisotropy (easy XY plane anisotropy).
 %
-% See also SW, SW.ADDCOUPLING, SW.ADDG, SW.ADDMATRIX.
+% See also SPINW, SPINW.ADDCOUPLING, SPINW.ADDG, SPINW.ADDMATRIX.
 %
-
-% TODO
 
 mAtom    = obj.matom;
 nMagAtom = size(mAtom.idx,2);

@@ -10,7 +10,7 @@ function stat = annealloop(obj, varargin)
 %
 % Input:
 %
-% obj             Input object contains structural data, sw type.
+% obj             Input object contains structural data, spinw type.
 %
 % Options:
 %
@@ -115,7 +115,7 @@ function stat = annealloop(obj, varargin)
 %    Kirkpatrick, S., Gelatt, C.D., & Vecchi, M.P. (1983). Optimization by
 %    Simulated Annealing. _Science, 220_, 671-680.
 %
-% See also SW, SW.OPTMAGSTR, SW_FSUB, SW_FSTAT.
+% See also SPINW, SPINW.OPTMAGSTR, SW_FSUB, SW_FSTAT.
 %
 
 func0 = @(obj,T)obj.temperature(T);

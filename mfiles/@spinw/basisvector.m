@@ -5,7 +5,7 @@ function basisVector = basisvector(obj, varargin)
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 % norm      If true, the basis vectors are normalized to 1, otherwise the
 %           length is equal to the lattice constants. Defult is false.
 %           Optional.
@@ -29,7 +29,7 @@ function basisVector = basisvector(obj, varargin)
 % reciprocal lattice units --> Angstrom^-1 (xyz coordinate system)
 %   Q_xyz =  [h k l] * 2*pi*inv(basisvector);
 %
-% See also SW, SW.ABC.
+% See also SPINW, SPINW.ABC.
 %
 
 if nargin < 2

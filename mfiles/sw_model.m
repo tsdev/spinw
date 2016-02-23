@@ -48,7 +48,7 @@ switch model
         
         for ii = 1:numel(param)
             obj.addmatrix('value',param(ii),'label',['J' num2str(ii)],'color',sw_colorname(randi(140),1))
-            obj.addcoupling(ii,ii)
+            obj.addcoupling('mat',ii,'bond',ii)
         end
         
         %obj.lattice.lat_const(3) = 5;
@@ -61,7 +61,7 @@ switch model
         
         for ii = 1:numel(param)
             obj.addmatrix('value',param(ii),'label',['J' num2str(ii)],'color',sw_colorname(randi(140),1))
-            obj.addcoupling(ii,ii)
+            obj.addcoupling('mat',ii,'bond',ii)
         end
         
         %obj.lattice.lat_const(3) = 5;
@@ -79,7 +79,7 @@ switch model
         
         for ii = 1:numel(param)
             obj.addmatrix('value',param(ii),'label',['J' num2str(ii)],'color',sw_colorname(randi(140),1))
-            obj.addcoupling(ii,ii)
+            obj.addcoupling('mat',ii,'bond',ii)
         end
         
         %obj.lattice.lat_const(2:3) = 5;

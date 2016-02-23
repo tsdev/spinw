@@ -5,7 +5,7 @@ function addtwin(obj,varargin)
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 %
 % Options:
 %
@@ -34,7 +34,7 @@ function addtwin(obj,varargin)
 % This will add two extra crystallographic twins to the crystal, with the
 % original orientation there are will be three twins with equal volumes.
 %
-% See also SW, SW.TWINQ.
+% See also SPINW, SPINW.TWINQ.
 %
 
 if nargin == 1

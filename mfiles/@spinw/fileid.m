@@ -11,7 +11,7 @@ function fidOut = fileid(obj,fid)
 %
 % Outputs the stored fileID value.
 %
-% See also SW, SW.DISPLAY.
+% See also SPINW, SPINW.DISPLAY.
 %
 
 if nargin > 1

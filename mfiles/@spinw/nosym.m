@@ -8,7 +8,7 @@ function nosym(obj, varargin)
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 %
 % Output:
 %
@@ -18,7 +18,7 @@ function nosym(obj, varargin)
 % Example:
 %
 % sw_addsym('x+1/2,y+1/2,z;x+1/2,y,z+1/2;x,y+1/2,z+1/2','FCC');
-% cryst = sw;
+% cryst = spinw;
 % cryst.genlattice('lat_const',[8 8 8],'sym','FCC')
 % cryst.addatom('r',[0 0 0],'label','Atom1')
 % cryst.nosym
@@ -27,7 +27,7 @@ function nosym(obj, varargin)
 % command, the cryst.unit_cell.r contains the four generated positions,
 % that are not symmetry equivalent any more.
 %
-% See also SW, SW.NEWCELL.
+% See also SPINW, SPINW.NEWCELL.
 %
 
 % TODO keep bonds when removing symmetry

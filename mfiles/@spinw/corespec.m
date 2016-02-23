@@ -97,7 +97,7 @@ function [omega, Vsave] = corespec(obj, hkl, varargin)
 % incomm        Whether the spectra calculated is incommensurate or not.
 % obj           The copy of the input obj.
 %
-% See also SW, SW.SPINWAVESYM, SW_NEUTRON, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
+% See also SPINW, SPINW.SPINWAVESYM, SW_NEUTRON, SW_POL, SW.POWSPEC, SPINW.OPTMAGSTR.
 %
 
 % help when executed without argument

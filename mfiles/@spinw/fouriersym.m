@@ -5,7 +5,7 @@ function res = fouriersym(obj,varargin)
 %
 % Input:
 %
-% obj           Input structure, sw class object.
+% obj           Input structure, spinw class object.
 %
 % Options:
 %
@@ -15,7 +15,7 @@ function res = fouriersym(obj,varargin)
 %
 %
 %
-% See also SW.FOURIER.
+% See also SPINW.FOURIER.
 %
 
 % TODO: test for magnetic supercell

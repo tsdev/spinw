@@ -5,7 +5,7 @@ function addmatrix(obj, varargin)
 %
 % Input:
 %
-% obj       sw class object
+% obj       spinw class object
 %
 % Options:
 %
@@ -33,7 +33,7 @@ function addmatrix(obj, varargin)
 %
 % Adds a diagonal matrix, that can describe Heisenberg interaction.
 %
-% See also SW, SW_COLORNAME.
+% See also SPINW, SW_COLORNAME.
 %
 
 if nargin < 2

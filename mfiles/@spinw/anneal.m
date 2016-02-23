@@ -124,7 +124,7 @@ function stat = anneal(obj, varargin)
 %    Kirkpatrick, S., Gelatt, C.D., & Vecchi, M.P. (1983). Optimization by
 %    Simulated Annealing. _Science, 220_, 671-680.
 %
-% See also SW, SW.OPTMAGSTR, SW_FSUB, SW_FSTAT.
+% See also SPINW, SPINW.OPTMAGSTR, SW_FSUB, SW_FSTAT.
 %
 
 % save the beginning of the calculation

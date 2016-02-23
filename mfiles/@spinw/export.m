@@ -1,5 +1,5 @@
 function out = export(obj, varargin)
-% export data from sw object into different file formats
+% export data from spinw object into different file formats
 %
 % out = EXPORT(obj, 'Option1', Value1, ...)
 %

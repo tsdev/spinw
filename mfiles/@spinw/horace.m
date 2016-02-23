@@ -8,7 +8,7 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %
 % Input:
 %
-% obj           Input sw object.
+% obj           Input spinw object.
 % qh, qk, ql    Reciprocal lattice components in reciprocal lattice units.
 % p             Parameters, currently unused.
 %
@@ -75,7 +75,7 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 % scattering intensity of the spin wave model stored in cryst and plots it
 % using sliceomatic.
 %
-% See also SW, SW.SPINWAVE, SW.MATPARSER, SW_READPARAM.
+% See also SPINW, SPINW.SPINWAVE, SPINW.MATPARSER, SW_READPARAM.
 %
 
 if nargin <= 1

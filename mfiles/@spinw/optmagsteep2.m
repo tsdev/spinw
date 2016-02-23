@@ -9,7 +9,7 @@ function varargout = optmagsteep2(obj, varargin)
 %
 % Input:
 %
-% obj             Input object contains structural data, sw type.
+% obj             Input object contains structural data, spinw type.
 %
 % Options:
 %
@@ -43,7 +43,7 @@ function varargout = optmagsteep2(obj, varargin)
 %           calculation makes the script very slow.
 %
 %
-% See also SW, SW.ANNEAL, SW_FSUB, SW_FSTAT.
+% See also SPINW, SPINW.ANNEAL, SW_FSUB, SW_FSTAT.
 %
 
 nExt   = double(obj.mag_str.N_ext);

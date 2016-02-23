@@ -5,7 +5,7 @@ function bonds = couplingtable(obj, varargin)
 %
 % Input:
 %
-% obj       sw class object. 
+% obj       spinw class object. 
 % bondIdx   List of bond indices, by default all bonds will be output.
 %           Optional.
 %
@@ -38,7 +38,7 @@ function bonds = couplingtable(obj, varargin)
 %
 % This will list only the 1st, 2nd and third neighbour bonds.
 %
-% See also SW.MATOM, SW.INTMATRIX, SW.ADDCOUPLING, SW.GENCOUPLING.
+% See also SPINW.MATOM, SPINW.INTMATRIX, SPINW.ADDCOUPLING, SPINW.GENCOUPLING.
 %
 
 % no bonds are defined

@@ -37,7 +37,7 @@ function addg(obj, matrixIdx, varargin)
 % This will add the 'g1' diagonal matrix to all magnetic atoms as
 % anisotropic g-tensor.
 %
-% See also SW, SW.ADDCOUPLING, SW.ADDANISO, SW.ADDMATRIX.
+% See also SPINW, SPINW.ADDCOUPLING, SPINW.ADDANISO, SPINW.ADDMATRIX.
 %
 
 mAtom    = obj.matom;

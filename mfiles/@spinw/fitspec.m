@@ -72,7 +72,7 @@ function fitsp = fitspec(obj, varargin)
 %
 % Any option used by SW.SPINWAVE function are also accepted.
 %
-% See also SW.SPINWAVE, SW_EGRID, SW_NEUTRON, SW_READSPEC, FMINSEARCH.
+% See also SPINW.SPINWAVE, SW_EGRID, SW_NEUTRON, SW_READSPEC, FMINSEARCH.
 %
 
 inpForm.fname  = {'epsilon' 'datapath' 'xmin'   'xmax'  'x0'    'func' 'plot'};

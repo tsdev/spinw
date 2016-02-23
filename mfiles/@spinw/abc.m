@@ -5,7 +5,7 @@ function abc = abc(obj)
 %
 % Input:
 %
-% obj       sw class object
+% obj       spinw class object
 %
 % Output:
 %
@@ -13,7 +13,7 @@ function abc = abc(obj)
 %           contains the lattice parameters and angles in
 %           Angstrom and degree units respectively.
 %
-% See also SW.HORACE.
+% See also SPINW.HORACE.
 %
 
 abc = [obj.lattice.lat_const obj.lattice.angle*180/pi];

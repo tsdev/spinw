@@ -11,7 +11,7 @@ function M = moment(obj, varargin)
 %
 % Input:
 %
-% obj           Input structure, sw class object.
+% obj           Input structure, spinw class object.
 %
 % Options:
 %
@@ -59,7 +59,7 @@ function M = moment(obj, varargin)
 % [1] D. A. Huse, Phys. Rev. B 37, 2380 (1988).
 % M = S - 0.197
 %
-% See also SW, SW.SPINWAVE, SW.GENMAGSTR, SW.TEMPERATURE.
+% See also SPINW, SPINW.SPINWAVE, SPINW.GENMAGSTR, SPINW.TEMPERATURE.
 % 
 
 T0 = obj.single_ion.T;

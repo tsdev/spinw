@@ -8,7 +8,7 @@ function matparser(obj, varargin)
 %
 % Input:
 %
-% obj           Input structure, sw class object.
+% obj           Input structure, spinw class object.
 %
 % Options:
 %
@@ -50,7 +50,7 @@ function matparser(obj, varargin)
 %
 % The sw object will contain the modified matrix.mat field.
 %
-% See also SW, SW.HORACE, SW.ADDMATRIX.
+% See also SPINW, SPINW.HORACE, SPINW.ADDMATRIX.
 %
 
 inpForm.fname  = {'param' 'mat' 'selector' 'init'};

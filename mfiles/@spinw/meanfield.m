@@ -5,7 +5,7 @@ function chi = meanfield(obj, hkl, varargin)
 %
 % Input:
 %
-% obj           Input structure, sw class object.
+% obj           Input structure, spinw class object.
 % hkl           Defines the Q points where chi is calculated, in reciprocal
 %               lattice units, size is [3 nHkl]. Q can be also defined by
 %               several linear scan in reciprocal space. In this case hkl

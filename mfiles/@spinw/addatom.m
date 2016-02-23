@@ -1,11 +1,11 @@
 function addatom(obj, varargin)
-% adds new atom to an sw object
+% adds new atom to an spinw object
 %
 % ADDATOM(obj,'Option1', Value1, ...)
 %
 % Input:
 %
-% obj       sw object
+% obj       spinw object
 %
 % Options:
 %
@@ -32,7 +32,7 @@ function addatom(obj, varargin)
 % Output:
 %
 % The function creates extra elements in the 'unit_cell' field of the obj
-% sw object.
+% spinw object.
 %
 % Example:
 %
@@ -41,7 +41,7 @@ function addatom(obj, varargin)
 % Adds a magnetic atom (S=1) at position (0,0,0) and a non-magnetic one at
 % (1/2 0 0) with red and blue color respectively.
 %
-% See also SW.GENLATTICE, SW.ADDMATRIX, SW_COLORNAME.
+% See also SPINW.GENLATTICE, SPINW.ADDMATRIX, SW_COLORNAME.
 %
 
 if nargin < 2

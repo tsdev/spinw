@@ -9,7 +9,7 @@ function moments = magtable(obj)
 %
 % Input:
 %
-% obj       sw class object.
+% obj           spinw class object.
 %
 % Output:
 %
@@ -26,7 +26,7 @@ function moments = magtable(obj)
 %   atom        Pointer to the magnetic atom in the subfields of
 %               sw.unit_cell.
 %
-% See also SW.GENMAGSTR.
+% See also SPINW.GENMAGSTR.
 %
 
 

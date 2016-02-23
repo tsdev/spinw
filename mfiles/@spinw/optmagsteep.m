@@ -6,7 +6,7 @@ function optm = optmagsteep(obj, varargin)
 %
 % Input:
 %
-% obj             Input object contains structural data, sw type.
+% obj             Input object contains structural data, spinw type.
 %
 % Options:
 %
@@ -52,7 +52,7 @@ function optm = optmagsteep(obj, varargin)
 % dateend   End time of the function.
 % title     Title of the simulation, given in the input.
 %
-% See also SW, SW.ANNEAL, SW_FSUB, SW_FSTAT.
+% See also SPINW, SPINW.ANNEAL, SW_FSUB, SW_FSTAT.
 %
 
 % disable warning in sw.energy

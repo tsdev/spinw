@@ -18,7 +18,7 @@ function  E = energy(obj, varargin)
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 %
 % Options:
 %
@@ -55,7 +55,7 @@ function  E = energy(obj, varargin)
 % different ground state structures to decide which is the right classical
 % ground state of the magnetic model in cryst.
 %
-% See also SW, SW.ANNEAL, SW.EXTENDLATTICE.
+% See also SPINW, SPINW.ANNEAL, SPINW.EXTENDLATTICE.
 %
 
 inpForm.fname  = {'epsilon'};

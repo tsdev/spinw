@@ -5,7 +5,7 @@ function genlattice(obj, varargin)
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 %
 % Options:
 %
@@ -45,7 +45,7 @@ function genlattice(obj, varargin)
 % The two lines are equivalent, both will create hexagonal lattice, with 
 % 'P 6' space group.
 %
-% See also SW, SW_ADDSYM, SW_GENSYM, SW.GENCOUPLING.
+% See also SPINW, SW_ADDSYM, SW_GENSYM, SPINW.GENCOUPLING.
 %
 
 inpForm.fname  = {'angle'           'lat_const'           'sym'           'angled'};

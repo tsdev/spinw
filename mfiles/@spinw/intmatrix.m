@@ -5,7 +5,7 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %
 % Input:
 %
-% obj           Input sw class object.
+% obj           Input spinw class object.
 %
 % Options:
 %
@@ -69,7 +69,7 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 % RR            Positions of the atoms in lattice units, dimensions are
 %               [3 nMAgExt].
 %
-% See also SW.COUPLINGTABLE.
+% See also SPINW.COUPLINGTABLE.
 %
 
 %if obj.symbolic && obj.symmetry

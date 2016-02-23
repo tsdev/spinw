@@ -1,34 +1,38 @@
-function addcoupling(obj, matrixLabel, couplingIdx, varargin)
+function addcoupling(obj, varargin)
 % assigns a predefined matrix as exchange coupling on selected bonds
 %
-% ADDCOUPLING(obj, matrixLabel, couplingIdx, {bondIdx})
+% ADDCOUPLING(obj, 'option1', value1, ...)
 %
 % Input:
 %
-% obj           sw class object.
-% matrixLabel   Label of the matrix, or the index.
-% couplingIdx   Selects the interacting atom pairs through the coupling.idx
-%               number. The coupling.idx numbers are in increasing order
-%               according to the distances between magnetic atoms, for
-%               example all shortest interatom distances have idx=1, second
-%               shortest idx=2 and so on. couplingIdx can be vector to
-%               assign the matrix to multiple inequivalent magnetic atom
-%               distances.
-% bondIdx       Selects the indices of bonds within coupling.idx to
-%               differentiate between equal length bonds. If bondIdx
-%               defined, couplingIdx has to be scalar. Optional. If the
-%               crystal symmetry is not P1, bondIdx is not allowed, since
-%               each equivalent coupling matrix will be calculated using
-%               the symmetry operators of the space group. Optional.
-% atom1         If several bonds have the same length but couple different
-%               type of atoms, atom1 can restrict the selected bonds to the
-%               bonds where atom1 is given by the atom label or index in
-%               the sw.unit_cell list. Can be a row vector of indices or
-%               cell with strings. Only works if space group is 0 (P0).
-%               Default is [].
-% atom2         Same as atom1, but defines the second atom in the bond.
+% obj           spinw class object.
 %
-% TODO
+% Options:
+%
+% mat           Label or index of the matrix that will be assigned to
+%               selected bonds.
+% bond          Selects the interacting atom pairs through the
+%               obj.coupling.idx number. The coupling.idx numbers are in
+%               increasing order according to the distances between
+%               magnetic atoms, for example all shortest interatom
+%               distances have idx=1, second shortest idx=2 and so on.
+%               bondIdx can be a vector to assign the matrix to multiple
+%               inequivalent bonds.
+% atom          Contains labels of atoms or index of atoms in the
+%               obj.unit_cell list of atoms. If a single string label or
+%               number is given, only bonds between the selected atoms will
+%               be assigned. If a cell with 2 strings are given, only bonds
+%               between the two selected atoms will be assigned. Only works
+%               if space group is P0. Default is [].
+% subIdx        If the above options are not enough to select the desired
+%               bonds, using subIdx bonds can be selected one-by-one from
+%               the list of bonds that fulfill the above options. Only
+%               works if the space group is P0.
+% type          Type of the coupling. Possible values:
+%                   0       Quadratic exchange, default.
+%                   1       Biquadratic exchange.
+%               Can be also one of the following string: 'quadratic',
+%               'biquadratic'.
 %
 % Output:
 %
@@ -45,72 +49,134 @@ function addcoupling(obj, matrixLabel, couplingIdx, varargin)
 % This will add the 'J1' diagonal matrix to all second shortes bonds
 % between magnetic atoms.
 %
-% See also SW, SW.GENCOUPLING, SW.ADDMATRIX.
+% See also SPINW, SPINW.GENCOUPLING, SPINW.ADDMATRIX.
 %
 
 if ~any(obj.atom.mag)
     error('sw:addcoupling:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 
-if isnumeric(matrixLabel)
-    matrixIdx = matrixLabel;
-else
-    matrixIdx = find(strcmp(obj.matrix.label,matrixLabel),1,'last');
+inpForm.fname  = {'mat'  'bond' 'atom' 'subIdx' 'type'};
+inpForm.defval = {[]     []     []      []      []    };
+inpForm.size   = {[1 -1] [1 -2] [-3 -4] [1 -5]  [1 -6]};
+inpForm.soft   = {false  false  true    true    true  };
+
+param = sw_readparam(inpForm, varargin{:});
+
+if ~isnumeric(param.mat)
+    param.mat = find(ismember(obj.matrix.label,param.mat));
 end
 
-if isempty(matrixIdx)
-    error('sw:addcoupling:CouplingTypeError','Matrix label does not exist!');
+if isempty(param.type)
+    param.type = 0*param.mat;
 end
 
-if nargin>3
-    bondIdx = varargin{1};
-    if numel(couplingIdx) > 1
-        warning('sw:addcoupling:CouplingSize',['couplingIdx is '...
-            'non-scalar but bondIdx is defined!']);
+if ischar(param.type)
+    param.type = {param.type};
+end
+
+if iscell(param.type)
+    % check string input for the coupling type
+    qSel  = strcmp(param.type,'quadratic');
+    bqSel = strcmp(param.type,'biquadratic');
+    param.type = nan(size(param.type));
+    param.type(qSel)  = 0;
+    param.type(bqSel) = 1;
+    if any(isnan(param.type))
+        error(['sw:addcoupling:WrongInput','Wrong coupling type, '...
+            'currently only quadratic and biquadratic exchanges '...
+            'are supported!']);
+    end
+    
+end
+
+if any(size(param.mat)~=size(param.type))
+    error('sw:addcoupling:WrongInput',['A coupling type has to be '...
+        'provided for each input matrix!'])
+end
+
+% select atoms
+if ~isnumeric(param.atom)
+    if ~iscell(param.atom)
+        param.atom = {param.atom};
+    end
+    if numel(param.atom)>2
+        error('sw:addcoupling:WrongInput','Only two different atom label can be given at once!');
+    end
+    aIdx1 = find(ismember(obj.unit_cell.label,param.atom{1}));
+    if numel(param.atom)>1
+        aIdx2 = find(ismember(obj.unit_cell.label,param.atom{2}));
+    else
+        aIdx2 = aIdx1;
+    end
+end
+
+if ~isempty(param.atom) || ~isempty(param.subIdx)
+    if numel(param.bond) > 1
+        warning('sw:addcoupling:CouplingSize',['bond parameter has to be '...
+            'scalar, only the first bond is selected!']);
+        param.bond = param.bond(1);
     end
     if obj.sym
-        error('sw:addcoupling:SymmetryProblem',['bondIdx is not allowed '...
-            'when crystal symmetry is not P1!']);
+        error('sw:addcoupling:SymmetryProblem',['atom and subIdx options are not allowed '...
+            'when crystal symmetry is not P0!']);
     end
 end
 
-warn = false;
-for cSelect = 1:length(couplingIdx)
-    
-    index = (obj.coupling.idx==couplingIdx(cSelect));
-    if ~any(index)
-        error('sw:addcoupling:CouplingError',['Coupling with idx=%d does '...
-            'not exist, use gencoupling with larger maxDistance and '...
-            'nUnitCell parameters!'],couplingIdx(cSelect));
-    end
-    
-    index = find(index);
-    % If bondIdx is defined, it selects couplings to assign to J value.
-    if exist('bondIdx','var')
-        index = index(bondIdx);
-    end
-    
-    Jmod = obj.coupling.mat_idx(:,index);
-    
-    for ii = 1:size(Jmod,2)
-        if any(Jmod(:,ii)==matrixIdx)
-            warn = true;
-        elseif ~all(Jmod(:,ii))
-            tIndex = find(~Jmod(:,ii),1,'first');
-            Jmod(tIndex,ii) = int32(matrixIdx);
-        else
-            error('sw:addcoupling:TooManyCoupling',['The maximum '...
-                'number of allowed couplings (3) between 2 spins are reached!']);
-        end
-    end
-    
-    obj.coupling.mat_idx(:,index) = Jmod;
-    
+idx = ismember(obj.coupling.idx,param.bond);
+if ~any(idx)
+    error('sw:addcoupling:CouplingError',['Coupling with idx=%d does '...
+        'not exist, use gencoupling with larger maxDistance and '...
+        'nUnitCell parameters!'],param.bond(1));
 end
 
-if warn
+% Select bonds with given atoms
+% convert atom indices from the unit_cell into matom indices
+if ~isempty(param.atom)
+    
+    matom = obj.matom;
+    maIdx1a = ismember(obj.coupling.atom1,find(ismember(matom.idx,aIdx1)));
+    maIdx2a = ismember(obj.coupling.atom2,find(ismember(matom.idx,aIdx2)));
+    maIdx1b = ismember(obj.coupling.atom1,find(ismember(matom.idx,aIdx2)));
+    maIdx2b = ismember(obj.coupling.atom2,find(ismember(matom.idx,aIdx1)));
+    idx = idx & ((maIdx1a & maIdx2a) | (maIdx1b & maIdx2b));
+end
+
+idx = find(idx);
+
+% IfsubIdx is defined, subselect bonds.
+if ~isempty(param.subIdx)
+    idx = idx(param.subIdx);
+end
+
+if isempty(idx)
+    warning('sw:addcoupling:NoBond','No matrix assigned, since no bond fulfilled the given options!')
+    return
+end
+
+Jmod = obj.coupling.mat_idx(:,idx);
+Tmod = obj.coupling.type(:,idx);
+
+param.mat = int32(param.mat);
+param.type   = int32(param.type);
+
+if any(ismember(Jmod(:),param.mat))
     warning('sw:addcoupling:CouplingIdxWarning',['Same matrix already '...
         'assigned on some coupling!']);
 end
+
+if any(Jmod(3,:))
+    error('sw:addcoupling:TooManyCoupling',['The maximum '...
+        'number of allowed couplings (3) per bond is reached!']);
+end
+
+for ii = 1:numel(param.mat)
+    idxSel = sub2ind(size(Jmod),sum(Jmod>0,1)+1,1:size(Jmod,2));
+    Jmod(idxSel) = param.mat(ii);
+    Tmod(idxSel) = param.type(ii);
+end
+
+obj.coupling.mat_idx(:,idx) = Jmod;
+obj.coupling.type(:,idx)    = Tmod;
 
 end

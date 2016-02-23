@@ -10,7 +10,7 @@ function varargout = newcell(obj,bvect, bshift)
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 % bvect     Defines the new lattice vectors in the original lattice
 %           coordinate system. Cell with the following elements 
 %           {v1 v2 v3}.
@@ -40,7 +40,7 @@ function varargout = newcell(obj,bvect, bshift)
 % The example show how to convert a triangular lattice into orthogonal
 % lattice vectors and plots the new unit cell.
 %
-% See also SW.GENLATTICE, SW.GENCOUPLING, SW.NOSYM.
+% See also SPINW.GENLATTICE, SPINW.GENCOUPLING, SPINW.NOSYM.
 %
 
 if nargin <= 1

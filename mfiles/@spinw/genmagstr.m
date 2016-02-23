@@ -9,7 +9,7 @@ function genmagstr(obj, varargin)
 %
 % Input:
 %
-% obj       sw class object.
+% obj       spinw class object.
 %
 % Options:
 %
@@ -149,7 +149,7 @@ function genmagstr(obj, varargin)
 %
 % Example:
 %
-% USb = sw;
+% USb = spinw;
 % USb.genlattice('lat_const',[6.203 6.203 6.203],'angled',[90 90 90],'sym','F m -3 m')
 % USb.addatom('r',[0 0 0],'S',1)
 % FQ = {[0;0;1+1i] [0 0 1] [0;1+1i;0] [0 1 0] [1+1i;0;0] [1 0 0]};
@@ -159,7 +159,7 @@ function genmagstr(obj, varargin)
 % The above example creates the multi-q magnetic structure of USb with the
 % FQ Fourier components and plots the magnetic structure.
 %
-% See also SW, SW.ANNEAL, SW.OPTMAGSTR, GM_SPHERICAL3D, GM_PLANAR.
+% See also SPINW, SPINW.ANNEAL, SPINW.OPTMAGSTR, GM_SPHERICAL3D, GM_PLANAR.
 %
 
 if ~any(obj.atom.mag)

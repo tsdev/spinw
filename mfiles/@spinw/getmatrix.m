@@ -5,7 +5,7 @@ function [aMat, param, pOp] = getmatrix(obj, varargin)
 %
 % Input:
 %
-% obj           sw class object.
+% obj           spinw class object.
 %
 % Options:
 %
@@ -62,20 +62,20 @@ function [aMat, param, pOp] = getmatrix(obj, varargin)
 %
 % Example:
 %
-% cryst = sw;
+% cryst = spinw;
 % cryst.genlattice('sym','P 4')
 % cryst.addatom('r',[0 0 0],'label','MCu2')
 % cryst.addmatrix('label','A','value',eye(3))
 % cryst.gencoupling
 % cryst.addaniso('A')
-% cryst.getmatrix('label','A','fid',1);
+% cryst.getmatrix('label','A');
 %
 % The above example determines the allowed anisotropy matrix elements in
 % the C4 point group symmetry (the symmetry at the [0 0 0] atomic
 % position) and prints them onto the Command Window. The allowed matrix
 % elements are: diag([A A B]).
 %
-% See also SW.SETMATRIX.
+% See also SPINW.SETMATRIX.
 %
 
 inpForm.fname  = {'label' 'mat_idx' 'aniso_idx' 'coupling_idx' 'tol' 'pref' 'g_idx' 'sub_idx'};

@@ -1,5 +1,5 @@
 function varargout = notwin(obj)
-% removes any twin added to the sw object
+% removes any twin added to the spinw object
 %
 % NOTWIN(obj)
 %

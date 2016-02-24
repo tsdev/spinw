@@ -31,7 +31,7 @@ pubfiles(strcmp({pubfiles(:).name},'publish_PSI.m')) = [];
 for ii = 1:numel(pubfiles)
     %publish([pubfolder filesep pubfiles(ii).name],'outputDir',[pubfolder filesep pubfiles(ii).name(1:end-2)],'maxOutputLines',0);
     % use the non documented antialiasing option
-    opts.figureSnapMethod = 'antialiased';
+    %opts.figureSnapMethod = 'antialiased';
     opts.outputDir = [pubfolder filesep pubfiles(ii).name(1:end-2)];
     publish([pubfolder filesep pubfiles(ii).name],opts);
     close all

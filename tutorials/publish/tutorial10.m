@@ -46,7 +46,7 @@ spec = sw_instrument(spec,'dE',0.3,'ki',1e4);
 % The calculated intensity map is stored in spec.swConv, we reshape it into
 % a 3D matrix.
 
-spec3D = reshape(spec.swConv,nE,nQ,nQ);
+spec3D = reshape(spec.swConv,nE-1,nQ,nQ);
 
 %% Plotting E=const cut
 % A constant energy cut takes the (Eidx,:,:) elements of the matrix and
@@ -60,7 +60,7 @@ set(gca,'YDir','normal')
 xlabel('(H 0 0) (r.l.u.)')
 ylabel('(0 K 0) (r.l.u.)')
 title('Spin wave spectrum at E = 3 meV, square lattice Heisenberg AF')
-caxis([0 12000])
+caxis([0 1])
 colormap jet
 
 %%

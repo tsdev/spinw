@@ -4,7 +4,7 @@
 % independent atomic positions, j is the index of the generated atomic
 % positions of the i-th independent position.
 
-kagome4 = sw; 
+kagome4 = spinw; 
 kagome4.fileid(0)
 kagome4.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3');
 kagome4.addatom('r', [1/2 0 0],'S', 1,'label','MCu1','color','r');
@@ -31,10 +31,10 @@ kagome4.addmatrix('label','J2','value', 0.10,'color','r')
 kagome4.addmatrix('label','J3-','value', 0.00,'color','orange')
 kagome4.addmatrix('label','Jd','value', 0.17,'color','b')
 
-kagome4.addcoupling('J1',1);
-kagome4.addcoupling('J2',2); 
-kagome4.addcoupling('Jd',3); 
-kagome4.addcoupling('J3-',4);
+kagome4.addcoupling('mat','J1','bond',1);
+kagome4.addcoupling('mat','J2','bond',2); 
+kagome4.addcoupling('mat','J3-','bond',3); 
+kagome4.addcoupling('mat','Jd','bond',4);
 plot(kagome4,'range',[2 2 1],'zoom',-0.8)
 
 %% Magnetic structure

@@ -11,7 +11,7 @@
 % spin quantum number of 1/2 but also the non-magnetic atoms for plotting
 % the structure.
 
-nairo = sw;
+nairo = spinw;
 nairo.fileid(0)
 nairo.genlattice('lat_const',[5.427 9.395 5.614],'angled',[90 109.037 90],'sym','C 2/m')
 nairo.addatom('label','MIr4','r',[1/2; 0.167; 0],'S',1/2,'color','DarkCyan');
@@ -50,16 +50,16 @@ nairo.addmatrix('label','J3','value',1,'color','cyan');
 
 % add J1, J2 and J3 and JK couplings
 
-nairo.addcoupling('Jxx',1,[1 4]);
-nairo.addcoupling('Jyy',1,[2 3]);
-nairo.addcoupling('Jzz',2);
+nairo.addcoupling('mat','Jxx','bond',1,'subidx',[2 4]);
+nairo.addcoupling('mat','Jyy','bond',1,'subidx',[1 3]);
+nairo.addcoupling('mat','Jzz','bond',2);
 % Plot Kitaev couplings only.
 plot(nairo,'range',[2 2 0.5],'pNonMagAtom',false,'zoom',1)
 snapnow
 
-nairo.addcoupling('J1-',[1 2]);
-nairo.addcoupling('J2',[3 4]);
-nairo.addcoupling('J3',[7 8]);
+nairo.addcoupling('mat','J1-','bond',[1 2]);
+nairo.addcoupling('mat','J2','bond',[3 4]);
+nairo.addcoupling('mat','J3','bond',[7 8]);
 % Plot all couplings.
 plot(nairo,'range',[2 2 0.5],'pNonMagAtom',false)
 

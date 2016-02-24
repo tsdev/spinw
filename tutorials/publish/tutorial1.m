@@ -8,7 +8,7 @@
 % magnetic Cu+ ion with spin S=1 at the origin of the unit cell and plot
 % the lattice.
 
-FMchain = sw; 
+FMchain = spinw; 
 FMchain.fileid(0)
 FMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0)
 FMchain.addatom('r', [0 0 0],'S', 1,'label','MCu1','color','blue')
@@ -44,7 +44,7 @@ cTable.bondv
 % structure with the added bonds.
  
 FMchain.addmatrix('value',-eye(3),'label','Ja','color','green')
-FMchain.addcoupling('Ja',1);
+FMchain.addcoupling('mat','Ja','bond',1);
 plot(FMchain,'range',[3 0.2 0.2],'pCell',false,'zoom',0.8)
 
 %% Definition of FM magnetic structure

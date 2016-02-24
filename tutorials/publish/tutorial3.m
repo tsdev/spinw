@@ -2,7 +2,7 @@
 % Crystal structure, shortest bond along a-axis, Cu+ magnetic atoms with
 % S=1 spin.
 
-J1J2chain = sw; 
+J1J2chain = spinw; 
 J1J2chain.genlattice('lat_const',[3 8 10],'angled',[90 90 90],'sym',0);
 J1J2chain.addatom('r',[0 0 0],'S',1,'label','Cu1','color','blue');
 display('Atomic positions as columns:')
@@ -23,8 +23,8 @@ J1J2chain.couplingtable.bondv
 J1J2chain.addmatrix('label','J1', 'value',-1,'color','r');
 J1J2chain.addmatrix('label','J2-','value', 2,'color','g'); 
 
-J1J2chain.addcoupling('J1', 1);
-J1J2chain.addcoupling('J2-',2);
+J1J2chain.addcoupling('mat','J1','bond',1);
+J1J2chain.addcoupling('mat','J2-','bond',2);
 plot(J1J2chain,'range',[3 0.9 0.9],'zoom',0.8)
 
 %% Magnetic structure is a helix

@@ -2,7 +2,7 @@
 % We create a lattice with space group "P -3" where all first neighbor
 % bonds are symmetry equivalent and add a magnetic Cr+ with S=1 spin.
 
-AFkagome = sw;
+AFkagome = spinw;
 AFkagome.fileid(0)
 AFkagome.genlattice('lat_const',[6 6 10],'angled',[90 90 120],'sym','P -3')
 AFkagome.addatom('r',[1/2 0 0],'S', 1,'label','MCu1','color','r')
@@ -24,8 +24,8 @@ AFkagome.couplingtable([1 2]).bondv
 
 AFkagome.addmatrix('label','J1','value',1.00,'color','r')
 AFkagome.addmatrix('label','J2','value',0.11,'color','g')
-AFkagome.addcoupling('J1',1)
-AFkagome.addcoupling('J2',2)
+AFkagome.addcoupling('mat','J1','bond',1)
+AFkagome.addcoupling('mat','J2','bond',2)
 plot(AFkagome,'range',[3 3 1],'zoom',-0.5)
 
 %% Generate magnetic structure

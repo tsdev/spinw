@@ -1,4 +1,4 @@
-<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">sqrt(3) x sqrt(3) Kagome antiferromagnet</a></li><li><a href="#2">Create bonds</a></li><li><a href="#3">Hamiltonian</a></li><li><a href="#4">Generate magnetic structure I.</a></li><li><a href="#5">Calculate spin wave dispersion I.</a></li><li><a href="#6">Generate magnetic structure II.</a></li><li><a href="#7">Calculate spin wave dispersion II.</a></li><li><a href="#8">Powder spectrum</a></li></ul></div><h2>sqrt(3) x sqrt(3) Kagome antiferromagnet<a name="1"></a></h2><p>We create a lattice with space group "P -3" where all first neighbor bonds are symmetry equivalent and add a magnetic Cr+ with S=1 spin.</p><pre class="codeinput">AF33kagome = sw;
+<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">sqrt(3) x sqrt(3) Kagome antiferromagnet</a></li><li><a href="#2">Create bonds</a></li><li><a href="#3">Hamiltonian</a></li><li><a href="#4">Generate magnetic structure I.</a></li><li><a href="#5">Calculate spin wave dispersion I.</a></li><li><a href="#6">Generate magnetic structure II.</a></li><li><a href="#7">Calculate spin wave dispersion II.</a></li><li><a href="#8">Powder spectrum</a></li></ul></div><h2>sqrt(3) x sqrt(3) Kagome antiferromagnet<a name="1"></a></h2><p>We create a lattice with space group "P -3" where all first neighbor bonds are symmetry equivalent and add a magnetic Cr+ with S=1 spin.</p><pre class="codeinput">AF33kagome = spinw;
 AF33kagome.fileid(0)
 AF33kagome.genlattice(<span class="string">'lat_const'</span>,[6 6 40],<span class="string">'angled'</span>,[90 90 120],<span class="string">'sym'</span>,<span class="string">'P -3'</span>)
 AF33kagome.addatom(<span class="string">'r'</span>,[1/2 0 0],<span class="string">'S'</span>, 1,<span class="string">'label'</span>,<span class="string">'MCu1'</span>,<span class="string">'color'</span>,<span class="string">'r'</span>)
@@ -14,11 +14,11 @@ ans =
 
   Columns 1 through 6
 
-           1           0          -1           0           0           0
-           0           0           0           0          -1           1
+           0           0           0           0           1          -1
+           1          -1           0           0           0           0
            0           0           0           0           0           0
            3           1           2           3           1           2
-           2           3           1           2           3           1
+           1           2           3           1           2           3
            1           1           1           1           1           1
            0           0           0           0           0           0
            0           0           0           0           0           0
@@ -38,11 +38,11 @@ ans =
 
   Columns 13 through 18
 
-           1           0          -1           0          -1           1
-           0           1          -1           1          -1           0
+           0          -1           1           0          -1           1
+           1          -1           0           1          -1           0
            0           0           0           0           0           0
-           1           2           3           1           2           3
-           1           2           3           1           2           3
+           1           2           3           2           3           1
+           1           2           3           2           3           1
            3           3           3           4           4           4
            0           0           0           0           0           0
            0           0           0           0           0           0
@@ -50,11 +50,11 @@ ans =
 
   Columns 19 through 21
 
-           1           0          -1
-           0           1          -1
+           0          -1           1
+           1          -1           0
            0           0           0
-           2           3           1
-           2           3           1
+           3           1           2
+           3           1           2
            5           5           5
            0           0           0
            0           0           0
@@ -66,27 +66,27 @@ ans =
 
   Columns 1 through 7
 
-    0.5000         0   -0.5000   -0.5000         0    0.5000    0.5000
-         0    0.5000   -0.5000         0   -0.5000    0.5000   -0.5000
+         0   -0.5000    0.5000         0    0.5000   -0.5000    0.5000
+    0.5000   -0.5000         0   -0.5000    0.5000         0   -0.5000
          0         0         0         0         0         0         0
     3.0000    3.0000    3.0000    3.0000    3.0000    3.0000    5.1962
 
   Columns 8 through 14
 
-    0.5000   -1.0000   -0.5000   -0.5000    1.0000    1.0000         0
-    1.0000   -0.5000    0.5000   -1.0000    0.5000         0    1.0000
+    0.5000   -1.0000   -0.5000   -0.5000    1.0000         0   -1.0000
+    1.0000   -0.5000    0.5000   -1.0000    0.5000    1.0000   -1.0000
          0         0         0         0         0         0         0
     5.1962    5.1962    5.1962    5.1962    5.1962    6.0000    6.0000
 
   Columns 15 through 21
 
-   -1.0000         0   -1.0000    1.0000    1.0000         0   -1.0000
-   -1.0000    1.0000   -1.0000         0         0    1.0000   -1.0000
+    1.0000         0   -1.0000    1.0000         0   -1.0000    1.0000
+         0    1.0000   -1.0000         0    1.0000   -1.0000         0
          0         0         0         0         0         0         0
     6.0000    6.0000    6.0000    6.0000    6.0000    6.0000    6.0000
 
 </pre><h2>Hamiltonian<a name="3"></a></h2><p>We create AFM first neighbor interactions.</p><pre class="codeinput">AF33kagome.addmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>,<span class="string">'value'</span>,1.00,<span class="string">'color'</span>,<span class="string">'g'</span>)
-AF33kagome.addcoupling(<span class="string">'J1'</span>,1)
+AF33kagome.addcoupling(<span class="string">'mat'</span>,<span class="string">'J1'</span>,<span class="string">'bond'</span>,1)
 plot(AF33kagome,<span class="string">'range'</span>,[3 3 1],<span class="string">'zoom'</span>,-0.8)
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial8_02.png" alt=""> <h2>Generate magnetic structure I.<a name="4"></a></h2><p>We create the k = (1/3 1/3 0) magnetic structure, with the three spin directions in the unit cell (120 degree between neighbors). The spin vector components are given in the coordinate system of the lattice vectors (abc). We have two possibilities to store the structure. Either we use the magnetic supercell 3x3x1 times the unit cell and. In this case the spin waves are calculated on the larger cell that is a zero-k structure.</p><pre class="codeinput">S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'k'</span>,[-1/3 -1/3 0],<span class="string">'n'</span>,[0 0 1],<span class="string">'unitS'</span>,<span class="string">'lu'</span>,<span class="string">'S'</span>,S0,<span class="string">'nExt'</span>,[3 3 1]);
@@ -196,7 +196,7 @@ Ground state energy (meV/spin)
 
 ans =
 
-   -1.0000
+    -1
 
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial8_03.png" alt=""> <h2>Calculate spin wave dispersion I.<a name="5"></a></h2><p>We plot the real and imaginary part of the dispersion. By observing the imaginary part of the dispersion we can ensure that we have the right magnetic ground state. After calculating the diagonal of the correlation function we can see that only a few modes have non-zero intensity.</p><pre class="codeinput">kag33Spec = AF33kagome.spinwave({[-1/2 0 0] [0 0 0] [1/2 1/2 0] 100}, <span class="string">'hermit'</span>,false);
 kag33Spec = sw_egrid(kag33Spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>);
@@ -264,15 +264,16 @@ sw_plotspec(kag33Spec,<span class="string">'mode'</span>,3,<span class="string">
 figure;
 sw_plotspec(kag33Pow,<span class="string">'axLim'</span>,[0 0.2],<span class="string">'dE'</span>,0.05)
 </pre><pre class="codeoutput">Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised! 
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial8_09.png" alt=""> <pre>Written by
+Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised! 
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial8_09.png" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial8_10.png" alt=""> <pre>Written by
 Bjorn Fak &amp; Sandor Toth
-07-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+07-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####
 %% sqrt(3) x sqrt(3) Kagome antiferromagnet
 % We create a lattice with space group "P -3" where all first neighbor
 % bonds are symmetry equivalent and add a magnetic Cr+ with S=1 spin.
 
-AF33kagome = sw; 
+AF33kagome = spinw; 
 AF33kagome.fileid(0)
 AF33kagome.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3')
 AF33kagome.addatom('r',[1/2 0 0],'S', 1,'label','MCu1','color','r')
@@ -291,7 +292,7 @@ AF33kagome.couplingtable.bondv
 % We create AFM first neighbor interactions.
 
 AF33kagome.addmatrix('label','J1','value',1.00,'color','g')
-AF33kagome.addcoupling('J1',1)
+AF33kagome.addcoupling('mat','J1','bond',1)
 plot(AF33kagome,'range',[3 3 1],'zoom',-0.8)
 
 %% Generate magnetic structure I.

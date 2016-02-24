@@ -1,4 +1,4 @@
-<div class="content"><h1>Spin wave spectrum of the Heisenberg ferromagnetic nearest-neighbor spin chain</h1><!--introduction--><p>The following tutorial shows every step necessary to calculate spin wave spectrum through the simple example of the ferromagnetic spin chain</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Define spin chain with magnetic atoms</a></li><li><a href="#2">Determine the list of bonds based on length</a></li><li><a href="#3">Defining the spin Hamiltonian</a></li><li><a href="#4">Definition of FM magnetic structure</a></li><li><a href="#5">The energy of the ground state per spin</a></li><li><a href="#6">Calculate spin wave dispersion and spin-spin correlation function</a></li><li><a href="#7">Calculate powder average spectrum</a></li></ul></div><h2>Define spin chain with magnetic atoms<a name="1"></a></h2><p>The shortest lattice parameter along the a-axis will give the first neighbor bonds along this axis. After defining the lattice, we add a magnetic Cu+ ion with spin S=1 at the origin of the unit cell and plot the lattice.</p><pre class="codeinput">FMchain = sw;
+<div class="content"><h1>Spin wave spectrum of the Heisenberg ferromagnetic nearest-neighbor spin chain</h1><!--introduction--><p>The following tutorial shows every step necessary to calculate spin wave spectrum through the simple example of the ferromagnetic spin chain</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Define spin chain with magnetic atoms</a></li><li><a href="#2">Determine the list of bonds based on length</a></li><li><a href="#3">Defining the spin Hamiltonian</a></li><li><a href="#4">Definition of FM magnetic structure</a></li><li><a href="#5">The energy of the ground state per spin</a></li><li><a href="#6">Calculate spin wave dispersion and spin-spin correlation function</a></li><li><a href="#7">Calculate powder average spectrum</a></li></ul></div><h2>Define spin chain with magnetic atoms<a name="1"></a></h2><p>The shortest lattice parameter along the a-axis will give the first neighbor bonds along this axis. After defining the lattice, we add a magnetic Cu+ ion with spin S=1 at the origin of the unit cell and plot the lattice.</p><pre class="codeinput">FMchain = spinw;
 FMchain.fileid(0)
 FMchain.genlattice(<span class="string">'lat_const'</span>,[3 8 8],<span class="string">'angled'</span>,[90 90 90],<span class="string">'sym'</span>,0)
 FMchain.addatom(<span class="string">'r'</span>, [0 0 0],<span class="string">'S'</span>, 1,<span class="string">'label'</span>,<span class="string">'MCu1'</span>,<span class="string">'color'</span>,<span class="string">'blue'</span>)
@@ -68,7 +68,7 @@ ans =
      6
 
 </pre><h2>Defining the spin Hamiltonian<a name="3"></a></h2><p>We create a matrix with a label 'Ja', ferromagnetic heisenberg interaction, J = -1 meV and assing it to the first neghbor bonds as spin-spin exchange interaction: J*S(i)*S(i+1). And plot the crystal structure with the added bonds.</p><pre class="codeinput">FMchain.addmatrix(<span class="string">'value'</span>,-eye(3),<span class="string">'label'</span>,<span class="string">'Ja'</span>,<span class="string">'color'</span>,<span class="string">'green'</span>)
-FMchain.addcoupling(<span class="string">'Ja'</span>,1);
+FMchain.addcoupling(<span class="string">'mat'</span>,<span class="string">'Ja'</span>,<span class="string">'bond'</span>,1);
 plot(FMchain,<span class="string">'range'</span>,[3 0.2 0.2],<span class="string">'pCell'</span>,false,<span class="string">'zoom'</span>,0.8)
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial1_02.png" alt=""> <h2>Definition of FM magnetic structure<a name="4"></a></h2><p>The classical magnetic ground state of the previously defined Hamiltonian is where every spin have the same direction, the direction is arbitrary since the Hamiltonian is isotropic. We use the following parameters:</p><div><ul><li>magnetic ordering wave vector k = (0 0 0)</li><li>there is a single spin per unit cell S = [0 1 0]</li><li>an arbitrary normal vector to the spin n = [1 0 0]</li></ul></div><pre class="codeinput">FMchain.genmagstr(<span class="string">'mode'</span>,<span class="string">'direct'</span>, <span class="string">'k'</span>,[0 0 0],<span class="string">'n'</span>,[1 0 0],<span class="string">'S'</span>,[0; 1; 0]);
 
@@ -119,7 +119,7 @@ axis([0 2.5 0 4.5]);
 caxis([0 .05]);
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial1_06.png" alt=""> <pre>Written by
 Bjorn Fak &amp; Sandor Toth
-06-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+06-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####
 %% Spin wave spectrum of the Heisenberg ferromagnetic nearest-neighbor spin chain 
 % The following tutorial shows every step necessary to calculate spin wave
@@ -131,7 +131,7 @@ Bjorn Fak &amp; Sandor Toth
 % magnetic Cu+ ion with spin S=1 at the origin of the unit cell and plot
 % the lattice.
 
-FMchain = sw; 
+FMchain = spinw; 
 FMchain.fileid(0)
 FMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0)
 FMchain.addatom('r', [0 0 0],'S', 1,'label','MCu1','color','blue')
@@ -167,7 +167,7 @@ cTable.bondv
 % structure with the added bonds.
  
 FMchain.addmatrix('value',-eye(3),'label','Ja','color','green')
-FMchain.addcoupling('Ja',1);
+FMchain.addcoupling('mat','Ja','bond',1);
 plot(FMchain,'range',[3 0.2 0.2],'pCell',false,'zoom',0.8)
 
 %% Definition of FM magnetic structure

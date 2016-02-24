@@ -1,4 +1,4 @@
-<div class="content"><h1>Spin-spin correlation function of two different coupled magnetic ion</h1><!--introduction--><p>In this tutorial, we demonstrate how the spin wave spectrum of two different coupled ion can be calculated. Using the magnetic form factor, the spin-spin correlation function on the two ions can be separated. This method is also usefull for simulating RIXS (Resonant Inelastic X-ray Scattering) on spin waves, that typically measures only the spin waves on the resonant ion.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Cu and Fe chain</a></li><li><a href="#2">Define magnetic structure</a></li><li><a href="#3">Spin-spin correlation function including the form factor</a></li><li><a href="#4">Copper only correlations</a></li><li><a href="#5">Iron only correlations</a></li><li><a href="#6">Reduced moments</a></li></ul></div><h2>Cu and Fe chain<a name="1"></a></h2><p>We define a unit cell with an Fe2+ and Cu2+ ions, the size of the spin is determined by the code using the information stored in the  ion.dat file. We couple antiferromagnetically the Fe and Cu atoms in separate chains running along the a-axis. The chains are weakly coupled along the b-axis.</p><pre class="codeinput">FeCuChain = sw;
+<div class="content"><h1>Spin-spin correlation function of two different coupled magnetic ion</h1><!--introduction--><p>In this tutorial, we demonstrate how the spin wave spectrum of two different coupled ion can be calculated. Using the magnetic form factor, the spin-spin correlation function on the two ions can be separated. This method is also usefull for simulating RIXS (Resonant Inelastic X-ray Scattering) on spin waves, that typically measures only the spin waves on the resonant ion.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Cu and Fe chain</a></li><li><a href="#2">Define magnetic structure</a></li><li><a href="#3">Spin-spin correlation function including the form factor</a></li><li><a href="#4">Copper only correlations</a></li><li><a href="#5">Iron only correlations</a></li><li><a href="#6">Reduced moments</a></li></ul></div><h2>Cu and Fe chain<a name="1"></a></h2><p>We define a unit cell with an Fe2+ and Cu2+ ions, the size of the spin is determined by the code using the information stored in the  ion.dat file. We couple antiferromagnetically the Fe and Cu atoms in separate chains running along the a-axis. The chains are weakly coupled along the b-axis.</p><pre class="codeinput">FeCuChain = spinw;
 FeCuChain.fileid(0)
 FeCuChain.genlattice(<span class="string">'lat_const'</span>,[3 8 4],<span class="string">'sym'</span>,<span class="string">'P 1'</span>)
 FeCuChain.addatom(<span class="string">'label'</span>,<span class="string">'MCu2'</span>,<span class="string">'r'</span>,[0 0 0])
@@ -9,10 +9,10 @@ FeCuChain.addmatrix(<span class="string">'label'</span>,<span class="string">'J_
 FeCuChain.addmatrix(<span class="string">'label'</span>,<span class="string">'J_{Fe-Fe}'</span>,<span class="string">'value'</span>,1,<span class="string">'color'</span>,<span class="string">'b'</span>)
 FeCuChain.addmatrix(<span class="string">'label'</span>,<span class="string">'J_{Cu-Fe}'</span>,<span class="string">'value'</span>,-0.1,<span class="string">'color'</span>,<span class="string">'orange'</span>)
 
-FeCuChain.addcoupling(<span class="string">'J_{Cu-Cu}'</span>,1)
-FeCuChain.addcoupling(<span class="string">'J_{Fe-Fe}'</span>,2)
-FeCuChain.addcoupling(<span class="string">'J_{Cu-Fe}'</span>,[5 6])
-plot(FeCuChain,<span class="string">'range'</span>,[2 0.7 1],<span class="string">'zoom'</span>,1)
+FeCuChain.addcoupling(<span class="string">'mat'</span>,<span class="string">'J_{Cu-Cu}'</span>,<span class="string">'bond'</span>,1)
+FeCuChain.addcoupling(<span class="string">'mat'</span>,<span class="string">'J_{Fe-Fe}'</span>,<span class="string">'bond'</span>,2)
+FeCuChain.addcoupling(<span class="string">'mat'</span>,<span class="string">'J_{Cu-Fe}'</span>,<span class="string">'bond'</span>,[4 5])
+plot(FeCuChain,<span class="string">'range'</span>,[2 2 1],<span class="string">'zoom'</span>,1)
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial19_01.png" alt=""> <h2>Define magnetic structure<a name="2"></a></h2><p>The classical ground state of the above define Hamiltonian is antiferromagnetic chains ordered ferromagnetically along the b-direction. Here we define a magnetic unit cell that is 2x1x1 of the crystal unit cell to incorporate the antiferromagnetic structure.</p><pre class="codeinput">FeCuChain.genmagstr(<span class="string">'mode'</span>,<span class="string">'direct'</span>,<span class="string">'S'</span>,[0 0;1 1;0 0],<span class="string">'k'</span>,[1/2 0 0])
 FeCuChain.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'nExt'</span>,[2 1 1])
 plot(FeCuChain,<span class="string">'range'</span>,[2 0.7 1],<span class="string">'zoom'</span>,1,<span class="string">'rSpin'</span>,0.08,<span class="string">'lHeadSpin'</span>,0.75,<span class="string">'sSpin'</span>,1.5,<span class="string">'zoom'</span>,2)
@@ -32,15 +32,18 @@ figure
 sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.2)
 </pre><pre class="codeoutput">Warning: To make the Hamiltonian positive definite, a small omega_tol value was
 added to its diagonal! 
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial19_06.png" alt=""> <h2>Reduced moments<a name="6"></a></h2><p>The size of the reduced moment due to the zero point energy of the spin waves can be calculated as well. The calculated momen reduction is finite, that shows that within the spin wave approach, the 2D coupled plane of Heisenberg spins at zero temperature is ordered. The moment reduction is much larger on the spin-2 Fe ion (dS = 0.577) than on the spin-1/2 (dS = 0.137) Cu ions. This is due to the fact, that for the Fe ions the interchain coupling is much weaker than the chain coupling, this leads to large moment reduction, while the Cu ions the interchain coupling is much larger relative to the intrachain exchange.</p><pre class="codeinput">FeCuChain.moment(<span class="string">'nRand'</span>,1e4)
-</pre><pre class="codeoutput">ans = 
-    moment: [0.3669 1.4412 0.3669 1.4412]
-       obj: [1x1 sw]
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial19_06.png" alt=""> <h2>Reduced moments<a name="6"></a></h2><p>The size of the reduced moment due to the zero point energy of the spin waves can be calculated as well. The calculated momen reduction is finite, that shows that within the spin wave approach, the 2D coupled plane of Heisenberg spins at zero temperature is ordered. The moment reduction is much larger on the spin-2 Fe ion (dS = 0.577) than on the spin-1/2 (dS = 0.137) Cu ions. This is due to the fact, that for the Fe ions the interchain coupling is much weaker than the chain coupling, this leads to large moment reduction, while the Cu ions the interchain coupling is much larger relative to the intrachain exchange.</p><pre class="codeinput">FeCuChain.moment(<span class="string">'nRand'</span>,1e5)
+</pre><pre class="codeoutput">
+ans = 
+
+    moment: [0.3635 1.4247 0.3635 1.4247]
+       obj: [1x1 spinw]
          T: 0
-     nRand: 10000
+     nRand: 100000
+
 </pre><pre>Written by
 Sandor Toth
-2-September-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+2-September-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####
 %% Spin-spin correlation function of two different coupled magnetic ion
 % In this tutorial, we demonstrate how the spin wave spectrum of two
@@ -56,7 +59,7 @@ Sandor Toth
 % We couple antiferromagnetically the Fe and Cu atoms in separate chains
 % running along the a-axis. The chains are weakly coupled along the b-axis.
 
-FeCuChain = sw;
+FeCuChain = spinw;
 FeCuChain.fileid(0)
 FeCuChain.genlattice('lat_const',[3 8 4],'sym','P 1')
 FeCuChain.addatom('label','MCu2','r',[0 0 0])
@@ -67,10 +70,10 @@ FeCuChain.addmatrix('label','J_{Cu-Cu}','value',1,'color','r')
 FeCuChain.addmatrix('label','J_{Fe-Fe}','value',1,'color','b')
 FeCuChain.addmatrix('label','J_{Cu-Fe}','value',-0.1,'color','orange')
 
-FeCuChain.addcoupling('J_{Cu-Cu}',1)
-FeCuChain.addcoupling('J_{Fe-Fe}',2)
-FeCuChain.addcoupling('J_{Cu-Fe}',[5 6])
-plot(FeCuChain,'range',[2 0.7 1],'zoom',1)
+FeCuChain.addcoupling('mat','J_{Cu-Cu}','bond',1)
+FeCuChain.addcoupling('mat','J_{Fe-Fe}','bond',2)
+FeCuChain.addcoupling('mat','J_{Cu-Fe}','bond',[4 5])
+plot(FeCuChain,'range',[2 2 1],'zoom',1)
 
 %% Define magnetic structure
 % The classical ground state of the above define Hamiltonian is
@@ -134,7 +137,7 @@ sw_plotspec(spec,'mode','color','dE',0.2)
 % leads to large moment reduction, while the Cu ions the interchain
 % coupling is much larger relative to the intrachain exchange.
 
-FeCuChain.moment('nRand',1e4)
+FeCuChain.moment('nRand',1e5)
 
 %%
 %  Written by

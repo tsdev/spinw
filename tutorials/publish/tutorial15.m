@@ -9,7 +9,7 @@
 % We define only the magnetic atoms in of the crystal that are Fe3+ ions
 % with spin quantum number of 5/2.
 
-banb = sw;
+banb = spinw;
 banb.fileid(0)
 banb.genlattice('lat_const',[8.539 8.539 5.2414],'angled',[90 90 120],'sym','P 3 2 1');
 banb.addatom('label','MFe3','r',[0.24964 0 1/2],'S',5/2,'color','gray');
@@ -47,17 +47,17 @@ banb.addmatrix('value',J3,'label','J3','color','orange')
 banb.addmatrix('value',J4,'label','J4','color','b')
 banb.addmatrix('value',J5,'label','J5','color','purple')
 
-banb.addcoupling('J1',1)
-banb.addcoupling('J2',3)
-banb.addcoupling('J4',2)
+banb.addcoupling('mat','J1','bond',1)
+banb.addcoupling('mat','J2','bond',3)
+banb.addcoupling('mat','J4','bond',2)
 
 switch eT
     case +1
-        banb.addcoupling('J3',4)
-        banb.addcoupling('J5',5)
+        banb.addcoupling('mat','J3','bond',4)
+        banb.addcoupling('mat','J5','bond',5)
     case -1
-        banb.addcoupling('J3',5)
-        banb.addcoupling('J5',4)
+        banb.addcoupling('mat','J3','bond',5)
+        banb.addcoupling('mat','J5','bond',4)
 end
 plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'zoom',2)
 

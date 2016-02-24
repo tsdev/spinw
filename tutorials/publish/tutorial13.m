@@ -3,7 +3,7 @@
 % http://arxiv.org/abs/0902.2288 or http://prb.aps.org/abstract/PRB/v79/i9/e092413
 % We define only the magnetic atoms of LiNiPO4
 
-linipo = sw;
+linipo = spinw;
 linipo.fileid(0)
 linipo.genlattice('lat_const', [10.02 5.86 4.68],'sym','P n m a');
 linipo.addatom('r',[1/4 1/4 0],'S',1,'label','MNi2','color','b')
@@ -31,11 +31,11 @@ linipo.addmatrix('label','Jab','value',Jab,'color','Turquoise')
 linipo.addmatrix('label','Jac','value',Jac,'color','orange')
 linipo.addmatrix('label','D',  'value',diag([Da Db Dc]),'color','purple')
 
-linipo.addcoupling('Jbc',1)
-linipo.addcoupling('Jc' ,2)
-linipo.addcoupling('Jb' ,7)
-linipo.addcoupling('Jab',[5 6])
-linipo.addcoupling('Jac',[3 4])
+linipo.addcoupling('mat','Jbc','bond',1)
+linipo.addcoupling('mat','Jc' ,'bond',2)
+linipo.addcoupling('mat','Jb' ,'bond',7)
+linipo.addcoupling('mat','Jab','bond',[5 6])
+linipo.addcoupling('mat','Jac','bond',[3 4])
 
 linipo.addaniso('D')
 plot(linipo,'range',[2 2 1])

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Spin wave spectrum of Ba3NbFe3Si2O14</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-06-16"><meta name="DC.source" content="tutorial15.m"><style type="text/css">
+      --><title>Spin wave spectrum of Ba3NbFe3Si2O14</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-02-24"><meta name="DC.source" content="tutorial15.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Spin wave spectrum of Ba3NbFe3Si2O14</h1><!--introduction--><p>Here we model the spin wave spectrum of Ba3NbFe3Si2O14 chiral compound. The crystal structure is taken from PRL <b>101</b>, 247201 (2008), [[http://dx.doi.org/10.1103/PhysRevLett.101.247201]]. The spin wave model parameters are taken from PRL <b>106</b>, 207201 (2011), [[http://dx.doi.org/10.1103/PhysRevLett.106.207201]].</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Crystal structure</a></li><li><a href="#2">Chrality</a></li><li><a href="#3">Magnetic Hamiltonian</a></li><li><a href="#4">Magnetic structure</a></li><li><a href="#5">Spin wave spectrum</a></li><li><a href="#6">Chiral correlations</a></li></ul></div><h2>Crystal structure<a name="1"></a></h2><p>We define only the magnetic atoms in of the crystal that are Fe3+ ions with spin quantum number of 5/2.</p><pre class="codeinput">banb = sw;
+  </style></head><body><div class="content"><h1>Spin wave spectrum of Ba3NbFe3Si2O14</h1><!--introduction--><p>Here we model the spin wave spectrum of Ba3NbFe3Si2O14 chiral compound. The crystal structure is taken from PRL <b>101</b>, 247201 (2008), [[http://dx.doi.org/10.1103/PhysRevLett.101.247201]]. The spin wave model parameters are taken from PRL <b>106</b>, 207201 (2011), [[http://dx.doi.org/10.1103/PhysRevLett.106.207201]].</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Crystal structure</a></li><li><a href="#2">Chrality</a></li><li><a href="#3">Magnetic Hamiltonian</a></li><li><a href="#4">Magnetic structure</a></li><li><a href="#5">Spin wave spectrum</a></li><li><a href="#6">Chiral correlations</a></li></ul></div><h2>Crystal structure<a name="1"></a></h2><p>We define only the magnetic atoms in of the crystal that are Fe3+ ions with spin quantum number of 5/2.</p><pre class="codeinput">banb = spinw;
 banb.fileid(0)
 banb.genlattice(<span class="string">'lat_const'</span>,[8.539 8.539 5.2414],<span class="string">'angled'</span>,[90 90 120],<span class="string">'sym'</span>,<span class="string">'P 3 2 1'</span>);
 banb.addatom(<span class="string">'label'</span>,<span class="string">'MFe3'</span>,<span class="string">'r'</span>,[0.24964 0 1/2],<span class="string">'S'</span>,5/2,<span class="string">'color'</span>,<span class="string">'gray'</span>);
@@ -87,17 +87,17 @@ banb.addmatrix(<span class="string">'value'</span>,J3,<span class="string">'labe
 banb.addmatrix(<span class="string">'value'</span>,J4,<span class="string">'label'</span>,<span class="string">'J4'</span>,<span class="string">'color'</span>,<span class="string">'b'</span>)
 banb.addmatrix(<span class="string">'value'</span>,J5,<span class="string">'label'</span>,<span class="string">'J5'</span>,<span class="string">'color'</span>,<span class="string">'purple'</span>)
 
-banb.addcoupling(<span class="string">'J1'</span>,1)
-banb.addcoupling(<span class="string">'J2'</span>,3)
-banb.addcoupling(<span class="string">'J4'</span>,2)
+banb.addcoupling(<span class="string">'mat'</span>,<span class="string">'J1'</span>,<span class="string">'bond'</span>,1)
+banb.addcoupling(<span class="string">'mat'</span>,<span class="string">'J2'</span>,<span class="string">'bond'</span>,3)
+banb.addcoupling(<span class="string">'mat'</span>,<span class="string">'J4'</span>,<span class="string">'bond'</span>,2)
 
 <span class="keyword">switch</span> eT
     <span class="keyword">case</span> +1
-        banb.addcoupling(<span class="string">'J3'</span>,4)
-        banb.addcoupling(<span class="string">'J5'</span>,5)
+        banb.addcoupling(<span class="string">'mat'</span>,<span class="string">'J3'</span>,<span class="string">'bond'</span>,4)
+        banb.addcoupling(<span class="string">'mat'</span>,<span class="string">'J5'</span>,<span class="string">'bond'</span>,5)
     <span class="keyword">case</span> -1
-        banb.addcoupling(<span class="string">'J3'</span>,5)
-        banb.addcoupling(<span class="string">'J5'</span>,4)
+        banb.addcoupling(<span class="string">'mat'</span>,<span class="string">'J3'</span>,<span class="string">'bond'</span>,5)
+        banb.addcoupling(<span class="string">'mat'</span>,<span class="string">'J5'</span>,<span class="string">'bond'</span>,4)
 <span class="keyword">end</span>
 plot(banb,<span class="string">'range'</span>,[-0.5 1.5;-0.5 1.5;0 0.5],<span class="string">'zoom'</span>,2)
 </pre><img vspace="5" hspace="5" src="tutorial15_02.png" alt=""> <h2>Magnetic structure<a name="4"></a></h2><p>We fix the magnetic structure with the predefined chirality. The magnetic ordering wave vector is <b>k</b>=(0,0,e_H*1/7), the spins are lying in the <b>ab</b>-plane and we use a single cell to describe the structure (default value of nExt = [1 1 1]). We plot the triangular plane magnetic structure.</p><pre class="codeinput">S0 = [1 -1/2 -1/2;0 eD*sqrt(3)/2 -eD*sqrt(3)/2;0 0 0];
@@ -122,7 +122,7 @@ title(tString,<span class="string">'fontSize'</span>,16)
 colormap(makecolormap([0 1 0],[1 1 1],[0 0 1],81));
 </pre><img vspace="5" hspace="5" src="tutorial15_05.png" alt=""> <pre>Written by
 Sandor Toth
-16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Spin wave spectrum of Ba3NbFe3Si2O14
 % Here we model the spin wave spectrum of Ba3NbFe3Si2O14 chiral compound.
@@ -135,7 +135,7 @@ Sandor Toth
 % We define only the magnetic atoms in of the crystal that are Fe3+ ions
 % with spin quantum number of 5/2.
 
-banb = sw;
+banb = spinw;
 banb.fileid(0)
 banb.genlattice('lat_const',[8.539 8.539 5.2414],'angled',[90 90 120],'sym','P 3 2 1');
 banb.addatom('label','MFe3','r',[0.24964 0 1/2],'S',5/2,'color','gray');
@@ -173,17 +173,17 @@ banb.addmatrix('value',J3,'label','J3','color','orange')
 banb.addmatrix('value',J4,'label','J4','color','b')
 banb.addmatrix('value',J5,'label','J5','color','purple')
 
-banb.addcoupling('J1',1)
-banb.addcoupling('J2',3)
-banb.addcoupling('J4',2)
+banb.addcoupling('mat','J1','bond',1)
+banb.addcoupling('mat','J2','bond',3)
+banb.addcoupling('mat','J4','bond',2)
 
 switch eT
     case +1
-        banb.addcoupling('J3',4)
-        banb.addcoupling('J5',5)
+        banb.addcoupling('mat','J3','bond',4)
+        banb.addcoupling('mat','J5','bond',5)
     case -1
-        banb.addcoupling('J3',5)
-        banb.addcoupling('J5',4)
+        banb.addcoupling('mat','J3','bond',5)
+        banb.addcoupling('mat','J5','bond',4)
 end
 plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'zoom',2)
 

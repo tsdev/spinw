@@ -1,4 +1,4 @@
-<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Frustrated J1-J2 AFM chain</a></li><li><a href="#2">Couplings</a></li><li><a href="#3">Magnetic structure is a helix</a></li><li><a href="#4">Direct input</a></li><li><a href="#5">We optimise the helix pitch angle</a></li><li><a href="#6">Spin wave spectrum</a></li></ul></div><h2>Frustrated J1-J2 AFM chain<a name="1"></a></h2><p>Crystal structure, shortest bond along a-axis, Cu+ magnetic atoms with S=1 spin.</p><pre class="codeinput">J1J2chain = sw;
+<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Frustrated J1-J2 AFM chain</a></li><li><a href="#2">Couplings</a></li><li><a href="#3">Magnetic structure is a helix</a></li><li><a href="#4">Direct input</a></li><li><a href="#5">We optimise the helix pitch angle</a></li><li><a href="#6">Spin wave spectrum</a></li></ul></div><h2>Frustrated J1-J2 AFM chain<a name="1"></a></h2><p>Crystal structure, shortest bond along a-axis, Cu+ magnetic atoms with S=1 spin.</p><pre class="codeinput">J1J2chain = spinw;
 J1J2chain.genlattice(<span class="string">'lat_const'</span>,[3 8 10],<span class="string">'angled'</span>,[90 90 90],<span class="string">'sym'</span>,0);
 J1J2chain.addatom(<span class="string">'r'</span>,[0 0 0],<span class="string">'S'</span>,1,<span class="string">'label'</span>,<span class="string">'Cu1'</span>,<span class="string">'color'</span>,<span class="string">'blue'</span>);
 display(<span class="string">'Atomic positions as columns:'</span>)
@@ -22,10 +22,12 @@ J1J2chain.couplingtable.bondv
 J1J2chain.addmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>, <span class="string">'value'</span>,-1,<span class="string">'color'</span>,<span class="string">'r'</span>);
 J1J2chain.addmatrix(<span class="string">'label'</span>,<span class="string">'J2-'</span>,<span class="string">'value'</span>, 2,<span class="string">'color'</span>,<span class="string">'g'</span>);
 
-J1J2chain.addcoupling(<span class="string">'J1'</span>, 1);
-J1J2chain.addcoupling(<span class="string">'J2-'</span>,2);
+J1J2chain.addcoupling(<span class="string">'mat'</span>,<span class="string">'J1'</span>,<span class="string">'bond'</span>,1);
+J1J2chain.addcoupling(<span class="string">'mat'</span>,<span class="string">'J2-'</span>,<span class="string">'bond'</span>,2);
 plot(J1J2chain,<span class="string">'range'</span>,[3 0.9 0.9],<span class="string">'zoom'</span>,0.8)
-</pre><pre class="codeoutput">Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3
+</pre><pre class="codeoutput">Creating the bond list (maxDistance = 7 &Aring;, nCell = 3x1x1) ...
+... 2 bonds are retained out of 36 generated!
+Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3
 
 ans =
 
@@ -47,6 +49,8 @@ ans =
       atom2: [1 1]
         idx: [1 2]
     mat_idx: [3x2 int32]
+       type: [3x2 int32]
+       rdip: 0
 
 Bond vectors (first three rows) and bond distances
 
@@ -96,7 +100,7 @@ ans =
 
     -2
 
- Finished in      0.0 min.
+Finished in 00:00:00 (hh:mm:ss).
 Ground state energy after optimization (meV/spin)
 
 ans =
@@ -125,17 +129,20 @@ J1J2spec = sw_egrid(J1J2spec, <span class="string">'Evect'</span>,linspace(0,6.5
 sw_plotspec(J1J2spec, <span class="string">'mode'</span>,1,<span class="string">'colorbar'</span>,false)
 axis([0 1 0 6])
 </pre><pre class="codeoutput">Calculating INCOMMENSURATE spin wave spectra (nMagExt = 1, nHkl = 1200, nTwin = 1)...
-                                   
-Warning: Eigenvectors of defective eig Finished in      0.0 min.
+No magnetic form factor is included in the spin-spin correlation function.
+No g-tensor is included in the spin-spin correlation function.
+                                        
+Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised! 
+Warning: Eigenvectors of defectivFinished in 00:00:00 (hh:mm:ss).
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial3_04.png" alt=""> <pre>Written by
 Bjorn Fak &amp; Sandor Toth
-06-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+06-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####
 %% Frustrated J1-J2 AFM chain
 % Crystal structure, shortest bond along a-axis, Cu+ magnetic atoms with
 % S=1 spin.
 
-J1J2chain = sw; 
+J1J2chain = spinw; 
 J1J2chain.genlattice('lat_const',[3 8 10],'angled',[90 90 90],'sym',0);
 J1J2chain.addatom('r',[0 0 0],'S',1,'label','Cu1','color','blue');
 display('Atomic positions as columns:')
@@ -156,8 +163,8 @@ J1J2chain.couplingtable.bondv
 J1J2chain.addmatrix('label','J1', 'value',-1,'color','r');
 J1J2chain.addmatrix('label','J2-','value', 2,'color','g'); 
 
-J1J2chain.addcoupling('J1', 1);
-J1J2chain.addcoupling('J2-',2);
+J1J2chain.addcoupling('mat','J1','bond',1);
+J1J2chain.addcoupling('mat','J2-','bond',2);
 plot(J1J2chain,'range',[3 0.9 0.9],'zoom',0.8)
 
 %% Magnetic structure is a helix

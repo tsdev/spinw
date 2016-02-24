@@ -5,7 +5,7 @@
 % by symmetry). Symmetry equivalent positions are automatically generated
 % by the sw.atom() function. The magnetic atoms is Cu+ with S=1 spin.
 
-FMkagome = sw; 
+FMkagome = spinw; 
 FMkagome.genlattice('lat_const',[6 6 5],'angled',[90 90 120],'sym','P -3')
 FMkagome.addatom('r', [1/2 0 0], 'S', 1, 'label','MCu1','color','r')
 display('Atomic positions as columns:') 
@@ -26,7 +26,7 @@ display('Bond vectors (first three rows) and bond distances')
 FMkagome.couplingtable.bondv 
 
 FMkagome.addmatrix('label','J1','value',-1,'color','orange'); 
-FMkagome.addcoupling('J1',1);
+FMkagome.addcoupling('mat','J1','bond',1);
 plot(FMkagome,'range',[2 2 1],'zoom',1.2)
 
 %% FM magnetic structure

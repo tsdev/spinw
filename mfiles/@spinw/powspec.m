@@ -37,6 +37,8 @@ function spectra = powspec(obj, hklA, varargin)
 % useMex        If true, the code will use compiled mex files (if they
 %               exist) to speed up the calculation, for details see
 %               sw_mex() function. Default is false.
+% imagChk   Checks that the imaginary part of the spin wave dispersion is
+%           smaller than the energy bin size. Default is true.
 %
 % Output:
 %
@@ -88,9 +90,9 @@ inpForm.fname  = {'nRand' 'Evect'             'T'   'formfact' 'formfactfun'};
 inpForm.defval = {100     linspace(0,1.1,101) T0    false      @sw_mff      };
 inpForm.size   = {[1 1]   [1 -1]              [1 1] [1 -2]     [1 1]        };
 
-inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' }];
-inpForm.defval = [inpForm.defval {true     false     title0  @spinwave }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]     }];
+inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' 'imagChk'}];
+inpForm.defval = [inpForm.defval {true     false     title0  @spinwave  true   }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]      [1 1]  }];
 
 inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType' 'useMex'}];
 inpForm.defval = [inpForm.defval {false    false  0        'ebin'    false   }];
@@ -166,7 +168,7 @@ for ii = 1:nQ
     specQ = sw_neutron(specQ,'pol',false);
     specQ.obj = obj;
     % use edge grid by default
-    specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T,'binType',param.binType);
+    specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T,'binType',param.binType,'imagChk',param.imagChk);
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
     if fid
         sw_status(ii/nQ*100);

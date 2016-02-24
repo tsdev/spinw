@@ -1,7 +1,7 @@
 %% Antiferromagnetic square lattice
 % We define a square lattice in the ab plane, with Cu+ ions with S=1 spin.
 
-AFsq = sw; 
+AFsq = spinw; 
 AFsq.fileid(0)
 AFsq.genlattice('lat_const',[3 3 10],'angled',[90 90 90],'sym',0)
 AFsq.addatom('r',[0 0 0],'S', 1,'label','Cu1','color','b');
@@ -23,8 +23,8 @@ AFsq.couplingtable.bondv
 
 AFsq.addmatrix('label','J1','value',1,'color','red')
 AFsq.addmatrix('label','J2','value',-0.1,'color','green')
-AFsq.addcoupling('J1',1)
-AFsq.addcoupling('J2',2)
+AFsq.addcoupling('mat','J1','bond',1)
+AFsq.addcoupling('mat','J2','bond',2)
 plot(AFsq,'range',[2 2 0.5],'zoom',-1)
 
 %% Magnetic structure

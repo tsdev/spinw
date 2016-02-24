@@ -2,7 +2,7 @@
 % We create a lattice with space group "P -3" where all first neighbor
 % bonds are symmetry equivalent and add a magnetic Cr+ with S=1 spin.
 
-AF33kagome = sw; 
+AF33kagome = spinw; 
 AF33kagome.fileid(0)
 AF33kagome.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3')
 AF33kagome.addatom('r',[1/2 0 0],'S', 1,'label','MCu1','color','r')
@@ -21,7 +21,7 @@ AF33kagome.couplingtable.bondv
 % We create AFM first neighbor interactions.
 
 AF33kagome.addmatrix('label','J1','value',1.00,'color','g')
-AF33kagome.addcoupling('J1',1)
+AF33kagome.addcoupling('mat','J1','bond',1)
 plot(AF33kagome,'range',[3 3 1],'zoom',-0.8)
 
 %% Generate magnetic structure I.

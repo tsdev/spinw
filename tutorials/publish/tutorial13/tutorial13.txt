@@ -1,4 +1,4 @@
-<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Spin wave spectrum of LiNiPO4</a></li><li><a href="#2">Magnetic Hamiltonian</a></li><li><a href="#3">Magnetic structure</a></li><li><a href="#4">Spin wave spectrum</a></li><li><a href="#5">Mode crossing</a></li></ul></div><h2>Spin wave spectrum of LiNiPO4<a name="1"></a></h2><p>Spin wave model  from: T. Jensen, et al., PRB 79, 6 (2009) <a href="http://arxiv.org/abs/0902.2288">http://arxiv.org/abs/0902.2288</a> or <a href="http://prb.aps.org/abstract/PRB/v79/i9/e092413">http://prb.aps.org/abstract/PRB/v79/i9/e092413</a> We define only the magnetic atoms of LiNiPO4</p><pre class="codeinput">linipo = sw;
+<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Spin wave spectrum of LiNiPO4</a></li><li><a href="#2">Magnetic Hamiltonian</a></li><li><a href="#3">Magnetic structure</a></li><li><a href="#4">Spin wave spectrum</a></li><li><a href="#5">Mode crossing</a></li></ul></div><h2>Spin wave spectrum of LiNiPO4<a name="1"></a></h2><p>Spin wave model  from: T. Jensen, et al., PRB 79, 6 (2009) <a href="http://arxiv.org/abs/0902.2288">http://arxiv.org/abs/0902.2288</a> or <a href="http://prb.aps.org/abstract/PRB/v79/i9/e092413">http://prb.aps.org/abstract/PRB/v79/i9/e092413</a> We define only the magnetic atoms of LiNiPO4</p><pre class="codeinput">linipo = spinw;
 linipo.fileid(0)
 linipo.genlattice(<span class="string">'lat_const'</span>, [10.02 5.86 4.68],<span class="string">'sym'</span>,<span class="string">'P n m a'</span>);
 linipo.addatom(<span class="string">'r'</span>,[1/4 1/4 0],<span class="string">'S'</span>,1,<span class="string">'label'</span>,<span class="string">'MNi2'</span>,<span class="string">'color'</span>,<span class="string">'b'</span>)
@@ -20,11 +20,11 @@ linipo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jab'<
 linipo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jac'</span>,<span class="string">'value'</span>,Jac,<span class="string">'color'</span>,<span class="string">'orange'</span>)
 linipo.addmatrix(<span class="string">'label'</span>,<span class="string">'D'</span>,  <span class="string">'value'</span>,diag([Da Db Dc]),<span class="string">'color'</span>,<span class="string">'purple'</span>)
 
-linipo.addcoupling(<span class="string">'Jbc'</span>,1)
-linipo.addcoupling(<span class="string">'Jc'</span> ,2)
-linipo.addcoupling(<span class="string">'Jb'</span> ,7)
-linipo.addcoupling(<span class="string">'Jab'</span>,[5 6])
-linipo.addcoupling(<span class="string">'Jac'</span>,[3 4])
+linipo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jbc'</span>,<span class="string">'bond'</span>,1)
+linipo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jc'</span> ,<span class="string">'bond'</span>,2)
+linipo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jb'</span> ,<span class="string">'bond'</span>,7)
+linipo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jab'</span>,<span class="string">'bond'</span>,[5 6])
+linipo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jac'</span>,<span class="string">'bond'</span>,[3 4])
 
 linipo.addaniso(<span class="string">'D'</span>)
 plot(linipo,<span class="string">'range'</span>,[2 2 1])
@@ -54,14 +54,14 @@ figure
 sw_plotspec(linipoSpec,<span class="string">'mode'</span>,<span class="string">'int'</span>,<span class="string">'axLim'</span>,[0 15],<span class="string">'colormap'</span>,[0 0 0],<span class="string">'colorbar'</span>,false)
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial13_03.png" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial13_04.png" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial13_05.png" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial13_06.png" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial13_07.png" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial13_08.png" alt=""> <h2>Mode crossing<a name="5"></a></h2><p>On the last figure, the two spin wave mode cross each other, where the order of the modes are reversed. This is a general feature of numercial eigenvalue calculations, where it is hard to follow the eigenvalues and eigenvectors through accidental degeneracy points. However at every Q point the physical quantities (mode+assigned intensity) are always right.</p><pre>Written by
 Sandor Toth
-16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####
 %% Spin wave spectrum of LiNiPO4
 % Spin wave model  from: T. Jensen, et al., PRB 79, 6 (2009)
 % http://arxiv.org/abs/0902.2288 or http://prb.aps.org/abstract/PRB/v79/i9/e092413
 % We define only the magnetic atoms of LiNiPO4
 
-linipo = sw;
+linipo = spinw;
 linipo.fileid(0)
 linipo.genlattice('lat_const', [10.02 5.86 4.68],'sym','P n m a');
 linipo.addatom('r',[1/4 1/4 0],'S',1,'label','MNi2','color','b')
@@ -89,11 +89,11 @@ linipo.addmatrix('label','Jab','value',Jab,'color','Turquoise')
 linipo.addmatrix('label','Jac','value',Jac,'color','orange')
 linipo.addmatrix('label','D',  'value',diag([Da Db Dc]),'color','purple')
 
-linipo.addcoupling('Jbc',1)
-linipo.addcoupling('Jc' ,2)
-linipo.addcoupling('Jb' ,7)
-linipo.addcoupling('Jab',[5 6])
-linipo.addcoupling('Jac',[3 4])
+linipo.addcoupling('mat','Jbc','bond',1)
+linipo.addcoupling('mat','Jc' ,'bond',2)
+linipo.addcoupling('mat','Jb' ,'bond',7)
+linipo.addcoupling('mat','Jab','bond',[5 6])
+linipo.addcoupling('mat','Jac','bond',[3 4])
 
 linipo.addaniso('D')
 plot(linipo,'range',[2 2 1])

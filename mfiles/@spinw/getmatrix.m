@@ -24,7 +24,7 @@ function [aMat, param, pOp] = getmatrix(obj, varargin)
 % g_idx         Value of the obj.matom.idx, that selects a magnetic atom,
 %               for which the symmetry allowed elemtns of the g-tensor
 %               have to be determined.
-% sub_idx       Select a certain bond. Default value is 1.
+% subIdx        Select a certain bond. Default value is 1.
 %
 % Optional inputs:
 %
@@ -78,7 +78,7 @@ function [aMat, param, pOp] = getmatrix(obj, varargin)
 % See also SPINW.SETMATRIX.
 %
 
-inpForm.fname  = {'label' 'mat_idx' 'aniso_idx' 'coupling_idx' 'tol' 'pref' 'g_idx' 'sub_idx'};
+inpForm.fname  = {'label' 'mat_idx' 'aniso_idx' 'coupling_idx' 'tol' 'pref' 'g_idx' 'subIdx'};
 inpForm.defval = {zeros(1,0) 0       0          0              1e-5  []     0       1        };
 inpForm.size   = {[1 -1]  [1 1]      [1 1]      [1 1]          [1 1] [1 -2] [1 1]   [1 1]    };
 inpForm.soft   = {false   false      false      false          false true   false   false    };
@@ -147,8 +147,8 @@ if param.coupling_idx
         error('sw:getmatrix:WrongInput','The given obj.coupling.idx does not existst, check your input!');
     end
 
-    if param.sub_idx ~=1
-        iSel = iSel(param.sub_idx);
+    if param.subIdx ~=1
+        iSel = iSel(param.subIdx);
     end
 
     mAtom = obj.matom;

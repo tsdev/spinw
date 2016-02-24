@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tutorial18</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-06-27"><meta name="DC.source" content="tutorial18.m"><style type="text/css">
+      --><title>tutorial18</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-02-24"><meta name="DC.source" content="tutorial18.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -72,7 +72,7 @@ Jab = 0.75;
 Ja  = -J/.66 - Jab;
 Jip = 0.01;
 
-hK = sw;
+hK = spinw;
 hK.fileid(0)
 hK.genlattice(<span class="string">'lat_const'</span>,[10.2 5.94 7.81],<span class="string">'angled'</span>,[90 117.7 90],<span class="string">'sym'</span>,<span class="string">'C 2/m'</span>)
 
@@ -87,11 +87,11 @@ hK.addmatrix(<span class="string">'label'</span>,<span class="string">'Ja'</span
 hK.addmatrix(<span class="string">'label'</span>,<span class="string">'Jab'</span>,<span class="string">'color'</span>,<span class="string">'cyan'</span>,<span class="string">'value'</span>,Jab)
 hK.addmatrix(<span class="string">'label'</span>,<span class="string">'Jip'</span>,<span class="string">'color'</span>,<span class="string">'gray'</span>,<span class="string">'value'</span>,Jip)
 
-hK.addcoupling(<span class="string">'J'</span>,1)
-hK.addcoupling(<span class="string">'J'''</span>,2)
-hK.addcoupling(<span class="string">'Ja'</span>,3)
-hK.addcoupling(<span class="string">'Jab'</span>,5)
-hK.addcoupling(<span class="string">'Jip'</span>,10)
+hK.addcoupling(<span class="string">'mat'</span>,<span class="string">'J'</span>,<span class="string">'bond'</span>,1)
+hK.addcoupling(<span class="string">'mat'</span>,<span class="string">'J'''</span>,<span class="string">'bond'</span>,2)
+hK.addcoupling(<span class="string">'mat'</span>,<span class="string">'Ja'</span>,<span class="string">'bond'</span>,3)
+hK.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jab'</span>,<span class="string">'bond'</span>,5)
+hK.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jip'</span>,<span class="string">'bond'</span>,10)
 
 hK.plot(<span class="string">'range'</span>,[2 2 0.3],<span class="string">'zoom'</span>,-2)
 </pre><img vspace="5" hspace="5" src="tutorial18_01.png" alt=""> <h2>Magnetic ground<a name="2"></a></h2><p>Approximate ground magnetic ground state with a single k-vector: S_i = 2*pi*k*r_i. The magnetic unit cell is defined using the rotating coordinate system.</p><pre class="codeinput">hK.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'n'</span>,[0 0 1],<span class="string">'S'</span>,[1 0 0]',<span class="string">'k'</span>,[0.77 0 0.115],<span class="string">'next'</span>,[1 1 1]);
@@ -134,7 +134,10 @@ figure
 sw_plotspec(hkSpec,<span class="string">'mode'</span>,<span class="string">'pretty'</span>,<span class="string">'linestyle'</span>,<span class="string">'-'</span>);
 caxis([0 20])
 </pre><pre class="codeoutput">Calculating INCOMMENSURATE spin wave spectra (nMagExt = 6, nHkl = 1500, nTwin = 1)...
- Finished in      0.0 min.
+To optimise memory allocation, Q is cut into 2 pieces!
+No magnetic form factor is included in the spin-spin correlation function.
+No g-tensor is included in the spin-spin correlation function.
+Finished in 00:00:00 (hh:mm:ss).
 Warning: To make the Hamiltonian positive definite, a small omega_tol value was
 added to its diagonal! 
 </pre><img vspace="5" hspace="5" src="tutorial18_04.png" alt=""> <h2>Test dispersion on commensurate cell<a name="5"></a></h2><p>We recalculate the dispersion on a superlattice, that should give the same S(Q,omega), but it is much slower. We approximate the ordering k-vector within 0.05 rlu using the rat() built-in Matlab function. We create the magnetic superlattice and then define the k-vector as zero. In this case the sw.spinwave() function will be run in commensurate mode.</p><pre class="codeinput">[~,nSuperlat] = rat(hK.mag_str.k,0.05);
@@ -145,22 +148,24 @@ hK.mag_str.k = [0 0 0];
 hkSpec = hK.spinwave({[0 0 0] [1 0 0] 50},<span class="string">'Hermit'</span>,false);
 hK.fileid(0)
 hkSpec = sw_neutron(hkSpec,<span class="string">'pol'</span>,false);
-hkSpec = sw_egrid(hkSpec,<span class="string">'Evect'</span>,linspace(0,5,500));
+hkSpec = sw_egrid(hkSpec,<span class="string">'Evect'</span>,linspace(0,5,500),<span class="string">'imagChk'</span>,false);
 
 figure
 sw_plotspec(hkSpec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'axlim'</span>,[0 20],<span class="string">'dE'</span>,0.3);
 </pre><pre class="codeoutput">Warning: In the extended unit cell k is still larger than epsilon! 
 Calculating COMMENSURATE spin wave spectra (nMagExt = 270, nHkl = 50, nTwin = 1)...
-To optimise memory allocation, Q is cut into 24 pieces!
- Finished in      0.9 min.
+Memory allocation is not optimal, nMagExt is too large compared to the free memory!
+No magnetic form factor is included in the spin-spin correlation function.
+No g-tensor is included in the spin-spin correlation function.
+Finished in 00:00:40 (hh:mm:ss).
 </pre><img vspace="5" hspace="5" src="tutorial18_05.png" alt=""> <h2>Powder averaged spectrum<a name="6"></a></h2><p>We calculate the powder spectrum on the smaller unit cell between Q = 0 - 3 Angstrom^-1.</p><pre class="codeinput">hK.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'n'</span>,[0 0 1],<span class="string">'S'</span>,[1 0 0]',<span class="string">'k'</span>,kOpt,<span class="string">'next'</span>,[1 1 1]);
 powSpec = hK.powspec(linspace(0,3,80),<span class="string">'nrand'</span>,500,<span class="string">'Evect'</span>,linspace(0,5,500));
 
 figure;
-sw_plotspec(powSpec,<span class="string">'dE'</span>,0.01,<span class="string">'axlim'</span>,[0 0.3])
+sw_plotspec(powSpec,<span class="string">'dE'</span>,0.01,<span class="string">'axlim'</span>,[0 0.05])
 </pre><img vspace="5" hspace="5" src="tutorial18_06.png" alt=""> <pre>Written by
 G&oslash;ran Nilsen and Sandor Toth
-27-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+27-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Defines distorted kagome lattice
 % This is the calculation used to estimate the spin exchange parameters in
@@ -174,7 +179,7 @@ Jab = 0.75;
 Ja  = -J/.66 - Jab;
 Jip = 0.01;
 
-hK = sw;
+hK = spinw;
 hK.fileid(0)
 hK.genlattice('lat_const',[10.2 5.94 7.81],'angled',[90 117.7 90],'sym','C 2/m')
 
@@ -189,11 +194,11 @@ hK.addmatrix('label','Ja', 'color','b',   'value',Ja)
 hK.addmatrix('label','Jab','color','cyan','value',Jab)
 hK.addmatrix('label','Jip','color','gray','value',Jip)
 
-hK.addcoupling('J',1)
-hK.addcoupling('J''',2)
-hK.addcoupling('Ja',3)
-hK.addcoupling('Jab',5)
-hK.addcoupling('Jip',10)
+hK.addcoupling('mat','J','bond',1)
+hK.addcoupling('mat','J''','bond',2)
+hK.addcoupling('mat','Ja','bond',3)
+hK.addcoupling('mat','Jab','bond',5)
+hK.addcoupling('mat','Jip','bond',10)
 
 hK.plot('range',[2 2 0.3],'zoom',-2)
 
@@ -258,7 +263,7 @@ hK.mag_str.k = [0 0 0];
 hkSpec = hK.spinwave({[0 0 0] [1 0 0] 50},'Hermit',false);
 hK.fileid(0)
 hkSpec = sw_neutron(hkSpec,'pol',false);
-hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500));
+hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500),'imagChk',false);
 
 figure
 sw_plotspec(hkSpec,'mode','color','axlim',[0 20],'dE',0.3);
@@ -271,7 +276,7 @@ hK.genmagstr('mode','helical','n',[0 0 1],'S',[1 0 0]','k',kOpt,'next',[1 1 1]);
 powSpec = hK.powspec(linspace(0,3,80),'nrand',500,'Evect',linspace(0,5,500));
 
 figure;
-sw_plotspec(powSpec,'dE',0.01,'axlim',[0 0.3])
+sw_plotspec(powSpec,'dE',0.01,'axlim',[0 0.05])
 
 %%
 %  Written by

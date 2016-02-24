@@ -8,7 +8,7 @@ a = 5.2821;
 b = 5.6144;
 c = 7.5283;
 
-yvo3 = sw;
+yvo3 = spinw;
 yvo3.fileid(0)
 yvo3.genlattice('lat_const', [a/sqrt(2) b/sqrt(2) c]);
 yvo3.addatom('r',[0 0 0],'label','MV4','S',1/2,'color','gray')
@@ -52,12 +52,12 @@ sK1.color = [128 128 0];
 
 yvo3.addmatrix([sJab sJc1 sJc2 sK1])
 Assign the matrices to the magnetic atoms:
-yvo3.addcoupling('Jab',[1 3])
-yvo3.addcoupling('Jc1',2,2)
-yvo3.addcoupling('Jc2',2,1)
+yvo3.addcoupling('mat','Jab','bond',[1 3])
+yvo3.addcoupling('mat','Jc1','bond',2,'subidx',2)
+yvo3.addcoupling('mat','Jc2','bond',2,'subidx',1)
 Add K1 matrix to the single-ion anisotropy:
 yvo3.addaniso('K1')
-Create test magnetic structure, G-type antiferromagnet:
+%Create test magnetic structure, G-type antiferromagnet:
 par_ms.mode = 'helical';
 par_ms.S    = [1;0;0];
 par_ms.nExt = [2 2 1];

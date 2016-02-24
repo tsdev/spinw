@@ -2,7 +2,7 @@
 % We create a triangular lattice in the *ab*-plane with Cr3+ magnetic atoms
 % with spin quantum number S=3/2.
 
-tri = sw;
+tri = spinw;
 tri.genlattice('lat_const',[3 3 4],'angled',[90 90 120])
 tri.addatom('r',[0 0 0],'S',3/2,'label','MCr3','color','orange')
 tri.gencoupling
@@ -17,7 +17,7 @@ plot(tri,'range',[2 2 1],'zoom',-2)
 
 tri.addmatrix('value',1,'label','J','color','SteelBlue')
 tri.addmatrix('value',diag([0 0 0.2]),'label','D','color','r')
-tri.addcoupling('J',1)
+tri.addcoupling('mat','J','bond',1)
 tri.addaniso('D')
 plot(tri,'range',[2 2 1])
 
@@ -75,8 +75,8 @@ dE    = 0.15;
 % Calculate spectra using disp2sqw_plot Horace function.
 horaceObj = d3d(tri.abc,[1 0 0 0],[0,0.01,1],[0 1 0 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
 horaceObj = disp2sqw_eval(horaceObj,@tri.horace,{'component','Sperp'},dE);
-% cut1 = cut(horaceObj,[0,0.01,1],[0,0.01,1],[2 2.5]);
-% plot(cut1)
+cut1 = cut(horaceObj,[0,0.01,1],[0,0.01,1],[2.0 2.1]);
+plot(cut1)
 
 %%
 %  Written by

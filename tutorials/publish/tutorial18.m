@@ -10,7 +10,7 @@ Jab = 0.75;
 Ja  = -J/.66 - Jab;
 Jip = 0.01;
 
-hK = sw;
+hK = spinw;
 hK.fileid(0)
 hK.genlattice('lat_const',[10.2 5.94 7.81],'angled',[90 117.7 90],'sym','C 2/m')
 
@@ -25,11 +25,11 @@ hK.addmatrix('label','Ja', 'color','b',   'value',Ja)
 hK.addmatrix('label','Jab','color','cyan','value',Jab)
 hK.addmatrix('label','Jip','color','gray','value',Jip)
 
-hK.addcoupling('J',1)
-hK.addcoupling('J''',2)
-hK.addcoupling('Ja',3)
-hK.addcoupling('Jab',5)
-hK.addcoupling('Jip',10)
+hK.addcoupling('mat','J','bond',1)
+hK.addcoupling('mat','J''','bond',2)
+hK.addcoupling('mat','Ja','bond',3)
+hK.addcoupling('mat','Jab','bond',5)
+hK.addcoupling('mat','Jip','bond',10)
 
 hK.plot('range',[2 2 0.3],'zoom',-2)
 
@@ -94,7 +94,7 @@ hK.mag_str.k = [0 0 0];
 hkSpec = hK.spinwave({[0 0 0] [1 0 0] 50},'Hermit',false);
 hK.fileid(0)
 hkSpec = sw_neutron(hkSpec,'pol',false);
-hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500));
+hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500),'imagChk',false);
 
 figure
 sw_plotspec(hkSpec,'mode','color','axlim',[0 20],'dE',0.3);

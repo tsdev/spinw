@@ -1,4 +1,4 @@
-<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Symbolic spin wave dispersion of FM chain</a></li><li><a href="#2">Magnetic Hamiltonian</a></li><li><a href="#3">Magnetic structure</a></li><li><a href="#4">Ground state energy</a></li><li><a href="#5">Spin wave dispersion</a></li><li><a href="#6">Plot spin wave spectrum</a></li></ul></div><h2>Symbolic spin wave dispersion of FM chain<a name="1"></a></h2><p>To prepare for symbolic calculation we will need the Matlab Symbolic Toolbox. The symbolic mode should be switched on just after the sw object is created using the sw.symbolic(true) function. The lattice (lattice constants, angles, atomic positions) will still have numerical values. However the spins will be symbolic automatically, see below. The sw.unit_cell.S variable will belong to the 'sym' class, that is defined by the Symbolic Toolbox.</p><pre class="codeinput">FMchain = sw;
+<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Symbolic spin wave dispersion of FM chain</a></li><li><a href="#2">Magnetic Hamiltonian</a></li><li><a href="#3">Magnetic structure</a></li><li><a href="#4">Ground state energy</a></li><li><a href="#5">Spin wave dispersion</a></li><li><a href="#6">Plot spin wave spectrum</a></li></ul></div><h2>Symbolic spin wave dispersion of FM chain<a name="1"></a></h2><p>To prepare for symbolic calculation we will need the Matlab Symbolic Toolbox. The symbolic mode should be switched on just after the sw object is created using the sw.symbolic(true) function. The lattice (lattice constants, angles, atomic positions) will still have numerical values. However the spins will be symbolic automatically, see below. The sw.unit_cell.S variable will belong to the 'sym' class, that is defined by the Symbolic Toolbox.</p><pre class="codeinput">FMchain = spinw;
 FMchain.fileid(0)
 FMchain.symbolic(true)
 
@@ -7,7 +7,10 @@ FMchain.addatom(<span class="string">'label'</span>,<span class="string">'A1'</s
 disp(<span class="string">'Symbolic spin value:'</span>)
 FMchain.unit_cell.S
 FMchain.gencoupling
-</pre><pre class="codeoutput">Symbolic spin value:
+</pre><pre class="codeoutput">Warning: Support of strings that are not valid variable names or define a number
+will be removed in a future release. To create symbolic expressions, first
+create symbolic variables and then use operations on them. 
+Symbolic spin value:
  
 ans =
  
@@ -21,7 +24,7 @@ FMchain.addmatrix(<span class="string">'label'</span>,<span class="string">'J1'<
 disp(<span class="string">'Symbolic matrix value from symbolic input:'</span>)
 FMchain.matrix.mat
 
-FMchain.addcoupling(<span class="string">'J1'</span>,1)
+FMchain.addcoupling(<span class="string">'mat'</span>,<span class="string">'J1'</span>,<span class="string">'bond'</span>,1)
 plot(FMchain,<span class="string">'range'</span>,[3 0.5 0.5])
 </pre><pre class="codeoutput">Symbolic matrix value from double type input:
  
@@ -59,11 +62,11 @@ ans =
  
 </pre><h2>Spin wave dispersion<a name="5"></a></h2><p>For symbolic mode, only the spin wave dispersion can be calculated calling the sw.spinwave function. It produces the general dispersion withouth any additional input. We note that the final result is not in a nice form, but this is the limitation of the simplify() function of the symbolic  engine.</p><pre class="codeinput">FMspec = FMchain.spinwave();
 pretty(FMspec.omega)
-</pre><pre class="codeoutput">/                                          2 \
-|  J S_1 exp(-pi h 2 i) (exp(pi h 2 i) - 1)  |
-|                                            |
-|                                          2 |
-\ -J S_1 exp(-pi h 2 i) (exp(pi h 2 i) - 1)  /
+</pre><pre class="codeoutput">/                                        2 \
+|  J S_1 exp(-pi h 2i) (exp(pi h 2i) - 1)  |
+|                                          |
+|                                        2 |
+\ -J S_1 exp(-pi h 2i) (exp(pi h 2i) - 1)  /
 
 </pre><h2>Plot spin wave spectrum<a name="6"></a></h2><p>For plotting we need to calculate the spin wave spectrum at given Q point, here along the (H,0,0) direction using the eval() function.</p><pre class="codeinput">h   = linspace(0,1,501);
 J   = 1;
@@ -77,7 +80,7 @@ ylabel(<span class="string">'Energy (meV)'</span>)
 title(<span class="string">'Spin wave dispersion of FM chain, J = -1, S = 1'</span>,<span class="string">'fontsize'</span>,15)
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial17_03.png" alt=""> <pre>Written by
 Sandor Toth
-16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####
 %% Symbolic spin wave dispersion of FM chain
 % To prepare for symbolic calculation we will need the Matlab Symbolic
@@ -88,7 +91,7 @@ Sandor Toth
 % sw.unit_cell.S variable will belong to the 'sym' class, that is defined
 % by the Symbolic Toolbox.
 
-FMchain = sw;
+FMchain = spinw;
 FMchain.fileid(0)
 FMchain.symbolic(true)
 
@@ -117,7 +120,7 @@ FMchain.addmatrix('label','J1','value',-sym('J','positive'))
 disp('Symbolic matrix value from symbolic input:')
 FMchain.matrix.mat
 
-FMchain.addcoupling('J1',1)
+FMchain.addcoupling('mat','J1','bond',1)
 plot(FMchain,'range',[3 0.5 0.5])
 
 %% Magnetic structure

@@ -2,7 +2,7 @@
 % We create the lattice with 'P -3' space group and magnetic Cu+ with S=1
 % spin.
 
-DMkag = sw;
+DMkag = spinw;
 DMkag.fileid(0)
 DMkag.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3')
 DMkag.addatom('r', [1/2 0 0],'S',1,'label', 'Cu1', 'color','r')
@@ -20,9 +20,9 @@ plot(DMkag,'range',[2 2 1],'zoom',-0.5)
 DMkag.gencoupling('maxDistance',7)
 DMkag.addmatrix('label','DM1','value',1,'color','b')
 DMkag.addmatrix('label','J1','value',1,'color','g')
-DMkag.addcoupling('DM1',1)
-DMkag.addcoupling('J1',1)
-DMkag.setmatrix('label','DM1','pref',{[0 0 0.08]});
+DMkag.addcoupling('mat','DM1','bond',1)
+DMkag.addcoupling('mat','J1','bond',1)
+DMkag.setmatrix('label','DM1','pref',{[0 0 -0.08]});
 plot(DMkag,'range',[3 3 1],'zoom',-0.8)
 display('J1='); DMkag.matrix.mat(:,:,2)
 display('DM1='); DMkag.matrix.mat(:,:,1)
@@ -50,7 +50,7 @@ sw_plotspec(dmkSpec,'mode',1,'axLim',[0 3],'colorbar',false,'colormap',[0 0 0],'
 % The flat mode that is the zero energy mode lifted by the DM interaction
 % is well visible on the powder spectrum.
 
-dmkPow = DMkag.powspec(linspace(0,2.5,150),'Evect',linspace(0,3,250),'nRand',1000,'hermit',false);
+dmkPow = DMkag.powspec(linspace(0,2.5,150),'Evect',linspace(0,3,250),'nRand',1000,'hermit',false,'imagChk',false);
 figure;
 sw_plotspec(dmkPow,'axLim',[0 0.5],'dE',0.02)
 

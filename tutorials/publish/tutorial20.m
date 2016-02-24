@@ -16,7 +16,7 @@
 
 sw_addsym('-z, y+3/4, x+3/4; z+3/4, -y, x+3/4; z+3/4, y+3/4, -x; y+3/4, x+3/4, -z; x+3/4, -z, y+3/4; -z, x+3/4, y+3/4','F d -3 m Z');
 
-ybti = sw;
+ybti = spinw;
 a = 10.0307;
 ybti.genlattice('lat_const',[a a a],'angled',[90 90 90],'sym','F d -3 m Z')
 ybti.addatom('label','Yb3+','r',[1/2 1/2 1/2])
@@ -46,7 +46,7 @@ ybti.unit_cell = ybti.unitcell(1);
 
 %%
 % We generate the list of bonds.
-ybti.gencoupling
+ybti.gencouplingold
 
 %%
 % We create two 3x3 matrix, one for the first neighbor anisotropic exchange
@@ -55,7 +55,7 @@ ybti.gencoupling
 ybti.addmatrix('label','J1','value',1)
 ybti.addmatrix('label','g0','value',1);
 
-ybti.addcoupling('J1',1)
+ybti.addcoupling('mat','J1','bond',1)
 ybti.addg('g0')
 
 %%
@@ -134,7 +134,7 @@ for ii = 1:10
         % create fully polarised magnetic structure along the field direction
         ybti.genmagstr('S',n','mode','helical');
         % find best structure using steepest descendend
-        ybti.optmagsteep('nRun',100)
+        ybti.optmagsteep
     end
     
     % spin wave spectrum

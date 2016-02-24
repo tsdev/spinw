@@ -12,7 +12,7 @@
 % We couple antiferromagnetically the Fe and Cu atoms in separate chains
 % running along the a-axis. The chains are weakly coupled along the b-axis.
 
-FeCuChain = sw;
+FeCuChain = spinw;
 FeCuChain.fileid(0)
 FeCuChain.genlattice('lat_const',[3 8 4],'sym','P 1')
 FeCuChain.addatom('label','MCu2','r',[0 0 0])
@@ -23,10 +23,10 @@ FeCuChain.addmatrix('label','J_{Cu-Cu}','value',1,'color','r')
 FeCuChain.addmatrix('label','J_{Fe-Fe}','value',1,'color','b')
 FeCuChain.addmatrix('label','J_{Cu-Fe}','value',-0.1,'color','orange')
 
-FeCuChain.addcoupling('J_{Cu-Cu}',1)
-FeCuChain.addcoupling('J_{Fe-Fe}',2)
-FeCuChain.addcoupling('J_{Cu-Fe}',[5 6])
-plot(FeCuChain,'range',[2 0.7 1],'zoom',1)
+FeCuChain.addcoupling('mat','J_{Cu-Cu}','bond',1)
+FeCuChain.addcoupling('mat','J_{Fe-Fe}','bond',2)
+FeCuChain.addcoupling('mat','J_{Cu-Fe}','bond',[4 5])
+plot(FeCuChain,'range',[2 2 1],'zoom',1)
 
 %% Define magnetic structure
 % The classical ground state of the above define Hamiltonian is
@@ -90,7 +90,7 @@ sw_plotspec(spec,'mode','color','dE',0.2)
 % leads to large moment reduction, while the Cu ions the interchain
 % coupling is much larger relative to the intrachain exchange.
 
-FeCuChain.moment('nRand',1e4)
+FeCuChain.moment('nRand',1e5)
 
 %%
 %  Written by

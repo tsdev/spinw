@@ -7,7 +7,7 @@
 % sw.unit_cell.S variable will belong to the 'sym' class, that is defined
 % by the Symbolic Toolbox.
 
-FMchain = sw;
+FMchain = spinw;
 FMchain.fileid(0)
 FMchain.symbolic(true)
 
@@ -36,7 +36,7 @@ FMchain.addmatrix('label','J1','value',-sym('J','positive'))
 disp('Symbolic matrix value from symbolic input:')
 FMchain.matrix.mat
 
-FMchain.addcoupling('J1',1)
+FMchain.addcoupling('mat','J1','bond',1)
 plot(FMchain,'range',[3 0.5 0.5])
 
 %% Magnetic structure

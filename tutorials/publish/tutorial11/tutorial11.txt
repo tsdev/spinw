@@ -21,7 +21,7 @@ lacuoSpec = sw_omegasum(lacuoSpec,<span class="string">'zeroint'</span>,1e-5,<sp
 sw_plotspec(lacuoSpec,<span class="string">'mode'</span>,2,<span class="string">'axLim'</span>,[0 20],<span class="string">'dashed'</span>,true,<span class="string">'colormap'</span>,[0 0 0])
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial11_02.png" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial11_03.png" alt=""> <pre>Written by
 Sandor Toth
-16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####
 %% Spin wave spectrum of La2CuO4
 % Crystal structure of La2CuO4 contains Cu2+ atoms with S = 1/2 spin on a

@@ -2,7 +2,7 @@
 % Definition of crystal structure, shortest bonds along the a-axis magnetic
 % Cu+ atoms with S=1 spin.
 
-AFMchain = sw; 
+AFMchain = spinw; 
 AFMchain.fileid(0)
 AFMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0);
 AFMchain.addatom('r',[0 0 0],'S',1,'label','MCu1','color','blue');
@@ -21,7 +21,7 @@ display('Bond vectors (first three rows) and bond distances')
 AFMchain.couplingtable.bondv
 
 AFMchain.addmatrix('label','Ja','value',1,'color','red'); 
-AFMchain.addcoupling('Ja',1);
+AFMchain.addcoupling('mat','Ja','bond',1);
 plot(AFMchain,'range',[3 0.9 0.9],'zoom',0.8)
 
 %% Two ways of defining the magnetic structure

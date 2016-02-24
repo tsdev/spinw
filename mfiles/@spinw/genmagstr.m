@@ -338,7 +338,7 @@ switch param.mode
             % Axis of rotation defined by the spin direction
             nRot  = cross(n,S1);
             % Angle of rotation.
-            phi = atan2(norm(cross(S1,nRot)),dot(S1,nRot));
+            phi = -atan2(norm(cross(S1,n)),dot(S1,n));
         else
             nRot = n;
             % Angle of rotation.

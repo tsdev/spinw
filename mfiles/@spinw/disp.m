@@ -97,7 +97,7 @@ else
     chem.chemform(chem.chemform == '_') = [];
     abc  = obj.abc;
     aa   = symbol('angs');
-    [~,~,symStr]=sw_gensym(obj.lattice.sym);
+    [~,~,symStr] = sw_gensym(obj.lattice.sym);
     
     swDescr = ['\b<strong>SpinW</strong> object, <a href="matlab:doc @spinw">spinw</a> class:\n'...
         sprintf('<strong>Chemical formula</strong>: %s\n',chem.chemform) ...

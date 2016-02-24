@@ -1,7 +1,7 @@
-function sw_install()
+function install_spinw()
 % installs SpinW
 %
-% SW_INSTALL()
+% INSTALL_SPINW()
 %
 % It adds the SpinW folder to the search path and modifies startup.m and
 % clears the class definitions. There is a y/n question before every
@@ -20,9 +20,7 @@ try %#ok<TRYNC>
 end
 
 % find SpinW folder
-folName = mfilename('fullpath');
-idx     = strfind(folName,filesep);
-folName = folName(1:idx(end-1));
+folName = fileparts(mfilename('fullpath'));
 
 % adding new path
 fprintf('Adding path to new SpinW installation: %s!\n',folName);
@@ -91,8 +89,8 @@ if ~isempty(sfLoc)
     
     if answer == 'y'
         fid = fopen(sfLoc,'a');
-        fprintf(fid,['\n%%###SW_UPDATE\n%% Path to the SpinW (rev. %d) '...
-            'toolbox:\naddpath(genpath(''%s''));\n%%###SW_UPDATE\n'],newRev,folName);
+        fprintf(fid,['\n%%###SW_UPDATE\n%% Path to the SpinW installation\n'...
+            'addpath(genpath(''%s''));\n%%###SW_UPDATE\n'],folName);
         fclose(fid);
     end
 end
@@ -112,5 +110,19 @@ end
 
 
 disp('The installation of SpinW was successful!')
+
+end
+
+function answer = getinput(message,good)
+% get the necessary letter input
+
+answer = ' ';
+while ~ismember(answer(1),good)
+    answer = input(message,'s');
+    if isempty(answer)
+        answer = 0;
+    end
+end
+answer = answer(1);
 
 end

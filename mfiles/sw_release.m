@@ -14,7 +14,7 @@ function sw_release(verNum, tempDir)
 %
 
 if nargin == 0
-    help sw_release;
+    help sw_release
     return
 end
 
@@ -26,7 +26,7 @@ swVer = sw_version;
 
 if isfield(swVer,'Version')
     disp('The current version of SpinW is already released!');
-    return;
+    return
 end
 
 % get latest revision number

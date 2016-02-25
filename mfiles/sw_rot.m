@@ -37,6 +37,8 @@ if nargin==0
     return
 end
 
+% make row vector
+rotAxis = rotAxis(:)';
 % rotAngle vector along the 3rd dimension
 rotAngle = permute(rotAngle(:),[2 3 1]);
 % Normalize axis vector.
@@ -45,8 +47,6 @@ rotAxis = rotAxis./sqrt(sum(rotAxis.^2));
 nx  = [0 -rotAxis(3) rotAxis(2); rotAxis(3) 0 -rotAxis(1); -rotAxis(2) rotAxis(1) 0];
 % Rodrigues' rotation formula.
 % works for multiple rotation angles as well
-% rotM = eye(3)*cos(rotAngle) + sin(rotAngle)*nx + (1-cos(rotAngle))*(rotAxis')*rotAxis;
-
 rotM = bsxfunsym(@times,eye(3),cos(rotAngle)) + bsxfunsym(@times,nx,sin(rotAngle)) + bsxfunsym(@times,(rotAxis')*rotAxis,1-cos(rotAngle));
 
 if nargin > 2

@@ -1,4 +1,4 @@
-function gencoupling2(obj, varargin)
+function gencoupling(obj, varargin)
 % generates the COUPLING property of sw object
 %
 % GENCOUPLING(obj, 'option1', value, ...)
@@ -46,7 +46,7 @@ function gencoupling2(obj, varargin)
 %
 % Example:
 %
-% cryst = sw;
+% cryst = spinw;
 % cryst.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
 % cryst.addatom('r',[0 0 0])
 % cryst.gencoupling

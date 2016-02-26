@@ -82,6 +82,9 @@ param = sw_readparam(inpForm,varargin{:});
 % Text output file
 fid = obj.fid;
 
+fprintf0(fid,['Optimising the magnetic structure using local spin '...
+    'updates (nRun = %d, boundary = (%s,%s,%s))...\n'],param.nRun,param.boundary{:});
+
 % Creates random spin directions if param.random is true.
 mag_param = struct;
 if param.random || isempty(obj.mag_str.S)
@@ -124,6 +127,15 @@ end
 % anisotropy matrix. B is in units of the couplings.
 Bloc = permute(mmat(SI.field*obj.unit.muB,SI.g),[2 3 1]);
 AA = SI.aniso;
+
+% convert all anisotropy matrix to have a maximum eigenvalue of zero
+% anisotropy gan be generated from eigenvalues and eigenvectors: A = V*E*V';
+for ii = 1:size(AA,3)
+    [AAv,AAe]  = eig(AA(:,:,ii));
+    AAe2       = diag(diag(AAe)-max(AAe(:)));
+    AA(:,:,ii) = AAv*AAe2*AAv';
+end
+
 Ax = squeeze(AA(:,1,:));
 Ay = squeeze(AA(:,2,:));
 Az = squeeze(AA(:,3,:));

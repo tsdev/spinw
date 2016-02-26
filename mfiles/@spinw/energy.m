@@ -27,7 +27,7 @@ function  E = energy(obj, varargin)
 %
 % Output:
 %
-% E         Energy per moment (anisotropy, exchange and Zeeman energy).
+% E         Energy per moment (anisotropy + exchange + Zeeman energy).
 %
 %
 % WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
@@ -55,7 +55,7 @@ function  E = energy(obj, varargin)
 % different ground state structures to decide which is the right classical
 % ground state of the magnetic model in cryst.
 %
-% See also SPINW, SPINW.ANNEAL, SPINW.EXTENDLATTICE.
+% See also SPINW, SPINW.ANNEAL, SPINW.NEWCELL.
 %
 
 inpForm.fname  = {'epsilon'};

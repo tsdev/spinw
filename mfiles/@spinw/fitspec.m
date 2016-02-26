@@ -182,7 +182,7 @@ if param.plot
 end
 
 % set the best fit to the sw object
-obj = param.func(obj,x(1,:));
+param.func(obj,x(1,:));
 
 obj.fileid(fidSave);
 
@@ -212,7 +212,8 @@ function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param)
 
 param.nPoints = 50;
 
-obj = parfunc(obj,x);
+
+parfunc(obj,x);
 
 %nExt = double(obj.mag_str.N_ext);
 
@@ -255,7 +256,10 @@ for ii = 1:nConv
         
         data.Eii  = data.E(1:data.nii,jj)';
         data.Iii  = data.I(1:data.nii,jj)';
-        data.wii  = 1./(data.sigma(1:data.nii,jj).^2)';
+        data.sii  = data.sigma(1:data.nii,jj)';
+        data.wii  = data.sii.^(-2);
+        %data.wii  = 1./(data.sigma(1:data.nii,jj).^2)';
+        
         
         simVect   = [repmat(data.minE(jj),[1 data.nii]) sim.E repmat(data.maxE(jj),[1 data.nii])];
         
@@ -281,7 +285,7 @@ for ii = 1:nConv
                 cPoints = sw_circle([jj+Qc data.Eii(kk) 0]',[0 0 1]',sqrt(data.Eii(kk))*param.iFact,param.nPoints);
                 pHandle(end+1) = plot(cPoints(1,:),cPoints(2,:));
                 set(pHandle(end),'Color','r');
-                pHandle(end+1) = line([0 0]+jj+Qc,[-1 1]*data.wii(kk)+data.Eii(kk),'Color','r','LineWidth',2);
+                pHandle(end+1) = line([0 0]+jj+Qc,[-1 1]*data.sii(kk)+data.Eii(kk),'Color','r','LineWidth',2);
             end
             
             pHandle(end+1) = line([-0.2 0.2]+jj+Qc,data.minE(jj)*[1 1],'Color','g');

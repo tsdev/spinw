@@ -60,7 +60,7 @@ if any(param.axis)
         [~, param.rotC(:,:,ii)] = sw_rot(param.axis,param.phi(ii));
     end
 else
-    nTwin = size(rotC,3);
+    nTwin = size(param.rotC,3);
 end
 
 if size(param.vol,2)<nTwin

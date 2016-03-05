@@ -50,7 +50,7 @@ elseif nargin == 2
 elseif nargin == 1
     raw = struct;
 else
-    error('sw:sw_readparam:WrongNumberOfInput','Wrong number of input parameters!');
+    error('sw:sw_readparam:WrongNumberOfInput','Wrong number of input options!');
 end
 
 fName     = format.fname;
@@ -95,21 +95,21 @@ for ii = 1:length(fName)
             if isfield(format,'soft') && format.soft{ii}
                 input.(fName{ii}) = format.defval{ii};
             else
-                error('spinw:sw_readparam:SizeMismatch',['Input parameter size mismatch in .' fName{ii} '!']);
+                error('spinw:sw_readparam:SizeMismatch',['Input parameter size mismatch in option ''' fName{ii} '''']);
             end
         end
     else
         if isfield(format,'defval') && (any(size(format.defval{ii})) || (isfield(format,'soft') && format.soft{ii}))
             input.(fName{ii}) = format.defval{ii};
         else
-            error('spinw:sw_readparam:ParameterMissing',['Necessary input parameter missing (param.' fName{ii} ')!']);
+            error('spinw:sw_readparam:ParameterMissing',['Necessary input option is missing ''' fName{ii} '''']);
         end
     end
 end
 
 if ~all(usedField)
     wName = sprintf('%s, ',rName{~usedField});
-    warning('sw_readparam:UnreadInput','Invalid input parameter names: %s\b\b!',wName);
+    warning('sw_readparam:UnreadInput','Invalid input option names: %s\b\b!',wName);
 end
 
 end

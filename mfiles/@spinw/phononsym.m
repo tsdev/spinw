@@ -79,7 +79,7 @@ om = sqrt(om2);
 
 % % X-ray cross section
 hklA = (hkl'*2*pi*inv(obj.basisvector))';
-int  = permute(sum(bsxfun(@times,ea,permute(hklA,[1 3 2])),1),[2 3 1]).^2;
+int  = permute(sumsym(bsxfunsym(@times,ea,permute(hklA,[1 3 2])),1),[2 3 1]).^2;
 
 spectra.Sab   = ea;
 spectra.omega = om;

@@ -7,20 +7,20 @@ function mAtomList = matom(obj)
 % See also SPINW.ATOM.
 %
 
-if isempty(obj.matomstore)
+if isempty(obj.cache.matom)
     atomList      = obj.atom;
     
     mAtomList.r   = atomList.r(:,atomList.mag==1);
     mAtomList.idx = atomList.idx(:,atomList.mag==1);
     mAtomList.S   = obj.unit_cell.S(mAtomList.idx);
     
-    obj.matomstore = mAtomList;
+    obj.cache.matom = mAtomList;
     
     % add listener to lattice and unit_cell fields
     obj.propl    = addlistener(obj,'lattice',  'PostSet',@obj.modmatom);
     obj.propl(2) = addlistener(obj,'unit_cell','PostSet',@obj.modmatom);
 else
-    mAtomList = obj.matomstore;
+    mAtomList = obj.cache.matom;
 end
 
 end

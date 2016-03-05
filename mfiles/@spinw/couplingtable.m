@@ -92,4 +92,6 @@ for ii = 1:size(Jall,2)
     end
 end
 
+bonds.label = {'dl_x' 'dl_y' 'dl_z' 'atom1' 'atom2' 'idx' 'mat_idx1' 'mat_idx2' 'mat_idx3'};
+
 end

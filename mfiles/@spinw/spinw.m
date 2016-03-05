@@ -1,4 +1,4 @@
-classdef (ConstructOnLoad) spinw < handle
+classdef spinw < handle
     % SPINW class defines data structure and methods to calculate spin wave
     % dispersion in magnetic crystals.
     %
@@ -142,19 +142,19 @@ classdef (ConstructOnLoad) spinw < handle
         %   'muB'       Bohr magneton, default is 0.0579 [meV/T]
         %   'mu0'       Vacuum permeability, 201.335431 [T^2*Angstrom^3/meV]
         unit
+        % Stores the cache, it should be only used to check consistency of
+        % the code. The stored values should not be changed by the user!
+        % Sub fields are:
+        %   'matom'     Data on the magnetic unit cell.
+        cache = struct('matom',[]);
+        
     end
     
     properties (Access = private)
-        matomstore = []; % stores the magnetic atoms
         propl         % stores the property change listener handles
         sym  = false; % stores whether the couplings are generated under symmetry constraints
         symb = false; % stores whether the calculation are done symbolically
         fid  = 1;     % stores the file ID of the text output, default is the Command Window
-        Elabel = 'meV';
-        Qlabel = 'Angstrom^{-1}';
-        Rlabel = 'Angstrom';
-        Blabel = 'T';
-        Tlabel = 'K';
         ver    = sw_version;
     end
     
@@ -307,7 +307,7 @@ classdef (ConstructOnLoad) spinw < handle
             % listening to the change of the lattice or unit_cell fields
             
             % delete the stored magnetic atom positions
-            obj.matomstore = [];
+            obj.cache.matom = [];
             % remove the listener
             delete(obj.propl);
             % fprintf('Property changed!\n')

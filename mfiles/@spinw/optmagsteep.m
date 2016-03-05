@@ -326,6 +326,10 @@ else
     end
 end
 
+if rIdx == nRun
+    warning('Convergence was not reached!')
+end
+
 % Save optimised magnetic structure into the sw object.
 obj.mag_str.S = M(:,1:end-1);
 

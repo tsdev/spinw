@@ -42,11 +42,6 @@ objC = spinw(objS);
 objC.sym    = obj.sym;
 objC.symb   = obj.symb;
 objC.fid    = obj.fid;
-objC.Elabel = obj.Elabel;
-objC.Qlabel = obj.Qlabel;
-objC.Rlabel = obj.Rlabel;
-objC.Blabel = obj.Blabel;
-objC.Tlabel = obj.Tlabel;
 objC.ver    = obj.ver;
 
 end

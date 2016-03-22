@@ -1,11 +1,12 @@
 function spectra = phonon(obj, hkl, varargin)
-% calculates phonon dispersion based on a spring model
+% calculates phonon dispersion based on a ball-spring model or using
+% Phonopy data
 %
 % spectra = PHONON(obj, hkl, 'option1', value1 ...)
 %
 % Input:
 %
-% obj           Input structure, sw class object.
+% obj           Input structure, spinw class object.
 % hkl           Defines the Q points where the spectra is calculated, in
 %               reciprocal lattice units, size is [3 nHkl]. Q can be also
 %               defined by several linear scan in reciprocal space. In this

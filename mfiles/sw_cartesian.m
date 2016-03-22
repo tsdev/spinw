@@ -9,7 +9,7 @@ function [u, v] = sw_cartesian(n)
 %
 
 if nargin == 0
-    help sw_cartesian;
+    help sw_cartesian
     return
 end
 

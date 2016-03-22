@@ -115,15 +115,6 @@ while ~feof(fid)
         data{polIdx}.nMode = sum(data{polIdx}.I~=0,1);
         data{polIdx}.corr  = sw_parstr(modeStr{polIdx});
         
-        %         % sort magnon energies in increasing order
-        %         for ii = 1:size(data{polIdx}.E,1)
-        %             [~, idx] = sort(data{polIdx}.E(ii,:));
-        %
-        %             data{polIdx}.E(ii,:) = data{polIdx}.E(ii,idx);
-        %             data{polIdx}.I(ii,:) = data{polIdx}.I(ii,idx);
-        %             data{polIdx}.w(ii,:) = data{polIdx}.w(ii,idx);
-        %         end
-        
         if ~feof(fid)
             modeStr{polIdx+1}  = temp(2:strPosR(1));
         end

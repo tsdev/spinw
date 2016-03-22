@@ -84,8 +84,8 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %
 
 if nargin==0
-    help sw_plotspec;
-    return;
+    help sw_plotspec
+    return
 end
 
 inpForm.fname  = {'mode' 'imag' 'aHandle' 'colorbar' 'dashed' 'norm'     };

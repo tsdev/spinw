@@ -1,3 +1,4 @@
+name R  RGB(1) RGB(2) RGB(3) mass longname
 H    0.37  255 255 255   1.01 Hydrogen
 He   0.32  217 255 255   4.00 Helium
 Li   0.90  204 128 255   6.94 Lithium

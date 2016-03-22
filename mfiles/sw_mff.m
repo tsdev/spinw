@@ -20,9 +20,9 @@ function [formFactVal, coeff, S] = sw_mff(atomName, Q)
 %               formula:
 %               <j0(Qs)> = A*exp(-a*Qs^2) + B*exp(-b*Qs^2) + C*exp(-c*Qs^2) + D*exp(-d*Qs^2) + E,
 %               where Qs = Q/(4*pi) and A, a, B, ... are the coefficients.
-%               Optionally the (D,d) coefficients are zero.
+%               The (D,d) coefficients can be zero.
 %
-% S             Value of the spin quantum number (last column in ion.dat).
+% S             Value of the spin quantum number (last column in magion.dat).
 %
 % The source for the form factor data are:
 % [1] A.-J. Dianoux and G. Lander, Neutron Data Booklet (2003).
@@ -32,11 +32,9 @@ function [formFactVal, coeff, S] = sw_mff(atomName, Q)
 S = 0;
 
 if nargin == 0
-    help sw_mff;
-    return;
+    help sw_mff
+    return
 end
-
-formFact = struct;
 
 if ischar(atomName)
     % if there is whitespace, use the first word
@@ -48,53 +46,34 @@ if ischar(atomName)
     
     % remove +/- symbols
     atomName = atomName(atomName>45);
-    % Open the form factor definition file.
-    ffPath = [sw_rootdir 'dat_files' filesep 'ion.dat'];
-    fid = fopen(ffPath);
-    if fid == -1
-        error('sw:sw_mff:FileNotFound',['Form factor definition file not found: '...
-            regexprep(ffPath,'\' , '\\\') '!']);
-    end
-    
-    % Read all line from file
-    idx = 1;
-    formFact.coeff = zeros(0,15);
-    
-    while ~feof(fid)
-        fLine = fgets(fid);
-        [formFact.name{idx,1}, ~, ~, nextIdx] = sscanf(fLine,'%s',1);
-        coeffTemp = sscanf(fLine(nextIdx:end),'%f ',inf);
-        formFact.coeff(idx,1:numel(coeffTemp)-1) = coeffTemp(1:end-1);
-        formFact.S(idx) = coeffTemp(end);
-        idx = idx + 1;
-    end
-    fclose(fid);
+    % open the form factor definition file
+    ffPath = [sw_rootdir 'dat_files' filesep 'magion.dat'];
+    % read form factor data
+    formFact = sw_readtable(ffPath);
     
     flag = false;
     
-    % Looks for the name of the atom.
-    for ii = 1:length(formFact.name)
-        selected = formFact.name{ii};
-        if ~isempty(strfind(upper(atomName),upper(selected))) || ~isempty(strfind(upper(atomName),upper(selected(2:end))))
+    % search for the name of the atom
+    for ii = 1:numel(formFact)
+        selected = formFact(ii).label;
+        if strcmpi(atomName,selected) || strcmpi(atomName,selected(2:end))
             idx = ii;
             flag = true;
         end
     end
     
     if flag
-        coeff = formFact.coeff(idx,:);
-        % remove trailing zeros
-        cutIdx = find([diff(coeff==0) 0],1,'last');
-        coeff = coeff(1:cutIdx);
+        coeff = [formFact(idx).a;formFact(idx).b];
+        coeff = [coeff(:)'  formFact(idx).c];
         if isempty(coeff)
             coeff = 0;
         end
         
-        S     = formFact.S(idx);
+        S     = formFact(idx).spin;
     else
         coeff = [zeros(1,6) 1];
         if nargout < 3
-            warning('sw_mff:WrongInput','The form factor for the given magnetic atom is undefined!')
+            warning('sw_mff:WrongInput','The form factor for %s is undefined, constant 1 will be used instead!',atomName)
         end
     end
     
@@ -102,8 +81,6 @@ else
     %flag = true;
     coeff = atomName;
 end
-
-
 
 if nargin > 1
     if all(size(Q)>1)

@@ -28,6 +28,8 @@ function spectra = sw_instrument(spectra, varargin)
 %                               E_FWHM = res_fun(E)
 %                           where E_FWHM is the FWHM energy resolution and
 %                           E is the energy transfer value.
+% func          Shape of the energy resolution function, for details see
+%               the help of sw_resconv.
 % polDeg        Degree of the fitted polynomial to the instrumental
 %               resolution data. Default is 5.
 % dQ            Momentum transfer resolution of the instrument, FWHM is
@@ -64,21 +66,23 @@ function spectra = sw_instrument(spectra, varargin)
 %               instrumental factors.
 %
 %
-% See also POLYFIT, POLYVAL, SW_RES.
+% See also POLYFIT, POLYVAL, SW_RES, SW_RESCONV.
 %
 
 if nargin == 0
     help sw_instrument
-    return;
+    return
 end
+
+func0 = @func.gaussfwhm;
 
 inpForm.fname  = {'dE'  'ki'  'Ei'  'kf'  'Ef'  'plot' 'polDeg' 'ThetaMin'};
 inpForm.defval = {0      0     0     0     0     false   5        0       };
 inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]    };
 
-inpForm.fname  = [inpForm.fname  {'formFact' 'dQ'  'norm' 'useRaw'}];
-inpForm.defval = [inpForm.defval { 'auto'    0     false   true   }];
-inpForm.size   = [inpForm.size   { [1 -2]    [1 1] [1 1]   [1 1]  }];
+inpForm.fname  = [inpForm.fname  {'formFact' 'dQ'  'norm' 'useRaw' 'func'}];
+inpForm.defval = [inpForm.defval { 'auto'    0     false   true    func0 }];
+inpForm.size   = [inpForm.size   { [1 -2]    [1 1] [1 1]   [1 1]   [1 1] }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -136,7 +140,7 @@ cEvect = (spectra.Evect(1:(end-1))+spectra.Evect(2:end))/2;
 if calcres
     for jj = 1:nPlot
         %spectra.swConv{jj} = sw_resconv(spectra.swConv{jj},cEvect',param.dE);
-        spectra.swConv{jj} = sw_resconv(real(spectra.swConv{jj}),cEvect',param.dE);
+        spectra.swConv{jj} = sw_resconv(real(spectra.swConv{jj}),cEvect',param.dE,param.func);
     end
     
     fprintf0(fid0,'Finite instrumental energy resolution is applied.\n');

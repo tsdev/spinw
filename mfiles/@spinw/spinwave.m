@@ -99,7 +99,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %               Default is true.
 % saveH         If true, the quadratic form of the Hamiltonian is saved. Be
 %               carefull, it can take up lots of memory. Default is false.
-% saveT         If true, the matrices that transform the normal magnon
+% saveV         If true, the matrices that transform the normal magnon
 %               modes into the magnon modes localized on the spins are
 %               saved. Be carefull, it can take up lots of memory.
 %               Default is false.
@@ -124,10 +124,10 @@ function spectra = spinwave(obj, hkl, varargin)
 %               units, normalized to the crystallographic unit cell.
 % H             Quadratic form of the Hamiltonian.
 %               Only saved if saveH is true.
-% T             Transformation matrix from the normal magnon modes to the
+% V             Transformation matrix from the normal magnon modes to the
 %               magnons localized on spins:
-%                   x_i = sum_j T_ij * x_j'
-%               Only saved if saveT is true.
+%                   x_i = sum_j V_ij * x_j'
+%               Only saved if saveV is true.
 % Sabp          Dynamical structure factor in the rotating frame,
 %               dimensions are [3 3 nMode nHkl], but the number of modes
 %               are equal to twice the number of magnetic atoms.
@@ -210,7 +210,7 @@ inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' 'hermit'};
 inpForm.defval = {false     false    true       0        1e-4  true    };
 inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]   };
 
-inpForm.fname  = [inpForm.fname  {'omega_tol' 'saveSabp' 'saveT' 'saveH'}];
+inpForm.fname  = [inpForm.fname  {'omega_tol' 'saveSabp' 'saveV' 'saveH'}];
 inpForm.defval = [inpForm.defval {1e-5        true       false   false  }];
 inpForm.size   = [inpForm.size   {[1 1]       [1 1]      [1 1]   [1 1]  }];
 
@@ -544,8 +544,8 @@ Sab = zeros(3,3,2*nMagExt,0);
 % Empty matrices to save different intermediate results for further
 % analysis: Hamiltonian, eigenvectors, dynamical structure factor in the
 % rotating frame
-if param.saveT
-    Tsave = zeros(2*nMagExt,2*nMagExt,nHkl);
+if param.saveV
+    Vsave = zeros(2*nMagExt,2*nMagExt,nHkl);
 end
 if param.saveH
     Hsave = zeros(2*nMagExt,2*nMagExt,nHkl);
@@ -764,8 +764,8 @@ for jj = 1:nSlice
         end
     end
     
-    if param.saveT
-        Tsave(:,:,hklIdxMEM) = V;
+    if param.saveV
+        Vsave(:,:,hklIdxMEM) = V;
     end
     if param.saveH
         Hsave(:,:,hklIdxMEM) = ham;
@@ -916,8 +916,8 @@ spectra.helical = helical;
 spectra.norm    = false;
 
 % Save different intermediate results.
-if param.saveT
-    spectra.T = Tsave;
+if param.saveV
+    spectra.V = Vsave;
 end
 if param.saveH
     spectra.H = Hsave;

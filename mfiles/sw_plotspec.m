@@ -703,7 +703,11 @@ if param.mode > 1
 end
 
 if param.title
-    title(titleStr0,'FontSize',param.fontSize);
+    if isfield(spectra,'T')
+        title([titleStr0 sprintf(', T = %5.1f K',spectra.T)],'FontSize',param.fontSize);
+    else
+        title(titleStr0,'FontSize',param.fontSize);
+    end
 end
 drawnow;
 hold off

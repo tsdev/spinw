@@ -61,27 +61,46 @@ inpForm.soft   = {false             false                 false           false 
 param = sw_readparam(inpForm, varargin{:});
 
 if ~isempty(param.bv)
-    BV = param.bv;
-    % make ab plane perpendicular to z
+    % define basis vector of the new coordinate system
+    a = [1 0 0];
     c = [0 0 1];
-    % The starting vector, size (1,3):
-    n1 = sw_nvect(BV(:,[1 2]),1e-5);
-    % Axis of rotation defined by the spin direction
+    
+    BV = param.bv;
+    % make ab plane perpendicular to z, the starting normal vector:
+    n1  = sw_nvect(BV(:,[1 2]),1e-5);
+    %n1 = cross(BV(:,1),BV(:,2));
+    %n1 = n1/norm(n1);
+    % axis of rotation defined by the c x n1
     nRot  = cross(c,n1);
-    % Angle of rotation.
+    if norm(nRot) == 0
+        nRot = a;
+    end
+    
+    % angle of rotation.
     phi = -atan2(norm(cross(n1,c)),dot(n1,c));
     % rotate the basis vectors
     [BV1, R1] = sw_rot(nRot,phi,BV);
     
-    % rotate a-axis along x
-    a = [1 0 0];
-    phi = -atan2(norm(cross(BV1(:,1),a)),dot(BV1(:,1),a));
-    % rotate the basis vectors
-    [BV2, R2] = sw_rot(c,-phi,BV1);
     
+    % rotate a-axis along x
+    phi = atan2(norm(cross(BV1(:,1),a)),dot(BV1(:,1),a));
+    % rotate the basis vectors
+    [BV2, R2] = sw_rot(c,phi,BV1);
+    
+    % check the sign of cross(x,y)
+    if c*cross(BV2(:,1),BV2(:,2))<0
+        % add extra 180 deg rotation around x
+        [BV2, R3] = sw_rot(a,pi,BV2);
+        %BV2(:,[2 3]) = -BV2(:,[2 3]);
+    else
+        R3 = eye(3);
+    end
+    
+
     % rotation matrix that bring the basis vectors to the right direction
     if nargout > 0
-        R = R2*R1;
+        R = R3*R2*R1;
+        %R = R2*R1;
     end
     
     % the new abc vectors compatible with the SpinW format

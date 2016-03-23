@@ -1,12 +1,21 @@
-function [u, v] = sw_cartesian(n)
+function [vy, vz, vx] = sw_cartesian(n)
 % creates a right handed Cartesian coordinate system
 %
-% [u, v] = SW_CARTESIAN(n) 
+% [vy, vz, vx] = SW_CARTESIAN(n)
 %
-% It creates an (n,u,v) right handed Cartesian coordinate system.
+% It creates an (x,y,z) right handed Cartesian coordinate system.
 %
-% n         3 element vector, either row or column.
+% Input:
 %
+% n         Either a 3 element row/column vector or a 3x3 matrix with
+%           columns defining 3 vectors.
+% Output:
+%
+% vy,vz,vx  Vectors defining the right handed coordinate system. They are
+%           either column of row vectors depending on the shape of the
+%           input n.
+%
+
 
 if nargin == 0
     help sw_cartesian
@@ -14,24 +23,37 @@ if nargin == 0
 end
 
 % Shape of original vector.
-nShape = size(n);
+if numel(n) == 3
+    nShape = size(n);
+    n = n(:);
+    
+    z = [0; 0;-1];
+    y = [0;-1; 0];
+    
+    if any(cross(n,z))
+        vy = cross(n,z);
+    else
+        vy = cross(n,y);
+    end
+    vz = cross(n,vy);
+    
+elseif all(size(n) == [3 3])
+    if det(n) == 0
+        error('sw_cartesian:WrongInput','The input vectors are not linearly independent!')
+    end
 
-n = n(:);
-z = [0; 0;-1];
-y = [0;-1; 0];
-
-if any(cross(n,z))
-    u = cross(n,z);
+    nShape = [3 1];
+    vz = cross(n(:,1),n(:,2));
+    vy = cross(vz,n(:,1));
+    n = n(:,1);
+   
 else
-    u = cross(n,y);
+    error('sw_cartesian:WrongInput','Wrong size of n!')
 end
 
-v = cross(n,u);
-u = u/norm(u);
-v = v/norm(v);
-
 % Conserves the shape of the input vector.
-u = reshape(u,nShape);
-v = reshape(v,nShape);
+vy = reshape(vy/norm(vy),nShape);
+vz = reshape(vz/norm(vz),nShape);
+vx = reshape(n/norm(n),nShape);
 
 end

@@ -1,4 +1,4 @@
-function spectra = sw_phonopy(fName)
+function [spectra, R] = sw_phonopy(fName)
 % extract dispersion from Phonopy output yaml file
 %
 % spectra = SW_PHONOPY(fName)
@@ -8,7 +8,8 @@ function spectra = sw_phonopy(fName)
 % conversion to SpinW coordinate system is made. Also a fictious magnetic
 % structure is setup to set the nMagExt value equal to the number of phonon
 % modes divided by two. As a side effect, the "q-position" field in the
-% .yaml file is renamed to "qposition".
+% .yaml file is renamed to "qposition". If the atomic positions cannot be
+% found in the .yaml file, no coordinate system conversion is done.
 %
 % Input:
 %
@@ -56,21 +57,31 @@ spectra.Sab = reshape(spectra.Sab,3,[],nMode,nHkl);
 
 spectra.omega = spectra.omega*sw_converter(1,'THz','meV');
 
-spectra.obj = spinw;
-% generate the object from the basis vectors
-R = spectra.obj.genlattice('bv',inv(band.reciprocal_lattice));
-% add atoms
-for ii = 1:band.natom
-    spectra.obj.addatom('r',band.atomReducedPositions(ii,:),'label',band.atomNames{ii},'S',1);
+if ~isfield(band,'atomReducedPositions')
+    readobj = false;
+else
+    readobj = true;
 end
 
-% fake magnetic structure to generate the right nMagExt = nAtom value
-spectra.obj.mag_str.S = zeros(3,nMode/2);
-% rotate the components of the polarisation using R
-spectra.Sab = permute(mmat(R,permute(spectra.Sab,[1 5 2:4])),[1 3:5 2]);
+if readobj
+    spectra.obj = spinw;
+    % generate the object from the basis vectors
+    R = spectra.obj.genlattice('bv',inv(band.reciprocal_lattice));
+    % add atoms
+    for ii = 1:band.natom
+        spectra.obj.addatom('r',band.atomReducedPositions(ii,:),'label',band.atomNames{ii},'S',1);
+    end
+    
+    % fake magnetic structure to generate the right nMagExt = nAtom value
+    spectra.obj.mag_str.S = zeros(3,nMode/2);
+    % rotate the components of the polarisation using R
+    spectra.Sab = permute(mmat(R,permute(spectra.Sab,[1 5 2:4])),[1 3:5 2]);
+    % Angstrom^-1 units for Q
+    spectra.hklA = 2*pi*(spectra.hkl'/spectra.obj.basisvector)';
+else
+    R = zeros(3);
+end
 
 spectra.norm = false;
-% Angstrom^-1 units for Q
-spectra.hklA = 2*pi*(spectra.hkl'/spectra.obj.basisvector)';
 
 end

@@ -45,4 +45,10 @@ objC.symb   = obj.symb;
 objC.fid    = obj.fid;
 objC.ver    = obj.ver;
 
+% empty the cache of the new object
+fieldN = fieldnames(objC.cache);
+for ii = 1:numel(fieldN)
+    objC.cache.(fieldN{ii}) = [];
+end
+
 end

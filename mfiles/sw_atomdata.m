@@ -50,6 +50,7 @@ atomSymb = atomSymb(isstrprop(atomSymb,'alpha'));
 idx = find(strcmp({atom(:).name},atomSymb));
 
 if isempty(idx)
+    atom       = struct;
     atom.name  = '';
     atom.R     = 1;
     atom.RGB   = [255 167 0];

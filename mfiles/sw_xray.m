@@ -138,6 +138,15 @@ end
 for ii = 1:nTwin
     % apply form factor
     temp = bsxfun(@times,Sab{ii},permute(FF,[3 1 4 2]));
+    % apply Debye-Waller factor if given
+    if isfield(spectra,'DW')
+        fprintf0(spectra.obj.fileid,'Including the Debye-Waller factor in the X-ray scattering cross section!\n');
+        % QT*W*Q values
+        QWQ = mmat(mmat(permute(QA,[3 1 4 2]),spectra.DW),permute(QA,[1 3 4 2]));
+        temp = bsxfun(@times,temp,exp(-permute(QWQ,[1 3 2 4])));
+    else
+        fprintf0(spectra.obj.fileid,'No Debye-Waller factor is included in the X-ray scattering cross section!\n');
+    end
     % apply 1/sqrt(M) factor on u(q)
     temp = bsxfun(@rdivide,temp,sqrt(M));
     % include phase factor

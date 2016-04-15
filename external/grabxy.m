@@ -1,11 +1,12 @@
 function pts = grabxy(fName, ax, logax)
-% reads coordinates from raster image
+% reads coordinates from raster image or image on the clipboard
 %
 % pts = GRABXY(fName, ax, {logax})
 %
 % Input:
 %
-% fName         String, path to the image file.
+% fName         String, path to the image file. If empty, the image is read
+%               from the clipboard.
 % ax            (x,y) coordinates of the three axis points, with dimensions
 %               of 2x3. If ax is omitted or empty, GRABXY just shows the
 %               image.
@@ -42,7 +43,14 @@ if nargin < 3
 end
 
 % open image file
-img = imread(fName);
+if ~isempty(fName)
+    img = imread(fName);
+else
+    img = clipboardimage;
+    if isempty(img)
+        error('grabxy:NoCLPBRDImage','The clipboard doesn''t contain an image!');
+    end
+end
 
 % display the image
 hFig = figure('ToolBar','none','MenuBar','none','name','GrabXY');

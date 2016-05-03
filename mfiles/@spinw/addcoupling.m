@@ -162,7 +162,12 @@ param.type   = int32(param.type);
 
 if any(ismember(Jmod(:),param.mat))
     warning('sw:addcoupling:CouplingIdxWarning',['Same matrix already '...
-        'assigned on some coupling!']);
+        'assigned on some coupling, dublicate assigments are removed!']);
+end
+
+if isempty(param.mat)
+    warning('sw:addcoupling:WrongMatrixLabel','The selected matrix label does not exists!')
+    return
 end
 
 if any(Jmod(3,:))
@@ -171,7 +176,11 @@ if any(Jmod(3,:))
 end
 
 for ii = 1:numel(param.mat)
+    % generate one index for each column in Jmod
     idxSel = sub2ind(size(Jmod),sum(Jmod>0,1)+1,1:size(Jmod,2));
+    % remove index where Jmod already contains param.mat
+    idxSel = idxSel(~any(Jmod==param.mat(ii),1));
+    
     Jmod(idxSel) = param.mat(ii);
     Tmod(idxSel) = param.type(ii);
 end

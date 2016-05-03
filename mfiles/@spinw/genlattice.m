@@ -12,7 +12,7 @@ function R = genlattice(obj, varargin)
 % angled    Alpha, beta, gamma angles in degree, dimensions are [1 3].
 % angle     Alpha, beta, gamma angles in radian, dimensions are [1 3].
 % lat_const a, b, c lattice parameters, dimensions are [1 3].
-% sym       Space group index, or space group name (string).
+% spgr      Space group index, or space group name (string).
 %
 % Output:
 %
@@ -53,12 +53,17 @@ function R = genlattice(obj, varargin)
 % See also SPINW, SW_ADDSYM, SW_GENSYM, SPINW.GENCOUPLING.
 %
 
-inpForm.fname  = {'angle'           'lat_const'           'sym'           'angled' 'bv' };
-inpForm.defval = {obj.lattice.angle obj.lattice.lat_const obj.lattice.sym [0 0 0]  []   };
-inpForm.size   = {[1 3]             [1 3]                 [1 -1]          [1 3]    [3 3]};
-inpForm.soft   = {false             false                 false           false    true };
+inpForm.fname  = {'angle'           'lat_const'           'sym'           'angled' 'bv'  'spgr' };
+inpForm.defval = {obj.lattice.angle obj.lattice.lat_const obj.lattice.sym [0 0 0]  []    []     };
+inpForm.size   = {[1 3]             [1 3]                 [1 -1]          [1 3]    [3 3] [1 -2] };
+inpForm.soft   = {false             false                 false           false    true  true   };
 
 param = sw_readparam(inpForm, varargin{:});
+
+% new option, but keep the old one as well
+if ~isempty(param.spgr)
+    param.sym = param.spgr;
+end
 
 if ~isempty(param.bv)
     % define basis vector of the new coordinate system

@@ -210,8 +210,11 @@ classdef spinw < handle
                 
                 if ~isempty(cif0.symmetry_equiv_pos_as_xyz)
                     xyz0 = cif0.symmetry_equiv_pos_as_xyz;
-                else
+                elseif ~isempty(cif0.space_group_symop_operation_xyz)
                     xyz0 = cif0.space_group_symop_operation_xyz;
+                else
+                    warning('spinw:WrongFormat','Missing symmetry operators, using P1')
+                    xyz0 = {'x,y,z'};
                 end
                 
                 xyz0 = sprintf('%s; ',xyz0{:}); xyz0 = xyz0(1:end-2);

@@ -184,7 +184,7 @@ switch unitOut
         out = 2*pi/clight/k/1e10*1e15;
     case 'ps'
         out = 2*pi/clight/k/1e10*1e15*1e-3;
-    case 'J'
+    case {'J' 'Joule'}
         if m~=0
             %k = sqrt((value*2*m))/hBar/1e10;
             out = (k*1e10*hBar)^2/2/m;

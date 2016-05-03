@@ -103,6 +103,8 @@ if iscell(cName)
     else
         RGB = RGBList(idx,:);
     end
+else
+    cName = {cName};
 end
 
 if isempty(RGB)

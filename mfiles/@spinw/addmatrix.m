@@ -21,7 +21,8 @@ function addmatrix(obj, varargin)
 % color     Color for plotting, either a matrix with dimensions are  [3 nJ]
 %           that contains color RGB codes (0-255), or string with the name
 %           of the color (for multiple matrix the string have to be packed
-%           into a cell. Default color is red.
+%           into a cell. Default color is a random color from the color.dat
+%           file.
 %
 % Output:
 %
@@ -37,8 +38,8 @@ function addmatrix(obj, varargin)
 %
 
 if nargin < 2
-    help spinw.addmatrix;
-    return;
+    help spinw.addmatrix
+    return
 end
 
 inpForm.fname  = {'value'    'mat'      'label' 'color' };
@@ -93,7 +94,9 @@ end
 
 if ~isfield(newMat,'color') || isempty([newMat.color])
     for ii = 1:numel(newMat)
-        newMat(ii).color = repmat([255;0;0],1,size(newMat(ii).mat,3));
+        %newMat(ii).color = repmat([255;0;0],1,size(newMat(ii).mat,3));
+        % generate random color
+        newMat(ii).color = repmat(sw_colorname(randi(141),1),1,size(newMat(ii).mat,3));
     end
 else
     for ii = 1:numel(newMat)

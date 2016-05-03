@@ -49,23 +49,23 @@ if nargout <= 3
     % Magnetic ordering wave vector in the crystallographic unit cell!
     k = x(end+(-4:-2));
     % Normal to the spin rotation plane.
-    nTheta  = x(end-1);
-    nPhi    = x(end);
-    n = [sind(nTheta)*[cosd(nPhi) sind(nPhi)] cosd(nTheta)];
+    nTheta  = x(end-1)*pi/180;
+    nPhi    = x(end)*pi/180;
+    n = [sin(nTheta)*[cos(nPhi) sin(nPhi)] cos(nTheta)];
     % Angles in the spin plane.
-    phi = x(1:nMagExt);
+    phi = x(1:nMagExt)*pi/180;
     
     [u, v] = sw_cartesian(n');
     
     if numel(M0)==1
-        M = (u*cosd(phi) + v*sind(phi))*M0;
+        M = (u*cos(phi) + v*sin(phi))*M0;
     else
         % Check that the number of magnetic atoms is right
         if length(phi)~=length(M0)
             error('sw:gm_planar:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
         end
         % Magnetic moments in orthogonal coordinate sysyem.
-        M = bsxfunsym(@times,u*cosd(phi) + v*sind(phi),M0);
+        M = bsxfunsym(@times,u*cos(phi) + v*sin(phi),M0);
     end
 else
     nMagExt = size(M0,2);

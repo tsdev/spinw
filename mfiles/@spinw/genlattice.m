@@ -14,6 +14,10 @@ function R = genlattice(obj, varargin)
 % lat_const a, b, c lattice parameters, dimensions are [1 3].
 % spgr      Space group index, or space group name (string), or space group
 %           operators in a matrix with dimensions [3 4 nOp].
+% label     Optional label for the space group if the generators are given.
+% bv        Basis vectors given in a matrix with dimensions of [3 3].
+% origin    Origin for the space group operators. Default is [0 0 0].
+% perm      Permutation of the abc axes of the space group operators.
 %
 % Output:
 %
@@ -45,8 +49,8 @@ function R = genlattice(obj, varargin)
 % Example:
 %
 % ...
-% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'sym','P 6')
-% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'sym',168)
+% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','P 6')
+% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr',168)
 %
 % The two lines are equivalent, both will create hexagonal lattice, with
 % 'P 6' space group.
@@ -59,11 +63,10 @@ inpForm.defval = {obj.lattice.angle obj.lattice.lat_const obj.lattice.sym obj.la
 inpForm.size   = {[1 3]             [1 3]                 [-1 -2 -3]      [1 -7]           };
 inpForm.soft   = {false             false                 false           true             };
 
-inpForm.fname  = [inpForm.fname  {'angled' 'bv'  'spgr'     'origin'          }];
-inpForm.defval = [inpForm.defval {[0 0 0]  []    []         obj.lattice.origin}];
-inpForm.size   = [inpForm.size   {[1 3]    [3 3] [-4 -5 -6] [1 3]             }];
-inpForm.soft   = [inpForm.soft   {false    true  true       false             }];
-
+inpForm.fname  = [inpForm.fname  {'angled' 'bv'  'spgr'     'origin'           'perm'}];
+inpForm.defval = [inpForm.defval {[0 0 0]  []    []         obj.lattice.origin 'abc' }];
+inpForm.size   = [inpForm.size   {[1 3]    [3 3] [-4 -5 -6] [1 3]              [1 3] }];
+inpForm.soft   = [inpForm.soft   {false    true  true       false              true  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -139,7 +142,13 @@ else
 end
 
 % generate the symmetry operators
-obj.lattice.sym = sw_gensym(param.sym);
+param.sym = sw_gensym(param.sym);
+
+% permute the symmetry operators if necessary
+if ischar(param.perm)
+    param.perm = param.perm-'a'+1;
+end
+obj.lattice.sym = param.sym(param.perm,[param.perm 4],:);
 % assign the origin for space group operators
 obj.lattice.origin = param.origin;
 

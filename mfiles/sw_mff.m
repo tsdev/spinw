@@ -9,6 +9,7 @@ function [formFactVal, coeff, S] = sw_mff(atomName, Q)
 %               notation (e.g. Cr^3+ --> 'MCR3' or 'Cr3'). It can be also a
 %               vector of the 7 coefficients, see below. If the string
 %               contains whitespace, the first word will be used as input.
+%               Can be also a cell of strings to calculate multiple ions.
 % Q             Momentum transfer in Angstrom^-1 units with dimensions of
 %               [1 nQ] or [3 nQ], optional.
 %
@@ -22,14 +23,12 @@ function [formFactVal, coeff, S] = sw_mff(atomName, Q)
 %               where Qs = Q/(4*pi) and A, a, B, ... are the coefficients.
 %               The (D,d) coefficients can be zero.
 %
-% S             Value of the spin quantum number (last column in magion.dat).
+% S             Value of the spin quantum number ('spin' column in magion.dat).
 %
 % The source for the form factor data are:
 % [1] A.-J. Dianoux and G. Lander, Neutron Data Booklet (2003).
 % [2] K. Kobayashi, T. Nagao, and M. Ito, Acta Crystallogr. A. 67, 473 (2011).
 %
-
-S = 0;
 
 if nargin == 0
     help sw_mff
@@ -46,9 +45,10 @@ if iscell(atomName)
     % read form factor data
     formFact = sw_readtable(ffPath);
     % constant 1 form factor for atoms couldn't find
-    formFact(end+1).a = zeros(1,4);
-    formFact(end).b   = zeros(1,4);
-    formFact(end).c   = 1;
+    formFact(end+1).a  = zeros(1,4);
+    formFact(end).b    = zeros(1,4);
+    formFact(end).c    = 1;
+    formFact(end).spin = 0;
     
     idx = zeros(1,numel(atomName))+numel(formFact);
     
@@ -71,14 +71,15 @@ if iscell(atomName)
     end
     
     coeff = [reshape([formFact(idx).a],4,[]);reshape([formFact(idx).b],4,[]);[formFact(idx).c]]';
+    coeff = coeff(:,[1 5 2 6 3 7 4 8 9]);
+    S     = [formFact(idx).spin];
     
     if nargout < 3 && any(idx == numel(formFact))
         fIdx = find(idx == numel(formFact));
         warning('sw_mff:WrongInput','The form factor for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
     end
-    
 else
-    coeff = atomName;
+    error('sw_mff:WrongInput','Wrong input!')
 end
 
 % TODO for multiple atoms
@@ -88,13 +89,16 @@ if nargin > 1
         % units, calculate the absolute value of Q
         Q = sqrt(sum(Q.^2,1));
     end
-    Qs = Q/(4*pi);
+    Qs = Q(:)'/(4*pi);
     
-    formFactVal = Qs*0;
-    for ii = 2:2:numel(coeff)
-        formFactVal = formFactVal + coeff(ii-1)*exp(-coeff(ii)*Qs.^2);
+    formFactVal = zeros(size(coeff,1),numel(Qs));
+    
+    for ii = 2:2:size(coeff,2)
+        formFactVal = formFactVal + bsxfun(@times,coeff(:,ii-1),exp(bsxfun(@times,-coeff(:,ii),Qs.^2)));
     end
-    formFactVal = formFactVal + coeff(end);
+    
+    formFactVal = bsxfun(@plus,formFactVal,coeff(:,end));
+    
 else
     formFactVal = [];
 end

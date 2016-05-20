@@ -41,18 +41,18 @@ end
 rPath = [sw_rootdir 'dat_files' filesep 'atom.dat'];
 atom  = sw_readtable(rPath);
 
-% add atomic number for the first 111 atom (original definitions)
-cellIdx = num2cell(1:111);
+% add atomic number for the first 113 atom + unobtanium (original definitions)
+cellIdx = num2cell(1:114);
 % FANCY
-[atom(1:111).Z] = deal(cellIdx{:});
+[atom(1:114).Z] = deal(cellIdx{:});
 
 % add empty placeholder atom
-atom(end+1).name   = '';
-atom(end).R        = 1;
-atom(end).RGB      = [255 167 0];
-atom(end).mass     = 0;
-atom(end).longname = '';
-atom(end).Z        = 0;
+% atom(end+1).name   = '';
+% atom(end).R        = 1;
+% atom(end).RGB      = [255 167 0];
+% atom(end).mass     = 0;
+% atom(end).longname = '';
+% atom(end).Z        = 0;
 
 if ischar(atomSymb)
     atomSymb = {atomSymb};
@@ -89,6 +89,7 @@ if iscell(atomSymb)
     end
 else
     idx = atomSymb;
+    idx(idx<1 || idx>113) = 113;
 end
 
 % select atoms

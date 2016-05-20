@@ -61,6 +61,10 @@ inpForm.soft   = [inpForm.soft   {true    true       true         true  true    
 
 newAtom = sw_readparam(inpForm, varargin{:});
 
+if ~any(size(newAtom.r)-[1 3])
+    newAtom.r = newAtom.r';
+end
+
 % number of old atoms
 nOldAtom = size(obj.unit_cell.r,2);
 % number of new atoms
@@ -91,12 +95,21 @@ if  ~iscell(newAtom.label)
     newAtom.label = {newAtom.label};
 end
 
+if isempty(newAtom.occ)
+    newAtom.occ = ones(1,nNewAtom);
+end
+
+if isempty(newAtom.A)
+    newAtom.A = int32(-ones(1,nNewAtom));
+end
+
 if isempty(newAtom.label)
     % Generate atom labels if not given
     if ~isempty(newAtom.Z)
         newAtom.label = sw_atomdata(newAtom.Z,'name');
     else
         newAtom.label = repmat({'atom'},[1 nNewAtom]);
+        newAtom.Z     = 113+zeros(1,nNewAtom); % Unobtanium
     end
     
     if isempty(newAtom.ox)
@@ -154,22 +167,21 @@ else
     newAtom.color = sw_colorname(newAtom.color);
 end
 
-
-if ~any(size(newAtom.r)-[1 3])
-    newAtom.r = newAtom.r';
-end
-
 % Generate spins, default is generated from the label of the atom.
 if isempty(newAtom.S)
-    for jj = 1:nNewAtom
-        [~,~,S0] = sw_mff(newAtom.label{jj});
-        newAtom.S(jj) = S0;
-    end
+    [~,~,newAtom.S] = sw_mff(newAtom.label);
 end
 
 if size(newAtom.S,2) == 1
     newAtom.S = newAtom.S';
 end
+
+% get scattering length
+newAtom.ff = zeros(2,9,nNewAtom);
+newAtom.b  = zeros(2,nNewAtom);
+
+newAtom.Z  = int32(newAtom.Z);
+
 
 if obj.symbolic
     if ~isa(newAtom.S,'sym')
@@ -189,28 +201,21 @@ if size(newAtom.label,2) == 1
     newAtom.label = newAtom.label';
 end
 
-newAtom.color = int32(newAtom.color);
+newAtom.color     = int32(newAtom.color);
 newObj.unit_cell  = newAtom;
 validate(newObj,'unit_cell');
-
-% check whether atom exists already
-occupied = false;
-for jj = 1:size(newObj.unit_cell.r,2)
-    if any(sum(abs(bsxfunsym(@minus,obj.unit_cell.r,newObj.unit_cell.r(:,jj))),1) < 1e-2)
-        occupied = true;
-    end
-end
-
-if occupied
-    warning('sw:addatom:AtomExists','Atomic position is already occupied, new atoms skipped!');
-    return;
-end
 
 obj.unit_cell.r     = [obj.unit_cell.r     mod(newObj.unit_cell.r,1)];
 obj.unit_cell.S     = [obj.unit_cell.S     newObj.unit_cell.S];
 obj.unit_cell.label = [obj.unit_cell.label newObj.unit_cell.label];
 obj.unit_cell.color = [obj.unit_cell.color newObj.unit_cell.color];
+obj.unit_cell.ox    = [obj.unit_cell.ox    newObj.unit_cell.ox];
+obj.unit_cell.occ   = [obj.unit_cell.occ   newObj.unit_cell.occ];
+obj.unit_cell.b     = [obj.unit_cell.b     newObj.unit_cell.b];
+obj.unit_cell.ff    = cat(3,obj.unit_cell.ff,newObj.unit_cell.ff);
+obj.unit_cell.A     = [obj.unit_cell.A     newObj.unit_cell.A];
+obj.unit_cell.Z     = [obj.unit_cell.Z     newObj.unit_cell.Z];
 
-validate(struct(obj));
+validate(obj);
 
 end

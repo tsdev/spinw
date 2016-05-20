@@ -8,20 +8,20 @@ function oHandle = sw_getobject(tagName, fHandle)
 %
 % Input:
 %
-% fHandle       Handle of figure, optional. If undefined, objects on all
-%               figures will be searched.
 % tagName       String of the tag that the objects have, it can be a cell
 %               that contains several strings.
+% fHandle       Handle of figure, optional. If undefined, objects on all
+%               figures will be searched.
 %
 % Output:
 %
 % oHandle       Handles of the found graphical objects in vector.
 %
-% See also SW, SW_GETFIGHANDLE, SW.PLOT.
+% See also SW, SW_GETFIGHANDLE, SW.PLOT, SW_SETOBJECT.
 %
 
 if nargin == 0
-    help sw_getobject;
+    help sw_getobject
     return
 end
 

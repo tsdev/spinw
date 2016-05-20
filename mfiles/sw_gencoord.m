@@ -1,4 +1,4 @@
-function [symOp, symTr, symName] = sw_gencoord(sym, fid)
+function [symOp, symTr, symName] = sw_gencoord(sym, fid, tol)
 % calculates all symmetry operators for a given space group
 %
 % [symOp, symTr, symName] = SW_GENCOORD(sym, fid) 
@@ -9,6 +9,8 @@ function [symOp, symTr, symName] = sw_gencoord(sym, fid)
 %               symmetry operators or cell: {symOp, symTr}.
 %               For example:
 %                   sym = 'P b n m';
+%               Can be also a matrix with dimensions [3 4 nOp] in a
+%               symmetry operator format.
 % fid           For printing the symmetry operators:
 %                   0   no printed output (Default)
 %                   1   standard output (Command Line)
@@ -23,29 +25,24 @@ function [symOp, symTr, symName] = sw_gencoord(sym, fid)
 % symName       String, the name of  the space group.
 %
 % See also SW, SW.ATOM, SW.MATOM, SW.GENCOUPLING, SW_POINTSYM, SW_GENATPOS,
-% SW_GENSYM.
+% SW_GENSYM, SW_ISSYMOP.
 %
 
 if nargin == 0
-    help sw_gencoord;
-    return;
+    help sw_gencoord
+    return
 end
 
 % tolerance for numerical error
-tol = 1e-5;
+if nargin < 3
+    tol = 1e-5;
+end
 
 if nargin < 2
     fid = 0;
 end
 
-if iscell(sym)
-    genOp  = sym{1};
-    transl = sym{2};
-    symName = '';
-else
-    [genOp, transl, symName] = sw_gensym(sym);
-end
-
+[genOp, transl, symName] = sw_gensym(sym);
 
 nGen  = size(genOp,3);
 symOp = eye(3);

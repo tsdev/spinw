@@ -37,51 +37,51 @@ if nargin == 0
 end
 
 if ischar(atomName)
-    % if there is whitespace, use the first word
-    atomName = strword(atomName,1);
-    atomName = atomName{1};
-    %     atomName = strsplit(atomName);
-    %     wordIdx = find(cellfun(@numel,atomName));
-    %     atomName = atomName{wordIdx(1)};
-    
-    % remove +/- symbols
-    atomName = atomName(atomName>45);
+    atomName = {atomName};
+end
+
+if iscell(atomName)
     % open the form factor definition file
     ffPath = [sw_rootdir 'dat_files' filesep 'magion.dat'];
     % read form factor data
     formFact = sw_readtable(ffPath);
+    % constant 1 form factor for atoms couldn't find
+    formFact(end+1).a = zeros(1,4);
+    formFact(end).b   = zeros(1,4);
+    formFact(end).c   = 1;
     
-    flag = false;
+    idx = zeros(1,numel(atomName))+numel(formFact);
     
-    % search for the name of the atom
-    for ii = 1:numel(formFact)
-        selected = formFact(ii).label;
-        if strcmpi(atomName,selected) || strcmpi(atomName,selected(2:end))
-            idx = ii;
-            flag = true;
+    for ii = 1:numel(atomName)
+        
+        % if there is whitespace, use the first word
+        atomName0 = strword(atomName{ii},1);
+        atomName0 = atomName0{1};
+        
+        % remove +/- symbols
+        atomName0 = atomName0(atomName0>45);
+        
+        % search for the name of the atom
+        idx0 = [find(strcmpi({formFact(:).label},atomName0))...
+            find(strcmpi(cellfun(@(C)C(2:end),{formFact(:).label},'UniformOutput',0),atomName0))];
+        
+        if ~isempty(idx0)
+            idx(ii) = idx0;
         end
     end
     
-    if flag
-        coeff = [formFact(idx).a;formFact(idx).b];
-        coeff = [coeff(:)'  formFact(idx).c];
-        if isempty(coeff)
-            coeff = 0;
-        end
-        
-        S     = formFact(idx).spin;
-    else
-        coeff = [zeros(1,6) 1];
-        if nargout < 3
-            warning('sw_mff:WrongInput','The form factor for %s is undefined, constant 1 will be used instead!',atomName)
-        end
+    coeff = [reshape([formFact(idx).a],4,[]);reshape([formFact(idx).b],4,[]);[formFact(idx).c]]';
+    
+    if nargout < 3 && any(idx == numel(formFact))
+        fIdx = find(idx == numel(formFact));
+        warning('sw_mff:WrongInput','The form factor for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
     end
     
 else
-    %flag = true;
     coeff = atomName;
 end
 
+% TODO for multiple atoms
 if nargin > 1
     if all(size(Q)>1)
         % if Q points are given as a list of Q vectors in Angstrom^-1

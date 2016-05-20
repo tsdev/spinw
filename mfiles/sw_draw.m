@@ -1,7 +1,7 @@
-function polyDat = sw_draw(varargin)
+function varargout = sw_draw(varargin)
 % plots additional object onto the crystal structure
 %
-% polyDat = SW_DRAW(Option1, Value1, ...) 
+% {polyDat} = SW_DRAW(Option1, Value1, ...) 
 %
 % It plots extra objects (bonds, polyhedra) onto the crystal structure
 % plot produced previously by sw.plot() function.
@@ -26,7 +26,7 @@ function polyDat = sw_draw(varargin)
 %           the central atom (true) or keep it black (false). Default is
 %           true.
 % alpha     Transparency of the plotted surfaces. Default is 1 for
-%           non-transparecy.
+%           non-transparecy. Default is 1 for bonds and 0.5 for polyhedron.
 % cBond     Color of different bonds. Default is 'auto', when they are set
 %           to the color of the center atom. [R G B] will fix the color of
 %           all bonds to a uniform one.
@@ -73,8 +73,9 @@ basisVector = obj.basisvector;
 param = getappdata(hFigure,'param');
 
 inpForm.fname  = {'mode' 'cAtom' 'pAtom' 'range'     'limit' 'edge' 'alpha' 'rBond' 'surfRes'};
-inpForm.defval = {'poly' 1       2       param.range 6       true   1       0.15    30       };
-inpForm.size   = {[1 -1] [1 -2]  [1 -3]  [3 2]       [1 -4]  [1 1]  [1 1]   [1 1]   [1 1]    };
+inpForm.defval = {'poly' 1       2       param.range 6       true   []       0.15    30       };
+inpForm.size   = {[1 -1] [1 -2]  [1 -3]  [3 2]       [1 -4]  [1 1]  [1 -5]   [1 1]   [1 1]    };
+inpForm.soft   = {false   false  false   false       false   false  true     false   false    };
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -151,8 +152,14 @@ pos   = zeros(3,nPol);
 switch param.mode
     case 'poly'
         polyDat.surf   = zeros(1,size(atom1.r,2));
+        if isempty(param.alpha)
+            param.alpha = 0.5;
+        end
     case 'bond'
         polyDat.surf   = [];
+        if isempty(param.alpha)
+            param.alpha = 1;
+        end
     otherwise
         error('sw_draw:WrongInput','Wrong ''mode'' option, check ''help sw_draw''!');
 end
@@ -216,8 +223,10 @@ for ii=1:size(atom1.r,2)
                 end
                 set(cCylinder1,'FaceColor',atom1.color(:,ii));
                 set(cCylinder1,'EdgeColor',atom1.color(:,ii));
+                set(cCylinder1,'FaceAlpha',param.alpha);
                 set(cCylinder2,'FaceColor',colorP(:,jj));
                 set(cCylinder2,'EdgeColor',colorP(:,jj));
+                set(cCylinder2,'FaceAlpha',param.alpha);
                 polyDat.index(jj,ii) = atom1.index(ii);
                 
             end
@@ -232,6 +241,10 @@ if ~param.edge
 end
 
 hold off
+
+if nargout == 1
+    varargout{1} = polyDat;
+end
 
 end
 

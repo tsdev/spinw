@@ -517,15 +517,27 @@ for ii = 1:nAtom
     % atom.name{ii} = labelTemp{wordIdx(1)};
 end
 
-atom.rad   = ones(nAtom,1) * param.rAtom; % atomic radius
+if numel(param.rAtom) > 1 && numel(param.rAtom) ~= max(atom.idx)
+    warning('spinw:plot:WrongInput',['The length of atom radius vector '...
+        'doesn''t agree with the number of different atoms to plot (%d)'],max(atom.idx));
+    param.rAtom = param.rAtom(1);
+end
+
+% define the atomic radius to plot
+atom.rad   = ones(nAtom,1) * param.rAtom(1); 
 
 for ll = 1:nAtom
     % Saves atomic radius data if allowed and exists scaled with param.rAtom.
-    if param.rAtomData && (sw_atomdata(atom.name{ll},'radius') > 0)
+    r0 = sw_atomdata(atom.name{ll},'radius');
+    if param.rAtomData && (r0 > 0)
         if numel(param.rAtom)>1
-            atom.rad(ll) = sw_atomdata(atom.name{ll},'radius')*param.rAtom(atom.idx(ll));
+            atom.rad(ll) = r0*param.rAtom(atom.idx(ll));
         else
-            atom.rad(ll) = sw_atomdata(atom.name{ll},'radius')*param.rAtom;
+            atom.rad(ll) = r0*param.rAtom;
+        end
+    elseif ~param.rAtomData
+        if numel(param.rAtom)>1
+            atom.rad(ll) = param.rAtom(atom.idx(ll));
         end
     end
 end

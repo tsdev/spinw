@@ -12,7 +12,8 @@ function R = genlattice(obj, varargin)
 % angled    Alpha, beta, gamma angles in degree, dimensions are [1 3].
 % angle     Alpha, beta, gamma angles in radian, dimensions are [1 3].
 % lat_const a, b, c lattice parameters, dimensions are [1 3].
-% spgr      Space group index, or space group name (string).
+% spgr      Space group index, or space group name (string), or space group
+%           operators in a matrix with dimensions [3 4 nOp].
 %
 % Output:
 %
@@ -53,10 +54,16 @@ function R = genlattice(obj, varargin)
 % See also SPINW, SW_ADDSYM, SW_GENSYM, SPINW.GENCOUPLING.
 %
 
-inpForm.fname  = {'angle'           'lat_const'           'sym'           'angled' 'bv'  'spgr' };
-inpForm.defval = {obj.lattice.angle obj.lattice.lat_const obj.lattice.sym [0 0 0]  []    []     };
-inpForm.size   = {[1 3]             [1 3]                 [1 -1]          [1 3]    [3 3] [1 -2] };
-inpForm.soft   = {false             false                 false           false    true  true   };
+inpForm.fname  = {'angle'           'lat_const'           'sym'           'label'          };
+inpForm.defval = {obj.lattice.angle obj.lattice.lat_const obj.lattice.sym obj.lattice.label};
+inpForm.size   = {[1 3]             [1 3]                 [-1 -2 -3]      [1 -7]           };
+inpForm.soft   = {false             false                 false           true             };
+
+inpForm.fname  = [inpForm.fname  {'angled' 'bv'  'spgr'     'origin'          }];
+inpForm.defval = [inpForm.defval {[0 0 0]  []    []         obj.lattice.origin}];
+inpForm.size   = [inpForm.size   {[1 3]    [3 3] [-4 -5 -6] [1 3]             }];
+inpForm.soft   = [inpForm.soft   {false    true  true       false             }];
+
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -101,7 +108,7 @@ if ~isempty(param.bv)
         R3 = eye(3);
     end
     
-
+    
     % rotation matrix that bring the basis vectors to the right direction
     if nargout > 0
         R = R3*R2*R1;
@@ -131,11 +138,15 @@ else
     
 end
 
-if numel(param.sym) > 1
-    % get the number of the symmetry
-    [~,~,~,~,param.sym] = sw_gensym(param.sym);
+% generate the symmetry operators
+obj.lattice.sym = sw_gensym(param.sym);
+% assign the origin for space group operators
+obj.lattice.origin = param.origin;
+
+if ischar(param.sym)
+    param.label = param.sym;
 end
 
-obj.lattice.sym       = int32(param.sym);
+obj.lattice.label = param.label;
 
 end

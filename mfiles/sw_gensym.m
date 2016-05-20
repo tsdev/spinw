@@ -1,7 +1,7 @@
 function [symOp, symTr, symName, symStr, symNum] = sw_gensym(varargin)
 % returns symmetry operators of a given space group
 %
-% [symOp, symTr, symName, symStr, symNum] = SW_GENSYM({sym}) 
+% [symOp, {symTr, symName, symStr, symNum}] = SW_GENSYM({sym}) 
 %
 % It gives the symmetry elements based on the space group number or given
 % list of symmetry operators. Without arguments, returns the name of all
@@ -20,12 +20,48 @@ function [symOp, symTr, symName, symStr, symNum] = sw_gensym(varargin)
 % symStr        The string of the symmetry operations.
 % symNum        The index of the symmetry in the symmetry.dat file.
 %
+% If a single output is requested, the function returns the symmetry
+% operators in symOp in a [3 4 nOp] matrix.
+%
 % See also SW_ADDSYM, SPINW, SPINW.GENCOUPLING, SW_GENCOORD.
 %
 
 if nargin == 0
     help sw_gensym
     return
+end
+
+if nargin > 0
+    sym = varargin{1};
+    symName = '';
+    symStr  = '';
+    symNum = -1;
+    
+    if iscell(sym)
+        % handle input where the operators are already given
+        symOp = [sym{1} permute(sym{2},[1 3 2])];
+        if nargout > 1
+            symTr = permute(symOp(:,4,:),[1 3 2]);
+            symOp = symOp(:,1:3,:);
+        end
+        
+        return
+    elseif sw_issymop(sym)
+        if ~isempty(sym)
+            symOp = sym;
+        else
+            symOp = [eye(3) zeros(3,1)];
+        end
+        
+        if nargout > 1
+            symTr = permute(symOp(:,4,:),[1 3 2]);
+            symOp = symOp(:,1:3,:);
+        end
+
+        return
+    elseif ~ischar(sym) && numel(sym)~=1
+        error('sw_gensym:WrongInput','Wrong symmetry definition');
+    end
 end
 
 % Open the symmetry definition file.
@@ -47,24 +83,19 @@ if nargin == 0
         ii = ii+1;
     end
     symOp = [];
-    symTr = [];
     symStr  = [];
     fclose(fid);
     return
 
 elseif nargin == 1
     
-    if iscell(varargin{1})
-        varargin{1} = varargin{1}{1};
-    end
-    
-    if ischar(varargin{1})
-        if isempty(varargin{1})
+    if ischar(sym)
+        if isempty(sym)
             symStr = 'x,y,z';
             symName = 'P 1';
         else
             % find symmetry label
-            symName = varargin{1};
+            symName = sym;
             symName(end+1:11) = 32;
             symIdx = 0;
             ii     = 1;
@@ -84,15 +115,14 @@ elseif nargin == 1
         end
         
     else
-        symNum = varargin{1};
+        symNum = sym;
         
         if symNum<0
             fclose(fid);
             error('spinw:sw_gensym:WrongInput','Symmetry number has to be positive integer!');
         elseif symNum == 0
             fclose(fid);
-            symOp   = eye(3);
-            symTr   = [0 0 0]';
+            symOp   = [eye(3) zeros(3,1)];
             symName = 'No sym';
             symStr  = 'x,y,z';
             symNum  = 0;
@@ -111,13 +141,12 @@ elseif nargin == 1
         symName = textLine(7:17);
     end
 elseif nargin >= 2
-    symName = varargin{1};
-    symStr   = varargin{2};
+    symName = sym;
+    symStr  = varargin{2};
 
 end
 
-symOp = zeros(3,3,30);
-symTr = zeros(3,30);
+symOp = zeros(3,4,30);
 vNew   = zeros(3,1);
 
 nNew  = 1;
@@ -127,12 +156,12 @@ nSign = 1;
 ii=1;
 while(ii<=length(symStr))
     if symStr(ii)==','
-        symOp(nNew,:,nOp) = vNew;
+        symOp(nNew,1:3,nOp) = vNew;
         vNew  = vNew*0;
         nSign = 1;
         nNew  = mod(nNew,3)+1;
     elseif symStr(ii)==';'
-        symOp(nNew,:,nOp) = vNew;
+        symOp(nNew,1:3,nOp) = vNew;
         vNew = vNew*0;
         nSign = 1;
         nNew  = 1;
@@ -148,22 +177,26 @@ while(ii<=length(symStr))
     elseif symStr(ii)=='+'
         nSign = 1;
     elseif (symStr(ii)=='1')||(symStr(ii)=='2')||(symStr(ii)=='3')
-        symTr(nNew,nOp) = (symStr(ii)-'0')/(symStr(ii+2)-'0');
+        symOp(nNew,4,nOp) = (symStr(ii)-'0')/(symStr(ii+2)-'0');
         ii = ii+2;
     end
     ii = ii+1;
     
 end
 
-symOp(nNew,:,nOp) = vNew;
+symOp(nNew,1:3,nOp) = vNew;
 symOp = symOp(:,:,1:nOp);
-symTr = symTr(:,1:nOp);
 
+if nargout > 1
+    symTr = permute(symOp(:,4,:),[1 3 2]);
+    symOp = symOp(:,1:3,:);
+end
+    
 % cut trailing spaces from symName
 if isnan(symName)
     symName = '';
 else
-    symName = symName(1:find(diff([symName '  ']==32),1,'last'));
+    symName = strtrim(symName);
 end
 
 end

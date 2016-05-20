@@ -52,12 +52,7 @@ if nargin < 4
     tol = 1e-5;
 end
 
-if ~iscell(sym)
-    [symOp, symTr, symName] = sw_gencoord(sym, fid);
-else
-    symOp = sym{1};
-    symTr = sym{2};
-end
+[symOp, symTr, symName] = sw_gencoord(sym, fid);
 
 nAtom  = size(r,2);
 rSym   = zeros(3,0);

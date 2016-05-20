@@ -65,7 +65,7 @@ else
         'track changes/dates\nin source files. Any modifications to or '...
         'software\nincluding (via compiler) GPL-licensed code must\nalso be '...
         'made available under the GPL along with\nbuild & install instructions.']);
-    text(0.6,0.48,txt0,'units','normal')
+    text(0.6,0.5,txt0,'units','normal')
     
 end
 

@@ -16,8 +16,8 @@ function sym = sw_addsym(symStr, symName)
 %
 
 if nargin == 0
-    help sw_addsym;
-    return;
+    help sw_addsym
+    return
 end
 
 symPath = [sw_rootdir 'dat_files' filesep 'symmetry.dat'];

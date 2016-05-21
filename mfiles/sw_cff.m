@@ -1,5 +1,5 @@
 function [formFactVal, coeff, label] = sw_cff(atomName, Q)
-% returns the atomic charge form factor values for X-ray
+% returns the atomic charge form factor values for X-ray scattering
 %
 % [formFactVal, coeff, label] = SW_CFF(atomName, {Q})
 %
@@ -32,68 +32,72 @@ if nargin == 0
 end
 
 if ischar(atomName)
-    % if there is whitespace, use the first word
-    atomName = strword(atomName,1);
-    atomName = atomName{1};
-    
+    atomName = {atomName};
+end
+
+if iscell(atomName)
     % open the form factor definition file
     ffPath = [sw_rootdir 'dat_files' filesep 'xrayion.dat'];
     % read form factor data
     formFact = sw_readtable(ffPath);
     
-    flag = false;
+    % constant 1 form factor for atoms couldn't find
+    formFact(end+1).a  = zeros(1,4);
+    formFact(end).b    = zeros(1,4);
+    formFact(end).c    = 1;
+    formFact(end).spin = 0;
     
-    % search for the name of the atom
-    for ii = 1:numel(formFact)
-        selected = formFact(ii).label;
-        if strcmpi(atomName,selected)
-            idx = ii;
-            flag = true;
-        end
-    end
+    idx = zeros(1,numel(atomName))+numel(formFact);
     
-    if flag
-        coeff = [formFact(idx).a; formFact(idx).b];
-        coeff = [coeff(:)' formFact(idx).c];
-        if isempty(coeff)
-            coeff = 0;
-        end
+    for ii = 1:numel(atomName)
         
-    else
-        coeff = [zeros(1,11) 1];
-        if nargout < 3
-            warning('sw_cff:WrongInput',['The form factor for %s is '...
-                'undefined, constant 1 will be used instead!'],atomName)
+        % if there is whitespace, use the first word
+        atomName0 = strword(atomName{ii},1);
+        atomName0 = atomName0{1};
+        
+        % remove +/- symbols
+        atomName0 = atomName0(atomName0>45);
+        
+        % search for the name of the atom
+        idx0 = find(strcmpi({formFact(:).label},atomName0));
+        
+        if ~isempty(idx0)
+            idx(ii) = idx0;
         end
     end
     
+    coeff = [reshape([formFact(idx).a],4,[]);reshape([formFact(idx).b],4,[]);[formFact(idx).c]]';
+    coeff = coeff(:,[1 5 2 6 3 7 4 8 9]);
+    
+    
+    if nargout < 3 && any(idx == numel(formFact))
+        fIdx = find(idx == numel(formFact));
+        warning('sw_cff:WrongInput','The form factor for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
+    end
 else
-    coeff = atomName;
+    error('sw_cff:WrongInput','Wrong input!')
 end
 
+
+% TODO for multiple atoms
 if nargin > 1
     if all(size(Q)>1)
         % if Q points are given as a list of Q vectors in Angstrom^-1
         % units, calculate the absolute value of Q
         Q = sqrt(sum(Q.^2,1));
     end
-    Qs = Q/(4*pi);
+    Qs = Q(:)'/(4*pi);
     
-    formFactVal = Qs*0;
-    for ii = 2:2:numel(coeff)
-        formFactVal = formFactVal + coeff(ii-1)*exp(-coeff(ii)*Qs.^2);
+    formFactVal = zeros(size(coeff,1),numel(Qs));
+    
+    for ii = 2:2:size(coeff,2)
+        formFactVal = formFactVal + bsxfun(@times,coeff(:,ii-1),exp(bsxfun(@times,-coeff(:,ii),Qs.^2)));
     end
-    formFactVal = formFactVal + coeff(end);
+    
+    formFactVal = bsxfun(@plus,formFactVal,coeff(:,end));
+    
 else
     formFactVal = [];
-end
-
-if nargout > 2
-    if flag
-        label = formFact(idx).label;
-    else
-        label = [];
-    end
 end
 
 end

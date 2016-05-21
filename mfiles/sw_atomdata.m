@@ -89,7 +89,7 @@ if iscell(atomSymb)
     end
 else
     idx = atomSymb;
-    idx(idx<1 || idx>113) = 113;
+    idx(idx<1 | idx>113) = 113;
 end
 
 % select atoms

@@ -222,7 +222,7 @@ classdef spinw < handle
                 cell0 = [cif0.atom_site_label cif0.atom_site_type_symbol];
                 name0 = cellfun(@(x,y)strjoin({x y}),cell0(:,1),cell0(:,2),'UniformOutput',false)';
                 r0    = mod([cif0.atom_site_fract_x cif0.atom_site_fract_y cif0.atom_site_fract_z]',1);
-                %occ0 = cif0.atom_site_occupancy;
+                occ0 = cif0.atom_site_occupancy';
                 
                 if numel(abc0)==3
                     objS.lattice.lat_const = abc0;
@@ -231,10 +231,14 @@ classdef spinw < handle
                     objS.lattice.angle = ang0*pi/180;
                 end
                 if numel(xyz0) > 3
-                    symIdx = sw_addsym(xyz0,sym0);
-                    objS.lattice.sym = int32(symIdx);
-                    
+                    % determine the symmetry generators
+                    [symOp, symTr] = sw_gensym(sym0, xyz0);
+                    [symOp, symTr] = sw_symgetgen(symOp, symTr);
+                    % save generators into spinw pbject
+                    objS.lattice.label = sym0;
+                    objS.lattice.sym   = [symOp permute(symTr,[1 3 2])];
                 end
+                
                 if size(name0,2) == size(r0,2)
                     nAtom = numel(name0);
                     

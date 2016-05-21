@@ -9,26 +9,41 @@ function addatom(obj, varargin)
 %
 % Options:
 %
-%   r       Atomic positions, dimensions are [3 nAtom]. No default value!
-%   S       Spin of the atoms, dimensions are [1 nAtom], for non-magnetic
+% r         Atomic positions, dimensions are [3 nAtom]. No default value!
+% S         Spin of the atoms, dimensions are [1 nAtom], for non-magnetic
 %           atoms set S to zero. Default spin is generated from the given
 %           label of the atom. For example if 'label' is 'MCr3+' or 'Cr3+'
 %           then the high spin of S=3/2 is automatically generated. The
 %           high spin values for every ion is stored in the last column of
 %           the ion.dat file. If the atom type is unknown S=0 is assumed.
-%   label   Names of the atoms for plotting and form factor
+% label     Names of the atoms for plotting and form factor
 %           calculations (see ion.dat), it is a cell, optional.
 %           Example:
 %           {'atom1' 'atom2' 'atom3'}
 %           Default value is 'atomI', where I is the atom index.
-%   color   Colors of the atoms for plotting, dimensions are [3 nAtom],
+% color     Colors of the atoms for plotting, dimensions are [3 nAtom],
 %           where each column describes an RGB color. Each value is between
 %           0 and 255, optional. Default value is [255;165;0] for each
 %           atom.
 %           Alternatively a name of the color can be given as a string, for
 %           example 'White', for multiple atoms package it into a cell. For
 %           the list of colors, see sw_colorname().
-%
+% ox        Oxidation number given as a double or it will be determined
+%           automatically from label. Default is 0.
+% occ       Occupancy, given as double. Default is 1.
+% formfact  Neutron scattering form factor, given as 9 numbers, for details
+%           see the help of sw_mff().
+% formfactn  Neutron scattering form factor, given as 9 numbers, for details
+%           see the help of sw_mff().
+% formfactx X-ray scattering form factor, given as 9 numbers, for details
+%           see the help of sw_cff().
+% Z         Atomic number, given as integer or determined from label
+%           automatically. Default is 113 (Unobtanium).
+% A         Atomic mass, given as integer. Default is -1 for the natural
+%           mixture of isotopes.
+% bn        Neutron scattering length, given as double.
+% bx        X-ray scattering length.
+%   
 % Output:
 %
 % The function creates extra elements in the 'unit_cell' field of the obj
@@ -41,7 +56,7 @@ function addatom(obj, varargin)
 % Adds a magnetic atom (S=1) at position (0,0,0) and a non-magnetic one at
 % (1/2 0 0) with red and blue color respectively.
 %
-% See also SPINW.GENLATTICE, SPINW.ADDMATRIX, SW_COLORNAME.
+% See also SPINW.GENLATTICE, SPINW.ADDMATRIX, SW_COLORNAME, SW_MFF, SW_CFF.
 %
 
 if nargin < 2
@@ -61,8 +76,22 @@ inpForm.soft   = [inpForm.soft   {true    true       true         true  true    
 
 newAtom = sw_readparam(inpForm, varargin{:});
 
+if isempty(newAtom.formfactn)
+    newAtom.formfactn = newAtom.formfact;
+end
+if isempty(newAtom.bn)
+    newAtom.bn = newAtom.b;
+end
+
 if ~any(size(newAtom.r)-[1 3])
     newAtom.r = newAtom.r';
+end
+
+% modulo
+newAtom.r = mod(newAtom.r,1);
+
+if size(newAtom.label,2) == 1
+    newAtom.label = newAtom.label';
 end
 
 % number of old atoms
@@ -167,26 +196,54 @@ else
     newAtom.color = sw_colorname(newAtom.color);
 end
 
-% Generate spins, default is generated from the label of the atom.
-if isempty(newAtom.S)
-    [~,~,newAtom.S] = sw_mff(newAtom.label);
-end
-
+% Generate spins and magnetic form factor, default is generated from the label of the atom.
 if size(newAtom.S,2) == 1
     newAtom.S = newAtom.S';
 end
 
-% get scattering length
-newAtom.ff = zeros(2,9,nNewAtom);
-newAtom.b  = zeros(2,nNewAtom);
+% get form factors from label
+[~,newAtom.ffn,newAtom.S0] = sw_mff(newAtom.label);
+%[~,newAtom.ffx]            = sw_cff(newAtom.label);
+newAtom.ffn = permute(newAtom.ffn,[3 2 1]);
+newAtom.ffx = [zeros(1,8,nNewAtom) ones(1,1,nNewAtom)];
+
+% get the auto size of the magnetic moments if not given
+if isempty(newAtom.S)
+    newAtom.S = newAtom.S0;
+end
+
+% get scattering form factor if given
+if ischar(newAtom.formfactn)
+    newAtom.formfactn = {newAtom.formfactn};
+end
+if iscell(newAtom.formfactn)
+    [~,newAtom.ffn] = sw_mff(newAtom.formfactn);
+    newAtom.ffn = permute(newAtom.ffn,[3 2 1]);
+elseif ~isempty(newAtom.formfactn)
+    newAtom.ffn = newAtom.formfactn;
+end
+
+% x-ray scattering form factor
+if ischar(newAtom.formfactx)
+    newAtom.formfactx = {newAtom.formfactx};
+end
+if iscell(newAtom.formfactx)
+    [~,newAtom.ffx] = sw_mff(newAtom.fromfactx);
+    newAtom.ffx = permute(newAtom.ffx,[3 2 1]);
+elseif ~isempty(newAtom.formfactx)
+    newAtom.ffx = newAtom.formfactx;
+end
+
+newAtom.ff = [newAtom.ffn;newAtom.ffx];
+newAtom.b  = ones(2,nNewAtom);
 
 newAtom.Z  = int32(newAtom.Z);
 
 
 if obj.symbolic
     if ~isa(newAtom.S,'sym')
-        symS = sym('');
-        for jj = 1:numel(newAtom.r)/3
+        symS = sym(0);
+        for jj = 1:nNewAtom
             if newAtom.S(jj) > 0
                 symS(jj) = sym(['S_' num2str(jj+nOldAtom)],'positive');
             else
@@ -197,25 +254,24 @@ if obj.symbolic
     end
 end
 
-if size(newAtom.label,2) == 1
-    newAtom.label = newAtom.label';
-end
-
 newAtom.color     = int32(newAtom.color);
 newObj.unit_cell  = newAtom;
 validate(newObj,'unit_cell');
 
-obj.unit_cell.r     = [obj.unit_cell.r     mod(newObj.unit_cell.r,1)];
-obj.unit_cell.S     = [obj.unit_cell.S     newObj.unit_cell.S];
-obj.unit_cell.label = [obj.unit_cell.label newObj.unit_cell.label];
-obj.unit_cell.color = [obj.unit_cell.color newObj.unit_cell.color];
-obj.unit_cell.ox    = [obj.unit_cell.ox    newObj.unit_cell.ox];
-obj.unit_cell.occ   = [obj.unit_cell.occ   newObj.unit_cell.occ];
-obj.unit_cell.b     = [obj.unit_cell.b     newObj.unit_cell.b];
+cField = {'r' 'S' 'label' 'color' 'ox' 'occ' 'b' 'A' 'Z'};
+for ii = 1:numel(cField)
+    obj.unit_cell.(cField{ii}) = [obj.unit_cell.(cField{ii}) newObj.unit_cell.(cField{ii})];
+end
+
 obj.unit_cell.ff    = cat(3,obj.unit_cell.ff,newObj.unit_cell.ff);
-obj.unit_cell.A     = [obj.unit_cell.A     newObj.unit_cell.A];
-obj.unit_cell.Z     = [obj.unit_cell.Z     newObj.unit_cell.Z];
 
 validate(obj);
+
+[~,~,rIdx] = unique(obj.unit_cell.r','rows');
+
+% check occupancy
+if any(accumarray(rIdx,obj.unit_cell.occ)>1)
+    warning('spinw:addatom:WrongInput','Occupancy on some site is larger than 1!')
+end
 
 end

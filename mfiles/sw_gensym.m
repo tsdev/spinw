@@ -61,6 +61,7 @@ if nargin > 0
         return
     elseif ~ischar(sym) && numel(sym)~=1
         error('sw_gensym:WrongInput','Wrong symmetry definition');
+        
     end
 end
 

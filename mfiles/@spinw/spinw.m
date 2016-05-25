@@ -17,6 +17,10 @@ classdef spinw < handle
     % construct new spinw class object, where cif_path contains a string of
     % a .cif file path defining an input crystals structure.
     %
+    % obj = SPINW(figure_handle)
+    %
+    % copy the SpinW object stored in a previous structural plot.
+    %
     % The data structure behind the spinw object can be accessed by using
     % STRUCT(obj). All fields of the struct type data behind the spinw
     % object are accessible through the main field names of the obj object.
@@ -167,15 +171,31 @@ classdef spinw < handle
                 objS = initfield(struct);
                 fNames = fieldnames(objS);
                 for ii = 1:length(fNames)
-                    obj.(fNames{ii}) = objS.(fNames{ii});
+                   obj.(fNames{ii}) = objS.(fNames{ii});
                 end
-                return;
+                return
             end
             
             firstArg = varargin{1};
-            if isa(firstArg, 'spinw') %  It is used when objects are passed as arguments.
+            
+            if ishandle(firstArg)
+                % get spinw object from graphics handle
+                switch get(firstArg,'Tag')
+                    case 'sw_crystal'
+                        figDat = getappdata(firstArg);
+                        obj = copy(figDat.obj);
+                    case 'sw_spectra'
+                        figDat = getappdata(firstArg);
+                        obj    = copy(figDat.spectra.obj);
+                end
+                return
+
+            end
+            
+            if isa(firstArg, 'spinw')
+                %  it is used when objects are passed as arguments.
                 obj = copy(firstArg);
-                return;
+                return
             end
             
             if isstruct(firstArg)
@@ -200,7 +220,11 @@ classdef spinw < handle
                 % import data from cif file
                 
                 objS = initfield(struct);
-                
+                fNames = fieldnames(objS);
+                for ii = 1:length(fNames)
+                    obj.(fNames{ii}) = objS.(fNames{ii});
+                end
+
                 cif0 = cif(firstArg);
                 fprintf0(1,'Crystal structure is imported from %s.\n',firstArg);
                 abc0 = [cif0.cell_length_a cif0.cell_length_b cif0.cell_length_c];
@@ -222,44 +246,33 @@ classdef spinw < handle
                 cell0 = [cif0.atom_site_label cif0.atom_site_type_symbol];
                 name0 = cellfun(@(x,y)strjoin({x y}),cell0(:,1),cell0(:,2),'UniformOutput',false)';
                 r0    = mod([cif0.atom_site_fract_x cif0.atom_site_fract_y cif0.atom_site_fract_z]',1);
-                occ0 = cif0.atom_site_occupancy';
+                
+                % save formula units
+                if ~isempty(cif0.cell_formula_units_Z)
+                    obj.unit.nformula = int32(cif0.cell_formula_units_Z);
+                end
                 
                 if numel(abc0)==3
-                    objS.lattice.lat_const = abc0;
+                    obj.lattice.lat_const = abc0;
                 end
                 if numel(ang0) == 3
-                    objS.lattice.angle = ang0*pi/180;
+                    obj.lattice.angle = ang0*pi/180;
                 end
                 if numel(xyz0) > 3
                     % determine the symmetry generators
                     [symOp, symTr] = sw_gensym(sym0, xyz0);
                     [symOp, symTr] = sw_symgetgen(symOp, symTr);
                     % save generators into spinw pbject
-                    objS.lattice.label = sym0;
-                    objS.lattice.sym   = [symOp permute(symTr,[1 3 2])];
+                    obj.lattice.label = sym0;
+                    obj.lattice.sym   = [symOp permute(symTr,[1 3 2])];
                 end
                 
                 if size(name0,2) == size(r0,2)
-                    nAtom = numel(name0);
-                    
-                    objS.unit_cell.r = r0;
-                    objS.unit_cell.label = name0;
-                    
-                    col = zeros(3,nAtom);
-                    for ii = 1:nAtom
-                        aName = strword(name0{ii},2,true);
-                        col0 = sw_atomdata(aName{1}(aName{1}>57),'color')';
-                        col(:,ii) = col0;
-                        [~, ~, objS.unit_cell.S(ii)] = sw_mff(aName{1});
-                    end
-                    objS.unit_cell.color = int32(col);
-                end
-                
-                fNames = fieldnames(objS);
-                for ii = 1:length(fNames)
-                    obj.(fNames{ii}) = objS.(fNames{ii});
-                end
-                
+                    % add atoms to the structure
+                    obj.addatom('r',r0,'label',name0,'occ',cif0.atom_site_occupancy')
+                else
+                    error('spinw:WrongInput','The .cif file contains inconsistent information!')
+                end 
             end
             
             
@@ -309,6 +322,18 @@ classdef spinw < handle
                 
     end
     
+    methods(Hidden=true,Static=true)
+            function obj = loadobj(obj)
+                % restore property listeners
+                % add new listeners to the new object
+                if ~isempty(obj.cache.matom)
+                    % add listener to lattice and unit_cell fields
+                    obj.propl    = addlistener(obj,'lattice',  'PostSet',@obj.modmatom);
+                    obj.propl(2) = addlistener(obj,'unit_cell','PostSet',@obj.modmatom);
+                end
+            end
+    end
+        
     methods(Hidden=true)
         function modmatom(obj, ~, ~)
             % listening to the change of the lattice or unit_cell fields
@@ -319,6 +344,13 @@ classdef spinw < handle
             delete(obj.propl);
             % fprintf('Property changed!\n')
         end
+        function obj = saveobj(obj)
+            % remove property change listeners
+            delete(obj.propl);
+            % empty pointers
+            obj.propl = [];
+        end
+
         function lh = addlistener(varargin)
             lh = addlistener@handle(varargin{:});
         end

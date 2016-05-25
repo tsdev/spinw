@@ -255,9 +255,10 @@ else
     fHandle = sw_getfighandle('sw_spectra');
     if isempty(fHandle)
         fHandle = figure;
-        set(fHandle,'Tag','sw_spectra');
     end
 end
+% set Tag to find window later easily
+set(fHandle,'Tag','sw_spectra');
 
 % Position figure window on the screen
 if numel(param.figPos) == 1
@@ -634,7 +635,11 @@ if param.mode == 3
     if param.colorbar && (nPlot == 1)
         cHandle = colorbar;
         if spectra.norm
-            cLabelU = '(mbarn/meV)';
+            if spectra.obj.unit.nformula > 0
+                cLabelU = '(mbarn/meV/f.u.)';
+            else
+                cLabelU = '(mbarn/meV/cell)';
+            end
         else
             cLabelU = '(arb. u.)';
         end
@@ -697,7 +702,7 @@ if param.mode > 1
         end
         warn_state = warning;
         warning('off','MATLAB:legend:IgnoringExtraEntries')
-        legend(hLegend,titleStr{:},'FontSize',param.fontSize);
+        set(legend(hLegend,titleStr{:}),'FontSize',param.fontSize);
         warning(warn_state);
     end
 end

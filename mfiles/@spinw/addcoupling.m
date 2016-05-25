@@ -33,6 +33,11 @@ function addcoupling(obj, varargin)
 %                   1       Biquadratic exchange.
 %               Can be also one of the following string: 'quadratic',
 %               'biquadratic'.
+% sym           If true, symmetry operators will be applied on the exchange
+%               matrices to generate the coupling on symmetry equivalent
+%               bonds, if false all symmetry equivalent bonds will have the
+%               same exhcange matrix. It has to be false if subIdx is
+%               given.
 %
 % Output:
 %
@@ -56,10 +61,10 @@ if ~any(obj.atom.mag)
     error('sw:addcoupling:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 
-inpForm.fname  = {'mat'  'bond' 'atom' 'subIdx' 'type'};
-inpForm.defval = {[]     []     []      []      []    };
-inpForm.size   = {[1 -1] [1 -2] [-3 -4] [1 -5]  [1 -6]};
-inpForm.soft   = {false  false  true    true    true  };
+inpForm.fname  = {'mat'  'bond' 'atom' 'subIdx' 'type' 'sym' };
+inpForm.defval = {[]     []     []      []      []     []    };
+inpForm.size   = {[1 -1] [1 -2] [-3 -4] [1 -5]  [1 -6] [1 -7]};
+inpForm.soft   = {false  false  true    true    true   true  };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -90,6 +95,18 @@ if iscell(param.type)
     
 end
 
+if isempty(param.sym)
+    if isempty(param.subIdx)
+        param.sym = true;
+    else
+        param.sym = false;
+    end
+end
+
+if numel(param.sym) == 1
+    param.sym = param.mat*0+param.sym;
+end
+
 if any(size(param.mat)~=size(param.type))
     error('sw:addcoupling:WrongInput',['A coupling type has to be '...
         'provided for each input matrix!'])
@@ -117,10 +134,10 @@ if ~isempty(param.atom) || ~isempty(param.subIdx)
             'scalar, only the first bond is selected!']);
         param.bond = param.bond(1);
     end
-    if obj.sym
-        error('sw:addcoupling:SymmetryProblem',['atom and subIdx options are not allowed '...
-            'when crystal symmetry is not P0!']);
-    end
+    %     if obj.sym
+    %         error('sw:addcoupling:SymmetryProblem',['atom and subIdx options are not allowed '...
+    %             'when crystal symmetry is not P0!']);
+    %     end
 end
 
 idx = ismember(obj.coupling.idx,param.bond);
@@ -130,7 +147,7 @@ if ~any(idx)
         'nUnitCell parameters!'],param.bond(1));
 end
 
-% Select bonds with given atoms
+% select bonds with given atoms
 % convert atom indices from the unit_cell into matom indices
 if ~isempty(param.atom)
     
@@ -144,7 +161,14 @@ end
 
 idx = find(idx);
 
-% IfsubIdx is defined, subselect bonds.
+% check that all to be assigned bonds are symmetry generated
+if obj.symmetry
+    if obj.coupling.idx(max(idx)) > obj.coupling.nsym
+        warning('spinw:addcoupling:SymmetryLimit','The assigned bonds are not generated using space group symmetry!');
+    end
+end
+
+% if subIdx is defined, subselect bonds
 if ~isempty(param.subIdx)
     idx = idx(param.subIdx);
 end
@@ -154,11 +178,13 @@ if isempty(idx)
     return
 end
 
-Jmod = obj.coupling.mat_idx(:,idx);
-Tmod = obj.coupling.type(:,idx);
+Jmod   = obj.coupling.mat_idx(:,idx);
+Tmod   = obj.coupling.type(:,idx);
+Symmod = obj.coupling.sym(:,idx);
 
-param.mat = int32(param.mat);
-param.type   = int32(param.type);
+param.mat  = int32(param.mat);
+param.type = int32(param.type);
+param.sym  = int32(param.sym);
 
 if any(ismember(Jmod(:),param.mat))
     warning('sw:addcoupling:CouplingIdxWarning',['Same matrix already '...
@@ -181,11 +207,13 @@ for ii = 1:numel(param.mat)
     % remove index where Jmod already contains param.mat
     idxSel = idxSel(~any(Jmod==param.mat(ii),1));
     
-    Jmod(idxSel) = param.mat(ii);
-    Tmod(idxSel) = param.type(ii);
+    Jmod(idxSel)   = param.mat(ii);
+    Tmod(idxSel)   = param.type(ii);
+    Symmod(idxSel) = param.sym(ii);
 end
 
 obj.coupling.mat_idx(:,idx) = Jmod;
 obj.coupling.type(:,idx)    = Tmod;
+obj.coupling.sym(:,idx)     = Symmod;
 
 end

@@ -33,7 +33,7 @@ function nosym(obj, varargin)
 % TODO keep bonds when removing symmetry
 
 obj.newcell({[1 0 0] [0 1 0] [0 0 1]});
-obj.lattice.sym = int32(0);
+obj.lattice.sym = zeros(3,4,0);
 obj.sym = false;
 
 end

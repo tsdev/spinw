@@ -87,7 +87,7 @@ fprintf0(fid,['Optimising the magnetic structure using local spin '...
 
 % Creates random spin directions if param.random is true.
 mag_param = struct;
-if param.random || isempty(obj.mag_str.S)
+if param.random || isempty(obj.mag_str.S) || any(param.nExt~=double(obj.mag_str.N_ext))
     mag_param.mode = 'random';
     mag_param.nExt = param.nExt;
     obj.genmagstr(mag_param);

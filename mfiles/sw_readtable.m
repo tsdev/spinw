@@ -41,7 +41,7 @@ function dat = sw_readtable(fName,delimiter)
 % string for the first 4 entry and '[Myy] [1 0 0]' for the last 3 entry.
 % For example the field Q has 3 elements per entry, to extract all Q points
 % into a matrix use the command:
-% >> Q = reshape([dat(:).Q],3,[]);
+% >> Q = reshape([dat(:).Q],3,[])';
 %
 
 if nargin == 0

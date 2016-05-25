@@ -25,7 +25,7 @@ function varargout = sw_atomdata(atomSymb, datType)
 % optional second output is 'atomLabel' that contains the name of the atom
 % clean.
 %
-% See also SW_MFF.
+% See also SW_MFF, SW_CFF.
 %
 
 if nargin == 1
@@ -38,24 +38,18 @@ if nargin == 0
 end
 
 % read in the atom definition file
-rPath = [sw_rootdir 'dat_files' filesep 'atom.dat'];
-atom  = sw_readtable(rPath);
+atom  = sw_readtable([sw_rootdir 'dat_files' filesep 'atom.dat']);
 
 % add atomic number for the first 113 atom + unobtanium (original definitions)
-cellIdx = num2cell(1:114);
+cellIdx = num2cell(1:113);
 % FANCY
-[atom(1:114).Z] = deal(cellIdx{:});
-
-% add empty placeholder atom
-% atom(end+1).name   = '';
-% atom(end).R        = 1;
-% atom(end).RGB      = [255 167 0];
-% atom(end).mass     = 0;
-% atom(end).longname = '';
-% atom(end).Z        = 0;
+[atom(1:113).Z] = deal(cellIdx{:});
 
 if ischar(atomSymb)
     atomSymb = {atomSymb};
+    backChar = true;
+else
+    backChar = false;
 end
 
 if iscell(atomSymb)
@@ -81,10 +75,12 @@ if iscell(atomSymb)
         
         if ~isempty(idx0)
             idx(ii) = idx0;
+        else
+            atomSymb{ii} = 'A';
         end
     end
     
-    if numel(atomSymb) == 1
+    if backChar
         atomSymb = atomSymb{1};
     end
 else

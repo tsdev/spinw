@@ -18,6 +18,9 @@ function R = genlattice(obj, varargin)
 % bv        Basis vectors given in a matrix with dimensions of [3 3].
 % origin    Origin for the space group operators. Default is [0 0 0].
 % perm      Permutation of the abc axes of the space group operators.
+% nformula  Gives the number of formula units in the unit cell. It is used
+%           to normalize cross section in absolute units. Default is 0,
+%           when cross section is normalized per unit cell.
 %
 % Output:
 %
@@ -63,10 +66,10 @@ inpForm.defval = {obj.lattice.angle obj.lattice.lat_const obj.lattice.sym obj.la
 inpForm.size   = {[1 3]             [1 3]                 [-1 -2 -3]      [1 -7]           };
 inpForm.soft   = {false             false                 false           true             };
 
-inpForm.fname  = [inpForm.fname  {'angled' 'bv'  'spgr'     'origin'           'perm'}];
-inpForm.defval = [inpForm.defval {[0 0 0]  []    []         obj.lattice.origin 'abc' }];
-inpForm.size   = [inpForm.size   {[1 3]    [3 3] [-4 -5 -6] [1 3]              [1 3] }];
-inpForm.soft   = [inpForm.soft   {false    true  true       false              true  }];
+inpForm.fname  = [inpForm.fname  {'angled' 'bv'  'spgr'     'origin'           'perm' 'nformula'       }];
+inpForm.defval = [inpForm.defval {[0 0 0]  []    []         obj.lattice.origin 'abc'  obj.unit.nformula}];
+inpForm.size   = [inpForm.size   {[1 3]    [3 3] [-4 -5 -6] [1 3]              [1 3]  [1 1]            }];
+inpForm.soft   = [inpForm.soft   {false    true  true       false              true   true             }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -142,7 +145,9 @@ else
 end
 
 % generate the symmetry operators
-param.sym = sw_gensym(param.sym);
+if ~isempty(param.sym)
+    param.sym = sw_gensym(param.sym);
+end
 
 % permute the symmetry operators if necessary
 if ischar(param.perm)
@@ -157,5 +162,7 @@ if ischar(param.sym)
 end
 
 obj.lattice.label = param.label;
+
+obj.unit.nformula = int32(param.nformula);
 
 end

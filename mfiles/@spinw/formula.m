@@ -32,11 +32,22 @@ end
 
 atom = obj.atom;
 
-m = zeros(1,numel(atom.idx));
-aLabel = cell(1,numel(atom.idx));
+[m, aLabel] = sw_atomdata(obj.unit_cell.label(atom.idx),'mass');
 
-for ii = 1:numel(atom.idx)
-    [m(ii), aLabel{ii}] = sw_atomdata(obj.unit_cell.label{atom.idx(ii)},'mass');
+% get more precise mass from isotope data
+iso0  = sw_readtable([sw_rootdir 'dat_files' filesep 'isotope.dat']);
+iso.m = [iso0(:).mass];
+iso.Z = [iso0(:).Z];
+iso.A = [iso0(:).A];
+
+formulaA = obj.unit_cell.A(atom.idx);
+formulaZ = obj.unit_cell.Z(atom.idx);
+
+[iFound, loc] = ismember([formulaA;formulaZ]',[iso.A;iso.Z]','rows');
+
+% only keep if all atoms are found
+if all(iFound)
+    m = iso.m(loc);
 end
 
 if numel(atom.idx) == 0
@@ -46,7 +57,7 @@ end
 % aVogadro number (1/mol)
 nA = 6.02214129e23;
 
-% find fomula
+% find formula
 diffLabel = unique(aLabel);
 
 numAtom = cell(1,2*numel(diffLabel));
@@ -57,18 +68,21 @@ for ii = 1:numel(diffLabel)
     numAtom{2*ii} = temp;
 end
 
-% find greates commond divider
-nForm = gcdv([numAtom{2:2:end}]);
+% number of formula units in the unit cell
+nForm = double(obj.unit.nformula);
+if nForm == 0
+    % formula units is not given directly, try to find greates commond divider
+    nForm = gcdv([numAtom{2:2:end}]);
+end
 
 % number of formula in cell
 formula.N = nForm;
 % formula mass in gramms
 formula.m = sum(m)/nForm;
 % cell volume in Angstrom^3
-formula.V = prod(obj.lattice.lat_const);
+formula.V = det(obj.basisvector);
 % density in g/cm^3
 formula.rho = formula.m/formula.V/nA*1e24*nForm;
-
 
 % divide the number of atoms in formula
 numAtom(2:2:end) = num2cell([numAtom{2:2:end}]/nForm);
@@ -82,11 +96,11 @@ if nargout > 0
 end
 
 if nargout == 0
-    fprintf0(fid,'Chemical formula:  %s\n',formula.chemform);
-    fprintf0(fid,'Formula mass:      %8.3f g/mol\n',formula.m);
-    fprintf0(fid,'Formula in cell:   %8d units\n',formula.N);
-    fprintf0(fid,'Cell volume:       %8.3f Angstrom^3\n',formula.V);
-    fprintf0(fid,'Density:           %8.3f g/cm^3\n',formula.rho);
+    fprintf0(fid,'     <strong>Chemical formula:</strong>  %s\n',formula.chemform);
+    fprintf0(fid,'     <strong>Formula mass:</strong>      %8.3f g/mol\n',formula.m);
+    fprintf0(fid,'     <strong>Formula in cell:</strong>   %8d units\n',formula.N);
+    fprintf0(fid,'     <strong>Cell volume:</strong>       %8.3f Angstrom^3\n',formula.V);
+    fprintf0(fid,'     <strong>Density:</strong>           %8.3f g/cm^3\n',formula.rho);
 end
 
 end

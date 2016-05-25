@@ -52,7 +52,7 @@ if iscell(atomName)
     for ii = 1:numel(atomName)
         
         % if there is whitespace, use the first word
-        atomName0 = strword(atomName{ii},1);
+        atomName0 = strword(atomName{ii},2,true);
         atomName0 = atomName0{1};
         
         % remove +/- symbols

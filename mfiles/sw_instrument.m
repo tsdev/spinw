@@ -247,7 +247,7 @@ if FX > 0
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% normalise spectrum to mbarn/meV
+% normalise spectrum to mbarn/meV/f.u. or mbarn/meV/cell
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if ~isfield(spectra,'gtensor')
@@ -282,7 +282,11 @@ if param.norm
     
     % set 'normalized units' switch on
     spectra.norm = true;
-    fprintf0(fid0,'Intensity is converted to mbarn/meV units.\n');
+    if spectra.obj.unit.nformula > 0
+        fprintf0(fid0,'Intensity is converted to mbarn/meV/f.u. units.\n');
+    else
+        fprintf0(fid0,'Intensity is converted to mbarn/meV/cell units.\n');
+    end
     if spectra.gtensor
         fprintf0(fid0,'g-tensor was already included in the spin wave calculation.\n');
     else

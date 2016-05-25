@@ -131,7 +131,7 @@ idxExt(idxCut) = [];
 Sext(idxCut)   = [];
 
 % new lattice simmetry is no-symmetry
-obj.lattice.sym     = int32(0);
+obj.lattice.sym     = zeros(3,4,0);
 % no symmetry operations
 obj.sym = false;
 

@@ -809,11 +809,16 @@ for jj = 1:nSlice
     % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
     % Normalizes the intensity to single unit cell.
     Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
-
+    
     if fid == 1
         sw_status(jj/nSlice*100);
     end
-    
+end
+
+% If number of formula units are given per cell normalize to formula
+% unit
+if obj.unit.nformula > 0
+    Sab = Sab/double(obj.unit.nformula);
 end
 
 if fid == 1
@@ -907,13 +912,14 @@ if ~param.notwin
 end
 
 % Creates output structure with the calculated values.
-spectra.omega   = omega;
-spectra.Sab     = Sab;
-spectra.hkl     = hkl(:,1:nHkl0);
-spectra.hklA    = hklA;
-spectra.incomm  = incomm;
-spectra.helical = helical;
-spectra.norm    = false;
+spectra.omega    = omega;
+spectra.Sab      = Sab;
+spectra.hkl      = hkl(:,1:nHkl0);
+spectra.hklA     = hklA;
+spectra.incomm   = incomm;
+spectra.helical  = helical;
+spectra.norm     = false;
+spectra.nformula = double(obj.unit.nformula);
 
 % Save different intermediate results.
 if param.saveV

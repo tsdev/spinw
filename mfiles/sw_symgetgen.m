@@ -24,7 +24,7 @@ if nargin == 0
     return
 end
 
-uIdx = 1:size(symOp,3);
+uIdx   = 1:size(symOp,3);
 symOpG = zeros(3,3,0);
 symTrG = zeros(3,0);
 
@@ -36,32 +36,46 @@ if verLessThan('matlab','7.14')
 else
     uOption = {'rows','R2012a'};
 end
-    
 
-while ~isempty(uIdx)
-    symOpG = cat(3,symOpG,symOp(:,:,uIdx(1)));
-    symTrG = [symTrG symTr(:,uIdx(1))]; %#ok<AGROW>
+% run twice
+symOp0 = symOp;
+symTr0 = symTr;
+
+% eliminate operators twice
+for ii = 1:2
+    while ~isempty(uIdx)
+        symOpG = cat(3,symOpG,symOp0(:,:,uIdx(1)));
+        symTrG = [symTrG symTr0(:,uIdx(1))]; %#ok<AGROW>
+        
+        % generate all symmetry elements from the given generators
+        [symOp1, symTr1] = sw_gencoord({symOpG symTrG});
+        % number of already generated symmetry operators
+        nReady = size(symOp1,3);
+        % find all non-generated operators
+        symMat = [[reshape(symOp1,9,[]) reshape(symOp0,9,[])];[symTr1 symTr0]]';
+        [~, uIdx] = unique(symMat,uOption{:});
+        uIdx = sort(uIdx)';
+        uIdx = uIdx(nReady+1:end)-nReady;
+    end
     
-    % generate all symmetry elements from the given generators
-    [symOp1, symTr1] = sw_gencoord({symOpG symTrG});
-    % number of already generated symmetry operators
-    nReady = size(symOp1,3);
-    % find all non-generated operators
-    symMat = [[reshape(symOp1,9,[]) reshape(symOp,9,[])];[symTr1 symTr]]';
+    % remove the unity operator
+    symMat = [[reshape(eye(3),9,[]) reshape(symOpG,9,[])];[[0;0;0] symTrG]]';
     [~, uIdx] = unique(symMat,uOption{:});
     uIdx = sort(uIdx)';
-    uIdx = uIdx(nReady+1:end)-nReady;
+    uIdx = uIdx(2:end)-1;
     
+    symOpG = symOpG(:,:,uIdx);
+    symTrG = symTrG(:,uIdx);
+    
+    if ii == 1
+        % reshuffle the operators
+        symOp0 = symOpG(:,:,end:-1:1);
+        symTr0 = symTrG(:,end:-1:1);
+        uIdx   = 1:size(symOp0,3);
+        symOpG = zeros(3,3,0);
+        symTrG = zeros(3,0);
+    end
 end
-
-% remove the unity operator
-symMat = [[reshape(eye(3),9,[]) reshape(symOpG,9,[])];[[0;0;0] symTrG]]';
-[~, uIdx] = unique(symMat,uOption{:});
-uIdx = sort(uIdx)';
-uIdx = uIdx(2:end)-1;
-
-symOpG = symOpG(:,:,uIdx);
-symTrG = symTrG(:,uIdx);
 
 % determine isGen
 symMat = [[reshape(symOpG,9,[]) reshape(symOp,9,[])];[symTrG symTr]]';

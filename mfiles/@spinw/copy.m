@@ -45,10 +45,17 @@ objC.symb   = obj.symb;
 objC.fid    = obj.fid;
 objC.ver    = obj.ver;
 
-% empty the cache of the new object
-fieldN = fieldnames(objC.cache);
-for ii = 1:numel(fieldN)
-    objC.cache.(fieldN{ii}) = [];
+% add new listeners to the new object
+if ~isempty(objC.cache.matom)
+    % add listener to lattice and unit_cell fields
+    objC.propl    = addlistener(objC,'lattice',  'PostSet',@objC.modmatom);
+    objC.propl(2) = addlistener(objC,'unit_cell','PostSet',@objC.modmatom);
 end
+
+% % empty the cache of the new object
+% fieldN = fieldnames(objC.cache);
+% for ii = 1:numel(fieldN)
+%     objC.cache.(fieldN{ii}) = [];
+% end
 
 end

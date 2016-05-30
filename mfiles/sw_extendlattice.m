@@ -1,7 +1,7 @@
-function [mAtom, SSext] = sw_extendlattice(nExt, mAtom, varargin)
+function [aList, SSext] = sw_extendlattice(nExt, aList, SS)
 % creates superlattice
 %
-% [mAtom AAext SSext] = SW_EXTENDLATTICE(nExt, mAtom, {SS}) 
+% [aList, SSext] = SW_EXTENDLATTICE(nExt, aList, {SS})
 %
 % It creates a superlattice and all redefines all given bond for the larger
 % superlattice.
@@ -9,15 +9,15 @@ function [mAtom, SSext] = sw_extendlattice(nExt, mAtom, varargin)
 % Input:
 %
 % nExt          Number of unit cell extensions, dimensions are [1 3].
-% mAtom         Properties of the magnetic atoms, produced by sw.matom.
+% aList         List of the atoms, produced by sw.matom.
 % SS            Interactions matrices in the unit cell, optional.
 %
 % Output:
 %
-% mAtom         Parameters of the magnetic atoms.
-% mAtom.RRext   Positions of magnetic atoms, assuming an extended unit
+% aList         Parameters of the magnetic atoms.
+% aList.RRext   Positions of magnetic atoms, assuming an extended unit
 %               cell, dimensions are [3 nMagExt].
-% mAtom.Sext    Spin length of the magnetic atoms, dimensions are
+% aList.Sext    Spin length of the magnetic atoms, dimensions are
 %               [1 nMagExt].
 %
 % SSext         Interaction matrix in the extended unit cell, struct type.
@@ -32,97 +32,52 @@ function [mAtom, SSext] = sw_extendlattice(nExt, mAtom, varargin)
 %
 
 if nargin == 0
-    help sw_extendlattice;
+    help sw_extendlattice
     return
 end
 
-RR       = mAtom.r;
-S        = mAtom.S;
-nAtom    = size(RR,2);
-nMagAtom = length(S);
+nAtom    = size(aList.r,2);
 nCell    = prod(nExt);
-nExt     = nExt';
+nExt     = nExt(:);
 nExt1    = nExt-1;
 
-rIndex   = 0;
-RRext    = zeros(3,nAtom*nCell);
-if isa(S,'sym')
-    Sext     = sym(zeros(1,nAtom*nCell));
-else
-    Sext     = zeros(1,nAtom*nCell);
+% generate cell indices in the supercell
+[cIdx{1:3}] = ndgrid(0:nExt1(1),0:nExt1(2),0:nExt1(3));
+cIdx        = cat(4,cIdx{:});
+
+% generate spin quantum numbers for the extendd unit cell
+aList.Sext = repmat(aList.S,[1 nCell]);
+% generate atomic positions in the extended unit cell
+aList.RRext = bsxfun(@plus,bsxfun(@rdivide,cIdx,permute(nExt,[2:4 1])),permute(bsxfun(@rdivide,aList.r,nExt),[3 4 5 1 2]));
+aList.RRext = reshape(permute(aList.RRext,[4 5 1:3]),3,[]);
+% generate the indices for each atom in the extended unit cell
+if isfield(aList,'idx')
+    aList.idxext = repmat(aList.idx,[1 nCell]);
 end
 
-% Extend unit cell.
-for kk = 0:nExt1(3)
-    for jj = 0:nExt1(2)
-        for ii = 0:nExt1(1)
-            vIdx = [ii;jj;kk];
-            RRext(:,rIndex*nAtom+(1:nAtom)) = (RR + vIdx*ones(1,nAtom))./(nExt*ones(1,nAtom));
-            Sext(rIndex*nMagAtom+(1:nMagAtom)) = S;
-            rIndex = rIndex + 1;
-        end
-    end
+if nargin < 3
+    SSext = struct;
+    return
 end
 
-if isfield(mAtom,'idx')
-    mAtom.idxext = repmat(mAtom.idx,[1 nCell]);
-end
+% loop over all field names of SS
+fNameV = fields(SS);
+SSext = struct;
 
-mAtom.RRext = RRext;
-mAtom.Sext  = Sext;
+% additional atom index for bonds [1 1 nCell*nAtom]
+addIdx = permute((0:(nCell-1))*nAtom,[1 3 2]);
 
-switch nargin
-    case 2
-        SSext = struct;
-    case 3
-        SS = varargin{1};
-        
-        fName    = fieldnames(SS);
-        SSext    = struct;
-        
-        for ii = 1:length(fName)
-            sName = fName{ii};
-            sSize = size(SS.(sName));
-            SSext.(sName) = zeros(sSize(1),sSize(2)*nCell);
-        end
-        
-        % Extend coupling matrices.
-        for ll = 1:length(fName)
-            if isa(SS.(fName{ll}),'sym')
-                SS0 = SS.(fName{ll});
-                N   = size(SS0,2);
-                SS2 = sym(zeros(size(SS0,1),N*nCell));
-            else
-                SS0 = double(SS.(fName{ll}));
-                N   = size(SS0,2);
-                SS2 = zeros(size(SS0,1),N*nCell);
-            end
-            
-            if ~isempty(SS0)
-                rIndex = 0;
-                
-                for kk = 0:nExt1(3)
-                    for jj = 0:nExt1(2)
-                        for ii = 0:nExt1(1)
-                            vIdx = [ii;jj;kk];
-                            
-                            temp = (SS0(1:3,:)+vIdx*ones(1,N))./(nExt*ones(1,N));
-                            
-                            SS2(1:3,rIndex*N+(1:N))   = floor(temp);
-                            SS2(4,rIndex*N+(1:N))     = sum(vIdx.*[1;nExt(1);nExt(1)*nExt(2)],1)*nAtom+SS0(4,:);
-                            SS2(5,rIndex*N+(1:N))     = sum((temp-floor(temp)).*(nExt*ones(1,N))*nAtom.*([1;nExt(1);nExt(1)*nExt(2)]*ones(1,N)),1);
-                            SS2(5,rIndex*N+(1:N))     = round(SS2(5,rIndex*N+(1:N))+SS0(5,:));
-                            SS2(6:end,rIndex*N+(1:N)) = SS0(6:end,:);
-                            rIndex = rIndex + 1;
-                            
-                        end
-                    end
-                end
-            end
-            SSext.(fName{ll}) = SS2;
-        end
-    otherwise
-        error('sw:sw_extendunitcell:WrongInput','Wrong number of input parameters!');
+for ii = 1:numel(fNameV)
+    fName = fNameV{ii};
+    SSext.(fName) = repmat(SS.(fName),[1 nCell]);
+    % first atom index within the uspercell
+    SSext.(fName)(4,:) = reshape(bsxfun(@plus,addIdx,SS.(fName)(4,:)),1,[]);
+    % end of bond vector still in original cell dimensions
+    bVect = reshape(permute(bsxfun(@plus,cIdx,permute(SS.(fName)(1:3,:),[3:5 1 2])),[4 5 1:3]),3,[]);
+    % normalize bond vector to supercell dimensions
+    SSext.(fName)(1:3,:) = floor(bsxfun(@rdivide,bVect,nExt));
+    % indices are between (0:nCell-1)*nAtom
+    SSext.(fName)(5,:) = sum(bsxfun(@times,bVect-bsxfun(@times,SSext.(fName)(1:3,:),nExt),[1;nExt(1);prod(nExt(1:2))]),1)*nAtom+SSext.(fName)(5,:);
 end
 
 end

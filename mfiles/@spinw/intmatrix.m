@@ -85,18 +85,18 @@ inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]    [1 
 
 param = sw_readparam(inpForm, varargin{:});
 
-% Create parameters of magnetic atoms in the unit cell.
+% create parameters of magnetic atoms in the unit cell
 mAtom    = obj.matom;
 nMagAtom = size(mAtom.r,2);
 mat      = obj.matrix.mat;
 nMat     = size(mat,3);
 
-% Add extra zero matrix to the end of the matrix list
+% add extra zero matrix to the end of the matrix list
 mat = cat(3,mat,zeros(3));
 % Add another extra matrix for g=2 default tensor
 mat = cat(3,mat,2*eye(3));
 
-% Anisotropy matrix.
+% anisotropy matrix
 if size(obj.single_ion.aniso,2) == nMagAtom
     idx = obj.single_ion.aniso;
     % the non-assigned atoms get a pointer to the last zero energy matrix
@@ -108,7 +108,7 @@ else
     SI.aniso = zeros(3,3,nMagAtom);
 end
 
-% g-tensor.
+% g-tensor
 if size(obj.single_ion.g,2) == nMagAtom
     idx = obj.single_ion.g;
     % the non-assigned atoms get a pointer to the last zero energy matrix

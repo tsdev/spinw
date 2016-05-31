@@ -39,23 +39,21 @@ objS = struct(obj);
 objC = spinw(objS);
 
 % copy the private properties
-objC.propl  = obj.propl;
+objC.propl  = event.listener.empty;
 objC.sym    = obj.sym;
 objC.symb   = obj.symb;
 objC.fid    = obj.fid;
 objC.ver    = obj.ver;
 
 % add new listeners to the new object
-if ~isempty(objC.cache.matom)
+if ~isempty(obj.cache.matom)
     % add listener to lattice and unit_cell fields
-    objC.propl    = addlistener(objC,'lattice',  'PostSet',@objC.modmatom);
-    objC.propl(2) = addlistener(objC,'unit_cell','PostSet',@objC.modmatom);
+    obj.addlistenermulti(1);
 end
 
-% % empty the cache of the new object
-% fieldN = fieldnames(objC.cache);
-% for ii = 1:numel(fieldN)
-%     objC.cache.(fieldN{ii}) = [];
-% end
+if ~isempty(obj.cache.bondsymop)
+    % add listener to lattice, unit_cell and coupling fields
+    obj.addlistenermulti(2);
+end
 
 end

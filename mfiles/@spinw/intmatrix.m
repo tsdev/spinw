@@ -133,8 +133,8 @@ if param.fitmode > 0
     % loop over the different types of couplings
     typeList = unique(mat_type(:));
     
-    JJ.mat = zeros(3,3,0);
-    JJ.idx = zeros(1,0);
+    JJ.mat   = zeros(3,3,0);
+    JJ.idx   = zeros(1,0);
     all_temp = zeros(8,0);
     
     for ii = 1:numel(typeList)
@@ -143,7 +143,7 @@ if param.fitmode > 0
         if numel(typeList)>1
             mat_idx(mat_type~=typeList(ii)) = 0;
         end
-        % Remove couplings where all mat_idx == 0.
+        % remove couplings where all mat_idx == 0.
         colSel = any(mat_idx ~= 0,1);
         
         mat_temp = mat_idx(:,colSel);

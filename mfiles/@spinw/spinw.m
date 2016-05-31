@@ -150,16 +150,16 @@ classdef spinw < handle
         % the code. The stored values should not be changed by the user!
         % Sub fields are:
         %   'matom'     Data on the magnetic unit cell.
-        cache = struct('matom',[]);
+        cache = struct('matom',[],'bondsymop',[]);
         
     end
     
     properties (Access = private)
-        propl         % stores the property change listener handles
-        sym  = false; % stores whether the couplings are generated under symmetry constraints
-        symb = false; % stores whether the calculation are done symbolically
-        fid  = 1;     % stores the file ID of the text output, default is the Command Window
-        ver    = sw_version;
+        propl = event.proplistener.empty;  % stores the property change listener handles
+        sym   = false; % stores whether the couplings are generated under symmetry constraints
+        symb  = false; % stores whether the calculation are done symbolically
+        fid   = 1;     % stores the file ID of the text output, default is the Command Window
+        ver   = sw_version;
     end
     
     methods
@@ -328,27 +328,55 @@ classdef spinw < handle
                 % add new listeners to the new object
                 if ~isempty(obj.cache.matom)
                     % add listener to lattice and unit_cell fields
-                    obj.propl    = addlistener(obj,'lattice',  'PostSet',@obj.modmatom);
-                    obj.propl(2) = addlistener(obj,'unit_cell','PostSet',@obj.modmatom);
+                    obj.addlistenermulti(1);
+                end
+                if ~isempty(obj.cache.bondsymop)
+                    % add listener to lattice, unit_cell and coupling fields
+                    obj.addlistenermulti(2);
                 end
             end
     end
         
     methods(Hidden=true)
-        function modmatom(obj, ~, ~)
-            % listening to the change of the lattice or unit_cell fields
+        function clearcache(obj, chgField)
+            % listening to changes of the spinw object to clear cache is
+            % necessary
             
-            % delete the stored magnetic atom positions
-            obj.cache.matom = [];
-            % remove the listener
-            delete(obj.propl);
-            % fprintf('Property changed!\n')
+            switch chgField
+                case 1
+                    % magnetic atoms: delete the stored magnetic atom positions
+                    obj.cache.matom = [];
+                    % remove the listeners
+                    delete(obj.propl(1:2));
+                case 2
+                    % bond symmetry operators: delete the stored operators
+                    obj.cache.bondsymop = [];
+                    % remove the listeners
+                    delete(obj.propl(3:5));
+            end
         end
+        
+        function addlistenermulti(obj, chgField)
+            % create the corresponding listeners to each cache subfield
+            
+            switch chgField
+                case 1
+                    % add listener to lattice and unit_cell fields
+                    obj.propl(1) = addlistener(obj,'lattice',  'PostSet',@(evnt,src)obj.clearcache(1));
+                    obj.propl(2) = addlistener(obj,'unit_cell','PostSet',@(evnt,src)obj.clearcache(1));
+                case 2
+                    % add listener to lattice, unit_cell and coupling fields
+                    obj.propl(3) = addlistener(obj,'lattice',  'PostSet',@(evnt,src)obj.clearcache(2));
+                    obj.propl(4) = addlistener(obj,'unit_cell','PostSet',@(evnt,src)obj.clearcache(2));
+                    obj.propl(5) = addlistener(obj,'coupling', 'PostSet',@(evnt,src)obj.clearcache(2));
+            end
+        end
+        
         function obj = saveobj(obj)
             % remove property change listeners
             delete(obj.propl);
             % empty pointers
-            obj.propl = [];
+            obj.propl = event.listener.empty;
         end
 
         function lh = addlistener(varargin)

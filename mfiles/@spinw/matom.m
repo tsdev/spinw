@@ -17,8 +17,7 @@ if isempty(obj.cache.matom)
     obj.cache.matom = mAtomList;
     
     % add listener to lattice and unit_cell fields
-    obj.propl    = addlistener(obj,'lattice',  'PostSet',@obj.modmatom);
-    obj.propl(2) = addlistener(obj,'unit_cell','PostSet',@obj.modmatom);
+    obj.addlistenermulti(1);
 else
     mAtomList = obj.cache.matom;
 end

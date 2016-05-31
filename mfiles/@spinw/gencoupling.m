@@ -217,7 +217,7 @@ if isSym
     coupling.nsym = int32(maxidxSym);
     
 else
-    coupling.nsym = obj.coupling.nsym;
+    coupling.nsym = int32(0);
     
 end
 

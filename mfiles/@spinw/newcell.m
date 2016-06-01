@@ -91,12 +91,13 @@ nExt  = ceil(max(pp,[],2) - min(pp,[],2))'+2;
 %obj.mag_str.N_ext = int32(nExt);
 
 % generated atoms
-atomList = obj.atom;
+atomList   = obj.atom;
 atomList.S = obj.unit_cell.S(atomList.idx);
 atomList = sw_extendlattice(nExt,atomList);
 rExt   = bsxfun(@plus,bsxfun(@times,atomList.RRext,nExt'),(min(pp,[],2)-1));
 idxExt = atomList.idxext;
-Sext   = atomList.Sext;
+
+
 
 rExt = bsxfun(@plus,rExt,bshift);
 % atomic positions in the new unit cell
@@ -107,7 +108,7 @@ rNew = inv(Tn_o)*rExt; %#ok<MINV>
 idxCut = any((rNew<0) | (rNew>=1),1);
 rNew(:,idxCut) = [];
 idxExt(idxCut) = [];
-Sext(idxCut)   = [];
+atomList.Sext(idxCut)   = [];
 
 % find equivalent positions for dubious border atoms
 idxB = find(any(rNew>=(1-eps),1));
@@ -128,7 +129,7 @@ end
 % remove the necessary bad behaving atoms
 rNew(:,idxCut) = [];
 idxExt(idxCut) = [];
-Sext(idxCut)   = [];
+atomList.Sext(idxCut)   = [];
 
 % new lattice simmetry is no-symmetry
 obj.lattice.sym     = zeros(3,4,0);
@@ -137,9 +138,17 @@ obj.sym = false;
 
 % new unit cell defined
 obj.unit_cell.r     = rNew;
-obj.unit_cell.S     = Sext;
+obj.unit_cell.S     = atomList.Sext;
 obj.unit_cell.label = obj.unit_cell.label(1,idxExt);
 obj.unit_cell.color = obj.unit_cell.color(:,idxExt);
+
+obj.unit_cell.ox  = obj.unit_cell.ox(1,idxExt);
+obj.unit_cell.occ = obj.unit_cell.occ(1,idxExt);
+obj.unit_cell.b   = obj.unit_cell.b(:,idxExt);
+obj.unit_cell.ff  = obj.unit_cell.ff(:,:,idxExt);
+obj.unit_cell.A   = obj.unit_cell.A(:,idxExt);
+obj.unit_cell.Z   = obj.unit_cell.Z(:,idxExt);
+
 obj.mag_str.N_ext   = int32([1 1 1]);
 
 % transformation from the original reciprocal lattice into the new

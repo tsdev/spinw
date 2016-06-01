@@ -1,4 +1,4 @@
-function [SS, SI, RR] = intmatrix2(obj, varargin)
+function [SS, SI, RR] = intmatrix(obj, varargin)
 % creates the interactions matrices (connectors and values)
 %
 % [SS, SI, RR] = INTMATRIX(obj, 'Option1', Value1, ...)
@@ -125,42 +125,6 @@ end
 coupling = obj.coupling;
 SS.all   = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx]);
 
-% generate the symmetry operators if necessary
-if isempty(obj.cache.bondsymop)
-    % transformation matrix between l.u. and xyz coordinate systems
-    A = obj.basisvector(false,obj.symbolic);
-    % first positions of the couplings with identical idx values used to
-    % generate the coupling matrices for the rest
-    % only calculate for the symmetry generated bonds
-    bondSel = [true logical(diff(SS.all(6,:)))] & SS.all(6,:)<= coupling.nsym;
-    % keep the bonds the will generate the space group operators
-    firstBond = SS.all(1:5,bondSel);
-    % produce the space group symmetry operators
-    [symOp, symTr] = sw_gencoord(obj.lattice.sym);
-    rotOp = zeros(3,3,find(SS.all(6,:)<= coupling.nsym,1,'last'));
-    % select rotation matrices for each generated coupling
-    bIdx = 0;
-    for ii = 1:size(firstBond,2)
-        [~, rotIdx] = sw_gensymcoupling(obj, firstBond(:,ii), {symOp, symTr}, 1e-5);
-        rotOp(:,:,bIdx+(1:sum(rotIdx))) = symOp(:,:,rotIdx);
-        bIdx = bIdx + sum(rotIdx);
-    end
-    
-    % convert rotation operators to xyz Cartesian coordinate system
-    rotOp = mmat(A,mmat(rotOp,inv(A)));
-    
-    % save to the cache
-    obj.cache.bondsymop = rotOp;
-    
-    % add listener to lattice and unit_cell fields
-    obj.addlistenermulti(2);
-else
-    % get the stored operators
-    rotOp = obj.cache.bondsymop;
-end
-
-
-
 if param.fitmode > 0
     % sum up couplings on the same bond
     
@@ -249,13 +213,13 @@ if obj.sym
     if ~isempty(SS.all)
         % first positions of the couplings with identical idx values used to
         % generate the coupling matrices for the rest
-        firstBond = SS.all(1:5,[true logical(diff(SS.all(6,:)+100*SS.all(7,:)))]);
+        firstC = SS.all(1:5,[true logical(diff(SS.all(6,:)+100*SS.all(7,:)))]);
         % produce the space group symmetry operators
         [symOp, symTr] = sw_gencoord(obj.lattice.sym);
         rotOp = zeros(3,3,0);
         % select rotation matrices for each generated coupling
-        for ii = 1:size(firstBond,2)
-            [~, rotIdx] = sw_gensymcoupling(obj, firstBond(:,ii), {symOp, symTr}, 1e-5);
+        for ii = 1:size(firstC,2)
+            [~, rotIdx] = sw_gensymcoupling(obj, firstC(:,ii), {symOp, symTr}, 1e-5);
             rotOp = cat(3,rotOp,symOp(:,:,rotIdx));
         end
         

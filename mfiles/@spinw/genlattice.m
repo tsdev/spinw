@@ -144,6 +144,10 @@ else
     
 end
 
+if ischar(param.sym)
+    param.label = param.sym;
+end
+
 % generate the symmetry operators
 if ~isempty(param.sym)
     param.sym = sw_gensym(param.sym);
@@ -156,10 +160,6 @@ end
 obj.lattice.sym = param.sym(param.perm,[param.perm 4],:);
 % assign the origin for space group operators
 obj.lattice.origin = param.origin;
-
-if ischar(param.sym)
-    param.label = param.sym;
-end
 
 obj.lattice.label = param.label;
 

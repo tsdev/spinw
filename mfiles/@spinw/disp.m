@@ -88,9 +88,6 @@ if nargout == 1
     
     varargout{1} = swDescr;
 else
-    if nargin < 2
-        fid = obj.fid;
-    end
     
     chem = obj.formula;
     chem.chemform(chem.chemform == ' ') = [];
@@ -108,7 +105,7 @@ else
         ];
     
     % print the text
-    fprintf0(fid,swDescr);
+    fprintf(swDescr);
 end
 
 end

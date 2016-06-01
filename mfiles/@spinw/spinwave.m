@@ -317,7 +317,7 @@ twinIdx = twinIdx(:);
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
 if param.fitmode
-    [SS, SI, RR] = obj.intmatrix('fitmode',2,'conjugate',true);
+    [SS, SI, RR] = obj.intmatrix('fitmode',true,'conjugate',true);
 else
     [SS, SI, RR] = obj.intmatrix('conjugate',true);
 end
@@ -557,43 +557,13 @@ end
 
 warn1 = false;
 
-% precalculate all magnetic form factors
-if iscell(param.formfact) || param.formfact
-    if ~iscell(param.formfact)
-        % unique atom labels
-        uLabel = unique(obj.unit_cell.label(obj.unit_cell.S>0));
-        % all atom labels
-        aLabel = obj.unit_cell.label(obj.matom.idx);
-        
-        % save the form factor information in the output
-        spectra.formfact = obj.unit_cell.label(obj.unit_cell.S>0);
-    else
-        if numel(param.formfact) ~= unique(obj.matom.idx)
-            error('sw:spinwave:WrongInput',['Number of form factor '...
-                'parameters has to equal to the number of symmetry inequivalent '...
-                'magnetic atoms in the unit cell!'])
-        end
-        % use the labels given as a cell input for all symmetry
-        % inequivalent atom
-        uLabel = param.formfact;
-        aLabel = uLabel(obj.matom.idx);
-        % convert numerical values to char() type
-        aLabel = cellfun(@char,aLabel,'UniformOutput', false);
-        
-        % save the form factor information in the output
-        spectra.formfact = uLabel;
-    end
-    
-    % stores the form factor values for each Q point and unique atom
-    % label
-    FF = zeros(nMagExt,nHkl);
+% calculate all magnetic form factors
+if param.formfact
+    spectra.formfact = true;
     % Angstrom^-1 units for Q
     hklA0 = 2*pi*(hkl0'/obj.basisvector)';
-    
-    for ii = 1:numel(uLabel)
-        lIdx = repmat(strcmp(aLabel,char(uLabel{ii})),[1 prod(nExt)]);
-        FF(lIdx,:) = repmat(param.formfactfun(uLabel{ii},hklA0),[sum(lIdx) 1]);
-    end
+    % store form factor per Q point for each atom in the magnetic supercell
+    FF = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[1 nExt]);
 else
     spectra.formfact = false;
 end
@@ -944,7 +914,6 @@ spectra.title           = param.title;
 spectra.gtensor         = param.gtensor;
 
 if ~param.fitmode
-    spectra.ff  = ones(nMagExt,nHkl0);
     spectra.obj = copy(obj);
 end
 

@@ -40,18 +40,18 @@ iso.m = [iso0(:).mass];
 iso.Z = [iso0(:).Z];
 iso.A = [iso0(:).A];
 
-formulaA = obj.unit_cell.A(atom.idx);
-formulaZ = obj.unit_cell.Z(atom.idx);
-
-[iFound, loc] = ismember([formulaA;formulaZ]',[iso.A;iso.Z]','rows');
-
-% only keep if all atoms are found
-if all(iFound)
-    m = iso.m(loc);
-end
-
 if numel(atom.idx) == 0
     m = 0;
+else
+    formulaA = obj.unit_cell.A(atom.idx);
+    formulaZ = obj.unit_cell.Z(atom.idx);
+    
+    [iFound, loc] = ismember([formulaA;formulaZ]',[iso.A;iso.Z]','rows');
+    
+    % only keep if all atoms are found
+    if all(iFound)
+        m = iso.m(loc);
+    end 
 end
 
 % aVogadro number (1/mol)
@@ -87,7 +87,7 @@ formula.rho = formula.m/formula.V/nA*1e24*nForm;
 % divide the number of atoms in formula
 numAtom(2:2:end) = num2cell([numAtom{2:2:end}]/nForm);
 
-formula.chemform = sprintf('%s_%d ',numAtom{:});
+formula.chemform = sprintf('%s%d',numAtom{:});
 formula.chemlabel = numAtom(1:2:end);
 formula.chemnum = [numAtom{2:2:end}];
 

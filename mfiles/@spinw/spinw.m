@@ -49,6 +49,8 @@ classdef spinw < handle
         %   'lat_const' lattice constants in a 1x3 vector in Angstrom units
         %   'angle'     (alpha,beta,gamma) angles in 1x3 vector in radian
         %   'sym'       crystal space group, line number in symmetry.dat file
+        %   'origin'    Origin of the cell in l.u.
+        %   'label'     Label of the space group.
         %
         % See also SPINW.GENLATTICE, SPINW.ABC, SPINW.BASISVECTOR, SPINW.NOSYM.
         lattice
@@ -61,6 +63,18 @@ classdef spinw < handle
         %   'label'     label of the atom, strings in a 1 x nAtom cell
         %   'color'     color of the atom in 3 x nAtom matrix, where every
         %               column is an 0-255 RGB color
+        %   'ox'        oxidation number of the atom, in a 1 x nAtom matrix
+        %   'occ'       site occupancy in a 1 x nAtom matrix
+        %   'b'         scattering length of the site for neutron and x-ray
+        %               stored in a 2 x nAtom matrix, first row is neutron,
+        %               second row is for x-ray
+        %   'ff'        form factor of the site stored in a 2 x 9 x nAtom
+        %               matrix, first row is the magnetic form factor for
+        %               neutrons, the second row is the charge form factor
+        %               for x-ray
+        %   'Z'         atomic number
+        %   'A'         atomic mass (N+Z) for isotopes and -1 for natural
+        %               distribution of isotopes
         %
         % See also SPINW.ADDATOM, SPINW.ATOM, SPINW.MATOM, SPINW.NEWCELL, SPINW.PLOT.
         unit_cell
@@ -117,6 +131,15 @@ classdef spinw < handle
         %   'type'      Type of coupling corresponding to mat_idx matrices.
         %               Default is 0 for quadratic exchange. type = 1 for
         %               biquadratic exchange.
+        %   'sym'       If true the bond symmetry operators will be applied
+        %               on the assigned matrix.
+        %   'rdip'      Maximum distance until the dipolar interaction is
+        %               calculated. Zero vlue means no dipolar interactions
+        %               are considered.
+        %   'nsym'      The largest bond 'idx' value that is generated
+        %               using the space group operators. Typically very
+        %               long bonds for dipolar interactions won't be
+        %               calculated using space group symmetry.
         %
         % See also SPINW.GENCOUPLING, SPINW.ADDCOUPLING, SPINW.FIELD.
         coupling
@@ -133,9 +156,6 @@ classdef spinw < handle
         %               if the magnetic cell is identical to the
         %               crystallographic cell, the 1x3 vector extends the
         %               cell along the a, b and c axis
-        %   'rdip'      Maximum distance until the dipolar interaction is
-        %               calculated. Zero vlue means no dipolar interactions
-        %               are considered.
         %
         % See also SPINW.GENMAGSTR, SPINW.OPTMAGSTR, SPINW.ANNEAL, SPINW.MOMENT, SPINW.NMAGEXT, SPINW.STRUCTFACT.
         mag_str
@@ -146,11 +166,12 @@ classdef spinw < handle
         %   'muB'       Bohr magneton, default is 0.0579 [meV/T]
         %   'mu0'       Vacuum permeability, 201.335431 [T^2*Angstrom^3/meV]
         unit
-        % Stores the cache, it should be only used to check consistency of
-        % the code. The stored values should not be changed by the user!
+        % Stores the cache, it should be only used to check consistency of the code.
+        % The stored values should not be changed by the user in any case!
         % Sub fields are:
         %   'matom'     Data on the magnetic unit cell.
-        cache = struct('matom',[],'bondsymop',[]);
+        %   'symop'     Data on the generated symmetry operators per bond.
+        cache = struct('matom',[],'symop',[]);
         
     end
     
@@ -330,7 +351,7 @@ classdef spinw < handle
                     % add listener to lattice and unit_cell fields
                     obj.addlistenermulti(1);
                 end
-                if ~isempty(obj.cache.bondsymop)
+                if ~isempty(obj.cache.symop)
                     % add listener to lattice, unit_cell and coupling fields
                     obj.addlistenermulti(2);
                 end
@@ -350,7 +371,7 @@ classdef spinw < handle
                     delete(obj.propl(1:2));
                 case 2
                     % bond symmetry operators: delete the stored operators
-                    obj.cache.bondsymop = [];
+                    obj.cache.symop = [];
                     % remove the listeners
                     delete(obj.propl(3:5));
             end

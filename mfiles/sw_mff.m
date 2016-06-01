@@ -78,11 +78,13 @@ if iscell(atomName)
         fIdx = find(idx == numel(formFact));
         warning('sw_mff:WrongInput','The form factor for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
     end
+elseif size(atomName,2) == 9
+    % just calculates the form factor values
+    coeff = atomName;
 else
     error('sw_mff:WrongInput','Wrong input!')
 end
 
-% TODO for multiple atoms
 if nargin > 1
     if all(size(Q)>1)
         % if Q points are given as a list of Q vectors in Angstrom^-1

@@ -48,12 +48,12 @@ objC.ver    = obj.ver;
 % add new listeners to the new object
 if ~isempty(obj.cache.matom)
     % add listener to lattice and unit_cell fields
-    obj.addlistenermulti(1);
+    objC.addlistenermulti(1);
 end
 
-if ~isempty(obj.cache.bondsymop)
+if ~isempty(obj.cache.symop)
     % add listener to lattice, unit_cell and coupling fields
-    obj.addlistenermulti(2);
+    objC.addlistenermulti(2);
 end
 
 end

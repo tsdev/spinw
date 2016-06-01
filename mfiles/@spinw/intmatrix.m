@@ -1,4 +1,4 @@
-function [SS, SI, RR] = intmatrix(obj, varargin)
+function [SS, SI, RR] = intmatrix2(obj, varargin)
 % creates the interactions matrices (connectors and values)
 %
 % [SS, SI, RR] = INTMATRIX(obj, 'Option1', Value1, ...)
@@ -31,9 +31,6 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %               unit cell is calculated. Default is true.
 % conjugate     Introduce the conjugate of the couplings (atom1 and atom2
 %               exchanged). Default is false.
-% rotMat        Rotate the J and A matrices according to the point group
-%               operations between symmetry equivalent sites. Default is
-%               true.
 %
 % Output:
 %
@@ -79,9 +76,9 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %    end
 %end
 
-inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate' 'rotMat' 'sortDM'};
-inpForm.defval = {0          false     false   true     false       true     false   };
-inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]    [1 1]   };
+inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate' 'sortDM'};
+inpForm.defval = {0          false     false   true     false       false   };
+inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -125,118 +122,94 @@ end
 coupling = obj.coupling;
 SS.all   = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx]);
 
-if param.fitmode > 0
-    % sum up couplings on the same bond
-    
-    mat_type = double(coupling.type);
-    
-    % loop over the different types of couplings
-    typeList = unique(mat_type(:));
-    
-    JJ.mat   = zeros(3,3,0);
-    JJ.idx   = zeros(1,0);
-    all_temp = zeros(8,0);
-    
-    for ii = 1:numel(typeList)
-        mat_idx  = coupling.mat_idx;
-        
-        if numel(typeList)>1
-            mat_idx(mat_type~=typeList(ii)) = 0;
-        end
-        % remove couplings where all mat_idx == 0.
-        colSel = any(mat_idx ~= 0,1);
-        
-        mat_temp = mat_idx(:,colSel);
-        mat_temp(mat_temp == 0) = nMat + 1;
-        % add 0 as last row instead of JJ.idx, since we sum up the matrices
-        all_temp = [all_temp [SS.all(:,colSel);repmat([0; typeList(ii)],1,sum(colSel))]]; %#ok<AGROW>
-        
-        % sum the interactions on the same coupling
-        JJ.mat = cat(3,JJ.mat,mat(:,:,mat_temp(1,:)) + mat(:,:,mat_temp(2,:)) + mat(:,:,mat_temp(3,:)));
-        JJ.idx = [JJ.idx; mat_idx(mat_idx(:) ~= 0)];
-    end
-    SS.all = all_temp;
-else
-    % just keep all coupling that has an assigned matrix
-    % TODO
-    mat_idx  = coupling.mat_idx';
-    mat_type = double(coupling.type)';
-    
-    JJ.idx  = mat_idx(mat_idx(:) ~= 0);
-    
-    colSel  = [find(coupling.mat_idx(1,:)~=0) find(coupling.mat_idx(2,:)~=0) find(coupling.mat_idx(3,:)~=0)];
-    SS.all = SS.all(:,colSel(:));
-    
-    SS.all = [SS.all; double(JJ.idx')];
-    
-    % select the non-zero interactions into JJ.mat
-    JJ.mat  = mat(:,:,JJ.idx);
-    
-    % add an extra type row to SS.all
-    SS.all = [SS.all; mat_type(mat_idx(:) ~= 0)'];
-end
+% find the last symmetry generated matrix
+lastSym = find(coupling.idx <= coupling.nsym,1,'last');
 
-% For non P1 symmetry and when the couplings are generated using symmetry,
-% generate the Hamiltonian using the symmetry operators
-if obj.sym
-    % Generate the transformation matrix between lattice units and xyz
-    % coordinate system
-    A = obj.basisvector(false,obj.symbolic);
-    
-    % Generate anisotropy matrice using the space group symmetry
-    if obj.symb
-        nzeroA = ~sw_always(sum(SI.aniso(:).^2,1)==0);
-    else
-        nzeroA = any(SI.aniso(:));
-    end
-    
-    % generate the rotation matrices
-    if obj.symbolic
-        [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,~sw_always(obj.unit_cell.S==0)));
-    else
-        [~, ~, ~, rotOp] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
-    end
-    % convert rotation operators to xyz Cartesian coordinate system
-    rotOp = mmat(A,mmat(rotOp,inv(A)));
-    
-    if param.rotMat
-        if nzeroA
-            % rotate the matrices: R*M*R'
-            SI.aniso = mmat(rotOp,mmat(SI.aniso,permute(rotOp,[2 1 3])));
+% generate the symmetry operators if necessary
+if isempty(obj.cache.symop)
+    if coupling.nsym > 0
+        % transformation matrix between l.u. and xyz coordinate systems
+        A = obj.basisvector(false,obj.symbolic);
+        
+        
+        % generate symmetry operators for anisotropy matrice using the space group symmetry
+        % generate the rotation matrices
+        if obj.symbolic
+            [~, ~, ~, rotOpA] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,~sw_always(obj.unit_cell.S==0)));
+        else
+            [~, ~, ~, rotOpA] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
         end
-        % Generate g-tensor using the space group symmetry
-        % rotate the matrices: R*M*R'
-        SI.g = mmat(rotOp,mmat(SI.g,permute(rotOp,[2 1 3])));
-    end
-    
-    % Generate interaction matrices using the space group symmetry
-    if ~isempty(SS.all)
+        % convert rotation operators to xyz Cartesian coordinate system
+        rotOpA = mmat(A,mmat(rotOpA,inv(A)));
+        
+        % generate symmetry operators for exchange matrices
         % first positions of the couplings with identical idx values used to
         % generate the coupling matrices for the rest
-        firstC = SS.all(1:5,[true logical(diff(SS.all(6,:)+100*SS.all(7,:)))]);
+        % only calculate for the symmetry generated bonds
+        bondSel = [true logical(diff(SS.all(6,:)))] & SS.all(6,:)<= coupling.nsym;
+        % keep the bonds the will generate the space group operators
+        firstBond = SS.all(1:5,bondSel);
         % produce the space group symmetry operators
         [symOp, symTr] = sw_gencoord(obj.lattice.sym);
-        rotOp = zeros(3,3,0);
+        rotOpB = zeros(3,3,lastSym);
         % select rotation matrices for each generated coupling
-        for ii = 1:size(firstC,2)
-            [~, rotIdx] = sw_gensymcoupling(obj, firstC(:,ii), {symOp, symTr}, 1e-5);
-            rotOp = cat(3,rotOp,symOp(:,:,rotIdx));
+        bIdx = 0;
+        for ii = 1:size(firstBond,2)
+            [~, rotIdx] = sw_gensymcoupling(obj, firstBond(:,ii), {symOp, symTr}, 1e-5);
+            rotOpB(:,:,bIdx+(1:sum(rotIdx))) = symOp(:,:,rotIdx);
+            bIdx = bIdx + sum(rotIdx);
         end
-        
-        %if obj.symbolic
-        %    rotOp = round(rotOp);
-        %end
         
         % convert rotation operators to xyz Cartesian coordinate system
-        %if sum(abs((A-diag(diag(A)))/max(A))) > 1e-15
-        rotOp = mmat(A,mmat(rotOp,inv(A)));
-        %end
+        rotOpB = mmat(A,mmat(rotOpB,inv(A)));
         
-        % rotate the matrices: R*M*R'
-        if param.rotMat
-            JJ.mat = mmat(rotOp,mmat(JJ.mat,permute(rotOp,[2 1 3])));
-        end
+        % save to the cache
+        obj.cache.symop.sion = rotOpA;
+        obj.cache.symop.bond = rotOpB;
+    else
+        % save to the cache
+        obj.cache.symop.sion = zeros(3,3,0);
+        obj.cache.symop.bond = zeros(3,3,0);
     end
+    % add listener to lattice and unit_cell fields
+    obj.addlistenermulti(2);
+else
+    % get the stored operators from cache
+    rotOpA = obj.cache.symop.sion;
+    rotOpB = obj.cache.symop.bond;
+end
+
+% extract the assigned bonds
+mat_idx  = coupling.mat_idx';
+mat_type = double(coupling.type)';
+mat_sym  = coupling.sym';
+
+JJ.idx  = mat_idx(mat_idx(:) ~= 0);
+JJ.sym  = mat_sym(mat_idx(:) ~= 0);
+
+% keep the column index of each generated bond
+colSel  = [find(coupling.mat_idx(1,:)~=0) find(coupling.mat_idx(2,:)~=0) find(coupling.mat_idx(3,:)~=0)];
+SS.all  = SS.all(:,colSel(:));
+
+SS.all = [SS.all; double(JJ.idx')];
+
+% add an extra type row to SS.all
+SS.all = [SS.all; mat_type(mat_idx(:) ~= 0)'];
+
+% select the non-zero interactions into JJ.mat
+JJ.mat  = mat(:,:,JJ.idx);
+
+% rotate the anisotropy & g matrices according to the symmetry operators
+if obj.sym
+    % rotate the matrices: R*M*R'
+    SI.aniso = mmat(rotOpA,mmat(SI.aniso,permute(rotOpA,[2 1 3])));
+    % generate g-tensor using the space group symmetry
+    % rotate the matrices: R*M*R'
+    SI.g = mmat(rotOpA,mmat(SI.g,permute(rotOpA,[2 1 3])));
+    
+    % rotate the coupling matrices only when symmetry operator requested
+    colSym = colSel <= lastSym & JJ.sym';
+    JJ.mat(:,:,colSym) = mmat(rotOpB(:,:,colSel(colSym)),mmat(JJ.mat(:,:,colSym),permute(rotOpB(:,:,colSel(colSym)),[2 1 3])));
 end
 
 mat_type = SS.all(8,:);
@@ -244,7 +217,7 @@ idxTemp  = SS.all(6,:);
 SS.all   = SS.all(1:5,:);
 
 % don't calculate these for speedup in case of fitting
-if param.fitmode < 2
+if param.fitmode
     JJ.type = sw_mattype(JJ.mat);
     
     % new type for biquadratic exchange
@@ -354,7 +327,7 @@ if param.plotmode
     % Saves all coupling matrix indices in SS.all in case of non-fitting mode
     % in the bottom row
     if ~isempty(SS.all)
-        SS.all   = [SS.all(1:14,:); double(JJ.idx'); idxTemp;SS.all(15,:)];
+        SS.all   = [SS.all(1:14,:); double(JJ.idx'); idxTemp; SS.all(15,:)];
     else
         SS.all   = zeros(17,0);
     end

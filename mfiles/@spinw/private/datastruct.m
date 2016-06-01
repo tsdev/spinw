@@ -7,14 +7,14 @@ function Datastruct = datastruct()
 Datastruct.mainfield = {...
     'lattice' 'unit_cell' 'twin' 'matrix' 'single_ion' 'coupling' 'mag_str' 'unit'};
 Datastruct.subfield = {...
-    'angle' 'lat_const' 'sym'   'origin'  'label' ''    ''     '' '' '';... % LATTICE
-    'r'     'S'         'label' 'color'   'ox'  'occ'  'b' 'ff' 'A' 'Z';... % UNIT_CELL
-    'vol'   'rotc'      ''      ''        ''    ''      ''     '' '' '';... % TWIN
-    'mat'   'color'     'label' ''        ''    ''      ''     '' '' '';... % MATRIX
-    'aniso' 'g'         'field' 'T'       ''    ''      ''     '' '' '';... % SINGLE_ION
+    'angle' 'lat_const' 'sym'   'origin'  'label' ''    ''     '' '' '';...         % LATTICE
+    'r'     'S'         'label' 'color'   'ox'  'occ'  'b' 'ff' 'A' 'Z';...         % UNIT_CELL
+    'vol'   'rotc'      ''      ''        ''    ''      ''     '' '' '';...         % TWIN
+    'mat'   'color'     'label' ''        ''    ''      ''     '' '' '';...         % MATRIX
+    'aniso' 'g'         'field' 'T'       ''    ''      ''     '' '' '';...         % SINGLE_ION
     'dl'    'atom1'     'atom2' 'mat_idx' 'idx' 'type'  'sym'  'rdip' 'nsym' '';... % COUPLING
-    'N_ext' 'k'         'S'     'n'       ''    ''      ''     '' '' '';... % MAG_STR
-    'kB'    'muB'       'mu0'   'label'   'nformula' '' ''     '' '' ''};   % UNIT
+    'N_ext' 'k'         'S'     'n'       ''    ''      ''     '' '' '';...         % MAG_STR
+    'kB'    'muB'       'mu0'   'label'   'nformula' '' ''     '' '' ''};           % UNIT
 Datastruct.sizefield = {...
     {1 3}          {1 3}          {3 4 'nSymOp'} {1 3}       {1 'nStr'}  {}          {}    {} {} {};...
     {3 'nAtom'}    {1 'nAtom'}    {1 'nAtom'}    {3 'nAtom'} {1 'nAtom'} {1 'nAtom'} {2 'nAtom'} {2 9 'nAtom'} {1 'nAtom'} {1 'nAtom'};...

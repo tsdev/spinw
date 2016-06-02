@@ -1,7 +1,7 @@
-function [formFactVal, coeff, label] = sw_cff(atomName, Q)
+function [formFactVal, coeff] = sw_cff(atomName, Q)
 % returns the atomic charge form factor values for X-ray scattering
 %
-% [formFactVal, coeff, label] = SW_CFF(atomName, {Q})
+% [formFactVal, coeff] = SW_CFF(atomName, {Q})
 %
 % The provided form factor values at Q=0 are normalized to Z.
 %
@@ -24,6 +24,8 @@ function [formFactVal, coeff, label] = sw_cff(atomName, Q)
 %                                i=1,5
 %               where Qs = Q/(4*pi) and [a_1 b_1 a_2 b_2 ... c] are the
 %               coefficients.
+%
+% See also sw_mff.
 %
 
 if nargin == 0
@@ -51,12 +53,12 @@ if iscell(atomName)
     
     for ii = 1:numel(atomName)
         
-        % if there is whitespace, use the first word
+        % if there is whitespace, use the second word
         atomName0 = strword(atomName{ii},2,true);
         atomName0 = atomName0{1};
         
         % remove +/- symbols
-        atomName0 = atomName0(atomName0>45);
+        %atomName0 = atomName0(atomName0>45);
         
         % search for the name of the atom
         idx0 = find(strcmpi({formFact(:).label},atomName0));
@@ -66,20 +68,21 @@ if iscell(atomName)
         end
     end
     
-    coeff = [reshape([formFact(idx).a],4,[]);reshape([formFact(idx).b],4,[]);[formFact(idx).c]]';
-    coeff = coeff(:,[1 5 2 6 3 7 4 8 9]);
+    coeff = [reshape([formFact(idx).a],5,[]);reshape([formFact(idx).b],5,[]);[formFact(idx).c]]';
+    coeff = coeff(:,[1 6 2 7 3 8 4 9 5 10 11]);
     
     
     if nargout < 3 && any(idx == numel(formFact))
         fIdx = find(idx == numel(formFact));
         warning('sw_cff:WrongInput','The form factor for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
     end
+elseif size(atomName,2) == 11
+    coeff = atomName;
 else
     error('sw_cff:WrongInput','Wrong input!')
 end
 
 
-% TODO for multiple atoms
 if nargin > 1
     if all(size(Q)>1)
         % if Q points are given as a list of Q vectors in Angstrom^-1

@@ -203,9 +203,10 @@ end
 
 % get form factors from label
 [~,newAtom.ffn,newAtom.S0] = sw_mff(newAtom.label);
-%[~,newAtom.ffx]            = sw_cff(newAtom.label);
+[~,newAtom.ffx]            = sw_cff(newAtom.label);
+
 newAtom.ffn = permute(newAtom.ffn,[3 2 1]);
-newAtom.ffx = [zeros(1,8,nNewAtom) ones(1,1,nNewAtom)];
+newAtom.ffx = permute(newAtom.ffx,[3 2 1]);
 
 % get the auto size of the magnetic moments if not given
 if isempty(newAtom.S)
@@ -233,6 +234,9 @@ if iscell(newAtom.formfactx)
 elseif ~isempty(newAtom.formfactx)
     newAtom.ffx = newAtom.formfactx;
 end
+
+% include 2 zeros to make both form factor the same size
+newAtom.ffn = [newAtom.ffn(1,1:8,:) zeros(1,2,size(newAtom.ffn,3)) newAtom.ffn(1,9,:)];
 
 newAtom.ff = [newAtom.ffn;newAtom.ffx];
 newAtom.b  = ones(2,nNewAtom);

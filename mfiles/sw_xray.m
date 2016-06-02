@@ -75,7 +75,7 @@ spectra.Sperp = cell(1,nTwin);
 % copy out SpinW object
 obj = spectra.obj;
 % number of Q points
-nHkl = size(spectra.omega,2);
+%nHkl = size(spectra.omega,2);
 
 % convert Q into A-1 units
 % Angstrom^-1 units for Q
@@ -84,47 +84,58 @@ QA = 2*pi*(spectra.hkl'/obj.basisvector)';
 % atoms in the structure
 atom = obj.atom;
 % number of atoms in the unit cell
-nAtom = numel(atom.idx);
+%nAtom = numel(atom.idx);
 
 % get X-ray form factors
 % precalculate all magnetic form factors
-if iscell(param.formfact) || param.formfact
-    if ~iscell(param.formfact)
-        % unique atom labels
-        uLabel = obj.unit_cell.label;
-        % all atom labels
-        aLabel = obj.unit_cell.label(atom.idx);
-        
-        % save the form factor information in the output
-        spectra.formfact = obj.unit_cell.label;
-    else
-        if numel(param.formfact) ~= numel(obj.unit_cell.label)
-            error('sw:spinwave:WrongInput',['Number of form factor '...
-                'parameters has to equal to the number of symmetry inequivalent '...
-                'magnetic atoms in the unit cell!'])
-        end
-        % use the labels given as a cell input for all symmetry
-        % inequivalent atom
-        uLabel = param.formfact;
-        aLabel = uLabel(obj.atom.idx);
-        % convert numerical values to char() type
-        aLabel = cellfun(@char,aLabel,'UniformOutput', false);
-        
-        % save the form factor information in the output
-        spectra.formfact = uLabel;
-    end
-    
-    % stores the form factor values for each Q point and unique atom
-    % label
-    FF = zeros(nAtom,nHkl);
-    
-    for ii = 1:numel(uLabel)
-        lIdx = strcmp(aLabel,char(uLabel{ii}));
-        FF(lIdx,:) = repmat(param.formfactfun(uLabel{ii},QA),[sum(lIdx) 1]);
-    end
+% calculate all magnetic form factors
+if param.formfact
+    spectra.formfact = true;
+    % store form factor per Q point for each atom in the magnetic supercell
+    FF = param.formfactfun(permute(obj.unit_cell.ff(2,:,atom.idx),[3 2 1]),QA);
 else
     spectra.formfact = false;
 end
+
+
+
+% if param.formfact
+%     if ~iscell(param.formfact)
+%         % unique atom labels
+%         uLabel = obj.unit_cell.label;
+%         % all atom labels
+%         aLabel = obj.unit_cell.label(atom.idx);
+%         
+%         % save the form factor information in the output
+%         spectra.formfact = obj.unit_cell.label;
+%     else
+%         if numel(param.formfact) ~= numel(obj.unit_cell.label)
+%             error('sw:spinwave:WrongInput',['Number of form factor '...
+%                 'parameters has to equal to the number of symmetry inequivalent '...
+%                 'magnetic atoms in the unit cell!'])
+%         end
+%         % use the labels given as a cell input for all symmetry
+%         % inequivalent atom
+%         uLabel = param.formfact;
+%         aLabel = uLabel(obj.atom.idx);
+%         % convert numerical values to char() type
+%         aLabel = cellfun(@char,aLabel,'UniformOutput', false);
+%         
+%         % save the form factor information in the output
+%         spectra.formfact = uLabel;
+%     end
+%     
+%     % stores the form factor values for each Q point and unique atom
+%     % label
+%     FF = zeros(nAtom,nHkl);
+%     
+%     for ii = 1:numel(uLabel)
+%         lIdx = strcmp(aLabel,char(uLabel{ii}));
+%         FF(lIdx,:) = repmat(param.formfactfun(uLabel{ii},QA),[sum(lIdx) 1]);
+%     end
+% else
+%     spectra.formfact = false;
+% end
 
 % get the mass of the atoms
 aLabel = obj.unit_cell.label(atom.idx);

@@ -505,7 +505,7 @@ elseif nSlice > 1
 end
 
 % message for magnetic form factor calculation
-if iscell(param.formfact) || param.formfact
+if param.formfact
     ffstrOut = 'The';
 else
     ffstrOut = 'No';

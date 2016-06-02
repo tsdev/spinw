@@ -78,7 +78,7 @@ if iscell(atomName)
         fIdx = find(idx == numel(formFact));
         warning('sw_mff:WrongInput','The form factor for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
     end
-elseif size(atomName,2) == 9
+elseif size(atomName,2) >= 9
     % just calculates the form factor values
     coeff = atomName;
 else

@@ -27,19 +27,21 @@ function pOp = sw_pointsym(sym, r)
 %
 
 if nargin == 0
-    help sw_pointsym;
-    return;
+    help sw_pointsym
+    return
 end
 
 if ~iscell(sym)
     % returns all operators
-    [symOp, symTr] = sw_gencoord(sym);
+    [symOp, ~] = sw_gencoord(sym);
+    [symOp0, symTr0] = sw_gensym(sym);
 else
-    symOp = sym{1};
-    symTr = sym{2};
+    symOp0 = sym{1};
+    symTr0 = sym{2};
+    [symOp, ~] = sw_gencoord({symOp0, symTr0});
 end
 
-[~, ~, isMoved] = sw_genatpos({symOp symTr}, r);
+[~, ~, isMoved] = sw_genatpos({symOp0 symTr0}, r);
 
 % point group operators are the ones that does NOT move the atom
 pOp = symOp(:,:,~isMoved{1});

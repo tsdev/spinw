@@ -40,8 +40,8 @@ function [rSym, aIdx, isMoved, opMove, symName] = sw_genatpos(sym, r, fid, tol)
 %
 
 if nargin == 0
-    help sw_genatpos;
-    return;
+    help sw_genatpos
+    return
 end
 
 if nargin == 2
@@ -54,11 +54,11 @@ end
 
 [symOp, symTr, symName] = sw_gencoord(sym, fid);
 
-nAtom  = size(r,2);
-rSym   = zeros(3,0);
-aIdx   = [];
-isMoved  = cell(1,nAtom);
-opMove = zeros(3,3,0);
+nAtom   = size(r,2);
+rSym    = zeros(3,0);
+aIdx    = [];
+isMoved = cell(1,nAtom);
+opMove  = zeros(3,3,0);
 
 % loop over all input atoms
 for ii = 1:nAtom

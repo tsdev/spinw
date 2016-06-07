@@ -132,7 +132,7 @@ for ii = 1:size(newMat.mat,3)
     newJItem.color = int32(newMat.color(:,ii));
     newObj.matrix  = newJItem;
     
-    validate(newObj,'matrix');
+    %validate(newObj,'matrix');
     
     cIdx = find(strcmp(obj.matrix.label,newJItem.label));
     
@@ -169,6 +169,6 @@ for ii = 1:size(newMat.mat,3)
     end
 end
 
-validate(obj);
+%validate(obj);
 
 end

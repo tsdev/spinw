@@ -57,7 +57,7 @@ function addcoupling(obj, varargin)
 % See also SPINW, SPINW.GENCOUPLING, SPINW.ADDMATRIX.
 %
 
-if ~any(obj.atom.mag)
+if isempty(obj.matom.r)
     error('sw:addcoupling:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 

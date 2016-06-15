@@ -9,9 +9,11 @@ classdef cif
     %
     % path      Path to the cif file to be opened.
     %
+    % See also cif.fieldnames.
     
     properties (Access = private)
         cifdat
+        source
     end
     
     methods
@@ -19,7 +21,7 @@ classdef cif
             obj.cifdat = struct('name','','val',[],'type','');
             
             if nargin == 1
-                obj.cifdat = obj.importcif(path);
+                [obj.cifdat, obj.source] = obj.importcif(path);
             end
             
         end
@@ -41,6 +43,22 @@ classdef cif
             end
             
         end
+        
+        function fName = fieldnames(obj)
+            % returns all the field names of the cif object
+            fName = {obj.cifdat(:).name}';
+        end
+        
+        function fName = names(obj)
+            % returns all the field names of the cif object
+            fName = {obj.cifdat(:).name}';
+        end
+        function disp(obj)
+            fprintf(['  <a href="matlab:help @cif">cif</a> object with %d fields,\n'...
+                '  stores all data imported from the Crystallographic Information File,\n'...
+                '  source file: <a href="matlab:cd %s">%s</a>.\n\n'],numel(obj.cifdat),fileparts(obj.source),obj.source);
+        end
+        
     end
     
 end

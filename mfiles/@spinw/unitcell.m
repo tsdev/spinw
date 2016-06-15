@@ -16,15 +16,8 @@ function unit_cell_info = unitcell(obj, idx)
 %
 % Output:
 %
-% 'unit_cell_info' is a tructure with the following fields:
-% r         Positions of the atoms in the unit cell, in a matrix with
-%           dimensions of [3 nAtom], in lattice units.
-% S         Spin quantum number of the atoms, in a [1 nAtom] horizontal
-%           vector, non-magnetic atoms have S=0.
-% label     Label of the atom, strings in a cell with dimensions of 
-%           [1 nAtom].
-% color     Color of the atom in a matrix with dimensions of [3 nAtom],
-%           where every column is an 0-255 RGB color code.
+% 'unit_cell_info' is a tructure with that contains all the fields of
+% unit_cell.
 %
 % Example:
 %
@@ -61,9 +54,11 @@ end
 
 end
 
-unit_cell_info.r     = obj.unit_cell.r(:,idx);
-unit_cell_info.S     = obj.unit_cell.S(1,idx);
-unit_cell_info.label = obj.unit_cell.label(1,idx);
-unit_cell_info.color = obj.unit_cell.color(:,idx);
+% copy all fields
+fName = {'r' 'S' 'label' 'color' 'ox' 'occ' 'b' 'A' 'Z'};
+for ii = 1:numel(fName)
+    unit_cell_info.(fName{ii}) = obj.unit_cell.(fName{ii})(:,idx);
+end
+unit_cell_info.ff = obj.unit_cell.ff(:,:,idx);
 
 end

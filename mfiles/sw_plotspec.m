@@ -88,9 +88,15 @@ if nargin==0
     return
 end
 
-inpForm.fname  = {'mode' 'imag' 'aHandle' 'colorbar' 'dashed' 'norm'     };
-inpForm.defval = {4      false   gca      true       false   spectra.norm};
-inpForm.size   = {[1 -6] [1 1]  [1 1]     [1 1]      [1 1]   [1 1]       };
+if isfield(spectra,'norm')
+    norm0 = spectra.norm;
+else
+    norm0 = false;
+end
+
+inpForm.fname  = {'mode' 'imag' 'aHandle' 'colorbar' 'dashed' 'norm' };
+inpForm.defval = {4      false   gca      true       false   norm0   };
+inpForm.size   = {[1 -6] [1 1]  [1 1]     [1 1]      [1 1]   [1 1]   };
 
 inpForm.fname  = [inpForm.fname  {'dE'  'fontSize' 'colormap' 'axLim'}];
 inpForm.defval = [inpForm.defval {0     14         'auto'     'auto' }];

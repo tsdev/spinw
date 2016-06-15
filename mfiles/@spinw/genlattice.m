@@ -148,9 +148,16 @@ if ischar(param.sym)
     param.label = param.sym;
 end
 
+if iscell(param.sym)
+    param.label = param.sym{1};
+end
+
 % generate the symmetry operators
 if ~isempty(param.sym)
-    param.sym = sw_gensym(param.sym);
+    if ~iscell(param.sym)
+        param.sym = {param.sym};
+    end
+    param.sym = sw_gensym(param.sym{:});
 end
 
 % permute the symmetry operators if necessary

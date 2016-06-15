@@ -1,11 +1,10 @@
-function cifdat = importcif(~, path)
+function [cifdat, source] = importcif(~, path)
 % imports .cif file
 
 fid = fopen(path);
 
-%loop = false;
-%loopvar = {};
-
+% get the name of the file
+source = fopen(fid);
 
 idx = 1;
 cifStr = {};

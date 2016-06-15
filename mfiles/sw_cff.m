@@ -44,8 +44,8 @@ if iscell(atomName)
     formFact = sw_readtable(ffPath);
     
     % constant 1 form factor for atoms couldn't find
-    formFact(end+1).a  = zeros(1,4);
-    formFact(end).b    = zeros(1,4);
+    formFact(end+1).a  = zeros(1,5);
+    formFact(end).b    = zeros(1,5);
     formFact(end).c    = 1;
     formFact(end).spin = 0;
     
@@ -57,11 +57,20 @@ if iscell(atomName)
         atomName0 = strword(atomName{ii},2,true);
         atomName0 = atomName0{1};
         
-        % remove +/- symbols
-        %atomName0 = atomName0(atomName0>45);
+        % remove leading uppercase latters up to the last one
+        cutIdx = find(atomName0>='A' & atomName0<='Z',1,'last');
+        if ~isempty(cutIdx) && cutIdx>1
+            atomName0 = atomName0(cutIdx:end);
+        end
+        % add + symbol if not given
+        if ~any(ismember(atomName0,'+-'))
+            atomName0 = [atomName0 '+']; %#ok<AGROW>
+        end
         
         % search for the name of the atom
         idx0 = find(strcmpi({formFact(:).label},atomName0));
+        
+        atomName{ii} = atomName0;
         
         if ~isempty(idx0)
             idx(ii) = idx0;
@@ -74,7 +83,7 @@ if iscell(atomName)
     
     if nargout < 3 && any(idx == numel(formFact))
         fIdx = find(idx == numel(formFact));
-        warning('sw_cff:WrongInput','The form factor for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
+        warning('sw_cff:WrongInput','The x-ray scattering form factor for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
     end
 elseif size(atomName,2) == 11
     coeff = atomName;

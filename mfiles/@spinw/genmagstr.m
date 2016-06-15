@@ -411,10 +411,12 @@ end
 
 % normalize the magnetic moments
 if param.norm
-    S = bsxfunsym(@rdivide,S,sqrt(sum(S.^2,1))./repmat(mAtom.S,[1 prod(nExt)]));
-    if any(isnan(S(:)))
-        error('spinw:genmagstr:WrongMoments','Zero magnetic moments cannot be normalized!');
-    end
+    normS = sqrt(sum(S.^2,1))./repmat(mAtom.S,[1 prod(nExt)]);
+    normS(normS==0) = 1;
+    S = bsxfunsym(@rdivide,S,normS);
+    %if any(isnan(S(:)))
+    %    error('spinw:genmagstr:WrongMoments','Zero magnetic moments cannot be normalized!');
+    %end
     
 end
 

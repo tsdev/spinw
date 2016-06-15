@@ -14,6 +14,7 @@ classdef cif
     properties (Access = private)
         cifdat
         source
+        isfile
     end
     
     methods
@@ -21,7 +22,7 @@ classdef cif
             obj.cifdat = struct('name','','val',[],'type','');
             
             if nargin == 1
-                [obj.cifdat, obj.source] = obj.importcif(path);
+                [obj.cifdat, obj.source, obj.isfile] = obj.importcif(path);
             end
             
         end
@@ -49,14 +50,26 @@ classdef cif
             fName = {obj.cifdat(:).name}';
         end
         
-        function fName = names(obj)
+        function fName = fields(obj)
             % returns all the field names of the cif object
             fName = {obj.cifdat(:).name}';
         end
         function disp(obj)
-            fprintf(['  <a href="matlab:help @cif">cif</a> object with %d fields,\n'...
-                '  stores all data imported from the Crystallographic Information File,\n'...
-                '  source file: <a href="matlab:cd %s">%s</a>.\n\n'],numel(obj.cifdat),fileparts(obj.source),obj.source);
+            if ~isempty(obj.source)
+                if obj.isfile
+                    fprintf(['  <a href="matlab:help @cif">cif</a> object with %d fields,\n'...
+                        '  stores all data imported from the Crystallographic Information File,\n'...
+                        '  source: <a href="matlab:cd %s">%s</a>.\n\n'],numel(obj.cifdat),fileparts(obj.source),obj.source);
+                else
+                    fprintf(['  <a href="matlab:help @cif">cif</a> object with %d fields,\n'...
+                        '  stores all data imported from the Crystallographic Information File,\n'...
+                        '  source: %s.\n\n'],numel(obj.cifdat),obj.source);
+                end
+            else
+                fprintf(['  <a href="matlab:help @cif">cif</a> object with %d fields,\n'...
+                    '  stores all data imported from the Crystallographic Information File.\n\n'],numel(obj.cifdat));
+            end
+            
         end
         
     end

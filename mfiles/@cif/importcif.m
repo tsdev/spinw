@@ -1,22 +1,46 @@
-function [cifdat, source] = importcif(~, path)
+function [cifdat, source, isfile] = importcif(~, path)
 % imports .cif file
 
-fid = fopen(path);
-
-% get the name of the file
-source = fopen(fid);
-
-idx = 1;
-cifStr = {};
-
-if fid < 0
-    error('cif:importcif:FileNotFound','.cif file cannot be found!');
+try
+    fid = fopen(path);
+catch
+    fid = -1;
 end
-% read in all lines
-while ~feof(fid)
-    cifStr{idx} = fgetl(fid);
-    idx = idx + 1;
+
+if fid > -1
+    % get the name of the file
+    source = fopen(fid);
+    
+    idx = 1;
+    cifStr = {};
+    
+    if fid < 0
+        error('cif:importcif:FileNotFound','.cif file cannot be found!');
+    end
+    % read in all lines
+    
+    while ~feof(fid)
+        cifStr{idx} = fgetl(fid);
+        idx = idx + 1;
+    end
+    fclose(fid);
+    isfile = true;
+    
+elseif numel(path) < 200
+    % try to load it from the web
+    cifStr = webread(path);
+    cifStr = strsplit(char(cifStr'),'\n');
+    
+    source = path;
+    isfile = false;
+else
+    % take it as a string storing the .cif file content
+    cifStr = strsplit(char(path(:))','\n');
+    %cifStr = mat2cell(cifStr,ones(size(cifStr,1),1));
+    source = '';
+    isfile = false;
 end
+
 % unite broken lines
 bLine = double(cellfun(@(x)numel(x)>0 && x(1)==';',cifStr));
 
@@ -189,7 +213,6 @@ for ii = 1:numel(strout)
     end
 end
 
-fclose(fid);
 cifdat = cifdat(2:end);
 
 end

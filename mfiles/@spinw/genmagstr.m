@@ -360,14 +360,14 @@ switch param.mode
         % keeps the final k-vector zero
         Fk = param.Fk;
         if isempty(Fk) || ~iscell(Fk)
-            error('sw:genmagstr:WrongInput','Wrong ''Fk'' option that defines the Fourier components!');
+            error('spinw:genmagstr:WrongInput','Wrong ''Fk'' option that defines the Fourier components!');
         end
         
         % number of moments for the Fourier components are defined
         nFourier = size(Fk{1},2);
         nQ = numel(Fk)/2;
         
-        if (nFourier~= nMagAtom) && (nFourier==1)
+        if (nFourier ~= nMagAtom) && (nFourier==1)
             % Single defined moment, use the atomic position in l.u.
             RR = bsxfun(@times,mAtom.RRext,nExt');
         elseif nFourier == nMagAtom
@@ -383,40 +383,44 @@ switch param.mode
         % number of cells in the supercell
         nCell = prod(nExt);
         
+        % save the Fourier components
+        S = cat(3,Fk{1:2:end});
+        k = cat(1,Fk{2:2:end})';
+        
         % multiply the Fourier components with the spin quantum number
         % TODO
         
         
-        for ii = 1:2:(2*nQ)
-            % F(k)
-            S = S + bsxfunsym(@times,repmat(Fk{ii},[1 nCell*nMagAtom/nFourier]),exp(1i*Fk{ii+1}*RR*2*pi))/2;
-            % conj(F(k))
-            S = S + bsxfunsym(@times,repmat(conj(Fk{ii}),[1 nCell*nMagAtom/nFourier]),exp(-1i*Fk{ii+1}*RR*2*pi))/2;
-            
-        end
-        S = real(S);
-
-        k = [0 0 0];
-        
-        warning('sw:genmagstr:Approximation',['The generated magnetic '...
+%         for ii = 1:2:(2*nQ)
+%             % F(k)
+%             S = S + bsxfunsym(@times,repmat(Fk{ii},[1 nCell*nMagAtom/nFourier]),exp(1i*Fk{ii+1}*RR*2*pi))/2;
+%             % conj(F(k))
+%             S = S + bsxfunsym(@times,repmat(conj(Fk{ii}),[1 nCell*nMagAtom/nFourier]),exp(-1i*Fk{ii+1}*RR*2*pi))/2;
+%             
+%         end
+%         S = real(S);
+% 
+%         k = [0 0 0];
+%         
+        warning('spinw:genmagstr:Approximation',['The generated magnetic '...
             'structure is only an approximation of the input multi-q'...
             ' structure on a supercell!'])
-        n = [0 0 1];
+        %n = [0 0 1];
         
     otherwise
-        error('sw:genmagstr:WrongMode','Wrong param.mode value!');
+        error('spinw:genmagstr:WrongMode','Wrong param.mode value!');
 end
 
 % normalize the magnetic moments
-if param.norm
-    normS = sqrt(sum(S.^2,1))./repmat(mAtom.S,[1 prod(nExt)]);
-    normS(normS==0) = 1;
-    S = bsxfunsym(@rdivide,S,normS);
-    %if any(isnan(S(:)))
-    %    error('spinw:genmagstr:WrongMoments','Zero magnetic moments cannot be normalized!');
-    %end
-    
-end
+% if param.norm
+%     normS = sqrt(sum(S.^2,1))./repmat(mAtom.S,[1 prod(nExt)]);
+%     normS(normS==0) = 1;
+%     S = bsxfunsym(@rdivide,S,normS);
+%     %if any(isnan(S(:)))
+%     %    error('spinw:genmagstr:WrongMoments','Zero magnetic moments cannot be normalized!');
+%     %end
+%     
+% end
 
 % simplify expressions
 if obj.symbolic
@@ -425,11 +429,11 @@ if obj.symbolic
     n = simplify(sym(n));
 end
 
-mag_str.N_ext = int32(nExt(:))';
-mag_str.k     = k(:)';
-mag_str.S     = S;
-mag_str.n     = n(:)';
+mag_str.nExt = int32(nExt(:))';
+mag_str.k    = k;
+mag_str.S    = S;
 
 obj.mag_str   = mag_str;
+validate(obj);
 
 end

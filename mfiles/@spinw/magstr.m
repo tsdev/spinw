@@ -7,10 +7,10 @@ function magOut = magstr(obj, varargin)
 
 nExt0 = double(obj.mag_str.nExt);
 
-inpForm.fname  = {'nExt'    };
-inpForm.defval = {nExt0     };
-inpForm.size   = {[1 3]     };
-inpForm.soft   = {false     };
+inpForm.fname  = {'nExt'};
+inpForm.defval = {nExt0 };
+inpForm.size   = {[1 3] };
+inpForm.soft   = {false };
 
 param = sw_readparam(inpForm, varargin{:});
 

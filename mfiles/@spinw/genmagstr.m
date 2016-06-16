@@ -166,10 +166,10 @@ if ~any(obj.atom.mag)
     error('sw:genmagstr:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 
-inpForm.fname  = {'mode'   'nExt'            'k'           'n'           };
-inpForm.defval = {'extend' obj.mag_str.N_ext obj.mag_str.k obj.mag_str.n };
-inpForm.size   = {[1 -1]   [1 -4]            [1 3]         [1 3]         };
-inpForm.soft   = {false    false             false         false         };
+inpForm.fname  = {'mode'   'nExt'            'k'           'n'      };
+inpForm.defval = {'extend' obj.mag_str.nExt obj.mag_str.k  [0 0 1]  };
+inpForm.size   = {[1 -1]   [1 -4]            [1 3]         [1 3]    };
+inpForm.soft   = {false    false             false         false    };
 
 inpForm.fname  = [inpForm.fname  {'func'          'x0'   'norm' 'r0' }];
 inpForm.defval = [inpForm.defval {@gm_spherical3d []     true   true }];
@@ -183,9 +183,8 @@ inpForm.soft   = [inpForm.soft   {true    false false     false   false     }];
 
 param = sw_readparam(inpForm, varargin{:});
 
-% make lowercase the string options
-param.mode  = lower(param.mode);
-param.unitS = lower(param.unitS);
+% make string lower case
+param.mode = lower(param.mode);
 
 if isempty(param.S)
     param.S = obj.mag_str.S;
@@ -197,7 +196,7 @@ else
         error('sw:genmagstr:WrongInput','Parameter S has to have dimensions of [3 nSpin]!');
     end
     
-    switch param.unitS
+    switch lower(param.unitS)
         case 'lu'
             % convert the moments from lattice units to xyz
             param.S = obj.basisvector(true)*param.S;
@@ -278,11 +277,10 @@ switch param.mode
         % Magnetic ordering wavevector in the extended unit cell.
         kExt = k.*nExt;
         % Warns about the non sufficient extension of the unit cell.
-        try
-            % symbolic km gives an error, thus try skips it
-            if any(abs(kExt-round(kExt))>param.epsilon) && prod(nExt) > 1
-                warning('sw:genmagstr:UCExtNonSuff','In the extended unit cell k is still larger than epsilon!');
-            end
+        % we substitute random values for symbolic km
+        skExt = sw_sub1(kExt,'rand');
+        if any(abs(skExt-round(skExt))>param.epsilon) && prod(nExt) > 1
+            warning('sw:genmagstr:UCExtNonSuff','In the extended unit cell k is still larger than epsilon!');
         end
         % Number of spins in the input.
         nSpin = size(param.S,2);

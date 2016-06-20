@@ -26,9 +26,10 @@ nAtom   = size(obj.matom.r,2);
 % number of k-vectors in the magnetic unit cell
 nK      = size(obj.mag_str.k,2);
 % if the new supercell not equal to the old, tile up the magnetic moments
-if all(nExtNew~=nExt0)
-    M0 = reshape(obj.mag_str.S,[3 nAtom*nExt0]);
-    
+if any(nExtNew~=nExt0)
+    M0 = repmat(reshape(obj.mag_str.S,[3 nAtom*nExt0 nK]),[1 ceil(nExtNew./nExt0) 1]);
+    % remove additional moments if nExtNew is not integer multiples of nExt0
+    if 
 end
 
 

@@ -168,7 +168,7 @@ obj.lattice.sym = param.sym(param.perm,[param.perm 4],:);
 % assign the origin for space group operators
 obj.lattice.origin = param.origin;
 
-obj.lattice.label = param.label;
+obj.lattice.label = strtrim(param.label);
 
 obj.unit.nformula = int32(param.nformula);
 

@@ -40,6 +40,9 @@ iso.m = [iso0(:).mass];
 iso.Z = [iso0(:).Z];
 iso.A = [iso0(:).A];
 
+% occupancy
+occ    = obj.unit_cell.occ(atom.idx);
+
 if numel(atom.idx) == 0
     m = 0;
 else
@@ -50,7 +53,7 @@ else
     
     % only keep if all atoms are found
     if all(iFound)
-        m = iso.m(loc);
+        m = iso.m(loc).*occ;
     end 
 end
 
@@ -63,7 +66,8 @@ diffLabel = unique(aLabel);
 numAtom = cell(1,2*numel(diffLabel));
 
 for ii = 1:numel(diffLabel)
-    temp = sum(strcmp(aLabel,diffLabel{ii}));
+    %findAtom = strcmp(aLabel,diffLabel{ii});
+    temp = sum(strcmp(aLabel,diffLabel{ii}).*occ);
     numAtom{2*ii-1} = diffLabel{ii};
     numAtom{2*ii} = temp;
 end
@@ -73,6 +77,9 @@ nForm = double(obj.unit.nformula);
 if nForm == 0
     % formula units is not given directly, try to find greates commond divider
     nForm = gcdv([numAtom{2:2:end}]);
+    if nForm < 1
+        nForm = 1;
+    end
 end
 
 % number of formula in cell
@@ -87,7 +94,7 @@ formula.rho = formula.m/formula.V/nA*1e24*nForm;
 % divide the number of atoms in formula
 numAtom(2:2:end) = num2cell([numAtom{2:2:end}]/nForm);
 
-formula.chemform = sprintf('%s%d',numAtom{:});
+formula.chemform = sprintf('%s%g',numAtom{:});
 formula.chemlabel = numAtom(1:2:end);
 formula.chemnum = [numAtom{2:2:end}];
 

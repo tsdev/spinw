@@ -241,6 +241,10 @@ newAtom.ffn = [newAtom.ffn(1,1:8,:) zeros(1,2,size(newAtom.ffn,3)) newAtom.ffn(1
 newAtom.ff = [newAtom.ffn;newAtom.ffx];
 newAtom.b  = ones(2,nNewAtom);
 
+% get neutron scattering length
+newAtom.b(1,:) = sw_nb(newAtom.label);
+
+
 newAtom.Z  = int32(newAtom.Z);
 
 

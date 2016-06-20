@@ -1,7 +1,7 @@
-function dat = sw_readtable(fName,delimiter)
+function dat = sw_readtable(fName,delimiter,nHeader)
 % reads tabular data
 %
-% dat = SW_READTABLE(fName, {delimiter})
+% dat = SW_READTABLE(fName, {delimiter},{nHeader})
 %
 % Function reads tabular data that has arbitrary header lines denoted with
 % # and the last header line is followed by a column name line. The data
@@ -53,11 +53,22 @@ if nargin == 1
     delimiter = ' ';
 end
 
+if nargin < 3
+    nHeader = 0;
+end
+
 fid = fopen(fName);
 
 if fid == -1
     error('spinw:sw_readtable:FileNotFound',['Data file not found: '...
         regexprep(fName,'\' , '\\\') '!']);
+end
+
+% read header lines given by user
+if nHeader > 0
+    for ii = 1:nHeader
+        fgets(fid);
+    end
 end
 
 % read header

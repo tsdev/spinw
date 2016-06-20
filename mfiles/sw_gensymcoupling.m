@@ -99,7 +99,7 @@ idx = 1:nB;
 
 %symIdx = arrayfun(@(idx)find(~notequal(:,idx),1,'first'),idx(~isnew));
 % faster solution
-symIdx = max(bsxfun(@times,~notequal(:,idx(~isnew)),(1:size(notequal,2))'),[],1);
+symIdx = max(bsxfun(@times,~notequal(:,idx(~isnew)),(1:size(notequal,1))'),[],1);
 
 end
 

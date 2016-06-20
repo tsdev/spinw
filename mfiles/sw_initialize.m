@@ -23,9 +23,12 @@ if fid == -1
 end
 
 nLines = 1;
-while (~feof(fid)) && (nLines <= 230)
+% number of space group operators in symmetry.dat
+nOp = 231;
+
+while (~feof(fid)) && (nLines <= nOp)
     line = fgetl(fid);
-    if nLines < 230
+    if nLines < nOp
         fprintf(fidNew,[line '\n']);
     else
         fprintf(fidNew,line);

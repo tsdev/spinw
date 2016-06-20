@@ -62,8 +62,8 @@ if iscell(atomName)
         if ~isempty(cutIdx) && cutIdx>1
             atomName0 = atomName0(cutIdx:end);
         end
-        % add + symbol if not given
-        if ~any(ismember(atomName0,'+-'))
+        % add + symbol if not given for oxidation states
+        if ~any(ismember(atomName0,'+-')) && any(ismember(atomName0,'1':'9'))
             atomName0 = [atomName0 '+']; %#ok<AGROW>
         end
         

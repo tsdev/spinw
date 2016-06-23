@@ -81,7 +81,7 @@ if iscell(atomName)
     coeff = coeff(:,[1 6 2 7 3 8 4 9 5 10 11]);
     
     
-    if nargout < 3 && any(idx == numel(formFact))
+    if any(idx == numel(formFact))
         fIdx = find(idx == numel(formFact));
         warning('sw_cff:WrongInput','The x-ray scattering form factor for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
     end

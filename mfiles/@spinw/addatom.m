@@ -90,6 +90,19 @@ end
 % modulo
 newAtom.r = mod(newAtom.r,1);
 
+% save warnings
+warn0 = warning;
+
+if isempty(newAtom.label)
+    % remove warnings since the user don't want specific atom
+    warning('off','sw_mff:WrongInput');
+    warning('off','sw_cff:WrongInput');
+    warning('off','sw_nb:WrongInput');
+elseif isempty(newAtom.S)
+    % the atom is not intentionally mgnetic
+    warning('off','sw_mff:WrongInput');
+end
+
 if size(newAtom.label,2) == 1
     newAtom.label = newAtom.label';
 end
@@ -276,6 +289,9 @@ obj.unit_cell.ff    = cat(3,obj.unit_cell.ff,newObj.unit_cell.ff);
 validate(obj);
 
 [~,~,rIdx] = unique(obj.unit_cell.r','rows');
+
+% restore warnings
+warning(warn0);
 
 % check occupancy
 if any(accumarray(rIdx,obj.unit_cell.occ)>1)

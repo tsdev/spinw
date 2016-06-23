@@ -78,28 +78,30 @@ elseif ~isempty(dat.matom)
     obj0.addatom('r',[dat.matom(:).r],'label',{dat.matom(:).label},'S',ones(1,numel(dat.matom)));
 end
 
-% generate the single-k magnetic structure
-obj0.mag_str.k = dat.k(:,1)';
-% determine normal vector
-obj0.mag_str.n = cross(real(dat.matom(1).M),imag((dat.matom(1).M)))';
-obj0.mag_str.n = obj0.mag_str.n./norm(obj0.mag_str.n);
-
-% determine real magnetic moment components
-M0 = [dat.matom(:).M];
-% number of k-vectors
-nk = size(dat.k,2);
-% convert from the lattice component coordinate system to Descartes
-% coordinate system
-for ii = 1:nk
-    M0(:,:,ii) = obj0.basisvector(1)*M0(:,:,ii);
+if ~isempty(dat.k)
+    % generate the single-k magnetic structure
+    obj0.mag_str.k = dat.k(:,1)';
+    % determine normal vector
+    obj0.mag_str.n = cross(real(dat.matom(1).M),imag((dat.matom(1).M)))';
+    obj0.mag_str.n = obj0.mag_str.n./norm(obj0.mag_str.n);
+    
+    % determine real magnetic moment components
+    M0 = [dat.matom(:).M];
+    % number of k-vectors
+    nk = size(dat.k,2);
+    % convert from the lattice component coordinate system to Descartes
+    % coordinate system
+    for ii = 1:nk
+        M0(:,:,ii) = obj0.basisvector(1)*M0(:,:,ii);
+    end
+    
+    % keep only the first wave vector
+    % the given magnetic moments are in Bohr magneton, SpinW assumes g=2, thus
+    % the moments are divided by this number
+    g0 = 2;
+    % calculate the real part of the magnetic structure
+    obj0.mag_str.S = 2*real(M0(:,:,1))/g0;
 end
-
-% keep only the first wave vector
-% the given magnetic moments are in Bohr magneton, SpinW assumes g=2, thus
-% the moments are divided by this number
-g0 = 2;
-% calculate the real part of the magnetic structure
-obj0.mag_str.S = 2*real(M0(:,:,1))/g0;
 
 if nargout > 0
     obj = obj0;
@@ -108,5 +110,5 @@ end
 if toPlot
     plot(obj0,'range',reshape(dat.box',[2 3])')
 end
-     
+
 end

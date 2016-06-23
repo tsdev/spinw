@@ -546,8 +546,13 @@ end
 % MAGNETIC MOMENTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% generate magnetic structure in the rotating basis
+% the stored magnetic structure
+% TODO fix supercell definition
+mag_str = obj.magstr('nExt',ceil(param.range(:,2)'));
+
 if param.coplanar>0
-    [nSpin, param.coplanar] = coplanar([[0;0;0] obj.mag_str.S],param.coplanar);
+    [nSpin, param.coplanar] = coplanar([[0;0;0] mag_str.S],param.coplanar);
 end
 
 
@@ -566,7 +571,7 @@ end
 matrix   = obj.matrix;
 mColor   = double(matrix.color)/255;
 coupling = obj.coupling;
-nExt     = double(obj.mag_str.N_ext);
+nExt     = double(mag_str.N_ext);
 
 if isempty(SS.all)
     coupling.dl      = zeros(3,0);
@@ -815,14 +820,14 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         % translation in lat.units to calculate moment
                         transl  = floor(dCell./nExt').*nExt';
                         % angles of rotation of the moment
-                        phi   = obj.mag_str.k*transl*2*pi;
-                        selS  = obj.mag_str.S(:,llMagAtom+llSpin);
+                        phi   = mag_str.k*transl*2*pi;
+                        selS  = mag_str.S(:,llMagAtom+llSpin);
                         if param.nSpin
                             selS = selS/norm(selS);
                         end
-                        plotS = param.sSpin*sw_rot(obj.mag_str.n,phi,selS);
-                        %plotS   = param.sSpin*obj.mag_str.S(:,llMagAtom+llSpin);
-                        lengthS = norm(obj.mag_str.S(:,llMagAtom+llSpin));
+                        plotS = param.sSpin*sw_rot(mag_str.n,phi,selS);
+                        %plotS   = param.sSpin*mag_str.S(:,llMagAtom+llSpin);
+                        lengthS = norm(mag_str.S(:,llMagAtom+llSpin));
                         
                         if obj.symbolic
                             plotS   = sw_sub1(plotS);
@@ -884,7 +889,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                                 str0 = ['S=' sprintf('%4.2f',lengthS)];
                             end
                             
-                            spin0 = sw_sub1(obj.mag_str.S(:,llMagAtom+llSpin));
+                            spin0 = sw_sub1(mag_str.S(:,llMagAtom+llSpin));
                             str1 = sprintf('[%6.3f, %6.3f, %6.3f]',double(spin0));
                             
                             tooltip(hArrow,[str0 ' magnetic moment \nxyz components:  \n' str1]);

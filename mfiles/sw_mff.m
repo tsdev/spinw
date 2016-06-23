@@ -66,7 +66,7 @@ if iscell(atomName)
             find(strcmpi(cellfun(@(C)C(2:end),{formFact(:).label},'UniformOutput',0),atomName0))];
         
         if ~isempty(idx0)
-            idx(ii) = idx0;
+            idx(ii) = idx0(1);
         end
     end
     
@@ -74,7 +74,7 @@ if iscell(atomName)
     coeff = coeff(:,[1 5 2 6 3 7 4 8 9]);
     S     = [formFact(idx).spin];
     
-    if nargout < 3 && any(idx == numel(formFact))
+    if any(idx == numel(formFact))
         fIdx = find(idx == numel(formFact));
         warning('sw_mff:WrongInput','The magnetic form factor for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
     end

@@ -27,53 +27,95 @@ nAtom   = size(obj.matom.r,2);
 nK      = size(obj.mag_str.k,2);
 % if the new supercell not equal to the old, tile up the magnetic moments
 if any(nExtNew~=nExt0)
-    M0 = repmat(reshape(obj.mag_str.S,[3 nAtom*nExt0 nK]),[1 ceil(nExtNew./nExt0) 1]);
-    % remove additional moments if nExtNew is not integer multiples of nExt0
-    if 
-end
-
-
-% create the cell indices for all magnetic atoms in the original supercell
-nExt1 = nExt0-1;
-[cIdx{1:3}] = ndgrid(0:nExt1(1),0:nExt1(2),0:nExt1(3));
-% dimensions: nExt(1) x nExt(2) x nExt(3) x 3
-cIdx        = cat(4,cIdx{:});
-
-% additional phase for each unit cell within the magnetic supercell
-phi = zeros(nK,nCell);
-for ii = 1:nK
-    phi(ii,:) = reshape(sum(bsxfun(@times,2*pi*obj.mag_str.k(:,ii),permute(cIdx,[4 1:3])),1),[1 nCell]);
-end
-
-
-% Warns about the non sufficient extension of the unit cell.
-% we substitute random values for symbolic km
-skExt = sw_sub1(kExt,'rand');
-if any(abs(skExt-round(skExt))>param.epsilon) && prod(nExt) > 1
-    warning('sw:genmagstr:UCExtNonSuff','In the extended unit cell k is still larger than epsilon!');
-end
-
-
-% First crystallographic unit cell defined, use only unit cell
-% position.
-r = bsxfun(@rdivide,floor(bsxfun(@times,mAtom.RRext,nExt')),nExt');
-
-
-% Spin in the extended unit cell.
-S = zeros(3,nMagExt);
-if obj.symbolic
-    S = sym(S);
-end
-
-if isreal(param.S) || isa(param.S,'sym')
-    % Rotate spins for each unit cell.
-    for ii = 1:nMagExt
-        selS    = S0(:,mod(ii-1,nSpin)+1);
-        S(:,ii) = sw_rot(n,phi(ii),selS);
+    M0 = repmat(reshape(obj.mag_str.S,[3 nAtom nExt0 nK]),[1 1 ceil(nExtNew./nExt0) 1]);
+    
+    if any(mod(nExtNew./nExt0,1))
+        % remove additional moments if nExtNew is not integer multiples of nExt0
+        M0 = M0(:,:,1:nExtNew(1),1:nExtNew(2),1:nExtNew(3),:);
     end
 else
-    error('sw:genmagstr:WrongInput','For complex Fourier components use the ''mode'' ''fourier'' option!');
+    M0 = reshape(obj.mag_str.S,[3 nAtom nExt0 nK]);
 end
+
+% create the cell indices for all magnetic atoms in the new supercell
+nExt1 = nExtNew-1;
+[cIdx{1:3}] = ndgrid(0:nExt1(1),0:nExt1(2),0:nExt1(3));
+% dimensions: nExtNew(1) x nExtNew(2) x nExtNew(3) x 3
+cIdx        = cat(4,cIdx{:});
+
+% calculate the translation vectors that generate the rotations in the new supercell
+tIdx = floor(bsxfun(@rdivide,cIdx,permute(nExt0,[1 3 4 2])));
+% propagation vector in the original supercell
+kExt0 = bsxfun(@times,obj.mag_str.k,nExt0');
+% calculate the phases that generate the rotations for the new supercell
+phi  = sum(bsxfun(@times,tIdx,permute(kExt0,[3 4 5 1 2])),4);
+% complex phase factors
+M = real(bsxfun(@times,M0,exp(2*pi*1i*permute(phi,[4 6 1:3 5]))));
+% sum up the wave vectors and reshape to standard dimensions
+magOut.S = reshape(sum(M,6),3,[]);
+% keep only the first non-zero wave vector
+kInc = find(sum(mod(kExt0,1) == 0,1)<3);
+if ~isempty(kInc)
+    magOut.k = obj.mag_str.k(:,kInc(1))';
+    n = cross(real(obj.mag_str.S(:,1,kInc(1))),imag(obj.mag_str.S(:,1,kInc(1))));
+    % normalize n-vector
+    if norm(n) == 0
+        magOut.n = [0 0 1];
+    else
+        magOut.n = n/norm(n);
+    end
+else
+    magOut.k = [0 0 0];
+    magOut.n = [0 0 1];
+end
+
+    
+% check whether the above calculation gives an exact magnetic structure
+nUn = sw_uniquetol(reshape(cross(real(obj.mag_str.S(:,:,kInc)),imag(obj.mag_str.S(:,:,kInc))),3,[]));
+
+if numel(kInc)>1 || size(nUn,2)>1
+    magOut.exact = false;
+else
+    magOut.exact = true;
+end
+
+magOut.N_ext = nExtNew;
+
+% % additional phase for each unit cell within the magnetic supercell
+% phi = zeros(nK,nCell);
+% for ii = 1:nK
+%     phi(ii,:) = reshape(sum(bsxfun(@times,2*pi*obj.mag_str.k(:,ii),permute(cIdx,[4 1:3])),1),[1 nCell]);
+% end
+% 
+% 
+% % Warns about the non sufficient extension of the unit cell.
+% % we substitute random values for symbolic km
+% skExt = sw_sub1(kExt,'rand');
+% if any(abs(skExt-round(skExt))>param.epsilon) && prod(nExt) > 1
+%     warning('sw:genmagstr:UCExtNonSuff','In the extended unit cell k is still larger than epsilon!');
+% end
+% 
+% 
+% % First crystallographic unit cell defined, use only unit cell
+% % position.
+% r = bsxfun(@rdivide,floor(bsxfun(@times,mAtom.RRext,nExt')),nExt');
+% 
+% 
+% % Spin in the extended unit cell.
+% S = zeros(3,nMagExt);
+% if obj.symbolic
+%     S = sym(S);
+% end
+% 
+% if isreal(param.S) || isa(param.S,'sym')
+%     % Rotate spins for each unit cell.
+%     for ii = 1:nMagExt
+%         selS    = S0(:,mod(ii-1,nSpin)+1);
+%         S(:,ii) = sw_rot(n,phi(ii),selS);
+%     end
+% else
+%     error('sw:genmagstr:WrongInput','For complex Fourier components use the ''mode'' ''fourier'' option!');
+% end
 
 
 end

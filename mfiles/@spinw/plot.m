@@ -359,7 +359,7 @@ wShift = repmat(wShift,[1 2]);
 wShift = reshape(wShift',1,[]);
 
 % Plot spins if spin variables exist and param.pSpin is true.
-param.pSpin = param.pSpin && ~isempty(obj.mag_str.S);
+param.pSpin = param.pSpin && ~isempty(obj.mag_str.F);
 
 %% save data to figure
 

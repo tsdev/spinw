@@ -43,6 +43,11 @@ function addatom(obj, varargin)
 %           mixture of isotopes.
 % bn        Neutron scattering length, given as double.
 % bx        X-ray scattering length.
+% biso      Isotropic displacement factors in units of Angstrom^2.
+%           Definition is the same as in FullProf, defining the
+%           Debye-Waller factor as:
+%               Wd = 1/8*biso/d^2
+%           including in the structure factor as exp(-2Wd).
 %   
 % Output:
 %
@@ -64,10 +69,10 @@ if nargin < 2
     return
 end
 
-inpForm.fname  = {'r'     'S'      'label' 'color' 'ox'   'occ'  'bn'    };
-inpForm.defval = {[]      []       {}      []      []     []     []      };
-inpForm.size   = {[-1 -2] [-3 -4]  [1 -5] [1 -6]   [1 -7] [1 -7] [1 -7]  };
-inpForm.soft   = {false   true     true    true    true   true   true    };
+inpForm.fname  = {'r'     'S'      'label' 'color' 'ox'   'occ'  'bn'   'biso' };
+inpForm.defval = {[]      []       {}      []      []     []     []     []     };
+inpForm.size   = {[-1 -2] [-3 -4]  [1 -5] [1 -6]   [1 -7] [1 -7] [1 -7] [1 -10]};
+inpForm.soft   = {false   true     true    true    true   true   true   true   };
 
 inpForm.fname  = [inpForm.fname  {'bx'   'formfactn' 'formfactx' 'b'    'formfact' 'A'    'Z'   }];
 inpForm.defval = [inpForm.defval {[]     []          []          []     []         []     []    }];
@@ -111,6 +116,13 @@ end
 nOldAtom = size(obj.unit_cell.r,2);
 % number of new atoms
 nNewAtom = numel(newAtom.r)/3;
+
+% isotropic displacement
+if isempty(newAtom.biso)
+    newAtom.biso = zeros(1,nNewAtom);
+elseif numel(newAtom.biso)~= nNewAtom
+    error('spinw:addatom:WrongInput','Wrong input for option ''biso''!');
+end
 
 % check oxidation number
 if ~isempty(newAtom.ox)
@@ -279,7 +291,7 @@ newAtom.color     = int32(newAtom.color);
 newObj.unit_cell  = newAtom;
 validate(newObj,'unit_cell');
 
-cField = {'r' 'S' 'label' 'color' 'ox' 'occ' 'b' 'A' 'Z'};
+cField = {'r' 'S' 'label' 'color' 'ox' 'occ' 'b' 'A' 'Z' 'biso'};
 for ii = 1:numel(cField)
     obj.unit_cell.(cField{ii}) = [obj.unit_cell.(cField{ii}) newObj.unit_cell.(cField{ii})];
 end

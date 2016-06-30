@@ -73,6 +73,9 @@ end
 % check whether the above calculation gives an exact magnetic structure
 nUn = sw_uniquetol(reshape(cross(real(obj.mag_str.F(:,:,kInc)),imag(obj.mag_str.F(:,:,kInc))),3,[]));
 
+% TODO check whether the original structure is not sinusoidal
+%
+
 if numel(kInc)>1 || size(nUn,2)>1
     magOut.exact = false;
 else

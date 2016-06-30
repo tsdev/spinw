@@ -12,10 +12,11 @@ classdef spinw < handle
     % checks its data integrity. If obj is struct type, it creates new
     % spinw object and checks data integrity.
     %
-    % obj = SPINW(cif_path)
+    % obj = SPINW(file_path)
     %
-    % construct new spinw class object, where cif_path contains a string of
-    % a .cif file path defining an input crystals structure.
+    % construct new spinw class object, where file_path contains a string
+    % of a .cif/.fst file defining an input crystal and/or magnetic
+    % structure.
     %
     % obj = SPINW(figure_handle)
     %
@@ -46,131 +47,136 @@ classdef spinw < handle
     properties (SetObservable)
         % Stores the unit cell parameters.
         % Sub fields are:
-        %   'lat_const' lattice constants in a 1x3 vector in Angstrom units
-        %   'angle'     (alpha,beta,gamma) angles in 1x3 vector in radian
-        %   'sym'       crystal space group, line number in symmetry.dat file
-        %   'origin'    Origin of the cell in l.u.
-        %   'label'     Label of the space group.
+        %   lat_const   lattice constants in a 1x3 vector in Angstrom units
+        %   angle       (alpha,beta,gamma) angles in 1x3 vector in radian
+        %   sym         crystal space group, line number in symmetry.dat file
+        %   origin      Origin of the cell in l.u.
+        %   label       Label of the space group.
         %
         % See also SPINW.GENLATTICE, SPINW.ABC, SPINW.BASISVECTOR, SPINW.NOSYM.
         lattice
         % Stores the atoms in the crystallographic unit cell.
         % Sub fields are:
-        %   'r'         pasitions of the atoms in the unit cell, in a
-        %               3 x nAtom matrix, in lattice units
-        %   'S'         spin quantum number of the atoms, in a 1 x nAtom
-        %               vector, non-magnetic atoms have S=0
-        %   'label'     label of the atom, strings in a 1 x nAtom cell
-        %   'color'     color of the atom in 3 x nAtom matrix, where every
-        %               column is an 0-255 RGB color
-        %   'ox'        oxidation number of the atom, in a 1 x nAtom matrix
-        %   'occ'       site occupancy in a 1 x nAtom matrix
-        %   'b'         scattering length of the site for neutron and x-ray
-        %               stored in a 2 x nAtom matrix, first row is neutron,
-        %               second row is for x-ray
-        %   'ff'        form factor of the site stored in a 2 x 9 x nAtom
-        %               matrix, first row is the magnetic form factor for
-        %               neutrons, the second row is the charge form factor
-        %               for x-ray
-        %   'Z'         atomic number
-        %   'A'         atomic mass (N+Z) for isotopes and -1 for natural
-        %               distribution of isotopes
+        %   r       positions of the atoms in the unit cell, in a
+        %           3 x nAtom matrix, in lattice units
+        %   S       spin quantum number of the atoms, in a 1 x nAtom
+        %           vector, non-magnetic atoms have S=0
+        %   label   label of the atom, strings in a 1 x nAtom cell
+        %   color   color of the atom in 3 x nAtom matrix, where every
+        %           column is an 0-255 RGB color
+        %   ox      oxidation number of the atom, in a 1 x nAtom matrix
+        %   occ     site occupancy in a 1 x nAtom matrix
+        %   b       scattering length of the site for neutron and x-ray
+        %           stored in a 2 x nAtom matrix, first row is neutron,
+        %           second row is for x-ray
+        %   ff      form factor of the site stored in a 2 x 9 x nAtom
+        %           matrix, first row is the magnetic form factor for
+        %           neutrons, the second row is the charge form factor
+        %           for x-ray cross section
+        %   Z       atomic number
+        %   A       atomic mass (N+Z) for isotopes and -1 for natural
+        %           distribution of isotopes
+        %   biso    Isotropic displacement factors in units of Angstrom^2.
+        %           Definition is the same as in FullProf, defining the
+        %           Debye-Waller factor as:
+        %               Wd = 1/8*biso/d^2
+        %           including in the structure factor as exp(-2Wd)
         %
         % See also SPINW.ADDATOM, SPINW.ATOM, SPINW.MATOM, SPINW.NEWCELL, SPINW.PLOT.
         unit_cell
         % Stores the crystallographic twin parameters.
         % Sub fields are:
-        %   'rotc'      rotation matrices in the xyz coordinate system for
-        %               every twin, stored in a 3 x 3 x nTwin matrix
-        %   'vol'       volume ratio of the different twins, stored in a
-        %               1 x nTwin vector
+        %   rotc    rotation matrices in the xyz coordinate system for
+        %           every twin, stored in a 3 x 3 x nTwin matrix
+        %   vol     volume ratio of the different twins, stored in a
+        %           1 x nTwin vector
         %
         % See also SPINW.ADDTWIN, SPINW.TWINQ, SPINW.UNIT_CELL.
         twin
         % Stores 3x3 matrices for using them in the Hailtonian.
         % Sub fields are:
-        %   'mat'       stores the actual values of 3x3 matrices, in a
-        %               3 x 3 x nMatrix matrix, defult unit is meV
-        %   'color'     color assigned for every matrix, stored in a
-        %               3 x nMatrix matrix, with 0-255 RGB columns
-        %   'label'     label for every matrix, stored as string in a
-        %               1 x nMatrix cell
+        %   mat     stores the actual values of 3x3 matrices, in a
+        %           3 x 3 x nMatrix matrix, defult unit is meV
+        %   color   color assigned for every matrix, stored in a
+        %           3 x nMatrix matrix, with 0-255 RGB columns
+        %   label   label for every matrix, stored as string in a
+        %           1 x nMatrix cell
         %
         % See also SPINW.ADDMATRIX, SPINW.NTWIN.
         matrix
         % Stores single ion terms of the Hamiltonian.
         % Sub fields are:
-        %   'aniso'     vector contains 1 x nMagAtom integers, each integer
-        %               assignes one of the nMatrix from the .matrix field
-        %               to a magnetic atom in the spinw.matom list as a single
-        %               ion anisotropy (zeros for no anisotropy)
-        %   'g'         vector contains 1 x nMagAtom integers, each integer
-        %               assignes one of the nMatrix from the .matrix field
-        %               to a magnetic atom in the spinw.matom list as a
-        %               g-tensor
-        %   'field'     external magnetic field stored in a 1x3 vector,
-        %               default unit is Tesla
-        %   'T'         temperature, scalar, default unit is Kelvin
+        %   aniso   vector contains 1 x nMagAtom integers, each integer
+        %           assignes one of the nMatrix from the .matrix field
+        %           to a magnetic atom in the spinw.matom list as a single
+        %           ion anisotropy (zeros for no anisotropy)
+        %   g       vector contains 1 x nMagAtom integers, each integer
+        %           assignes one of the nMatrix from the .matrix field
+        %           to a magnetic atom in the spinw.matom list as a
+        %           g-tensor
+        %   field   external magnetic field stored in a 1x3 vector,
+        %           default unit is Tesla
+        %   T       temperature, scalar, default unit is Kelvin
         %
         % See also SPINW.ADDANISO, SPINW.ADDG, SPINW.GETMATRIX, SPINW.SETMATRIX, SPINW.INTMATRIX.
         single_ion
         % Stores the list of spin-spin couplings.
         % Sub fields are:
-        %   'dl'        distance between the unit cells of two interacting
-        %               spins, stored in a 3 x nCoupling matrix
-        %   'atom1'     first magnetic atom, pointing to the list of
-        %               magnetic atoms in spinw.matom list, stored in a
-        %               1 x nCoupling vector
-        %   'atom2'     second magnetic atom, stored in a  1 x nCoupling
-        %               vector
-        %   'mat_idx'   stores pointers to matrices for every coupling in a
-        %               3 x nCoupling matrix, maximum three matrices per
-        %               coupling (zeros for no coupling)
-        %   'idx'       increasing indices for the symmetry equivalent
-        %               couplings, starting with 1,2,3...
-        %   'type'      Type of coupling corresponding to mat_idx matrices.
-        %               Default is 0 for quadratic exchange. type = 1 for
-        %               biquadratic exchange.
-        %   'sym'       If true the bond symmetry operators will be applied
-        %               on the assigned matrix.
-        %   'rdip'      Maximum distance until the dipolar interaction is
-        %               calculated. Zero vlue means no dipolar interactions
-        %               are considered.
-        %   'nsym'      The largest bond 'idx' value that is generated
-        %               using the space group operators. Typically very
-        %               long bonds for dipolar interactions won't be
-        %               calculated using space group symmetry.
+        %   dl      distance between the unit cells of two interacting
+        %           spins, stored in a 3 x nCoupling matrix
+        %   atom1   first magnetic atom, pointing to the list of
+        %           magnetic atoms in spinw.matom list, stored in a
+        %           1 x nCoupling vector
+        %   atom2   second magnetic atom, stored in a  1 x nCoupling
+        %           vector
+        %   mat_idx stores pointers to matrices for every coupling in a
+        %           3 x nCoupling matrix, maximum three matrices per
+        %           coupling (zeros for no coupling)
+        %   idx     increasing indices for the symmetry equivalent
+        %           couplings, starting with 1,2,3...
+        %   type    Type of coupling corresponding to mat_idx matrices.
+        %           Default is 0 for quadratic exchange. type = 1 for
+        %           biquadratic exchange.
+        %   sym     If true the bond symmetry operators will be applied
+        %           on the assigned matrix.
+        %   rdip    Maximum distance until the dipolar interaction is
+        %           calculated. Zero vlue means no dipolar interactions
+        %           are considered.
+        %   nsym    The largest bond 'idx' value that is generated
+        %           using the space group operators. Typically very
+        %           long bonds for dipolar interactions won't be
+        %           calculated using space group symmetry.
         %
         % See also SPINW.GENCOUPLING, SPINW.ADDCOUPLING, SPINW.FIELD.
         coupling
         % Stores the magnetic structure.
         % Sub fields are:
-        %   'S'         stores the moment direction for every spin in the
-        %               crystallographic or magnetic supercell in a
-        %               3 x nMagExt matrix, where nMagExt = nMagAtom*prod(N_ext)
-        %   'k'         magnetic ordering wave vector in a 3x1 vector
-        %   'n'         normal vector to the rotation of the moments in
-        %               case of non-zero ordering wave vector, dimensions
-        %               are 3x1
-        %   'N_ext'     Size of the magnetic supercell, default is [1 1 1]
-        %               if the magnetic cell is identical to the
-        %               crystallographic cell, the 1x3 vector extends the
-        %               cell along the a, b and c axis
+        %   S       stores the moment direction for every spin in the
+        %           crystallographic or magnetic supercell in a
+        %           3 x nMagExt matrix, where nMagExt = nMagAtom*prod(N_ext)
+        %   k       magnetic ordering wave vector in a 3x1 vector
+        %   n       normal vector to the rotation of the moments in
+        %           case of non-zero ordering wave vector, dimensions are
+        %           3x1
+        %   N_ext   Size of the magnetic supercell, default is [1 1 1]
+        %           if the magnetic cell is identical to the
+        %           crystallographic cell, the 1x3 vector extends the
+        %           cell along the a, b and c axis
         %
         % See also SPINW.GENMAGSTR, SPINW.OPTMAGSTR, SPINW.ANNEAL, SPINW.MOMENT, SPINW.NMAGEXT, SPINW.STRUCTFACT.
         mag_str
         % Stores the physical units in the Hamiltonian.
         % Defaults are meV, Tesla Angstrom and Kelvin.
         % Sub fields are:
-        %   'kB'        Boltzmann constant, default is 0.0862 [meV/K]
-        %   'muB'       Bohr magneton, default is 0.0579 [meV/T]
-        %   'mu0'       Vacuum permeability, 201.335431 [T^2*Angstrom^3/meV]
+        %   kB      Boltzmann constant, default is 0.0862 [meV/K]
+        %   muB     Bohr magneton, default is 0.0579 [meV/T]
+        %   mu0     vacuum permeability, 201.335431 [T^2*Angstrom^3/meV]
         unit
         % Stores the cache, it should be only used to check consistency of the code.
         % The stored values should not be changed by the user in any case!
         % Sub fields are:
-        %   'matom'     Data on the magnetic unit cell.
-        %   'symop'     Data on the generated symmetry operators per bond.
+        %   matom   data on the magnetic unit cell
+        %   symop   data on the generated symmetry operators per bond
         cache = struct('matom',[],'symop',[]);
         
     end
@@ -238,64 +244,17 @@ classdef spinw < handle
                 return;
             end
             if ischar(firstArg)
-                % import data from cif file
+                % import data from file (cif/fst are supported)
                 
                 objS = initfield(struct);
                 fNames = fieldnames(objS);
                 for ii = 1:length(fNames)
                     obj.(fNames{ii}) = objS.(fNames{ii});
                 end
-
-                cif0 = cif(firstArg);
-                fprintf0(1,'Crystal structure is imported from %s.\n',firstArg);
-                abc0 = [cif0.cell_length_a cif0.cell_length_b cif0.cell_length_c];
-                ang0 = [cif0.cell_angle_alpha cif0.cell_angle_beta cif0.cell_angle_gamma];
-                sym0 = cif0.('symmetry_space_group_name_H-M');
-                %symi0 = cif0.symmetry_Int_Tables_number;
                 
-                if ~isempty(cif0.symmetry_equiv_pos_as_xyz)
-                    xyz0 = cif0.symmetry_equiv_pos_as_xyz;
-                elseif ~isempty(cif0.space_group_symop_operation_xyz)
-                    xyz0 = cif0.space_group_symop_operation_xyz;
-                else
-                    warning('spinw:WrongFormat','Missing symmetry operators, using P1')
-                    xyz0 = {'x,y,z'};
-                end
+                obj = sw_import(firstArg,false,obj);
                 
-                xyz0 = sprintf('%s; ',xyz0{:}); xyz0 = xyz0(1:end-2);
-                %name0 = cif0.atom_site_type_symbol';
-                cell0 = [cif0.atom_site_label cif0.atom_site_type_symbol];
-                name0 = cellfun(@(x,y)strjoin({x y}),cell0(:,1),cell0(:,2),'UniformOutput',false)';
-                r0    = mod([cif0.atom_site_fract_x cif0.atom_site_fract_y cif0.atom_site_fract_z]',1);
-                
-                % save formula units
-                if ~isempty(cif0.cell_formula_units_Z)
-                    obj.unit.nformula = int32(cif0.cell_formula_units_Z);
-                end
-                
-                if numel(abc0)==3
-                    obj.lattice.lat_const = abc0;
-                end
-                if numel(ang0) == 3
-                    obj.lattice.angle = ang0*pi/180;
-                end
-                if numel(xyz0) > 3
-                    % determine the symmetry generators
-                    [symOp, symTr] = sw_gensym(sym0, xyz0);
-                    [symOp, symTr] = sw_symgetgen(symOp, symTr);
-                    % save generators into spinw pbject
-                    obj.lattice.label = sym0;
-                    obj.lattice.sym   = [symOp permute(symTr,[1 3 2])];
-                end
-                
-                if size(name0,2) == size(r0,2)
-                    % add atoms to the structure
-                    obj.addatom('r',r0,'label',name0,'occ',cif0.atom_site_occupancy')
-                else
-                    error('spinw:WrongInput','The .cif file contains inconsistent information!')
-                end 
             end
-            
             
         end % .spinw
         

@@ -9,6 +9,11 @@ function A = sumn(A,dim, varargin)
 % See also SUM.
 %
 
+if nargin == 0
+    help sumn
+    return
+end
+
 if nargin == 1
     % sum along the first non-singleton dimension
     dim = find(size(A)>1,1,'first');

@@ -35,20 +35,10 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % Options:
 %
-% formfact      Setting, that determines whether the magnetic form factor
-%               is included in the spin-spin correlation function
-%               calculation. Possible values:
-%                   false   No magnetic form factor is applied (default).
-%                   true    Magnetic form factors are applied, based on the
-%                           label string of the magnetic ions, see sw_mff()
-%                           function help.
-%                   cell    Cell type that contains mixed labels and
-%                           numbers for every symmetry inequivalent atom in
-%                           the unit cell, the numbers are taken as
-%                           constants.
-%               For example: formfact = {0 'MCr3'}, this won't include
-%               correlations on the first atom and using the form factor of
-%               Cr3+ ion for the second atom.
+% formfact      If true, the magnetic form factor is included in the
+%               spin-spin correlation function calculation. The form factor
+%               coefficients are stored in obj.unit_cell.ff(1,:,atomIndex).
+%               Default value is false.
 % formfactfun   Function that calculates the magnetic form factor for given
 %               Q value. Default value is @sw_mff(), that uses a tabulated
 %               coefficients for the form factor calculation. For
@@ -505,12 +495,9 @@ elseif nSlice > 1
 end
 
 % message for magnetic form factor calculation
-if param.formfact
-    ffstrOut = 'The';
-else
-    ffstrOut = 'No';
-end
-fprintf0(fid,[ffstrOut ' magnetic form factor is included in the spin-spin correlation function.\n']);
+ffstrOut = {'No' 'The'};
+fprintf0(fid,[ffstrOut{param.formfact+1} ' magnetic form factor is'...
+    ' included in the calculated structure factor.\n']);
 
 % message for g-tensor calculation
 if param.gtensor
@@ -764,7 +751,7 @@ for jj = 1:nSlice
     % since the S(Q+/-k,omega) correlation functions also belong to the
     % F(Q)^2 form factor
     
-    if iscell(param.formfact) || param.formfact
+    if param.formfact
         % include the form factor in the z^alpha, z^beta matrices
         zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 2*nMagExt 2 1]);
         zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 2*nMagExt 1]);

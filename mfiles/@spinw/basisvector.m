@@ -7,7 +7,7 @@ function basisVector = basisvector(obj, varargin)
 %
 % obj       spinw class object.
 % norm      If true, the basis vectors are normalized to 1, otherwise the
-%           length is equal to the lattice constants. Defult is false.
+%           length is equal to the lattice constants. Default is false.
 %           Optional.
 %
 % Output:

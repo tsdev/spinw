@@ -28,7 +28,11 @@ if fid > -1
     
 elseif numel(path) < 200
     % try to load it from the web
-    cifStr = webread(path);
+    try
+        cifStr = webread(path);
+    catch
+        error('cif:importcif:WrongInput','The requested data cannot be found!')
+    end
     cifStr = strsplit(char(cifStr'),'\n');
     
     source = path;

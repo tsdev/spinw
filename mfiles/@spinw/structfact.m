@@ -1,16 +1,19 @@
-function sFact = structfact(obj, hkl, varargin)
-% calculates magnetic structure factor using FFT
+function sFact = structfact(obj, kGrid, varargin)
+% calculates magnetic and nuclear structure factor
 %
-% sFact = STRUCTFACT(obj, k, option1, value1, ...)
+% sFact = STRUCTFACT(obj, kGrid, option1, value1, ...)
+%
+% The calculated structure factors are in barn units. Magnetic structures
+% (FM, AFM and HELical) are checked against FullProf. The structure factor
+% includes the site occupancy and Debye-Waller factors calculated from
+% obj.unit_cell.biso, using the same definition as FullProf.
 %
 % Input:
 %
-% obj       Input spinw object, contains positions of the magnetic atoms,
-%           size of the magnetic supercell and the vector components of the
-%           spins anf g-tensors.
-% hkl       Defines the reciprocal lattice vectors where the magnetic
-%           intensity is calculated. For commensurate structures these are
-%           the possible positions of the magnetic Bragg peaks. For
+% obj       Input spinw object, contains crystal and/or magnetic structure.
+% kGrid     Defines the reciprocal lattice vectors where the structure
+%           factor is to be calculated. For commensurate structures these
+%           are the possible positions of the magnetic Bragg peaks. For
 %           incommensurate helical/conical structures 3 Bragg peaks
 %           positions are possible: (k-km,k,k+km) around every reciprocal
 %           lattice vector. In this case still the integer positions have
@@ -19,25 +22,25 @@ function sFact = structfact(obj, hkl, varargin)
 %
 % Options:
 %
+% mode          String, defines the type of calculation:
+%                   mag     Magnetic structure factor and intensities for
+%                           unpolarised neutron scattering.
+%                   nucn    Nuclear structure factor and neutron scattering
+%                           intensities.
+%                   nucx    X-ray scattering structure factor and
+%                           intensities.
+% sortq         Sorting the reflections according to increasing momentum
+%               value if true. Default is false.
+%
 % gtensor       If true, the g-tensor will be included in the static spin
-%               correlation function. Including anisotropic g-tensor or
-%               different g-tensor for different ions is only possible here.
-%               Including a simple isotropic g-tensor is possible afterwards
-%               using the sw_instrument() function.
-% formfact      Setting, that determines whether the magnetic form factor
-%               is included in the spin-spin correlation function
-%               calculation. Possible values:
-%                   false   No magnetic form factor is applied (default).
-%                   true    Magnetic form factors are applied, based on the
-%                           label string of the magnetic ions, see sw_mff()
-%                           function help.
-%                   cell    Cell type that contains mixed labels and
-%                           numbers for every symmetry inequivalent atom in
-%                           the unit cell, the numbers are taken as
-%                           constants.
-%               For example: formfact = {0 'MCr3'}, this won't include
-%               correlations on the first atom and using the form factor of
-%               Cr3+ ion for the second atom.
+%               correlation function, including anisotropic g-tensor or
+%               different g-tensor per ion.
+%
+% formfact      If true, the magnetic form factor is included in the
+%               spin-spin correlation function calculation. The form factor
+%               coefficients are stored in obj.unit_cell.ff(1,:,atomIndex).
+%               Default value is false.
+%
 % formfactfun   Function that calculates the magnetic form factor for given
 %               Q value. Default value is @sw_mff(), that uses a tabulated
 %               coefficients for the form factor calculation. For
@@ -72,173 +75,209 @@ function sFact = structfact(obj, hkl, varargin)
 %               factor in included in the spin-spin correlation function.
 % obj           Copy of the input obj object.
 %
-% See also SW_PLOTSF, SW_INTSF, SPINW.ANNEAL, SPINW.GENMAGSTR.
+% See also SW_QGRID, SW_PLOTSF, SW_INTSF, SPINW.ANNEAL, SPINW.GENMAGSTR.
 %
 
-
-inpF.fname  = {'gtensor' 'tol' 'formfact' 'formfactfun'};
-inpF.defval = {false     1e-4  false       @sw_mff     };
-inpF.size   = {[1 1]     [1 1] [1 -1]      [1 1]       };
+inpF.fname  = {'mode' 'sortq' 'gtensor' 'formfact' 'formfactfun'};
+inpF.defval = {'mag'  false   false     false       @sw_mff     };
+inpF.size   = {[1 -1] [1 1]   [1 1]     [1 1]       [1 1]       };
 
 param = sw_readparam(inpF, varargin{:});
 
-sGrid = size(hkl);
+fid = obj.fileid;
 
-matom = obj.matom;
-nExt  = double(obj.mag_str.N_ext);
-km    = obj.mag_str.k;
-n     = obj.mag_str.n;
+% make a list of k-vectors from a grid and remember original dimensions
+kDim  = size(kGrid);
+hkl   = reshape(kGrid,3,[]);
+% number of Q point
+nQ    = size(hkl,2);
 
-% convert km into the lu of the magnetic supercell
-kmExt = mod(km.*nExt,1);
-
-if sGrid(1) ~=3
-    error('sw:structfact:WrongInput','The k input has to have 3 elements alogn the first dimension!')
+if kDim(1)~=3
+    error('spinw:structfact:Wronginput','Dimensions of input hkl matrix are wrong!')
 end
 
-if numel(sGrid)>2 && sGrid(1)==3
-    % change grid into a list of k-points, data will be changed back in the
-    % end.
-    hkl = reshape(hkl,3,[]);
-end
+% constant for magnetic intensity
+% neutron gyromagnetic ratio
+gamma = 1.91304272;
+% classical radius of the electron
+r0 = 2.8179403267e-15; % m
+% magnetic cross section constant in barn
+constM = (gamma*r0/2)^2*1e28;
 
-% check whether all hkl are integer in the supercell
-hklExt = bsxfun(@times,hkl,nExt');
-if sum(abs(hklExt(:)-round(hklExt(:))))/numel(hklExt) > 1e-10
-    error('sw:structfact:WrongInput','All hkl values have to be integers.')
-end
+% occupancy
+occ = obj.unit_cell.occ;
+% isotropic displacement
+biso = obj.unit_cell.biso;
 
-% whether the structure is incommensurate
-incomm = any(abs(kmExt-round(kmExt)) > param.tol);
-
-% special case if 2*km=tau structure
-if incomm && all(abs(2*kmExt-round(2*kmExt))<param.tol)
-    incomm = 2;
-end
-
-switch incomm
-    case 0
-        hklExtQ = hklExt;
-        hklQ    = hkl;
-    case 1
-        % create (km-Q,km,km+Q) shifts for incommensurate structures
-        hklExtQ = [bsxfun(@minus,hklExt,kmExt') hklExt bsxfun(@plus,hklExt,kmExt')];
-        hklQ    = [bsxfun(@minus,hkl,(km./nExt)') hkl bsxfun(@plus,hkl,(kmExt./nExt)')];
-    case 2
-        % create (km+2*Q,km,km+Q) shifts for incommensurate structures
-        hklExtQ = [bsxfun(@plus,hklExt,2*kmExt') hklExt bsxfun(@plus,hklExt,kmExt')];
-        hklQ    = [bsxfun(@plus,hkl,2*(km./nExt)') hkl bsxfun(@plus,hklExt,(km./nExt)')];
-end
-
-% positions of the magnetic atoms in the supercell in lu units
-matomExt = sw_extendlattice(nExt, matom);
-% positions in unit of the crystallographic unit cell
-RRext = matomExt.RRext;
-
-% spins
-S = obj.mag_str.S;
-
-% calculate magnetic moments if gtensor is true, default g-value is 2
-if param.gtensor
-    % M = g*S
-    [~,SI] = obj.intmatrix;
-    %     mat = SI.;
-    %     gIdx = double(obj.single_ion.g);
-    %     gIdx(gIdx==0) = size(mat,3);
-    M = permute(mmat(SI.g,permute(S,[1 3 2])),[1 3 2]);
-else
-    M = S;
-end
-
-% different dimensions
-nHkl    = size(hklQ,2); 
-nMagExt = obj.nmagext;
-
-% Calculates momentum transfer in A^-1 units.
-hklA = 2*pi*(hklQ'/obj.basisvector)';
-
-% complex phases 1 x nHkl x nMagExt matrix
-expF = exp(2*pi*1i*sum(bsxfun(@times,permute(hklExtQ,[3 2 4 1]),permute(RRext,[3 4 2 1])),4));
-
-% calculate all magnetic form factors
-if iscell(param.formfact) || param.formfact
-    if ~iscell(param.formfact)
-        % unique atom labels
-        uLabel = unique(obj.unit_cell.label(obj.unit_cell.S>0));
-        % all atom labels
-        aLabel = obj.unit_cell.label(obj.matom.idx);
+switch param.mode
+    case 'mag'
+        % message for magnetic form factor calculation
+        ffstrOut = {'No' 'The'};
+        fprintf0(fid,[ffstrOut{param.formfact+1} ' magnetic form factor is'...
+            ' included in the calculated structure factor.\n']);
         
-        % save the form factor information in the output
-        sFact.formfact = obj.unit_cell.label(obj.unit_cell.S>0);
-    else
-        if numel(param.formfact) ~= numel(matom.idx)
-            error('sw:spinwave:WrongInput',['Number of form factor '...
-                'parameters has to equal to the number of magnetic '...
-                'atoms in the unit cell!'])
+        % magnetic atoms in the unit cell
+        matom = obj.matom;
+        % get k-vector
+        km0  = obj.mag_str.k;
+        % number of different magnetic propagation vectors
+        nK0   = size(km0,2);
+        % number of propagation vectors (count -km)
+        nProp = any(mod(2*km0,1),1)+1;
+        % number of prop vectors together with -km
+        nK = sum(nProp);
+        % store all km & -km
+        kmStore = zeros(3,nK);
+        iSign   = zeros(1,nK);
+        iFact   = zeros(1,nK);
+        kmIdx   = zeros(1,nK);
+        
+        % empty variables
+        sFact.Sab   = zeros(3,3,nQ,nK);
+        sFact.Sperp = zeros(nQ,nK);
+        sFact.hklA  = zeros(3,nQ,nK);
+        sFact.d     = zeros(1,nQ,nK);
+
+        % loop over all prop vector to add the -km to the list
+        idx = 1;
+        for ii = 1:nK0
+            if nProp(ii) == 1
+                kmStore(:,idx) = km0(:,ii);
+                iSign(1,idx)   = 1;
+                iFact(1,idx)   = 2;
+                kmIdx(1,idx)   = ii;
+                idx = idx + 1;
+            else
+                idxL = idx+[0 1];
+                kmStore(:,idxL) = [km0(:,ii) -km0(:,ii)];
+                iSign(1,idxL)         = [1 -1];
+                iFact(1,idxL)         = [1/2 1/2];
+                kmIdx(1,idxL)         = [ii ii];
+                idx = idx + 2;
+            end
         end
-        % use the labels given as a cell input for all symmetry
-        % inequivalent atom
-        uLabel = param.formfact;
-        aLabel = uLabel(obj.matom.idx);
-        % convert numerical values to char() type
-        aLabel = cellfun(@char,aLabel,'UniformOutput', false);
         
-        % save the form factor information in the output
-        sFact.formfact = uLabel;
+        for ii = 1:nK
+            % loop over all km vector one-by-one also including -km
+            % select propagation vector
+            km  = repmat(kmStore(:,ii),[1 nQ]);
+            % position of magnetic reflections
+            hklKm = bsxfun(@plus,hkl,km);
+            % in Angstrom units [3 nQ nK]
+            sFact.hklA(:,:,ii) = (hklKm'*obj.rl)';
+            
+            % Fourier components with the selected propagation vector
+            % [3 nMagAtom 1]
+            F1 = obj.mag_str.F(:,:,kmIdx(ii));
+            % [3 nMagAtom] [3 _ nQ] --> F1*exp(i*kappa*r_ip) [3 nMagAtom nQ]
+            kPerm = permute(iSign(ii)*hklKm,[1 3 2]);
+            % include exp() factor
+            F1 = bsxfun(@times,F1,exp(sum(bsxfun(@times,1i*2*pi*matom.r,kPerm),1)));
+
+            % d-spacing in Angstrom units [1 nQ nK]
+            sFact.d(:,:,ii) = 2*pi./sqrt(sum(sFact.hklA(:,:,ii).^2,1));
+            % Debye-Waller factor [1 nMagAtom nQ]
+            Wd = exp(-bsxfun(@times,biso(matom.idx),permute(1./(sFact.d(:,:,ii).^2),[1 3 2]))/4);
+            
+            % include occupancy and D-W factor
+            F1 = bsxfun(@times,F1,bsxfun(@times,occ(matom.idx),Wd));
+            
+            if param.formfact
+                % include magnetic form factors
+                % store form factor per Q point for each atom in the
+                % magnetic cell
+                % [nMagAtom nQ]
+                FF = param.formfactfun(permute(obj.unit_cell.ff(1,:,matom.idx),...
+                    [3 2 1]),sFact.hklA(:,:,ii));
+                % sum over magnetic atoms
+                F1 = sum(bsxfun(@times,F1,permute(FF,[3 1 2])),2);
+            else
+                F1 = sum(F1,2);
+            end
+            
+            % S^ab for elastic scattering [3 3 nQ]
+            F2 = bsxfun(@times,permute(F1,[1 2 3]),conj(permute(F1,[2 1 3])));
+            % [3 nQ]
+            hklAnorm = bsxfun(@rdivide,sFact.hklA(:,:,ii),sqrt(sum(sFact.hklA(:,:,ii).^2,1)));
+            % 1-q^2 [3 3 nQ]
+            mq = bsxfun(@minus,eye(3),bsxfun(@times,permute(hklAnorm,[1 3 2]),permute(hklAnorm,[3 1 2])));
+            % [3 3 nQ nK]
+            sFact.Sab(:,:,:,ii) = iFact(ii)*F2.*mq;
+            % sum up for non-polarized calculation, keep only the real part
+            sFact.Sperp(:,ii) = constM*real(permute(sumn(sFact.Sab(:,:,:,ii),[1 2]),[3 1 2 4]));
+        end
+    case 'nucn'
+        % nuclear structure factor
+        % including occupancy & isotropic displacement
+
+        % precalculation the atoms in the unit cell
+        atom = obj.atom;
+        % scattering length, convert to sqrt(barn)
+        bc = obj.unit_cell.b(1,atom.idx)*0.1;
+        
+        sFact.hklA = (hkl'*obj.rl)';
+        % d-spacing in Angstrom units [1 nQ]
+        sFact.d = 2*pi./sqrt(sum(sFact.hklA.^2,1));
+        % Debye-Waller factor [1 nAtom nQ]
+        Wd = bsxfun(@times,biso(atom.idx),permute(1./(d.^2),[1 3 2]))/4;
+        
+        % nuclear unit-cell structure factor (fast, but takes lots of memory)
+        % [1 1 nQ]
+        F1 = sum(bsxfun(@times,bc.*occ(atom.idx),exp(-Wd+2*pi*1i*sum(bsxfun(@times,atom.r,permute(hkl,[1 3 2])),1))),2);
+        % cross section
+        sFact.Sperp = permute(F1.*conj(F1),[3 1 2]);
+        
+        % no magnetic wave vector
+        nK = 1;
+        % no magnetic form factor
+        param.formfact = false;
+        
+    case 'nucx'
+    otherwise
+end
+
+if param.sortq
+    % don't resize the matrices, but sort
+    sFact.hklA = reshape(sFact.hklA,3,[]);
+    [~,idx] = sort(sum(sFact.hklA.^2,1));
+    
+    sFact.hklA = sFact.hklA(:,idx);
+    
+    sFact.Sab = reshape(sFact.Sab,3,3,[]);
+    sFact.Sab = sFact.Sab(:,:,idx);
+    
+    sFact.Sperp = reshape(sFact.Sperp,1,[]);
+    sFact.Sperp = sFact.Sperp(:,idx);
+    % store reciprocal lattice vectors
+    sFact.hkl = repmat(hkl,[1 nK]);
+    sFact.hkl = sFact.hkl(:,idx);
+    switch param.mode
+        case 'mag'
+            % store the magnetic propagation vector
+            sFact.km  = repmat(permute(1:nK,[1 3 2]),[1 nQ 1]);
+            sFact.km  = reshape(sFact.km,1,[]);
+            sFact.km  = sFact.km(:,idx);
     end
-    
-    % stores the form factor values for each Q point and unique atom
-    % label
-    FF = zeros(nMagExt,nHkl);
-    
-    for ii = 1:numel(uLabel)
-        lIdx = repmat(strcmp(aLabel,char(uLabel{ii})),[1 prod(nExt)]);
-        FF(lIdx,:) = repmat(param.formfactfun(uLabel{ii},hklA),[sum(lIdx) 1]);
-    end
-    
-    % include magnetic form factor in the exponential prefactor
-    expF = expF.*permute(FF,[3 2 1]);
-    
 else
-    sFact.formfact = [];
-end
-
-% sum up spins
-Mk = sum(bsxfun(@times,permute(M,[1 3 2]),expF),3);
-
-if incomm>0
-    % include rotation matrices
-    nx  = [0 -n(3) n(2); n(3) 0 -n(1); -n(2) n(1) 0];
-    nxn = n'*n;
-    K1 = 1/2*(eye(3) - nxn - 1i*nx);
-    K2 = nxn;
+    % resize the matrices to the dimensions of the input q-grid
+    % [nQ1 nQ2 nQ3 nK]
+    sFact.Sperp = reshape(sFact.Sperp,[kDim(2:end) nK]);
+    % store reciprocal lattice vectors
+    sFact.hkl = kGrid;
+    switch param.mode
+        case 'mag'
+            sFact.km    = kmStore;
+            % [3 3 nQ1 nQ2 nQ3 nK]
+            sFact.Sab = reshape(sFact.Sab,[3 3 kDim(2:end) nK]);
+    end
     
-    Mk = [permute(sum(bsxfun(@times,K1,permute(Mk(:,1:end/3),[1 3 2])),2),[1 3 2]) ...
-        permute(sum(bsxfun(@times,K2,permute(Mk(:,(end/3+1):end/3*2),[1 3 2])),2),[1 3 2]) ...
-        permute(sum(bsxfun(@times,conj(K1),permute(Mk(:,(end/3*2+1):end),[1 3 2])),2),[1 3 2])];
 end
 
-if incomm == 2
-    % sum up the km+Q and km+2Q values
-    Mk = [Mk(:,(end/3+1):end/3*2) Mk(:,1:end/3)+Mk(:,(end/3*2+1):end)];
-    
-    hklQ = [hklQ(:,(end/3+1):end/3*2) hklQ(:,(end/3*2+1):end)];
-end
-
-% convert intensity per unit cell
-Mk = Mk/prod(nExt);
-
-% save output into struct
-% structure factor
-sFact.F2 = Mk.*conj(Mk);
-% Fourier transform
-sFact.Mk = Mk;
-% momentum in rlu
-sFact.hkl = hklQ;
-
-sFact.hklA = 2*pi*(hklQ'/obj.basisvector)';
-
-sFact.obj = copy(obj);
-sFact.incomm = logical(incomm);
+% create output parameters
+sFact.sortq    = param.sortq;
+sFact.unit     = 'barn';
+sFact.formfact = param.formfact;
+sFact.obj      = copy(obj);
+sFact.mode     = param.mode;
 
 end

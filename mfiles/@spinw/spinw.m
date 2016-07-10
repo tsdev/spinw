@@ -264,7 +264,7 @@ classdef spinw < handle
             % nMagExt = NMAGEXT(obj)
             %
             
-            nMagExt = size(obj.mag_str.S,2);
+            nMagExt = size(obj.mag_str.F,2);
         end
         function nAtom = natom(obj)
             % gives the number of symmetry unrelated atoms in the unit cell

@@ -353,7 +353,7 @@ end
 
 if param.extend
     % Extend the lattice for magnetic interactions
-    nExt = double(obj.mag_str.N_ext);
+    nExt = obj.magstr.N_ext;
     [mAtom, SS] = sw_extendlattice(nExt, mAtom, SS);
     SI.aniso = repmat(SI.aniso, [1 1 prod(nExt)]);
     SI.g     = repmat(SI.g, [1 1 prod(nExt)]);

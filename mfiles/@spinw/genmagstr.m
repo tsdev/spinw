@@ -119,22 +119,19 @@ function genmagstr(obj, varargin)
 % nExt      Size of the magnetic supercell in multiples of the
 %           crystallographic cell, dimensions are [1 3]. Default value is
 %           stored in obj. If nExt is a single number, then the size of the
-%           extended unit cell is automatically determined from the
+%           extended unit cell is automatically determined from the FIRST
 %           magnetic ordering wavevector. If nExt = 0.01, then the number
 %           of unit cells is determined so, that in the extended unit cell,
 %           the magnetic ordering wave vector is [0 0 0], within the given
-%           0.01 error.
-% k         Magnetic ordering wavevector in r.l.u., dimensions are [1 3].
+%           0.01 r.l.u. error.
+% k         Magnetic ordering wavevector in r.l.u., dimensions are [nK 3].
 %           Default value is defined in obj.
 % n         Normal vector to the spin rotation plane for single-k magnetic
 %           structures, dimensions are [1 3]. Default value [0 0 1].
-% S         Direct input of the spin values, dimensions are [3 nSpin].
+% S         Direct input of the spin values, dimensions are [3 nSpin nK].
 %           Every column defines the three (S_x, S_y, S_z) components of
 %           the moment in the xyz Descartes coodinate system or in l.u.
 %           coordinate system. Default value is stored in obj.
-% Fk        Fourier compoents for general magnetic structures.
-%           For description, see the 'fourier' mode description above.
-%           No default value, it has to be defined if 'mode' is 'fourier'.
 % unitS     Units for S and Fk, default is 'xyz', optionally 'lu' can be used,
 %           in this case the input spin components are assumed to be in
 %           lattice units and they will be converted to the xyz coordinate
@@ -186,53 +183,43 @@ if isempty(obj.matom.r)
     error('spinw:genmagstr:NoMagAtom','There are no magnetic atoms (S>0) in the unit cell!')
 end
 
-inpForm.fname  = {'mode'   'nExt'            'k'           'n'    };
-inpForm.defval = {'extend' obj.mag_str.nExt obj.mag_str.k  [0 0 1]};
-inpForm.size   = {[1 -1]   [1 -4]            [1 3]         [1 3]  };
-inpForm.soft   = {false    false             false         false  };
+inpForm.fname  = {'mode'   'nExt'            'k'           'n'   };
+inpForm.defval = {'extend' obj.mag_str.nExt obj.mag_str.k' []    };
+inpForm.size   = {[1 -1]   [1 -4]            [-6 3]        [-6 3] };
+inpForm.soft   = {false    false             false         true  };
 
 inpForm.fname  = [inpForm.fname  {'func'          'x0'   'norm' 'r0' }];
 inpForm.defval = [inpForm.defval {@gm_spherical3d []     true   true }];
 inpForm.size   = [inpForm.size   {[1 1]           [1 -3] [1 1]  [1 1]}];
 inpForm.soft   = [inpForm.soft   {false           true   false  false}];
 
-inpForm.fname  = [inpForm.fname  {'S'     'phi' 'phid' 'epsilon' 'unitS' 'Fk'      }];
-inpForm.defval = [inpForm.defval {[]      0     0      1e-5      'xyz'   cell(1,0) }];
-inpForm.size   = [inpForm.size   {[-6 -2] [1 1] [1 1]  [1 1]     [1 -5]  [1 -7]    }];
-inpForm.soft   = [inpForm.soft   {true    false false  false     false   false     }];
+inpForm.fname  = [inpForm.fname  {'S'     'phi' 'phid' 'epsilon' 'unitS'}];
+inpForm.defval = [inpForm.defval {[]      0     0      1e-5      'xyz'  }];
+inpForm.size   = [inpForm.size   {[3 -7 -6] [1 1] [1 1]  [1 1]     [1 -5] }];
+inpForm.soft   = [inpForm.soft   {true    false false  false     false  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
+% input type for S, check whether it is complex type
+cmplxS = ~isreal(param.S);
+
 if param.phi == 0
-    % use degrees for phi is given
+    % use degrees for phi if given
     param.phi = param.phid*pi/180;
 end
 
-% make string lower case
-param.mode = lower(param.mode);
-
 if isempty(param.S)
-    param.S = obj.magstr.S;
+    % use the complex Fourier components from the stored magnetic structure
+    param.S = obj.mag_str.F;
+    cmplxS  = true;
 else
-    % number of rows in .S has to be three
-    if numel(param.S) == 3
-        param.S = param.S(:);
-    elseif (size(param.S,1) ~= 3)
-        error('spinw:genmagstr:WrongInput','Parameter S has to have dimensions of [3 nSpin]!');
-    end
-    
     switch lower(param.unitS)
         case 'lu'
             % convert the moments from lattice units to xyz
             BV = obj.basisvector(true);
-            param.S = BV*param.S;
+            %param.S = BV*param.S;
+            param.S = mmat(BV,parm.S);
             
-            % convert also the Fourier components if they are given
-            if ~isempty(param.Fk)
-                for ii = 1:2:numel(param.Fk)
-                    param.Fk{ii} = BV*param.Fk{ii};
-                end
-            end
         case 'xyz'
             % do nothing
         otherwise
@@ -240,12 +227,13 @@ else
     end
 end
 
-nExt     = double(param.nExt);
+nExt = double(param.nExt);
 
-% automatic determination of the size of the extended unit cell
+% automatic determination of the size of the extended unit cell based on
+% the first k-vector
 % if nExt is a single number
 if numel(nExt) == 1
-    [~, nExt] = rat(param.k,nExt);
+    [~, nExt] = rat(param.k(1,:),nExt);
 end
 
 mAtom    = obj.matom;
@@ -259,17 +247,27 @@ end
 % Create mAtom.Sext matrix.
 mAtom    = sw_extendlattice(nExt, mAtom);
 
-% Magnetic ordering wavevector
-k = param.k;
+% Magnetic ordering wavevector(s)
+k  = param.k;
+% number of k-vectors
+nK = size(k,1);
 
-% Axis of rotation, size (1,3)
-n = (param.n)/norm(param.n);
+% normalized axis of rotation, size (nK,3)
+if isempty(param.n)
+    % default value
+    param.n = repmat([0 0 1],[nK 1]);
+end
 
-% If the magnetic structure is not initialized start with a random one.
+n = bsxfun(@rdivide,param.n,sqrt(sum(param.n.^2,2)));
+
+if size(param.n,1) ~= nK
+    error('spinw:genmagstr:WrongInput',['The number of normal vectors has'...
+        ' to be equal to the number of k-vector!'])
+end
+
+% if the magnetic structure is not initialized start with a random real one
 if strcmp(param.mode,'extend') && (nMagAtom > size(param.S,2))
     param.mode = 'random';
-    % this warning is not necessary
-    %warning('sw:genmagstr:WrongInitialStructure','No magnetic structure is defined, random structure is created instead!')
 end
 
 if obj.symb
@@ -278,26 +276,35 @@ if obj.symb
     n = sym(n);
 end
 
+if ~cmplxS
+    param.S = param.S + 1i*cross(repmat(permute(n,[2 3 1]),[1 size(param.S,2) 1]),param.S);
+end
+
 switch param.mode
-    case 'extend'
-        % Extend the unit cell if:
+    case {'extend' 'tile'}
+        % effectively tiles the magnetic supercell with the given magnetic
+        % moments if:
         % -the new number of extended cells does not equal to the number of
         %  cells defined in obj
         % -the number of spins stored in obj is not equal to the number
         %  of spins in the final structure
         if any(obj.mag_str.N_ext - int32(param.nExt)) || (size(param.S,2) ~= nMagExt)
-            S = param.S(:,1:nMagAtom);
-            S = repmat(S,[1 prod(nExt)]);
+            S = param.S(:,1:nMagAtom,:);
+            S = repmat(S,[1 prod(nExt) 1]);
         else
             S = param.S;
         end
+        % sum up all kvectors and keep the real part only
+        S  = real(sum(S,3));
         k = [0 0 0];
+        
     case 'random'
-        % Create random spin directions.
-        S = randn(nMagExt,3);
-        S = bsxfun(@rdivide,S,sqrt(sum(S.^2,2)));
-        S = bsxfunsym(@times,S,mAtom.Sext')';
-        k = [0 0 0];
+        % Create random spin directions and use a single k-vector
+        S  = randn(nMagExt,3);
+        S  = bsxfun(@rdivide,S,sqrt(sum(S.^2,2)));
+        S  = bsxfunsym(@times,S,mAtom.Sext')';
+        k  = [0 0 0];
+        
     case 'helical'
         S0 = param.S;
         % Magnetic ordering wavevector in the extended unit cell.
@@ -308,52 +315,43 @@ switch param.mode
         if any(abs(skExt-round(skExt))>param.epsilon) && prod(nExt) > 1
             warning('sw:genmagstr:UCExtNonSuff','In the extended unit cell k is still larger than epsilon!');
         end
-        % Number of spins in the input.
+        % number of spins in the input
         nSpin = size(param.S,2);
         
         if (nSpin~= nMagAtom) && (nSpin==1)
-            % Single defined spin, use the atomic position.
+            % there is only a single given spin, use the fractional atomic position
             if param.r0
                 r = mAtom.RRext;
             else
                 r = bsxfun(@minus,mAtom.RRext,mAtom.RRext(:,1));
             end
         elseif nSpin == nMagAtom
-            % First crystallographic unit cell defined, use only unit cell
-            % position.
+            % moments in the crystallographic unit cell are defined, use
+            % only unit cell position.
             r = bsxfun(@rdivide,floor(bsxfun(@times,mAtom.RRext,nExt')),nExt');
         else
             error('sw:genmagstr:WrongNumberSpin','Wrong number of input spins!');
         end
-        % Angles of rotation for each unit cell.
-        phi = kExt*r*2*pi;
+                
+        % additional phase for eahc spin in the magnetic supercell
+        phi = sum(bsxfun(@times,2*pi*kExt',r),1);
+
+        % add the extra phase for each spin in the unit cell
+        % TODO check
+        S = bsxfun(@times,S0(:,mod(0:(nMagExt-1),nSpin)+1,:),exp(-1i*phi));
         
-        % Spin in the extended unit cell.
-        S = zeros(3,nMagExt);
-        if obj.symbolic
-            S = sym(S);
-        end
-        
-        if isreal(param.S) || isa(param.S,'sym')
-            % Rotate spins for each unit cell.
-            for ii = 1:nMagExt
-                selS    = S0(:,mod(ii-1,nSpin)+1);
-                S(:,ii) = sw_rot(n,phi(ii),selS);
-            end
-        else
-            error('sw:genmagstr:WrongInput','For complex Fourier components use the ''mode'' ''fourier'' option!');
-        end
     case 'direct'
-        % Direct input of the magnetic moments.
+        % direct input of real magnetic moments
         S = param.S;
-        if size(S,2)==nMagAtom
+        if size(S,2) == nMagAtom
             % single unit cell
             nExt = [1 1 1];
         end
         
-        if (size(S,1) ~= 3) || (size(S,2) ~= nMagExt)
+        if size(S,2) ~= nMagExt
             error('sw:genmagstr:WrongSpinSize','Wrong size of param.S!');
         end
+                
     case 'rotate'
         S   = param.S;
         if param.phi == 0
@@ -370,94 +368,89 @@ switch param.mode
         end
         % Rotate the spins.
         S = sw_rot(nRot,phi,S);
-        n = obj.mag_str.n;
         k = obj.mag_str.k;
+        
     case 'func'
         S = mAtom.S;
         S = repmat(S,[prod(nExt) 1]);
         
         if obj.symbolic
-            [S, k, n] = param.func(sym(S), sym(param.x0));
+            [S, k, ~] = param.func(sym(S), sym(param.x0));
         else
-            [S, k, n] = param.func(S,param.x0);
+            [S, k, ~] = param.func(S,param.x0);
         end
-    case 'fourier'
-        % generate supercell from Fourier components
-        % keeps the final k-vector zero
-        Fk = param.Fk;
-        if isempty(Fk) || ~iscell(Fk)
-            error('spinw:genmagstr:WrongInput','Wrong ''Fk'' option that defines the Fourier components!');
-        end
-        
-        % number of moments for the Fourier components are defined
-        nFourier = size(Fk{1},2);
-        nQ = numel(Fk)/2;
-        
-        if (nFourier ~= nMagAtom) && (nFourier==1)
-            % Single defined moment, use the atomic position in l.u.
-            RR = bsxfun(@times,mAtom.RRext,nExt');
-        elseif nFourier == nMagAtom
-            % First crystallographic unit cell defined, use only unit cell
-            % position in l.u.
-            RR = floor(bsxfun(@times,mAtom.RRext,nExt'));
-        else
-            error('sw:genmagstr:WrongNumberComponent','Wrong number of input Fourier components!');
-        end
-        
-        % no moments
-        S = RR*0;
-        % number of cells in the supercell
-        nCell = prod(nExt);
-        
-        % save the Fourier components
-        S = cat(3,Fk{1:2:end});
-        k = cat(1,Fk{2:2:end})';
-        
-        % multiply the Fourier components with the spin quantum number
-        % TODO
-        
-        
-%         for ii = 1:2:(2*nQ)
-%             % F(k)
-%             S = S + bsxfunsym(@times,repmat(Fk{ii},[1 nCell*nMagAtom/nFourier]),exp(1i*Fk{ii+1}*RR*2*pi))/2;
-%             % conj(F(k))
-%             S = S + bsxfunsym(@times,repmat(conj(Fk{ii}),[1 nCell*nMagAtom/nFourier]),exp(-1i*Fk{ii+1}*RR*2*pi))/2;
-%             
+%     case 'fourier'
+%         % generate supercell from Fourier components
+%         % keeps the final k-vector zero
+%         Fk = param.Fk;
+%         if isempty(Fk) || ~iscell(Fk)
+%             error('spinw:genmagstr:WrongInput','Wrong ''Fk'' option that defines the Fourier components!');
 %         end
-%         S = real(S);
-% 
-%         k = [0 0 0];
 %         
-        warning('spinw:genmagstr:Approximation',['The generated magnetic '...
-            'structure is only an approximation of the input multi-q'...
-            ' structure on a supercell!'])
-        %n = [0 0 1];
-        
+%         % number of moments for the Fourier components are defined
+%         nFourier = size(Fk{1},2);
+%         nQ = numel(Fk)/2;
+%         
+%         if (nFourier ~= nMagAtom) && (nFourier==1)
+%             % Single defined moment, use the atomic position in l.u.
+%             RR = bsxfun(@times,mAtom.RRext,nExt');
+%         elseif nFourier == nMagAtom
+%             % First crystallographic unit cell defined, use only unit cell
+%             % position in l.u.
+%             RR = floor(bsxfun(@times,mAtom.RRext,nExt'));
+%         else
+%             error('sw:genmagstr:WrongNumberComponent','Wrong number of input Fourier components!');
+%         end
+%         
+%         % no moments
+%         S = RR*0;
+%         % number of cells in the supercell
+%         nCell = prod(nExt);
+%         
+%         % save the Fourier components
+%         S = cat(3,Fk{1:2:end});
+%         k = cat(1,Fk{2:2:end})';
+%         
+%         % multiply the Fourier components with the spin quantum number
+%         % TODO
+%         
+%         
+% %         for ii = 1:2:(2*nQ)
+% %             % F(k)
+% %             S = S + bsxfunsym(@times,repmat(Fk{ii},[1 nCell*nMagAtom/nFourier]),exp(1i*Fk{ii+1}*RR*2*pi))/2;
+% %             % conj(F(k))
+% %             S = S + bsxfunsym(@times,repmat(conj(Fk{ii}),[1 nCell*nMagAtom/nFourier]),exp(-1i*Fk{ii+1}*RR*2*pi))/2;
+% %             
+% %         end
+% %         S = real(S);
+% % 
+% %         k = [0 0 0];
+% %         
+%         warning('spinw:genmagstr:Approximation',['The generated magnetic '...
+%             'structure is only an approximation of the input multi-q'...
+%             ' structure on a supercell!'])
+%         %n = [0 0 1];
+%         
     otherwise
         error('spinw:genmagstr:WrongMode','Wrong param.mode value!');
 end
 
 % normalize the magnetic moments
-% if param.norm
-%     normS = sqrt(sum(S.^2,1))./repmat(mAtom.S,[1 prod(nExt)]);
-%     normS(normS==0) = 1;
-%     S = bsxfunsym(@rdivide,S,normS);
-%     %if any(isnan(S(:)))
-%     %    error('spinw:genmagstr:WrongMoments','Zero magnetic moments cannot be normalized!');
-%     %end
-%     
-% end
+if param.norm
+    normS = sqrt(sum(real(S).^2,1))./repmat(mAtom.S,[1 prod(nExt)]);
+    normS(normS==0) = 1;
+    S = bsxfunsym(@rdivide,S,normS);
+end
 
 % simplify expressions
 if obj.symbolic
     S = simplify(sym(S));
     k = simplify(sym(k));
-    n = simplify(sym(n));
 end
 
 mag_str.nExt = int32(nExt(:))';
-mag_str.k    = k;
-mag_str.S    = S;
+mag_str.k    = k';
+mag_str.F    = S;
 
 obj.mag_str   = mag_str;
 validate(obj);

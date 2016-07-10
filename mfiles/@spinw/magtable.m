@@ -3,9 +3,10 @@ function moments = magtable(obj)
 %
 % moments = MAGTABLE(obj)
 %
-% The function lists the moment directions in the magnetic supercell, whose
-% size is defined by the obj.mag_str.N_ext field. The positions of the
-% magnetic atoms are in lattice units.
+% The function lists the APPROXIMATED moment directions (using the rotating
+% coordinate system notation) in the magnetic supercell, whose size is
+% defined by the obj.mag_str.N_ext field. The positions of the magnetic
+% atoms are in lattice units.
 %
 % Input:
 %
@@ -30,7 +31,7 @@ function moments = magtable(obj)
 %
 
 
-M0 = obj.mag_str.S;
+M0 = obj.magstr.S;
 S0 = sqrt(sum(M0.^2,1));
 nMagExt = size(M0,2);
 
@@ -69,7 +70,7 @@ moments.e2 = e2;
 moments.e3 = e3;
 
 mAtom = obj.matom;
-nExt  = double(obj.mag_str.N_ext);
+nExt  = obj.magstr.N_ext;
 
 % Create mAtom.Sext matrix.
 mAtom    = sw_extendlattice(nExt, mAtom);

@@ -73,7 +73,8 @@ if readobj
     end
     
     % fake magnetic structure to generate the right nMagExt = nAtom value
-    spectra.obj.mag_str.S = zeros(3,nMode/2);
+    spectra.obj.mag_str.F = zeros(3,nMode/2);
+    spectra.obj.mag_str.k = zeros(3,1);
     % rotate the components of the polarisation using R
     spectra.Sab = permute(mmat(R,permute(spectra.Sab,[1 5 2:4])),[1 3:5 2]);
     % Angstrom^-1 units for Q

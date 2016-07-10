@@ -104,9 +104,9 @@ switch linescan
             end
         end
         if size(hkl,1) == 1
-            xLabel = ['[' xiLabel{1} ',' xiLabel{2} ',' xiLabel{3} ']'];
+            xLabel = ['(' xiLabel{1} ',' xiLabel{2} ',' xiLabel{3} ')'];
         else
-            xLabel = ['[' xiLabel{1} ',' xiLabel{2} ',' xiLabel{3} '] in ' sprintf('%.5g',inA) ' A^{-1}'];
+            xLabel = ['(' xiLabel{1} ',' xiLabel{2} ',' xiLabel{3} ') in ' sprintf('%.5g ',inA) symbol('a') '^{-1}'];
         end
         
     case 1

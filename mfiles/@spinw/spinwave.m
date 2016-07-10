@@ -223,10 +223,18 @@ if ~(param.useMex && exist('chol_omp','file')==3 && ...
     param.useMex = false;
 end
 
+% generate magnetic structure in the rotating noation
+magStr = obj.magstr;
+
+if ~magStr.exact
+    warning('spinw:spinwave:MagStr',['The magnetic structure is '...
+        'approximated for the spin wave calculation!'])
+end
+
 % size of the extended magnetic unit cell
-nExt    = double(obj.mag_str.N_ext);
+nExt    = magStr.N_ext;
 % magnetic ordering wavevector in the extended magnetic unit cell
-km = obj.mag_str.k.*nExt;
+km = magStr.k.*nExt;
 
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
@@ -339,14 +347,14 @@ hklExt  = bsxfun(@times,hklExt,nExt')*2*pi;
 hklExt0 = bsxfun(@times,hkl0,nExt')*2*pi;
 
 % Calculates parameters eta and zed.
-if isempty(obj.mag_str.S)
+if isempty(magStr.S)
     error('sw:spinwave:NoMagneticStr','No magnetic structure defined in obj!');
 end
 
-M0 = obj.mag_str.S;
+M0 = magStr.S;
 S0 = sqrt(sum(M0.^2,1));
 % normal to rotation of the magnetic moments
-n  = obj.mag_str.n;
+n  = magStr.n;
 nMagExt = size(M0,2);
 
 if fid ~= 0

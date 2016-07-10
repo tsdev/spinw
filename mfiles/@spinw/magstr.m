@@ -57,7 +57,7 @@ magOut.S = reshape(sum(M,6),3,[]);
 kInc = find(sum(mod(kExt0,1) == 0,1)<3);
 if ~isempty(kInc)
     magOut.k = obj.mag_str.k(:,kInc(1))';
-    n = cross(real(obj.mag_str.F(:,1,kInc(1))),imag(obj.mag_str.F(:,1,kInc(1))));
+    n = cross(real(obj.mag_str.F(:,1,kInc(1))),imag(obj.mag_str.F(:,1,kInc(1))))';
     % normalize n-vector
     if norm(n) == 0
         magOut.n = [0 0 1];

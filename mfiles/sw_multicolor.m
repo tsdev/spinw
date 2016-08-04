@@ -31,8 +31,8 @@ function cMat = sw_multicolor(vMat, cMap, cLim, nCol, pflipud)
 %
 
 if nargin < 3
-    help sw_multicolor;
-    return;
+    help sw_multicolor
+    return
 end
 
 if nargin == 3

@@ -78,7 +78,8 @@ while isempty(str) || str(1) == '#'
 end
 
 % read column names
-cTemp = strsplit(strtrim(str),delimiter);
+%cTemp = strsplit(strtrim(str),delimiter);
+cTemp = regexp(strtrim(str), ['(?:', delimiter, ')+'], 'split');
 
 cName = {};
 mIdx  = cell(1,numel(cTemp));
@@ -125,7 +126,8 @@ while str ~= -1
     
     str = strtrim(str);
     
-    lTemp = strsplit(str,delimiter);
+    %lTemp = strsplit(str,delimiter);
+    lTemp = regexp(str,['(?:', delimiter, ')+'],'split');
     
     if ~isempty(str) && str(1) == '#'
         modeStr = str;

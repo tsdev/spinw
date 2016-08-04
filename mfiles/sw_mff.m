@@ -1,4 +1,4 @@
-function [formFactVal, coeff, S] = sw_mff(atomName, Q)
+function [formFactVal, coeff, S] = sw_mff(atomName, Q, nCoeff)
 % returns the magnetic form factor values and the coefficients
 %
 % [formFactVal, coeff, S] = SW_MFF(atomName, {Q})
@@ -30,10 +30,23 @@ function [formFactVal, coeff, S] = sw_mff(atomName, Q)
 % [2] K. Kobayashi, T. Nagao, and M. Ito, Acta Crystallogr. A. 67, 473 (2011).
 %
 
+% by default return 9 numbers as coefficients
+nCoeff0 = 9;
+
 if nargin == 0
     help sw_mff
     return
 end
+
+if nargin == 1
+    Q = [];
+end
+
+if nargin < 3
+    nCoeff = nCoeff0;
+end
+
+
 
 if ischar(atomName)
     atomName = {atomName};
@@ -74,6 +87,11 @@ if iscell(atomName)
     coeff = coeff(:,[1 5 2 6 3 7 4 8 9]);
     S     = [formFact(idx).spin];
     
+    % pad the number of coefficients
+    if nCoeff > nCoeff0
+        coeff = [coeff(:,1:8) zeros(size(coeff,1),nCoeff-9) coeff(:,9)];
+    end
+    
     if any(idx == numel(formFact))
         fIdx = find(idx == numel(formFact));
         warning('sw_mff:WrongInput','The magnetic form factor for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
@@ -85,7 +103,7 @@ else
     error('sw_mff:WrongInput','Wrong input!')
 end
 
-if nargin > 1
+if ~isempty(Q)
     if all(size(Q)>1)
         % if Q points are given as a list of Q vectors in Angstrom^-1
         % units, calculate the absolute value of Q

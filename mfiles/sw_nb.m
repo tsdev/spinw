@@ -49,7 +49,11 @@ if iscell(atomName)
         
         % remove all numbers
         atomName0 = atomName0(atomName0>'9');
-
+        
+        % remove M for magnetic atoms
+        if atomName0(1) == 'M' && numel(atomName0)>1 && upper(atomName0(2))==atomName0(2)
+            atomName0 = atomName0(2:end);
+        end
         % search for the name of the atom
         idx0 = find(strcmpi({sigma(:).name},atomName0));
         

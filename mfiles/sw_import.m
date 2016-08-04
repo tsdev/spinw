@@ -72,6 +72,7 @@ switch fExt
                 case 'SKP'
                     % M: 3 x 1 x nK
                     kIdx = str2double(sSplit{2});
+                    % use FPStudio convention
                     Mk   = 0.5*(str2double(sSplit(4:6))+1i*str2double(sSplit(7:9)))*exp(-2*pi*1i*str2double(sSplit{10}));
                     % opposite phi
                     %Mk   = str2double(sSplit(4:6))+1i*str2double(sSplit(7:9))*exp(2*pi*1i*str2double(sSplit{10}));

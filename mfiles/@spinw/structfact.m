@@ -89,6 +89,7 @@ fid = obj.fileid;
 % make a list of k-vectors from a grid and remember original dimensions
 kDim  = size(kGrid);
 hkl   = reshape(kGrid,3,[]);
+
 % number of Q point
 nQ    = size(hkl,2);
 
@@ -206,6 +207,7 @@ switch param.mode
             % sum up for non-polarized calculation, keep only the real part
             sFact.Sperp(:,ii) = constM*real(permute(sumn(sFact.Sab(:,:,:,ii),[1 2]),[3 1 2 4]));
         end
+
     case 'nucn'
         % nuclear structure factor
         % including occupancy & isotropic displacement
@@ -233,7 +235,9 @@ switch param.mode
         param.formfact = false;
         
     case 'nucx'
+        fprintf('X-ray structure factor calculation is not implemented yet!')
     otherwise
+        error('spinw:structfact:WrongInput','Wrong ''mode'' string!')
 end
 
 if param.sortq
@@ -274,10 +278,8 @@ else
 end
 
 % create output parameters
-sFact.sortq    = param.sortq;
+sFact.param    = param;
 sFact.unit     = 'barn';
-sFact.formfact = param.formfact;
 sFact.obj      = copy(obj);
-sFact.mode     = param.mode;
 
 end

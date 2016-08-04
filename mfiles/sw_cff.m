@@ -57,7 +57,8 @@ if iscell(atomName)
         atomName0 = strword(atomName{ii},2,true);
         atomName0 = atomName0{1};
         
-        % remove leading uppercase latters up to the last one
+        % remove leading uppercase letters up to the last one
+        % TODO
         cutIdx = find(atomName0>='A' & atomName0<='Z',1,'last');
         if ~isempty(cutIdx) && cutIdx>1
             atomName0 = atomName0(cutIdx:end);

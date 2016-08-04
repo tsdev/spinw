@@ -1,45 +1,29 @@
-function [cifdat, source, isfile] = importcif(~, path)
-% imports .cif file
+function [cifdat, source, isfile] = importcif(~, dataStr)
+% imports .cif data from file, web or string
 
-try
-    fid = fopen(path);
-catch
-    fid = -1;
-end
-
-if fid > -1
+if exist(dataStr,'file') == 2
     % get the name of the file
+    fid = fopen(dataStr);
     source = fopen(fid);
-    
-    idx = 1;
-    cifStr = {};
-    
-    if fid < 0
-        error('cif:importcif:FileNotFound','.cif file cannot be found!');
-    end
-    % read in all lines
-    
-    while ~feof(fid)
-        cifStr{idx} = fgetl(fid);
-        idx = idx + 1;
-    end
     fclose(fid);
+    
+    cifStr = regexp(fileread(dataStr), ['(?:' sprintf('\n') ')+'], 'split');
     isfile = true;
     
-elseif numel(path) < 200
+elseif numel(dataStr) < 200
     % try to load it from the web
     try
-        cifStr = webread(path);
+        cifStr = webread(dataStr);
     catch
         error('cif:importcif:WrongInput','The requested data cannot be found!')
     end
     cifStr = strsplit(char(cifStr'),'\n');
     
-    source = path;
+    source = dataStr;
     isfile = false;
 else
     % take it as a string storing the .cif file content
-    cifStr = strsplit(char(path(:))','\n');
+    cifStr = strsplit(char(dataStr(:))','\n');
     %cifStr = mat2cell(cifStr,ones(size(cifStr,1),1));
     source = '';
     isfile = false;

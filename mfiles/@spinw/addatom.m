@@ -227,7 +227,8 @@ if size(newAtom.S,2) == 1
 end
 
 % get form factors from label
-[~,newAtom.ffn,newAtom.S0] = sw_mff(newAtom.label);
+% 11 coefficients for the magnetic atoms
+[~,newAtom.ffn,newAtom.S0] = sw_mff(newAtom.label,[],11);
 [~,newAtom.ffx]            = sw_cff(newAtom.label);
 
 newAtom.ffn = permute(newAtom.ffn,[3 2 1]);
@@ -243,7 +244,7 @@ if ischar(newAtom.formfactn)
     newAtom.formfactn = {newAtom.formfactn};
 end
 if iscell(newAtom.formfactn)
-    [~,newAtom.ffn] = sw_mff(newAtom.formfactn);
+    [~,newAtom.ffn] = sw_mff(newAtom.formfactn,[],11);
     newAtom.ffn = permute(newAtom.ffn,[3 2 1]);
 elseif ~isempty(newAtom.formfactn)
     newAtom.ffn = newAtom.formfactn;
@@ -254,14 +255,14 @@ if ischar(newAtom.formfactx)
     newAtom.formfactx = {newAtom.formfactx};
 end
 if iscell(newAtom.formfactx)
-    [~,newAtom.ffx] = sw_mff(newAtom.fromfactx);
+    [~,newAtom.ffx] = sw_cff(newAtom.fromfactx);
     newAtom.ffx = permute(newAtom.ffx,[3 2 1]);
 elseif ~isempty(newAtom.formfactx)
     newAtom.ffx = newAtom.formfactx;
 end
 
 % include 2 zeros to make both form factor the same size
-newAtom.ffn = [newAtom.ffn(1,1:8,:) zeros(1,2,size(newAtom.ffn,3)) newAtom.ffn(1,9,:)];
+%newAtom.ffn = [newAtom.ffn(1,1:8,:) zeros(1,2,size(newAtom.ffn,3)) newAtom.ffn(1,9,:)];
 
 newAtom.ff = [newAtom.ffn;newAtom.ffx];
 newAtom.b  = ones(2,nNewAtom);

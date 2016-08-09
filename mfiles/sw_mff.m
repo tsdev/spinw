@@ -104,10 +104,10 @@ else
 end
 
 if ~isempty(Q)
-    if all(size(Q)>1)
-        % if Q points are given as a list of Q vectors in Angstrom^-1
-        % units, calculate the absolute value of Q
+    if size(Q,1)==3
         Q = sqrt(sum(Q.^2,1));
+    elseif size(Q,1)~=1
+        error('sw_mff:WrongInput','The dimensions of the given Q array is wrong!')
     end
     Qs = Q(:)'/(4*pi);
     

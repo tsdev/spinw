@@ -73,7 +73,10 @@ if nargin == 1
     return
 end
 
+f0 = obj.fileid;
+obj.fileid(0);
 [aMat, param] = obj.getmatrix(varargin{:});
+obj.fileid(f0);
 
 if isempty(param.pref)
     % Identity matrix (Heisenberg coupling) is always allowed by symmetry!

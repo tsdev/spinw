@@ -83,13 +83,15 @@ inpForm.defval = {zeros(1,0) 0       0          0              1e-5  []     0   
 inpForm.size   = {[1 -1]  [1 1]      [1 1]      [1 1]          [1 1] [1 -2] [1 1]   [1 1]    };
 inpForm.soft   = {false   false      false      false          false true   false   false    };
 
-param = sw_readparam(inpForm, varargin{:});
+param0 = sw_readparam(inpForm, varargin{:});
+param  = param0;
+
 tol = param.tol;
 fid = obj.fid;
 
 if nargin == 1
-    help spinw.getmatrix;
-    return;
+    help spinw.getmatrix
+    return
 end
 
 % Check for appropriate input
@@ -215,7 +217,7 @@ pOp = mmat(A,mmat(pOp,inv(A)));
 
 aMatS = aMat(:,:,~aSym);
 if param.coupling_idx
-    aMatA = aMat(:,:, aSym);
+    aMatA = aMat(:,:,aSym);
 else
     aMat  = aMatS;
     aMatA = zeros(3,3,0);
@@ -223,6 +225,36 @@ else
 end
 
 nSymMat = size(aMat,3);
+
+% convert aMat in case subIdx is non-zero for coupling matrices
+mod_mat = false;
+if param.subIdx > 1 && param.aniso_idx == 0 && param.g_idx == 0
+    mod_mat = true;
+    % get the matrices for the first bond
+    param0.subIdx = 1;
+    param0.pref   = [];
+    f0 = obj.fileid;
+    obj.fileid(0);
+    aMat0 = obj.getmatrix(param0);
+    obj.fileid(f0);
+    
+    % save the original matrix of the object
+    mat0 = obj.matrix.mat(:,:,param.mat_idx);
+    
+    tMat = zeros(3,3,nSymMat);
+    for ii = 1:nSymMat
+        obj.matrix.mat(:,:,param.mat_idx) = aMat0(:,:,ii);
+        tMat(:,:,ii) = obj.couplingtable(param.coupling_idx).matrix(:,:,param.subIdx);
+    end
+        
+    aMat1 = zeros(3,3,nSymMat);
+    for ii = 1:nSymMat
+        aMat1(:,:,ii) = sum(bsxfun(@times,aMat0,permute(linsolve(reshape(tMat,9,[]),reshape(aMat(:,:,ii),[9 1])),[2 3 1])),3);
+    end
+    
+    obj.matrix.mat(:,:,param.mat_idx) = mat0;
+    aMat = aMat1;
+end
 
 dVect = permute([aMatA(2,3,:) aMatA(3,1,:) aMatA(1,2,:)],[2 3 1]);
 
@@ -388,6 +420,10 @@ if fid
     if param.coupling_idx
         fprintf0(fid,' allowed components of the Dzyaloshinskii-Moriya vector:\n');
         fprintf0(fid,'  D = %s\n\n',amatStr);
+    end
+    
+    if mod_mat
+        fprintf0(fid,'Be carefull, the output matrices are corresponding to subIdx = 1!\n');
     end
 end
 

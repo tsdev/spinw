@@ -26,14 +26,23 @@ for ii = 1:230
     [Rg,Tg] = sw_gensym(ii);
     [R,T]   = sw_gencoord(ii);
     [R0, T0] = sw_symgetgen(R,T);
-    % check that the number of generators agree
-    good(ii) = size(Rg,3) == size(R0,3);
+    % check that the number of generators are smaller or equal 
+    good(ii) = size(Rg,3) >= size(R0,3);
     
 end
+
+[R1,T1]   = sw_gencoord({R0 T0});
+[R2,T2]   = sw_gencoord({Rg(:,:,[1 3 4]) Tg(:,[1 3 4])});
 
 if ~all(good)
     error('Symmetry generator calculator test failed!')
 end
+
+% %%
+% 
+% Rs =[reshape(R,9,[]); T];
+% R1s=[reshape(R1,9,[]);T1];
+
 
 
 

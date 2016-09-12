@@ -50,7 +50,7 @@ switch fExt
             sSplit = strsplit(sstr,' ');
             switch sSplit{1}
                 case 'SPACEG'
-                    dat.spgr = sstr(8:end);
+                    dat.spgr = strtrim(sstr(8:end));
                 case 'CELL'
                     dat.cell = str2double(sSplit(2:7));
                 case 'BOX'

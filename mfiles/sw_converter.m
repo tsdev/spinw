@@ -1,4 +1,4 @@
-function out = sw_converter(value, unitIn, unitOut, particleName)
+function out = sw_converter(value, unitIn, unitOut, particleName,invert)
 % converts energy and momentum units for a given particle
 %
 % out = SW_CONVERTER(value, unitIn, unitOut, {particleName}) 
@@ -65,8 +65,19 @@ EmeV2THz = EmeV2J/hBar*1e-12/2/pi;
 ETHz2meV = 1/EmeV2THz;
 
 % Choose particle my selecting its mass
-if nargin == 3
+if nargin < 4
     particleName = 'neutron';
+end
+
+if nargin < 5
+    invert = false;
+end
+
+% flip the units
+if invert
+    unitTemp = unitIn;
+    unitIn   = unitOut;
+    unitOut  = unitTemp;
 end
 
 switch particleName

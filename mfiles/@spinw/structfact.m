@@ -57,6 +57,8 @@ function sFact = structfact(obj, kGrid, varargin)
 %               ordering wavevector. Deviations from integer values of the
 %               ordering wavevector smaller than the tolerance are considered
 %               to be commensurate. Default value is 1e-4.
+% fitmode       Speed up the calculation for fitting mode (omitting
+%               copying the spinw object to the output). Default is false.
 %
 % Output:
 %
@@ -78,13 +80,17 @@ function sFact = structfact(obj, kGrid, varargin)
 % See also SW_QGRID, SW_PLOTSF, SW_INTSF, SPINW.ANNEAL, SPINW.GENMAGSTR.
 %
 
-inpF.fname  = {'mode' 'sortq' 'gtensor' 'formfact' 'formfactfun'};
-inpF.defval = {'mag'  false   false     false       @sw_mff     };
-inpF.size   = {[1 -1] [1 1]   [1 1]     [1 1]       [1 1]       };
+inpF.fname  = {'mode' 'sortq' 'gtensor' 'formfact' 'formfactfun' 'fitmode'};
+inpF.defval = {'mag'  false   false     false       @sw_mff      false    };
+inpF.size   = {[1 -1] [1 1]   [1 1]     [1 1]       [1 1]        [1 1]    };
 
 param = sw_readparam(inpF, varargin{:});
 
-fid = obj.fileid;
+if param.fitmode
+    fid = 0;
+else
+    fid = obj.fileid;
+end
 
 % make a list of k-vectors from a grid and remember original dimensions
 kDim  = size(kGrid);
@@ -280,6 +286,8 @@ end
 % create output parameters
 sFact.param    = param;
 sFact.unit     = 'barn';
-sFact.obj      = copy(obj);
+if ~param.fitmode
+    sFact.obj      = copy(obj);
+end
 
 end

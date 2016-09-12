@@ -1,7 +1,7 @@
 function magOut = magstr(obj, varargin)
 % generates magnetic structure for the rotating frame
 %
-% magOut = GENMAGSTR(obj, 'Option1', 'Value1', ...)
+% magOut = MAGSTR(obj, 'Option1', 'Value1', ...)
 %
 %
 

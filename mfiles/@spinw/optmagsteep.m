@@ -1,5 +1,5 @@
 function optm = optmagsteep(obj, varargin)
-% optimise magnetic structure using the steepest descendend method
+% optimise magnetic structure using the method of steepest descent
 %
 % optm = OPTMAGSTEEP(obj, 'option1', value1 ...)
 %
@@ -39,7 +39,7 @@ function optm = optmagsteep(obj, varargin)
 % Output:
 %
 % 'optm' is a struct type variable with the following fields:
-% obj       sw object that contains the optimised magnetic structure.
+% obj       spinw object that contains the optimised magnetic structure.
 % M         Magnetic moment directions with dimensions [3 nMagExt], if
 %           'saveAll' parameter is true, it contains the magnetic structure
 %           after every loop in a matrix with dimensions [3 nMagExt nLoop].
@@ -64,7 +64,7 @@ if nargout > 0
 end
 
 nExt   = double(obj.mag_str.N_ext);
-title0 = 'Optimised magnetic structure using steepest descendent';
+title0 = 'Optimised magnetic structure using the method of steepest descent';
 
 inpForm.fname  = {'nRun' 'epsilon' 'random' 'boundary'          'subLat'};
 inpForm.defval = {100     1e-5      false   {'per' 'per' 'per'}  []     };

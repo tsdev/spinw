@@ -549,7 +549,7 @@ end
 % generate magnetic structure in the rotating basis
 % the stored magnetic structure
 % TODO fix supercell definition
-mag_str = obj.magstr('nExt',ceil(param.range(:,2)'));
+mag_str = obj.magstr('nExt',ceil(param.range(:,2)'+1e-10));
 
 if param.coplanar>0
     [nSpin, param.coplanar] = coplanar([[0;0;0] mag_str.S],param.coplanar);

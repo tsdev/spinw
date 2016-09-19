@@ -140,6 +140,14 @@ switch fExt
         name0 = cellfun(@(x,y)strjoin({x y}),cell0(:,1),cell0(:,2),'UniformOutput',false)';
         r0    = mod([cif0.atom_site_fract_x cif0.atom_site_fract_y cif0.atom_site_fract_z]',1);
         
+        % check for special values
+        % only used for .cif files!
+        % TODO
+        sNum = [1/3 2/3 1/6 5/6];
+        for ii = 1:numel(sNum)
+            r0(abs(r0 - sNum(ii))<1e-4) = sNum(ii);
+        end        
+        
         % save formula units
         if ~isempty(cif0.cell_formula_units_Z)
             obj0.unit.nformula = int32(cif0.cell_formula_units_Z);

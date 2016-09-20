@@ -304,7 +304,7 @@ if plotmode
         set(hFigure,'outerPosition',[(param.figPos(2)-1)*fWidth dSize(4)-20-param.figPos(1)*fHeight fWidth fHeight]);
         set(hFigure,'Units',fUnit);
     end
-
+    
     if param.hg
         if isempty(hFigure)
             hFigure = sw_structfigure;
@@ -524,7 +524,7 @@ if numel(param.rAtom) > 1 && numel(param.rAtom) ~= max(atom.idx)
 end
 
 % define the atomic radius to plot
-atom.rad   = ones(nAtom,1) * param.rAtom(1); 
+atom.rad   = ones(nAtom,1) * param.rAtom(1);
 
 for ll = 1:nAtom
     % Saves atomic radius data if allowed and exists scaled with param.rAtom.
@@ -815,7 +815,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                         end
                     end
                     
-                    % Plots magnetic moments.
+                    % Plots magnetic moments
                     if param.pSpin && atom.mag(ll)
                         % translation in lat.units to calculate moment
                         transl  = floor(dCell./nExt').*nExt';

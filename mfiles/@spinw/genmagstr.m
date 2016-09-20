@@ -34,7 +34,7 @@ function genmagstr(obj, varargin)
 %                   direct input of the magnetic structure using the 
 %                   parameters of the single-k magnetic structure.
 %
-%            'extend' (default)
+%            'tile' (default)
 %                   Simply extends the existing or input structure
 %                   (param.S) into a magnetic supercell by replicating it.
 %                   If no structure is stored in the spinw object a random
@@ -184,7 +184,7 @@ if isempty(obj.matom.r)
 end
 
 inpForm.fname  = {'mode'   'nExt'            'k'           'n'   };
-inpForm.defval = {'extend' obj.mag_str.nExt obj.mag_str.k' []    };
+inpForm.defval = {'tile' obj.mag_str.nExt obj.mag_str.k' []    };
 inpForm.size   = {[1 -1]   [1 -4]            [-6 3]        [-6 3] };
 inpForm.soft   = {false    false             false         true  };
 
@@ -199,6 +199,10 @@ inpForm.size   = [inpForm.size   {[3 -7 -6] [1 1] [1 1]  [1 1]     [1 -5] }];
 inpForm.soft   = [inpForm.soft   {true    false false  false     false  }];
 
 param = sw_readparam(inpForm, varargin{:});
+
+if strcmp(param.mode,'extend')
+    param.mode = 'tile';
+end
 
 % input type for S, check whether it is complex type
 cmplxS = ~isreal(param.S);
@@ -218,7 +222,7 @@ else
             % convert the moments from lattice units to xyz
             BV = obj.basisvector(true);
             %param.S = BV*param.S;
-            param.S = mmat(BV,parm.S);
+            param.S = mmat(BV,param.S);
             
         case 'xyz'
             % do nothing
@@ -227,17 +231,29 @@ else
     end
 end
 
+% Magnetic ordering wavevector(s)
+k  = param.k;
+% number of k-vectors
+nK = size(k,1);
+
 nExt = double(param.nExt);
 
 % automatic determination of the size of the extended unit cell based on
-% the first k-vector
-% if nExt is a single number
+% the given k-vectors if nExt is a single number
 if numel(nExt) == 1
-    [~, nExt] = rat(param.k(1,:),nExt);
+    [~, nExtT] = rat(param.k(1,:),nExt);
+    if nK>1
+        for ii = 2:nK
+            [~, nExtT2] = rat(param.k(ii,:),nExt);
+            nExtT = lcm(nExtT,nExtT2);
+        end
+    end
+    nExt = nExtT;
 end
 
 mAtom    = obj.matom;
 nMagAtom = size(mAtom.r,2);
+% number of magnetic atoms in the supercell
 nMagExt  = nMagAtom*prod(nExt);
 
 if nMagAtom==0
@@ -247,33 +263,28 @@ end
 % Create mAtom.Sext matrix.
 mAtom    = sw_extendlattice(nExt, mAtom);
 
-% Magnetic ordering wavevector(s)
-k  = param.k;
-% number of k-vectors
-nK = size(k,1);
-
 % normalized axis of rotation, size (nK,3)
 if isempty(param.n)
     % default value
     param.n = repmat([0 0 1],[nK 1]);
 end
-
 n = bsxfun(@rdivide,param.n,sqrt(sum(param.n.^2,2)));
 
 if size(param.n,1) ~= nK
     error('spinw:genmagstr:WrongInput',['The number of normal vectors has'...
-        ' to be equal to the number of k-vector!'])
+        ' to be equal to the number of k-vectors!'])
 end
 
 % if the magnetic structure is not initialized start with a random real one
-if strcmp(param.mode,'extend') && (nMagAtom > size(param.S,2))
+if strcmp(param.mode,'tile') && (nMagAtom > size(param.S,2))
     param.mode = 'random';
 end
 
+% convert input into symbolic variables
 if obj.symb
-    k = sym(k);
+    k       = sym(k);
     param.S = sym(param.S);
-    n = sym(n);
+    n       = sym(n);
 end
 
 if ~cmplxS
@@ -281,7 +292,7 @@ if ~cmplxS
 end
 
 switch param.mode
-    case {'extend' 'tile'}
+    case 'tile'
         % effectively tiles the magnetic supercell with the given magnetic
         % moments if:
         % -the new number of extended cells does not equal to the number of

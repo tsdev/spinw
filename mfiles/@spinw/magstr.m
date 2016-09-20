@@ -3,14 +3,30 @@ function magOut = magstr(obj, varargin)
 %
 % magOut = MAGSTR(obj, 'Option1', 'Value1', ...)
 %
+% The function converts the internally stored magnetic structure (general
+% Fourier representation) into a rotating frame representation with a
+% single propagation vector, real magnetisation vectors and the normal axis
+% of the rotation. The conversion is not always possible, in that case the
+% best possible approximation is used, that might lead sometimes to
+% unexpected magnetic structures.
 %
+% Options:
+%
+% exact     If true, a warning appears in case the conversion is not exact.
+%           Default is true.
+% nExt      Size of the magnetic supercell, default is the value stored in
+%           the SpinW object (on which the Fourier expansion is defined).
+% phi0      Additional phase for generating the magnetic structure. Default
+%           is zero.
+%
+% See also spinw.genmagstr.
+
 
 nExt0 = double(obj.mag_str.nExt);
 
-inpForm.fname  = {'nExt'};
-inpForm.defval = {nExt0 };
-inpForm.size   = {[1 3] };
-inpForm.soft   = {false };
+inpForm.fname  = {'nExt' 'exact' 'phi0'};
+inpForm.defval = {nExt0  true    0     };
+inpForm.size   = {[1 3]  [1 1]   [1 1] };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -50,7 +66,7 @@ kExt0 = bsxfun(@times,obj.mag_str.k,nExt0');
 % calculate the phases that generate the rotations for the new supercell
 phi  = sum(bsxfun(@times,tIdx,permute(kExt0,[3 4 5 1 2])),4);
 % complex phase factors
-M = real(bsxfun(@times,M0,exp(2*pi*1i*permute(phi,[4 6 1:3 5]))));
+M = real(bsxfun(@times,M0,exp(-2*pi*1i*permute(phi+param.phi0,[4 6 1:3 5]))));
 % sum up the wave vectors and reshape to standard dimensions
 magOut.S = reshape(sum(M,6),3,[]);
 % keep only the first non-zero wave vector
@@ -78,6 +94,10 @@ nUn = sw_uniquetol(reshape(cross(real(obj.mag_str.F(:,:,kInc)),imag(obj.mag_str.
 
 if numel(kInc)>1 || size(nUn,2)>1
     magOut.exact = false;
+    if param.exact
+        warning('spinw:magstr:NotExact',['The stored magnetic structure does'...
+            ' not have an exact representation in the rotating frame formalism!'])
+    end
 else
     magOut.exact = true;
 end

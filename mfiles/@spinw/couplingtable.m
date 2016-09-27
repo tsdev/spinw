@@ -46,7 +46,7 @@ if isempty(obj.coupling.idx)
     bonds.table = zeros(9,0);
     bonds.bondv = zeros(4,0);
     bonds.matrix = zeros(3,3,0);
-    return;
+    return
 end
 
 if nargin < 2
@@ -56,22 +56,30 @@ else
     bondIdx = bondIdx(:)';
 end
 
+% output proper Matlab table
+if all(bondIdx<0)
+    tTable = true;
+    bondIdx = -bondIdx;
+else
+    tTable = false;
+end
+
 % create the table
-bonds.table = [obj.coupling.dl;obj.coupling.atom1;obj.coupling.atom2;obj.coupling.idx;obj.coupling.mat_idx];
-bonds.table = bonds.table(:,ismember(obj.coupling.idx,bondIdx));
+table0 = [obj.coupling.dl;obj.coupling.atom1;obj.coupling.atom2;obj.coupling.idx;obj.coupling.mat_idx];
+table0 = table0(:,ismember(obj.coupling.idx,bondIdx));
 
 % create the bond vectors
 mAtom = obj.matom.r;
-r1 = mAtom(:,bonds.table(4,:));
-r2 = mAtom(:,bonds.table(5,:));
-bonds.bondv = r2+double(bonds.table(1:3,:))-r1;
+r1 = mAtom(:,table0(4,:));
+r2 = mAtom(:,table0(5,:));
+bonds.bondv = r2+double(table0(1:3,:))-r1;
 % bond distance in Angstrom
 bonds.bondv(4,:) = sqrt(sum((obj.basisvector*bonds.bondv).^2,1));
 
 % create the matrices
 Jall = obj.intmatrix('extend',false).all;
 
-nCoupling = size(bonds.table,2);
+nCoupling = size(table0,2);
 
 % assign bond index to the coupling
 bonds.matrix = zeros(3,3,nCoupling);
@@ -79,7 +87,7 @@ if obj.symbolic
     bonds.matrix = sym(bonds.matrix);
 end
 
-bondT = bonds.table(1:5,:);
+bondT = table0(1:5,:);
 bondT = bondT(:)';
 
 for ii = 1:size(Jall,2)
@@ -92,6 +100,22 @@ for ii = 1:size(Jall,2)
     end
 end
 
-bonds.label = {'dl_x' 'dl_y' 'dl_z' 'atom1' 'atom2' 'idx' 'mat_idx1' 'mat_idx2' 'mat_idx3'};
+if tTable
+    mLabel = [obj.matrix.label {''}];
+    mName  = table0(7:9,:);
+    mName(mName==0) = numel(mLabel);
+    
+    aName1 = obj.unit_cell.label(obj.matom.idx(table0(4,:)))';
+    aName2 = obj.unit_cell.label(obj.matom.idx(table0(5,:)))';
+
+    label0 = {'bond' 'dl' 'atom1' 'idx1' 'atom2' 'idx2' 'matrix'};
+    cTable = mat2cell(table0(1:6,:)',nCoupling,[3 1 1 1]);
+    bonds.table = table(cTable{[4 1]},aName1,cTable{2},aName2,cTable{3},...
+        [mLabel(mName(1,:))',mLabel(mName(2,:))',...
+        mLabel(mName(3,:))'],'VariableNames',label0);
+else
+    bonds.label = {'dl_x' 'dl_y' 'dl_z' 'atom1' 'atom2' 'idx' 'mat_idx1' 'mat_idx2' 'mat_idx3'};
+    bonds.table = table0;
+end
 
 end

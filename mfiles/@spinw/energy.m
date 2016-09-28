@@ -66,8 +66,9 @@ param = sw_readparam(inpForm,varargin{:});
 
 [SS, SI] = obj.intmatrix;
 
-nExt = double(obj.mag_str.N_ext);
-kExt = obj.mag_str.k.*nExt;
+magStr = obj.magstr;
+nExt   = magStr.N_ext;
+kExt   = magStr.k.*nExt;
 
 % Incommensurate structure in the extended unit cell.
 if obj.symbolic
@@ -77,7 +78,7 @@ else
 end
 incomm = any(abs(kTest-round(kTest))>param.epsilon);
 
-M0      = obj.mag_str.S;
+M0      = magStr.S;
 nMagExt = size(M0,2);
 
 % Anisotropy energy can be wrong.
@@ -98,7 +99,7 @@ if nMagExt>0
     % For incommensurate structures in the extended unit cell rotates M2
     % moments.
     if incomm && any(any(dR))
-        n = obj.mag_str.n;
+        n = magStr.n;
         dRIdx = find(any(dR));
         for ii = 1:length(dRIdx)
             M2(:,dRIdx(ii)) = sw_rot(n, kExt*dR(:,dRIdx(ii))*2*pi, M2(:,dRIdx(ii)));

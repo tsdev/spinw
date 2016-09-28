@@ -74,7 +74,7 @@ if nargin == 0
     return
 end
 
-func0 = @func.gaussfwhm;
+func0 = @swfunc.gaussfwhm;
 
 inpForm.fname  = {'dE'  'ki'  'Ei'  'kf'  'Ef'  'plot' 'polDeg' 'ThetaMin'};
 inpForm.defval = {0      0     0     0     0     false   5        0       };

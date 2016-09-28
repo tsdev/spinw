@@ -193,10 +193,10 @@ inpForm.defval = [inpForm.defval {@gm_spherical3d []     true   true }];
 inpForm.size   = [inpForm.size   {[1 1]           [1 -3] [1 1]  [1 1]}];
 inpForm.soft   = [inpForm.soft   {false           true   false  false}];
 
-inpForm.fname  = [inpForm.fname  {'S'     'phi' 'phid' 'epsilon' 'unitS'}];
-inpForm.defval = [inpForm.defval {[]      0     0      1e-5      'xyz'  }];
+inpForm.fname  = [inpForm.fname  {'S'       'phi' 'phid' 'epsilon' 'unitS'}];
+inpForm.defval = [inpForm.defval {[]         0     0      1e-5      'xyz'  }];
 inpForm.size   = [inpForm.size   {[3 -7 -6] [1 1] [1 1]  [1 1]     [1 -5] }];
-inpForm.soft   = [inpForm.soft   {true    false false  false     false  }];
+inpForm.soft   = [inpForm.soft   {true      true  false  false     false  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -206,11 +206,6 @@ end
 
 % input type for S, check whether it is complex type
 cmplxS = ~isreal(param.S);
-
-if param.phi == 0
-    % use degrees for phi if given
-    param.phi = param.phid*pi/180;
-end
 
 if isempty(param.S)
     % use the complex Fourier components from the stored magnetic structure
@@ -364,10 +359,31 @@ switch param.mode
         end
                 
     case 'rotate'
+        
+        if param.phi == 0
+            % use degrees for phi if given
+            param.phi = param.phid*pi/180;
+        end
+        
         S   = param.S;
+        
+        if ~isreal(param.phi)
+            % rotate the first spin along [100]
+            S1 = S(:,1)-sum(n*S(:,1))*n';
+            S1 = S1/norm(S1);
+            param.phi = -atan2(cross(n,[1 0 0])*S1,[1 0 0]*S1);
+        end
+
         if param.phi == 0
             % The starting vector, size (1,3):
-            S1 = sw_nvect(S);
+            incomm = mod(bsxfun(@times,k,nExt),1);
+            incomm = any(incomm(:));
+            if incomm
+                S1 = sw_nvect(S);
+            else
+                S1 = sw_nvect(real(S));
+            end
+            
             % Axis of rotation defined by the spin direction
             nRot  = cross(n,S1);
             % Angle of rotation.
@@ -379,7 +395,7 @@ switch param.mode
         end
         % Rotate the spins.
         S = sw_rot(nRot,phi,S);
-        k = obj.mag_str.k;
+        k = obj.mag_str.k';
         
     case 'func'
         S = mAtom.S;

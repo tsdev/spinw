@@ -7,7 +7,9 @@ function bonds = couplingtable(obj, varargin)
 %
 % obj       spinw class object. 
 % bondIdx   List of bond indices, by default all bonds will be output.
-%           Optional.
+%           Optional. If a bond index is mutiplied by -1, the table output
+%           is a matlab built in table type, works only for Matlab R2013b
+%           or later versions.
 %
 % Output:
 %
@@ -34,9 +36,10 @@ function bonds = couplingtable(obj, varargin)
 %
 % ...
 % crystal.gencoupling
-% bonds = crystal.couplingtable([1 2 3]);
+% bonds = crystal.couplingtable(-[1 2 3]).table
 %
-% This will list only the 1st, 2nd and third neighbour bonds.
+% This will list only the 1st, 2nd and 3rd neighbour bonds in a formatted
+% table.
 %
 % See also SPINW.MATOM, SPINW.INTMATRIX, SPINW.ADDCOUPLING, SPINW.GENCOUPLING.
 %

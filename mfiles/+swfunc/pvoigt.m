@@ -17,6 +17,7 @@ function y = pvoigt(x,p)
 %           mu      Mixing constant, mu = 1 for pure Lorentzian, mu = 0 for
 %                   pure Gaussian. It has to be within the range of [0 1].
 %
+% See also SWFUNC.GAUSS, SWFUNC.LORFWHM.
 
 A  = p(1);
 x0 = p(2);

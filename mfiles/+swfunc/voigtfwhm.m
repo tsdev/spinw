@@ -23,7 +23,6 @@ function y = voigtfwhm(x,p)
 % sigma = wG/sqrt(8*ln(2))
 %
 % See also FUNC.GAUSS, FUNC.GAUSSFWHM.
-%
 
 % Origian code of:
 % 27-December-2013 N. Cherkasov

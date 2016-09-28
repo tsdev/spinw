@@ -123,6 +123,11 @@ function spectra = spinwave(obj, hkl, varargin)
 %               are equal to twice the number of magnetic atoms.
 % formfact      Cell containing the labels of the magnetic ions if form
 %               factor in included in the spin-spin correlation function.
+% cmplxBase     The local coordinate system on each magnetic moment is
+%               defined by the complex magnetic moments:
+%                   e1 = imag(M/norm(M))
+%                   e3 = real(M/norm(M))
+%                   e2 = cross(e3,e1)
 %
 % nMode is the number of magnetic mode. For commensurate structures it is
 % double the number of magnetic atoms in the magnetic cell/supercell. For
@@ -208,9 +213,9 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
-inpForm.fname  = [inpForm.fname  {'useMex'}];
-inpForm.defval = [inpForm.defval {false   }];
-inpForm.size   = [inpForm.size   {[1 1]   }];
+inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase'}];
+inpForm.defval = [inpForm.defval {false    false     }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]     }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -225,11 +230,6 @@ end
 
 % generate magnetic structure in the rotating noation
 magStr = obj.magstr;
-
-if ~magStr.exact
-    warning('spinw:spinwave:MagStr',['The magnetic structure is '...
-        'approximated for the spin wave calculation!'])
-end
 
 % size of the extended magnetic unit cell
 nExt    = magStr.N_ext;
@@ -371,10 +371,60 @@ end
 % e3||Si,ata
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 % e1 = e2 x e3
-magTab = obj.magtable;
-
-zed = magTab.e1 + 1i*magTab.e2;
-eta = magTab.e3;
+% Local (e1,e2,e3) coordinate system fixed to the moments.
+% TODO add the possibility that the coordinate system is fixed by the
+% comples magnetisation vectors: e1 = imag(M), e3 = real(M), e2 =
+% cross(e3,e1)
+if ~param.cmplxBase
+    if obj.symbolic
+        e3 = simplify(M0./[S0; S0; S0]);
+        % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
+        e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
+        % select zero vector and make them parallel to [0,0,1]
+        selidx = abs(e2)>0;
+        if isa(selidx,'sym')
+            e2(3,~any(~sw_always(abs(e2)==0))) = 1;
+        else
+            e2(3,~any(abs(e2)>0)) = 1;
+        end
+        E0 = sqrt(sum(e2.^2,1));
+        e2  = simplify(e2./[E0; E0; E0]);
+        % e1 = e2 x e3
+        e1  = simplify(cross(e2,e3));
+    else
+        % e3 || Si
+        e3 = bsxfun(@rdivide,M0,S0);
+        % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
+        e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
+        e2(3,~any(abs(e2)>1e-10)) = 1;
+        e2  = bsxfun(@rdivide,e2,sqrt(sum(e2.^2,1)));
+        % e1 = e2 x e3
+        e1  = cross(e2,e3);
+    end
+else
+    F0  = obj.mag_str.F;
+    RF0 = sqrt(sum(real(F0).^2,1));
+    IF0 = sqrt(sum(imag(F0).^2,1));
+    % e3 = real(M)
+    e3  = real(F0)./repmat(RF0,[3 1]);
+    % e1 = imag(M) perpendicular to e3
+    e1  = imag(F0)./repmat(IF0,[3 1]);
+    e1  = e1-bsxfun(@times,sum(e1.*e3,1),e3);
+    e1  = e1./repmat(sqrt(sum(e1.^2,1)),[3 1]);
+    % e2 = cross(e3,e1)
+    e2  = cross(e3,e1);
+    
+    if obj.symbolic
+        e1 = simplify(e1);
+        e2 = simplify(e2);
+        e3 = simplify(e3);
+    end
+    
+end
+% assign complex vectors that define the rotating coordinate system on
+% every magnetic atom
+zed = e1 + 1i*e2;
+eta = e3;
 
 dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
 atom1 = [SS.all(4,:)   1:nMagExt];

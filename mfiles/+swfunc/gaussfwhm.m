@@ -1,7 +1,7 @@
-function y = gauss(x,p)
-% normalized gaussian function defined by the standard deviation
+function y = gaussfwhm(x,p)
+% normalized gaussian function defined by the FWHM
 %
-% y = FUNC.GAUSS(x,p)
+% y = FUNC.GAUSSFWHM(x,p)
 %
 % The integral of the function is normalized assumind dx = 1.
 %
@@ -9,10 +9,10 @@ function y = gauss(x,p)
 % x         Coordinate vector where the function will be evaluated.
 % p         Parameter vector: [I Centre FWHM].
 %
-% See also FUNC.VOIGT, FUNC.GAUSSFWHM.
+% See also SWFUNC.VOIGT, SWFUNC.GAUSS.
 
 % standard deviation
-sigma = p(3);
+sigma = p(3)/sqrt(8*log(2));
 
 y = p(1)/sqrt(2*pi)/sigma * exp(-0.5*((x-p(2))/sigma).^2);
 

@@ -182,10 +182,14 @@ classdef spinw < handle
     end
     
     properties (Access = private)
-        propl = event.proplistener.empty;  % stores the property change listener handles
-        sym   = false; % stores whether the couplings are generated under symmetry constraints
-        symb  = false; % stores whether the calculation are done symbolically
-        fid   = 1;     % stores the file ID of the text output, default is the Command Window
+        % stores the property change listener handles
+        propl = event.proplistener.empty;
+        % stores whether the couplings are generated under symmetry constraints
+        sym   = false;
+        % stores whether the calculation are done symbolically
+        symb  = false;
+        % stores the file ID of the text output, default is the Command Window (see swpref)
+        fid   = swpref.getpref('fid',nan);
         ver   = sw_version;
     end
     

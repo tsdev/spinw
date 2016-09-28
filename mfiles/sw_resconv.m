@@ -34,7 +34,7 @@ function M = sw_resconv(M,x,dx,func0)
 %       meaning of the first 2 elements of the parameter vector are fixed.
 %           p(1)    integral of the function.
 %           p(2)    center of mass position of the function.
-%       Optional, default value is @func.gaussfwhm.
+%       Optional, default value is @swfunc.gaussfwhm.
 %
 % Output:
 %
@@ -50,7 +50,7 @@ if nargin == 0
 end
 
 if nargin < 4
-    func0 = @func.gaussfwhm;
+    func0 = @swfunc.gaussfwhm;
 end
 
 Mtemp = M * 0;

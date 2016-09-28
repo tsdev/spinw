@@ -12,6 +12,7 @@ function obj = sw_import(fName, toPlot, obj0)
 % toPlot    If true the structure will be plotted, default is false.
 %
 
+
 if nargin == 0
     help sw_import
     return

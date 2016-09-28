@@ -63,7 +63,8 @@ if nargout > 0
     optm.datestart  = datestr(now);
 end
 
-nExt   = double(obj.mag_str.N_ext);
+% get magnetic structure
+nExt   = double(obj.mag_str.nExt);
 title0 = 'Optimised magnetic structure using the method of steepest descent';
 
 inpForm.fname  = {'nRun' 'epsilon' 'random' 'boundary'          'subLat'};
@@ -83,23 +84,26 @@ param = sw_readparam(inpForm,varargin{:});
 fid = obj.fid;
 
 fprintf0(fid,['Optimising the magnetic structure using local spin '...
-    'updates (nRun = %d, boundary = (%s,%s,%s))...\n'],param.nRun,param.boundary{:});
+    'updates\n(nRun = %d, boundary = (%s,%s,%s))...\n'],param.nRun,param.boundary{:});
 
 % Creates random spin directions if param.random is true.
 mag_param = struct;
-if param.random || isempty(obj.mag_str.S) || any(param.nExt~=double(obj.mag_str.N_ext))
+if param.random || isempty(obj.mag_str.F) || any(param.nExt~=nExt)
     mag_param.mode = 'random';
     mag_param.nExt = param.nExt;
     obj.genmagstr(mag_param);
 end
 
-M = obj.mag_str.S;
+% get the magnetic structure
+magStr = obj.magstr;
+
+M = magStr.S;
 
 % Produce the interaction matrices
 [SS, SI] = obj.intmatrix;
 
 % express translations in the original unit cell
-SS.all(1:3,:) = bsxfun(@times,SS.all(1:3,:),double(obj.mag_str.N_ext'));
+SS.all(1:3,:) = bsxfun(@times,SS.all(1:3,:),nExt');
 
 % Function options.
 nRun    = param.nRun;
@@ -184,7 +188,7 @@ SSJG = zeros(9,maxNeighG,nMagExt);
 trIdx = reshape(reshape(1:9,[3 3])',[9 1])+5;
 
 % magnetic ordering wave vector
-km = obj.mag_str.k;
+km = magStr.k;
 
 % for non-zero km, rotate the exchange matrices that couple spins between
 % different unit cell
@@ -192,10 +196,10 @@ if any(km)
     % Rotate the coupling matrices that couple spins in different unit cells
     % Si * Jij * Sj' = Si * Jij * R * Sj
     % Sj' = R(km,dl) * Sj
-    [~,R] = sw_rot(obj.mag_str.n,km*SS.all(1:3,:)*2*pi);
+    [~,R] = sw_rot(magStr.n,km*SS.all(1:3,:)*2*pi);
     Jrot  = mmat(reshape(SS.all(6:14,:),3,3,[]),R);
     JJR   = reshape(Jrot,9,[]);
-    [~,R] = sw_rot(obj.mag_str.n,-km*SS.all(1:3,:)*2*pi);
+    [~,R] = sw_rot(magStr.n,-km*SS.all(1:3,:)*2*pi);
     Jrot  = mmat(reshape(SS.all(trIdx,:),3,3,[]),R);
     JJTR  = reshape(Jrot,9,[]);
 else
@@ -219,8 +223,7 @@ Sindex = zeros(nSub,nMagExt);
 Sindex(nSub*(0:nMagExt-1)+SSc) = 1;
 Sindex      = logical(Sindex);
 
-% Remove uncoupled moments, they have should keep their original
-% orientation
+% Remove uncoupled moments, they should keep their original orientation
 fSpin = squeeze(sumn(abs(AA),[1 2]))==0 & nNeighG==0 & sum(abs(Bloc'),2)==0;
 Sindex(:,fSpin) = false;
 
@@ -301,7 +304,10 @@ while (rIdx < nRun) && (dM>param.TolX)
     
     % Calculates the system energy at the end of the temperature step.
     if nargout > 0
-        obj.mag_str.S = M(:,1:end-1);
+        obj.mag_str.F    = M(:,1:end-1);
+        obj.mag_str.nExt = int32(nExt);
+        obj.mag_str.k    = km';
+        %genmagstr('mode','helical','S',M(:,1:end-1),'k',magStr.k,'nExt',nExt);
         E(rIdx+1) = obj.energy;
         if param.saveAll
             Msave(:,:,rIdx+1) = M(:,1:end-1);
@@ -331,7 +337,9 @@ if rIdx == nRun
 end
 
 % Save optimised magnetic structure into the sw object.
-obj.mag_str.S = M(:,1:end-1);
+obj.mag_str.F = M(:,1:end-1);
+obj.mag_str.k = km';
+obj.mag_str.nExt = int32(nExt);
 
 % Create output structure.
 if nargout > 0

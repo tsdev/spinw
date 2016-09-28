@@ -5,7 +5,7 @@ function moments = magtable(obj)
 %
 % The function lists the APPROXIMATED moment directions (using the rotating
 % coordinate system notation) in the magnetic supercell, whose size is
-% defined by the obj.mag_str.N_ext field. The positions of the magnetic
+% defined by the obj.mag_str.nExt field. The positions of the magnetic
 % atoms are in lattice units.
 %
 % Input:
@@ -22,14 +22,13 @@ function moments = magtable(obj)
 %               vector for the i-th moment. e3 is parallel to the magnetic
 %               moment, e1 and e2 span a right handed orthogonal coordinate
 %               system.
-%   R           Matrix, where evry column defines the position of the
+%   R           Matrix, where every column defines the position of the
 %               magnetic atom in lattice units.
 %   atom        Pointer to the magnetic atom in the subfields of
 %               sw.unit_cell.
 %
 % See also SPINW.GENMAGSTR.
 %
-
 
 M0 = obj.magstr.S;
 S0 = sqrt(sum(M0.^2,1));
@@ -84,6 +83,10 @@ else
     
     % atom idx values
     moments.atom = repmat(mAtom.idx,[1 prod(nExt)]);
+end
+
+if ~verLessThan('matlab','R2013b')
+    % TODO add table
 end
 
 end

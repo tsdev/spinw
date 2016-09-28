@@ -69,7 +69,7 @@ if iscell(atomName)
     
     if any(idx == numel(sigma))
         fIdx = find(idx == numel(sigma));
-        warning('sw_nb:WrongInput','The scattering length for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
+        warning('sw_nb:WrongInput','The neutron scattering length for %s is undefined, constant 1 will be used instead!',atomName{fIdx(1)})
     end
 else
     error('sw_mff:WrongInput','Wrong input!')

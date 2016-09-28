@@ -3,6 +3,9 @@ function [n, collinear] = sw_nvect(S, epsilon)
 %
 % [n collinear] = SW_NVECT(S, {epsilon})
 %
+% The function can deal with complex vectors, separating the real and
+% complex parts as separate vectors.
+%
 % S           Array of column vectors, dimensions are [3 N].
 % epsilon     Upper limit of the collinearity and the lower limit of
 %             coplanarity. Default value is 0.1. If epsilon = 1 the
@@ -25,6 +28,12 @@ end
 
 if nargin == 1
     epsilon = 0.1;
+end
+
+if ~isreal(S)
+    % deal with complex vectors
+    S = [real(S) imag(S)];
+    S(:,sum(S.^2,1)==0) = [];
 end
 
 Srot   = bsxfun(@rdivide,S,sqrt(sum(S.^2,1)));

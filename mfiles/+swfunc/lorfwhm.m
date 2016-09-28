@@ -10,7 +10,7 @@ function y = lorfwhm(x,p)
 % x     Vector of coordinate values where the function is evaluated.
 % p     Parameter vector with values  p = [I Centre FWHM].
 %
-%
+% See also SWFUNC.GAUSS.
 
 y = p(1)/(pi*p(3))./(1+((x-p(2))/p(3)).^2);
 

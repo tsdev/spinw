@@ -3,7 +3,7 @@ function y = gaussfwhm(x,p)
 %
 % y = FUNC.GAUSSFWHM(x,p)
 %
-% The integral of the function is normalized assumind dx = 1.
+% The integral of the function is normalized assuming dx = 1.
 %
 % Input:
 % x         Coordinate vector where the function will be evaluated.

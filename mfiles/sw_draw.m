@@ -27,9 +27,10 @@ function varargout = sw_draw(varargin)
 %           true.
 % alpha     Transparency of the plotted surfaces. Default is 1 for
 %           non-transparecy. Default is 1 for bonds and 0.5 for polyhedron.
-% cBond     Color of different bonds. Default is 'auto', when they are set
-%           to the color of the center atom. [R G B] will fix the color of
-%           all bonds to a uniform one.
+% color     Color of the drawn objects. Default is 'auto', when they are
+%           set to the color of atoms. [R G B] will fix the color of all
+%           bonds to a uniform one, can also arbitrary color name (see
+%           sw_colorname() function).
 % rBond     Radius of the cylinder of the bonds, default is 0.15 Angstrom.
 % surfRes   Number of points on the surface mesh, default is 30.
 %           
@@ -58,7 +59,7 @@ function varargout = sw_draw(varargin)
 %
 
 if nargin == 0
-    help sw_draw;
+    help sw_draw
     return
 end
 
@@ -77,9 +78,13 @@ inpForm.defval = {'poly' 1       2       param.range 6       true   []       0.1
 inpForm.size   = {[1 -1] [1 -2]  [1 -3]  [3 2]       [1 -4]  [1 1]  [1 -5]   [1 1]   [1 1]    };
 inpForm.soft   = {false   false  false   false       false   false  true     false   false    };
 
+inpForm.fname  = [inpForm.fname  {'color'}];
+inpForm.defval = [inpForm.defval {'auto' }];
+inpForm.size   = [inpForm.size   {[1 -6] }];
+inpForm.soft   = [inpForm.soft   {false  }];
+
 param  = sw_readparam(inpForm, varargin{:});
 
-       
 % identify atoms by their labels
 if ischar(param.cAtom)
     param.cAtom = {param.cAtom};
@@ -112,8 +117,13 @@ atom1.r0     = atom.r(:,ismember(atom.idx,param.cAtom));
 atom2.r0     = atom.r(:,ismember(atom.idx,param.pAtom));
 atom1.index0 = atom.idx(ismember(atom.idx,param.cAtom));
 atom2.index0 = atom.idx(ismember(atom.idx,param.pAtom));
-atom1.color0 = double(unit_cell.color(:,atom1.index0))/255;
-atom2.color0 = double(unit_cell.color(:,atom2.index0))/255;
+if strcmp(param.color,'auto')
+    atom1.color0 = double(unit_cell.color(:,atom1.index0))/255;
+    atom2.color0 = double(unit_cell.color(:,atom2.index0))/255;
+else
+    atom1.color0 = repmat(sw_colorname(param.color)/255,[1 numel(atom1.index0)]);
+    atom2.color0 = repmat(sw_colorname(param.color)/255,[1 numel(atom2.index0)]);
+end
 
 atom1.r     = [];
 atom1.color = [];
@@ -205,7 +215,7 @@ for ii=1:size(atom1.r,2)
             h1 = polyhedron2(posP);
             set(h1,'Tag',sprintf('poly_%d',ii));
             polyDat.pos{ii} = bsxfun(@minus,posP,polyDat.center(:,ii));
-            
+
             set(h1,'FaceColor',atom1.color(:,ii));
             set(h1,'EdgeColor',atom1.color(:,ii));
             set(h1,'FaceAlpha',param.alpha);

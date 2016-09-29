@@ -113,13 +113,15 @@ param = sw_readparam(inpForm, varargin{:});
 
 obj.genmagstr(param);
 
+magStr  = obj.magstr; 
+
 % starting magnetic structure from sw object
-if isempty(obj.mag_str.S)
+if isempty(magStr.S)
     obj.genmagstr('mode','random');
 end
 
-S       = sqrt(sum(obj.mag_str.S.^2,1));
-nExt    = double(obj.mag_str.N_ext);
+S       = sqrt(sum(magStr.S.^2,1));
+nExt    = double(magStr.N_ext);
 nMagExt = length(S);
 
 
@@ -232,9 +234,10 @@ end
 
 [M, k, n] = param.func(S, minX);
 
-obj.mag_str.S = M;
-obj.mag_str.k = k;
-obj.mag_str.n = n;
+%obj.mag_str.S = M;
+%obj.mag_str.k = k;
+%obj.mag_str.n = n;
+obj.genmagstr('mode','helical','S',M,'k',k,'n',n);
 
 validate(obj);
 

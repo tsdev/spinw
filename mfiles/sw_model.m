@@ -52,7 +52,7 @@ switch model
         end
         
         %obj.lattice.lat_const(3) = 5;
-        obj.genmagstr('mode','direct','S',[1 0 0])
+        obj.genmagstr('mode','helical','S',[1 0 0]','k',[0 0 0])
         obj.optmagstr('func',@gm_planar,'xmin',[0 0 0 0 0 0],'xmax',[0 1/2 1/2 0 0 0],'nRun',10)
     case 'squareAF'
         obj.genlattice('lat_const',[3 3 9],'angled',[90 90 90])
@@ -65,10 +65,10 @@ switch model
         end
         
         %obj.lattice.lat_const(3) = 5;
-        obj.genmagstr('mode','direct','S',[1 0 0])
+        obj.genmagstr('mode','helical','S',[1 0 0]','k',[0 0 0])
         obj.optmagstr('func',@gm_planar,'xmin',[0 0 0 0 0 0],'xmax',[0 1/2 1/2 0 0 0],'nRun',10)
         tol = 2e-4;
-        helical = sum(abs(mod(abs(2*obj.mag_str.k)+tol,1)-tol).^2) > tol;
+        helical = sum(abs(mod(abs(2*obj.magstr.k)+tol,1)-tol).^2) > tol;
         if ~helical
             obj.genmagstr('mode','helical','nExt',[2 2 1]);
         end
@@ -83,13 +83,13 @@ switch model
         end
         
         %obj.lattice.lat_const(2:3) = 5;
-        obj.genmagstr('mode','direct','S',[1 0 0])
+        obj.genmagstr('mode','helical','S',[1 0 0]','k',[0 0 0])
         obj.optmagstr('func',@gm_planar,'xmin',[0 0 0 0 0 0],'xmax',[0 1/2 0 0 0 0],'nRun',10)
         tol = 2e-4;
-        helical = sum(abs(mod(abs(2*obj.mag_str.k)+tol,1)-tol).^2) > tol;
-        if ~helical && any(obj.mag_str.k>tol)
+        helical = sum(abs(mod(abs(2*obj.magstr.k)+tol,1)-tol).^2) > tol;
+        if ~helical && any(obj.magstr.k>tol)
             nExt = [1 1 1];
-            nExt(obj.mag_str.k(1:2)>tol) = 2;
+            nExt(obj.magstr.k(1:2)>tol) = 2;
             obj.genmagstr('mode','helical','nExt',nExt);
         end
         

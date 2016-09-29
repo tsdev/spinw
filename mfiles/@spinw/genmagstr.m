@@ -294,7 +294,7 @@ switch param.mode
         %  cells defined in obj
         % -the number of spins stored in obj is not equal to the number
         %  of spins in the final structure
-        if any(obj.mag_str.N_ext - int32(param.nExt)) || (size(param.S,2) ~= nMagExt)
+        if any(obj.magstr.N_ext - double(param.nExt)) || (size(param.S,2) ~= nMagExt)
             S = param.S(:,1:nMagAtom,:);
             S = repmat(S,[1 prod(nExt) 1]);
         else

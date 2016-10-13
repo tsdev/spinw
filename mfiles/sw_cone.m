@@ -14,7 +14,7 @@ function [handle] = sw_cone(rBase, rTop, R, N)
 %
 
 if nargin == 0
-    help sw_cone;
+    help sw_cone
     return
 end
 
@@ -38,6 +38,6 @@ X = [points(1,:); rTop(1)*ones(1,N)];
 Y = [points(2,:); rTop(2)*ones(1,N)];
 Z = [points(3,:); rTop(3)*ones(1,N)];
 
-handle = surface(X,Y,Z,'LineStyle','none');
+handle = surface(X,Y,Z,'LineStyle','none','EdgeColor','none');
 
 end

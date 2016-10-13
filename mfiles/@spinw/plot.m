@@ -751,7 +751,8 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                                 ell.y = reshape(ell.xyz(2,:),[1 1]*param.surfRes+1);
                                 ell.z = reshape(ell.xyz(3,:),[1 1]*param.surfRes+1);
                                 
-                                sAniso = surf(ell.x+rPlot(1),ell.y+rPlot(2),ell.z+rPlot(3));
+                                %sAniso = surf(ell.x+rPlot(1),ell.y+rPlot(2),ell.z+rPlot(3));
+                                sAniso = surface(ell.x+rPlot(1),ell.y+rPlot(2),ell.z+rPlot(3),'EdgeColor','none');
                                 
                                 handle.aniso(atom.idx(ll),end+1) = sAniso;
                                 set(sAniso,'LineStyle','none');
@@ -801,7 +802,8 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                             end
                             
                             % Creates the sphere of the atom.
-                            aSphere = surf(sp.x*atom.rad(ll)+rPlot(1), sp.y*atom.rad(ll)+rPlot(2), sp.z*atom.rad(ll)+rPlot(3));
+                            %aSphere = surf(sp.x*atom.rad(ll)+rPlot(1), sp.y*atom.rad(ll)+rPlot(2), sp.z*atom.rad(ll)+rPlot(3));
+                            aSphere = surface(sp.x*atom.rad(ll)+rPlot(1), sp.y*atom.rad(ll)+rPlot(2), sp.z*atom.rad(ll)+rPlot(3),'EdgeColor','none');
                             set(aSphere,'Tag',['atom_' atom.label{ll}]);
                             handle.atom(atom.idx(ll),end+1) = aSphere;
                             set(aSphere,'LineStyle','none');
@@ -1018,7 +1020,8 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                                 ell.z = reshape(ell.xyz(3,:),[1 1]*param.surfRes+1);
                                 
                                 if plotmode
-                                    sAniso = surf(ell.x+rCent(1),ell.y+rCent(2),ell.z+rCent(3));
+                                    %sAniso = surf(ell.x+rCent(1),ell.y+rCent(2),ell.z+rCent(3));
+                                    sAniso = surface(ell.x+rCent(1),ell.y+rCent(2),ell.z+rCent(3),'EdgeColor','none');
                                     
                                     handle.caniso(end+1) = sAniso;
                                     set(sAniso,'LineStyle','none');

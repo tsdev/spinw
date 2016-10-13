@@ -14,7 +14,7 @@ function [handle] = sw_arrow(rStart, rEnd, R, alpha, lHead, N)
 %
 
 if nargin == 0
-    help sw_arrow;
+    help sw_arrow
     return
 end
 

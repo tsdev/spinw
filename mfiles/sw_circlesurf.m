@@ -37,6 +37,6 @@ X = [edge(1,:); r0(1)*ones(1,N)];
 Y = [edge(2,:); r0(2)*ones(1,N)];
 Z = [edge(3,:); r0(3)*ones(1,N)];
 
-handle = surface(X,Y,Z,'LineStyle','none');
+handle = surface(X,Y,Z,'LineStyle','none','EdgeColor','none');
 
 end

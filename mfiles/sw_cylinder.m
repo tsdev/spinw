@@ -59,7 +59,7 @@ for ii = 1:nDash
     Y = [c1(2,:); c2(2,:)];
     Z = [c1(3,:); c2(3,:)];
     
-    handle(ii) = surface(X,Y,Z,'LineStyle','none');
+    handle(ii) = surface(X,Y,Z,'LineStyle','none','EdgeColor','none');
     
 end
 
@@ -77,7 +77,7 @@ if norm(r2-rf)>(2*R*dash)
     Y = [c1(2,:); c2(2,:)];
     Z = [c1(3,:); c2(3,:)];
     
-    handle(nDash+1) = surface(X,Y,Z,'LineStyle','none');
+    handle(nDash+1) = surface(X,Y,Z,'LineStyle','none','EdgeColor','none');
     
 end
 

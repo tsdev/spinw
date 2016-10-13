@@ -247,7 +247,7 @@ handle.surf = polyDat.surf;
 sw_addobject(hFigure,handle);
 
 if ~param.edge
-    set(polyDat.surf,'EdgeColor',[0 0 0]);
+    set(polyDat.surf,'EdgeColor','none');
 end
 
 hold off

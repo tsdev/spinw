@@ -231,6 +231,7 @@ mod_mat = false;
 if param.subIdx > 1 && param.aniso_idx == 0 && param.g_idx == 0
     mod_mat = true;
     % get the matrices for the first bond
+    % TODO use cache.symop
     param0.subIdx = 1;
     param0.pref   = [];
     f0 = obj.fileid;

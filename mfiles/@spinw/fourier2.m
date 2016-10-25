@@ -79,7 +79,7 @@ param = sw_readparam(inpForm, varargin{:});
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
-isconj = true;
+isconj = 1;
 if param.fitmode
     [SS, SI, RR] = obj.intmatrix('fitmode',2,'conjugate',isconj);
 else
@@ -94,7 +94,7 @@ matom = obj.matom;
 % number of Q points
 nHkl    = size(hkl,2);
 % number of magnetic atoms in the magnetic supercell
-nMagExt = prod(obj.mag_str.N_ext)*numel(matom.idx);
+nMagExt = prod(obj.mag_str.nExt)*numel(matom.idx);
 % number of bonds
 nBond   = size(SS.all,2) + nMagExt;
 
@@ -113,6 +113,7 @@ atom1 = [SS.all(4,:)   1:nMagExt];
 atom2 = [SS.all(5,:)   1:nMagExt];
 % distance vector in lu.
 dR    = [SS.all(1:3,:) zeros(3,nMagExt)]+RR(:,atom2)-RR(:,atom1);
+%dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
 
 % magnetic couplings, 3x3xnJ
 JJ = [SS.all(6:14,:) reshape(SI.aniso,9,[])];

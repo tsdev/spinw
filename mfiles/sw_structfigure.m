@@ -351,7 +351,7 @@ end
 % end
  
 %    'WindowStyle',    'modal',...
-objMod = findobj('Tag',['setRange_' num2str(figNum)']);
+objMod = findobj('Tag',['setRange_' num2str(figNum)]);
 
 if ~isempty(objMod)
     close(objMod)

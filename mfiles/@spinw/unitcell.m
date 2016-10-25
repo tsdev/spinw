@@ -55,7 +55,8 @@ end
 end
 
 % copy all fields
-fName = {'r' 'S' 'label' 'color' 'ox' 'occ' 'b' 'A' 'Z'};
+%fName = {'r' 'S' 'label' 'color' 'ox' 'occ' 'b' 'ff' 'A' 'Z' 'biso'};
+fName = fieldnames(obj.unit_cell);
 for ii = 1:numel(fName)
     unit_cell_info.(fName{ii}) = obj.unit_cell.(fName{ii})(:,idx);
 end

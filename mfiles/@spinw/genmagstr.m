@@ -183,8 +183,14 @@ if isempty(obj.matom.r)
     error('spinw:genmagstr:NoMagAtom','There are no magnetic atoms (S>0) in the unit cell!')
 end
 
+if isempty(obj.mag_str.k)
+    k0 = [0 0 0];
+else
+    k0 = obj.mag_str.k';
+end
+
 inpForm.fname  = {'mode'   'nExt'            'k'           'n'   };
-inpForm.defval = {'tile' obj.mag_str.nExt obj.mag_str.k' []    };
+inpForm.defval = {'tile' obj.mag_str.nExt    k0            []    };
 inpForm.size   = {[1 -1]   [1 -4]            [-6 3]        [-6 3] };
 inpForm.soft   = {false    false             false         true  };
 

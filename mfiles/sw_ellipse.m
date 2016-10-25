@@ -1,7 +1,7 @@
 function points = sw_ellipse(r0, n, R, N, v1, v2)
 % creates an array of the 3D coordinates of the ellipse circumference
 %
-% points = SW_ELLIPE(r0, n, R, N, {v1, v2})
+% points = SW_ELLIPSE(r0, n, R, N, {v1, v2})
 %
 % Input:
 %

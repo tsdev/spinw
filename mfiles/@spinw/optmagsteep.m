@@ -92,6 +92,8 @@ if param.random || isempty(obj.mag_str.F) || any(param.nExt~=nExt)
     mag_param.mode = 'random';
     mag_param.nExt = param.nExt;
     obj.genmagstr(mag_param);
+    % TODO check
+    nExt = param.nExt;
 end
 
 % get the magnetic structure

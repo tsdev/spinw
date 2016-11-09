@@ -42,7 +42,7 @@ end
 
 % digits of error
 if err>0
-    eExp = log10(err/e10);
+    eExp = round(log10(err/e10));
 else
     eExp = 0;
 end

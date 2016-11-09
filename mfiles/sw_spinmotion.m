@@ -43,9 +43,9 @@ inpForm.size   = {[1 1]    [-1 1] };
 
 param = sw_readparam(inpForm, varargin{:});
 
-if ~isfield(spectra,'T')
+if ~isfield(spectra,'V')
     error('sw_spinmotion:MissingField',['Input spectra has to be calculated '...
-        'before using sw.spinwave() function with the ''saveT'' option set to true.']);
+        'before using sw.spinwave() function with the ''saveV'' option set to true.']);
 end
 
 % sw object of the calculated spectrum
@@ -84,14 +84,14 @@ end
 
 % vector transforms the selected normal magnon mode into the localized
 % magnons on the spins
-Tm = spectra.T(:,nMagS,iQ);
+Vm = spectra.V(:,nMagS,iQ);
 
 % energy of the selected magnon
 om = spectra.omega(nMagS,iQ);
 
 % original complex prefactors of the boson operators
-A = Tm(1:nMagExt);
-B = Tm((nMagExt+1):end);
+A = Vm(1:nMagExt);
+B = Vm((nMagExt+1):end);
 
 % complex amplitudes along the e1 and e2 axes (x,y)
 Cx = transpose(A + B);

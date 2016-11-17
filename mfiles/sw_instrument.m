@@ -140,7 +140,7 @@ cEvect = (spectra.Evect(1:(end-1))+spectra.Evect(2:end))/2;
 if calcres
     for jj = 1:nPlot
         %spectra.swConv{jj} = sw_resconv(spectra.swConv{jj},cEvect',param.dE);
-        spectra.swConv{jj} = sw_resconv(real(spectra.swConv{jj}),cEvect',param.dE,param.func);
+        spectra.swConv{jj} = sw_resconv(spectra.swConv{jj},cEvect',param.dE,param.func);
     end
     
     fprintf0(fid0,'Finite instrumental energy resolution is applied.\n');

@@ -1,4 +1,4 @@
-function abc = abc(obj)
+function abc = abc(obj,ind)
 % returns lattice parameters and angles
 %
 % latVect = ABC(obj)
@@ -17,5 +17,9 @@ function abc = abc(obj)
 %
 
 abc = [obj.lattice.lat_const obj.lattice.angle*180/pi];
+
+if nargin>1
+    abc = abc(ind);
+end
 
 end

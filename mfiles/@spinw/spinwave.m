@@ -214,8 +214,8 @@ inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
 inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase'}];
-inpForm.defval = [inpForm.defval {false    false     }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]     }];
+inpForm.defval = [inpForm.defval {false    false      }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]      }];
 
 param = sw_readparam(inpForm, varargin{:});
 

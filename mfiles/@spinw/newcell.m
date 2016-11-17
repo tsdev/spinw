@@ -139,22 +139,33 @@ obj.sym = false;
 % new unit cell defined
 obj.unit_cell.r     = rNew;
 obj.unit_cell.S     = atomList.Sext;
-obj.unit_cell.label = obj.unit_cell.label(1,idxExt);
-obj.unit_cell.color = obj.unit_cell.color(:,idxExt);
 
-obj.unit_cell.ox  = obj.unit_cell.ox(1,idxExt);
-obj.unit_cell.occ = obj.unit_cell.occ(1,idxExt);
-obj.unit_cell.b   = obj.unit_cell.b(:,idxExt);
 obj.unit_cell.ff  = obj.unit_cell.ff(:,:,idxExt);
-obj.unit_cell.A   = obj.unit_cell.A(:,idxExt);
-obj.unit_cell.Z   = obj.unit_cell.Z(:,idxExt);
+
+fNames = fieldnames(obj.unit_cell);
+fNames = setdiff(fNames,{'r' 'S' 'ff'});
+
+for ii = 1:numel(fNames)
+    obj.unit_cell.(fNames{ii}) = obj.unit_cell.(fNames{ii})(:,idxExt);
+end
+
+% obj.unit_cell.label = obj.unit_cell.label(:,idxExt);
+% obj.unit_cell.color = obj.unit_cell.color(:,idxExt);
+% obj.unit_cell.ox    = obj.unit_cell.ox(:,idxExt);
+% obj.unit_cell.occ   = obj.unit_cell.occ(:,idxExt);
+% obj.unit_cell.b     = obj.unit_cell.b(:,idxExt);
+% obj.unit_cell.A     = obj.unit_cell.A(:,idxExt);
+% obj.unit_cell.Z     = obj.unit_cell.Z(:,idxExt);
+% obj.unit_cell.biso  = obj.unit_cell.biso(:,idxExt);
+
 
 obj.mag_str.N_ext   = int32([1 1 1]);
+
 
 % transformation from the original reciprocal lattice into the new
 % reciprocal lattice
 if nargout>0
-    varargout{1} = inv(Tn_o);
+    varargout{1} = Tn_o;
 end
 
 end

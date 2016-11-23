@@ -322,28 +322,29 @@ if ~powmode
     end
     
     
-    
-    % Defines colors for plotting modes.
-    %colors  = flipud(fireprint(nMode+2));
-    if isa(param.colormap,'function_handle')
-        colors = flipud(param.colormap(nMode+2));
-    else
-        if strcmpi(param.colormap,'auto')
-            colors = flipud(fireprint(nMode+2));
+    if param.mode<3
+        % Defines colors for plotting modes.
+        %colors  = flipud(fireprint(nMode+2));
+        if isa(param.colormap,'function_handle')
+            colors = flipud(param.colormap(nMode+2));
         else
-            if numel(param.colormap) == 3
-                param.colormap = param.colormap(:);
-                colors = repmat(param.colormap',nMode+2,1)/255;
-            elseif (size(param.colormap,1) == nMode) && (size(param.colormap,2)==3)
-                colors = [0 0 0; param.colormap; 0 0 0]/255;
-            elseif (size(param.colormap,2) == nMode) && (size(param.colormap,1)==3)
-                colors = [0 0 0; param.colormap'; 0 0 0]/255;
+            if strcmpi(param.colormap,'auto')
+                colors = flipud(fireprint(nMode+2));
             else
-                error('sw:sw_plotspec:ColormapError','The dimensions of the colormap should be [3 nMode=%d]',nMode);
+                if numel(param.colormap) == 3
+                    param.colormap = param.colormap(:);
+                    colors = repmat(param.colormap',nMode+2,1)/255;
+                elseif (size(param.colormap,1) == nMode) && (size(param.colormap,2)==3)
+                    colors = [0 0 0; param.colormap; 0 0 0]/255;
+                elseif (size(param.colormap,2) == nMode) && (size(param.colormap,1)==3)
+                    colors = [0 0 0; param.colormap'; 0 0 0]/255;
+                else
+                    error('sw:sw_plotspec:ColormapError','The dimensions of the colormap should be [3 nMode=%d]',nMode);
+                end
             end
         end
+        colors  = colors(2:(end-1),:);
     end
-    colors  = colors(2:(end-1),:);
     
     modeList = nMode/(2*nMagExt);
     if modeList == 1

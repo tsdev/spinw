@@ -4,10 +4,10 @@
 yig = spinw('YIG_10K.cif');
 
 % color differently the two Fe sublattice
-% yig.unit_cell.color(:,3) = sw_colorname('r');
-% yig.unit_cell.color(:,2) = sw_colorname('b');
-yig.unit_cell.color(:,3) = c0(1,:)*255;
-yig.unit_cell.color(:,2) = c0(end,:)*255;
+yig.unit_cell.color(:,3) = sw_colorname('r');
+yig.unit_cell.color(:,2) = sw_colorname('b');
+%yig.unit_cell.color(:,3) = c0(1,:)*255;
+%yig.unit_cell.color(:,2) = c0(end,:)*255;
 
 % problem with the generators, the calculated generators from the .cif file
 % give only 64 positions, while there should be 96 positions:
@@ -65,19 +65,22 @@ end
 
 %% Spin wave dispersion to compare with the paper
 
-Q0  = T*[1 2 3]'*0;
+Q0  = T*[1 2 3]';
 Q_N = T*[ 1/2  1/2    0]'+Q0;
 Q_G = T*[   0    0    0]'+Q0;
 Q_H = T*[   0    0    1]'+Q0;
 
 spec = yig.spinwave({Q_N Q_G Q_H 501});
+
+%%
+
 spec = sw_egrid(spec,'component','Sxy-Syx','Evect',linspace(0,28,501));
-spec = sw_instrument(spec,'dE',0.5);
+spec = sw_instrument(spec,'dE',0.75);
 
 figure
 sw_plotspec(spec,'mode','disp','colormap',[0 0 0])
 hold on
-sw_plotspec(spec,'mode','color','imag',1)
+sw_plotspec(spec,'mode','color','imag',true)
 colormap(sw_cbrewer('RdBu'))
 title('YIG low temperature spin wave spectrum')
 ylabel('Energy (THz)')

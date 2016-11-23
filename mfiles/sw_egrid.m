@@ -452,6 +452,10 @@ end
 spectra.T     = param.T;
 spectra.Evect = eEvect;
 
+if isfield(spectra,'swRaw')
+    spectra = rmfield(spectra,'swRaw');
+end
+
 if numel(swConv) == 1
     spectra.swConv    = swConv{1};
     spectra.swInt     = DSF{1};

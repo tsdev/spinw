@@ -2,7 +2,8 @@ function obj = sw_import(fName, toPlot, obj0)
 % create SpinW object from .cif and FullProf Studio .fst files
 %
 % At present the function can import Crystallographic Information Framework
-% (.cif) files or FullProf Studio (.fst) files.
+% (.cif) files or FullProf Studio (.fst) files. It is able to read .cif
+% files from a web link.
 %
 % obj = SW_IMPORT(fName, {toPlot})
 %
@@ -27,6 +28,11 @@ if nargin < 3
 end
 
 [~,~,fExt] = fileparts(fName);
+
+if isempty(fExt) && numel(fName)>=4 && strcmp(fName(1:4),'http')
+    % assume the web link points to a .cif file
+    fExt = '.cif';
+end
 
 switch fExt
     case '.fst'

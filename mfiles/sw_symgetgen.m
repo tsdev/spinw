@@ -2,6 +2,7 @@ function [symOpG, symTrG, isGen] = sw_symgetgen(symOp, symTr)
 % creates the generators from a list of symmetry operators
 %
 % [symOp, symTr, isGen] = SW_SYMGETGEN(symOp, symTr)
+% [symOp, symTr, isGen] = SW_SYMGETGEN(symMat)
 %
 % Input:
 %
@@ -9,6 +10,10 @@ function [symOpG, symTrG, isGen] = sw_symgetgen(symOp, symTr)
 %           operators, dimensions are [3 3 nSym].
 % symTr     Matrix, whose columns contain the translation of every symmetry
 %           operator, dimensions are [3 nSym].
+% symMat    Matrix that contains both the rotation and translation matrices
+%           having dimensions of [3 4 nSym], where the symMat(:,4,:) stores
+%           the translation vectors, while the symMat(:,1:3,:) stores the
+%           rotation operators.
 %
 % Output:
 %
@@ -22,6 +27,12 @@ function [symOpG, symTrG, isGen] = sw_symgetgen(symOp, symTr)
 if nargin == 0
     help sw_symgetgen
     return
+end
+
+if nargin == 1
+    % use the general input
+    symTr = permute(symOp(:,4,:),[1 3 2]);
+    symOp = symOp(:,1:3,:);
 end
 
 uIdx   = 1:size(symOp,3);

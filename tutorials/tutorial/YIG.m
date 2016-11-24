@@ -1,7 +1,7 @@
 %% model YIG spin wave spectrum
 % to compare to PRL 117, 217201 (2016)
 
-%yig = spinw('YIG_10K.cif');
+% get the .cif file from Google Drive
 yig = spinw('https://drive.google.com/uc?export=download&id=0BzFs7CQXhehScVFfbkhrZHo1Z1k');
 
 % color differently the two Fe sublattice

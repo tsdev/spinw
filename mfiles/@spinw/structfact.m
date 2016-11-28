@@ -1,7 +1,9 @@
 function sFact = structfact(obj, kGrid, varargin)
 % calculates magnetic and nuclear structure factor
 %
-% sFact = STRUCTFACT(obj, kGrid, option1, value1, ...)
+% sFact   = STRUCTFACT(obj, kGrid, option1, value1, ...)
+%
+% sfTable = STRUCTFACT(obj, kGrid, option1, value1, ...)
 %
 % The calculated structure factors are in barn units. Magnetic structures
 % (FM, AFM and HELical) are checked against FullProf. The structure factor
@@ -53,10 +55,21 @@ function sFact = structfact(obj, kGrid, varargin)
 %                   atomLabel string, label of the selected magnetic atom
 %                   Q   matrix with dimensions of [3 nQ], where each column
 %                       contains a Q vector in Angstrom^-1 units.
+%
+% lambda        Wavelength. If given, the 2theta value for each reflection
+%               is calculated.
+% dmin          Minimum d-value of a reflection, all higher order
+%               reflections will be removed from the results.
+% output        String, defines the type of the output:
+%                   struct  Results are returned in a struct type variable,
+%                           default.
+%                   table   Results are returned in a table type output for
+%                           easy viewing and exporting.
 % tol           Tolerance of the incommensurability of the magnetic
 %               ordering wavevector. Deviations from integer values of the
 %               ordering wavevector smaller than the tolerance are considered
 %               to be commensurate. Default value is 1e-4.
+%
 % fitmode       Speed up the calculation for fitting mode (omitting
 %               copying the spinw object to the output). Default is false.
 %
@@ -75,7 +88,12 @@ function sFact = structfact(obj, kGrid, varargin)
 % incomm        Whether the spectra calculated is incommensurate or not.
 % formfact      Cell containing the labels of the magnetic ions if form
 %               factor in included in the spin-spin correlation function.
+% {tth}         2theta value of the reflection for the given wavelength,
+%               only given if a wavelength is provided.
 % obj           Copy of the input obj object.
+%
+% 'sfTable' is an optional output in table format for quick viewing and
+% saving the output into a text file.
 %
 % See also SW_QGRID, SW_PLOTSF, SW_INTSF, SPINW.ANNEAL, SPINW.GENMAGSTR.
 %
@@ -83,7 +101,13 @@ function sFact = structfact(obj, kGrid, varargin)
 inpF.fname  = {'mode' 'sortq' 'gtensor' 'formfact' 'formfactfun' 'fitmode'};
 inpF.defval = {'mag'  false   false     false       @sw_mff      false    };
 inpF.size   = {[1 -1] [1 1]   [1 1]     [1 1]       [1 1]        [1 1]    };
+inpF.soft   = {false  false   false     false       false        false    };
 
+inpF.fname  = [inpF.fname  {'lambda' 'output' 'dmin' 'rmzero' 'delta'}];
+inpF.defval = [inpF.defval {[]       'struct' []     false    1e-10  }];
+inpF.size   = [inpF.size   {[1 1]    [1 -2]   [1 1]  [1 1]    [1 1]  }];
+inpF.soft   = [inpF.soft   {true     false    true   false    false  }];
+  
 param = sw_readparam(inpF, varargin{:});
 
 if param.fitmode
@@ -227,7 +251,7 @@ switch param.mode
         % d-spacing in Angstrom units [1 nQ]
         sFact.d = 2*pi./sqrt(sum(sFact.hklA.^2,1));
         % Debye-Waller factor [1 nAtom nQ]
-        Wd = bsxfun(@times,biso(atom.idx),permute(1./(d.^2),[1 3 2]))/4;
+        Wd = bsxfun(@times,biso(atom.idx),permute(1./(sFact.d.^2),[1 3 2]))/4;
         
         % nuclear unit-cell structure factor (fast, but takes lots of memory)
         % [1 1 nQ]
@@ -249,12 +273,20 @@ end
 if param.sortq
     % don't resize the matrices, but sort
     sFact.hklA = reshape(sFact.hklA,3,[]);
-    [~,idx] = sort(sum(sFact.hklA.^2,1));
+    qA = sqrt(sum(sFact.hklA.^2,1));
+    
+    [qA,idx] = sort(qA,2);
+    if ~isempty(param.dmin)
+        idx = idx(2*pi./qA>param.dmin);
+    end
     
     sFact.hklA = sFact.hklA(:,idx);
+    sFact.d    = sFact.d(:,idx);
     
-    sFact.Sab = reshape(sFact.Sab,3,3,[]);
-    sFact.Sab = sFact.Sab(:,:,idx);
+    if isfield(sFact,'Sab')
+        sFact.Sab = reshape(sFact.Sab,3,3,[]);
+        sFact.Sab = sFact.Sab(:,:,idx);
+    end
     
     sFact.Sperp = reshape(sFact.Sperp,1,[]);
     sFact.Sperp = sFact.Sperp(:,idx);
@@ -268,6 +300,21 @@ if param.sortq
             sFact.km  = reshape(sFact.km,1,[]);
             sFact.km  = sFact.km(:,idx);
     end
+    
+    if param.rmzero
+        idx = sFact.Sperp > param.delta;
+        sFact.hkl  = sFact.hkl(:,idx);
+        sFact.d    = sFact.d(:,idx);
+        sFact.hklA = sFact.hklA(:,idx);
+        sFact.Sperp = sFact.Sperp(1,idx);
+        if isfield(sFact,'Sab')
+            sFact.Sab = sFact.Sab(:,:,idx);
+        end
+        if isfield(sFact,'km')
+            sFact.km = sFact.km(1,idx);
+        end
+    end
+    
 else
     % resize the matrices to the dimensions of the input q-grid
     % [nQ1 nQ2 nQ3 nK]
@@ -283,11 +330,57 @@ else
     
 end
 
+if ~isempty(param.lambda)
+    sFact.tth = 2*asind(sqrt(sum(sFact.hklA.^2,1))*param.lambda/4/pi);
+end
+
 % create output parameters
 sFact.param    = param;
 sFact.unit     = 'barn';
 if ~param.fitmode
-    sFact.obj      = copy(obj);
+    sFact.obj = copy(obj);
+end
+
+% remove nan for Q=0
+if isfield(sFact,'Sab')
+    sFact.Sab(isnan(sFact.Sab)) = 0;
+end
+sFact.Sperp(isnan(sFact.Sperp)) = 0;
+
+% create table if requested
+switch param.output
+    case 'table'
+        sTab = table;
+        sTab.h     = sFact.hkl(1,:)';
+        sTab.k     = sFact.hkl(2,:)';
+        sTab.l     = sFact.hkl(3,:)';
+        switch param.mode
+            case 'mag'
+                dStr = 'magnetic neutron';
+                sTab.km    = sFact.km';
+            case 'nucn'
+                dStr = 'nuclear neutron';
+            case 'nucx'
+                dStr = 'X-ray';
+        end
+        sTab.F2 = sFact.Sperp';
+        sTab.d  = sFact.d';
+        sTab.Properties.VariableUnits(1:3) = {'r.l.u.' 'r.l.u.' 'r.l.u.'};
+        sTab.Properties.VariableUnits{'F2'} = 'barn';
+        sTab.Properties.VariableUnits{'d'} = [symbol('a') 'ngstrom'];
+
+        sTab.Properties.Description = ['Calculated ' dStr ' scattering cross section'];
+        sTab.Properties.UserData.obj   = sFact.obj;
+        sTab.Properties.UserData.param = sFact.param;
+        if ~isempty(param.lambda)
+            sTab.tth = sFact.tth';
+            sTab.Properties.VariableUnits{'tth'} = 'degree';
+        end
+        
+        sFact = sTab;
+    case 'struct'
+    otherwise
+        error('spinw:structfact:WrongInput','''output'' option should be ''struct'' or ''table''!');
 end
 
 end

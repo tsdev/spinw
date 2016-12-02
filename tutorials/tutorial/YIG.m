@@ -1,7 +1,7 @@
 %% model YIG spin wave spectrum
 % to compare to PRL 117, 217201 (2016)
 
-% get the .cif file from Google Drive
+% get the .cif file from Google Drive, the file is also available on ICSD
 yig = spinw('https://drive.google.com/uc?export=download&id=0BzFs7CQXhehScVFfbkhrZHo1Z1k');
 
 % color differently the two Fe sublattice
@@ -59,7 +59,6 @@ yig.optmagsteep
 if sum(yig.mag_str.F(3,:),2)<0
     yig.mag_str.F = -yig.mag_str.F;
 end
-
 
 %plot(yig,'pnonmagatom',0)
 

@@ -101,7 +101,7 @@ isGen(uIdx) = false;
 % P1
 if isempty(symOpG)
     symOpG = eye(3);
-    symTrG = zeros(1,3);
+    symTrG = zeros(3,1);
     isGen  = 1;
 end
 

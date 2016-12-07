@@ -37,6 +37,20 @@ set(hArrow,'FaceColor','r')
 % add the arrow to the crystal model
 sw_addobject(hFig,hArrow);
 
+% An interesting symmetry property of YIG in the "I a -3 d" space group is
+% that the bonds type 3 and type 4 have the exact same length, however they
+% are not related by symmetry. This can be easily seen by checking the
+% center psition of the bonds:
+yig.gencoupling('maxDistance',6);
+yig.getmatrix('coupling_idx',3);
+yig.getmatrix('coupling_idx',4);
+
+% The (7/8,1/8,1/8) position belongs to the 48g Wyckoff position, while the
+% (7/8,7/8,7/8) position is 16b. Thus the exchange interactions on the two
+% bonds can be different, even though previous models of YIG assumed they
+% are equal.
+
+
 %% create spin Hamiltonian
 % change from BCC to primitive cubic cell
 T = yig.newcell({pBV(1,:) pBV(2,:) pBV(3,:)});

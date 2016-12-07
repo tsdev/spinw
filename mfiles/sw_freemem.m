@@ -23,7 +23,7 @@ try %#ok<TRYNC>
             % there is no buffer/cache, just get the 'Mem' calues
             [~, memStr] = unix('free -b | grep ''Mem''');
             [~, mem_free] = strtok(memStr);
-            mem = sscanf('%f',mem_free);
+            mem = sscanf(mem_free,'%f');
             mem = mem(3);
         else
             [~, mem_free] = strtok(memStr(20:end));

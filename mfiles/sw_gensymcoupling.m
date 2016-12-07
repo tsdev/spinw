@@ -24,8 +24,8 @@ function [genCp, ugenCp] = sw_gensymcoupling(obj, coupling, sym, tol)
 tolDist = 1e-5;
 
 if nargin == 0
-    help sw_gensymcoupling;
-    return;
+    help sw_gensymcoupling
+    return
 end
 
 if nargin < 4

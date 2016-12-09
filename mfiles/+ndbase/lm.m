@@ -13,7 +13,7 @@ function [p0,yHat,stat] = lm(dat,func,p0,varargin)
 %               dat.y   vector of N data values to be fitted,
 %               dat.e   vector of N standard deviation (positive numbers)
 %                       used to weight the fit. If zero or missing
-%                       1/dat.y^2 will be assigned to each point, however
+%                       1./dat.y^2 will be assigned to each point, however
 %                       in this case the refinement is reduced to an
 %                       optimisation problem.
 % func      Function handle with the following definition:
@@ -90,6 +90,8 @@ function [p0,yHat,stat] = lm(dat,func,p0,varargin)
 %               nIter   The number of iterations executed during the fit.
 %               nFunEvals The number of function evaluations executed
 %                       during the fit.
+%
+% See also NDBASE.PSO.
 %
 
 %   Henri Gavin, Dept. Civil & Environ. Engineering, Duke Univ. 4 May 2016

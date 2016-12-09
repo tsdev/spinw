@@ -1,21 +1,10 @@
 function [pOpt,fVal,stat] = pso(dat,func,p0,varargin)
 % minimization via particle swarm optimisation
 %
-% [pOpt,fVal,stat] = NDBASE.PSO(dat,func,p0,'Option1','Value1',...)
-%
 % [pOpt,fVal,stat] = NDBASE.PSO([],func,p0,'Option1','Value1',...)
 %
-% Input:
+% [pOpt,fVal,stat] = NDBASE.PSO(dat,func,p0,'Option1','Value1',...)
 %
-% dat
-% func
-% p0
-% 
-% Options:
-%
-%
-% k0    It can take values between 0 and 1, but is usually set to one
-%       (Montes de Oca et al., 2006).
 %
 % PSO finds a minimum of a function of several variables using the particle
 % swarm optimization (PSO) algorithm originally introduced in 1995 by
@@ -26,53 +15,73 @@ function [pOpt,fVal,stat] = pso(dat,func,p0,varargin)
 % factors. Therefore, the algorithm using a constriction factor was
 % implemented here.
 %
-%   PSO attempts to solve problems of the form:
-%       min F(X) subject to: LB <= X <= UB
-%        X
+% The function has two different modes, depending on the first input
+% argument. If dat is empty, pso minimizes the cost function func, that has
+% the following header:
+%                           R2 = func(p)
 %
-%   X=PSO(FUN,X0) start at X0 and finds a minimum X to the function FUN.
-%   FUN accepts input X and returns a scalar function value F evaluated at
-%   X. X0 may be a scalar, vector, or matrix.
+% If dat is a struct, the function optimizes the model defined by func via
+% least squares to the data stored in dat. In this case func has the
+% following header:
+%                           yModel = func(x,p)
+% And the least square deviation is defined by:
+%                       R2 = sum((yData-yModel).^2/errorData.^2)
 %
-%   X=PSO(FUN,X0,LB,UB) defines a set of lower and upper bounds on the
-%   design variables, X, so that a solution is found in the range
-%   LB <= X <= UB. Use empty matrices for LB and UB if no bounds exist.
-%   Set LB(i) = -Inf if X(i) is unbounded below; set UB(i) = Inf if X(i) is
-%   unbounded above.
 %
-%   X=PSO(FUN,X0,LB,UB,OPTIONS) minimizes with the default optimization
-%   parameters replaced by values in the structure OPTIONS, an argument
-%   created with the PSOSET function. See PSOSET for details.
-%   Used options are PopulationSize, SwarmC1, SwarmC2, MaxIter,
-%   MaxFunEvals, TolX, TolFun, Display and OutputFcn.
-%   Use OPTIONS = [] as a place holder if no options are set.
+% Input:
 %
-%   X=PSO(FUN,X0,LB,UB,OPTIONS,varargin) is used to supply a variable
-%   number of input arguments to the objective function FUN.
+% dat       Either empty or contains data to be fitted stored in a
+%           structure with fields:
+%               dat.x   vector of N independent variables,
+%               dat.y   vector of N data values to be fitted,
+%               dat.e   vector of N standard deviation (positive numbers)
+%                       used to weight the fit. If zero or missing
+%                       1./dat.y^2 will be assigned to each point.
+% func      Function handle with one of the following definition:
+%               R2 = func(p)        if dat is empty,
+%               y  = func(x,p)      if dat is a struct.
+%           Here x is a vector of N independent variables, p are the
+%           M parameters to be optimized and y is the simulated model, R2
+%           is the value to minimize.
+% p0        Vector of M initial parameters.
 %
-%   [X,FVAL]=PSO(FUN,X0,...) returns the value of the objective
-%   function FUN at the solution X.
+% Options:
 %
-%   [X,FVAL,EXITFLAG]=PSO(FUN,X0,...) returns an EXITFLAG that describes the
-%   exit condition of PSO. Possible values of EXITFLAG and the corresponding
-%   exit conditions are:
+% lb        Vector with N elements, lower boundary of the parameters.
+%           Default value is -1e5.
+% ub        Vector with N elements, upper boundary of the parameters.
+%           Default value is 1e5.
+% MaxIter   Maximum number of iterations, default value is 100*M.
+% MaxFunEvals Maximum number of function evaluations, default value is
+%           1000*M.
+% TolX      Convergence tolerance for parameters, default value is 1e-3.
+% Display   Level of information to print onto the Command Line during
+%           optimisation. Possible values are 'off', 'notify' and 'iter'.
+%           Default is 'off'.
+% TolFun    Convergence tolerance on the R2 value (return value of func or
+%           the weighted least square deviation from data). Default value
+%           is 1e-3.
+% SwarmC1   Swarm parameter, also called phi_p in the literature. Default
+%           value is 2.8.
+% SwarmC2   Swarm parameter, also called phi_g in the literature. Default
+%           value is 1.3.
+% k0        Swarm paramter, it can take values between 0 and 1, but is
+%           usually set to one (Montes de Oca et al., 2006). Default value
+%           is 1.
+% seed      Seed number for the random number generator, by default it is
+%           seeded from the system clock every time the function is called.
+% PopulationSize Size of the swarm, default value is 25.
+% autoTune  Determine the size of the swarm based on the number of free
+%           parameters (number of parameters that are not fixed by setting
+%           lb(i)==ub(i)). Default is false. The optimal swarm size is:
+%               PopulationSize = 25 + 1.4*Nf
+%           This value is based on the technical report:
+%               Good Parameters for Particle Swarm Optimization By Magnus Erik Hvass Pedersen Hvass Laboratories
+%               Technical Report no. HL1001
+%               http://www.hvass-labs.org/people/magnus/publications/pedersen10good-pso.pdf
 %
-%     1  Change in the objective function value less than the specified tolerance.
-%     2  Change in X less than the specified tolerance.
-%     0  Maximum number of function evaluations or iterations reached.
-%    -1  Maximum time exceeded.
+% See also NDBASE.LM.
 %
-%   [X,FVAL,EXITFLAG,OUTPUT]=PSO(FUN,X0,...) returns a structure OUTPUT with
-%   the number of iterations taken in OUTPUT.nITERATIONS, the number of function
-%   evaluations in OUTPUT.nFUN_EVALS, the coordinates of the different particles in
-%   the swarm in OUTPUT.SWARM, the corresponding fitness values in OUTPUT.FITNESS,
-%   the particle's best position and its corresponding fitness in OUTPUT.PBEST and
-%   OUTPUT.PBEST_FITNESS, the best position ever achieved by the swarm in
-%   OUTPUT.GBEST and its corresponding fitness in OUTPUT.GBEST_FITNESS, the amount
-%   of time needed in OUTPUT.TIME and the options used in OUTPUT.OPTIONS.
-%
-
-
 
 % Copyright (C) 2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be
 %
@@ -102,7 +111,7 @@ Np    = numel(p0);
 oNp = ones(1,Np);
 
 inpForm.fname  = {'Display' 'TolFun' 'TolX' 'MaxIter' 'MaxFunEvals' 'SwarmC1' 'seed'       };
-inpForm.defval = {'off'     1e-3     1e-5   100*Np    1000*Np       2.8      sum(100*clock)};
+inpForm.defval = {'off'     1e-3     1e-3   100*Np    1000*Np       2.8      sum(100*clock)};
 inpForm.size   = {[1 -1]    [1 1]    [1 1]  [1 1]     [1 1]         [1 1]    [1 1]         };
 
 inpForm.fname  = [inpForm.fname  {'SwarmC2' 'PopulationSize' 'lb'      'ub'     'autoTune' 'k0'}];
@@ -111,17 +120,20 @@ inpForm.size   = [inpForm.size   {[1 1]     [1 1]            [1 Np]     [1 Np]  
 
 param = sw_readparam(inpForm, varargin{:});
 
-if param.autoTune
-    % loosely base on:
-    %   Good Parameters for Particle Swarm Optimization By Magnus Erik Hvass Pedersen Hvass Laboratories
-    %   Technical Report no. HL1001
-    %   http://www.hvass-labs.org/people/magnus/publications/pedersen10good-pso.pdf
-    param.PopulationSize = 25 + 1.4*Np;
-end
-
 % parameter boundaries
 UB = param.ub;
 LB = param.lb;
+
+if any(UB<LB)
+    error('pso:WrongInput','Upper boundary has to be larger than the lower boundary!');
+end
+
+% number of free parameters
+Nf = sum(UB>LB);
+
+if param.autoTune
+    param.PopulationSize = 25 + 1.4*Nf;
+end
 
 % population size
 popSize = param.PopulationSize;

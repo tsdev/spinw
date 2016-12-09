@@ -133,6 +133,7 @@ atomList.Sext(idxCut)   = [];
 
 % new lattice simmetry is no-symmetry
 obj.lattice.sym     = zeros(3,4,0);
+obj.lattice.label   = 'P 0';
 % no symmetry operations
 obj.sym = false;
 

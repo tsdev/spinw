@@ -206,6 +206,10 @@ inpForm.soft   = [inpForm.soft   {true      true  false  false     false  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
+if prod(param.nExt) == 0
+    error('spinw:genmagstr:WrongInput','''nExt'' has to be larger than 0!');
+end
+
 if strcmp(param.mode,'extend')
     param.mode = 'tile';
 end

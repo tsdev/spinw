@@ -80,6 +80,10 @@ inpForm.soft   = [inpForm.soft   {0      0        0      0        0        }];
 
 param = sw_readparam(inpForm,varargin{:});
 
+if prod(param.nExt) == 0
+    error('spinw:optmagsteep:WrongInput','''nExt'' has to be larger than 0!');
+end
+
 % Text output file
 fid = obj.fid;
 

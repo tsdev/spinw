@@ -1,15 +1,26 @@
 classdef cif
-    % cif('path')
-    %
     % class handling cif data
+    %
+    % obj = CIF(source)
+    %
     % Any field returns a value belonging to that field name. Use
     % cif.('field-name') for field names that are not valid matlab field
     % names. Cif files containing multiple crystal structure, the first one
     % will be retrieved.
     %
-    % path      Path to the cif file to be opened.
+    % Input:
+    %
+    % source        Source of the .cif file, can be a filename, internet
+    %               link or a string containing the content of a .cif file.
+    %
+    % Example:
+    %
+    % To test loading a .cif file from the internet use:
+    %
+    % cryst = cif('https://drive.google.com/uc?export=download&id=0BzFs7CQXhehScVFfbkhrZHo1Z1k');
     %
     % See also cif.fieldnames.
+    %
     
     properties (Access = private)
         cifdat

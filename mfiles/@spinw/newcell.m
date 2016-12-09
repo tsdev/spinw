@@ -1,26 +1,29 @@
 function varargout = newcell(obj,bvect, bshift)
 % changes lattice vectors while keeping atoms
 %
-% {T} = NEWCELL(obj, bvect, {bshift}) 
+% {T} = NEWCELL(obj, bvect, {bshift})
 %
 % The function defines new unit cell using the 3 vectors contained in
 % bvect. The three vectors in lattice units define a parallelepiped. This
 % will be the new unit cell. The atoms from the original unit cell will
-% fill the new unit cell.
+% fill the new unit cell. Also the magnetic structure and bond and single
+% ion property definitions will be erased from the structure.
+%
+% There might be problem, if there are atoms on the faces and corners of
+% the new lattice (due to numerical error). In this case use small bshift
+% to move the atoms. Always recommended to check the new structure by
+% plotting it, generating new bonds and checking that their length agree
+% with the bonds of the original structure.
 %
 % Input:
 %
 % obj       spinw class object.
 % bvect     Defines the new lattice vectors in the original lattice
-%           coordinate system. Cell with the following elements 
+%           coordinate system. Cell with the following elements
 %           {v1 v2 v3}.
 % bshift    Vector defines a shift of the position of the unit cell.
 %           Optional.
 %
-% There might be problem, if there are atoms on the faces and corners of
-% the new lattice (due to numerical error). In this case use small bshift
-% to move the atoms.
-% 
 % Output:
 %
 % T     is a transformation matrix that converts Q points (in reciprocal
@@ -31,13 +34,13 @@ function varargout = newcell(obj,bvect, bshift)
 %
 % Example:
 %
-% tri = sw;
+% tri = spinw;
 % tri.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
 % tri.addatom('r',[0 0 0])
 % tri.newcell({[1 0 0] [1 2 0] [0 0 1]})
 % plot(tri)
 %
-% The example show how to convert a triangular lattice into orthogonal
+% The example show how to convert a triangular lattice into orthorhombic
 % lattice vectors and plots the new unit cell.
 %
 % See also SPINW.GENLATTICE, SPINW.GENCOUPLING, SPINW.NOSYM.
@@ -49,7 +52,7 @@ if nargin <= 1
 end
 
 if ~iscell(bvect) || numel(bvect)~=3
-    error('sw:newcell:WrongInput','Input has to be cell type with 3 vectors inside!');
+    error('spinw:newcell:WrongInput','Input has to be cell type with 3 vectors inside!');
 end
 
 % shift
@@ -150,18 +153,10 @@ for ii = 1:numel(fNames)
     obj.unit_cell.(fNames{ii}) = obj.unit_cell.(fNames{ii})(:,idxExt);
 end
 
-% obj.unit_cell.label = obj.unit_cell.label(:,idxExt);
-% obj.unit_cell.color = obj.unit_cell.color(:,idxExt);
-% obj.unit_cell.ox    = obj.unit_cell.ox(:,idxExt);
-% obj.unit_cell.occ   = obj.unit_cell.occ(:,idxExt);
-% obj.unit_cell.b     = obj.unit_cell.b(:,idxExt);
-% obj.unit_cell.A     = obj.unit_cell.A(:,idxExt);
-% obj.unit_cell.Z     = obj.unit_cell.Z(:,idxExt);
-% obj.unit_cell.biso  = obj.unit_cell.biso(:,idxExt);
-
-
-obj.mag_str.N_ext   = int32([1 1 1]);
-
+% reset the magnetic structure
+obj.mag_str.F     = zeros(3,0,0);
+obj.mag_str.k     = zeros(3,0);
+obj.mag_str.N_ext = int32([1 1 1]);
 
 % transformation from the original reciprocal lattice into the new
 % reciprocal lattice

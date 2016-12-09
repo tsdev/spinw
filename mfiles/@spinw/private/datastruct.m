@@ -8,7 +8,7 @@ Datastruct.mainfield = {...
     'lattice' 'unit_cell' 'twin' 'matrix' 'single_ion' 'coupling' 'mag_str' 'unit'};
 Datastruct.subfield = {...
     'angle' 'lat_const' 'sym'   'origin'  'label' ''    ''     '' '' '' '';...         % LATTICE
-    'r'     'S'         'label' 'color'   'ox'  'occ'  'b' 'ff' 'A' 'Z' 'biso';...         % UNIT_CELL
+    'r'     'S'         'label' 'color'   'ox'  'occ'  'b' 'ff' 'A' 'Z' 'biso';...     % UNIT_CELL
     'vol'   'rotc'      ''      ''        ''    ''      ''     '' '' '' '';...         % TWIN
     'mat'   'color'     'label' ''        ''    ''      ''     '' '' '' '';...         % MATRIX
     'aniso' 'g'         'field' 'T'       ''    ''      ''     '' '' '' '';...         % SINGLE_ION

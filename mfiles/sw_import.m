@@ -130,6 +130,10 @@ switch fExt
         abc0 = [cif0.cell_length_a cif0.cell_length_b cif0.cell_length_c];
         ang0 = [cif0.cell_angle_alpha cif0.cell_angle_beta cif0.cell_angle_gamma];
         sym0 = cif0.('symmetry_space_group_name_H-M');
+        
+        if ~ischar(sym0)
+            sym0 = 'empty';
+        end
         %symi0 = cif0.symmetry_Int_Tables_number;
         
         if ~isempty(cif0.symmetry_equiv_pos_as_xyz)
@@ -175,9 +179,13 @@ switch fExt
             obj0.lattice.sym   = [symOp permute(symTr,[1 3 2])];
         end
         
-        if size(name0,2) == size(r0,2)
+        nAtom = size(r0,2);
+        bIso  = cif0.atom_site_B_iso_or_equiv;
+        occ   = cif0.atom_site_occupancy';
+        
+        if size(name0,2) == nAtom
             % add atoms to the crystal structure
-            obj0.addatom('r',r0,'label',name0,'occ',cif0.atom_site_occupancy','biso',cif0.atom_site_B_iso_or_equiv)
+            obj0.addatom('r',r0,'label',name0,'occ',occ,'biso',bIso)
         else
             error('spinw:WrongInput','The .cif file contains inconsistent information!')
         end

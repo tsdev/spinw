@@ -97,7 +97,11 @@ else
             varargout{1} = struct;
         end
     else
-        varargout{1} = verStruct;
+        if isempty(verStruct)
+            varargout{1} = 'beta';
+        else
+            varargout{1} = verStruct;
+        end
     end
 end
 

@@ -34,6 +34,12 @@ function [p0,yHat,stat] = lm(dat,func,p0,varargin)
 %               dp(j)=0     sets corresponding partials to zero, i.e. holds
 %                           p(j) fixed.
 %           Default value if 1e-3.
+% fix       Vector with N elements, if an element is true, the
+%           corresponding parameter will be fixed by setting the lower and
+%           upper boundary to the starting value overwriting the given lb 
+%           and ub options. Default value is false(1,N).
+% win       Limits for the independent variabel values where the function
+%           is fitted. Default is [-inf inf].
 % lb        Vector with N elements, lower boundary of the parameters.
 %           Default value is -inf.
 % ub        Vector with N elements, upper boundary of the parameters.
@@ -118,16 +124,14 @@ end
 
 % number of parameters
 Np    = numel(p0);
-% number of independent variables
-Nx    = numel(dat.x);
 
-inpForm.fname  = {'dp'   'lb'       'ub'      'MaxIter' 'eps1' 'TolX' 'MaxFunEvals' 'confLev'     };
-inpForm.defval = {1e-3   -inf(1,Np) inf(1,Np) 10*Np     1e-3   1e-3   100*Np        erf(1/sqrt(2))};
-inpForm.size   = {[1 -1] [1 Np]     [1 Np]    [1 1]     [1 1]  [1 1]  [1 1]         [1 1]         };
+inpForm.fname  = {'dp'   'lb'       'ub'      'MaxIter' 'eps1' 'TolX' 'MaxFunEvals' 'confLev'      'win'     };
+inpForm.defval = {1e-3   -inf(1,Np) inf(1,Np) 10*Np     1e-3   1e-3   100*Np        erf(1/sqrt(2)) [-inf inf]};
+inpForm.size   = {[1 -1] [1 Np]     [1 Np]    [1 1]     [1 1]  [1 1]  [1 1]         [1 1]          [1 2]     };
 
-inpForm.fname  = [inpForm.fname  {'eps2' 'eps3' 'lambda0' 'lUp' 'lDown' 'update' 'extraStat'}];
-inpForm.defval = [inpForm.defval {0.1    0.1    1e-2      11    9       1        true       }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]  [1 1]     [1 1] [1 1]   [1 1]    [1 1]      }];
+inpForm.fname  = [inpForm.fname  {'eps2' 'eps3' 'lambda0' 'lUp' 'lDown' 'update' 'extraStat' 'fix'      }];
+inpForm.defval = [inpForm.defval {0.1    0.1    1e-2      11    9       1        true        false(1,Np)}];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]  [1 1]     [1 1] [1 1]   [1 1]    [1 1]       [1 Np]     }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -148,6 +152,18 @@ p0    = p0(:);
 dat.x = dat.x(:);
 dat.y = dat.y(:);
 
+% remove unnecessary data
+xKeep = dat.x>param.win(1) & dat.x<param.win(2);
+dat.x = dat.x(xKeep);
+dat.y = dat.x(xKeep);
+if isfield(dat,'e')
+    dat.e = dat.x(xKeep);
+end
+
+% number of independent variables
+Nx    = numel(dat.x);
+
+% define fit weights
 if ~isfield(dat,'e') || isempty(dat.e) || ~any(dat.e(:))
     weight = 1./abs(dat.y);
 else
@@ -179,6 +195,12 @@ param.ub = param.ub(:);
 
 if numel(param.dp) == 1
     param.dp = param.dp*ones(Np,1);
+end
+
+% fixed the requested parameters
+param.fix = logical(param.fix);
+if any(param.fix)
+    param.dp(param.fix) = 0;
 end
 
 % indices of the parameters to be fit

@@ -190,7 +190,7 @@ classdef spinw < handle
         symb  = false;
         % stores the file ID of the text output, default is the Command Window (see swpref)
         fid   = swpref.getpref('fid',nan);
-        ver   = sw_version;
+        ver   = '';
     end
     
     methods
@@ -260,7 +260,11 @@ classdef spinw < handle
                 
             end
             
+            % define the version property
+            obj.ver = sw_version;
+            
         end % .spinw
+        
         
         function nMagExt = nmagext(obj)
             % gives the number of magnetic atoms in the magnetic supercell

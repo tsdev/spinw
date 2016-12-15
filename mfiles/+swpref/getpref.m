@@ -13,7 +13,7 @@ function rPref = getpref(prefName, simple)
 % is a struct with field names 'name', 'label' and 'val'. Each field is a
 % cell.
 %
-% rPref = swpref.getpref(pName, simple)
+% rPref = swpref.getpref(pName, {simple})
 %
 % Returns only the requested SpinW preference name, value and label in a
 % struct. Each field contains the requested value. If a second argument is

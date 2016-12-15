@@ -348,23 +348,23 @@ end
 
 end
 
-function [YTRY] = calculate_cost(FUN,PTRY,LB,UB)
+function yTry = calculate_cost(func,pTry,LB,UB)
 % cost function evaluation
 
 for ii = 1:numel(LB)
     % check lower bounds
-    if PTRY(ii) < LB(ii)
-        YTRY = 1e12+(LB(ii)-PTRY(ii))*1e6;
+    if pTry(ii) < LB(ii)
+        yTry = 1e12+(LB(ii)-pTry(ii))*1e6;
         return
     end
     % check upper bounds
-    if PTRY(ii) > UB(ii)
-        YTRY = 1e12+(PTRY(ii)-UB(ii))*1e6;
+    if pTry(ii) > UB(ii)
+        yTry = 1e12+(pTry(ii)-UB(ii))*1e6;
         return
     end
 end
 
 % calculate cost associated with PTRY
-YTRY = FUN(PTRY);
+yTry = func(pTry);
 
 end

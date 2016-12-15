@@ -34,10 +34,9 @@ function [p0,yHat,stat] = lm(dat,func,p0,varargin)
 %               dp(j)=0     sets corresponding partials to zero, i.e. holds
 %                           p(j) fixed.
 %           Default value if 1e-3.
-% fix       Vector with N elements, if an element is true, the
-%           corresponding parameter will be fixed by setting the lower and
-%           upper boundary to the starting value overwriting the given lb 
-%           and ub options. Default value is false(1,N).
+% vary      Vector with N elements, if an element is false, the
+%           corresponding parameter will be fixed. Default value is 
+%           false(1,N).
 % win       Limits for the independent variabel values where the function
 %           is fitted. Default is [-inf inf].
 % lb        Vector with N elements, lower boundary of the parameters.
@@ -56,9 +55,9 @@ function [p0,yHat,stat] = lm(dat,func,p0,varargin)
 % lUp       Factor for increasing lambda, default value is 11.
 % lDown     Factor for decreasing lambda, default value is 9.
 % update    Type of parameter update:
-%                   1       Levenberg-Marquardt lambda update (default),
-%                   2       Quadratic update,
-%                   3       Nielsen's lambda update equations.
+%                   'lm'        Levenberg-Marquardt lambda update,
+%                   'quadratic' Quadratic update,
+%                   'nielsen'   Nielsen's lambda update equations (default).
 % extraStat Calculates extra statistics: covariance matrix of parameters,
 %           cofficient of multiple determination, asymptotic standard
 %           error of the curve-fit and convergence history.
@@ -129,11 +128,22 @@ inpForm.fname  = {'dp'   'lb'       'ub'      'MaxIter' 'eps1' 'TolX' 'MaxFunEva
 inpForm.defval = {1e-3   -inf(1,Np) inf(1,Np) 10*Np     1e-3   1e-3   100*Np        erf(1/sqrt(2)) [-inf inf]};
 inpForm.size   = {[1 -1] [1 Np]     [1 Np]    [1 1]     [1 1]  [1 1]  [1 1]         [1 1]          [1 2]     };
 
-inpForm.fname  = [inpForm.fname  {'eps2' 'eps3' 'lambda0' 'lUp' 'lDown' 'update' 'extraStat' 'fix'      }];
-inpForm.defval = [inpForm.defval {0.1    0.1    1e-2      11    9       1        true        false(1,Np)}];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]  [1 1]     [1 1] [1 1]   [1 1]    [1 1]       [1 Np]     }];
+inpForm.fname  = [inpForm.fname  {'eps2' 'eps3' 'lambda0' 'lUp' 'lDown' 'update' 'extraStat' 'vary'     }];
+inpForm.defval = [inpForm.defval {0.1    0.1    1e-2      11    9       'nielsen' true       false(1,Np)}];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]  [1 1]     [1 1] [1 1]   [1 -2]    [1 1]      [1 Np]     }];
 
 param = sw_readparam(inpForm, varargin{:});
+
+switch param.update
+    case 'lm'
+        update = 1;
+    case 'quadratic'
+        update = 2;
+    case 'nielsen'
+        update = 3;
+    otherwise
+        error('lm:WrongInput','Wrong ''update'' option!')
+end
 
 % check input function
 if ischar(func)
@@ -155,9 +165,9 @@ dat.y = dat.y(:);
 % remove unnecessary data
 xKeep = dat.x>param.win(1) & dat.x<param.win(2);
 dat.x = dat.x(xKeep);
-dat.y = dat.x(xKeep);
+dat.y = dat.y(xKeep);
 if isfield(dat,'e')
-    dat.e = dat.x(xKeep);
+    dat.e = dat.e(xKeep);
 end
 
 % number of independent variables
@@ -179,8 +189,6 @@ pOld  = zeros(Np,1);
 yOld  = zeros(Nx,1);
 % empty Jacobian matrix
 J     = zeros(Nx,Np);
-% statistical degrees of freedom
-DoF   = Nx - Np + 1;
 % empty output
 stat = struct('msg',[],'warning',[],'p',[],'sigP',[],'redX2',[],'Rsq',[],'sigY',[],'corrP',[]);
 
@@ -198,28 +206,37 @@ if numel(param.dp) == 1
 end
 
 % fixed the requested parameters
-param.fix = logical(param.fix);
-if any(param.fix)
-    param.dp(param.fix) = 0;
+param.vary = logical(param.vary);
+if any(~param.vary)
+    param.dp(~param.vary) = 0;
 end
 
 % indices of the parameters to be fit
 idxP = find(param.dp ~= 0);
-% number of parameters to fit
-%Nfit = numel(idxP);
+% number of parameters to vary
+Nv = numel(idxP);
+% statistical degrees of freedom
+DoF   = Nx - Nv + 1;
+
 % termination flag
 isFinished = 0;
 
 % initialize Jacobian with finite difference calculation
 [JtWJ,JtWdy,X2,yHat,J] = linfitmat(func,dat.x,pOld,yOld,1,J,p0,dat.y,weight,param.dp);
 
-if max(abs(JtWdy)) < param.eps1
+if all(param.dp==0)
+    exitFlag   = 7;
     isFinished = 1;
 end
 
-switch param.update
+if max(abs(JtWdy)) < param.eps1
+    exitFlag   = 1;
+    isFinished = 1;
+end
+
+switch update
     case 1
-        % Marquardt: init'l lambda
+        % Marquardt: initial lambda
         lambda  = param.lambda0;
     otherwise
         % Quadratic and Nielsen
@@ -239,13 +256,13 @@ while ~isFinished && lm_iteration <= param.MaxIter
     lm_iteration = lm_iteration + 1;
     
     % incremental change in parameters
-    switch param.update
+    switch update
         case 1
             % Marquardt
             h = ( JtWJ + lambda*diag(diag(JtWJ)) ) \ JtWdy;
         otherwise
             % Quadratic and Nielsen
-            h = ( JtWJ + lambda*eye(Np) ) \ JtWdy;
+            h = ( JtWJ + lambda*eye(Nv) ) \ JtWdy;
     end
     
     % this is a big step
@@ -253,7 +270,8 @@ while ~isFinished && lm_iteration <= param.MaxIter
     
     % are parameters [p+h] much better than [p] ?
     % update the [idx] elements
-    pTry = p0 + h(idxP);
+    pTry = p0;
+    pTry(idxP) = pTry(idxP) + h;
     % apply constraints
     pTry = min(max(param.lb,pTry),param.ub);
     % residual error using p_try
@@ -268,15 +286,16 @@ while ~isFinished && lm_iteration <= param.MaxIter
     % Chi-squared error criteria
     X2try = dy' * (dy .* weight);
     
-    if param.update == 2
+    if update == 2
         % Quadratic
         % One step of quadratic line update in the h direction for minimum X2
         alpha =  JtWdy'*h / ( (X2try - X2)/2 + 2*JtWdy'*h ) ;
         h = alpha * h;
         % update only [idx] elements
-        pTry = p0 + h(idxP);
+        pTry = p0;
+        pTry(idxP) = pTry(idxP) + h;
         % apply constraints
-        pTry = min(max(p_min,pTry),p_max);
+        pTry = min(max(param.lb,pTry),param.ub);
         % residual error using p_try
         dy = dat.y - func(dat.x,pTry);
         lm_func_calls = lm_func_calls + 1;
@@ -297,7 +316,7 @@ while ~isFinished && lm_iteration <= param.MaxIter
         [JtWJ,JtWdy,X2,yHat,J] = linfitmat(func,dat.x,pOld,yOld,dX2,J,p0,dat.y,weight,param.dp);
         
         % decrease lambda ==> Gauss-Newton method
-        switch param.update
+        switch update
             case 1
                 % Levenberg
                 lambda = max(lambda/param.lDown,1.e-7);
@@ -319,7 +338,7 @@ while ~isFinished && lm_iteration <= param.MaxIter
         end
         
         % increase lambda  ==> gradient descent method
-        switch param.update
+        switch update
             case 1
                 % Levenberg
                 lambda = min(lambda*param.lUp,1.e7);
@@ -343,7 +362,7 @@ while ~isFinished && lm_iteration <= param.MaxIter
         exitFlag = 1;
         isFinished = true;
     end
-    if max(abs(h./p0)) < param.TolX  &&  lm_iteration > 2
+    if max(abs(h./p0(idxP))) < param.TolX  &&  lm_iteration > 2
         exitFlag = 2;
         isFinished = true;
     end
@@ -376,9 +395,11 @@ switch exitFlag
         stat.msg = 'Maximum Number of function evaluations is reached without convergence!';
     case 6
         stat.msg = 'Floating point error, parameter change is smaller than eps!';
+    case 7
+        stat.msg = 'All parameters are fixed!';
 end
 
-if exitFlag > 3
+if exitFlag > 3 && exitFlag < 7
     stat.error = true;
     warning('lm:convergence','Convergence is not reached!')
 else
@@ -396,16 +417,23 @@ if nargout > 1
     stat.redX2 = X2/DoF;
 end
 
-[JtWJ,~,~,yHat,J] = linfitmat(func,dat.x,pOld,yOld,-1,J,p0,dat.y,weight,param.dp);
+[JtWJ,~,~,yHat,J0] = linfitmat(func,dat.x,pOld,yOld,-1,J,p0,dat.y,weight,param.dp);
+
+% extend matrix to original parameter size
+J = zeros(Nx,Np);
+J(:,idxP) = J0;
 
 % standard error of parameters
-covP = inv(JtWJ);
+covP0 = inv(JtWJ);
+covP = zeros(Np,Np);
+covP(idxP,idxP) = covP0;
+
 stat.sigP = sqrt(diag(covP))';
 
 if param.extraStat
     
     % error of the fit at the given confidence level
-    stat.sigY = sqrt(2)*erfinv(param.confLev)*sqrt(diag(J*covP*J'))'; %#ok<MINV>
+    stat.sigY = sqrt(2)*erfinv(param.confLev)*sqrt(diag(J*covP*J'))';
     
     % parameter correlation matrix
     stat.corrP = covP./(stat.sigP*stat.sigP');
@@ -425,7 +453,7 @@ stat.p = p0';
 % save counters
 stat.nIter      = lm_iteration;
 stat.nFunEvals  = lm_func_calls;
-stat.algorithm  = 'Levenberg?Marquardt';
+stat.algorithm  = 'Levenberg-Marquardt';
 stat.func       = func;
 stat.exitFlag   = exitFlag;
 
@@ -433,7 +461,7 @@ stat.exitFlag   = exitFlag;
 stat.param = param;
 
 % type of update
-switch param.update
+switch update
     case 1
         stat.param.updateStr = 'Levenberg-Marquardt lambda update';
     case 2
@@ -486,46 +514,50 @@ global  lm_func_calls
 
 % number of data points
 M = numel(y);
-% number of parameters
-N = numel(p);
+% indices of parameters to vary
+pIdx = find(dp~=0);
+
+% number of varied parameters
+Nv = numel(pIdx);
 
 ps  = p;
-J   = zeros(M,N);
+J   = zeros(M,Nv);
 % initialize Jacobian to Zero
-del = zeros(N,1);
+del = zeros(Nv,1);
 
 % loop over all parameters
-for jj = 1:N
+for ii = 1:Nv
+    idx = pIdx(ii);
     % parameter perturbation
-    del(jj) = dp(jj) * (1+abs(p(jj)));
+    del(idx) = dp(idx) * (1+abs(p(idx)));
     % perturb parameter p(j)
-    p(jj)   = ps(jj) + del(jj);
+    p(idx)   = ps(idx) + del(idx);
     
-    if del(jj) ~= 0
+    if del(idx)%~=0
         y1 = func(x,p);
         lm_func_calls = lm_func_calls + 1;
         
-        if dp(jj) < 0
+        if dp(idx) < 0
             % backwards difference
-            J(:,jj) = (y1-y)/del(jj);
+            J(:,ii) = (y1-y)/del(idx);
         else
             % central difference, additional func call
-            p(jj)   = ps(jj) - del(jj);
-            J(:,jj) = (y1-func(x,p))/(2*del(jj));
+            p(idx)   = ps(idx) - del(idx);
+            J(:,ii) = (y1-func(x,p))/(2*del(idx));
             lm_func_calls = lm_func_calls + 1;
         end
     end
     % restore p(j)
-    p(jj)=ps(jj);
+    p(idx) = ps(idx);
     
 end
 
 end
 
-function J = broyden(pOld,yOld,J,p,y)
+function J = broyden(pOld,yOld,J,p,y,dp)
 % carry out a rank-1 update to the Jacobian matrix using Broyden's equation
 %
-% J = BROYDEN(p_old,y_old,J,p,y)
+% J = BROYDEN(p_old,y_old,J,p,y,dp)
 %
 % Input:
 %
@@ -534,6 +566,7 @@ function J = broyden(pOld,yOld,J,p,y)
 % J  	Current value of the Jacobian matrix.
 % p     Current  set of parameters.
 % y     Model evaluation at current  set of parameters, yHat(x,p)
+% dp    Only determine the jacobian where dp~=0.
 %
 % Output:
 %
@@ -541,14 +574,14 @@ function J = broyden(pOld,yOld,J,p,y)
 %           J(i,j) = dFunc(x,p)(i) / dp(j)
 %
 
-h = p - pOld;
+h = p(dp~=0) - pOld(dp~=0);
 % Broyden rank-1 update eq'n
 J = J + (y-yOld-J*h)*h'/(h'*h);
 
 end
 
 
-function [JtWJ,JtWdy,chiSq,yHat,J] = linfitmat(func,x,pOld,yOld,dX2,J,p,yDat,weight,dp)
+function [JtWJ,JtWdy,chiSq,yFunc,J] = linfitmat(func,x,pOld,yOld,dX2,J,p,yDat,weight,dp)
 % evaluate the linearized fitting matrix
 %
 % [JtWJ,JtWdy,chiSq,yHat,J] = LINFITMAT(func,x,pOld,yOld,dX2,J,p,yDat,weight,dp)
@@ -594,27 +627,29 @@ function [JtWJ,JtWdy,chiSq,yHat,J] = linfitmat(func,x,pOld,yOld,dX2,J,p,yDat,wei
 
 global   lm_iteration  lm_func_calls
 
-% number of parameters
+% number of varying parameters
 Np = numel(p);
+% number of varying parameters
+Nv = sum(dp~=0);
 
 % evaluate model using parameters 'p'
-yHat = func(x,p);
+yFunc = func(x,p);
 lm_func_calls = lm_func_calls + 1;
 
 if ~rem(lm_iteration,2*Np) || dX2 > 0
     % finite difference
-    J = jacobian(func,x,p,yHat,dp);
+    J = jacobian(func,x,p,yFunc,dp);
 else
     % rank-1 update
-    J = broyden(pOld,yOld,J,p,yHat);
+    J = broyden(pOld,yOld,J,p,yFunc,dp);
 end
 
 % residual error between model and data
-dy = yDat - yHat;
+dy = yDat - yFunc;
 % Chi-squared error criteria
 chiSq = dy' * (dy.* weight);
 
-JtWJ  = J' * (J.*repmat(weight,[1,Np]));
+JtWJ  = J' * (J.*repmat(weight,[1,Nv]));
 
 JtWdy = J' * (weight.*dy);
 

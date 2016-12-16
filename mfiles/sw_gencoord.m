@@ -87,37 +87,42 @@ end
 if fid~=0
     fprintf(fid, 'General coordinates of space group: %s\n',symName);
     
-    nSym = size(symOp,3);
-    for ii = 1:nSym
-        fprintf(fid,'(%d) ',ii);
-        for jj = 1:3
-            first = true;
-            for kk = 1:3
-                symE = symOp(jj,kk,ii);
-                switch sign(symE)
-                    case 1
-                        if first
-                            fprintf(fid,char(119+kk));
-                        else
-                            fprintf(fid,['+' 119+kk]);
-                            first = false;
-                        end
-                    case -1
-                        fprintf(fid,['-' 119+kk]);
-                        first = false;
-                end
-            end
-            trE  = symTr(jj,ii);
-            ndTr = [trE 1]*12/gcd(trE*12,12);
-            if trE
-                fprintf(fid,'%+d/%d',ndTr);
-            end
-            if jj < 3
-                fprintf(fid,',');
-            end
-        end
-        fprintf(fid,'\n');
+    sStr = strtrim(strsplit(sw_gensymstr(symOp,symTr),';')');
+    for ii = 1:numel(sStr)
+        fprintf(fid,'(%02d) %s\n',ii,sStr{ii});
     end
+    
+%     nSym = size(symOp,3);
+%     for ii = 1:nSym
+%         fprintf(fid,'(%d) ',ii);
+%         for jj = 1:3
+%             first = true;
+%             for kk = 1:3
+%                 symE = symOp(jj,kk,ii);
+%                 switch sign(symE)
+%                     case 1
+%                         if first
+%                             fprintf(fid,char(119+kk));
+%                         else
+%                             fprintf(fid,['+' 119+kk]);
+%                             first = false;
+%                         end
+%                     case -1
+%                         fprintf(fid,['-' 119+kk]);
+%                         first = false;
+%                 end
+%             end
+%             trE  = symTr(jj,ii);
+%             ndTr = [trE 1]*12/gcd(trE*12,12);
+%             if trE
+%                 fprintf(fid,'%+d/%d',ndTr);
+%             end
+%             if jj < 3
+%                 fprintf(fid,',');
+%             end
+%         end
+%         fprintf(fid,'\n');
+%     end
 end
 
 end

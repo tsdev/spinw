@@ -68,7 +68,8 @@ for ii = 1:nGen
         nSym = size(symOp,3);
         for kk = 1:nSym
             RS = R*symOp(:,:,kk);
-            TS = mod(R*symTr(:,kk) + T,1);
+            %TS = mod(R*symTr(:,kk) + T,1);
+            TS = mod(round(24*(R*symTr(:,kk)+T))/24,1);
             
             idxR = permute(sum(sum(abs(bsxfun(@minus,symOp,RS)),1),2),[3 1 2]) > tol;
             idxT = sum(abs(bsxfun(@minus,symTr,TS)),1)' > tol;

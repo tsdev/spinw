@@ -85,13 +85,13 @@ if fid ~= 0
     for ii = 1:nAtom
         fprintf(fid,'\nAtomic coordinates generated for: (%5.3f %5.3f %5.3f)\n',r(:,ii));
         idx2 = 1;
-        while (aIdx(idx) == ii) && (idx<nGenAtom)
-            fprintf(fid,'r%i (%5.3f %5.3f %5.3f)\n',idx2,rSym(:,idx));
+        while idx<=nGenAtom && aIdx(idx) == ii
+            fprintf(fid,'R%02i = (%5.3f %5.3f %5.3f)\n',idx2,rSym(:,idx));
             idx2 = idx2 + 1;
             idx  = idx  + 1;
         end
     end
-    fprintf(fid,'\n');
+    %fprintf(fid,'\n');
 end
 
 end

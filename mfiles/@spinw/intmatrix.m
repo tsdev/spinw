@@ -1,4 +1,4 @@
-function [SS, SI, RR] = intmatrix2(obj, varargin)
+function [SS, SI, RR] = intmatrix(obj, varargin)
 % creates the interactions matrices (connectors and values)
 %
 % [SS, SI, RR] = INTMATRIX(obj, 'Option1', Value1, ...)
@@ -118,7 +118,7 @@ else
     SI.g = repmat(2*eye(3),[1 1 nMagAtom]);
 end
 
-% Couplings
+% Bonds
 coupling = obj.coupling;
 SS.all   = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx]);
 
@@ -135,12 +135,13 @@ if isempty(obj.cache.symop)
         % generate symmetry operators for anisotropy matrice using the space group symmetry
         % generate the rotation matrices
         if obj.symbolic
-            [~, ~, ~, rotOpA] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,~sw_always(obj.unit_cell.S==0)));
+            [~, ~, opInfo] = swsym.position(obj.lattice.sym,obj.unit_cell.r(:,~sw_always(obj.unit_cell.S==0)));
         else
-            [~, ~, ~, rotOpA] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
+            [~, ~, opInfo] = swsym.position(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
         end
+        
         % convert rotation operators to xyz Cartesian coordinate system
-        rotOpA = mmat(A,mmat(rotOpA,inv(A)));
+        rotOpA = mmat(A,mmat(opInfo.opmove,inv(A)));
         
         % generate symmetry operators for exchange matrices
         % first positions of the couplings with identical idx values used to
@@ -149,14 +150,12 @@ if isempty(obj.cache.symop)
         bondSel = [true logical(diff(SS.all(6,:)))] & SS.all(6,:)<= coupling.nsym;
         % keep the bonds the will generate the space group operators
         firstBond = SS.all(1:5,bondSel);
-        % produce the space group symmetry operators
-        [symOp, symTr] = sw_gencoord(obj.lattice.sym);
         rotOpB = zeros(3,3,lastSym);
         % select rotation matrices for each generated coupling
         bIdx = 0;
         for ii = 1:size(firstBond,2)
-            [~, rotIdx] = sw_gensymcoupling(obj, firstBond(:,ii), {symOp, symTr}, 1e-5);
-            rotOpB(:,:,bIdx+(1:sum(rotIdx))) = symOp(:,:,rotIdx);
+            [~, rotIdx] = swsym.bond(obj.matom.r,obj.basisvector, firstBond(:,ii), obj.lattice.sym, 1e-5);
+            rotOpB(:,:,bIdx+(1:sum(rotIdx))) = obj.lattice.sym(:,1:3,rotIdx);
             bIdx = bIdx + sum(rotIdx);
         end
         

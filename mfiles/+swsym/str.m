@@ -1,25 +1,25 @@
-function strSym = sw_gensymstr(R,T)
-% generates the string for the symmetry operators
+function symStr = str(symOp)
+% generates a string equivalent of symmetry operators
 %
-% strSym = SW_GENSYMSTR(R,T)
+% symStr = SWSYM.STR(symOp)
 %
 % Input:
 %
-% R     Rotations matrices, with dimensions of [3 3 nOp].
-% T     Translation vectors in a matrix with a dimensions of [3 nOp].
+% symOp     Symmetry operator with rotations matrices symOp(:,1:3,:) and
+%           translation vectors in symOp(:,4,:).
 %
 % Output:
 %
-% strSym String, contains the symmetry operations.
+% strSym    String, contains the symmetry operations.
 %
 
 if nargin == 0
-    help sw_gensymstr
+    help swsym.str
     return
 end
 
 % number of perators
-nOp = size(R,3);
+nOp = size(symOp,3);
 
 % string for negative sign, & is used as a placeholder
 sgnStr =  '-+';
@@ -32,8 +32,9 @@ spStr  = '&& ';
 % division sign for translation
 perStr = repmat('/',[1 nOp*3]);
 % each column of R gives the new x1', y1', z1', x2', ...
-R = reshape(permute(R,[2 1 3]),3,[]);
+R = reshape(permute(symOp(:,1:3,:),[2 1 3]),3,[]);
 % each column gives the translation dx1, dy1, dz1, dx2, ...
+T = symOp(:,4,:);
 T = T(:)';
 % create the signs for x,y,z
 sgnR = sgnStr((R>=0)+1);
@@ -62,8 +63,8 @@ strT = [strS;num2str(Tn')';perStr;num2str(Td')';...
 % remove zeros
 strT(strT=='0') = '&';
 % operator
-strSym = [strR;strT];
-strSym(strSym=='&') = [];
-strSym = strSym(1:(end-2));
+symStr = [strR;strT];
+symStr(symStr=='&') = [];
+symStr = symStr(1:(end-2));
 
 end

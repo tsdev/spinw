@@ -92,7 +92,7 @@ end
 if param.mat_idx > 0
     obj.matrix.mat(:,:,param.mat_idx) = aMat;
 else
-    error('sw:setmatrix:WrongInput','It is not possible to unambiguously select a matrix from the input options!')
+    error('spinw:setmatrix:WrongInput','It is not possible to unambiguously select a matrix from the input options!')
 end
 
 end

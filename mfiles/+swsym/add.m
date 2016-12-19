@@ -1,7 +1,7 @@
-function sym = sw_addsym(symStr, symName)
+function sym = add(symStr, symName)
 % saves user defined symmetry operators
 %
-% sym = SW_ADDSYM(symStr, {symName})
+% sym = SWSYM.ADD(symStr, {symName})
 %
 % It saves the symmetry generators in symStr into the symmetry.dat file and
 % returns the line number of the space group in the symmetry.dat file.
@@ -24,7 +24,7 @@ symPath = [sw_rootdir 'dat_files' filesep 'symmetry.dat'];
 % Count the number of lines
 fid = fopen(symPath);
 if fid == -1
-    error('spinw:sw_gensym:FileNotFound',['Symmetry definition file not found: '...
+    error('add:FileNotFound',['Symmetry definition file not found: '...
         regexprep(symPath,'\' , '\\\') '!']);
 end
 
@@ -39,8 +39,9 @@ if nargin == 1
 end
 
 % determine the symmetry generators
-[symOp, symTr] = sw_gensym(symName, symStr);
-[~, ~, isG] = sw_symgetgen(symOp, symTr);
+symOp    = swsym.generator(symStr);
+[~, isG] = swsym.genreduce(symOp);
+
 % parse the input string
 idx = 1;
 parStr = {};
@@ -48,9 +49,9 @@ while ~isempty(symStr)
     [parStr{idx}, symStr] = strtok(symStr,';'); %#ok<STTOK,AGROW>
     idx = idx + 1;
 end
-parStr = parStr(isG);
-parStr = parStr(:)';
-parStr = [parStr; repmat({';'},1,numel(parStr))];
+parStr  = parStr(isG);
+parStr  = parStr(:)';
+parStr  = [parStr; repmat({';'},1,numel(parStr))];
 symStrG = [parStr{:}];
 symStrG = symStrG(1:end-1);
 
@@ -60,4 +61,5 @@ fprintf(fid,'\n%4d  %-11s: %s',nLines+1,symName,symStrG);
 fclose(fid);
 
 sym = nLines + 1;
+
 end

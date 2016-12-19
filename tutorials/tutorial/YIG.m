@@ -13,7 +13,7 @@ yig.unit_cell.color(:,2) = sw_colorname('b');
 % problem with the generators, the calculated generators from the .cif file
 % give only 64 positions, while there should be 96 positions:
 % http://it.iucr.org/Ab/ch7o1v0001/sgtable7o1o230/
-yig.lattice.sym = sw_gensym('I a -3 d');
+%yig.lattice.sym = sw_gensym('I a -3 d');
 
 % spin quantum number of Fe3+ ions, determined automatically by SpinW
 S0 = max(yig.unit_cell.S);

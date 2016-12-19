@@ -31,8 +31,8 @@ function C = mmat(A,B,dim)
 %
 
 if nargin == 0
-    help mmat;
-    return;
+    help mmat
+    return
 end
 
 if (nargin < 3)
@@ -40,11 +40,11 @@ if (nargin < 3)
 end
 
 if numel(dim)~=2
-    error('sw:sw_matmult:WrongInput','dim has to be a two element array!');
+    error('mmat:WrongInput','dim has to be a two element array!');
 end
 
 if size(A,dim(2)) ~= size(B,dim(1))
-    error('sw:sw_matmult:WrongInput','Wrong input matrix sizes!');
+    error('mmat:WrongInput','Wrong input matrix sizes!');
 end
 
 nDA = ndims(A);

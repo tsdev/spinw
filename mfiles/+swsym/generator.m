@@ -1,7 +1,7 @@
-function [symOp, symTr, symName, symStr, symNum] = sw_gensym(varargin)
+function [symOp, symInfo] = generator(sym, symStr, fid0)
 % returns symmetry operators of a given space group
 %
-% [symOp, {symTr, symName, symStr, symNum}] = SW_GENSYM({sym}) 
+% [symOp, symInfo] = SWSYM.GENERATOR(sym,{fid})
 %
 % It gives the symmetry elements based on the space group number or given
 % list of symmetry operators. Without arguments, returns the name of all
@@ -11,65 +11,55 @@ function [symOp, symTr, symName, symStr, symNum] = sw_gensym(varargin)
 %
 % sym           Either the label of the space group or the index from
 %               the International Tables of Crystallography.
+% fid           For printing the symmetry operators:
+%                   0   no printed output (Default)
+%                   1   standard output (Command Line)
+%                   fid text file opened before with the fid = fopen(path)
 %
 % Output:
 %
-% symOp         Rotation matrices, dimensions are [3 3 nOp].
-% symTr         Translation vectors, dimensions are [3 nOp].
-% symName       Name of the space group, stored in cells.
-% symStr        The string of the symmetry operations.
-% symNum        The index of the symmetry in the symmetry.dat file.
-%
-% If a single output is requested, the function returns the symmetry
-% operators in symOp in a [3 4 nOp] matrix.
+% symOp         Matrices defining the symmetry operators, dimensions are 
+%               [3 4 nOp].
+% symInfo       Structure containing additional information about the space 
+%               group with the following fields:
+%   name            Name of the space group, stored in cells.
+%   str             The string of the symmetry operations.
+%   num             The index of the symmetry in the symmetry.dat file.
 %
 % See also SW_ADDSYM, SPINW, SPINW.GENCOUPLING, SW_GENCOORD.
 %
 
-if nargin == 0
-    help sw_gensym
-    return
+symInfo = struct('name','','str','','num',-1);
+
+if nargin < 3
+    fid0 = 0;
 end
 
 if nargin > 0
-    sym = varargin{1};
-    symName = '';
-    symStr  = '';
     symNum = -1;
     
     if iscell(sym)
         % handle input where the operators are already given
-        symOp = [sym{1} permute(sym{2},[1 3 2])];
-        if nargout > 1
-            symTr = permute(symOp(:,4,:),[1 3 2]);
-            symOp = symOp(:,1:3,:);
-        end
-        
+        symOp = [sym{1} permute(sym{2},[1 3 2])];        
         return
-    elseif sw_issymop(sym)
+    elseif swsym.isop(sym)
         if ~isempty(sym)
             symOp = sym;
         else
             symOp = [eye(3) zeros(3,1)];
-        end
-        
-        if nargout > 1
-            symTr = permute(symOp(:,4,:),[1 3 2]);
-            symOp = symOp(:,1:3,:);
-        end
-
+        end        
         return
-    elseif ~ischar(sym) && numel(sym)~=1
-        error('sw_gensym:WrongInput','Wrong symmetry definition');
         
+    elseif ~ischar(sym) && numel(sym)~=1
+        error('generator:WrongInput','Wrong symmetry definition!');
     end
 end
 
 % Open the symmetry definition file.
 symPath = [sw_rootdir 'dat_files' filesep 'symmetry.dat'];
 fid = fopen(symPath);
-if fid == -1
-    
+
+if fid == -1    
     error('spinw:sw_gensym:FileNotFound',['Symmetry definition file not found: '...
         regexprep(symPath,'\' , '\\\') '!']);
 end
@@ -77,22 +67,24 @@ end
 % Just returns the name of all space groups.
 if nargin == 0
     ii = 1;
-    symName = {};
+    symName = cell(1,230);
     while ~feof(fid)
         textLine    = fgetl(fid);
-        symName{ii} = [textLine(7:17) sprintf(' (%3i)',ii)]; %#ok<AGROW>
-        ii = ii+1;
+        symName{ii} = [textLine(7:17) sprintf(' (%3i)',ii)];
+        ii          = ii+1;
     end
-    symOp = [];
-    symStr  = [];
     fclose(fid);
+    symOp  = zeros(3,4,0);
+    symInfo.str  = '';
+    symInfo.name = symName;
+    symInfo.num  = 1:(ii-1);
     return
-
+    
 elseif nargin == 1
     
     if ischar(sym)
         if isempty(sym)
-            symStr = 'x,y,z';
+            symStr  = 'x,y,z';
             symName = 'P 1';
         else
             % find symmetry label
@@ -109,10 +101,10 @@ elseif nargin == 1
             end
             fclose(fid);
             if symIdx == 0
-                error('sw:sw_gensym:WrongInput','Symmetry name does not exists (case insensitive)!');
+                error('generator:WrongInput','Symmetry name does not exists (case insensitive)!');
             end
             symNum = symIdx;
-            symStr     = textLine(20:end);
+            symStr = textLine(20:end);
         end
         
     else
@@ -120,14 +112,14 @@ elseif nargin == 1
         
         if symNum<0
             fclose(fid);
-            error('spinw:sw_gensym:WrongInput','Symmetry number has to be positive integer!');
+            error('generator:WrongInput','Symmetry number has to be positive integer!');
         elseif symNum == 0
             fclose(fid);
-            symOp   = [eye(3) zeros(3,1)];
-            symName = 'No sym';
-            symStr  = 'x,y,z';
-            symNum  = 0;
-            return;
+            symOp        = [eye(3) zeros(3,1)];
+            symInfo.name = 'No sym';
+            symInfo.str  = 'x,y,z';
+            symInfo.num  = 0;
+            return
         end
         ii = 1;
         while (ii<=symNum) && ~feof(fid)
@@ -136,15 +128,13 @@ elseif nargin == 1
         end
         fclose(fid);
         if ii <= symNum
-            error('spinw:sw_gensym:WrongInput','Symmetry number not found!')
+            error('generator:WrongInput','Symmetry number not found!')
         end
-        symStr   = textLine(20:end);
+        symStr  = textLine(20:end);
         symName = textLine(7:17);
     end
-elseif nargin >= 2
+elseif nargin==2
     symName = sym;
-    symStr  = varargin{2};
-
 end
 
 symOp = zeros(3,4,30);
@@ -188,16 +178,26 @@ end
 symOp(nNew,1:3,nOp) = vNew;
 symOp = symOp(:,:,1:nOp);
 
-if nargout > 1
-    symTr = permute(symOp(:,4,:),[1 3 2]);
-    symOp = symOp(:,1:3,:);
-end
-    
 % cut trailing spaces from symName
 if isnan(symName)
     symName = '';
 else
     symName = strtrim(symName);
 end
+
+% print symmetry elements
+if fid0~=0
+    fprintf(fid0, 'Generators of space group: %s\n',symName);
+    
+    sStr = strtrim(strsplit(swsym.str(symOp),';')');
+    for ii = 1:numel(sStr)
+        fprintf(fid0,'(%02d) %s\n',ii,sStr{ii});
+    end
+end
+
+% generate output
+symInfo.name = symName;
+symInfo.str  = strtrim(symStr);
+symInfo.num  = symNum;
 
 end

@@ -10,7 +10,7 @@ function r = sw_cmod(r, tol)
 %
 
 if nargin == 0
-    help sw_cmod;
+    help sw_cmod
     return
 end
 

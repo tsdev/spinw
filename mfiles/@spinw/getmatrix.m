@@ -122,7 +122,7 @@ if param.mat_idx ~= 0
     
     Cpidx = unique(obj.coupling.idx(selCpIdx));
     Anidx = unique(obj.matom.idx(selAnIdx));
-    Gidx   = unique(obj.matom.idx(selGIdx));
+    Gidx  = unique(obj.matom.idx(selGIdx));
     
     sumNum = numel(Cpidx) + numel(Anidx) + numel(Gidx);
     
@@ -204,7 +204,7 @@ end
 
 % get the point group symmetry operators of the center position
 % (coupling/atom)
-pOp = sw_pointsym(obj.lattice.sym,center(:,1));
+pOp = swsym.point(obj.lattice.sym,center(:,1));
 
 % convert the matrices to the xyz Cartesian coordinate system
 A   = obj.basisvector;
@@ -431,7 +431,7 @@ end
 % calculate interaction matrix using the prefactors
 if numel(param.pref) > 1
     if numel(param.pref)~=size(aMat,3)
-        error('sw:getmatrix:WrongInput','Wrong number of elements in pref option!');
+        error('spinw:getmatrix:WrongInput','Wrong number of elements in pref option!');
     end
     param.pref = param.pref(:);
     aMat = sum(repmat(permute(param.pref,[2 3 1]),[3 3 1]).*aMat,3);

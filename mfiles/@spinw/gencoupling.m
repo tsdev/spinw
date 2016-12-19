@@ -176,8 +176,6 @@ cMat = cMat([1:5 7],:);
 
 % symmetry equivalent couplings
 if isSym
-    % get the symmetry operators
-    [symOp, symTr] = sw_gencoord(obj.lattice.sym);
     % store the final sorted couoplings in nMat
     nMat = zeros(6,0);
     ii  = 1;
@@ -189,7 +187,7 @@ if isSym
         % select columns from sorM with a certain idx value
         sortMs = cMat(:,cMat(6,:) == ii);
         while size(sortMs,2)>0
-            [genC, unC] = sw_gensymcoupling(obj, sortMs(:,1), {symOp, symTr}, tol);
+            [genC, unC] = swsym.bond(mAtom.r, obj.basisvector, sortMs(:,1), obj.lattice.sym, tol);
             genCAll = [genC [-genC(1:3,:);genC([5 4],:)]];
             % remove from sortMs the identical couplings
             iNew = isnew(genCAll(1:5,:),sortMs(1:5,:),tol);

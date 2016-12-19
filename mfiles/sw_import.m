@@ -141,7 +141,7 @@ switch fExt
         elseif ~isempty(cif0.space_group_symop_operation_xyz)
             xyz0 = cif0.space_group_symop_operation_xyz;
         else
-            warning('spinw:WrongFormat','Missing symmetry operators, using P1')
+            warning('sw_import:WrongFormat','Missing symmetry operators, using P1')
             xyz0 = {'x,y,z'};
         end
         
@@ -171,12 +171,9 @@ switch fExt
             obj0.lattice.angle = ang0*pi/180;
         end
         if numel(xyz0) > 3
-            % determine the symmetry generators
-            [symOp, symTr] = sw_gensym(sym0, xyz0);
-            [symOp, symTr] = sw_symgetgen(symOp, symTr);
-            % save generators into spinw pbject
+            % save symmetry opreators into spinw pbject
             obj0.lattice.label = sym0;
-            obj0.lattice.sym   = [symOp permute(symTr,[1 3 2])];
+            obj0.lattice.sym   = swsym.generator(sym0,xyz0);
         end
         
         nAtom = size(r0,2);

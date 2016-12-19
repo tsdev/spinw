@@ -27,8 +27,8 @@ function [M, asym] = sw_basismat(symOp, r, tol)
 %
 
 if nargin == 0
-    help sw_basismat;
-    return;
+    help sw_basismat
+    return
 elseif nargin == 2
     tol = 1e-5;
 end
@@ -69,11 +69,11 @@ for ii = 1:nSym
         
     else
         % check that the rotation operator is valid
-        ordR = sw_symorder(R);
+        ordR = swsym.oporder(R);
         parR = 1;
     end
     if ordR == 10
-        error('sw:sw_basismat:WrongOp','Not a valid point group generator!');
+        error('sw_basismat:WrongOp','Not a valid point group generator!');
     end
     % solve the R*M-M*R=0 matrix equation valid for symmetric matrices
     [~, D, MS] = svd(kron(R,R)-eye(9));
@@ -204,16 +204,16 @@ asym = [asym(~asym) asym(asym)];
 
 end
 
-function v = dep(M,v,tol)
-% returns column vectors of v that can be produced from the column vectors
-% of M
-%
-
-rv = arrayfun(@(idx)rank([M v(:,idx)],tol),1:size(v,2));
-rv = rv == rank(M,tol);
-v = v(:,rv);
-
-end
+% function v = dep(M,v,tol)
+% % returns column vectors of v that can be produced from the column vectors
+% % of M
+% %
+% 
+% rv = arrayfun(@(idx)rank([M v(:,idx)],tol),1:size(v,2));
+% rv = rv == rank(M,tol);
+% v = v(:,rv);
+% 
+% end
 
 function I = intersec(U1,U2)
 % returns the intersection of two vectorspaces U1 and U2. Each column of U1

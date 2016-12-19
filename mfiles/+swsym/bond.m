@@ -25,6 +25,8 @@ function [genCp, ugenCp] = bond(r, bv, bond, symOp, tol)
 % ugenCp    Logical variable, true if the coupling is unique in the list of
 %           generated couplings.
 %
+% See also SPINW.GENCOUPLING, SWSYM.OPERATOR, SWSYM.POSITION.
+%
 
 % TODO
 tolDist = 1e-5;

@@ -34,7 +34,7 @@ function [r, aIdx, opInfo] = position(symOp, r0, fid, tol)
 %   opmove          The rotation operators for every moved atom, dimensions
 %                   are [3 3 nGenAtom].
 %
-% See also SW, SW.ATOM, SW.MATOM, SW.GENCOUPLING, SW_GENCOORD, SW_GENSYM, SW_POINTSYM.
+% See also SPINW, SWSYM.OPERATOR, SPINW.ATOM, SPINW.MATOM.
 %
 
 if nargin == 0

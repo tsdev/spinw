@@ -17,6 +17,8 @@ function [symOpG, isGen] = genreduce(symOp)
 % isGen     Vector, that gives whether a given input operator is part of
 %           the generators, dimensions are [1 nSym].
 %
+% See also SWSYM.ADD, SWSYM.GENERATOR, SWSYM.OPERATOR.
+%
 
 if nargin == 0
     help swsym.genreduce

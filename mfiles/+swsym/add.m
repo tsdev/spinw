@@ -12,11 +12,11 @@ function sym = add(symStr, symName)
 %               generators will be determined and only those will be saved.
 % symName       Label for the space group.
 %
-% See also SW_GENSYM, SW_SYMGETGEN.
+% See also SWSYM.GENERATOR, SWSYM.GENREDUCE.
 %
 
 if nargin == 0
-    help sw_addsym
+    help swsym.add
     return
 end
 

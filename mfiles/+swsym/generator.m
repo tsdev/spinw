@@ -1,7 +1,7 @@
-function [symOp, symInfo] = generator(sym, symStr, fid0)
+function [symOp, symInfo] = generator(sym, fid0)
 % returns symmetry operators of a given space group
 %
-% [symOp, symInfo] = SWSYM.GENERATOR(sym,{fid})
+% [symOp, symInfo] = SWSYM.GENERATOR(sym, {fid})
 %
 % It gives the symmetry elements based on the space group number or given
 % list of symmetry operators. Without arguments, returns the name of all
@@ -10,7 +10,9 @@ function [symOp, symInfo] = generator(sym, symStr, fid0)
 % Input:
 %
 % sym           Either the label of the space group or the index from
-%               the International Tables of Crystallography.
+%               the International Tables of Crystallography or string
+%               containing the space group operators in the same format as
+%               used in the symmetry.dat file.
 % fid           For printing the symmetry operators:
 %                   0   no printed output (Default)
 %                   1   standard output (Command Line)
@@ -26,12 +28,12 @@ function [symOp, symInfo] = generator(sym, symStr, fid0)
 %   str             The string of the symmetry operations.
 %   num             The index of the symmetry in the symmetry.dat file.
 %
-% See also SW_ADDSYM, SPINW, SPINW.GENCOUPLING, SW_GENCOORD.
+% See also SWSYM.ADD, SPINW, SPINW.GENCOUPLING, SWSYM.POSITION.
 %
 
 symInfo = struct('name','','str','','num',-1);
 
-if nargin < 3
+if nargin < 2
     fid0 = 0;
 end
 
@@ -80,12 +82,15 @@ if nargin == 0
     symInfo.num  = 1:(ii-1);
     return
     
-elseif nargin == 1
+else
     
     if ischar(sym)
         if isempty(sym)
             symStr  = 'x,y,z';
             symName = 'P 1';
+        elseif any(sym=='x') && any(sym=='y') && any(sym=='z') && any(sym==',')
+            symStr = sym;
+            symName = '';
         else
             % find symmetry label
             symName = sym;
@@ -133,8 +138,6 @@ elseif nargin == 1
         symStr  = textLine(20:end);
         symName = textLine(7:17);
     end
-elseif nargin==2
-    symName = sym;
 end
 
 symOp = zeros(3,4,30);

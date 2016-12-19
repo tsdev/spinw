@@ -8,6 +8,8 @@ function result = isop(symOp)
 % Op        Symemtry operators with rotation and translation. Dimensions
 %           are [3 4 nOp].
 %
+% See also SWSYM.GENERATOR, SWSYM.OPERATOR.
+%
 
 if nargin == 0
     help swsym.isop

@@ -12,9 +12,10 @@ function R = genlattice(obj, varargin)
 % angled    Alpha, beta, gamma angles in degree, dimensions are [1 3].
 % angle     Alpha, beta, gamma angles in radian, dimensions are [1 3].
 % lat_const a, b, c lattice parameters, dimensions are [1 3].
-% spgr      Space group index, or space group name (string), or space group
+% spgr      Space group index, or space group label (string), or space group
 %           operators in a matrix with dimensions [3 4 nOp].
-% label     Optional label for the space group if the generators are given.
+% label     Optional label for the space group if the generators are given
+%           in the 'spgr' option.
 % bv        Basis vectors given in a matrix with dimensions of [3 3].
 % origin    Origin for the space group operators. Default is [0 0 0].
 % perm      Permutation of the abc axes of the space group operators.
@@ -54,17 +55,18 @@ function R = genlattice(obj, varargin)
 % ...
 % crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','P 6')
 % crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr',168)
+% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','-y,x-y,z; -x,-y,z','label','R -3 m')
 %
-% The two lines are equivalent, both will create hexagonal lattice, with
+% The three lines are equivalent, both will create hexagonal lattice, with
 % 'P 6' space group.
 %
-% See also SPINW, SW_ADDSYM, SW_GENSYM, SPINW.GENCOUPLING.
+% See also SPINW, SWSYM.ADD, SWSYM.OPERATOR, SPINW.GENCOUPLING.
 %
 
-inpForm.fname  = {'angle'           'lat_const'           'sym'           'label'          };
-inpForm.defval = {obj.lattice.angle obj.lattice.lat_const obj.lattice.sym obj.lattice.label};
-inpForm.size   = {[1 3]             [1 3]                 [-1 -2 -3]      [1 -7]           };
-inpForm.soft   = {false             false                 false           true             };
+inpForm.fname  = {'angle'           'lat_const'           'sym'       'label'};
+inpForm.defval = {obj.lattice.angle obj.lattice.lat_const []          ''     };
+inpForm.size   = {[1 3]             [1 3]                 [-1 -2 -3]  [1 -7] };
+inpForm.soft   = {false             false                 true        true   };
 
 inpForm.fname  = [inpForm.fname  {'angled' 'bv'  'spgr'     'origin'           'perm' 'nformula'       }];
 inpForm.defval = [inpForm.defval {[0 0 0]  []    []         obj.lattice.origin 'abc'  obj.unit.nformula}];
@@ -144,31 +146,37 @@ else
     
 end
 
-if ischar(param.sym)
-    param.label = param.sym;
+% copy the apporiate label string
+if ~isempty(param.sym) && isempty(param.label)
+    if ischar(param.sym)
+        param.label = param.sym;
+    elseif iscell(param.sym)
+        param.label = param.sym{2};
+    end
 end
-
-if iscell(param.sym)
-    param.label = param.sym{1};
-end
-
+    
 % generate the symmetry operators
 if ~isempty(param.sym)
     if ~iscell(param.sym)
         param.sym = {param.sym};
     end
-    param.sym = sw_gensym(param.sym{:});
-end
+    param.sym = swsym.operator(param.sym{1});
+    
+    % permute the symmetry operators if necessary
+    if ischar(param.perm)
+        param.perm = param.perm-'a'+1;
+    end
+    obj.lattice.sym = param.sym(param.perm,[param.perm 4],:);
+    % assign the origin for space group operators
+    obj.lattice.origin = param.origin;
+    obj.lattice.label = strtrim(param.label);
 
-% permute the symmetry operators if necessary
-if ischar(param.perm)
-    param.perm = param.perm-'a'+1;
-end
-obj.lattice.sym = param.sym(param.perm,[param.perm 4],:);
-% assign the origin for space group operators
-obj.lattice.origin = param.origin;
+else
+    if ~isempty(param.label)
+        obj.lattice.label = strtrim(param.label);
+    end
+end   
 
-obj.lattice.label = strtrim(param.label);
 
 obj.unit.nformula = int32(param.nformula);
 

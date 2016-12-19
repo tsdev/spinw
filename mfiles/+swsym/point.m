@@ -23,7 +23,7 @@ function pOp = point(symOp, r)
 %               Where A is a 3x3 matrix, containing the basis vectors of
 %               the lattice as column vectors.
 %
-% See also SWSYM.OPERATOR, SWSYM.POSITION.
+% See also SWSYM.GENERATOR, SWSYM.OPERATOR, SWSYM.POSITION.
 %
 
 if nargin == 0

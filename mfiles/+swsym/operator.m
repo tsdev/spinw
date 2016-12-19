@@ -26,8 +26,8 @@ function [symOp, symInfo] = operator(sym, fid)
 %   num             The index of the symmetry in the symmetry.dat file.
 %
 %
-% See also SW, SW.ATOM, SW.MATOM, SW.GENCOUPLING, SW_POINTSYM, SW_GENATPOS,
-% SW_GENSYM, SW_ISSYMOP.
+% See also SW, SWSYM.POSITION, SPINW.ATOM, SPINW.MATOM, SWSYM.GENERATOR,
+% SWSYM.POINT.
 %
 
 if nargin == 0

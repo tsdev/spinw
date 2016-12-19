@@ -16,7 +16,7 @@ function N = oporder(symOp)
 %
 % R^sw_symorder([R zeros(3,1)]) == eye(3);
 %
-% See also SW_GENATPOS, SW_BASISMAT.
+% See also SWSYM.GENERATOR, SW_BASISMAT.
 %
 
 if nargin == 0

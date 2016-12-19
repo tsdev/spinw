@@ -25,14 +25,12 @@ function atomList = atom(obj)
 %
 % Example:
 %
-% sw_addsym('x+1/2,y+1/2,z;x+1/2,y,z+1/2;x,y+1/2,z+1/2','FCC');
-% 
 % cryst = spinw;
-% cryst.genlattice('lat_const',[8 8 8],'sym','FCC')
+% cryst.genlattice('lat_const',[8 8 8],'spgr','x+1/2,y+1/2,z;x+1/2,y,z+1/2;x,y+1/2,z+1/2','label','FCC')
 % cryst.addatom('r',[0 0 0],'label','Atom1')
 % atomList = cryst.atom;
 %
-% This will create a new symmetry, that contains all the translations of
+% This will create a new space group, that contains all the translations of
 % the FCC lattice. Then creates a crystal with an atom at [0 0 0] position.
 % The cryst.atom lists all 4 symmetry equivalent positions generated using
 % the 'FCC' symmetry operators.
@@ -41,7 +39,7 @@ function atomList = atom(obj)
 %
 
 % Generate all symmetry equivalent atoms
-[atomList.r, atomList.idx] = sw_genatpos(obj.lattice.sym,obj.unit_cell.r);
+[atomList.r, atomList.idx] = swsym.position(obj.lattice.sym,obj.unit_cell.r);
 
 if obj.symbolic
     atomList.mag = ~sw_always(obj.unit_cell.S(atomList.idx)==0);

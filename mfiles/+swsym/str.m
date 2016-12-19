@@ -12,6 +12,8 @@ function symStr = str(symOp)
 %
 % strSym    String, contains the symmetry operations.
 %
+% See also SWSYM.ADD, SWSYM.GENERATOR.
+%
 
 if nargin == 0
     help swsym.str

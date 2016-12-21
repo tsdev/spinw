@@ -82,6 +82,10 @@ inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
+if prod(obj.magstr.N_ext) == 1
+    param.extend = false;
+end
+
 % create parameters of magnetic atoms in the unit cell
 mAtom    = obj.matom;
 nMagAtom = size(mAtom.r,2);

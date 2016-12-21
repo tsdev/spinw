@@ -18,7 +18,7 @@ function [handle] = sw_cylinder(r1,r2,R,N, dash)
 %
 
 if nargin == 0
-    help sw_cylinder;
+    help sw_cylinder
     return
 end
 

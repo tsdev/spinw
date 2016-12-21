@@ -6,6 +6,15 @@ function hFigure = sw_structfigure()
 % See also SW.PLOT.
 %
 
+% Using code from:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Copyright (c) 2008 Andrea Tagliasacchi
+% All Rights Reserved
+% email: ata2 at cs dot nospam dot sfu dot ca
+% $Revision: 1.0$ 10 February 2008
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 % Position of the new figure window.
 %posFig = get(0,'DefaultFigurePosition');
 %posFig = [posFig(1:2) 400 400];
@@ -51,7 +60,6 @@ set(hFigure,...
     'Tag',           'sw_crystal',...
     'Toolbar',       'figure',...
     'DeleteFcn',     @closeSubFigs);
-%    'Position',      posFig,...
 
 hToolbarT = get(hFigure,'children');
 
@@ -64,16 +72,6 @@ else
     end
     hToolbar = hToolbarT(idx);
 end
-
-% if feature('usehg2')
-%     idx = 1;
-%     while ~isa(hToolbarT(idx),'matlab.ui.container.Toolbar')
-%         idx = idx + 1;
-%     end
-%     hToolbar = hToolbarT(idx);
-% else
-%     hToolbar = hToolbarT(end);
-% end
 
 hButton  = get(hToolbar,'children');
 delete(hButton([1:(end-3) end-1 end]));
@@ -167,7 +165,7 @@ set(hFigure,'Visible','on');
         
         % workaround condition (see point_on_sphere)
         if isnan(P)
-            return;
+            return
         end
         
         %%%%% ARCBALL COMPUTATION %%%%%
@@ -258,7 +256,11 @@ if size(multip,2)>1
     
     h   = getappdata(objFigure,'h');
     obj = getappdata(objFigure,'obj');
-    basisVector = obj.basisvector;
+    if isempty(obj)
+        basisVector = eye(3);
+    else
+        basisVector = obj.basisvector;
+    end
     v1 = basisVector(:,1);
     v2 = basisVector(:,2);
     v3 = basisVector(:,3);
@@ -300,12 +302,6 @@ else
     sub1 = findobj('Tag',['setRange_' num2str(hFigure.Number)]);
 end
 
-% if feature('usehg2')
-%     sub1 = findobj('Tag',['setRange_' num2str(hFigure.Number)]);
-% else
-%     sub1 = findobj('Tag',['setRange_' num2str(hFigure)]);
-% end
-
 if ~isempty(sub1)
     close(sub1);
 end
@@ -332,6 +328,11 @@ end
 function setrange(~, ~, hFigure)
 % setrange() changes the plotting range
 
+% if there is no crystal, don't do anything
+if isempty(getappdata(hFigure,'obj'))
+    return
+end
+
 param     = getappdata(hFigure,'param');
 parentPos = get(hFigure,'Position');
 fWidth    = 195;
@@ -344,12 +345,6 @@ else
     figNum = hFigure.Number;
 end
 
-% if feature('usehg2')
-%     figNum = hFigure.Number;
-% else
-%     figNum = hFigure;
-% end
- 
 %    'WindowStyle',    'modal',...
 objMod = findobj('Tag',['setRange_' num2str(figNum)]);
 

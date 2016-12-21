@@ -4,7 +4,7 @@
 %
 % List of functions:
 %
-% histn         Multi dimensional binning.
-% lm            Least square refinement using Levenberg Marquardt method.
-% pso           Minimization via particle swarm optimisation.
+% <a href="matlab: doc ndbase.histn">histn</a>         Multi dimensional binning.
+% <a href="matlab: doc ndbase.lm">lm</a>            Least square refinement using Levenberg Marquardt method.
+% <a href="matlab: doc ndbase.pso">pso</a>           Minimization via particle swarm optimisation.
 %

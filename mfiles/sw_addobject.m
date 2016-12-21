@@ -16,7 +16,7 @@ function sw_addobject(hFigure, hAdd)
 %
 
 if nargin == 0
-    help sw_addobject;
+    help sw_addobject
     return
 end
 

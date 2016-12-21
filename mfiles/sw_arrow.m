@@ -1,4 +1,4 @@
-function [handle] = sw_arrow(rStart, rEnd, R, alpha, lHead, N)
+function handle = sw_arrow(rStart, rEnd, R, alpha, lHead, N)
 % draws a 3D arrow
 %
 % [handle] = SW_ARROW(rStart, rEnd, R, alpha, lHead, N)

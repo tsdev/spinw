@@ -234,7 +234,7 @@ fSpin = squeeze(sumn(abs(AA),[1 2]))==0 & nNeighG==0 & sum(abs(Bloc'),2)==0;
 Sindex(:,fSpin) = false;
 
 if ~any(Sindex)
-    error('sw:optmagsteep:NoField','No spin Hamiltonian is defined!');
+    error('sw:optmagsteep:NoField','There nothing to optimise!');
 end
 
 % Speeds up the code by storing every sublattice data in different cells

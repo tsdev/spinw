@@ -332,12 +332,12 @@ if plotmode
         set(gca,'Color','none');
         set(gca,'Box','off');
         set(gca,'Clipping','Off');
-        daspect([1 1 1]);
-        pbaspect([1 1 1]);
+        daspect([1 1 1])
+        pbaspect([1 1 1])
         axis off
         axis vis3d
         hold on
-        material dull;
+        material dull
     end
     
     tooltip(hFigure,'<< Click on any object to get information! >>')

@@ -1,4 +1,4 @@
-function rPref = getpref(prefName, simple)
+function rPref = getpref(prefName, ~)
 % returns SpinW global preferences
 %
 % rPref = swpref.getpref
@@ -30,13 +30,14 @@ function rPref = getpref(prefName, simple)
 store = 'spinw_global';
 
 % default values
-dn = {      'fid'       'pid'             'expert'};
-dv = {      1           feature('getpid') 0       };
+dn = {      'fid'       'pid'             'expert' 'tag'       };
+dv = {      1           feature('getpid') 0        'sw_crystal'};
 
 dl = {...
     'file identifier for text output, default value is 1 (Command Window)'...
     'PID value assigned to the running Matlab session, used to reset all pref after restart'...
     'expert mode (1) gives less warnings (not recommended), default value is 0'...
+    'defines the tag property of the crystal structure plot figures'...
     };
 
 dPref = struct('val',{},'name',{},'label',{});

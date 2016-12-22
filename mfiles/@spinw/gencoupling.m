@@ -108,7 +108,7 @@ mAtom = obj.matom;
 nMagAtom = size(mAtom.r,2);
 
 if nMagAtom == 0
-    error('sw:gencoupling:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+    error('sw:gencoupling:NoMagAtom','There is no magnetic atom (S>0) in the unit cell!');
 end
 
 % Use half 'cube' around the center unit cell and remove the identical

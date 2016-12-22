@@ -14,12 +14,12 @@
 % atoms for plotting. ALternatively a .cif file of the crystal structure
 % can be imported.
 
-sw_addsym('-z, y+3/4, x+3/4; z+3/4, -y, x+3/4; z+3/4, y+3/4, -x; y+3/4, x+3/4, -z; x+3/4, -z, y+3/4; -z, x+3/4, y+3/4','F d -3 m Z');
+symStr = '-z, y+3/4, x+3/4; z+3/4, -y, x+3/4; z+3/4, y+3/4, -x; y+3/4, x+3/4, -z; x+3/4, -z, y+3/4; -z, x+3/4, y+3/4';
 
 ybti = spinw;
 a = 10.0307;
-ybti.genlattice('lat_const',[a a a],'angled',[90 90 90],'sym','F d -3 m Z')
-ybti.addatom('label','Yb3+','r',[1/2 1/2 1/2])
+ybti.genlattice('lat_const',[a a a],'angled',[90 90 90],'spgr',symStr,'label','F d -3 m Z')
+ybti.addatom('label','Yb3+','r',[1/2 1/2 1/2],'S',1/2)
 ybti.addatom('label','Ti4+','r',[0 0 0])
 ybti.addatom('label','O2-','r',[0.3318 1/8 1/8])
 ybti.addatom('label','O2-','r',[3/8 3/8 3/8])
@@ -46,7 +46,7 @@ ybti.unit_cell = ybti.unitcell(1);
 
 %%
 % We generate the list of bonds.
-ybti.gencouplingold
+ybti.gencoupling
 
 %%
 % We create two 3x3 matrix, one for the first neighbor anisotropic exchange
@@ -89,7 +89,7 @@ ybti.getmatrix('label','J1');
 
 ybti.fileid(0);
 J1 = -0.09; J2 = -0.22; J3 = -0.29; J4 = 0.01;
-ybti.setmatrix('label','J1','pref',[J1 -J3 J2 -J4]);
+ybti.setmatrix('label','J1','pref',[J1 J3 J2 J4]);
 
 
 %% Calculate spin wave spectrum

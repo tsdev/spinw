@@ -12,7 +12,7 @@ function points = sw_circle(r0, n, R, N)
 %
 
 if nargin == 0
-    help sw_circle;
+    help sw_circle
     return
 end
 

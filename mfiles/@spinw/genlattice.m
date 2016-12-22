@@ -160,16 +160,21 @@ if ~isempty(param.sym)
     if ~iscell(param.sym)
         param.sym = {param.sym};
     end
-    param.sym = swsym.operator(param.sym{1});
+    [symOp, symInfo] = swsym.operator(param.sym{1});
     
     % permute the symmetry operators if necessary
     if ischar(param.perm)
         param.perm = param.perm-'a'+1;
     end
-    obj.lattice.sym = param.sym(param.perm,[param.perm 4],:);
+    obj.lattice.sym = symOp(param.perm,[param.perm 4],:);
     % assign the origin for space group operators
     obj.lattice.origin = param.origin;
-    obj.lattice.label = strtrim(param.label);
+    
+    if isnumeric(param.sym{1}) && numel(param.sym{1})==1
+        obj.lattice.label = symInfo.name;
+    else
+        obj.lattice.label = strtrim(param.label);
+    end
 
 else
     if ~isempty(param.label)

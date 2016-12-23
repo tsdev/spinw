@@ -22,64 +22,54 @@ if nargin == 0
 end
 
 if nargin < 2
-    hFigure = findobj('tag',swpref.getpref('tag',[]));
-    if isempty(hFigure)
-        error('add:NoFigure',['There is no crystal structure plot figure, '...
-            'create one using the swplot.figure command!'])
-    end
-    hFigure = hFigure(1);
+    % find active figure
+    hFigure = swplot.activefigure;
 end
 
 cva = get(gca,'CameraViewAngle');
-h   = getappdata(hFigure,'h');
+hTransform = getappdata(hFigure,'h');
 
-if isappdata(hFigure,'handle')
-    handle = getappdata(hFigure,'handle');
+if isappdata(hFigure,'objects')
+    sObject = getappdata(hFigure,'objects');
 else
-    handle = struct;
+    sObject = struct;
 end
 
+% convert a simple list of handles to the required structure to store in
+% swplot
 if ~isstruct(hAdd)
-    temp.newObjects = hAdd;
-    hAdd = temp;
+    nObjAdd = numel(hAdd);
+    sTemp1 = struct('handle',cell(1,nObjAdd),'text',cell(1,nObjAdd),'position',cell(1,nObjAdd));
+    sTemp2.general = sTemp1;
+    % convert vector of graphical objects to cell
+    hAdd = num2cell(hAdd(:));
+    % save handles
+    [sTemp2.general(:).handle] = hAdd{:};
+    % empty placeholders
+    text1     = repmat({''},nObjAdd,1);
+    [sTemp2.general(:).text] = text1{:};
+    position1 = repmat({nan(3,2)},nObjAdd,1);
+    [sTemp2.general(:).position] = position1{:};
+    hAdd = sTemp2;
 end
 
-% Combs together the handles of the old and new graphical objects.
+% add all the objects to the hgtransform object.
+names = fieldnames(hAdd);
+for ii = 1:numel(names)
+    hSelect = [hAdd.(names{ii})(:).handle];
+    set(hSelect,'Parent',hTransform);
+    set(hSelect,'Clipping','Off');
+end
+
+% comb together the handles of the old and new graphical objects.
 namesAdd = fieldnames(hAdd);
 for ii = 1:length(namesAdd)
-    if isfield(handle,namesAdd{ii})
-        handle.(namesAdd{ii}) = [handle.(namesAdd{ii}) hAdd.(namesAdd{ii})];
+    if isfield(sObject,namesAdd{ii})
+        sObject.(namesAdd{ii}) = [sObject.(namesAdd{ii}) hAdd.(namesAdd{ii})];
     else
-        handle.(namesAdd{ii}) = hAdd.(namesAdd{ii});
+        sObject.(namesAdd{ii}) = hAdd.(namesAdd{ii});
     end
 end
-
-% Delete the light objects.
-if isfield(handle,'light')
-    delete(handle.light(:));
-    handle = rmfield(handle,'light');
-end
-
-h2 = hgtransform('Parent',h);
-names = fieldnames(handle);
-
-% Add all the objects to the hgtransform object.
-% TODO check whether the graphical objects are not duplicated.
-staticO = {'tooltip' 'legend' 'lRect' 'lText'};
-
-for ii = 1:length(names)
-    if ~any(strcmp(names{ii},staticO))
-        h0 = reshape(handle.(names{ii}),1,[]);
-        h0(h0 == 0) = [];
-        h0(~ishandle(h0)) = [];
-        set(h0,'Parent',h2);
-        set(h0,'Clipping','Off');
-    end
-end
-
-set(gca,'CameraViewAngle',cva);
-
-handle.light = camlight('right');
 
 % Shift the origin to center the plot.
 if isappdata(hFigure,'param')
@@ -88,16 +78,19 @@ else
     param = struct;
 end
 
+% center object if it is crystal
+% TODO change to BV matrix
 if isfield(param,'range') && isappdata(hFigure,'obj')
     range       = param.range;
     basisVector = getappdata(hFigure,'obj');
     basisVector = basisVector.basisvector;
     T           = makehgtform('translate',-sum(basisVector * sum(range,2)/2,2)');
-    set(h2,'Matrix',T);
+    set(hTransform,'Matrix',T);
 end
 
 % Saves the object handles into the figure UserData property.
-setappdata(hFigure,'handle',handle);
-setappdata(hFigure,'h',h);
+setappdata(hFigure,'objects',sObject);
+setappdata(hFigure,'h',hTransform);
+set(gca,'CameraViewAngle',cva);
 
 end

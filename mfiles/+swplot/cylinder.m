@@ -1,14 +1,15 @@
 function handle = cylinder(rStart, rEnd, R, N, close)
 % draws a closed/open 3D cylinder
 %
-% [handle] = SWPLOT.CYLINDER(rStart, rEnd, R, N, {close})
+% [handle] = SWPLOT.CYLINDER(rStart, rEnd, R, {N}, {close})
 %
 % Input:
 %
 % rStart    Coordinate of the starting point.
 % rEnd      Coordinate of the end point.
 % R         Radius of the arrow body.
-% N         Number of the points of the surface mesh.
+% N         Number of points on the curve, default value is stored in 
+%           swpref.getpref('npatch').
 % close     If true the cylinder is closed. Default is true.
 %
 % See also SWPLOT.ARROW.
@@ -17,6 +18,10 @@ function handle = cylinder(rStart, rEnd, R, N, close)
 if nargin == 0
     help swplot.cylinder
     return
+end
+
+if nargin < 4
+    N = swpref.getpref('npatch',[]);
 end
 
 if nargin < 5

@@ -27,11 +27,12 @@ showHidden = get(0,'Showhidden');
 set(0,'Showhidden','on')
 set(gcf,'color','w')
 
+hAxis = gca;
 % Make the look of the plot
-set(gca,'Position',[0 0 1 1]);
-set(gca,'Color','none');
-set(gca,'Box','off');
-set(gca,'Clipping','Off');
+set(hAxis,'Position',[0 0 1 1]);
+set(hAxis,'Color','none');
+set(hAxis,'Box','off');
+set(hAxis,'Clipping','Off');
 daspect([1 1 1]);
 pbaspect([1 1 1]);
 axis off
@@ -39,7 +40,7 @@ axis vis3d
 hold on
 material dull
 
-if get(gca,'CameraViewAngle') == 0.6
+if get(hAxis,'CameraViewAngle') == 0.6
     camva('auto');
 end
 
@@ -132,7 +133,7 @@ set(hFigure, 'WindowButtonMotionFcn', @motion_callback);
 set(hFigure, 'WindowButtonDownFcn',   @buttondown_callback);
 set(hFigure, 'WindowButtonUpFcn',     @buttonup_callback);
 set(hFigure, 'WindowScrollWheelFcn',  @wheel_callback);
-set(gca,'CameraViewAngle',0.6);
+set(hAxis,'CameraViewAngle',0.6);
 
 activatefigure([], [], hFigure, button.figActive, icon,'initialize')
 
@@ -141,9 +142,17 @@ mousestatus = 'buttonup';
 START = [0 0 0];
 M_previous = get(h,'Matrix');
 
+% child hgtransform for translation etc
+h2 = hgtransform(h);
 % save data to figure
 setappdata(hFigure,'button',button);
-setappdata(hFigure,'h',h);
+setappdata(hFigure,'h',h2);
+setappdata(hFigure,'axis',hAxis);
+setappdata(hFigure,'legend',struct('handle',gobjects(0),'text','','type',[]));
+setappdata(hFigure,'tooltip',struct('handle',gobjects(0)));
+setappdata(hFigure,'light',camlight('right'));
+setappdata(hFigure,'objects',struct);
+setappdata(hFigure,'icon',icon);
 set(hFigure,'Visible','on');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

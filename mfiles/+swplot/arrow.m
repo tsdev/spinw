@@ -1,7 +1,7 @@
 function handle = arrow(rStart, rEnd, R, alpha, lHead, N)
 % draws a 3D arrow
 %
-% [handle] = SWPLOT.ARROW(rStart, rEnd, R, alpha, lHead, N)
+% [handle] = SWPLOT.ARROW(rStart, rEnd, R, alpha, lHead, {N})
 %
 % Input:
 %
@@ -10,7 +10,8 @@ function handle = arrow(rStart, rEnd, R, alpha, lHead, N)
 % R         Radius of the arrow body.
 % alpha     Angle of the head in degrees.
 % lHead     Length of the head.
-% N         Number of the points of the surface mesh.
+% N         Number of points on the curve, default value is stored in 
+%           swpref.getpref('npatch').
 %
 % See also SWPLOT.CYLINDER.
 %
@@ -18,6 +19,10 @@ function handle = arrow(rStart, rEnd, R, alpha, lHead, N)
 if nargin == 0
     help swplot.arrow
     return
+end
+
+if nargin < 6
+    N = swpref.getpref('npatch',[]);
 end
 
 rStart = rStart(:);

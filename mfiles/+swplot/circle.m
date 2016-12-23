@@ -1,14 +1,15 @@
 function [handle] = circle(r0, n, R, N)
 % creates a circle surface in 3 dimensions
 %
-% handle = SWPLOIT.CIRCLE(r0, n, R, N)
+% handle = SWPLOIT.CIRCLE(r0, n, R, {N})
 %
 % Input:
 %
-% r0    Center of the circle, vector with three elements.
-% n     Vector normal to the circle surface, vector with three elements.
-% R     Radius of the circle.
-% N     Number of points on the curve.
+% r0        Center of the circle, vector with three elements.
+% n         Vector normal to the circle surface, vector with three elements.
+% R         Radius of the circle.
+% N         Number of points on the curve, default value is stored in 
+%           swpref.getpref('npatch').
 %
 % See also SWPLOT.CYLINDER.
 %
@@ -16,6 +17,10 @@ function [handle] = circle(r0, n, R, N)
 if nargin == 0
     help swplot.circle
     return
+end
+
+if nargin < 4
+    N = swpref.getpref('npatch',[]);
 end
 
 r0 = repmat(r0(:),1,N);

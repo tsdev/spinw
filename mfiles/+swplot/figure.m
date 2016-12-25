@@ -36,13 +36,15 @@ set(hAxis,'Clipping','Off');
 daspect([1 1 1]);
 pbaspect([1 1 1]);
 axis off
-axis vis3d
+
+% setup the camera to full manual control
+hAxis.CameraPosition  = [0 0 100];
+hAxis.CameraTarget    = [0 0 0];
+hAxis.CameraUpVector  = [0 1 0];
+hAxis.CameraViewAngle = 0.6;
+
 hold on
 material dull
-
-if get(hAxis,'CameraViewAngle') == 0.6
-    camva('auto');
-end
 
 if verLessThan('matlab','8.4.0')
     figNum = hFigure;
@@ -142,11 +144,9 @@ mousestatus = 'buttonup';
 START = [0 0 0];
 M_previous = get(h,'Matrix');
 
-% child hgtransform for translation etc
-h2 = hgtransform(h);
 % save data to figure
 setappdata(hFigure,'button',button);
-setappdata(hFigure,'h',h2);
+setappdata(hFigure,'h',h);
 setappdata(hFigure,'axis',hAxis);
 setappdata(hFigure,'legend',struct('handle',gobjects(0),'text','','type',[]));
 setappdata(hFigure,'tooltip',struct('handle',gobjects(0)));
@@ -183,8 +183,6 @@ set(hFigure,'Visible','on');
             rot_ang = acos( dot( P, START ) );
             
             % convert direction in model coordinate system
-            %M_tr = inv( M_previous );
-            %rot_dir = M_tr*[rot_dir,0]';
             rot_dir = M_previous\[rot_dir,0]';
             rot_dir = rot_dir(1:3);
             if norm(rot_dir) > 0

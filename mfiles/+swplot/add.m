@@ -85,7 +85,7 @@ if isfield(param,'range') && isappdata(hFigure,'obj')
     basisVector = getappdata(hFigure,'obj');
     basisVector = basisVector.basisvector;
     T           = makehgtform('translate',-sum(basisVector * sum(range,2)/2,2)');
-    set(hTransform,'Matrix',T);
+    set(hTransform,'Matrix',get(hTransform,'Matrix')*T);
 end
 
 % Saves the object handles into the figure UserData property.

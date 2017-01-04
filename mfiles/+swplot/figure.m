@@ -20,6 +20,11 @@ function hFigureOut = figure()
 % $Revision: 1.0$ 10 February 2008
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% how to avoid overplotting?
+% if ~isempty(get(0,'CurrentFigure'))
+%     oldAxis = get(gcf,'CurrentAxes');
+% end
+
 % Create new figure.
 hFigure = figure;
 % show hidden child handles, such as hToolbar
@@ -131,11 +136,10 @@ button.ver = uipushtool(hToolbar,'CData',icon.ver,'TooltipString','Show SpinW ve
     'Separator','on','ClickedCallback',{@sw_logo ''});
 set(button.figActive,'ClickedCallback',{@activatefigure hFigure button.figActive icon});
 
-set(hFigure, 'WindowButtonMotionFcn', @motion_callback);
-set(hFigure, 'WindowButtonDownFcn',   @buttondown_callback);
-set(hFigure, 'WindowButtonUpFcn',     @buttonup_callback);
-set(hFigure, 'WindowScrollWheelFcn',  @wheel_callback);
-set(hAxis,'CameraViewAngle',0.6);
+set(hFigure,'WindowButtonMotionFcn',@motion_callback);
+set(hFigure,'WindowButtonDownFcn',  @buttondown_callback);
+set(hFigure,'WindowButtonUpFcn',    @buttonup_callback);
+set(hFigure,'WindowScrollWheelFcn', @wheel_callback);
 
 activatefigure([], [], hFigure, button.figActive, icon,'initialize')
 
@@ -153,6 +157,7 @@ setappdata(hFigure,'tooltip',struct('handle',gobjects(0)));
 setappdata(hFigure,'light',camlight('right'));
 setappdata(hFigure,'objects',struct);
 setappdata(hFigure,'icon',icon);
+setappdata(hFigure,'base',eye(3));
 set(hFigure,'Visible','on');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -257,6 +262,12 @@ end
 
 % restore showHidden property
 set(0,'Showhidden',showHidden);
+
+% TODO how to avoid overplotting
+% if ~isempty(oldAxis)
+%     % make old axis active to avoid overplotting
+%     axes(oldAxis);
+% end
 
 end
 

@@ -157,6 +157,9 @@ end
 
 % define weighted least squares if dat is given
 if ~isempty(dat)
+    dat.x = dat.x(:);
+    dat.y = dat.y(:);
+    
     if ~isfield(dat,'e') || isempty(dat.e) || ~any(dat.e(:))
         weight = 1./abs(dat.y);
     else

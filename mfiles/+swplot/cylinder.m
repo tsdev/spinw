@@ -38,27 +38,30 @@ if any(cross(rArrow,[0; 0; 1]))
 else
     nArrow1 = cross(rArrow,[0; 1; 0]);
 end
+
 nArrow2 = cross(rArrow,nArrow1);
 nArrow1 = nArrow1/norm(nArrow1);
 nArrow2 = nArrow2/norm(nArrow2);
-
 
 phi     = linspace(0,2*pi,N);
 cPoint  = R*(nArrow1*cos(phi)+nArrow2*sin(phi));
 cPoint1 = cPoint+rStart;
 cPoint2 = cPoint+rEnd;
 
-% closing the begin of body
+V = [cPoint1';cPoint2'];
+
+% generate faces
+L = (1:(N-1))';
+F = [L L+1 L+N+1 L+N];
+
 if close
-    X = [rStart(1,:); cPoint1(1,:); cPoint2(1,:); rEnd(1,:)];
-    Y = [rStart(2,:); cPoint1(2,:); cPoint2(2,:); rEnd(2,:)];
-    Z = [rStart(3,:); cPoint1(3,:); cPoint2(3,:); rEnd(3,:)];
-else
-    X = [cPoint1(1,:); cPoint2(1,:)];
-    Y = [cPoint1(2,:); cPoint2(2,:)];
-    Z = [cPoint1(3,:); cPoint2(3,:)];   
+    % caps
+    L = (2:(N-2))';
+    F1 = [ones(N-3,1) L L+1 nan(N-3,1)];
+    F2 = F1+N;
+    F = [F1;F;F2];
 end
 
-handle = surface(X,Y,Z,'EdgeColor','none','FaceColor','r');
+handle = patch('Vertices',V,'Faces',F,'FaceLighting','flat','EdgeColor','none','FaceColor','r');
 
 end

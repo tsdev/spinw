@@ -51,13 +51,21 @@ cPoint1 = bsxfun(@plus,cPoint,rStart);
 cPoint2 = bsxfun(@plus,cPoint,endHead);
 cPoint3 = bsxfun(@plus,cPoint*rHead/R,endHead);
 
-rStart = repmat(rStart(:),1,N);
-rEnd   = repmat(rEnd(:),1,N);
 
-X = [rStart(1,:); cPoint1(1,:); cPoint2(1,:); cPoint3(1,:); rEnd(1,:)];
-Y = [rStart(2,:); cPoint1(2,:); cPoint2(2,:); cPoint3(2,:); rEnd(2,:)];
-Z = [rStart(3,:); cPoint1(3,:); cPoint2(3,:); cPoint3(3,:); rEnd(3,:)];
+V  = [cPoint1';cPoint2';cPoint3';rEnd(:)'];
+L = (2:(N-2))';
+% base circle
+F1 = [ones(N-3,1) L L+1 nan(N-3,1)];
+L  = (1:(N-1))';
+% body cylinder
+F2 = [L L+1 L+N+1 L+N];
+% back of circle of the head
+F3 = F2+N;
+L  = (1:(N-1))'+2*N;
+% head cone
+F4 = [L L+1 ones(N-1,1)*(3*N+1) nan(N-1,1)];
 
-handle = surface(X,Y,Z,'EdgeColor','none','FaceColor','r');
+F  = [F1;F2;F3;F4];
+handle = patch('Vertices',V,'Faces',F,'FaceLighting','flat','EdgeColor','none','FaceColor','r');
 
 end

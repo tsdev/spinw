@@ -11,9 +11,8 @@ function sw_logo(varargin)
 % See also: sw.
 %
 
-hFig = figure('menubar','none','toolbar','none','name',...
-    'About SpinW','NumberTitle','off','resize','off');
-WinOnTop(hFig, true);
+hFigure = figure('menubar','none','toolbar','none','name',...
+    'About SpinW','NumberTitle','off','resize','off','Visible','off');
 hold on
 
 % plot wave
@@ -70,6 +69,9 @@ else
     
 end
 
+set(hFigure,'Visible','on');
+WinOnTop(hFigure, true);
+
 end
 
 function WasOnTop = WinOnTop(FigureHandle, IsOnTop)
@@ -100,7 +102,7 @@ function WasOnTop = WinOnTop(FigureHandle, IsOnTop)
 
 % Parse Inputs
 
-if ~exist('FigureHandle','var');
+if ~exist('FigureHandle','var')
     FigureHandle = gcf;
 end
 

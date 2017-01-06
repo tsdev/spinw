@@ -1,19 +1,28 @@
-function view(ax)
+function view(ax,hFigure)
 % control 3D view of swplot
 %
-% SWPLOT.VIEW(ax)
+% SWPLOT.VIEW(ax,{hFigure})
 %
 % Input:
 %
-% ax        String to change view, options:
-%               'a','b','c'     axis normal to view plane
+% ax        String to change view of the 3D plot. Possible options:
+%               'ab','bc','ac'  the two axes define the view plane,
+%               'hk','kl','hl'  the two reciprocal lattice vectors define
+%                               the view plane.
+% hFigure   Handle of the swplot figure window, optional.
+%
 
-
-% find active figure
-hFigure = swplot.activefigure;
+if nargin<2
+    % find active figure
+    hFigure = swplot.activefigure;
+end
 
 % hgtransform object
 h = getappdata(hFigure,'h');
+
+if isempty(h)
+    return
+end
 
 bv = getappdata(hFigure,'base');
 

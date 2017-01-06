@@ -57,7 +57,9 @@ end
 names = fieldnames(hAdd);
 for ii = 1:numel(names)
     hSelect = [hAdd.(names{ii})(:).handle];
-    set(hSelect,'Parent',hTransform);
+    if ~isempty(hTransform)
+        set(hSelect,'Parent',hTransform);
+    end
     set(hSelect,'Clipping','Off');
 end
 
@@ -78,9 +80,9 @@ else
     param = struct;
 end
 
-% center object if it is crystal
+% center object if it is crystal and hgtransform exists
 % TODO change to BV matrix
-if isfield(param,'range') && isappdata(hFigure,'obj')
+if isfield(param,'range') && isappdata(hFigure,'obj') && ~isempty(hTransform)
     range       = param.range;
     basisVector = getappdata(hFigure,'obj');
     basisVector = basisVector.basisvector;
@@ -92,5 +94,6 @@ end
 setappdata(hFigure,'objects',sObject);
 setappdata(hFigure,'h',hTransform);
 set(gca,'CameraViewAngle',cva);
+material('shiny');
 
 end

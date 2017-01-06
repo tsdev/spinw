@@ -80,7 +80,7 @@ for ii = 1:numel(lType)
             % colored rectangle
             handle(end+1) = rectangle('Position',[5 lHeight-20*ii+6 sRadius*2 sRadius],...
                 'FaceColor',lColor(:,ii),'EdgeColor','k'); %#ok<*AGROW>
-            handle(end+1) = text(30,(lHeight-20*ii+10),lText{ii},'fontSize',fontSize,'color','k');
+            %handle(end+1) = text(30,(lHeight-20*ii+10),lText{ii},'fontSize',fontSize,'color','k');
         case 2
             % dashed rectangle
             handle(end+1) = rectangle('Position',[6 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5],...
@@ -89,9 +89,19 @@ for ii = 1:numel(lType)
                 'FaceColor',lColor(:,ii),'EdgeColor',lColor(:,ii));
             handle(end+1) = rectangle('Position',[5 lHeight-20*ii+6 sRadius*2 sRadius],...
                 'FaceColor','none','EdgeColor','k');
-            handle(end+1) = text(30,(lHeight-20*ii+10),lText{ii},...
-                'fontSize',fontSize,'color','k');
+            %handle(end+1) = text(30,(lHeight-20*ii+10),lText{ii},...
+            %    'fontSize',fontSize,'color','k');
+        case 3
+            % sphere
+            handle(end+1) = swplot.ellipsoid([5+sRadius lHeight-20*ii+3+sRadius 0],eye(3)*sRadius,3);
     end
+    % add text
+    handle(end+1) = text(30,(lHeight-20*ii+10),lText{ii},'fontSize',fontSize,'color','k');
+end
+
+if any(lType==3)
+    % add light
+    camlight('right');
 end
 
 % take care that one cannot activate axis by clicking on it

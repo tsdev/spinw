@@ -1,7 +1,7 @@
-function hFigureOut = figure()
+function hFigureOut = figure(mode)
 % creates figure for crystal structure plot
 %
-% hFigure = SWPLOT.FIGURE()
+% hFigure = SWPLOT.FIGURE({mode})
 %
 % The function creates an empty figure with all the controls for modifying
 % the plot and the 3D roation engine that rotates the objects on the figure
@@ -9,7 +9,14 @@ function hFigureOut = figure()
 % the graphics object (after creating it using surf, patch, etc.) has to be
 % added to the list using the function swplot.add.
 %
-% See also SWPLOT.ADD.
+% Input:
+%
+% mode      Optional string. If 'nohg', then no hgtransform object will be
+%           used for fine object rotation. Can be usefull for certain
+%           export functions, that are incompatible with hgtransform
+%           objects. Default is 'hg' to use hgtransform.
+%
+% See also SWPLOT.ADD, HGTRANSFORM.
 %
 
 % Using code from:
@@ -25,6 +32,10 @@ function hFigureOut = figure()
 %     oldAxis = get(gcf,'CurrentAxes');
 % end
 
+if nargin == 0
+    mode = 'hg';
+end
+
 % Create new figure.
 hFigure = figure;
 % show hidden child handles, such as hToolbar
@@ -32,29 +43,30 @@ showHidden = get(0,'Showhidden');
 set(0,'Showhidden','on')
 set(gcf,'color','w')
 
-hAxis = gca;
-% Make the look of the plot
-set(hAxis,'Position',[0 0 1 1]);
-set(hAxis,'Color','none');
-set(hAxis,'Box','off');
-set(hAxis,'Clipping','Off');
+% create drawing axis
+hAxis = axes(hFigure);
+
+% set camera to full manual control
+set(hAxis,...
+    'Position',         [0 0 1 1],...
+    'Color',            'none',...
+    'Box',              'off',...
+    'Clipping',         'off',...
+    'CameraPosition',   [0 0 100],...
+    'CameraTarget',     [0 0 0],...
+    'CameraUpVector',   [0 1 0],...
+    'CameraViewAngle',  0.6,...
+    'NextPlot',         'add',...
+    'Visible','off');
+
+% fix 1:1 ratio for all scale
 daspect([1 1 1]);
 pbaspect([1 1 1]);
-axis off
-
-% setup the camera to full manual control
-hAxis.CameraPosition  = [0 0 100];
-hAxis.CameraTarget    = [0 0 0];
-hAxis.CameraUpVector  = [0 1 0];
-hAxis.CameraViewAngle = 0.6;
-
-hold on
-material dull
 
 if verLessThan('matlab','8.4.0')
     figNum = hFigure;
 else
-    figNum = hFigure.Number;
+    figNum = get(hFigure,'Number');
 end
 
 set(hFigure,...
@@ -79,7 +91,13 @@ else
 end
 
 hButton  = get(hToolbar,'children');
-delete(hButton([1:(end-3) end-1 end]));
+switch mode
+    case 'hg'
+        delete(hButton([1:(end-3) end-1 end]));
+    case 'nohg'
+        % keep the object rotation button
+        delete(hButton([1:(end-9) (end-7):(end-3) end-1 end]));
+end
 
 % Loads the icon variable, that contains all the used icons.
 iconPath = [sw_rootdir 'dat_files' filesep 'icons.mat'];
@@ -90,7 +108,6 @@ catch err
         regexprep(iconPath,'\' , '\\\') '!']);
 end
 
-
 % Change button backgrounds to the toolbar background color using
 % undocumented features
 try
@@ -99,7 +116,8 @@ try
     jToolbar = get(get(hToolbar,'JavaContainer'),'ComponentPeer');
     jColor   = jToolbar.getParent.getParent.getBackground();
     bkgColor = [get(jColor,'Red') get(jColor,'Green') get(jColor,'Blue')];
-    fNames   = fieldnames(icon); %#ok<NODEF>
+    fNames   = fieldnames(icon);
+    
     for ii = 1:length(fNames)
         matSel = icon.(fNames{ii})*255;
         matSelR = matSel(:,:,1);
@@ -116,41 +134,53 @@ catch %#ok<CTCH>
     warning('figure:JavaSupport','Some functionality won''t work, due to Java incompatibility');
 end
 
-button.aAxis = uipushtool(hToolbar,'CData',icon.aAxis,'TooltipString','View direction: a axis',...
-    'ClickedCallback',{@buttonClick [1 0 0]},'Separator','on');
-button.bAxis = uipushtool(hToolbar,'CData',icon.bAxis,'TooltipString','View direction: b axis',...
-    'ClickedCallback',{@buttonClick [0 1 0]});
-button.cAxis = uipushtool(hToolbar,'CData',icon.cAxis,'TooltipString','View direction: c axis',...
-    'ClickedCallback',{@buttonClick [0 0 1]});
-button.anyAxis = uipushtool(hToolbar,'CData',icon.anyAxis,'TooltipString','Set view direction',...
-    'ClickedCallback',{@buttonClick 0});
+if strcmp(mode,'hg')
+    % only works in hg mode
+    button.aAxis = uipushtool(hToolbar,'CData',icon.aAxis,'TooltipString','View direction: a axis',...
+        'ClickedCallback',{@buttonClick 'a'},'Separator','on');
+    button.bAxis = uipushtool(hToolbar,'CData',icon.bAxis,'TooltipString','View direction: b axis',...
+        'ClickedCallback',{@buttonClick 'b'});
+    button.cAxis = uipushtool(hToolbar,'CData',icon.cAxis,'TooltipString','View direction: c axis',...
+        'ClickedCallback',{@buttonClick 'c'});
+    button.anyAxis = uipushtool(hToolbar,'CData',icon.anyAxis,'TooltipString','Set view direction',...
+        'ClickedCallback',{@buttonClick 0});
+end
+
 button.zoomOut = uipushtool(hToolbar,'CData',icon.zoomOut,'TooltipString','Zoom out',...
-    'ClickedCallback',{@buttonClick -1},'Separator','on');
+    'ClickedCallback',{@buttonClick 1/sqrt(2)},'Separator','on');
 button.zoomIn  = uipushtool(hToolbar,'CData',icon.zoomIn,'TooltipString','Zoom in ',...
-    'ClickedCallback',{@buttonClick  1});
+    'ClickedCallback',{@buttonClick sqrt(2)});
 button.setRange = uipushtool(hToolbar,'CData',icon.setRange,'TooltipString','Set range',...
     'ClickedCallback',{@setrange hFigure},'Separator','on');
 button.figActive = uipushtool(hToolbar,'CData',icon.active,'TooltipString','Keep figure',...
     'Separator','on');
 button.ver = uipushtool(hToolbar,'CData',icon.ver,'TooltipString','Show SpinW version',...
     'Separator','on','ClickedCallback',{@sw_logo ''});
-set(button.figActive,'ClickedCallback',{@activatefigure hFigure button.figActive icon});
+set(button.figActive,'ClickedCallback',{@activatefigure 'toggle'});
 
-set(hFigure,'WindowButtonMotionFcn',@motion_callback);
-set(hFigure,'WindowButtonDownFcn',  @buttondown_callback);
-set(hFigure,'WindowButtonUpFcn',    @buttonup_callback);
+% zoom function
 set(hFigure,'WindowScrollWheelFcn', @wheel_callback);
+% activate figure
+activatefigure([], [], 'initialize')
 
-activatefigure([], [], hFigure, button.figActive, icon,'initialize')
+if strcmp(mode,'hg')
+    % take care of fine object rotations via the mouse
+    set(hFigure,'WindowButtonMotionFcn',@motion_callback);
+    set(hFigure,'WindowButtonDownFcn',  @buttondown_callback);
+    set(hFigure,'WindowButtonUpFcn',    @buttonup_callback);
 
-h = hgtransform;
-mousestatus = 'buttonup';
-START = [0 0 0];
-M_previous = get(h,'Matrix');
+    % create hgtransform only if requested
+    h = hgtransform;
+    mousestatus = 'buttonup';
+    START = [0 0 0];
+    M_previous = get(h,'Matrix');
+    setappdata(hFigure,'h',h);
+else
+    setappdata(hFigure,'h',gobjects(0,1));
+end
 
 % save data to figure
 setappdata(hFigure,'button',button);
-setappdata(hFigure,'h',h);
 setappdata(hFigure,'axis',hAxis);
 setappdata(hFigure,'legend',struct('handle',gobjects(0),'text','','type',[]));
 setappdata(hFigure,'tooltip',struct('handle',gobjects(0)));
@@ -158,6 +188,9 @@ setappdata(hFigure,'light',camlight('right'));
 setappdata(hFigure,'objects',struct);
 setappdata(hFigure,'icon',icon);
 setappdata(hFigure,'base',eye(3));
+
+swplot.zoom('auto',hFigure);
+
 set(hFigure,'Visible','on');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -269,83 +302,85 @@ set(0,'Showhidden',showHidden);
 %     axes(oldAxis);
 % end
 
-end
-
-
-function buttonClick(obj, ~, multip)
-
-objFigure = get(get(obj,'Parent'),'Parent');
-
-if size(multip,2)>1
-    
-    h   = getappdata(objFigure,'h');
-    obj = getappdata(objFigure,'obj');
-    if isempty(obj)
-        basisVector = eye(3);
-    else
-        basisVector = obj.basisvector;
+    function buttonClick(~, ~, param)
+        % control view of the 3D objects on swplot figure
+        switch param
+            case {'a' 'b' 'c'}
+                swplot.view(param,hFigure);
+            case 0
+                % do nothing yet
+            otherwise
+                swplot.zoom(param,hFigure);
+        end
     end
-    v1 = basisVector(:,1);
-    v2 = basisVector(:,2);
-    v3 = basisVector(:,3);
-    v1 = v1/norm(v1);
-    v2 = v2/norm(v2);
-    v3 = v3/norm(v3);
-    
-    v = [v1 v2 v3]*multip';
-    z = [0 0 1];
-    cr = cross(v,z);
-    if any(cr)
-        an = atan2(sqrt(1-dot(v,z)^2),dot(v,z));
-        M=makehgtform('axisrotate',cr,an);
-        set(h,'Matrix',M);
-    else
-        set(h,'Matrix',diag(ones(4,1)));
+
+    function wheel_callback(~, event)
+        
+        cva = get(hAxis,'CameraViewAngle');
+        set(gca,'CameraViewAngle',cva*1.02^(event.VerticalScrollCount));
+        
     end
-    
-else
-    figure(objFigure);
-    cva = get(gca,'CameraViewAngle');
-    switch multip
-        case -1
-            set(gca,'CameraViewAngle',cva*1.5);
-        case  1
-            set(gca,'CameraViewAngle',cva/1.5);
+
+    function activatefigure(~,~,mode)
+        % activate/deactivate figure
+        %
+        % mode = initialize/toggle
+        %
+        
+        inact = 'inactive_';
+        
+        fTag = get(hFigure,'tag');
+        
+        switch mode
+            case 'initialize'
+                fTag = [inact fTag];
+            case 'toggle'
+        end
+       
+        
+        if ~isempty(strfind(fTag,inact)) || strcmp(mode,'initialize')
+            % activate figure
+            newTag = fTag((numel(inact)+1):end);
+            set(hFigure,'tag',newTag);
+            set(button.figActive,'CData',icon.active);
+            hList = findobj('Tag',newTag);
+            hList(hList==hFigure) = [];
+            % The handle of the activate button is Figure.Child(end).Child(1).
+            for jj = 1:numel(hList)
+                bt = getappdata(hList(jj),'button');
+                set(bt.figActive,'CData',icon.inactive);
+                set(hList(jj),'Tag',[inact newTag]);
+            end
+            
+        else
+            % inactivate figure
+            set(hFigure,'tag',[inact fTag]);
+            set(button.figActive,'CData',icon.inactive);
+        end
+        
+        
     end
-end
 
-end
-
-function closeSubFigs(hFigure, ~)
-% close all sub figures on plot window closing
-
-% close the "Set Range" window if it is open
-if verLessThan('matlab','8.4.0')
-    sub1 = findobj('Tag',['setRange_' num2str(hFigure)]);
-else
-    sub1 = findobj('Tag',['setRange_' num2str(hFigure.Number)]);
-end
-
-if ~isempty(sub1)
-    close(sub1);
-end
-
-% delete sw object
-delete(getappdata(hFigure,'obj'));
-% delete figure
-delete(hFigure);
-
-end
-
-function wheel_callback(~, event)
-cva = get(gca,'CameraViewAngle');
-if event.VerticalScrollCount == 1
-    mult = 1.0500;
-else
-    mult = 0.9524;
-end
-set(gca,'CameraViewAngle',cva*mult);
-
+    function closeSubFigs(~, ~)
+        % close all sub figures on plot window closing
+        
+        % close the "Set Range" window if it is open
+        if verLessThan('matlab','8.4.0')
+            sub1 = findobj('Tag',['setRange_' num2str(hFigure)]);
+        else
+            sub1 = findobj('Tag',['setRange_' num2str(hFigure.Number)]);
+        end
+        
+        if ~isempty(sub1)
+            close(sub1);
+        end
+        
+        % delete spinw object
+        %delete(getappdata(hFigure,'objects'));
+        % delete figure
+        delete(hFigure);
+        
+    end
 
 end
 
@@ -374,7 +409,7 @@ objMod = findobj('Tag',['setRange_' num2str(figNum)]);
 
 if ~isempty(objMod)
     close(objMod)
-    return;
+    return
 end
 
 objMod = figure(...
@@ -570,35 +605,4 @@ setappdata(objMod,'handles',handles);
         
         
     end
-end
-
-function activatefigure(~, ~, hFigure, button, icon, ~)
-
-inact = 'inactive_';
-
-fTag = get(hFigure,'tag');
-
-if nargin > 5
-    fTag = [inact fTag];
-end
-
-if ~isempty(strfind(fTag,inact)) || nargin>5
-    newTag = fTag((numel(inact)+1):end);
-    set(hFigure,'tag',newTag);
-    set(button,'CData',icon.active);
-    hList = findobj('Tag',newTag);
-    hList(hList==hFigure) = [];
-    % The handle of the activate button is Figure.Child(end).Child(1).
-    for ii = 1:numel(hList)
-        bt = getappdata(hList(ii),'button');
-        set(bt.figActive,'CData',icon.inactive);
-        set(hList(ii),'Tag',[inact newTag]);
-    end
-    
-else
-    set(hFigure,'tag',[inact fTag]);
-    set(button,'CData',icon.inactive);
-end
-
-
 end

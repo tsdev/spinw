@@ -37,6 +37,16 @@ function plot(varargin)
 % unit      String determining the coordinate system, either 'lu' for
 %           lattice units where the lattice is defined by the stored
 %           basis,or 'xyz' for the original matlab units. Default is 'lu'.
+% figure
+% R
+% alpha
+% lHead
+% nMesh
+% nPatch
+% T
+% onepatch  If true, a sinle patch command is used to draw multiple objects.
+%           It gives significant speedup of the drawing, but the object
+%           cannot be treated separately.
 %
 % See also SWPLOT.COLOR.
 %
@@ -49,10 +59,10 @@ inpForm.defval = {[]     []     []     []         []      []       []      'lu' 
 inpForm.size   = {[1 -8] [1 -1] [1 -2] [3 -3 -4]  [1 -5]  [1 1]    [-9 -6] [1 -7] [1 1]   };
 inpForm.soft   = {false  true   true   false      true    true     true    false  true    };
 
-inpForm.fname  = [inpForm.fname  {'R'     'alpha' 'lHead' 'nMesh' 'nPatch' 'T'      }];
-inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []       }];
-inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10]}];
-inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true     }];
+inpForm.fname  = [inpForm.fname  {'R'     'alpha' 'lHead' 'nMesh' 'nPatch' 'T'       'onepatch'}];
+inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []        false     }];
+inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] [1 1]     }];
+inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      false     }];
 
 param = sw_readparam(inpForm, varargin{:});
 

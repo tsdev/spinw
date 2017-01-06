@@ -3,6 +3,9 @@ function handle = cylinder(varargin)
 %
 % handle = SWPLOT.CYLINDER(rStart, rEnd, R, {N}, {close})
 %
+% The function can draw multiple cylinders with a single patch command for
+% speedup.
+%
 % handle = SWPLOT.CYLINDER(hAxis,...)
 %
 % draw to the specific axis
@@ -10,8 +13,8 @@ function handle = cylinder(varargin)
 % Input:
 %
 % hAxis     Axis handle.
-% rStart    Coordinate of the starting point.
-% rEnd      Coordinate of the end point.
+% rStart    Coordinate of the starting point with dimensions [3 nCylinder].
+% rEnd      Coordinate of the end point with dimensions [3 nCylinder].
 % R         Radius of the arrow body.
 % N         Number of points on the curve, default value is stored in 
 %           swpref.getpref('npatch').
@@ -55,9 +58,10 @@ else
     close = true;
 end
 
+% TODO
 rArrow = rEnd(:) - rStart(:);
-rStart = repmat(rStart(:),1,N);
-rEnd   = repmat(rEnd(:),1,N);
+rStart = rStart(:);
+rEnd   = rEnd(:);
 
 % normal vectors to the cylinder axis
 if any(cross(rArrow,[0; 0; 1]))
@@ -72,21 +76,21 @@ nArrow2 = nArrow2/norm(nArrow2);
 
 phi     = linspace(0,2*pi,N);
 cPoint  = R*(nArrow1*cos(phi)+nArrow2*sin(phi));
-cPoint1 = cPoint+rStart;
-cPoint2 = cPoint+rEnd;
+cPoint1 = bsxfun(@plus,cPoint,rStart);
+cPoint2 = bsxfun(@plus,cPoint,rEnd);
 
 V = [cPoint1';cPoint2'];
 
 % generate faces
 L = (1:(N-1))';
-F = [L L+1 L+N+1 L+N];
+F2 = [L L+1 L+N+1 L+N];
 
 if close
     % caps
     L = (2:(N-2))';
     F1 = [ones(N-3,1) L L+1 nan(N-3,1)];
-    F2 = F1+N;
-    F = [F1;F;F2];
+    F3 = F1+N;
+    F = [F1;F2;F3];
 end
 
 handle = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...

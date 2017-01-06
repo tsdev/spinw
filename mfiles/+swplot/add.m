@@ -153,7 +153,8 @@ set(hSelect,'Clipping','Off');
 
 % add callback function for showing the tooltips
 for ii = 1:nObjAdd
-    set(hAdd.(name)(ii).handle,'ButtonDownFcn',@(i,j)swplot.tooltip(hAdd.(name)(ii).text,hFigure));
+    str0 = hAdd.(name)(ii).text;
+    set(hAdd.(name)(ii).handle,'ButtonDownFcn',@(i,j)swplot.tooltip(str0,hFigure));
 end
     
 % comb together the handles of the old and new graphical objects.

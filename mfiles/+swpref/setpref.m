@@ -29,6 +29,8 @@ end
 
 setpref(store,'pid',pidNow);
 
+prefName = lower(prefName);
+
 if strcmp(prefName,'default')
     if ispref(store)
         rmpref(store);

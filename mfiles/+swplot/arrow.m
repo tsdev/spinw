@@ -1,10 +1,15 @@
-function handle = arrow(rStart, rEnd, R, alpha, lHead, N)
+function handle = arrow(varargin)
 % draws a 3D arrow
 %
-% [handle] = SWPLOT.ARROW(rStart, rEnd, R, alpha, lHead, {N})
+% handle = SWPLOT.ARROW(rStart, rEnd, R, alpha, lHead, {N})
+%
+% handle = SWPLOT.ARROW(hAxis,...)
+%
+% draw arrow on the specified figure
 %
 % Input:
 %
+% hAxis     Handle of the axis.
 % rStart    Coordinate of the starting point.
 % rEnd      Coordinate of the end point.
 % R         Radius of the arrow body.
@@ -21,7 +26,35 @@ if nargin == 0
     return
 end
 
-if nargin < 6
+if numel(varargin{1}) == 1
+    % first input figure handle
+    hAxis = varargin{1};
+    rStart  = varargin{2};
+    rEnd    = varargin{3};
+    R       = varargin{4};
+    alpha   = varargin{5};
+    lHead   = varargin{6};
+    if nargin > 6
+        N = varargin{7};
+    else
+        N = [];
+    end
+else
+    hAxis = gca;
+    rStart  = varargin{1};
+    rEnd    = varargin{2};
+    R       = varargin{3};
+    alpha   = varargin{4};
+    lHead   = varargin{5};
+    if nargin > 5
+        N = varargin{6};
+    else
+        N = [];
+    end
+   
+end
+
+if isempty(N)
     N = swpref.getpref('npatch',[]);
 end
 
@@ -66,6 +99,7 @@ L  = (1:(N-1))'+2*N;
 F4 = [L L+1 ones(N-1,1)*(3*N+1) nan(N-1,1)];
 
 F  = [F1;F2;F3;F4];
-handle = patch('Vertices',V,'Faces',F,'FaceLighting','flat','EdgeColor','none','FaceColor','r');
+handle = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
+    'EdgeColor','none','FaceColor','r','Tag','arrow');
 
 end

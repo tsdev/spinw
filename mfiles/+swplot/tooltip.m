@@ -1,12 +1,13 @@
-function tooltip(switch0,hFigure)
+function tooltip(text0,hFigure)
 % creates tooltip axis on swplot figure
 %
-% SWPLOT.TOOLTIP({switch}, {hFigure})
+% SWPLOT.TOOLTIP({text}, {hFigure})
 %
 % Input:
 %
-% switch        String, can be 'on' or 'off' to switch the tooltip on/off.
-%               Default is 'on'.
+% text          String, if it is 'on'/'off' the tooltip will be switched
+%               on/off. Otherwise the text will be shown in the tooltip.
+%               Default is 'on'. 
 % hFigure       Handle of the swplot figure. Default is the selected
 %               figure.
 %
@@ -17,7 +18,7 @@ function tooltip(switch0,hFigure)
 %
 
 if nargin == 0
-    switch0 = 'on';
+    text0 = 'on';
 end
 
 fontSize = swpref.getpref('fontsize',[]);
@@ -29,28 +30,29 @@ end
 
 tDat = getappdata(hFigure,'tooltip');
 
-if ~isempty(tDat.handle)
-    % remove old tooltip
-    delete(tDat.handle);
-    tDat.handle = [];
+if isempty(tDat.handle)
+    % create tooltip axis
+    tDat.handle    = axes(hFigure,'Units','Normalized','Position',[0.01 0.9 0.1 0.2],'Visible','off');
+    tDat.handle(2) = text(0.05,0.45,'','units','normalized','horizontalalignment','left',...
+        'FontSize',fontSize,'VerticalAlignment','top');
+    % avoid object get active for strange zooming effect
+    set(tDat.handle,'hittest','off','tag','tooltip');
+    
+    % switch to plot axis where all 3D objects are
+    axes(getappdata(hFigure,'axis'));
+
+    % save new handles
+    setappdata(hFigure,'tooltip',tDat);
+
 end
 
-switch switch0
+switch text0
     case 'on'
-        tDat.handle    = axes(hFigure,'Units','Normalized','Position',[0.01 0.9 0.1 0.2],'Visible','off');
-        tDat.handle(2) = text(0.05,0.45,'','units','normalized','horizontalalignment','left',...
-            'FontSize',fontSize,'VerticalAlignment','top');
-        % avoid object get active for strange zooming effect
-        set(tDat.handle,'hittest','off','tag','tooltip');
+        set(tDat.handle(2),'Visible','on');
     case 'off'
+        set(tDat.handle(2),'Visible','off');
     otherwise
-        error('tooltip:WrongInput','Use on/off to switch tooltip!')
+        set(tDat.handle(2),'String',text0);
 end
-
-% save new handles
-setappdata(hFigure,'tooltip',tDat);
-
-% switch do plot axis where all 3D objects are
-axes(getappdata(hFigure,'axis'));
 
 end

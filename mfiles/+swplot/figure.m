@@ -137,19 +137,19 @@ end
 if strcmp(mode,'hg')
     % only works in hg mode
     button.aAxis = uipushtool(hToolbar,'CData',icon.aAxis,'TooltipString','View direction: a axis',...
-        'ClickedCallback',{@buttonClick 'a'},'Separator','on');
+        'ClickedCallback',@(i,j)swplot.view('a',hFigure),'Separator','on');
     button.bAxis = uipushtool(hToolbar,'CData',icon.bAxis,'TooltipString','View direction: b axis',...
-        'ClickedCallback',{@buttonClick 'b'});
+        'ClickedCallback',@(i,j)swplot.view('b',hFigure));
     button.cAxis = uipushtool(hToolbar,'CData',icon.cAxis,'TooltipString','View direction: c axis',...
-        'ClickedCallback',{@buttonClick 'c'});
+        'ClickedCallback',@(i,j)swplot.view('c',hFigure));
     button.anyAxis = uipushtool(hToolbar,'CData',icon.anyAxis,'TooltipString','Set view direction',...
-        'ClickedCallback',{@buttonClick 0});
+        'ClickedCallback','');
 end
 
 button.zoomOut = uipushtool(hToolbar,'CData',icon.zoomOut,'TooltipString','Zoom out',...
-    'ClickedCallback',{@buttonClick 1/sqrt(2)},'Separator','on');
+    'ClickedCallback',@(i,j)swplot.zoom(1/sqrt(2),hFigure),'Separator','on');
 button.zoomIn  = uipushtool(hToolbar,'CData',icon.zoomIn,'TooltipString','Zoom in ',...
-    'ClickedCallback',{@buttonClick sqrt(2)});
+    'ClickedCallback',@(i,j)swplot.zoom(sqrt(2),hFigure));
 button.setRange = uipushtool(hToolbar,'CData',icon.setRange,'TooltipString','Set range',...
     'ClickedCallback',{@setrange hFigure},'Separator','on');
 button.figActive = uipushtool(hToolbar,'CData',icon.active,'TooltipString','Keep figure',...
@@ -182,15 +182,14 @@ end
 % save data to figure
 setappdata(hFigure,'button',button);
 setappdata(hFigure,'axis',hAxis);
-setappdata(hFigure,'legend',struct('handle',gobjects(0),'text','','type',[]));
-setappdata(hFigure,'tooltip',struct('handle',gobjects(0)));
+setappdata(hFigure,'legend',struct('handle',gobjects(0),'text','','type',[],'color',[]));
 setappdata(hFigure,'light',camlight('right'));
 setappdata(hFigure,'objects',struct);
 setappdata(hFigure,'icon',icon);
 setappdata(hFigure,'base',eye(3));
-
 swplot.zoom('auto',hFigure);
-
+setappdata(hFigure,'tooltip',struct('handle',gobjects(0)));
+swplot.tooltip('off',hFigure);
 set(hFigure,'Visible','on');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -302,22 +301,10 @@ set(0,'Showhidden',showHidden);
 %     axes(oldAxis);
 % end
 
-    function buttonClick(~, ~, param)
-        % control view of the 3D objects on swplot figure
-        switch param
-            case {'a' 'b' 'c'}
-                swplot.view(param,hFigure);
-            case 0
-                % do nothing yet
-            otherwise
-                swplot.zoom(param,hFigure);
-        end
-    end
-
     function wheel_callback(~, event)
-        
+        % zoom in/out for event
         cva = get(hAxis,'CameraViewAngle');
-        set(gca,'CameraViewAngle',cva*1.02^(event.VerticalScrollCount));
+        set(hAxis,'CameraViewAngle',cva*1.02^(event.VerticalScrollCount));
         
     end
 

@@ -1,10 +1,15 @@
-function handle = cylinder(rStart, rEnd, R, N, close)
+function handle = cylinder(varargin)
 % draws a closed/open 3D cylinder
 %
-% [handle] = SWPLOT.CYLINDER(rStart, rEnd, R, {N}, {close})
+% handle = SWPLOT.CYLINDER(rStart, rEnd, R, {N}, {close})
+%
+% handle = SWPLOT.CYLINDER(hAxis,...)
+%
+% draw to the specific axis
 %
 % Input:
 %
+% hAxis     Axis handle.
 % rStart    Coordinate of the starting point.
 % rEnd      Coordinate of the end point.
 % R         Radius of the arrow body.
@@ -20,11 +25,33 @@ if nargin == 0
     return
 end
 
-if nargin < 4
+if numel(varargin{1}) == 1
+    % first input figure handle
+    hAxis = varargin{1};
+    rStart  = varargin{2};
+    rEnd    = varargin{3};
+    R       = varargin{4};
+    nArgExt = nargin-4;
+    argExt  = {varargin{5:end}};
+    
+else
+    hAxis = gca;
+    rStart  = varargin{1};
+    rEnd    = varargin{2};
+    R       = varargin{3};
+    nArgExt = nargin-3;
+    argExt  = {varargin{4:end}};
+end
+
+if nArgExt > 0
+    N = argExt{1};
+else
     N = swpref.getpref('npatch',[]);
 end
 
-if nargin < 5
+if nArgExt > 1
+    close  = argExt{2};
+else
     close = true;
 end
 
@@ -62,6 +89,7 @@ if close
     F = [F1;F;F2];
 end
 
-handle = patch('Vertices',V,'Faces',F,'FaceLighting','flat','EdgeColor','none','FaceColor','r');
+handle = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
+    'EdgeColor','none','FaceColor','r','Tag','cylinder');
 
 end

@@ -10,8 +10,10 @@ function hText = text(varargin)
 % Input:
 %
 % handle    Handle of an axis object.
-% r         Coordinate of the center of the text for a single text.
-% string    String contains the text.
+% r         Coordinate of the center of the text for a single text or
+%           matrix with dimensions [3 nText] for multiple text.
+% string    String contains the text or cell of strings to plot multiple
+%           text.
 %
 % See also TEXT.
 %
@@ -32,9 +34,23 @@ if nargin == 0
     return
 end
 
+if numel(r) == 3
+    r = r(:);
+end
+
+nText = size(r,2);
+
+if ~iscell(string)
+    string = {string};
+end
+
 fontSize = swpref.getpref('fontsize',[]);
 
-hText = text(hAxis,r(1),r(2),r(3),string,'FontSize',fontSize,'Color','k',...
+hText = gobjects(1,nText);
+
+for ii = 1:nText
+    hText(ii) = text(hAxis,r(1,ii),r(2,ii),r(3,ii),string{ii},'FontSize',fontSize,'Color','k',...
     'VerticalAlignment','middle','HorizontalAlignment','center','Tag','text');
+end
 
 end

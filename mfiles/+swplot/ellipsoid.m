@@ -1,20 +1,24 @@
-function handle = ellipsoid(varargin)
+function hPatch = ellipsoid(varargin)
 % draw ellipsoid
 %
-% handle = SWPLOT.ELLIPSOID(R0,T,mesh)
+% hPatch = SWPLOT.ELLIPSOID(R0,T,mesh)
 %
 % The function can draw multiple ellipsoids with a single patch command.
 % Significant speedup can be achieved by a single patch compared to ellipse
 % per patch.
 %
-% handle = SWPLOT.ELLIPSOID(hAxis,...
+% hPatch = SWPLOT.ELLIPSOID(handle,...
 %
-% plots to the selected axis
+% Handle can be the handle of an axes object or a patch object. It either
+% selects an axis to plot or a patch object (triangulated) to add vertices
+% and faces.
 %
 % Input:
 %
-% hAxis     Axis handle.
-% R0        Center of the ellipsoid stored in a matrix with dimensions of 
+% handle    Handle of an axis or patch object. In case of patch object, the
+%           constructed faces will be added to the existing object instead
+%           of creating a new one.
+% R0        Center of the ellipsoid stored in a matrix with dimensions of
 %           [3 nEllipse].
 % T         Transformation matrix that transforms a unit sphere to the
 %           ellipse via: R' = T(:,:,i)*R
@@ -32,8 +36,15 @@ if nargin == 0
 end
 
 if numel(varargin{1}) == 1
-    % first input figure handle
-    hAxis = varargin{1};
+    % first input figure/patch handle
+    if strcmp(get(varargin{1},'Type'),'axes')
+        hAxis  = varargin{1};
+        hPatch = [];
+    else
+        hAxis  = gca;
+        hPatch = varargin{1};
+    end
+    
     R0  = varargin{2};
     T    = varargin{3};
     if nargin > 3
@@ -42,7 +53,8 @@ if numel(varargin{1}) == 1
         mesh = [];
     end
 else
-    hAxis = gca;
+    hAxis  = gca;
+    hPatch = [];
     R0  = varargin{1};
     T    = varargin{2};
     if nargin > 2
@@ -66,7 +78,8 @@ end
 % plot multiple ellipse
 nEllipse = size(R0,2);
 
-if size(R0,1)~=3 || any(size(T)~=[3 3 nEllipse])
+sT = [size(T) 1];
+if size(R0,1)~=3 || any(sT(1:3)~=[3 3 nEllipse])
     error('ellipsoid:WrongInput','Matrices have incompatible dimensions!')
 end
 
@@ -85,8 +98,16 @@ for ii = 1:nEllipse
     F((1:NF)+(ii-1)*NF,:) = F0+(ii-1)*NV;
 end
 
-% create patch
-handle = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
-    'EdgeColor','none','FaceColor','r','Tag','ellipsoid');
+if isempty(hPatch)
+    % create patch
+    hPatch = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
+        'EdgeColor','flat','FaceColor','flat','Tag','ellipsoid','FaceVertexCData',repmat([1 0 0],[size(F,1) 1]));
+else
+    V0 = get(hPatch,'Vertices');
+    F0 = get(hPatch,'Faces');
+    % number of existing faces
+    nV0 = size(V0,1);
+    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0]);
+end
 
 end

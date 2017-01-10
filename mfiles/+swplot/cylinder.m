@@ -1,12 +1,12 @@
-function hCylinder = cylinder(varargin)
+function hPatch = cylinder(varargin)
 % draws a closed/open 3D cylinder
 %
-% hCylinder = SWPLOT.CYLINDER(rStart, rEnd, R, {N}, {close})
+% hPatch = SWPLOT.CYLINDER(rStart, rEnd, R, {N}, {close})
 %
 % The function can draw multiple cylinders with a single patch command for
 % speedup.
 %
-% hCylinder = SWPLOT.CYLINDER(handle,...)
+% hPatch = SWPLOT.CYLINDER(handle,...)
 %
 % Handle can be the handle of an axes object or a patch object. It either
 % selects an axis to plot or a patch object (triangulated) to add vertices
@@ -20,7 +20,7 @@ function hCylinder = cylinder(varargin)
 % rStart    Coordinate of the starting point with dimensions [3 nCylinder].
 % rEnd      Coordinate of the end point with dimensions [3 nCylinder].
 % R         Radius of the arrow body.
-% N         Number of points on the curve, default value is stored in 
+% N         Number of points on the curve, default value is stored in
 %           swpref.getpref('npatch').
 % close     If true the cylinder is closed. Default is true.
 %
@@ -103,11 +103,12 @@ cPoint  = R*(bsxfun(@times,nArrow1,cos(phi))+bsxfun(@times,nArrow2,sin(phi)));
 cPoint1 = bsxfun(@plus,cPoint,rStart);
 cPoint2 = bsxfun(@plus,cPoint,rEnd);
 
+% vertices
 V = reshape(permute(cat(3,cPoint1,cPoint2),[1 3 2]),3,[])';
 
 % generate faces
-L = (1:N)';
-F2 = [L L+N mod(L+N,2*N)+1 L L+N mod(L+N,2*N)+1];
+L  = (1:N)';
+F2 = [L L+N mod(L,N)+N+1 L mod(L,N)+1 mod(L,N)+N+1];
 F2 = reshape(F2',3,[])';
 
 if close
@@ -122,7 +123,21 @@ end
 
 F = reshape(permute(bsxfun(@plus,F,permute((0:(nCylinder-1))*2*N,[1 3 2])),[1 3 2]),[],3);
 
-hCylinder = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
-    'EdgeColor','none','FaceColor','r','Tag','cylinder');
+% color data
+C = repmat([1 0 0],[size(F,1) 1]);
+
+if isempty(hPatch)
+    % create patch
+    hPatch = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
+        'EdgeColor','none','FaceColor','flat','Tag','cylinder','FaceVertexCData',C);
+else
+    % add to existing patch
+    V0 = get(hPatch,'Vertices');
+    F0 = get(hPatch,'Faces');
+    C0 = get(hPatch,'FaceVertexCData');
+    % number of existing faces
+    nV0 = size(V0,1);
+    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
+end
 
 end

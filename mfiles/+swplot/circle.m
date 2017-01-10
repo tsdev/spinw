@@ -1,20 +1,28 @@
-function [handle] = circle(varargin)
+function hPatch = circle(varargin)
 % creates a circle surface in 3 dimensions
 %
-% handle = SWPLOIT.CIRCLE(r0, n, R, {N})
+% hPatch = SWPLOIT.CIRCLE(r0, n, R, {N})
 %
-% handle = SWPLOIT.CIRCLE(hAxis,...)
+% hPatch = SWPLOIT.CIRCLE(handle,...)
 %
-% plot to specific axis.
+% Handle can be the handle of an axes object or a patch object. It either
+% selects an axis to plot or a patch object (triangulated) to add vertices
+% and faces.
 %
 % Input:
 %
-% hAXis     Axis handle.
+% handle    Handle of an axis or patch object. In case of patch object, the
+%           constructed faces will be added to the existing object instead
+%           of creating a new one.
 % r0        Center of the circle, vector with three elements.
 % n         Vector normal to the circle surface, vector with three elements.
 % R         Radius of the circle.
-% N         Number of points on the curve, default value is stored in 
+% N         Number of points on the curve, default value is stored in
 %           swpref.getpref('npatch').
+%
+% Example:
+%
+% swplot.circle(zeros(3),eye(3),1,100)
 %
 % See also SWPLOT.CYLINDER.
 %
@@ -25,8 +33,14 @@ if nargin == 0
 end
 
 if numel(varargin{1}) == 1
-    % first input figure handle
-    hAxis   = varargin{1};
+    % first input figure/patch handle
+    if strcmp(get(varargin{1},'Type'),'axes')
+        hAxis  = varargin{1};
+        hPatch = [];
+    else
+        hAxis  = gca;
+        hPatch = varargin{1};
+    end
     r0      = varargin{2};
     n       = varargin{3};
     R       = varargin{4};
@@ -35,6 +49,7 @@ if numel(varargin{1}) == 1
     
 else
     hAxis   = gca;
+    hPatch  = [];
     r0      = varargin{1};
     n       = varargin{2};
     R       = varargin{3};
@@ -48,24 +63,55 @@ else
     N = swpref.getpref('npatch',[]);
 end
 
-r0 = repmat(r0(:),1,N);
-n  = n(:);
+if numel(r0) == 3
+    r0 = r0(:);
+    n  = n(:);
+end
 
-if any(cross(n,[0; 0; 1]))
-    a = cross(n,[0; 0; 1]);
-else
-    a = cross(n,[0; 1; 0]);
+nCircle = size(r0,2);
+
+% normal vectors to the cylinder axis
+a = cross(n,repmat([0;0;1],[1 nCircle]));
+
+% index of zero normal vectors
+zIdx = find(sum(abs(a),1)==0);
+% try another normal vector for these
+if ~isempty(zIdx)
+    a(:,zIdx) = cross(n(:,zIdx),repmat([0;1;0],[1 numel(zIdx)]));
 end
 
 b = cross(n,a);
-a = a/norm(a);
-b = b/norm(b);
+a = bsxfun(@rdivide,a,sqrt(sum(a.^2,1)));
+b = bsxfun(@rdivide,b,sqrt(sum(b.^2,1)));
 
-phi = linspace(0,2*pi,N);
+phi    = permute(linspace(0,2*pi,N+1),[1 3 2]);
+phi    = phi(1,1,1:N);
+cPoint = R*(bsxfun(@times,a,cos(phi))+bsxfun(@times,b,sin(phi)));
 
-edge = mat2cell(R*(a*cos(phi)+b*sin(phi))+r0,ones(1,3),N);
+% vertices
+V = reshape(permute(bsxfun(@plus,cPoint,r0),[1 3 2]),3,[])';
 
-handle = patch(hAxis,edge{:},'FaceLighting','flat','EdgeColor','none',...
-    'FaceColor','r','Tag','circle');
+% faces
+L = (2:(N-1))';
+F = [ones(N-2,1) L mod(L,N)+1];
+
+F = reshape(permute(bsxfun(@plus,F,permute((0:(nCircle-1))*N,[1 3 2])),[1 3 2]),[],3);
+
+% color data
+C = repmat([1 0 0],[size(F,1) 1]);
+
+if isempty(hPatch)
+    % create patch
+    hPatch = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
+        'EdgeColor','none','FaceColor','flat','Tag','circle','FaceVertexCData',C);
+else
+    % add to existing patch
+    V0 = get(hPatch,'Vertices');
+    F0 = get(hPatch,'Faces');
+    C0 = get(hPatch,'FaceVertexCData');
+    % number of existing faces
+    nV0 = size(V0,1);
+    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
+end
 
 end

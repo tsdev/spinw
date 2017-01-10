@@ -75,6 +75,10 @@ if isnumeric(mesh)
     mesh = swplot.icomesh(mesh);
 end
 
+if numel(R0) == 3
+    R0 = R0(:);
+end
+
 % plot multiple ellipse
 nEllipse = size(R0,2);
 
@@ -98,16 +102,20 @@ for ii = 1:nEllipse
     F((1:NF)+(ii-1)*NF,:) = F0+(ii-1)*NV;
 end
 
+% red color
+C = repmat([1 0 0],[size(F,1) 1]);
+
 if isempty(hPatch)
     % create patch
     hPatch = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
-        'EdgeColor','flat','FaceColor','flat','Tag','ellipsoid','FaceVertexCData',repmat([1 0 0],[size(F,1) 1]));
+        'EdgeColor','none','FaceColor','flat','Tag','ellipsoid','FaceVertexCData',C);
 else
     V0 = get(hPatch,'Vertices');
     F0 = get(hPatch,'Faces');
+    C0 = get(hPatch,'FaceVertexCData');
     % number of existing faces
     nV0 = size(V0,1);
-    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0]);
+    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
 end
 
 end

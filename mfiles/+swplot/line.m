@@ -1,5 +1,5 @@
 function hLine = line(varargin)
-% draws a 3D line
+% draws a 3D line using patch
 %
 % hLine = SWPLOT.LINE(rStart, rEnd)
 %
@@ -56,24 +56,30 @@ else
     end
 end
 
-% create the segments and remove the last nan
-r = reshape(permute(cat(3,rStart,rEnd,nan(size(rStart))),[1 3 2]),3,[]);
-r = r(:,1:(end-1));
+% number of line segments
+nSegment = size(rStart,2);
+
+% create the vertices
+V = reshape(permute(cat(3,rStart,rEnd),[1 3 2]),3,[])';
+
+L = (1:nSegment)';
+F = [2*L-1 2*L];
+
+% black color
+C = repmat([0 0 0],[size(V,1) 1]);
 
 if isempty(hLine)
     % create new patch
-    hLine = line(hAxis,r(1,:),r(2,:),r(3,:),'Color','k','LineStyle','-','Tag','line');
+    hLine = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
+        'EdgeColor','flat','FaceColor','none','Tag','line','FaceVertexCData',C);
 else
-    r0 = [get(hLine,'XData');get(hLine,'YData');get(hLine,'ZData')];
-    
-    if any(isnan(r0(:,end)))
-        r = [r0 nan(3,1) r];
-    else
-        r = [r0 r];
-    end
-    
-    % add line segments
-    set(hLine,'XData',r(1,:),'Ydata',r(2,:),'ZData',r(3,:));
+    % add to existing patch
+    V0 = get(hLine,'Vertices');
+    F0 = get(hLine,'Faces');
+    C0 = get(hLine,'FaceVertexCData');
+    % number of existing faces
+    nV0 = size(V0,1);
+    set(hLine,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
 end
 
 end

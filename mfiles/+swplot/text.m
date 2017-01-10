@@ -1,11 +1,16 @@
-function handle = text(varargin)
+function hText = text(varargin)
 % draws a text at a point in 3D
 %
-% handle = SWPLOT.TEXT(r, string)
+% hText = SWPLOT.TEXT(r, string)
+%
+% hText = SWPLOT.TEXT(handle,...)
+%
+% Handle of an axes object that selects an axis to plot.
 %
 % Input:
 %
-% r         Coordinate of the center of the text.
+% handle    Handle of an axis object.
+% r         Coordinate of the center of the text for a single text.
 % string    String contains the text.
 %
 % See also TEXT.
@@ -29,7 +34,7 @@ end
 
 fontSize = swpref.getpref('fontsize',[]);
 
-handle = text(hAxis,r(1),r(2),r(3),string,'FontSize',fontSize,'Color','k',...
+hText = text(hAxis,r(1),r(2),r(3),string,'FontSize',fontSize,'Color','k',...
     'VerticalAlignment','middle','HorizontalAlignment','center','Tag','text');
 
 end

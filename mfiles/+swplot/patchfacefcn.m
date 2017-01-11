@@ -1,7 +1,7 @@
-function patchfacefcn(obj,hit,fun,selection,dLim)
+function varargout = patchfacefcn(obj,hit,fun,selection,dLim,hTransform)
 % callback function for patch face selection
 %
-% PATCHFACEFCN(obj,hit,callbackfun,selection)
+% PATCHFACEFCN(obj,hit,callbackfun,selection, {dLim})
 %
 % The function can find the index of the face in a patch object which was
 % clicked on by the mouse. The function should be used as a callback
@@ -33,7 +33,9 @@ function patchfacefcn(obj,hit,fun,selection,dLim)
 %                           is clicked (numel(faceIndex)==2).
 %                   'all'   The callbackfun() will be triggered for both
 %                           faces and edges.
-%
+% {dLim}        Upper limit of the absolute value of the determinant that
+%               determines whether a point is on a plane spanned by the two
+%               edges of a triangle. Default value is 1e-7 (tested).
 %
 % Example:
 %
@@ -61,9 +63,29 @@ if size(obj.Faces,2) ~=3
 end
 
 % precision for finding planes of faces
-if nargin < 5
+if nargin < 5 || isempty(dLim)
     dLim = 1e-7;
+    tLim = 0;
+elseif numel(dLim==2)
+    tLim = dLim(2);
+    dLim = dLim(1);
+else
+    tLim = 0;
 end
+
+% limit on the edge of the triangle
+
+if nargin<6
+    % no hgtransform parent, use unit transformation matrix
+    T = eye(4);
+else
+    % get the transformation matrix
+    T = get(hTransform,'Matrix');
+end
+
+% transform the point to the coordinate system of the object
+P = [P 0]*T;
+P = P(1:3);
 
 % shift the origin to the first vertex of every triangle
 E1 = V(obj.Faces(:,2),:)-V(obj.Faces(:,1),:);
@@ -84,7 +106,7 @@ if ~flat
     end
     
     % find the right face(s)
-    fIdx = pIdx(all(bCoord>=0 & bCoord<=1 & sum(bCoord,2)<=1,2));
+    fIdx = pIdx(all(bCoord>=-tLim & bCoord<=1+tLim & sum(bCoord,2)<=1+tLim,2));
 else
     % flat patch, all triangles are in the plane
     % determine barycentric coordinates
@@ -95,26 +117,38 @@ else
     
     % find the right face(s)
     fIdx = find(all(bCoord>=0 & bCoord<=1 & sum(bCoord,2)<=1,2));
+    
 end
 
-switch selection
-    case 'all'
-        % include clicks on edges (numel(fIdx)>1)
-        if numel(fIdx) > 0
-            fun(obj,hit,fIdx);
-        end
-    case 'face'
-        % only trigger for faces
-        if numel(fIdx) == 1
-            fun(obj,hit,fIdx);
-        end
-    case 'edge'
-        % only trigger for faces
-        if numel(fIdx) == 2
-            fun(obj,hit,fIdx);
-        end
-    otherwise
-        error('pathcfacefcn:WrongInput','The pathcfacefcn() callback has only two modes: ''body'' and ''face''!');
+% % for debugging
+% if isempty(fIdx)
+%     error
+% end
+
+if isempty(fun)
+    % don't call a function, just return the index of the patch face
+    varargout{1} = fIdx;
+else
+    % call user defined callback function
+    switch selection
+        case 'all'
+            % include clicks on edges (numel(fIdx)>1)
+            if numel(fIdx) > 0
+                fun(obj,hit,fIdx);
+            end
+        case 'face'
+            % only trigger for faces
+            if numel(fIdx) == 1
+                fun(obj,hit,fIdx);
+            end
+        case 'edge'
+            % only trigger for faces
+            if numel(fIdx) == 2
+                fun(obj,hit,fIdx);
+            end
+        otherwise
+            error('pathcfacefcn:WrongInput','The pathcfacefcn() callback has only two modes: ''body'' and ''face''!');
+    end
 end
 
 end

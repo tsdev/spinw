@@ -27,7 +27,7 @@ if isnumeric(mode)
     set(hAxis,'CameraViewAngle',get(hAxis,'CameraViewAngle')/mode);
 elseif strcmpi(mode,'auto')
     set(hAxis,'CameraViewAngleMode','auto');
-    set(hAxis,'CameraViewAngle',1.5*get(hAxis,'CameraViewAngle'));
+    set(hAxis,'CameraViewAngle',get(hAxis,'CameraViewAngle'));
 else
     error('zoom:WrongInput','Wrong zoom mode!');
 end

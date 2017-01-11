@@ -1,7 +1,10 @@
-function plot(varargin)
+function varargout = plot(varargin)
 % plots objects to swplot figure
 %
-% SWPLOT.PLOT()
+% SWPLOT.PLOT('Option1',Value1,...)
+%
+% hFigure = SWPLOT.PLOT(...)
+%
 %
 % Options:
 %
@@ -13,7 +16,7 @@ function plot(varargin)
 %               'line'          position specifies start and end points
 %               'text'          position specifies the center of the text
 % position  Position of the object/objects in a matrix with dimensions of
-%           [3 2 nObject]/[3 1 nObject] depending on the type of object.
+%           [3 nObject 2]/[3 nObject] depending on the type of object.
 % name      String, the name of the object. It can be used for finding the
 %           object handles after plotting.
 % text      Text to appear in the tooltip of the swplot figure after
@@ -37,16 +40,28 @@ function plot(varargin)
 % unit      String determining the coordinate system, either 'lu' for
 %           lattice units where the lattice is defined by the stored
 %           basis,or 'xyz' for the original matlab units. Default is 'lu'.
-% figure
-% R
-% alpha
-% lHead
-% nMesh
-% nPatch
-% T
-% onepatch  If true, a sinle patch command is used to draw multiple objects.
-%           It gives significant speedup of the drawing, but the object
-%           cannot be treated separately.
+% figure    Handle of the swplot figure. Default is the selected figure.
+% R         Radius value of cylinder, sphere (if no 'T' is given) and
+%           arrow, default is 0.06.
+% alpha     Head angle for arrow in degree units, default is 15 degree.
+% lHead     Length of the arrow head, default value is 0.5.
+% T         Transformation matrix that transforms a unit sphere to the
+%           ellipse via: R' = T(:,:,i)*R
+%           Dimensions are [3 3 nObject].
+% nMesh     Resolution of the ellipse surface mesh. Integer number that is 
+%           used to generate an icosahedron mesh with #mesh number of
+%           additional triangulation, default value is stored in
+%           swpref.getpref('nmesh')
+% nPatch    Number of points on the curve for arrow and cylinder, default 
+%           value is stored in swpref.getpref('npatch').
+% figPos    Position of the figure window on the screen. The [1,1] position
+%           is the upper left corner of the screen, [2,1] is shifted
+%           downwards by 1 figure window height, [1,2] is shifted right by
+%           1 figure window width relative to the [1,1] position. Default
+%           is [0,0] where the figure window will not be moved from the
+%           original position. If 4 element vector, the screen is divided
+%           up to a grid, with horizontally figPos(3) tiles, vertically
+%           figPos(4) tiles.
 %
 % See also SWPLOT.COLOR.
 %
@@ -59,10 +74,10 @@ inpForm.defval = {[]     []     []     []         []      []       []      'lu' 
 inpForm.size   = {[1 -8] [1 -1] [1 -2] [3 -3 -4]  [1 -5]  [1 1]    [-9 -6] [1 -7] [1 1]   };
 inpForm.soft   = {false  true   true   false      true    true     true    false  true    };
 
-inpForm.fname  = [inpForm.fname  {'R'     'alpha' 'lHead' 'nMesh' 'nPatch' 'T'       'onepatch'}];
-inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []        false     }];
-inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] [1 1]     }];
-inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      false     }];
+inpForm.fname  = [inpForm.fname  {'R'     'alpha' 'lHead' 'nMesh' 'nPatch' 'T'       }];
+inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []        }];
+inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] }];
+inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -112,9 +127,9 @@ if isempty(param.label)
     param.label = param.name;
 end
 
-if isempty(param.text)
-    param.text = param.label;
-end
+% if isempty(param.text)
+%     param.text = param.label;
+% end
 
 % label for legend
 if ~iscell(param.label)
@@ -127,17 +142,21 @@ nLabel = numel(label);
 % check size of position matrix
 pos0 = [2 1 2 2 2 1];
 pos  = param.position;
-if size(pos,2) ~= pos0(typeNum)
+if size(pos,3) ~= pos0(typeNum)
     error('plot:WrongInput','The given position matrix has wrong dimensions!');
 end
 
 % number of objects to plot
-nObject = size(pos,3);
+nObject = size(pos,2);
 
 % chekc unit selector string
 switch lower(param.unit)
     case 'lu'
+        BV = getappdata(hFigure,'base');
+        % multiply the coordinates with the basis vectors
+        xyz = permute(sum(bsxfun(@times,permute(pos,[4 1 2 3]),BV),2),[1 3 4 2]);
     case 'xyz'
+        xyz = pos;
     otherwise
         error('plot:WrongInput','The selected coordinate system unit option does not exists!');
 end
@@ -168,9 +187,7 @@ sObject = struct('handle',cell(1,nObject));
 
 switch type
     case 'arrow'
-        for ii = 1:nObject
-            sObject(ii).handle = swplot.arrow(hAxis,pos(:,1,ii),pos(:,2,ii),param.R,param.alpha,param.lHead,param.nPatch);
-        end
+        handle = swplot.arrow(hAxis,xyz(:,:,1),xyz(:,:,2),param.R,param.alpha,param.lHead,param.nPatch);
         
     case 'ellipsoid'
         if isempty(param.T)
@@ -181,26 +198,21 @@ switch type
             end
         end
         
-        % precreate mesh
-        mesh = swplot.icomesh(param.nMesh);
-        
-        for ii = 1:nObject
-            sObject(ii).handle = swplot.ellipsoid(hAxis,pos(:,1,ii),param.T(:,:,ii),mesh);
-        end
+        handle = swplot.ellipsoid(hAxis,xyz,param.T,param.nMesh);
     case 'cylinder'
         % closed cylinder
-        for ii = 1:nObject
-            sObject(ii).handle = swplot.cylinder(hAxis,pos(:,1,ii),pos(:,2,ii),param.R,param.nPatch,true);
-        end
+        handle = swplot.cylinder(hAxis,xyz(:,:,1),xyz(:,:,2),param.R,param.nPatch,true);
     case 'circle'
+        handle = gobjects(1,nObject);
         for ii = 1:nObject
-            sObject(ii).handle = swplot.circle(hAxis,pos(:,1,ii),pos(:,2,ii),param.R,param.nPatch);
+            handle(ii) = swplot.circle(hAxis,xyz(:,ii,1),xyz(:,ii,2),param.R,param.nPatch);
         end
         % remove normal vectors (not stored in appdata)
         pos = pos(:,1,:);
     case 'line'
+        handle = gobjects(1,nObject);
         for ii = 1:nObject
-            sObject(ii).handle = swplot.line(hAxis,pos(:,1,ii),pos(:,2,ii));
+            handle(ii) = swplot.line(hAxis,xyz(:,ii,1),xyz(:,ii,2));
         end
     case 'text'
         textStr = param.text;
@@ -208,25 +220,56 @@ switch type
             textStr = repmat({textStr},[1 nObject]);
         end
         
+        handle = swplot.text(hAxis,xyz,textStr);
+end
+
+handle = num2cell(handle);
+[sObject(:).handle] = handle{:};
+
+% change color of objects
+if sObject(1).handle == getappdata(hFigure,'facepatch')
+    % there is only a single unique handle
+    hPatch = sObject(1).handle;
+    
+    if nCol == 1
+        patchCData = repmat(color,[1 nObject]);
+    else
+        patchCData = color;
+    end
+    
+    % set colors per face
+    fIdx = getappdata(hPatch,'facenumber');
+    nI   = size(fIdx,1);
+    C    = get(hPatch,'FaceVertexCData');
+    nC   = size(C,1);
+    
+    nNewFace = nC-nI;
+    nFacePerObject = nNewFace/nObject;
+    if ceil(nFacePerObject)-nFacePerObject > 0
+        error('plot:WrongInput','All patch objects have to be the same type!');
+    end
+    
+    patchCData = reshape(permute(repmat(patchCData,[1 1 nFacePerObject]),[3 2 1]),[],3);
+    C(end+(((-nNewFace+1):0)),:) = patchCData;
+    set(hPatch,'FaceVertexCData',C);
+
+else
+    % set color per handle
+    % change color of object using the right property prop0
+    if strcmp(get(sObject(1).handle,'type'),'patch')
+        prop0 = 'FaceColor';
+    else
+        prop0 = 'Color';
+    end
+    
+    if nCol == 1
+        % same color for every object
+        set([sObject(:).handle],prop0,color);
+    else
+        % different color for each object
         for ii = 1:nObject
-            sObject(ii).handle = swplot.text(hAxis,pos(:,1,ii),textStr{ii});
+            set([sObject(ii).handle],prop0,color(:,ii));
         end
-end
-
-% change color of object using the right property prop0
-if strcmp(get(sObject(1).handle,'type'),'patch')
-    prop0 = 'FaceColor';
-else
-    prop0 = 'Color';
-end
-
-if nCol == 1
-    % same color for every object
-    set([sObject(:).handle],prop0,color);
-else
-    % different color for each object
-    for ii = 1:nObject
-        set([sObject(ii).handle],prop0,color(:,ii));
     end
 end
 
@@ -237,7 +280,7 @@ end
 [sObject(:).text] = param.text{:};
 
 % save position
-posC = permute(mat2cell(pos,3,size(pos,2),ones(1,nObject)),[3 1 2]);
+posC = mat2cell(permute(pos,[1 3 2]),3,size(pos,3),ones(1,nObject));
 [sObject(:).position] = posC{:};
 
 % save label
@@ -256,8 +299,12 @@ legendC = repmat({param.legend},[1 nObject]);
 typeC = repmat({type},[1 nObject]);
 [sObject(:).type] = typeC{:};
 
+% save name
+nameC = repmat({param.name},[1 nObject]);
+[sObject(:).name] = nameC{:};
+
 % add objects to the figure
-swplot.add(sObject,hFigure,param.name)
+swplot.add(sObject,hFigure);
 
 % take care of the legend
 lDat = getappdata(hFigure,'legend');
@@ -285,5 +332,9 @@ lDat.color = [lDat.color color];
 lDat.type = [lDat.type legend];
 
 setappdata(hFigure,'legend',lDat);
+
+if nargout > 0
+    varargout{1} = hFigure;
+end
 
 end

@@ -18,6 +18,11 @@ function hText = text(varargin)
 % See also TEXT.
 %
 
+if nargin == 0
+    help swplot.text
+    return
+end
+
 if numel(varargin{1}) == 1
     % first input figure handle
     hAxis   = varargin{1};
@@ -27,11 +32,6 @@ else
     hAxis   = gca;
     r       = varargin{1};
     string  = varargin{2};
-end
-
-if nargin == 0
-    help swplot.text
-    return
 end
 
 if numel(r) == 3

@@ -52,11 +52,12 @@ set(hAxis,...
     'Color',            'none',...
     'Box',              'off',...
     'Clipping',         'off',...
-    'CameraPosition',   [0 0 100],...
+    'CameraPosition',   [0 0 10000],...
     'CameraTarget',     [0 0 0],...
     'CameraUpVector',   [0 1 0],...
     'CameraViewAngle',  0.6,...
     'NextPlot',         'add',...
+    'Tag',              'swaxis',...
     'Visible','off');
 
 % fix 1:1 ratio for all scale
@@ -168,7 +169,7 @@ if strcmp(mode,'hg')
     set(hFigure,'WindowButtonMotionFcn',@motion_callback);
     set(hFigure,'WindowButtonDownFcn',  @buttondown_callback);
     set(hFigure,'WindowButtonUpFcn',    @buttonup_callback);
-
+    
     % create hgtransform only if requested
     h = hgtransform;
     mousestatus = 'buttonup';
@@ -184,13 +185,24 @@ setappdata(hFigure,'button',button);
 setappdata(hFigure,'axis',hAxis);
 setappdata(hFigure,'legend',struct('handle',gobjects(0),'text','','type',[],'color',[]));
 setappdata(hFigure,'light',camlight('right'));
-setappdata(hFigure,'objects',struct);
+%setappdata(hFigure,'objects',struct('handle',cell(1,0)));
 setappdata(hFigure,'icon',icon);
 setappdata(hFigure,'base',eye(3));
 swplot.zoom('auto',hFigure);
 setappdata(hFigure,'tooltip',struct('handle',gobjects(0)));
 swplot.tooltip('off',hFigure);
 set(hFigure,'Visible','on');
+% empty patch object for showing graphics with faces
+hPatch = patch(h,'Vertices',zeros(0,3),'Faces',zeros(0,3),'FaceLighting','flat',...
+    'EdgeColor','none','FaceColor','flat','Tag','facepatch',...
+    'FaceVertexCData',zeros(0,3),'Clipping','Off');
+% set tooltip callback for the general object
+% it is done in swplot.add
+%set(hPatch,'ButtonDownFcn',@(obj,hit)swplot.tooltipcallback(obj,hit,hFigure));
+
+setappdata(hFigure,'facepatch',hPatch);
+% setup the face --> object number translation table
+setappdata(hPatch,'facenumber',zeros(0,1));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Copyright (c) 2008 Andrea Tagliasacchi
@@ -245,7 +257,7 @@ set(hFigure,'Visible','on');
         % SET START POSITION
         START = point_on_sphere( P, HGEOM(3), HGEOM(4) );
         % SET START MATRIX
-        M_previous = get( h, 'Matrix' );
+        M_previous = get(h, 'Matrix');
     end
 
     function buttonup_callback(~, ~ )
@@ -323,7 +335,7 @@ set(0,'Showhidden',showHidden);
                 fTag = [inact fTag];
             case 'toggle'
         end
-       
+        
         
         if ~isempty(strfind(fTag,inact)) || strcmp(mode,'initialize')
             % activate figure
@@ -368,6 +380,8 @@ set(0,'Showhidden',showHidden);
         delete(hFigure);
         
     end
+
+
 
 end
 

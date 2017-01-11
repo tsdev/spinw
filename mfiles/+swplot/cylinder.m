@@ -1,7 +1,7 @@
 function hPatch = cylinder(varargin)
 % draws a closed/open 3D cylinder
 %
-% hPatch = SWPLOT.CYLINDER(rStart, rEnd, R, {N}, {close})
+% hPatch = SWPLOT.CYLINDER(rStart, rEnd, R, {nPatch}, {close})
 %
 % The function can draw multiple cylinders with a single patch command for
 % speedup.
@@ -20,7 +20,7 @@ function hPatch = cylinder(varargin)
 % rStart    Coordinate of the starting point with dimensions [3 nCylinder].
 % rEnd      Coordinate of the end point with dimensions [3 nCylinder].
 % R         Radius of the arrow body.
-% N         Number of points on the curve, default value is stored in
+% nPatch    Number of points on the curve, default value is stored in
 %           swpref.getpref('npatch').
 % close     If true the cylinder is closed. Default is true.
 %
@@ -58,13 +58,13 @@ else
 end
 
 if nArgExt > 0
-    N = argExt{1};
+    nPatch = argExt{1};
 else
-    N = [];
+    nPatch = [];
 end
 
-if isempty(N)
-    N = swpref.getpref('npatch',[]);
+if isempty(nPatch)
+    nPatch = swpref.getpref('npatch',[]);
 end
 
 if nArgExt > 1
@@ -81,10 +81,10 @@ end
 rArrow = rEnd - rStart;
 
 % number of cylinder segments
-nCylinder = size(rArrow,2);
+nObject = size(rArrow,2);
 
 % normal vectors to the cylinder axis
-nArrow1 = cross(rArrow,repmat([0;0;1],[1 nCylinder]));
+nArrow1 = cross(rArrow,repmat([0;0;1],[1 nObject]));
 
 % index of zero normal vectors
 zIdx = find(sum(abs(nArrow1),1)==0);
@@ -97,8 +97,8 @@ nArrow2 = cross(rArrow,nArrow1);
 nArrow1 = bsxfun(@rdivide,nArrow1,sqrt(sum(nArrow1.^2,1)));
 nArrow2 = bsxfun(@rdivide,nArrow2,sqrt(sum(nArrow2.^2,1)));
 
-phi     = permute(linspace(0,2*pi,N+1),[1 3 2]);
-phi     = phi(1,1,1:N);
+phi     = permute(linspace(0,2*pi,nPatch+1),[1 3 2]);
+phi     = phi(1,1,1:nPatch);
 cPoint  = R*(bsxfun(@times,nArrow1,cos(phi))+bsxfun(@times,nArrow2,sin(phi)));
 cPoint1 = bsxfun(@plus,cPoint,rStart);
 cPoint2 = bsxfun(@plus,cPoint,rEnd);
@@ -107,24 +107,31 @@ cPoint2 = bsxfun(@plus,cPoint,rEnd);
 V = reshape(permute(cat(3,cPoint1,cPoint2),[1 3 2]),3,[])';
 
 % generate faces
-L  = (1:N)';
-F2 = [L L+N mod(L,N)+N+1 L mod(L,N)+1 mod(L,N)+N+1];
+L  = (1:nPatch)';
+F2 = [L L+nPatch mod(L,nPatch)+nPatch+1 L mod(L,nPatch)+1 mod(L,nPatch)+nPatch+1];
 F2 = reshape(F2',3,[])';
 
 if close
     % caps
-    L  = (2:(N-1))';
-    F1 = [ones(N-2,1) L mod(L,N)+1];
-    F3 = F1+N;
+    L  = (2:(nPatch-1))';
+    F1 = [ones(nPatch-2,1) L mod(L,nPatch)+1];
+    F3 = F1+nPatch;
     F = [F1;F2;F3];
 else
     F = F2;
 end
 
-F = reshape(permute(bsxfun(@plus,F,permute((0:(nCylinder-1))*2*N,[1 3 2])),[1 3 2]),[],3);
+F = reshape(permute(bsxfun(@plus,F,permute((0:(nObject-1))*2*nPatch,[1 3 2])),[1 3 2]),[],3);
 
 % color data
 C = repmat([1 0 0],[size(F,1) 1]);
+
+if strcmp(get(hAxis,'Tag'),'swaxis')
+    % make sure we are on the plot axis of an swobject
+    % add object to the existing triangular patch
+    hFigure = get(hAxis,'Parent');
+    hPatch = getappdata(hFigure,'facepatch');
+end
 
 if isempty(hPatch)
     % create patch
@@ -138,6 +145,11 @@ else
     % number of existing faces
     nV0 = size(V0,1);
     set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
+end
+
+if strcmp(get(hAxis,'Tag'),'swaxis')
+    % replicate the arrow handle to give the right number of added objects
+    hPatch = repmat(hPatch,[1 nObject]);
 end
 
 end

@@ -1,7 +1,9 @@
-function legend(switch0,hFigure)
+function varargout = legend(switch0,hFigure)
 % draws legend to the swplot figure
 %
 % SWPLOT.LEGEND({switch}, {hFigure})
+%
+% status = SWPLOT.LEGEND
 %
 % Input:
 %
@@ -29,6 +31,15 @@ if nargin < 2
 end
 
 lDat = getappdata(hFigure,'legend');
+
+if nargout > 0 
+    if isempty(lDat.handle)
+        varargout{1} = 'off';
+    else
+        varargout{1} = 'on';
+    end
+    return
+end
 
 switch switch0
     case 'on'
@@ -74,9 +85,9 @@ end
 hAxis = axes(hFigure,'Units','pixel','Position',[dA dA lWidth+dA lHeight+dA],...
     'Visible','off','XLim',[0 lWidth],'YLim',[0 lHeight],'NextPlot','add');
 
-hRect = rectangle('Position',[1 1 lWidth-2 lHeight-2],'FaceColor','w');
+hObject = rectangle(hAxis,'Position',[1 1 lWidth-2 lHeight-2],'FaceColor','w');
 
-lDat.handle = [hAxis hRect];
+lDat.handle = [hAxis hObject];
 
 % extract legend data
 lType  = lDat.type;
@@ -90,23 +101,23 @@ for ii = 1:numel(lType)
     switch lType(ii)
         case 1
             % colored rectangle
-            hRect(end+1) = rectangle('Position',[5 lHeight-20*ii+6 sRadius*2 sRadius],...
+            hObject(end+1) = rectangle(hAxis,'Position',[5 lHeight-20*ii+6 sRadius*2 sRadius],...
                 'FaceColor',lColor(:,ii),'EdgeColor','k'); %#ok<*AGROW>
         case 2
             % dashed rectangle
-            hRect(end+1) = rectangle('Position',[6 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5],...
+            hObject(end+1) = rectangle(hAxis,'Position',[6 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5],...
                 'FaceColor',lColor(:,ii),'EdgeColor',lColor(:,ii));
-            hRect(end+1) = rectangle('Position',[5+sRadius*2/3*2 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5],...
+            hObject(end+1) = rectangle(hAxis,'Position',[5+sRadius*2/3*2 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5],...
                 'FaceColor',lColor(:,ii),'EdgeColor',lColor(:,ii));
-            hRect(end+1) = rectangle('Position',[5 lHeight-20*ii+6 sRadius*2 sRadius],...
+            hObject(end+1) = rectangle(hAxis,'Position',[5 lHeight-20*ii+6 sRadius*2 sRadius],...
                 'FaceColor','none','EdgeColor','k');
         case 3
             % sphere
-            hRect(end+1) = swplot.ellipsoid([5+sRadius lHeight-20*ii+3+sRadius 0],eye(3)*sRadius,3);
-            set(hRect(end),'FaceColor',lColor(:,ii));
+            hObject(end+1) = swplot.ellipsoid(hAxis,[5+sRadius lHeight-20*ii+3+sRadius 0],eye(3)*sRadius,3);
+            set(hObject(end),'FaceColor',lColor(:,ii));
     end
     % add text
-    hRect(end+1) = text(30,(lHeight-20*ii+10),lText{ii},'fontSize',fontSize,'color','k');
+    hObject(end+1) = text(hAxis,30,(lHeight-20*ii+10),lText{ii},'fontSize',fontSize,'color','k');
 end
 
 if any(lType==3)
@@ -115,14 +126,14 @@ if any(lType==3)
 end
 
 % take care that one cannot activate axis by clicking on it
-set(hRect,'Tag','legend');
-set(hRect,'hittest','off');
+set(hObject,'Tag','legend');
+set(hObject,'hittest','off');
 set(hAxis,'hittest','off','NextPlot','replace','Visible','on')
 
 % save new handle
 setappdata(hFigure,'legend',lDat);
 
-% switch do plot axis where all 3D objects are
-axes(getappdata(hFigure,'axis'));
+% switch to plot axis where all 3D objects are
+%axes(getappdata(hFigure,'axis'));
 
 end

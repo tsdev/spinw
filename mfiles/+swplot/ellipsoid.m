@@ -25,7 +25,8 @@ function hPatch = ellipsoid(varargin)
 %           Dimensions are [3 3 nEllipse].
 % mesh      Mesh of the ellipse surface, a triangulation class object or an
 %           integer that used to generate an icosahedron mesh with #mesh
-%           number of additional triangulation.
+%           number of additional triangulation. Default value is stored in
+%           swpref.getpref('nmesh')
 %
 % See also TRIANGULATION, SWPLOT.ICOMESH.
 %
@@ -80,10 +81,10 @@ if numel(R0) == 3
 end
 
 % plot multiple ellipse
-nEllipse = size(R0,2);
+nObject = size(R0,2);
 
 sT = [size(T) 1];
-if size(R0,1)~=3 || any(sT(1:3)~=[3 3 nEllipse])
+if size(R0,1)~=3 || any(sT(1:3)~=[3 3 nObject])
     error('ellipsoid:WrongInput','Matrices have incompatible dimensions!')
 end
 
@@ -92,10 +93,10 @@ F0 = mesh.ConnectivityList;
 NV = size(V0,1);
 NF = size(F0,1);
 
-V = zeros(NV*nEllipse,3);
-F = zeros(NF*nEllipse,3);
+V = zeros(NV*nObject,3);
+F = zeros(NF*nObject,3);
 
-for ii = 1:nEllipse
+for ii = 1:nObject
     % vertices
     V((1:NV)+(ii-1)*NV,:) = bsxfun(@plus,T(:,:,ii)*V0',R0(:,ii))';
     % faces
@@ -104,6 +105,12 @@ end
 
 % red color
 C = repmat([1 0 0],[size(F,1) 1]);
+
+if strcmp(get(hAxis,'Tag'),'swaxis')
+    % only work in the main plot axis of an swplot figure
+    hFigure = get(hAxis,'Parent');
+    hPatch = getappdata(hFigure,'facepatch');
+end
 
 if isempty(hPatch)
     % create patch
@@ -116,6 +123,11 @@ else
     % number of existing faces
     nV0 = size(V0,1);
     set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
+end
+
+if strcmp(get(hAxis,'Tag'),'swaxis')
+    % replicate the arrow handle to give the right number of added objects
+    hPatch = repmat(hPatch,[1 nObject]);
 end
 
 end

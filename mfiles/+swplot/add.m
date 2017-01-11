@@ -1,29 +1,31 @@
-function add(hAdd, hFigure, name)
-% adds a graphical object to a figure
+function add(hAdd, hFigure)
+% adds a graphical object to the hgtransform of an swplot figure
 %
-% SWPLOT.ADD(hAdd, {hFigure},{name})
+% SWPLOT.ADD(hAdd, {hFigure})
 %
-% It adds a graphical object to the hgtransform object of the figure for
-% continuous rotation with the mouse.
+% It adds a graphical object to the hgtransform object of the figure to
+% enable continuous rotation with the mouse.
 %
 % Input:
 %
 % hAdd      Either vector of the handles of the graphical objects, or
-%           struct with dimensions of [1 noBject] with a handle field each
+%           struct with dimensions of [1 nObject] with a handle field each
 %           contains a graphical object handle. The struct can contain any
 %           number of the following fields as well:
-%               'text'
-%               'position'
-%               'label'
-%               'legend'
-%               'type'
+%               'name'      Default value is 'general' if not given. The
+%                           name identifies groups of objects.
+%               'text'      Text that is shown in the tooltip when clicking
+%                           on the object.
+%               'position'  Position of the object, see swplot.plot for
+%                           details.
+%               'label'     Label that is shown in the legend.
+%               'legend'    Type of legend, see swplot.plot for details.
+%               'type'      Type of graphical object, see swplot.plot.
 % hFigure   The handle of the figure (number in the figure title bar). The
 %           default is the active swplot figure if the argument is not
 %           provided by the user or it is empty matrix.
-% name      String, the name of the objects. It can be used for finding the
-%           object handles after plotting.
 %
-% See also SWPLOT, SWPLOT.FIGURE, HGTRANSFORM.
+% See also SWPLOT, SWPLOT.FIGURE, HGTRANSFORM, SWPLOT.PLOT.
 %
 
 if nargin == 0
@@ -36,60 +38,62 @@ if nargin < 2 || isempty(hFigure)
     hFigure = swplot.activefigure;
 end
 
-if nargin < 3
-    name = 'general';
-end
+hAxis = getappdata(hFigure,'axis');
 
-cva = get(gca,'CameraViewAngle');
+cva = get(hAxis,'CameraViewAngle');
 hTransform = getappdata(hFigure,'h');
+
+% fields of struct to store objects
+fNames = {'handle' 'number' 'name' 'type' 'label' 'position' 'text' 'legend'};
 
 if isappdata(hFigure,'objects')
     sObject = getappdata(hFigure,'objects');
 else
-    sObject = struct;
+    c0 = cell(1,0);
+    sInit = [fNames; repmat({c0},[1 numel(fNames)])];
+    sObject = struct(sInit{:});
 end
 
-% get the largest existing number in sObject
-namesObj = fieldnames(sObject);
-nMax = 0;
-for ii = 1:numel(namesObj)
-    nMax = max([nMax sObject.(namesObj{ii})(:).number]);
+% keep the additional fields
+fNames = fNames(3:end);
+
+% find the maximum element value
+if isempty(sObject)
+    nMax = 0;
+else
+    nMax = round(max([sObject(:).number]));
 end
 
 % convert a simple list of handles to the required structure to store in
 % swplot
 nObjAdd = numel(hAdd);
 
-fNames = {'type' 'label' 'position' 'text' 'legend'};
-
 if ~isstruct(hAdd)
     hAddC = num2cell(hAdd);
-    hAdd = struct;
-    hAdd.(name) = struct('handle',cell(1,nObjAdd));
-    [hAdd.(name).handle] = hAddC{:};
+    hAdd = struct('handle',cell(1,nObjAdd));
+    [hAdd.handle] = hAddC{:};
 else
     hAddS = hAdd;
-    hAdd  = struct;
     if ~isfield(hAddS,'handle')
         error('add:WrongInput','handle field is required!');
     end
-    hAdd.(name) = struct('handle',cell(1,nObjAdd));
-    [hAdd.(name)(:).handle] = hAddS(:).handle;
-
+    hAdd = struct('handle',cell(1,nObjAdd));
+    [hAdd(:).handle] = hAddS(:).handle;
+    
     for ii = 1:numel(fNames)
         % copy only the allowed field names
         if isfield(hAddS,fNames{ii})
-            [hAdd.(name)(:).(fNames{ii})] = hAddS(:).(fNames{ii});
+            [hAdd(:).(fNames{ii})] = hAddS(:).(fNames{ii});
         end
     end
 end
 
 % .number
 num1 = num2cell(nMax+(1:nObjAdd));
-[hAdd.(name)(:).number] = num1{:};
+[hAdd(:).number] = num1{:};
 
 % define default legend type:
-% 0     no legend 
+% 0     no legend
 % 1     colored rectangle
 % 2     dashed rectangle
 % 3     colored sphere
@@ -100,14 +104,17 @@ num1 = num2cell(nMax+(1:nObjAdd));
 % 4 'circle'
 % 5 'line'
 % 6 'text'
-legend0 = [1 3 1 1 0 0];
-type0   = {'arrow' 'ellipsoid' 'cylinder' 'circle' 'line' 'text'};
+legend0 = [1 3 1 1 0 0 1];
+type0   = {'arrow' 'ellipsoid' 'cylinder' 'circle' 'line' 'text' 'facepatch'};
 % create dictionary to convert string to number
-K       = containers.Map(type0,1:6);
+K       = containers.Map(type0,1:numel(type0));
 
 for ii = 1:numel(fNames)
-    if ~isfield(hAdd.(name),fNames{ii})
+    if ~isfield(hAdd,fNames{ii})
         switch fNames{ii}
+            case 'name'
+                % .type
+                defval1 = repmat({'general'},nObjAdd,1);
             case 'position'
                 % .position
                 defval1 = repmat({nan(3,2)},nObjAdd,1);
@@ -116,11 +123,11 @@ for ii = 1:numel(fNames)
                 defval1 = repmat({''},nObjAdd,1);
             case 'text'
                 % .text
-                defval1 = {hAdd.(name)(:).label};
+                defval1 = {hAdd(:).label};
             case 'type'
                 % .type, default is taken from tag/type property
-                defval1 = get([hAdd.(name)(:).handle],'Tag');
-                type2 = get([hAdd.(name)(:).handle],'Type');
+                defval1 = get([hAdd(:).handle],'Tag');
+                type2   = get([hAdd(:).handle],'Type');
                 if ~iscell(defval1)
                     defval1 = {defval1};
                 end
@@ -131,7 +138,7 @@ for ii = 1:numel(fNames)
                 defval1(tIdx) = type2(tIdx);
             case 'legend'
                 try
-                    lIdx    = cell2mat(values(K,{hAdd.(name)(:).type}));
+                    lIdx    = cell2mat(values(K,{hAdd(:).type}));
                     defval1 = num2cell(legend0(lIdx));
                 catch
                     % .legend, default colored rectangle for all objects if
@@ -140,29 +147,55 @@ for ii = 1:numel(fNames)
                     defval1 = repmat({1},nObjAdd,1);
                 end
         end
-        [hAdd.(name)(:).(fNames{ii})] = defval1{:};
+        [hAdd(:).(fNames{ii})] = defval1{:};
     end
 end
 
-% add all the objects to the hgtransform object.
-hSelect = [hAdd.(name)(:).handle];
-if ~isempty(hTransform)
-    set(hSelect,'Parent',hTransform);
+% create faceindex data for facepatch type object
+hPatch   = getappdata(hFigure,'facepatch');
+hNew = [hAdd(:).handle];
+patchIdx = find(hPatch==hNew);
+nPatch   = numel(patchIdx);
+
+if nPatch > 0
+    % lets check if all new hPatch handles are the same type of object
+    type0 = hAdd(patchIdx(1)).type;
+    if ~all(ismember({hAdd(patchIdx).type},type0))
+        error('add:WrongInput','All patch objects have to be the same type!');
+    else
+        fIdx = getappdata(hPatch,'facenumber');
+        nI = size(fIdx,1);
+        F  = get(hPatch,'Faces');
+        nF = size(F,1);
+        
+        nFacePerObject = (nF-nI)/nPatch;
+        if ceil(nFacePerObject)-nFacePerObject > 0
+            error('add:WrongInput','All patch objects have to be the same type!');
+        end
+        
+        fIdxAdd = repmat([hAdd(patchIdx).number],[nFacePerObject 1]);
+        fIdx = [fIdx; fIdxAdd(:)];
+        setappdata(hPatch,'facenumber',fIdx);
+        
+    end
 end
-set(hSelect,'Clipping','Off');
+
+
+% add all the objects to the hgtransform object except the facepatch
+% handles that are already registered
+hNew(patchIdx) = [];
+if ~isempty(hTransform)
+    set(hNew,'Parent',hTransform);
+end
+set(hNew,'Clipping','Off');
 
 % add callback function for showing the tooltips
-for ii = 1:nObjAdd
-    str0 = hAdd.(name)(ii).text;
-    set(hAdd.(name)(ii).handle,'ButtonDownFcn',@(i,j)swplot.tooltip(str0,hFigure));
-end
-    
+%set([hNew hPatch],'ButtonDownFcn',@(obj,hit)swplot.tooltipcallback(obj,hit,hFigure,hTransform));
+swplot.tooltip(swplot.tooltip,hFigure);
+
+
 % comb together the handles of the old and new graphical objects.
-if isfield(sObject,name)
-    sObject.(name) = [sObject.(name) hAdd.(name)];
-else
-    sObject.(name) = hAdd.(name);
-end
+sObject = [sObject hAdd(:)'];
 
 % Shift the origin to center the plot.
 if isappdata(hFigure,'param')
@@ -184,7 +217,7 @@ end
 % Saves the object handles into the figure UserData property.
 setappdata(hFigure,'objects',sObject);
 setappdata(hFigure,'h',hTransform);
-set(gca,'CameraViewAngle',cva);
+set(hAxis,'CameraViewAngle',cva);
 material('shiny');
 
 end

@@ -34,15 +34,16 @@ if nargin == 0
         % find the first inactive figure
         hFigure = findobj('tag',inactiveTag);
         if isempty(hFigure)
-            error('activefigure:NoFig','There is no swplot figure, use swplot.figure() to create a new window!')
+            %error('activefigure:NoFig','There is no swplot figure, use swplot.figure() to create a new window!')
+            hFigure = swplot.figure;
         end
         swplot.activefigure(hFigure(1));
-        warning('activefigure:Ativate','There is no active figure, activating the last used one!');
+        %warning('activefigure:Ativate','There is no active figure, activating the last used one!');
     end
     hFigure = hFigure(1);
     
     % make figure live
-    figure(hFigure);
+    %figure(hFigure);
 else
     
     if ~(isgraphics(hFigure) || isnumeric(hFigure))

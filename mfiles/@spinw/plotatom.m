@@ -10,7 +10,7 @@ function varargout = plotatom(obj, varargin)
 %
 % Input:
 %
-% obj               spinw class object.
+% obj       spinw object.
 %
 % Options:
 %
@@ -32,7 +32,10 @@ function varargout = plotatom(obj, varargin)
 %               'auto'              use radius data from database based on 
 %                                   the atom label multiplied by radius0
 %                                   value.
-% magOnly   Whether to plot only the magnetic atoms, default is false.
+% type     String, defines the types of atoms to plot:
+%               'all'       Plot all atoms, default value.
+%               'mag'       Plot magnetic atoms only.
+%               'nonmag'    Plot non-magnetic atoms only.
 % color     Color of the atoms:
 %               'auto'      All atom gets the color stored in obj.unit_cell.
 %               'colorname' All atoms will have the same color.
@@ -45,27 +48,11 @@ function varargout = plotatom(obj, varargin)
 % hg        Whether to use hgtransform (nice rotation with the mouse) or 
 %           default Matlab rotation of 3D objects. Default is true.
 % figure    Handle of the swplot figure. Default is the selected figure.
-% figPos    Position of the figure window on the screen. The [1,1] position
-%           is the upper left corner of the screen, [2,1] is shifted
-%           downwards by 1 figure window height, [1,2] is shifted right by
-%           1 figure window width relative to the [1,1] position. Default
-%           is [0,0] where the figure window will not be moved from the
-%           original position. If 4 element vector, the screen is divided
-%           up to a grid, with horizontally figPos(3) tiles, vertically
-%           figPos(4) tiles.
-%
 %
 % Output:
 %
 % For plotting:
-% hFigure           Handle of the plot figure.
-% handle            Stores the handles for all graphical object in a
-%                   struct.
-%
-% For 'jmol' script file output:
-% strOut            A single string is returned, that contains a Jmol
-%                   script that reproduce the figure as close as possible.
-%
+% hFigure           Handle of the swplot figure.
 %
 % The labels on the atom has the following meaning:
 %
@@ -103,140 +90,48 @@ function varargout = plotatom(obj, varargin)
 % See also SW_DRAW, SW_GETOBJECT, SW_ADDOBJECT.
 %
 
-% input parameters
+% default values
+fontSize0 = swpref.getpref('fontsize',[]);
+nMesh0    = swpref.getpref('nmesh',[]);
+nPatch0   = swpref.getpref('npatch',[]);
 
 range0 = [0 1;0 1;0 1];
-inpForm.fname  = {'range' 'pSpin'    'cAxis'    'pCell'     'pCoupling' 'format'};
-inpForm.defval = {range0  true       [0 0 0]     true       true        'plot'  };
-inpForm.size   = {[-5 -6] [1 1]      [1 3]       [1 1]      [1 1]       [1 -9]  };
+inpForm.fname  = {'range' 'legend' 'label' 'dtext' 'fontsize' 'radius0'};
+inpForm.defval = {range0  true     true    0.2     fontSize0  0.3      };
+inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 1]      [1 1]    };
+inpForm.soft   = {false   false    false   false   false      false    };
+    
+inpForm.fname  = [inpForm.fname  {'radius' 'type' 'color' 'nMesh' 'nPatch'}];
+inpForm.defval = [inpForm.defval {'auto'   'all'  'auto'  nMesh0  nPatch0 }];
+inpForm.size   = [inpForm.size   {[1 -3]   [1 -4] [1 -5]  [1 1]   [1 1]   }];
+inpForm.soft   = [inpForm.soft   {false    false  false   false   false   }];
 
-inpForm.fname  = [inpForm.fname  {'angHeadAxis' 'lHeadAxis'     'rAxis'}];
-inpForm.defval = [inpForm.defval {15             0.5           0.06    }];
-inpForm.size   = [inpForm.size   {[1 1]          [1 1]         [1 1]   }];
-
-inpForm.fname  = [inpForm.fname  {'pMultCell'    'pAxis'   'surfRes' 'rCoupling' 'sSpin'  'rSpin'}];
-inpForm.defval = [inpForm.defval {false          true       30        0.05        1        0.06  }];
-inpForm.size   = [inpForm.size   {[1 1]          [1 1]      [1 1]     [1 1]       [1 1]    [1 1] }];
-
-inpForm.fname  = [inpForm.fname  {'angHeadSpin' 'lHeadSpin'     'aPlaneSpin' 'nSpin'}];
-inpForm.defval = [inpForm.defval {15             0.5           0.07          false  }];
-inpForm.size   = [inpForm.size   {[1 1]          [1 1]         [1 1]         [1 1]  }];
-
-inpForm.fname  = [inpForm.fname  {'labelAtom'  'cSpin' 'cCell'    'legend'}];
-inpForm.defval = [inpForm.defval {true         'auto'    [0 0 0]   true   }];
-inpForm.size   = [inpForm.size   {[1 1]        [1 -4]    [1 3]     [1 1]  }];
-
-inpForm.fname  = [inpForm.fname  {'lineStyleCell' 'dAxis'       'dText' 'wSpace' 'rAtomData'}];
-inpForm.defval = [inpForm.defval {'--'            [0.5;1.5;2.0] 0.2     10       false      }];
-inpForm.size   = [inpForm.size   {[1 -1]          [3 1]         [1 1]   [1 1]    [1 1]      }];
-
-inpForm.fname  = [inpForm.fname  {'rAtom' 'aEll' 'coplanar' 'fontSize' 'pNonMagAtom'}];
-inpForm.defval = [inpForm.defval {0.3     0.3          0          12     true       }];
-inpForm.size   = [inpForm.size   {[1 -8]  [1 1]        [1 1]      [1 1]  [1 1]      }];
-
-inpForm.fname  = [inpForm.fname  {'rEll' 'eEll' 'pZeroCoupling' 'tooltip' 'cCoupling' 'cDM' 'cAtom'}];
-inpForm.defval = [inpForm.defval {1          0.1          true             true      'auto' 'auto'   'auto' }];
-inpForm.size   = [inpForm.size   {[1 1]      [1 1]        [1 1]            [1 1]     [1 -7] [1 -2]   [1 -3] }];
-
-inpForm.fname  = [inpForm.fname  {'sEll' 'lwEll' 'dash' 'lineWidthCell' 'hFigure' 'hg'  'zoom' }];
-inpForm.defval = [inpForm.defval {1      1       1      1                0        true  0      }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]   [1 1]  [1 1]            [1 1]    [1 1] [1 1]  }];
-
-inpForm.fname  = [inpForm.fname  {'centerS' 'aCoupling' 'sCoupling' 'eCoupling' 'scaleC' 'figPos'}];
-inpForm.defval = [inpForm.defval {true      2           1           0.1         1         0      }];
-inpForm.size   = [inpForm.size   {[1 1]     [1 1]       [1 1]       [1 1]       [1 1]    [1 -10] }];
+inpForm.fname  = [inpForm.fname  {'hg'  'figure'}];
+inpForm.defval = [inpForm.defval {true  []      }];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]   }];
+inpForm.soft   = [inpForm.soft   {false    true }];
 
 param = sw_readparam(inpForm, varargin{:});
 
-switch param.format
-    case 'plot'
-        plotmode = true;
-    case 'jmol'
-        plotmode = false;
-        strOut = sprintf('BACKGROUND WHITE;\n');
-    otherwise
-        error('sw:plot:WrongInput','''format'' option has to be either ''plot'' or ''jmol''!');
+if isempty(param.figure)
+    hFigure  = swplot.activefigure(param.hg);
+else
+    hFigure = param.figure;
 end
 
+lattice = obj.lattice;
+% the basis vectors in columns.
+BV = obj.basisvector;
 
-lattice   = obj.lattice;
-% The basis vectors in columns.
-basisVector = obj.basisvector;
-
-if plotmode
-    % Handle of figure window to plot.
-    if param.hFigure>0
-        hFigure = param.hFigure;
-        figure(hFigure);
-    else
-        hFigure = sw_getfighandle('sw_crystal');
-    end
-    
-    % Position figure window on the screen
-    if all(param.figPos>0)
-        fUnit = get(hFigure,'Units');
-        set(hFigure,'Units','pixels');
-        if numel(param.figPos==4)
-            % get screen size
-            unit0 = get(0,'units');
-            set(0,'units','pixels');
-            scSize = get(0,'screensize');
-            set(0,'units',unit0);
-            
-            fWidth  = scSize(3)/param.figPos(4);
-            fHeight = scSize(4)/param.figPos(3);
-        else
-            fPos = get(hFigure,'outerPosition');
-            fWidth  = fPos(3);
-            fHeight = fPos(4);
-        end
-        
-        % Display size in pixel
-        dSize = get(0,'ScreenSize');
-        set(hFigure,'outerPosition',[(param.figPos(2)-1)*fWidth dSize(4)-20-param.figPos(1)*fHeight fWidth fHeight]);
-        set(hFigure,'Units',fUnit);
-    end
-    
-    if param.hg
-        if isempty(hFigure)
-            hFigure = sw_structfigure;
-        end
-    else
-        hFigure = figure;
-        if feature('usehg2')
-            hFigure.Name = sprintf('Figure %d: SpinW : Crystal structure',hFigure.Number);
-            hFigure.NumberTitle  = 'off';
-            hFigure.DockControls = 'off';
-            hFigure.PaperType    = 'A4';
-            hFigure.Tag          = 'sw_crystal';
-            %hFigure.Toolbar      = 'figure';
-        else
-            set(hFigure,...
-                'Name',          sprintf('Figure %d: SpinW : Crystal structure',hFigure),...
-                'NumberTitle',   'off',...
-                'DockControls',  'off',...
-                'PaperType',     'A4',...
-                'Tag',           'sw_crystal',...
-                'Toolbar',       'figure');
-        end
-        set(gcf,'color','w')
-        set(gca,'Position',[0 0 1 1]);
-        set(gca,'Color','none');
-        set(gca,'Box','off');
-        set(gca,'Clipping','Off');
-        daspect([1 1 1])
-        pbaspect([1 1 1])
-        axis off
-        axis vis3d
-        hold on
-        material dull
-    end
-    
-    tooltip(hFigure,'<< Click on any object to get information! >>')
-    
-    cva = get(gca,'CameraViewAngle');
-    [az, el] = view();
+if verLessThan('matlab','8.4.0')
+    figNum = hFigure;
+else
+    figNum = get(hFigure,'Number');
 end
+
+% set figure title
+set(hFigure,'Name', sprintf('Figure %d: SpinW: Crystal structure',figNum));
+
 
 % change range, if the number of unit cells are given
 if numel(param.range) == 3
@@ -246,7 +141,7 @@ elseif numel(param.range) ~=6
 end
 
 %shift of the plot
-wShift = -sum(basisVector * sum(param.range,2)/2,2);
+wShift = -sum(BV * sum(param.range,2)/2,2);
 wShift = repmat(wShift,[1 2]);
 wShift = reshape(wShift',1,[]);
 
@@ -269,14 +164,14 @@ end
 
 % basis vectors for unit cell
 v0 = zeros(3,1);
-v1 = basisVector(:,1);
-v2 = basisVector(:,2);
-v3 = basisVector(:,3);
+v1 = BV(:,1);
+v2 = BV(:,2);
+v3 = BV(:,3);
 
 %axis range to show
 if plotmode
     param.wRange = [param.range(:,1)-param.wSpace param.range(:,2)+param.wSpace];
-    axis(reshape((basisVector*param.wRange)',1,[])+wShift);
+    axis(reshape((BV*param.wRange)',1,[])+wShift);
     zoom(10);
     
     %sphare surface for atoms
@@ -629,7 +524,7 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                 
                 % Plot if the atom is within the plotting range.
                 if all((rLat <= param.range(:,2)) & (rLat >= param.range(:,1)))
-                    rPlot = basisVector*rLat;
+                    rPlot = BV*rLat;
                     
                     % Draw anisotropy semi-transparent ellipsoid.
                     if atom.mag(ll) && param.sEll>0
@@ -818,8 +713,8 @@ for ii = floor(param.range(1,1)):floor(param.range(1,2))
                     rLat2 = mAtom.r(:,coupling.atom2(ll)) + coupling.dl(:,ll) + dCell;
                     
                     if all((rLat1<=param.range(:,2))&(rLat1>=param.range(:,1))&(rLat2<=param.range(:,2))&(rLat2>=param.range(:,1)))
-                        rPlot1    = basisVector*rLat1;
-                        rPlot2    = basisVector*rLat2;
+                        rPlot1    = BV*rLat1;
+                        rPlot2    = BV*rLat2;
                         if strcmpi(param.cCoupling,'auto')
                             cColor    = mColor(:,coupling.mat_idx(ll));
                         else
@@ -985,7 +880,7 @@ if param.hg
         set(h0,'Parent',h2);
         set(h0,'Clipping','Off');
     end
-    T = makehgtform('translate',-sum(basisVector * sum(param.range,2)/2,2)');
+    T = makehgtform('translate',-sum(BV * sum(param.range,2)/2,2)');
     set(h2,'Matrix',T);
     
 end

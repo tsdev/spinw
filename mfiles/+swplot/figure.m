@@ -71,7 +71,7 @@ else
 end
 
 set(hFigure,...
-    'Name',          sprintf('Figure %d: SpinW : Crystal structure',figNum),...
+    'Name',          sprintf('Figure %d: swplot',figNum),...
     'NumberTitle',   'off',...
     'DockControls',  'off',...
     'PaperType',     'A4',...
@@ -177,7 +177,8 @@ if strcmp(mode,'hg')
     M_previous = get(h,'Matrix');
     setappdata(hFigure,'h',h);
 else
-    setappdata(hFigure,'h',gobjects(0,1));
+    h = gobjects(0,1);
+    setappdata(hFigure,'h',h);
 end
 
 % save data to figure
@@ -193,9 +194,13 @@ setappdata(hFigure,'tooltip',struct('handle',gobjects(0)));
 swplot.tooltip('off',hFigure);
 set(hFigure,'Visible','on');
 % empty patch object for showing graphics with faces
-hPatch = patch(h,'Vertices',zeros(0,3),'Faces',zeros(0,3),'FaceLighting','flat',...
+hPatch = patch('Vertices',zeros(0,3),'Faces',zeros(0,3),'FaceLighting','flat',...
     'EdgeColor','none','FaceColor','flat','Tag','facepatch',...
     'FaceVertexCData',zeros(0,3),'Clipping','Off');
+if ~isempty(h)
+    set(hPatch,'Parent',h);
+end
+
 % set tooltip callback for the general object
 % it is done in swplot.add
 %set(hPatch,'ButtonDownFcn',@(obj,hit)swplot.tooltipcallback(obj,hit,hFigure));

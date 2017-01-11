@@ -54,14 +54,8 @@ function varargout = plot(varargin)
 %           swpref.getpref('nmesh')
 % nPatch    Number of points on the curve for arrow and cylinder, default 
 %           value is stored in swpref.getpref('npatch').
-% figPos    Position of the figure window on the screen. The [1,1] position
-%           is the upper left corner of the screen, [2,1] is shifted
-%           downwards by 1 figure window height, [1,2] is shifted right by
-%           1 figure window width relative to the [1,1] position. Default
-%           is [0,0] where the figure window will not be moved from the
-%           original position. If 4 element vector, the screen is divided
-%           up to a grid, with horizontally figPos(3) tiles, vertically
-%           figPos(4) tiles.
+% hg        Whether to use hgtransform (nice rotation with the mouse) or 
+%           default Matlab rotation of 3D objects. Default is true.
 %
 % See also SWPLOT.COLOR.
 %
@@ -74,14 +68,20 @@ inpForm.defval = {[]     []     []     []         []      []       []      'lu' 
 inpForm.size   = {[1 -8] [1 -1] [1 -2] [3 -3 -4]  [1 -5]  [1 1]    [-9 -6] [1 -7] [1 1]   };
 inpForm.soft   = {false  true   true   false      true    true     true    false  true    };
 
-inpForm.fname  = [inpForm.fname  {'R'     'alpha' 'lHead' 'nMesh' 'nPatch' 'T'       }];
-inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []        }];
-inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] }];
-inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      }];
+inpForm.fname  = [inpForm.fname  {'R'     'alpha' 'lHead' 'nMesh' 'nPatch' 'T'       'hg'   }];
+inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []        'hg'   }];
+inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] [1 -12]}];
+inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      false}];
 
 param = sw_readparam(inpForm, varargin{:});
 
 type = lower(param.type);
+
+if param.hg
+    hgmode = 'hg';
+else
+    hgmode = 'nohg';
+end
 
 % convert type string to index
 % define default legend type:
@@ -111,7 +111,7 @@ else
 end
 
 if isempty(param.figure)
-    hFigure = swplot.activefigure;
+    hFigure = swplot.activefigure(hgmode);
 else
     hFigure = param.figure;
 end
@@ -336,5 +336,8 @@ setappdata(hFigure,'legend',lDat);
 if nargout > 0
     varargout{1} = hFigure;
 end
+
+% final corrections
+swplot.zoom
 
 end

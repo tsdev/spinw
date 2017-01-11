@@ -1,4 +1,4 @@
-function varargout = activefigure(hFigure)
+function varargout = activefigure(mode,hFigure)
 % returns the handle of the active swplot figure
 %
 % {hFigure} = SWPLOT.ACTIVEFIGURE
@@ -21,21 +21,45 @@ function varargout = activefigure(hFigure)
 % See also SWPLOT.FIGURE.
 %
 
+if nargin == 0
+    ishg = true;
+    hFigure = [];
+elseif ~ischar(mode)
+    hFigure = mode;
+    ishg    = true;
+elseif nargin == 1
+    hFigure = [];
+    ishg = strcmp(mode,'hg');
+elseif nargin == 2
+    ishg = strcmp(mode,'hg');
+end
+
+if ishg
+    mode = 'hg';
+else
+    mode = 'nohg';
+end
+
 % tag for active figure
 activeTag = swpref.getpref('tag',[]);
 
 % tag for inactive figures
 inactiveTag = ['inactive_' activeTag];
 
-if nargin == 0
+if isempty(hFigure)
     % find active figure
     hFigure = findobj('tag',activeTag);
+    % find the right type of figure
+    hFigure = hFigure(swplot.ishg(hFigure)==ishg);
+    
     if isempty(hFigure)
         % find the first inactive figure
         hFigure = findobj('tag',inactiveTag);
+        hFigure = hFigure(swplot.ishg(hFigure)==ishg);
+        
         if isempty(hFigure)
             %error('activefigure:NoFig','There is no swplot figure, use swplot.figure() to create a new window!')
-            hFigure = swplot.figure;
+            hFigure = swplot.figure(mode);
         end
         swplot.activefigure(hFigure(1));
         %warning('activefigure:Ativate','There is no active figure, activating the last used one!');

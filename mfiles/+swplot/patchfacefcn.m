@@ -75,17 +75,22 @@ end
 
 % limit on the edge of the triangle
 
-if nargin<6
+if nargin<6 || isempty(hTransform)
     % no hgtransform parent, use unit transformation matrix
-    T = eye(4);
+    M = eye(4);
 else
     % get the transformation matrix
-    T = get(hTransform,'Matrix');
+    M1 = get(hTransform,'Matrix');
+    hTransform2 = get(hTransform,'Parent');
+    M2 = get(hTransform2,'Matrix');
+    %M = M1*M2;
+    M = M2*M1;
 end
 
 % transform the point to the coordinate system of the object
-P = [P 0]*T;
-P = P(1:3);
+T = M(1:3,4)';
+R = M(1:3,1:3);
+P = (P-T)*R;
 
 % shift the origin to the first vertex of every triangle
 E1 = V(obj.Faces(:,2),:)-V(obj.Faces(:,1),:);

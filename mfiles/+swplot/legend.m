@@ -113,7 +113,7 @@ for ii = 1:numel(lType)
                 'FaceColor','none','EdgeColor','k');
         case 3
             % sphere
-            hObject(end+1) = swplot.ellipsoid(hAxis,[5+sRadius lHeight-20*ii+3+sRadius 0],eye(3)*sRadius,3);
+            hObject(end+1) = swplot.ellipsoid(hAxis,[5+sRadius lHeight-20*ii+3+sRadius 0],eye(3)*sRadius);
             set(hObject(end),'FaceColor',lColor(:,ii));
     end
     % add text
@@ -122,7 +122,9 @@ end
 
 if any(lType==3)
     % add light
-    camlight('right');
+    hLight = camlight('right');
+    set(hLight,'Parent',hAxis);
+    material('shiny');
 end
 
 % take care that one cannot activate axis by clicking on it

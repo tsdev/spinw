@@ -13,7 +13,9 @@ function tooltipcallback(obj,hit,hFigure,hTransform)
 % See also SWPLOT.TOOLTIP.
 %
 
+
 if isappdata(obj,'facenumber')
+    % face patch object
     % convert face into object index
     fIdx = swplot.patchfacefcn(obj,hit,[],'all',[1e-7 1e-7],hTransform);
     
@@ -61,13 +63,16 @@ if isappdata(obj,'facenumber')
     else
         swplot.tooltip('',hFigure);
     end
+elseif isappdata(obj,'vertexnumber')
+    % edge object
+    swplot.tooltip('',hFigure);
 else
     % graphical object data on swplot figure
     sObject = getappdata(hFigure,'objects');
     nIdx = find(obj == [sObject(:).handle]);
     % find text and show tooltip if there is text
     if ~isempty(nIdx)
-        swplot.tooltip(sObject(nIdx).text,hFigure)
+        swplot.tooltip(sObject(nIdx(1)).text,hFigure)
     end
     
 end

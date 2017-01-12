@@ -100,6 +100,13 @@ F = reshape(permute(bsxfun(@plus,F,permute((0:(nCircle-1))*N,[1 3 2])),[1 3 2]),
 % color data
 C = repmat([1 0 0],[size(F,1) 1]);
 
+if strcmp(get(hAxis,'Tag'),'swaxis')
+    % make sure we are on the plot axis of an swobject
+    % add object to the existing triangular patch
+    hFigure = get(hAxis,'Parent');
+    hPatch = getappdata(hFigure,'facepatch');
+end
+
 if isempty(hPatch)
     % create patch
     hPatch = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
@@ -112,6 +119,11 @@ else
     % number of existing faces
     nV0 = size(V0,1);
     set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
+end
+
+if strcmp(get(hAxis,'Tag'),'swaxis')
+    % replicate the arrow handle to give the right number of added objects
+    hPatch = repmat(hPatch,[1 nObject]);
 end
 
 end

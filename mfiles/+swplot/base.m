@@ -1,4 +1,4 @@
-function varargout = base(BV,hFigure)
+function varargout = base(varargin)
 % sets the basis vectors of an swplot figure
 %
 % SWPLOT.BASE(BV, {hFigure})
@@ -26,14 +26,30 @@ function varargout = base(BV,hFigure)
 % See also SWPLOT.PLOT.
 %
 
-if nargin < 2
-    % find active figure
-    hFigure = swplot.activefigure;
+BV      = [];
+hFigure = [];
+
+switch nargin
+    case 0
+    case 1
+        if numel(varargin{1})~=1 || isa(varargin{1},'spinw')
+            BV = varargin{1};
+        else
+            hFigure = varargin{1};
+        end
+    case 2
+        if numel(varargin{2})~=1 || isa(varargin{2},'spinw')
+            varargin = varargin([2 1]);
+        end
+        BV = varargin{1};
+        hFigure = varargin{2};
+    otherwise
+        error('base:WrongInput','Too many input arguments!')
 end
 
-if nargin == 0 || isempty(BV)
-    varargout{1} = getappdata(hFigure,'base');
-    return
+if isempty(hFigure)
+    % find active figure
+    hFigure = swplot.activefigure;
 end
 
 if isa(BV,'spinw')
@@ -41,6 +57,12 @@ if isa(BV,'spinw')
     BV = BV.basisvector;
 end
 
-setappdata(hFigure,'base',BV);
+if ~isempty(BV)
+    setappdata(hFigure,'base',BV);
+end
+
+if isempty(BV) || nargout > 0
+    varargout{1} = getappdata(hFigure,'base');
+end
 
 end

@@ -82,7 +82,7 @@ end
 fid = obj.fileid;
 
 % calculate the height of the paralellepiped of a unit cell
-hMax = 1./sqrt(sum(inv(obj.basisvector).^2,2));
+hMax = 1./sqrt(sum(inv(obj.basisvector').^2,2));
 
 % gives the number of extra unit cells along all 3 axes
 % that are necessary to cover the minimum bond distance

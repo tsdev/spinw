@@ -58,21 +58,17 @@ set(hAxis,...
     'CameraViewAngle',  0.6,...
     'NextPlot',         'add',...
     'Tag',              'swaxis',...
+    'XLim',             [-1 1],...
+    'YLim',             [-1 1],...
+    'ZLim',             [-1 1],...
     'Visible','off');
 
 % fix 1:1 ratio for all scale
 daspect([1 1 1]);
 pbaspect([1 1 1]);
 
-if verLessThan('matlab','8.4.0')
-    figNum = hFigure;
-else
-    figNum = get(hFigure,'Number');
-end
-
 set(hFigure,...
-    'Name',          sprintf('Figure %d: swplot',figNum),...
-    'NumberTitle',   'off',...
+    'Name',          'swplot',...
     'DockControls',  'off',...
     'PaperType',     'A4',...
     'Tag',           swpref.getpref('tag',[]),...
@@ -170,11 +166,15 @@ if strcmp(mode,'hg')
     set(hFigure,'WindowButtonDownFcn',  @buttondown_callback);
     set(hFigure,'WindowButtonUpFcn',    @buttonup_callback);
     
+    h2 = hgtransform('Parent',hAxis);
     % create hgtransform only if requested
-    h = hgtransform;
+    h = hgtransform('Parent',h2);
     mousestatus = 'buttonup';
     START = [0 0 0];
     M_previous = get(h,'Matrix');
+    % add another h for translations
+    % TODO
+    %h2 = hgtransform('Parent',h);
     setappdata(hFigure,'h',h);
 else
     h = gobjects(0,1);
@@ -200,14 +200,25 @@ hPatch = patch('Vertices',zeros(0,3),'Faces',zeros(0,3),'FaceLighting','flat',..
 if ~isempty(h)
     set(hPatch,'Parent',h);
 end
+setappdata(hFigure,'facepatch',hPatch);
+% setup the face --> object number translation table
+setappdata(hPatch,'facenumber',zeros(0,1));
+
+% empty patch object for showing graphics with edges
+hPatch2 = patch('Vertices',zeros(0,3),'Faces',zeros(0,2),...
+    'EdgeColor','flat','FaceColor','none','Tag','edgepatch',...
+    'FaceVertexCData',zeros(0,3),'Clipping','Off');
+if ~isempty(h)
+    set(hPatch2,'Parent',h);
+end
+setappdata(hFigure,'edgepatch',hPatch2);
+% setup the edge --> object number translation table
+setappdata(hPatch2,'vertexnumber',zeros(0,1));
 
 % set tooltip callback for the general object
 % it is done in swplot.add
 %set(hPatch,'ButtonDownFcn',@(obj,hit)swplot.tooltipcallback(obj,hit,hFigure));
 
-setappdata(hFigure,'facepatch',hPatch);
-% setup the face --> object number translation table
-setappdata(hPatch,'facenumber',zeros(0,1));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Copyright (c) 2008 Andrea Tagliasacchi

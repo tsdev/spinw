@@ -152,15 +152,21 @@ for ii = 1:numel(fNames)
 end
 
 % create faceindex data for facepatch type object
-hPatch   = getappdata(hFigure,'facepatch');
 hNew = [hAdd(:).handle];
-patchIdx = find(hPatch==hNew);
-nPatch   = numel(patchIdx);
+% find face patch objects
+hPatch   = getappdata(hFigure,'facepatch');
+facePatchIdx = find(hPatch==hNew);
+nFacePatch   = numel(facePatchIdx);
 
-if nPatch > 0
+% find edgepatch objects
+hEPatch      = getappdata(hFigure,'edgepatch');
+edgePatchIdx = find(hEPatch==hNew);
+nVertexPatch   = numel(edgePatchIdx);
+
+if nFacePatch > 0
     % lets check if all new hPatch handles are the same type of object
-    type0 = hAdd(patchIdx(1)).type;
-    if ~all(ismember({hAdd(patchIdx).type},type0))
+    type0 = hAdd(facePatchIdx(1)).type;
+    if ~all(ismember({hAdd(facePatchIdx).type},type0))
         error('add:WrongInput','All patch objects have to be the same type!');
     else
         fIdx = getappdata(hPatch,'facenumber');
@@ -168,14 +174,37 @@ if nPatch > 0
         F  = get(hPatch,'Faces');
         nF = size(F,1);
         
-        nFacePerObject = (nF-nI)/nPatch;
+        nFacePerObject = (nF-nI)/nFacePatch;
         if ceil(nFacePerObject)-nFacePerObject > 0
             error('add:WrongInput','All patch objects have to be the same type!');
         end
         
-        fIdxAdd = repmat([hAdd(patchIdx).number],[nFacePerObject 1]);
+        fIdxAdd = repmat([hAdd(facePatchIdx).number],[nFacePerObject 1]);
         fIdx = [fIdx; fIdxAdd(:)];
         setappdata(hPatch,'facenumber',fIdx);
+        
+    end
+end
+
+if nVertexPatch > 0
+    % lets check if all new hPatch handles are the same type of object
+    type0 = hAdd(edgePatchIdx(1)).type;
+    if ~all(ismember({hAdd(edgePatchIdx).type},type0))
+        error('add:WrongInput','All patch objects have to be the same type!');
+    else
+        fIdx = getappdata(hEPatch,'vertexnumber');
+        nI = size(fIdx,1);
+        V  = get(hEPatch,'Vertices');
+        nV = size(V,1);
+        
+        nVertexPerObject = (nV-nI)/nVertexPatch;
+        if ceil(nVertexPerObject)-nVertexPerObject > 0
+            error('add:WrongInput','All patch objects have to be the same type!');
+        end
+        
+        fIdxAdd = repmat([hAdd(edgePatchIdx).number],[nVertexPerObject 1]);
+        fIdx = [fIdx; fIdxAdd(:)];
+        setappdata(hEPatch,'vertexnumber',fIdx);
         
     end
 end
@@ -183,7 +212,7 @@ end
 
 % add all the objects to the hgtransform object except the facepatch
 % handles that are already registered
-hNew(patchIdx) = [];
+hNew([facePatchIdx edgePatchIdx]) = [];
 if ~isempty(hTransform)
     set(hNew,'Parent',hTransform);
 end

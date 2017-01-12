@@ -48,14 +48,13 @@ function varargout = plot(varargin)
 % T         Transformation matrix that transforms a unit sphere to the
 %           ellipse via: R' = T(:,:,i)*R
 %           Dimensions are [3 3 nObject].
-% nMesh     Resolution of the ellipse surface mesh. Integer number that is 
+% lineStyle Line style, default value is '-' for continuous lines.
+% nMesh     Resolution of the ellipse surface mesh. Integer number that is
 %           used to generate an icosahedron mesh with #mesh number of
 %           additional triangulation, default value is stored in
 %           swpref.getpref('nmesh')
-% nPatch    Number of points on the curve for arrow and cylinder, default 
+% nPatch    Number of points on the curve for arrow and cylinder, default
 %           value is stored in swpref.getpref('npatch').
-% hg        Whether to use hgtransform (nice rotation with the mouse) or 
-%           default Matlab rotation of 3D objects. Default is true.
 %
 % See also SWPLOT.COLOR.
 %
@@ -63,10 +62,10 @@ function varargout = plot(varargin)
 P0 = swpref.getpref('npatch',[]);
 M0 = swpref.getpref('nmesh',[]);
 
-inpForm.fname  = {'type' 'name' 'text' 'position' 'label' 'legend' 'color' 'unit' 'figure'};
-inpForm.defval = {[]     []     []     []         []      []       []      'lu'   []      };
-inpForm.size   = {[1 -8] [1 -1] [1 -2] [3 -3 -4]  [1 -5]  [1 1]    [-9 -6] [1 -7] [1 1]   };
-inpForm.soft   = {false  true   true   false      true    true     true    false  true    };
+inpForm.fname  = {'type' 'name' 'text' 'position' 'label' 'legend' 'color' 'unit' 'figure' 'linestyle'};
+inpForm.defval = {[]     []     ''     []         []      []       []      'lu'   []       '-'        };
+inpForm.size   = {[1 -8] [1 -1] [1 -2] [3 -3 -4]  [1 -5]  [1 1]    [-9 -6] [1 -7] [1 1]   [1 -13]     };
+inpForm.soft   = {false  true   true   false      true    true     true    false  true    false       };
 
 inpForm.fname  = [inpForm.fname  {'R'     'alpha' 'lHead' 'nMesh' 'nPatch' 'T'       'hg'   }];
 inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []        'hg'   }];
@@ -76,12 +75,6 @@ inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true 
 param = sw_readparam(inpForm, varargin{:});
 
 type = lower(param.type);
-
-if param.hg
-    hgmode = 'hg';
-else
-    hgmode = 'nohg';
-end
 
 % convert type string to index
 % define default legend type:
@@ -111,7 +104,7 @@ else
 end
 
 if isempty(param.figure)
-    hFigure = swplot.activefigure(hgmode);
+    hFigure = swplot.activefigure('plot');
 else
     hFigure = param.figure;
 end
@@ -199,27 +192,22 @@ switch type
         end
         
         handle = swplot.ellipsoid(hAxis,xyz,param.T,param.nMesh);
+        pos(:,:,2) = nan;
     case 'cylinder'
         % closed cylinder
         handle = swplot.cylinder(hAxis,xyz(:,:,1),xyz(:,:,2),param.R,param.nPatch,true);
     case 'circle'
-        handle = gobjects(1,nObject);
-        for ii = 1:nObject
-            handle(ii) = swplot.circle(hAxis,xyz(:,ii,1),xyz(:,ii,2),param.R,param.nPatch);
-        end
-        % remove normal vectors (not stored in appdata)
-        pos = pos(:,1,:);
+        handle = swplot.circle(hAxis,xyz(:,:,1),xyz(:,:,2),param.R,param.nPatch);
+        % remove normal vectors (use nans)
+        pos(:,:,2) = nan;
     case 'line'
-        handle = gobjects(1,nObject);
-        for ii = 1:nObject
-            handle(ii) = swplot.line(hAxis,xyz(:,ii,1),xyz(:,ii,2));
-        end
+        handle = swplot.line(hAxis,xyz(:,:,1),xyz(:,:,2),param.linestyle);
     case 'text'
         textStr = param.text;
         if ~iscell(textStr)
             textStr = repmat({textStr},[1 nObject]);
         end
-        
+        pos(:,:,2) = nan;
         handle = swplot.text(hAxis,xyz,textStr);
 end
 
@@ -228,6 +216,7 @@ handle = num2cell(handle);
 
 % change color of objects
 if sObject(1).handle == getappdata(hFigure,'facepatch')
+    % faces
     % there is only a single unique handle
     hPatch = sObject(1).handle;
     
@@ -253,11 +242,42 @@ if sObject(1).handle == getappdata(hFigure,'facepatch')
     C(end+(((-nNewFace+1):0)),:) = patchCData;
     set(hPatch,'FaceVertexCData',C);
 
+elseif sObject(1).handle == getappdata(hFigure,'edgepatch')
+    % lines
+    % there is only a single unique handle
+    hPatch = sObject(1).handle;
+    
+    if nCol == 1
+        patchCData = repmat(color,[1 nObject]);
+    else
+        patchCData = color;
+    end
+    
+    % set colors per edge
+    fIdx = getappdata(hPatch,'vertexnumber');
+    nI   = size(fIdx,1);
+    C    = get(hPatch,'FaceVertexCData');
+    nC   = size(C,1);
+    
+    nNewEdge = nC-nI;
+    nEdgePerObject = nNewEdge/nObject;
+    if ceil(nEdgePerObject)-nEdgePerObject > 0
+        error('plot:WrongInput','All patch objects have to be the same type!');
+    end
+    
+    patchCData = reshape(permute(repmat(patchCData,[1 1 nEdgePerObject]),[3 2 1]),[],3);
+    C(end+(((-nNewEdge+1):0)),:) = patchCData;
+    set(hPatch,'FaceVertexCData',C);
+    
 else
     % set color per handle
     % change color of object using the right property prop0
     if strcmp(get(sObject(1).handle,'type'),'patch')
-        prop0 = 'FaceColor';
+        if strcmp(get(sObject(1).handle,'FaceColor'),'none')
+            prop0 = 'EdgeColor';
+        else
+            prop0 = 'FaceColor';
+        end
     else
         prop0 = 'Color';
     end
@@ -307,31 +327,33 @@ nameC = repmat({param.name},[1 nObject]);
 swplot.add(sObject,hFigure);
 
 % take care of the legend
-lDat = getappdata(hFigure,'legend');
-if nLabel > 1 || nCol > 1
-    % different legend per object
-    if nCol == 1
-        color = repmat(color,[1 nObject]);
-    end
-    if nLabel == 1
-        label = repmat(label,[1 nObject]);
+if param.legend
+    lDat = getappdata(hFigure,'legend');
+    if nLabel > 1 || nCol > 1
+        % different legend per object
+        if nCol == 1
+            color = repmat(color,[1 nObject]);
+        end
+        if nLabel == 1
+            label = repmat(label,[1 nObject]);
+        end
+        
+        legend = repmat(legend,[1 nObject]);
     end
     
-    legend = repmat(legend,[1 nObject]);
+    % append text
+    if ~isempty(lDat.text)
+        lDat.text = [lDat.text(:)' label];
+    else
+        lDat.text = label;
+    end
+    % append color
+    lDat.color = [lDat.color color];
+    % append type
+    lDat.type = [lDat.type legend];
+    
+    setappdata(hFigure,'legend',lDat);
 end
-
-% append text
-if ~isempty(lDat.text)
-    lDat.text = [lDat.text(:)' label];
-else
-    lDat.text = label;
-end
-% append color
-lDat.color = [lDat.color color];
-% append type
-lDat.type = [lDat.type legend];
-
-setappdata(hFigure,'legend',lDat);
 
 if nargout > 0
     varargout{1} = hFigure;

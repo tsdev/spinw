@@ -30,8 +30,8 @@ function rPref = getpref(prefName, ~)
 store = 'spinw_global';
 
 % default values
-dn = {      'fid'       'pid'             'expert' 'tag'        'nmesh' 'maxmesh' 'npatch' 'fontsize'};
-dv = {      1           feature('getpid') 0        'sw_crystal' 1       6         20       12        };
+dn = {      'fid'       'pid'             'expert' 'tag'    'nmesh' 'maxmesh' 'npatch' 'fontsize'};
+dv = {      1           feature('getpid') 0        'swplot' 1       6         20       12        };
 
 dl = {...
     'file identifier for text output, default value is 1 (Command Window)'...

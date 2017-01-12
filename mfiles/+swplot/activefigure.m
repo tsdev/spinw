@@ -1,4 +1,4 @@
-function varargout = activefigure(mode,hFigure)
+function varargout = activefigure(varargin)
 % returns the handle of the active swplot figure
 %
 % {hFigure} = SWPLOT.ACTIVEFIGURE
@@ -21,23 +21,26 @@ function varargout = activefigure(mode,hFigure)
 % See also SWPLOT.FIGURE.
 %
 
-if nargin == 0
-    ishg = true;
-    hFigure = [];
-elseif ~ischar(mode)
-    hFigure = mode;
-    ishg    = true;
-elseif nargin == 1
-    hFigure = [];
-    ishg = strcmp(mode,'hg');
-elseif nargin == 2
-    ishg = strcmp(mode,'hg');
-end
+hFigure  = [];
 
-if ishg
-    mode = 'hg';
-else
-    mode = 'nohg';
+% for plots, when there is no active figure, new figure will be created.
+% For settings (such as legend, etc.) when there is no active figure, the
+% last inactive figure will be used.
+plotmode = false;
+
+switch nargin
+    case 1
+        if ischar(varargin{1})
+            plotmode = strcmpi(varargin{1},'plot');
+        else
+            hFigure = varargin{1};
+        end
+    case 2
+        if ischar(varargin{1})
+            varargin = varargin([2 1]);
+        end
+        hFigure = varargin{1};
+        plotmode = strcmpi(varargin{2},'plot');
 end
 
 % tag for active figure
@@ -49,18 +52,22 @@ inactiveTag = ['inactive_' activeTag];
 if isempty(hFigure)
     % find active figure
     hFigure = findobj('tag',activeTag);
-    % find the right type of figure
-    hFigure = hFigure(swplot.ishg(hFigure)==ishg);
     
     if isempty(hFigure)
-        % find the first inactive figure
-        hFigure = findobj('tag',inactiveTag);
-        hFigure = hFigure(swplot.ishg(hFigure)==ishg);
+        % no active figure create new figure for plotting to avoid overplot
+        % on inactive figures
+        if plotmode
+            hFigure = swplot.figure;
+        else
+            % find the first inactive figure
+            hFigure = findobj('tag',inactiveTag);
+        end
         
         if isempty(hFigure)
             %error('activefigure:NoFig','There is no swplot figure, use swplot.figure() to create a new window!')
-            hFigure = swplot.figure(mode);
+            hFigure = swplot.figure;
         end
+        
         swplot.activefigure(hFigure(1));
         %warning('activefigure:Ativate','There is no active figure, activating the last used one!');
     end

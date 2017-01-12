@@ -24,6 +24,9 @@ if isempty(h)
     return
 end
 
+% set mouse rotation to zero
+set(get(h,'Parent'),'Matrix',eye(4));
+
 bv = getappdata(hFigure,'base');
 
 if any(ax>'c')
@@ -67,6 +70,8 @@ switch ax
         error('view:WrongInput','Wrong input!')
 end
 
-h.Matrix(1:3,1:3) = [xp yp zp]/bvN;
+M = get(h,'Matrix');
+M(1:3,1:3) = [xp yp zp]/bvN;
+set(h,'Matrix',M);
 
 end

@@ -1,7 +1,7 @@
-function hLine = line(varargin)
+function hPatch = line(varargin)
 % draws a 3D line using patch
 %
-% hLine = SWPLOT.LINE(rStart, rEnd)
+% hLine = SWPLOT.LINE(rStart, rEnd, lineStyle)
 %
 % hLine = SWPLOT.LINE(handle,...)
 %
@@ -20,6 +20,7 @@ function hLine = line(varargin)
 % rEnd      Coordinate(s) of the end point, either a 3 element vector or
 %           a matrix with dimensions [3 nLineSegment] to plot multiple line
 %           segments.
+% lineStyle Line style, default is '-' for continuous line.
 %
 % See also LINE.
 %
@@ -29,22 +30,32 @@ if nargin == 0
     return
 end
 
+lineStyle = '-';
+
 if numel(varargin{1}) == 1
     % first input figure/patch handle
     if strcmp(get(varargin{1},'Type'),'axes')
         hAxis  = varargin{1};
-        hLine = [];
+        hPatch = [];
     else
         hAxis  = gca;
-        hLine = varargin{1};
+        hPatch = varargin{1};
     end
     rStart  = varargin{2};
     rEnd    = varargin{3};
+    if nargin > 3
+        lineStyle = varargin{4};
+    end
+
 else
     hAxis   = gca;
-    hLine  = [];
+    hPatch  = [];
     rStart  = varargin{1};
     rEnd    = varargin{2};
+    if nargin > 2
+        lineStyle = varargin{3};
+    end
+
 end
 
 if numel(rStart) == 3
@@ -57,29 +68,42 @@ else
 end
 
 % number of line segments
-nSegment = size(rStart,2);
+nObject = size(rStart,2);
 
 % create the vertices
 V = reshape(permute(cat(3,rStart,rEnd),[1 3 2]),3,[])';
 
-L = (1:nSegment)';
+L = (1:nObject)';
 F = [2*L-1 2*L];
 
 % black color
 C = repmat([0 0 0],[size(V,1) 1]);
 
-if isempty(hLine)
+if strcmp(get(hAxis,'Tag'),'swaxis') && strcmp(lineStyle,'-')
+    % make sure we are on the plot axis of an swobject
+    % add object to the existing edge patch, but only for continuous lines
+    hFigure = get(hAxis,'Parent');
+    hPatch = getappdata(hFigure,'edgepatch');
+end
+
+if isempty(hPatch)
     % create new patch
-    hLine = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
-        'EdgeColor','flat','FaceColor','none','Tag','line','FaceVertexCData',C);
+    hPatch = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
+        'EdgeColor','flat','FaceColor','none','Tag','line',...
+        'FaceVertexCData',C,'LineStyle',lineStyle);
 else
     % add to existing patch
-    V0 = get(hLine,'Vertices');
-    F0 = get(hLine,'Faces');
-    C0 = get(hLine,'FaceVertexCData');
+    V0 = get(hPatch,'Vertices');
+    F0 = get(hPatch,'Faces');
+    C0 = get(hPatch,'FaceVertexCData');
     % number of existing faces
     nV0 = size(V0,1);
-    set(hLine,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
+    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
+end
+
+if strcmp(get(hAxis,'Tag'),'swaxis')
+    % replicate the arrow handle to give the right number of added objects
+    hPatch = repmat(hPatch,[1 nObject]);
 end
 
 end

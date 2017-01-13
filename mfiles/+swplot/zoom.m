@@ -40,7 +40,7 @@ elseif strcmpi(mode,'auto')
         
         set(hAxis,'CameraViewAngleMode','auto');
         %set(hAxis,'CameraViewAngle',6*get(hAxis,'CameraViewAngle'));
-        set(hAxis,'CameraViewAngle',1.2*angle);
+        set(hAxis,'CameraViewAngle',1.5*angle);
     end
 else
     error('zoom:WrongInput','Wrong zoom mode!');

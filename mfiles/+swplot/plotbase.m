@@ -42,11 +42,13 @@ d = param.d/(BV');
 
 R = bsxfun(@minus,cat(3,zeros(3),eye(3)),d');
 % plot the arrows
-swplot.plot('type','arrow','position',R,'figure',hFigure,'color',param.color,'name','abc','legend',false);
+swplot.plot('type','arrow','position',R,'figure',hFigure,'color',param.color,...
+    'name','abc','legend',false,'tooltip',false);
 
 % convert d from xyz to base
 Rtext = bsxfun(@minus,bsxfun(@times,eye(3),1+param.dtext./sqrt(sum(BV.^2,1))),d');
 
-swplot.plot('type','text','position',Rtext,'text',{'a' 'b' 'c'},'figure',hFigure,'legend',false);
+swplot.plot('type','text','position',Rtext,'text',{'a' 'b' 'c'},...
+    'figure',hFigure,'legend',false,'tooltip',false);
 
 end

@@ -55,6 +55,11 @@ function varargout = plot(varargin)
 %           swpref.getpref('nmesh')
 % nPatch    Number of points on the curve for arrow and cylinder, default
 %           value is stored in swpref.getpref('npatch').
+% tooltip   If true, the tooltip will be switched on at the end of the
+%           plot. Default is true.
+% data      Arbitrary data per object that will be stored in the swplot
+%           figure and can be retrieved. It is stored in a cell with
+%           nObject number of elements.
 %
 % See also SWPLOT.COLOR.
 %
@@ -67,10 +72,15 @@ inpForm.defval = {[]     []     ''     []         []      []       []      'lu' 
 inpForm.size   = {[1 -8] [1 -1] [1 -2] [3 -3 -4]  [1 -5]  [1 1]    [-9 -6] [1 -7] [1 1]   [1 -13]     };
 inpForm.soft   = {false  true   true   false      true    true     true    false  true    false       };
 
-inpForm.fname  = [inpForm.fname  {'R'     'alpha' 'lHead' 'nMesh' 'nPatch' 'T'       'hg'   }];
-inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []        'hg'   }];
-inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] [1 -12]}];
-inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      false}];
+inpForm.fname  = [inpForm.fname  {'R'     'alpha' 'lHead' 'nMesh' 'nPatch' 'T'       'hg'    'tooltip'}];
+inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []        'hg'    true     }];
+inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] [1 -12] [1 1]    }];
+inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      false   false    }];
+
+inpForm.fname  = [inpForm.fname  {'data'   }];
+inpForm.defval = [inpForm.defval {{}       }];
+inpForm.size   = [inpForm.size   {[-13 -14]}];
+inpForm.soft   = [inpForm.soft   {true     }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -323,8 +333,13 @@ typeC = repmat({type},[1 nObject]);
 nameC = repmat({param.name},[1 nObject]);
 [sObject(:).name] = nameC{:};
 
+% save data
+if ~isempty(param.data)
+    [sObject(:).data] = param.data{:};
+end
+
 % add objects to the figure
-swplot.add(sObject,hFigure);
+swplot.add(sObject,hFigure,param.tooltip);
 
 % take care of the legend
 if param.legend

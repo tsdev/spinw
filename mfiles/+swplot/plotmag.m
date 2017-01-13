@@ -1,12 +1,12 @@
-function varargout = plotatom(varargin)
-% plots crystal structure
+function varargout = plotmag(varargin)
+% plots magnetic structure
 %
-% SWPLOT.PLOTATOM('option1', value1, ...)
+% SWPLOT.PLOTMAG('option1', value1, ...)
 %
-% hFigure = SWPLOT.PLOTATOM(...)
+% hFigure = SWPLOT.PLOTMAG(...)
 %
-% The function plots the crystal structure of a SpinW object onto an swplot
-% figure.
+% The function plots the magnetic structure of a SpinW object onto an
+% swplot figure.
 %
 % Input:
 %
@@ -19,76 +19,42 @@ function varargout = plotatom(varargin)
 %           along the a, b and c directions: [2 1 2], that is equivalent to
 %           [0 2;0 1;0 2]. Default is the single unit cell.
 % mode      String, defines the types of atoms to plot:
-%               'all'       Plot all atoms, default value.
-%               'mag'       Plot magnetic atoms only.
-%               'nonmag'    Plot non-magnetic atoms only.
+%               'all'       Plot both the rotation plane of incommensurate
+%                           magnetic structures and the moment directions.
+%               'circle'    Plot only the rotation plane of incommensurate
+%                           magnetic structures.
+%               'arrow'     Plots only the moment directions.
 % figure    Handle of the swplot figure. Default is the selected figure.
 % legend    Whether to add the plot to the legend, default is true.
 % label     Whether to plot labels for atoms, default is true.
 % dText     Distance between item and its text label, default is 0.1
 %           Angstrom.
-% fontSize  Font size of the atom labels in pt, default is stored in
+% fontSize  Font size of the atom labels in pt, default value is stored in
 %           swpref.getpref('fontsize').
-% radius0   Constant atom radius, default value is 0.3 Angstrom.
-% radius    Defines the atom radius:
-%               numerical value     Sets the radius of all atoms to the
-%                                   given value. Default is radius0.
-%               'auto'              use radius data from database based on
-%                                   the atom label multiplied by radius0
-%                                   value.
-% color     Color of the atoms:
-%               'auto'      All atom gets the color stored in obj.unit_cell.
-%               'colorname' All atoms will have the same color.
-%               [R G B]     RGB code of the color that fix the color of all
-%                           atoms.
-% nMesh     Resolution of the ellipse surface mesh. Integer number that is
-%           used to generate an icosahedron mesh with #mesh number of
-%           additional triangulation, default value is stored in
-%           swpref.getpref('nmesh')
+% color     Color of the magnetic moments:
+%               'auto'      All moments get the same color as the magnetic
+%                           atom.
+%               'colorname' All moments will have the same color.
+%               [R G B]     RGB code of the color.
+% scale     Scaling factor for the lenght of the magnetic moments.
+% normalize If true, all moment length will be normalized to the scale
+%           factor.
+% R         Radius value of arrow body, default is 0.06.
+% alpha     Head angle of the arrow in degree units, default is 30 degree.
+% lHead     Length of the arrow head, default value is 0.5.
+% aplane    Transparency (alpha value) of the circle, representing the
+%           rotation plane of the moments, default is 0.07.
+% centered  If true, the moment vector is centered on the atom, if false
+%           the beggining of the spin vector is on the atom. Default is
+%           true.
+% nPatch    Number of points on the curve for the arrows, default
+%           value is stored in swpref.getpref('npatch').
 % tooltip   If true, the tooltips will be shown when clicking on atoms.
 %           Default is true.
-% hg        Whether to use hgtransform (nice rotation with the mouse) or
-%           default Matlab rotation of 3D objects. Default is true.
 %
 % Output:
 %
-% For plotting:
 % hFigure           Handle of the swplot figure.
-%
-% The labels on the atom has the following meaning:
-%
-% AtomLabel(idx1)_idx2:
-%   idx1    The index of the atom in obj.unit_cell
-%   idx2    The index of the atom in obj.atom
-%
-% To access the graphical objects, use the function:
-%   handleList = sw_getobject(tagName,fHandle);
-% This command returns all objects with tagName string in their 'Tag'
-% field, in figure with fHandle.
-%
-% List of Tag values:
-% unitCell         Unit cell.
-% arrow            Arrows of the lattice vectors.
-% arrowText        Text of the lattice vectors.
-% atom_            Spheres of the atoms, for example 'atom_Cr' for atoms
-%                  with the label 'Cr'.
-% aniso_           Anisotropy ellipsoid with atom names, for example
-%                  'aniso_Cr', symbolising the anisotropy matrix.
-% atomText_        Label of atoms, for example 'atomText_Cr'.
-% coupling_        Cylinder of couplings, for example 'coupling_J1' for the
-%                  couplings with label 'J1'.
-% spinPlane        Circle showing the plane of the spins.
-% legend           Legend.
-%
-% Example:
-%
-% sq = sw_model('squareAF',1);
-% plot(sq);
-%
-% The example plots the structure, couplings and magnetic structure of the
-% square lattice antiferromagnet.
-%
-% See also SW_DRAW, SW_GETOBJECT, SW_ADDOBJECT.
 %
 
 % default values
@@ -134,7 +100,7 @@ end
 BV = obj.basisvector;
 
 % set figure title
-set(hFigure,'Name', 'SpinW: Crystal structure');
+set(hFigure,'Name', 'SpinW: Magnetic structure');
 
 % change range, if the number of unit cells are given
 if numel(param.range) == 3
@@ -150,7 +116,7 @@ switch param.rangeunit
         rangelu = [floor(range(:,1)) ceil(range(:,2))];
     case 'xyz'
         % calculate the height of the paralellepiped of a unit cell
-        hMax = 1./sqrt(sum(inv(BV').^2,2));
+        hMax = 1./sqrt(sum(inv(BV).^2,2));
         
         % calculate the [111] position and find the cube that fits into the
         % parallelepiped
@@ -252,15 +218,6 @@ if param.label
     swplot.plot('type','text','name','atom_label','position',pos+dtext,...
         'text',text,'figure',hFigure,'legend',false,'fontsize',param.fontsize,'tooltip',false);
 end
-
-% % tooltip
-% ttip = repmat(atom.ttip,[nCell 1]);
-% ttip = ttip(pIdx);
-% % add cell index and position
-% for ii = 1:numel(ttip)
-%     posi = pos(:,ii)';
-%     ttip{ii} = [ttip{ii} sprintf('[%d, %d, %d]',floor(posi)) newline 'Atomic position' newline sprintf('[%5.3f, %5.3f, %5.3f]',posi-floor(posi))];
-% end
 
 % legend label
 lLabel = repmat(atom.name,[nCell 1]);

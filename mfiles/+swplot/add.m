@@ -1,4 +1,4 @@
-function add(hAdd, hFigure)
+function add(hAdd, hFigure, showtooltip)
 % adds a graphical object to the hgtransform of an swplot figure
 %
 % SWPLOT.ADD(hAdd, {hFigure})
@@ -21,6 +21,7 @@ function add(hAdd, hFigure)
 %               'label'     Label that is shown in the legend.
 %               'legend'    Type of legend, see swplot.plot for details.
 %               'type'      Type of graphical object, see swplot.plot.
+%               'data'      Arbitrary data assigned to the object.
 % hFigure   The handle of the figure (number in the figure title bar). The
 %           default is the active swplot figure if the argument is not
 %           provided by the user or it is empty matrix.
@@ -38,13 +39,17 @@ if nargin < 2 || isempty(hFigure)
     hFigure = swplot.activefigure;
 end
 
+if nargin<3
+    showtooltip = true;
+end
+
 hAxis = getappdata(hFigure,'axis');
 
 cva = get(hAxis,'CameraViewAngle');
 hTransform = getappdata(hFigure,'h');
 
 % fields of struct to store objects
-fNames = {'handle' 'number' 'name' 'type' 'label' 'position' 'text' 'legend'};
+fNames = {'handle' 'number' 'name' 'type' 'label' 'position' 'text' 'legend' 'data'};
 
 if isappdata(hFigure,'objects')
     sObject = getappdata(hFigure,'objects');
@@ -146,6 +151,9 @@ for ii = 1:numel(fNames)
                     warning('add:WrongInput','The type of graphical object added to the plot might be not fully supported!');
                     defval1 = repmat({1},nObjAdd,1);
                 end
+            case 'data'
+                % empty .data
+                defval1 = cell(1,nObjAdd);
         end
         [hAdd(:).(fNames{ii})] = defval1{:};
     end
@@ -220,7 +228,9 @@ set(hNew,'Clipping','Off');
 
 % add callback function for showing the tooltips
 %set([hNew hPatch],'ButtonDownFcn',@(obj,hit)swplot.tooltipcallback(obj,hit,hFigure,hTransform));
-swplot.tooltip(swplot.tooltip,hFigure);
+if showtooltip
+    swplot.tooltip(swplot.tooltip,hFigure);
+end
 
 
 % comb together the handles of the old and new graphical objects.

@@ -71,6 +71,7 @@ R = [Rx Ry Rz];
 
 % plot the cells already in base units, so no conversion needed
 swplot.plot('type','line','position',R,'figure',hFigure,...
-    'linestyle',param.linestyle,'color',param.color,'name','cell','legend',false);
+    'linestyle',param.linestyle,'color',param.color,'name','cell',...
+    'legend',false,'tooltip',false);
 
 end

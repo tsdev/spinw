@@ -129,7 +129,7 @@ inpForm.defval = {1e-3   -inf(1,Np) inf(1,Np) 10*Np     1e-3   1e-3   100*Np    
 inpForm.size   = {[1 -1] [1 Np]     [1 Np]    [1 1]     [1 1]  [1 1]  [1 1]         [1 1]          [1 2]     };
 
 inpForm.fname  = [inpForm.fname  {'eps2' 'eps3' 'lambda0' 'lUp' 'lDown' 'update' 'extraStat' 'vary'     }];
-inpForm.defval = [inpForm.defval {0.1    0.1    1e-2      11    9       'nielsen' true       false(1,Np)}];
+inpForm.defval = [inpForm.defval {0.1    0.1    1e-2      11    9       'nielsen' true       true(1,Np)}];
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]  [1 1]     [1 1] [1 1]   [1 -2]    [1 1]      [1 Np]     }];
 
 param = sw_readparam(inpForm, varargin{:});
@@ -184,7 +184,7 @@ else
 end
 
 % previous set of parameters
-pOld  = zeros(Np,1);
+pOld  = zeros(1,Np);
 % previous model values: yOld = func(x,pOld)
 yOld  = zeros(Nx,1);
 % empty Jacobian matrix
@@ -202,7 +202,11 @@ param.lb = param.lb(:);
 param.ub = param.ub(:);
 
 if numel(param.dp) == 1
-    param.dp = param.dp*ones(Np,1);
+    param.dp = repmat(param.dp,[1 Np]);
+end
+
+if numel(param.vary) == 1
+    param.vary = repmat(param.vary,[1 Np]);
 end
 
 % fixed the requested parameters

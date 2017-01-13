@@ -359,7 +359,8 @@ if nargout > 0
     varargout{1} = hFigure;
 end
 
-% final corrections
+% final corrections to make figure nice
 swplot.zoom
+swplot.translate
 
 end

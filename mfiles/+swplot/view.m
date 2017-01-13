@@ -24,8 +24,10 @@ if isempty(h)
     return
 end
 
+% matrix that does the rotation
+%hRot = get(h,'Parent');
 % set mouse rotation to zero
-set(get(h,'Parent'),'Matrix',eye(4));
+%set(get(h,'Parent'),'Matrix',eye(4));
 
 bv = getappdata(hFigure,'base');
 
@@ -70,8 +72,8 @@ switch ax
         error('view:WrongInput','Wrong input!')
 end
 
-M = get(h,'Matrix');
+M = swplot.transform(hFigure);
 M(1:3,1:3) = [xp yp zp]/bvN;
-set(h,'Matrix',M);
+swplot.transform(M,hFigure);
 
 end

@@ -80,9 +80,19 @@ if isempty(h)
 else
     % hg
     if isempty(M)
-        varargout{1} = get(h,'Matrix');
+        MT = get(h,'Matrix');
+        MR = get(get(h,'Parent'),'Matrix');
+        M = eye(4);
+        M(1:3,1:3) = MR(1:3,1:3);
+        M(1:3,4)   = MT(1:3,4);
+        varargout{1} = M;
     else
-        set(h,'Matrix',M);
+        MT = eye(4);
+        MT(1:3,4) = M(1:3,4);
+        MR = eye(4);
+        MR(1:3,1:3) = M(1:3,1:3);
+        set(h,'Matrix',MT);
+        set(get(h,'Parent'),'Matrix',MR);
     end
 end
 

@@ -155,30 +155,16 @@ button.ver = uipushtool(hToolbar,'CData',icon.ver,'TooltipString','Show SpinW ve
     'Separator','on','ClickedCallback',{@sw_logo ''});
 set(button.figActive,'ClickedCallback',{@activatefigure 'toggle'});
 
-% zoom function
-set(hFigure,'WindowScrollWheelFcn', @wheel_callback);
 % activate figure
 activatefigure([], [], 'initialize')
 
 if strcmp(mode,'hg')
-    % take care of fine object rotations via the mouse
-    set(hFigure,'WindowButtonMotionFcn',@motion_callback);
-    set(hFigure,'WindowButtonDownFcn',  @buttondown_callback);
-    set(hFigure,'WindowButtonUpFcn',    @buttonup_callback);
-    
-    h2 = hgtransform('Parent',hAxis);
-    % create hgtransform only if requested
-    h = hgtransform('Parent',h2);
-    mousestatus = 'buttonup';
-    START = [0 0 0];
-    M_previous = get(h,'Matrix');
-    % add another h for translations
-    % TODO
-    %h2 = hgtransform('Parent',h);
-    setappdata(hFigure,'h',h);
+    hRotate = hgtransform('Parent',hAxis);
+    hTranslate = hgtransform('Parent',hRotate);
+    setappdata(hFigure,'h',hTranslate);
 else
-    h = gobjects(0,1);
-    setappdata(hFigure,'h',h);
+    hTranslate = gobjects(0,1);
+    setappdata(hFigure,'h',hTranslate);
 end
 
 % save data to figure
@@ -197,8 +183,8 @@ set(hFigure,'Visible','on');
 hPatch = patch('Vertices',zeros(0,3),'Faces',zeros(0,3),'FaceLighting','flat',...
     'EdgeColor','none','FaceColor','flat','Tag','facepatch',...
     'FaceVertexCData',zeros(0,3),'Clipping','Off');
-if ~isempty(h)
-    set(hPatch,'Parent',h);
+if ~isempty(hTranslate)
+    set(hPatch,'Parent',hTranslate);
 end
 setappdata(hFigure,'facepatch',hPatch);
 % setup the face --> object number translation table
@@ -208,113 +194,12 @@ setappdata(hPatch,'facenumber',zeros(0,1));
 hPatch2 = patch('Vertices',zeros(0,3),'Faces',zeros(0,2),...
     'EdgeColor','flat','FaceColor','none','Tag','edgepatch',...
     'FaceVertexCData',zeros(0,3),'Clipping','Off');
-if ~isempty(h)
-    set(hPatch2,'Parent',h);
+if ~isempty(hTranslate)
+    set(hPatch2,'Parent',hTranslate);
 end
 setappdata(hFigure,'edgepatch',hPatch2);
 % setup the edge --> object number translation table
 setappdata(hPatch2,'vertexnumber',zeros(0,1));
-
-% set tooltip callback for the general object
-% it is done in swplot.add
-%set(hPatch,'ButtonDownFcn',@(obj,hit)swplot.tooltipcallback(obj,hit,hFigure));
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Copyright (c) 2008 Andrea Tagliasacchi
-% All Rights Reserved
-% email: ata2 at cs dot nospam dot sfu dot ca
-% $Revision: 1.0$ 10 February 2008
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% motion callback, event "every" mouse movement
-    function motion_callback(src, ~)
-        % retrieve the current point
-        P = get(gcf,'CurrentPoint');
-        % retrieve window geometry
-        HGEOM = get(src, 'Position');
-        % transform in sphere coordinates (3,4) = (WIDTH, HEIGHT)
-        P = point_on_sphere( P, HGEOM(3), HGEOM(4) );
-        
-        % workaround condition (see point_on_sphere)
-        if isnan(P)
-            return
-        end
-        
-        %%%%% ARCBALL COMPUTATION %%%%%
-        if strcmp(mousestatus, 'buttondown')
-            % compute angle and rotation axis
-            rot_dir = cross( START, P ); rot_dir = rot_dir / norm( rot_dir );
-            rot_ang = acos( dot( P, START ) );
-            
-            % convert direction in model coordinate system
-            rot_dir = M_previous\[rot_dir,0]';
-            rot_dir = rot_dir(1:3);
-            if norm(rot_dir) > 0
-                rot_dir = rot_dir / norm( rot_dir ); % renormalize
-                % construct matrix
-                R_matrix = makehgtform('axisrotate',rot_dir,rot_ang);
-                % set hgt matrix
-                set(h,'Matrix',M_previous*R_matrix);
-                % refresh drawing
-                drawnow;
-            end
-        end
-    end
-
-% only 1 event on click
-    function buttondown_callback(src, ~ )
-        % change status
-        mousestatus = 'buttondown';
-        % retrieve the current point
-        P = get(gcf,'CurrentPoint');
-        % retrieve window geometry
-        HGEOM = get( src, 'Position');
-        % SET START POSITION
-        START = point_on_sphere( P, HGEOM(3), HGEOM(4) );
-        % SET START MATRIX
-        M_previous = get(h, 'Matrix');
-    end
-
-    function buttonup_callback(~, ~ )
-        % change status
-        mousestatus = 'buttonup';
-        % reset the start position
-        START = [0,0,0];
-    end
-
-%%%%%%%%%%%% UTILITY FUNCTION %%%%%%%%%%%%%
-    function P = point_on_sphere( P, width, height )
-        P(3) = 0;
-        
-        % determine radius of the sphere
-        R = min(width, height)/2;
-        
-        % TRANSFORM the point in window coordinate into
-        % the coordinate of a sphere centered in middle window
-        ORIGIN = [width/2, height/2, 0];
-        P = P - ORIGIN;
-        
-        % normalize position to [-1:1] WRT unit sphere
-        % centered at the origin of the window
-        P = P / R;
-        
-        % if position is out of sphere, normalize it to
-        % unit length
-        L = sqrt( P*P' );
-        if L > 1
-            % P = nan; % workaround to stop evaluation
-            % disp('out of sphere');
-            
-            P = P / L;
-            P(3) = 0;
-        else
-            % add the Z coordinate to the scheme
-            P(3) = sqrt( 1 - P(1)^2 - P(2)^2 );
-        end
-    end
-
-%%END OF FUNCTION%%
 
 if nargout > 0
     hFigureOut = hFigure;
@@ -323,18 +208,8 @@ end
 % restore showHidden property
 set(0,'Showhidden',showHidden);
 
-% TODO how to avoid overplotting
-% if ~isempty(oldAxis)
-%     % make old axis active to avoid overplotting
-%     axes(oldAxis);
-% end
-
-    function wheel_callback(~, event)
-        % zoom in/out for event
-        cva = get(hAxis,'CameraViewAngle');
-        set(hAxis,'CameraViewAngle',cva*1.02^(event.VerticalScrollCount));
-        
-    end
+% add mouse control
+swplot.mouse(hFigure);
 
     function activatefigure(~,~,mode)
         % activate/deactivate figure

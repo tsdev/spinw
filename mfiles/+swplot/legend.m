@@ -46,16 +46,18 @@ switch switch0
         switchon = true;
     case 'off'
         switchon = false;
-    case 'frame'
+    otherwise %'frame'
+        switchon = true;
         if ~isempty(lDat.handle)
-            if strcmp(get(lDat.handle(2),'LineStyle'),'none')
-                set(lDat.handle(2),'LineStyle','-');
-            else
-                set(lDat.handle(2),'LineStyle','none');
-            end
+            %if strcmp(get(lDat.handle(2),'LineStyle'),'none')
+            %    set(lDat.handle(2),'LineStyle','-');
+            %else
+            %    set(lDat.handle(2),'LineStyle','none');
+            %end
+            set(lDat.handle(2),'LineStyle',switch0);
         end
-    otherwise
-        error('legend:WrongInput','Use on/off to switch legend!')
+        %otherwise
+        %    error('legend:WrongInput','Use on/off to switch legend!')
 end
 
 if ~switchon && ~isempty(lDat.handle) 
@@ -82,10 +84,10 @@ if ~isempty(lDat.handle)
 end
 
 % create new axis for legend
-hAxis = axes(hFigure,'Units','pixel','Position',[dA dA lWidth+dA lHeight+dA],...
+hAxis = axes('Parent',hFigure,'Units','pixel','Position',[dA dA lWidth+dA lHeight+dA],...
     'Visible','off','XLim',[0 lWidth],'YLim',[0 lHeight],'NextPlot','add');
 
-hObject = rectangle(hAxis,'Position',[1 1 lWidth-2 lHeight-2],'FaceColor','w');
+hObject = rectangle('Parent',hAxis,'Position',[1 1 lWidth-2 lHeight-2],'FaceColor','w');
 
 lDat.handle = [hAxis hObject];
 
@@ -101,15 +103,15 @@ for ii = 1:numel(lType)
     switch lType(ii)
         case 1
             % colored rectangle
-            hObject(end+1) = rectangle(hAxis,'Position',[5 lHeight-20*ii+6 sRadius*2 sRadius],...
+            hObject(end+1) = rectangle('Parent',hAxis,'Position',[5 lHeight-20*ii+6 sRadius*2 sRadius],...
                 'FaceColor',lColor(:,ii),'EdgeColor','k'); %#ok<*AGROW>
         case 2
             % dashed rectangle
-            hObject(end+1) = rectangle(hAxis,'Position',[6 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5],...
+            hObject(end+1) = rectangle('Parent',hAxis,'Position',[6 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5],...
                 'FaceColor',lColor(:,ii),'EdgeColor',lColor(:,ii));
-            hObject(end+1) = rectangle(hAxis,'Position',[5+sRadius*2/3*2 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5],...
+            hObject(end+1) = rectangle('Parent',hAxis,'Position',[5+sRadius*2/3*2 lHeight-20*ii+6.9 sRadius*2/3-1 sRadius-1.5],...
                 'FaceColor',lColor(:,ii),'EdgeColor',lColor(:,ii));
-            hObject(end+1) = rectangle(hAxis,'Position',[5 lHeight-20*ii+6 sRadius*2 sRadius],...
+            hObject(end+1) = rectangle('Parent',hAxis,'Position',[5 lHeight-20*ii+6 sRadius*2 sRadius],...
                 'FaceColor','none','EdgeColor','k');
         case 3
             % sphere
@@ -117,7 +119,7 @@ for ii = 1:numel(lType)
             set(hObject(end),'FaceColor',lColor(:,ii));
     end
     % add text
-    hObject(end+1) = text(hAxis,30,(lHeight-20*ii+10),lText{ii},'fontSize',fontSize,'color','k');
+    hObject(end+1) = text(30,(lHeight-20*ii+10),lText{ii},'Parent',hAxis,'fontSize',fontSize,'color','k');
 end
 
 if any(lType==3)

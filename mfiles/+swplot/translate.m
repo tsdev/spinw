@@ -34,6 +34,9 @@ elseif strcmpi(mode,'auto')
     center = mean([min(pos(:,1,:),[],3) max(pos(:,1,:),[],3)],2);
     % translate in xyz units
     T = swplot.transform(hFigure);
+    if isempty(T)
+        T = eye(4);
+    end
     T(1:3,4) = -swplot.base(hFigure)*center;
     swplot.transform(T,hFigure);
 

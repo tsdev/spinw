@@ -35,12 +35,14 @@ elseif strcmpi(mode,'auto')
         size = diff([min(pos(:,1,:),[],3) max(pos(:,1,:),[],3)],[],2);
         size = max(swplot.base(hFigure)*size);
         
-        % view angle
-        angle = atand(size/norm(get(hAxis,'CameraPosition')));
-        
-        set(hAxis,'CameraViewAngleMode','auto');
-        %set(hAxis,'CameraViewAngle',6*get(hAxis,'CameraViewAngle'));
-        set(hAxis,'CameraViewAngle',1.5*angle);
+        if size>0
+            % view angle
+            angle = atand(size/norm(get(hAxis,'CameraPosition')));
+            
+            set(hAxis,'CameraViewAngleMode','auto');
+            %set(hAxis,'CameraViewAngle',6*get(hAxis,'CameraViewAngle'));
+            set(hAxis,'CameraViewAngle',1.5*angle);
+        end
     end
 else
     error('zoom:WrongInput','Wrong zoom mode!');

@@ -42,6 +42,14 @@ function varargout = patchfacefcn(obj,hit,fun,selection,dLim,hTransform)
 % See also PATCH.
 %
 
+if isempty(hit)
+    % older versions of Matlab hit is empty
+    if nargout > 0
+        varargout{1} = [];
+    end
+    return
+end
+
 % point where we hit the surface
 P = hit.IntersectionPoint;
 

@@ -49,7 +49,7 @@ fontSize = swpref.getpref('fontsize',[]);
 hText = gobjects(1,nText);
 
 for ii = 1:nText
-    hText(ii) = text(hAxis,r(1,ii),r(2,ii),r(3,ii),string{ii},'FontSize',fontSize,'Color','k',...
+    hText(ii) = text(r(1,ii),r(2,ii),r(3,ii),string{ii},'Parent',hAxis,'FontSize',fontSize,'Color','k',...
     'VerticalAlignment','middle','HorizontalAlignment','center','Tag','text');
 end
 

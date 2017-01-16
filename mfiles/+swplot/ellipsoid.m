@@ -88,8 +88,16 @@ if size(R0,1)~=3 || any(sT(1:3)~=[3 3 nObject])
     error('ellipsoid:WrongInput','Matrices have incompatible dimensions!')
 end
 
-V0 = mesh.Points;
-F0 = mesh.ConnectivityList;
+if isa(mesh,'TriRep')
+    V0 = mesh.X;
+    F0 = mesh.Triangulation;
+elseif isa(mesh,'triangulation')
+    V0 = mesh.Points;
+    F0 = mesh.ConnectivityList;
+else
+    error('ellipsoid:WrongInput','The given data is not a Matlab triangulation/TriRep class!')
+end
+
 NV = size(V0,1);
 
 % fast vertices
@@ -120,7 +128,7 @@ end
 
 if isempty(hPatch)
     % create patch
-    hPatch = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
+    hPatch = patch('Parent',hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
         'EdgeColor','none','FaceColor','flat','Tag','ellipsoid','FaceVertexCData',C);
 else
     V0 = get(hPatch,'Vertices');

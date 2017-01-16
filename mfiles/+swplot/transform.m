@@ -64,7 +64,7 @@ if isempty(h)
     if ~isempty(M)
         % rotate camera
         R = M(1:3,1:3)';
-        set(hAxis,'CameraPosition', R*[0 0 100]',...
+        set(hAxis,'CameraPosition', R*[0 0 1e4]',...
             'CameraTarget',         [0 0 0],...
             'CameraUpVector',       R*[0 1 0]');
     else
@@ -77,6 +77,8 @@ if isempty(h)
         %v0 = [v10;v20];
         warning('transform:MissingFeature','This option is not implemented yet!')
     end
+    varargout{1} = [];
+    
 else
     % hg
     if isempty(M)

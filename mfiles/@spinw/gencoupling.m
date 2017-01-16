@@ -85,7 +85,7 @@ fid = obj.fileid;
 hMax1 = 1./sqrt(sum(inv(obj.basisvector').^2,2));
 
 % calculate the distance of the [1 1 1] point from the origin
-hMax2 = sum(BV,2);
+hMax2 = sum(obj.basisvector,2);
         
 % calculate the closest point to the origin
 hMax = min([hMax1 hMax2],[],2);

@@ -15,7 +15,7 @@ function data = getdata(varargin)
 if nargin == 0
     hFigure = swplot.activefigure;
     arg = {hFigure};
-elseif nargin == 1 && isstring(varargin{1})
+elseif nargin == 1 && ischar(varargin{1})
     hFigure = swplot.activefigure;
     arg = {hFigure varargin{1}};
 elseif nargin == 1

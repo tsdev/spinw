@@ -39,12 +39,15 @@ cHullx = [1 5 9 6 4 9 1 4 10 4 1 9 8 2 5 8 1 10 1 8 5 12 6 9 5 12 9 2 12 5 12 ..
     3 6 3 12 2 3 7 6 4 7 10 7 4 6 8 11 2 11 3 2 11 8 10 7 11 10 11 7 3];
 cHullx = reshape(cHullx,3,[])';
 % triangulate the points
+% only compatible with new Matlab versions
 %TR = triangulation(fliplr(convhulln(x)),x);
-TR = triangulation(fliplr(cHullx),x);
+TR = TriRep(fliplr(cHullx),x);
 
 % get the data structure
-F = TR.ConnectivityList;
-X = TR.Points;
+%F = TR.ConnectivityList;
+%X = TR.Points;
+F = TR.Triangulation;
+X = TR.X;
 
 % spherical subdivision
 for ii = 1:nSub
@@ -83,9 +86,12 @@ for ii = 1:nSub
     
     % new mesh
     X  = cat(1,X,V);
-    TR = triangulation(F,X);
-    F  = TR.ConnectivityList;
-    X  = TR.Points;
+    %TR = triangulation(F,X);
+    %F  = TR.ConnectivityList;
+    %X  = TR.Points;
+    TR = TriRep(F,X);
+    F  = TR.Triangulation;
+    X  = TR.X;
     
 end
 
@@ -93,7 +99,8 @@ if nSub > 0
     % reproject the points onto the surface of the unit sphere
     XL2 = sqrt(sum(X.^2,2));
     X   = bsxfun(@rdivide,X,XL2);
-    TR  = triangulation(F,X);
+    %TR  = triangulation(F,X);
+    TR  = TriRep(F,X); 
 end
 
 end

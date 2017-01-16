@@ -48,9 +48,9 @@ end
 
 if isempty(tDat.handle)
     % create tooltip axis
-    tDat.handle    = axes(hFigure,'Units','Normalized','Position',[0.01 0.9 0.1 0.2],'Visible','off');
+    tDat.handle    = axes('Parent',hFigure,'Units','Normalized','Position',[0.01 0.9 0.1 0.2],'Visible','off');
     tDat.handle(2) = text(0.05,0.45,'','units','normalized','horizontalalignment','left',...
-        'FontSize',fontSize,'VerticalAlignment','top');
+        'FontSize',fontSize,'VerticalAlignment','top','Parent',tDat.handle);
     % avoid object get active for strange zooming effect
     set(tDat.handle,'hittest','off','tag','tooltip');
     

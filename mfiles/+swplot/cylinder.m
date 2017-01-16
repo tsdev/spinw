@@ -135,7 +135,7 @@ end
 
 if isempty(hPatch)
     % create patch
-    hPatch = patch(hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
+    hPatch = patch('Parent',hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
         'EdgeColor','none','FaceColor','flat','Tag','cylinder','FaceVertexCData',C);
 else
     % add to existing patch

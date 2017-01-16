@@ -10,6 +10,7 @@ function varargout = legend(switch0,hFigure)
 % switch        One of the following string:
 %                   'on'        show legend,
 %                   'off'       hide legend,
+%                   'refresh'   redraw legend,
 %                   'frame'     toggle the visibility of the legend frame.
 %               Default is 'on'.
 % hFigure       Handle of the swplot figure. Default is the selected
@@ -46,6 +47,8 @@ switch switch0
         switchon = true;
     case 'off'
         switchon = false;
+    case 'refresh'
+         switchon = ~isempty(lDat.handle);
     otherwise %'frame'
         switchon = true;
         if ~isempty(lDat.handle)

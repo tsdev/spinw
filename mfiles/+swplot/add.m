@@ -48,16 +48,18 @@ hAxis = getappdata(hFigure,'axis');
 cva = get(hAxis,'CameraViewAngle');
 hTransform = getappdata(hFigure,'h');
 
-% fields of struct to store objects
-fNames = {'handle' 'number' 'name' 'type' 'label' 'position' 'text' 'legend' 'data'};
+sObject = getappdata(hFigure,'objects');
 
-if isappdata(hFigure,'objects')
-    sObject = getappdata(hFigure,'objects');
-else
-    c0 = cell(1,0);
-    sInit = [fNames; repmat({c0},[1 numel(fNames)])];
-    sObject = struct(sInit{:});
-end
+% % fields of struct to store objects
+fNames = {'handle' 'number' 'name' 'type' 'label' 'position' 'text' 'legend' 'data'};
+% 
+% if isappdata(hFigure,'objects')
+%     sObject = getappdata(hFigure,'objects');
+% else
+%     c0 = cell(1,0);
+%     sInit = [fNames; repmat({c0},[1 numel(fNames)])];
+%     sObject = struct(sInit{:});
+% end
 
 % keep the additional fields
 fNames = fNames(3:end);

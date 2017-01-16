@@ -57,6 +57,8 @@ function varargout = plot(varargin)
 %           value is stored in swpref.getpref('npatch').
 % tooltip   If true, the tooltip will be switched on at the end of the
 %           plot. Default is true.
+% replace   If true, all object with the same name as the new plot will be
+%           deleted before plotting. Default is false.
 % data      Arbitrary data per object that will be stored in the swplot
 %           figure and can be retrieved. It is stored in a cell with
 %           nObject number of elements.
@@ -77,10 +79,10 @@ inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []   
 inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] [1 -12] [1 1]    }];
 inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      false   false    }];
 
-inpForm.fname  = [inpForm.fname  {'data'   }];
-inpForm.defval = [inpForm.defval {{}       }];
-inpForm.size   = [inpForm.size   {[-13 -14]}];
-inpForm.soft   = [inpForm.soft   {true     }];
+inpForm.fname  = [inpForm.fname  {'data'    'replace'}];
+inpForm.defval = [inpForm.defval {{}        false    }];
+inpForm.size   = [inpForm.size   {[-13 -14] [1 1]    }];
+inpForm.soft   = [inpForm.soft   {true      false    }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -141,6 +143,14 @@ else
     label = param.label;
 end
 nLabel = numel(label);
+
+% remove objects with the same name if necessary
+if param.replace
+    % find objects to be deleted
+    sObj = swplot.findobj(hFigure,'name',param.name);
+    % delete them!
+    swplot.delete([sObj(:).number]);
+end
 
 % check size of position matrix
 pos0 = [2 1 2 2 2 1];

@@ -24,7 +24,9 @@ end
 hAxis = getappdata(hFigure,'axis');
 
 if isnumeric(mode)    
+    
     set(hAxis,'CameraViewAngle',get(hAxis,'CameraViewAngle')/mode);
+    
 elseif strcmpi(mode,'auto')
     
     % find outer positions of objects

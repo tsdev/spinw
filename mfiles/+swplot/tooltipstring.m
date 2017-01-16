@@ -13,7 +13,7 @@ switch sObject.name
         label2 = labelTemp{2};
         string = [label2 ' atom (' label1 ')' newline 'Unit cell:' newline];
         % add cell index and position
-        posi = sObject.position(:,1)';
+        posi = sObject.data(:)';
         string = [string sprintf('[%d, %d, %d]',floor(posi)) newline 'Atomic position' newline sprintf('[%5.3f, %5.3f, %5.3f]',posi-floor(posi))];
 end
 

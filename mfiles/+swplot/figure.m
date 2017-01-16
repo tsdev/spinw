@@ -170,15 +170,20 @@ end
 % save data to figure
 setappdata(hFigure,'button',button);
 setappdata(hFigure,'axis',hAxis);
-setappdata(hFigure,'legend',struct('handle',gobjects(0),'text','','type',[],'color',[]));
-setappdata(hFigure,'light',camlight('right'));
-%setappdata(hFigure,'objects',struct('handle',cell(1,0)));
+setappdata(hFigure,'legend',struct('handle',gobjects(0),'text',{''},'type',[],'color',[],'name',{''}));
+setappdata(hFigure,'light',camlight('right'));    
 setappdata(hFigure,'icon',icon);
 setappdata(hFigure,'base',eye(3));
 swplot.zoom('auto',hFigure);
 setappdata(hFigure,'tooltip',struct('handle',gobjects(0)));
 swplot.tooltip('off',hFigure);
-set(hFigure,'Visible','on');
+
+% create empty object to store plot data
+fNames = {'handle' 'number' 'name' 'type' 'label' 'position' 'text' 'legend' 'data'};
+c0 = cell(1,0);
+sInit = [fNames; repmat({c0},[1 numel(fNames)])];
+setappdata(hFigure,'objects',struct(sInit{:}));
+
 % empty patch object for showing graphics with faces
 hPatch = patch('Vertices',[],'Faces',zeros(0,3),'FaceLighting','flat',...
     'EdgeColor','none','FaceColor','flat','Tag','facepatch',...
@@ -210,6 +215,10 @@ set(0,'Showhidden',showHidden);
 
 % add mouse control
 swplot.mouse(hFigure);
+
+% show figure
+set(hFigure,'Visible','on');
+
 
     function activatefigure(~,~,mode)
         % activate/deactivate figure

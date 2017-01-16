@@ -47,6 +47,9 @@ function varargout = plotatom(varargin)
 %           swpref.getpref('nmesh')
 % tooltip   If true, the tooltips will be shown when clicking on atoms.
 %           Default is true.
+% shift     Column vector with 3 elements, all atomic positions will be
+%           shifted by the given value. Default value is [0;0;0].
+% replace   Replace previous atom plot if true. Default is true.
 % hg        Whether to use hgtransform (nice rotation with the mouse) or
 %           default Matlab rotation of 3D objects. Default is true.
 %
@@ -111,6 +114,11 @@ inpForm.fname  = [inpForm.fname  {'hg'  'figure' 'obj' 'rangeunit' 'tooltip'}];
 inpForm.defval = [inpForm.defval {true  []       []    'lu'        true     }];
 inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1] [1 -6]      [1 1]    }];
 inpForm.soft   = [inpForm.soft   {false    true  true  false       false    }];
+
+inpForm.fname  = [inpForm.fname  {'shift' 'replace' }];
+inpForm.defval = [inpForm.defval {[0;0;0] true      }];
+inpForm.size   = [inpForm.size   {[3 1]   [1 1]     }];
+inpForm.soft   = [inpForm.soft   {false   false     }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -243,6 +251,12 @@ for ii = 1:nAtom
     %atom.ttip{ii}  = [label2 ' atom (' label1 ')' newline 'Unit cell:' newline];
 end
 
+% save atom coordinates into data
+posDat = mat2cell(pos,3,ones(1,size(pos,2)));
+
+% shift positions
+pos = pos+param.shift;
+
 % plot label on atoms
 if param.label
     dtext = inv(BV)*repmat(radius+param.dtext,[3 1]); %#ok<MINV>
@@ -250,7 +264,8 @@ if param.label
     text = text(pIdx);
     
     swplot.plot('type','text','name','atom_label','position',pos+dtext,...
-        'text',text,'figure',hFigure,'legend',false,'fontsize',param.fontsize,'tooltip',false);
+        'text',text,'figure',hFigure,'legend',false,...
+        'fontsize',param.fontsize,'tooltip',false,'replace',param.replace);
 end
 
 % % tooltip
@@ -266,20 +281,29 @@ end
 lLabel = repmat(atom.name,[nCell 1]);
 lLabel = lLabel(pIdx);
 
+% legend data
+lDat = getappdata(hFigure,'legend');
+
+if param.replace
+    % remove old legend entries
+    lIdx = ~ismember(lDat.name,'atom');
+    lDat.color = lDat.color(:,lIdx);
+    lDat.type  = lDat.type(:,lIdx);
+    lDat.name  = lDat.name(:,lIdx);
+    lDat.text  = lDat.text(:,lIdx);
+    % redraw legend
+    swplot.legend('refresh',hFigure);
+end
+
 if param.legend
-    
-    % create specific legend per atom type
-    lDat = getappdata(hFigure,'legend');
     % append color
     lDat.color = [lDat.color double(obj.unit_cell.color)/255];
     % append type
     lDat.type = [lDat.type 3*ones(1,obj.natom)];
+    % append name
+    lDat.name = [lDat.name repmat({'atom'},1,obj.natom)];
     % append text
-    if ~isempty(lDat.text)
-        lDat.text = [lDat.text(:)' obj.unit_cell.label];
-    else
-        lDat.text = obj.unit_cell.label;
-    end
+    lDat.text = [lDat.text obj.unit_cell.label];
     
     setappdata(hFigure,'legend',lDat);
     swplot.legend('on',hFigure);
@@ -288,7 +312,7 @@ end
 % plot the atoms, text generated automatically
 swplot.plot('type','ellipsoid','name','atom','position',pos,'R',radius,...
     'figure',hFigure,'color',color,'text','','legend',false,'label',lLabel,...
-    'nmesh',param.nmesh,'tooltip',false);
+    'nmesh',param.nmesh,'tooltip',false,'data',posDat,'replace',param.replace);
 
 if nargout > 0
     varargout{1} = hFigure;

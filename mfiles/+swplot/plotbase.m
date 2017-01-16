@@ -21,10 +21,10 @@ range0 = [0 1;0 1;0 1];
 col0   = swplot.color({'red' 'green' 'blue'});
 d0     = ones(1,3);
 
-inpForm.fname  = {'range' 'mode'    'figure' 'color' 'R'   'alpha' 'lhead' 'd'   'dtext'};
-inpForm.defval = {range0  'default' []       col0    0.06  30      0.5     d0    0.5    };
-inpForm.size   = {[-1 -2] [1 -3]    [1 1]    [-4 -5] [1 1] [1 1]   [1 1]   [1 3] [1 1]  };
-inpForm.soft   = {false   false     true     false   false false   false   false false  };
+inpForm.fname  = {'range' 'mode'    'figure' 'color' 'R'   'alpha' 'lhead' 'd'   'dtext' 'label'};
+inpForm.defval = {range0  'default' []       col0    0.06  30      0.5     d0    0.5     true   };
+inpForm.size   = {[-1 -2] [1 -3]    [1 1]    [-4 -5] [1 1] [1 1]   [1 1]   [1 3] [1 1]   [1 1]  };
+inpForm.soft   = {false   false     true     false   false false   false   false false   false  };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -45,10 +45,12 @@ R = bsxfun(@minus,cat(3,zeros(3),eye(3)),d');
 swplot.plot('type','arrow','position',R,'figure',hFigure,'color',param.color,...
     'name','abc','legend',false,'tooltip',false);
 
-% convert d from xyz to base
-Rtext = bsxfun(@minus,bsxfun(@times,eye(3),1+param.dtext./sqrt(sum(BV.^2,1))),d');
-
-swplot.plot('type','text','position',Rtext,'text',{'a' 'b' 'c'},...
-    'figure',hFigure,'legend',false,'tooltip',false);
+if param.label
+    % convert d from xyz to base
+    Rtext = bsxfun(@minus,bsxfun(@times,eye(3),1+param.dtext./sqrt(sum(BV.^2,1))),d');
+    
+    swplot.plot('type','text','position',Rtext,'text',{'a' 'b' 'c'},...
+        'figure',hFigure,'legend',false,'tooltip',false);
+end
 
 end

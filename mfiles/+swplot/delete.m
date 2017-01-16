@@ -28,6 +28,12 @@ sObj = getappdata(hFigure,'objects');
 if any(number==0)
     % select all objects to delete
     pIdx = 1:numel(sObj);
+    number = 1:max([sObj(:).number]);
+    % delete legend
+    swplot.legend('off',hFigure)
+    setappdata(hFigure,'legend',struct('handle',gobjects(0),'text',{''},...
+        'type',[],'color',[],'name',{''}));
+
 else
     % find objects with the given numbers
     pIdx = ismember([sObj(:).number],number);

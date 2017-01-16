@@ -228,13 +228,6 @@ if ~isempty(hTransform)
 end
 set(hNew,'Clipping','Off');
 
-% add callback function for showing the tooltips
-%set([hNew hPatch],'ButtonDownFcn',@(obj,hit)swplot.tooltipcallback(obj,hit,hFigure,hTransform));
-if showtooltip
-    swplot.tooltip(swplot.tooltip,hFigure);
-end
-
-
 % comb together the handles of the old and new graphical objects.
 sObject = [sObject hAdd(:)'];
 
@@ -257,8 +250,13 @@ end
 
 % Saves the object handles into the figure UserData property.
 setappdata(hFigure,'objects',sObject);
-setappdata(hFigure,'h',hTransform);
 set(hAxis,'CameraViewAngle',cva);
 material('shiny');
+
+% add callback function for showing the tooltips
+%set([hNew hPatch],'ButtonDownFcn',@(obj,hit)swplot.tooltipcallback(obj,hit,hFigure,hTransform));
+if showtooltip
+    swplot.tooltip(swplot.tooltip,hFigure);
+end
 
 end

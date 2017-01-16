@@ -37,6 +37,10 @@ elseif strcmpi(mode,'auto')
     % position in lu
     pos = cat(3,obj(:).position);
     center = mean([min(pos(:,1,:),[],3) max(pos(:,1,:),[],3)],2);
+    if any(isnan(center))
+        return
+    end
+    
     % translate in xyz units
     if swplot.ishg(hFigure)
         T = swplot.transform(hFigure);

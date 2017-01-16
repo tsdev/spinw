@@ -128,6 +128,11 @@ else
     hFigure = param.figure;
 end
 
+if isempty(param.obj) && ~isappdata(hFigure,'obj')
+    warning('plotatom:WrongInput','No SpinW object to plot!');
+    return
+end
+
 % takes care of spinw object saved/loaded in/from figure
 if isempty(param.obj)
     obj = getappdata(hFigure,'obj');

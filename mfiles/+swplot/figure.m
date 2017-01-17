@@ -171,7 +171,10 @@ end
 setappdata(hFigure,'button',button);
 setappdata(hFigure,'axis',hAxis);
 setappdata(hFigure,'legend',struct('handle',gobjects(0),'text',{''},'type',[],'color',[],'name',{''}));
-setappdata(hFigure,'light',camlight('right'));    
+% add light
+hLight = camlight('right');
+set(hLight,'Parent',hAxis);
+setappdata(hFigure,'light',hLight);    
 setappdata(hFigure,'icon',icon);
 setappdata(hFigure,'base',eye(3));
 swplot.zoom('auto',hFigure);

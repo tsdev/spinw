@@ -18,8 +18,12 @@ function varargout = plotatom(varargin)
 %           use: [0 1;0 1;0 1]. Also the number unit cells can be given
 %           along the a, b and c directions: [2 1 2], that is equivalent to
 %           [0 2;0 1;0 2]. Default is the single unit cell.
+% rangeunit Unit in which the range is defined. It can be the following
+%           string:
+%               'lu'        Lattice units (default).
+%               'xyz'       Cartesian coordinate system in Angstrom units.
 % mode      String, defines the types of atoms to plot:
-%               'all'       Plot all atoms, default value.
+%               'all'       Plot all atoms (default).
 %               'mag'       Plot magnetic atoms only.
 %               'nonmag'    Plot non-magnetic atoms only.
 % figure    Handle of the swplot figure. Default is the selected figure.
@@ -50,49 +54,17 @@ function varargout = plotatom(varargin)
 % shift     Column vector with 3 elements, all atomic positions will be
 %           shifted by the given value. Default value is [0;0;0].
 % replace   Replace previous atom plot if true. Default is true.
-% hg        Whether to use hgtransform (nice rotation with the mouse) or
-%           default Matlab rotation of 3D objects. Default is true.
 %
 % Output:
 %
-% For plotting:
 % hFigure           Handle of the swplot figure.
 %
-% The labels on the atom has the following meaning:
+% The name of the objects that are created called 'atom' and 'atom_label'.
+% To find the handles and the stored data on these objects, use e.g.
 %
-% AtomLabel(idx1)_idx2:
-%   idx1    The index of the atom in obj.unit_cell
-%   idx2    The index of the atom in obj.atom
+%   sObject = swplot.findobj(hFigure,'name','atom')
 %
-% To access the graphical objects, use the function:
-%   handleList = sw_getobject(tagName,fHandle);
-% This command returns all objects with tagName string in their 'Tag'
-% field, in figure with fHandle.
-%
-% List of Tag values:
-% unitCell         Unit cell.
-% arrow            Arrows of the lattice vectors.
-% arrowText        Text of the lattice vectors.
-% atom_            Spheres of the atoms, for example 'atom_Cr' for atoms
-%                  with the label 'Cr'.
-% aniso_           Anisotropy ellipsoid with atom names, for example
-%                  'aniso_Cr', symbolising the anisotropy matrix.
-% atomText_        Label of atoms, for example 'atomText_Cr'.
-% coupling_        Cylinder of couplings, for example 'coupling_J1' for the
-%                  couplings with label 'J1'.
-% spinPlane        Circle showing the plane of the spins.
-% legend           Legend.
-%
-% Example:
-%
-% sq = sw_model('squareAF',1);
-% plot(sq);
-%
-% The example plots the structure, couplings and magnetic structure of the
-% square lattice antiferromagnet.
-%
-% See also SW_DRAW, SW_GETOBJECT, SW_ADDOBJECT.
-%
+
 
 % default values
 fontSize0 = swpref.getpref('fontsize',[]);
@@ -110,10 +82,10 @@ inpForm.defval = [inpForm.defval {'auto'   'all'  'auto'  nMesh0  nPatch0 }];
 inpForm.size   = [inpForm.size   {[1 -3]   [1 -4] [1 -5]  [1 1]   [1 1]   }];
 inpForm.soft   = [inpForm.soft   {false    false  false   false   false   }];
 
-inpForm.fname  = [inpForm.fname  {'hg'  'figure' 'obj' 'rangeunit' 'tooltip'}];
-inpForm.defval = [inpForm.defval {true  []       []    'lu'        true     }];
-inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1] [1 -6]      [1 1]    }];
-inpForm.soft   = [inpForm.soft   {false    true  true  false       false    }];
+inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'rangeunit' 'tooltip'}];
+inpForm.defval = [inpForm.defval {[]       []    'lu'        true     }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]      [1 1]    }];
+inpForm.soft   = [inpForm.soft   {true     true  false       false    }];
 
 inpForm.fname  = [inpForm.fname  {'shift' 'replace' }];
 inpForm.defval = [inpForm.defval {[0;0;0] true      }];
@@ -153,7 +125,7 @@ set(hFigure,'Name', 'SpinW: Crystal structure');
 if numel(param.range) == 3
     param.range = [ zeros(3,1) param.range(:)];
 elseif numel(param.range) ~=6
-    error('sw:plotatom:WrongInput','The given plotting range is invalid!');
+    error('plotatom:WrongInput','The given plotting range is invalid!');
 end
 
 range = param.range;
@@ -174,7 +146,7 @@ switch param.rangeunit
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
         
     otherwise
-        error('sw:plotatom:WrongInput','The given rangeunit string is invalid!');
+        error('plotatom:WrongInput','The given rangeunit string is invalid!');
 end
 
 % atom data
@@ -193,7 +165,7 @@ switch param.mode
         atom.idx = atom.idx(1,~atom.mag);
         atom.mag = atom.mag(1,~atom.mag);
     otherwise
-        error('sw:plotatom:WrongInput','The given mode string is invalid!');
+        error('plotatom:WrongInput','The given mode string is invalid!');
 end
 
 nAtom = size(atom.r,2);
@@ -209,7 +181,7 @@ nCell = size(pos,2);
 aIdx = repmat(atom.idx,[nCell 1]);
 
 pos  = reshape(pos,3,[]);
-aIdx = reshape(aIdx,3,[]);
+%aIdx = reshape(aIdx,3,[]);
 
 % cut out the atoms that are out of range
 switch param.rangeunit
@@ -260,7 +232,7 @@ end
 posDat = mat2cell(pos,3,ones(1,size(pos,2)));
 
 % shift positions
-pos = pos+param.shift;
+pos = bsxfun(@plus,pos,param.shift);
 
 % plot label on atoms
 if param.label
@@ -272,15 +244,6 @@ if param.label
         'text',text,'figure',hFigure,'legend',false,...
         'fontsize',param.fontsize,'tooltip',false,'replace',param.replace);
 end
-
-% % tooltip
-% ttip = repmat(atom.ttip,[nCell 1]);
-% ttip = ttip(pIdx);
-% % add cell index and position
-% for ii = 1:numel(ttip)
-%     posi = pos(:,ii)';
-%     ttip{ii} = [ttip{ii} sprintf('[%d, %d, %d]',floor(posi)) newline 'Atomic position' newline sprintf('[%5.3f, %5.3f, %5.3f]',posi-floor(posi))];
-% end
 
 % legend label
 lLabel = repmat(atom.name,[nCell 1]);
@@ -315,7 +278,7 @@ if param.legend
 end
 
 % plot the atoms, text generated automatically
-swplot.plot('type','ellipsoid','name','atom','position',pos,'R',radius,...
+swplot.plot('type','ellipsoid','name','atom','position',pos,'R',radius',...
     'figure',hFigure,'color',color,'text','','legend',false,'label',lLabel,...
     'nmesh',param.nmesh,'tooltip',false,'data',posDat,'replace',param.replace);
 

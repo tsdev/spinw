@@ -45,7 +45,6 @@ end
 
 hAxis = getappdata(hFigure,'axis');
 
-cva = get(hAxis,'CameraViewAngle');
 hTransform = getappdata(hFigure,'h');
 
 sObject = getappdata(hFigure,'objects');
@@ -238,27 +237,8 @@ end
 % comb together the handles of the old and new graphical objects.
 sObject = [sObject hAdd(:)'];
 
-% Shift the origin to center the plot.
-if isappdata(hFigure,'param')
-    param = getappdata(hFigure,'param');
-else
-    param = struct;
-end
-
-% center object if it is crystal and hgtransform exists
-% TODO change to BV matrix
-if isfield(param,'range') && isappdata(hFigure,'obj') && ~isempty(hTransform)
-    range       = param.range;
-    basisVector = getappdata(hFigure,'obj');
-    basisVector = basisVector.basisvector;
-    T           = makehgtform('translate',-sum(basisVector * sum(range,2)/2,2)');
-    set(hTransform,'Matrix',get(hTransform,'Matrix')*T);
-end
-
 % Saves the object handles into the figure UserData property.
 setappdata(hFigure,'objects',sObject);
-setappdata(hFigure,'h',hTransform);
-set(hAxis,'CameraViewAngle',cva);
-material('shiny');
+material(hAxis,'shiny');
 
 end

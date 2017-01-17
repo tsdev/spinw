@@ -15,6 +15,9 @@ switch sObject.name
         % add cell index and position
         posi = sObject.data(:)';
         string = [string sprintf('[%d, %d, %d]',floor(posi)) newline 'Atomic position' newline sprintf('[%5.3f, %5.3f, %5.3f]',posi-floor(posi))];
+    case 'mag'
+        M = sObject.data(:)';
+        string = sprintf('Magnetic moment:\nM = [%5.3f, %5.3f, %5.3f]',M+1e-6);
 end
 
 end

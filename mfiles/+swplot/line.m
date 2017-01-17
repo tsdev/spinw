@@ -31,6 +31,7 @@ if nargin == 0
 end
 
 lineStyle = '-';
+lineWidth = 0.5;
 
 if numel(varargin{1}) == 1
     % first input figure/patch handle
@@ -46,7 +47,9 @@ if numel(varargin{1}) == 1
     if nargin > 3
         lineStyle = varargin{4};
     end
-
+    if nargin > 4
+        lineWidth = varargin{5};
+    end
 else
     hAxis   = gca;
     hPatch  = [];
@@ -54,6 +57,9 @@ else
     rEnd    = varargin{2};
     if nargin > 2
         lineStyle = varargin{3};
+    end
+    if nargin > 3
+        lineWidth = varargin{4};
     end
 
 end
@@ -79,7 +85,7 @@ F = [2*L-1 2*L];
 % black color
 C = repmat([0 0 0],[size(V,1) 1]);
 
-if strcmp(get(hAxis,'Tag'),'swaxis') && strcmp(lineStyle,'-')
+if strcmp(get(hAxis,'Tag'),'swaxis') && strcmp(lineStyle,'-') && lineWidth == 0.5
     % make sure we are on the plot axis of an swobject
     % add object to the existing edge patch, but only for continuous lines
     hFigure = get(hAxis,'Parent');
@@ -90,7 +96,7 @@ if isempty(hPatch)
     % create new patch
     hPatch = patch('Parent',hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
         'EdgeColor','flat','FaceColor','none','Tag','line',...
-        'FaceVertexCData',C,'LineStyle',lineStyle);
+        'FaceVertexCData',C,'LineStyle',lineStyle,'LineWidth',lineWidth);
 else
     % add to existing patch
     V0 = get(hPatch,'Vertices');

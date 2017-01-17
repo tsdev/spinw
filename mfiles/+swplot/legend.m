@@ -8,10 +8,11 @@ function varargout = legend(switch0,hFigure)
 % Input:
 %
 % switch        One of the following string:
-%                   'on'        show legend,
-%                   'off'       hide legend,
-%                   'refresh'   redraw legend,
-%                   'frame'     toggle the visibility of the legend frame.
+%                   'on'                show legend,
+%                   'off'               hide legend,
+%                   'refresh'           redraw legend,
+%                   {'-','--','none'}   change the linestyle of the legend
+%                                       frame.
 %               Default is 'on'.
 % hFigure       Handle of the swplot figure. Default is the selected
 %               figure.
@@ -33,7 +34,7 @@ end
 
 lDat = getappdata(hFigure,'legend');
 
-if nargout > 0 
+if nargout > 0
     if isempty(lDat.handle)
         varargout{1} = 'off';
     else
@@ -48,22 +49,14 @@ switch switch0
     case 'off'
         switchon = false;
     case 'refresh'
-         switchon = ~isempty(lDat.handle);
-    otherwise %'frame'
+        switchon = ~isempty(lDat.handle);
+    case {'-' '--' 'none'} %'frame'
         switchon = true;
-        if ~isempty(lDat.handle)
-            %if strcmp(get(lDat.handle(2),'LineStyle'),'none')
-            %    set(lDat.handle(2),'LineStyle','-');
-            %else
-            %    set(lDat.handle(2),'LineStyle','none');
-            %end
-            set(lDat.handle(2),'LineStyle',switch0);
-        end
-        %otherwise
-        %    error('legend:WrongInput','Use on/off to switch legend!')
+    otherwise
+        error('legend:WrongInput','Use on/off to switch legend!')
 end
 
-if ~switchon && ~isempty(lDat.handle) 
+if ~switchon && ~isempty(lDat.handle)
     % remove legend
     delete(lDat.handle)
     lDat.handle = gobjects(0);
@@ -88,7 +81,7 @@ end
 
 % create new axis for legend
 hAxis = axes('Parent',hFigure,'Units','pixel','Position',[dA dA lWidth+dA lHeight+dA],...
-    'Visible','off','XLim',[0 lWidth],'YLim',[0 lHeight],'NextPlot','add');
+    'Visible','off','XLim',[0 lWidth],'YLim',[0 lHeight],'NextPlot','add','box','off');
 
 hObject = rectangle('Parent',hAxis,'Position',[1 1 lWidth-2 lHeight-2],'FaceColor','w');
 
@@ -118,7 +111,7 @@ for ii = 1:numel(lType)
                 'FaceColor','none','EdgeColor','k');
         case 3
             % sphere
-            hObject(end+1) = swplot.ellipsoid(hAxis,[5+sRadius lHeight-20*ii+3+sRadius 0],eye(3)*sRadius);
+            hObject(end+1) = swplot.ellipsoid(hAxis,[5+sRadius lHeight-20*ii+3+sRadius 0],eye(3)*sRadius,3);
             set(hObject(end),'FaceColor',lColor(:,ii));
     end
     % add text
@@ -129,13 +122,18 @@ if any(lType==3)
     % add light
     hLight = camlight('right');
     set(hLight,'Parent',hAxis);
-    material('shiny');
+    material(hAxis,'shiny');
+end
+
+if ismember(switch0,{'-' '--' 'none'}) && ~isempty(lDat.handle)
+    % change rectangle line style
+    set(lDat.handle(2),'LineStyle',switch0);
 end
 
 % take care that one cannot activate axis by clicking on it
 set(hObject,'Tag','legend');
 set(hObject,'hittest','off');
-set(hAxis,'hittest','off','NextPlot','replace','Visible','on')
+set(hAxis,'hittest','off','NextPlot','replace','Visible','off')
 
 % save new handle
 setappdata(hFigure,'legend',lDat);

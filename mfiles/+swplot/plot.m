@@ -43,12 +43,13 @@ function varargout = plot(varargin)
 % figure    Handle of the swplot figure. Default is the selected figure.
 % R         Radius value of cylinder, sphere (if no 'T' is given) and
 %           arrow, default is 0.06.
-% alpha     Head angle for arrow in degree units, default is 15 degree.
+% ang       Angle for arrow head in degree units, default is 15 degree.
 % lHead     Length of the arrow head, default value is 0.5.
 % T         Transformation matrix that transforms a unit sphere to the
 %           ellipse via: R' = T(:,:,i)*R
 %           Dimensions are [3 3 nObject].
 % lineStyle Line style, default value is '-' for continuous lines.
+% lineWidth Line width, default value is 0.5.
 % nMesh     Resolution of the ellipse surface mesh. Integer number that is
 %           used to generate an icosahedron mesh with #mesh number of
 %           additional triangulation, default value is stored in
@@ -74,15 +75,15 @@ inpForm.defval = {[]     []     ''     []         []      []       []      'lu' 
 inpForm.size   = {[1 -8] [1 -1] [1 -2] [3 -3 -4]  [1 -5]  [1 1]    [-9 -6] [1 -7] [1 1]   [1 -13]     };
 inpForm.soft   = {false  true   true   false      true    true     true    false  true    false       };
 
-inpForm.fname  = [inpForm.fname  {'R'     'alpha' 'lHead' 'nMesh' 'nPatch' 'T'       'hg'    'tooltip'}];
+inpForm.fname  = [inpForm.fname  {'R'     'ang'   'lHead' 'nMesh' 'nPatch' 'T'       'hg'    'tooltip'}];
 inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []        'hg'    true     }];
 inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] [1 -12] [1 1]    }];
 inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      false   false    }];
 
-inpForm.fname  = [inpForm.fname  {'data'    'replace'}];
-inpForm.defval = [inpForm.defval {{}        false    }];
-inpForm.size   = [inpForm.size   {[-13 -14] [1 1]    }];
-inpForm.soft   = [inpForm.soft   {true      false    }];
+inpForm.fname  = [inpForm.fname  {'data'    'replace' 'linewidth'}];
+inpForm.defval = [inpForm.defval {{}        false     0.5        }];
+inpForm.size   = [inpForm.size   {[-13 -14] [1 1]     [1 1]      }];
+inpForm.soft   = [inpForm.soft   {true      false     false      }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -200,7 +201,7 @@ sObject = struct('handle',cell(1,nObject));
 
 switch type
     case 'arrow'
-        handle = swplot.arrow(hAxis,xyz(:,:,1),xyz(:,:,2),param.R,param.alpha,param.lHead,param.nPatch);
+        handle = swplot.arrow(hAxis,xyz(:,:,1),xyz(:,:,2),param.R,param.ang,param.lHead,param.nPatch);
         
     case 'ellipsoid'
         if isempty(param.T)
@@ -221,7 +222,7 @@ switch type
         % remove normal vectors (use nans)
         pos(:,:,2) = nan;
     case 'line'
-        handle = swplot.line(hAxis,xyz(:,:,1),xyz(:,:,2),param.linestyle);
+        handle = swplot.line(hAxis,xyz(:,:,1),xyz(:,:,2),param.linestyle,param.linewidth);
     case 'text'
         textStr = param.text;
         if ~iscell(textStr)

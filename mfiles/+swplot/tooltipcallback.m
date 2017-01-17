@@ -33,7 +33,7 @@ if isappdata(obj,'facenumber')
         if ~isempty(nIdx)
             % selected data object
             sObject = sObject(nIdx);
-            if ismember(sObject.name,{'atom'})
+            if ismember(sObject.name,{'atom' 'mag'})
                 % generate text automatically
                 string = swplot.tooltipstring(sObject);
             else

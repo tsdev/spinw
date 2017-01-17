@@ -35,11 +35,10 @@ function varargout = plotatom(varargin)
 %           swpref.getpref('fontsize').
 % radius0   Constant atom radius, default value is 0.3 Angstrom.
 % radius    Defines the atom radius:
-%               numerical value     Sets the radius of all atoms to the
-%                                   given value. Default is radius0.
-%               'auto'              use radius data from database based on
-%                                   the atom label multiplied by radius0
-%                                   value.
+%               'fix'       Sets the radius of all atoms to the value
+%                           stored in radius0.
+%               'auto'      use radius data from database based on the atom
+%                           label multiplied by radius0 value.
 % color     Color of the atoms:
 %               'auto'      All atom gets the color stored in obj.unit_cell.
 %               'colorname' All atoms will have the same color.
@@ -210,11 +209,14 @@ else
 end
 
 % radius
-if strcmp(param.radius,'auto')
-    radius = sw_atomdata(obj.unit_cell.label,'radius');
-    radius = radius(aIdx)*param.radius0;
-else
-    radius = param.radius0;
+switch param.radius
+    case 'auto'
+        radius = sw_atomdata(obj.unit_cell.label,'radius');
+        radius = radius(aIdx)*param.radius0;
+    case 'fix'
+        radius = param.radius0;
+    otherwise
+        error('plotatom:WrongInput','The given radius option is invalid!');
 end
 
 % prepare labels

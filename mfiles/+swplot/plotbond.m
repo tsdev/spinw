@@ -26,6 +26,10 @@ function varargout = plotbond(varargin)
 %               'cylinder'  Bonds are plotted as cylinders (default).
 %               'arrow'     Bonds are plotted as arrows (default if DM
 %                           interactions are non-zero).
+%               'line'      Bonds are plotted as continuous/dashed lines
+%                           depending on the label of the corresponding
+%                           matrix (dashed line is used if the matrix
+%                           label ends with '-', otherwise continuous).
 %               '--'        Bonds are plotted as dashed lines.
 %               '-'         Bonds are plotted as lines.
 % mode2     String, defines what is plotted on the bond:
@@ -35,18 +39,25 @@ function varargout = plotbond(varargin)
 %                           (default if DM vectors are non-zero).
 %               'sym'       Plot the symmetric exchange at the middle
 %                           of the bond as an ellipsoid.
-% linewidth Line width used to draw the bond if 'mode' is '--' or '-'.
+% linewidth Defines the bond radius if it is drawn by a line:
+%               'fix'       All line will have a width given by linewidth0.
+%                           Default value.
+%               'auto'      Lines will have a width that is depending on
+%                           the exchange matrix on the bond: W~sum(abs(J)),
+%                           where the largest line width on the strongest
+%                           bond is given by linewidth0.
+% linewidth0 Line width in pt used to draw the bond if 'mode' is 'line',
+%           '--' or '-'. Default value is 0.5.
 % zero      If true, bonds with zero exchange matrix will be plotted as
 %           well. Default is true.
 % radius0   Radius of the cylinder, default value is 0.05.
-% radius1   Constant atom radius, default value is 0.3 Angstrom.
+% radius2   Constant atom radius, default value is 0.3 Angstrom.
 % radius    Defines the atom radius (important for arrow bonds, to avoid
 %           overlap with the spheres of the atoms):
-%               numerical value     Sets the radius of all atoms to the
-%                                   given value. Default is radius1.
-%               'auto'              use radius data from database based on
-%                                   the atom label multiplied by radius1
-%                                   value.
+%               'fix'       Sets the radius of all atoms to the value
+%                           given by radius2.
+%               'auto'      use radius data from database based on the atom
+%                           label multiplied by radius2 value.
 % ang       Angle of the arrow head in degree units, default is 30 degree.
 % lHead     Length of the arrow head, default value is 0.5.
 % scale     Scaling factor for the lenght of the DM vector or the size of
@@ -93,21 +104,21 @@ nPatch0   = swpref.getpref('npatch',[]);
 range0    = [0 1;0 1;0 1];
 
 inpForm.fname  = {'range' 'legend' 'label' 'zero' 'scale' 'radius0' 'mode2' 'linewidth' };
-inpForm.defval = {range0  true     true    true   1       0.05      []      0.5         };
-inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]  [1 1]   [1 1]     [1 -7]  [1 1]       };
+inpForm.defval = {range0  true     true    true   1       0.05      []      'fix'       };
+inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]  [1 1]   [1 1]     [1 -7]  [1 -9]      };
 inpForm.soft   = {false   false    false   false  false   false     true    false       };
 
-inpForm.fname  = [inpForm.fname  {'radius' 'mode' 'color' 'nmesh' 'npatch'}];
-inpForm.defval = [inpForm.defval {'auto'   []     'auto'  nMesh0  nPatch0 }];
-inpForm.size   = [inpForm.size   {[1 -3]   [1 -4] [1 -5]  [1 1]   [1 1]   }];
-inpForm.soft   = [inpForm.soft   {false    true  false   false   false   }];
+inpForm.fname  = [inpForm.fname  {'radius' 'mode' 'color' 'nmesh' 'npatch' 'linewidth0' }];
+inpForm.defval = [inpForm.defval {'auto'   []     'auto'  nMesh0  nPatch0  0.5          }];
+inpForm.size   = [inpForm.size   {[1 -3]   [1 -4] [1 -5]  [1 1]   [1 1]    [1 1]        }];
+inpForm.soft   = [inpForm.soft   {false    true  false   false   false    false         }];
 
 inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'rangeunit' 'tooltip' 'radius'}];
 inpForm.defval = [inpForm.defval {[]       []    'lu'        true      'auto'  }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]      [1 1]     [1 -8]  }];
 inpForm.soft   = [inpForm.soft   {true     true  false       false     false   }];
 
-inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'arrow' 'ang' 'lHead' 'radius1'}];
+inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'arrow' 'ang' 'lHead' 'radius2'}];
 inpForm.defval = [inpForm.defval {[0;0;0] true      []      30    0.5     0.3      }];
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]   [1 1] [1 1]   [1 1]    }];
 inpForm.soft   = [inpForm.soft   {false   false     true    false false   false    }];
@@ -180,15 +191,17 @@ coupling.atom1  = SS.all(4,:);
 coupling.atom2  = SS.all(5,:);
 coupling.matidx = SS.all(15,:);
 coupling.idx    = SS.all(16,:);
-coupling.mat    = reshape(SS.all(6:14,:),3,3,[]);
-% DM interaction
-coupling.DM     = (coupling.mat-permute(coupling.mat,[2 1 3]))/2;
-% keep symmetric part of the interactions
-coupling.mat    = (coupling.mat+permute(coupling.mat,[2 1 3]))/2;
-coupling.DM     = cat(2,coupling.DM(2,3,:),coupling.DM(3,1,:),coupling.DM(1,2,:));
 
-% are there DM vectors
-isDM = any(coupling.DM(:));
+% matrix values
+mat   = reshape(SS.all(6:14,:),3,3,[]);
+% DM interaction
+matDM = (mat-permute(mat,[2 1 3]))/2;
+% keep symmetric part of the interactions
+matSym = (mat+permute(mat,[2 1 3]))/2;
+matDM  = permute(cat(2,matDM(2,3,:),matDM(3,1,:),matDM(1,2,:)),[2 3 1]);
+
+% are there non-zero DM vectors
+isDM = any(matDM(:));
 
 % select bond type to plot
 if isempty(param.mode)
@@ -222,6 +235,10 @@ nCell = size(pos,2);
 % generate matrix indices
 matidx = repmat(coupling.matidx,[nCell 1]);
 
+% generate matrix values
+matSym = reshape(repmat(permute(matSym,[1 2 4 3]),[1 1 nCell 1]),3,3,[]);
+matDM  = reshape(repmat(permute(matDM,[1 3 2]),[1 nCell 1]),3,[]);
+
 pos1  = reshape(pos1,3,[]);
 pos2  = reshape(pos2,3,[]);
 
@@ -249,6 +266,8 @@ end
 pos1   = pos1(:,pIdx);
 pos2   = pos2(:,pIdx);
 matidx = matidx(pIdx);
+matSym = matSym(:,:,pIdx);
+matDM  = matDM(:,pIdx);
 
 % shift positions
 pos1 = bsxfun(@plus,pos1,param.shift);
@@ -261,8 +280,9 @@ else
     color = swplot.color(param.color);
 end
 
-% save matrix values into data
-matDat = mat2cell(obj.matrix.mat(:,:,matidx),3,3,ones(1,numel(matidx)));
+% save original matrix values into data
+mat0   = obj.matrix.mat(:,:,matidx);
+matDat = mat2cell(mat0,3,3,ones(1,numel(matidx)));
 
 % legend label
 lLabel = obj.matrix.label(matidx);
@@ -275,17 +295,20 @@ switch param.mode
         type0 = 'arrow';
         % shorten the bonds
         % radius
-        if strcmp(param.radius,'auto')
-            radius = sw_atomdata(obj.unit_cell.label,'radius');
-            aidx1 = repmat(mAtom.idx(1,coupling.atom1),[nCell 1]);
-            aidx1 = aidx1(pIdx);
-            aidx2 = repmat(mAtom.idx(1,coupling.atom2),[nCell 1]);
-            aidx2 = aidx2(pIdx);
-            rad1 = radius(aidx1)*param.radius1;
-            rad2 = radius(aidx2)*param.radius1;
-        else
-            rad1 = param.radius1;
-            rad2 = param.radius1;
+        switch param.radius
+            case 'auto'
+                radius = sw_atomdata(obj.unit_cell.label,'radius');
+                aidx1 = repmat(mAtom.idx(1,coupling.atom1),[nCell 1]);
+                aidx1 = aidx1(pIdx);
+                aidx2 = repmat(mAtom.idx(1,coupling.atom2),[nCell 1]);
+                aidx2 = aidx2(pIdx);
+                rad1 = radius(aidx1)*param.radius2;
+                rad2 = radius(aidx2)*param.radius2;
+            case 'fix'
+                rad1 = param.radius2;
+                rad2 = param.radius2;
+            otherwise
+                error('plotmag:WrongInput','The given radius string is invalid!');
         end
         % shorten
         dpos = pos2-pos1;
@@ -293,9 +316,14 @@ switch param.mode
         dposxyz = BV*dpos;
         lxyz = sqrt(sum(dposxyz.^2,1));
         
-        pos1 = pos1 + bsxfun(@times,rad1./lxyz,dpos);
-        pos2 = pos2 - bsxfun(@times,rad2./lxyz,dpos);
-        
+        pos1s = pos1 + bsxfun(@times,rad1./lxyz,dpos);
+        pos2s = pos2 - bsxfun(@times,rad2./lxyz,dpos);
+    case 'line'
+        type0 = 'line';
+        % change linestyle based on the matrix label
+        % 1 for continuous line
+        % 2 for dashed line
+        lineStyle0 = (cellfun(@(C)C(end),lLabel)=='-')+1;
     case '--'
         type0 = 'line';
         lineStyle0 = '--';
@@ -304,13 +332,41 @@ switch param.mode
     otherwise
         error('plotbond:WrongInput','The given mode string is illegal!')
 end
+    
+switch param.linewidth
+    case 'fix'
+        lineWidth = param.linewidth0;
+    case 'auto'
+        absmat = permute(sumn(abs(mat),[1 2]),[1 3 2]);
+        lineWidth = absmat/max(absmat)*param.linewidth0;
+    otherwise
+        error('plotbond:WrongInput','The given lineStyle string is illegal!')
+end
 
 % plot bond vectors
-swplot.plot('type',type0,'name','bond','position',cat(3,pos1,pos2),'text','',...
+swplot.plot('type',type0,'name','bond','position',cat(3,pos1s,pos2s),'text','',...
     'figure',hFigure,'legend',lLabel,'color',color,'R',param.radius0,...
     'tooltip',false,'replace',param.replace,'lineStyle',lineStyle0,...
     'data',matDat,'label',{},'nmesh',param.nmesh,'ang',param.ang,...
-    'lineWidth',param.linewidth,'lHead',param.lHead);
+    'lineWidth',lineWidth,'lHead',param.lHead);
+
+% plot ellipse/arrow on top of bond
+switch param.mode2
+    case 'none'
+        % do nothing
+    case 'antisym'
+        % plot arrows
+        % TODO
+        swplot.plot('type','arrow','name','bond_DM','position',cat(3,(pos1+pos2)/2,(pos1+pos2)/2+1),'text','',...
+            'figure',hFigure,'legend',lLabel,'color',color,'R',param.radius0,...
+            'tooltip',false,'replace',param.replace,'lineStyle',lineStyle0,...
+            'data',matDat,'label',{},'nmesh',param.nmesh,'ang',param.ang,...
+            'lineWidth',lineWidth,'lHead',param.lHead);
+        
+    case 'sym'
+    otherwise
+        error('plotbond:WrongInput','The given mode2 string is invalid!');
+end
 
 % legend data
 lDat = getappdata(hFigure,'legend');

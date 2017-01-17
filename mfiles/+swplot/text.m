@@ -1,7 +1,7 @@
 function hText = text(varargin)
 % draws a text at a point in 3D
 %
-% hText = SWPLOT.TEXT(r, string)
+% hText = SWPLOT.TEXT(r, string, {fontSize})
 %
 % hText = SWPLOT.TEXT(handle,...)
 %
@@ -14,6 +14,8 @@ function hText = text(varargin)
 %           matrix with dimensions [3 nText] for multiple text.
 % string    String contains the text or cell of strings to plot multiple
 %           text.
+% fontSize  Font size in pt, default value is stored in
+%           swpref.getpref('fontsize')
 %
 % See also TEXT.
 %
@@ -23,15 +25,23 @@ if nargin == 0
     return
 end
 
+fontSize = [];
+
 if numel(varargin{1}) == 1
     % first input figure handle
     hAxis   = varargin{1};
     r       = varargin{2};
     string  = varargin{3};
+    if nargin>3
+        fontSize = varargin{4};
+    end
 else
     hAxis   = gca;
     r       = varargin{1};
     string  = varargin{2};
+    if nargin>3
+        fontSize = varargin{3};
+    end
 end
 
 if numel(r) == 3
@@ -44,7 +54,9 @@ if ~iscell(string)
     string = {string};
 end
 
-fontSize = swpref.getpref('fontsize',[]);
+if isempty(fontSize)
+    fontSize = swpref.getpref('fontsize',[]);
+end
 
 hText = gobjects(1,nText);
 

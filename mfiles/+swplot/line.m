@@ -1,7 +1,7 @@
 function hPatch = line(varargin)
 % draws a 3D line using patch
 %
-% hLine = SWPLOT.LINE(rStart, rEnd, lineStyle)
+% hLine = SWPLOT.LINE(rStart, rEnd, {lineStyle}, {lineWidth},{multiPatch})
 %
 % hLine = SWPLOT.LINE(handle,...)
 %
@@ -21,6 +21,10 @@ function hPatch = line(varargin)
 %           a matrix with dimensions [3 nLineSegment] to plot multiple line
 %           segments.
 % lineStyle Line style, default is '-' for continuous line.
+% lineWidth Line with in pt, default is 0.5.
+% mPatch    If true, a separate patch object will be created per line
+%           segment. Default is false, a single patch object will store all
+%           line segments.
 %
 % See also LINE.
 %
@@ -32,6 +36,7 @@ end
 
 lineStyle = '-';
 lineWidth = 0.5;
+mPatch    = false;
 
 if numel(varargin{1}) == 1
     % first input figure/patch handle
@@ -44,24 +49,27 @@ if numel(varargin{1}) == 1
     end
     rStart  = varargin{2};
     rEnd    = varargin{3};
-    if nargin > 3
-        lineStyle = varargin{4};
-    end
-    if nargin > 4
-        lineWidth = varargin{5};
-    end
+    nArgExt = nargin-3;
+    argExt  = {varargin{4:end}};
+    
 else
     hAxis   = gca;
     hPatch  = [];
     rStart  = varargin{1};
     rEnd    = varargin{2};
-    if nargin > 2
-        lineStyle = varargin{3};
-    end
-    if nargin > 3
-        lineWidth = varargin{4};
-    end
+    nArgExt = nargin-2;
+    argExt  = {varargin{3:end}};
+    
+end
 
+if nArgExt > 0
+    lineStyle = argExt{1};
+end
+if nArgExt > 1
+    lineWidth = argExt{2};
+end
+if nArgExt > 2
+    mPatch = argExt{3};
 end
 
 if numel(rStart) == 3
@@ -85,7 +93,12 @@ F = [2*L-1 2*L];
 % black color
 C = repmat([0 0 0],[size(V,1) 1]);
 
-if strcmp(get(hAxis,'Tag'),'swaxis') && strcmp(lineStyle,'-') && lineWidth == 0.5
+if isnumeric(lineStyle) || numel(lineWidth)>1
+    % multiple patch forced
+    mPatch = true;
+end
+
+if strcmp(get(hAxis,'Tag'),'swaxis') && ~mPatch && strcmp(lineStyle,'-') && lineWidth == 0.5
     % make sure we are on the plot axis of an swobject
     % add object to the existing edge patch, but only for continuous lines
     hFigure = get(hAxis,'Parent');
@@ -94,9 +107,31 @@ end
 
 if isempty(hPatch)
     % create new patch
-    hPatch = patch('Parent',hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
+    if mPatch
+        % prepare lineStyle
+        if ischar(lineStyle)
+            lineStyle = numel(lineStyle);
+        end
+        if numel(lineStyle) == 1
+            lineStyle = repmat(lineStyle,[1 nObject]);
+        end
+        if numel(lineWidth) == 1
+            lineWidth = repmat(lineWidth,[1 nObject]);
+        end
+
+        hPatch = gobjects(1,nObject);
+        for ii = 1:nObject
+            hPatch(ii) = patch('Parent',hAxis,'Vertices',V(2*ii+[-1 0],:),...
+                'Faces',[1 2],'FaceLighting','none',...
+                'EdgeColor',C(ii,:),'FaceColor','none','Tag','line',...
+                'LineStyle',repmat('-',[1 lineStyle(ii)]),'LineWidth',lineWidth(ii));
+        end
+
+    else
+    hPatch = patch('Parent',hAxis,'Vertices',V,'Faces',F,'FaceLighting','none',...
         'EdgeColor','flat','FaceColor','none','Tag','line',...
         'FaceVertexCData',C,'LineStyle',lineStyle,'LineWidth',lineWidth);
+    end
 else
     % add to existing patch
     V0 = get(hPatch,'Vertices');
@@ -107,7 +142,7 @@ else
     set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
 end
 
-if strcmp(get(hAxis,'Tag'),'swaxis')
+if strcmp(get(hAxis,'Tag'),'swaxis') && strcmp(lineStyle,'-') && lineWidth == 0.5 && ~mPatch
     % replicate the arrow handle to give the right number of added objects
     hPatch = repmat(hPatch,[1 nObject]);
 end

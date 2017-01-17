@@ -48,8 +48,11 @@ function varargout = plot(varargin)
 % T         Transformation matrix that transforms a unit sphere to the
 %           ellipse via: R' = T(:,:,i)*R
 %           Dimensions are [3 3 nObject].
-% lineStyle Line style, default value is '-' for continuous lines.
-% lineWidth Line width, default value is 0.5.
+% lineStyle Line style, default value is '-' for continuous lines. It can
+%           be also a vector with as many elements as many line segments.
+%           In this case 1 for continuous line, 2 for dashed line.
+% lineWidth Line width, default value is 0.5, can be a vector with nObject
+%           columns for different width per line segment.
 % nMesh     Resolution of the ellipse surface mesh. Integer number that is
 %           used to generate an icosahedron mesh with #mesh number of
 %           additional triangulation, default value is stored in
@@ -63,14 +66,17 @@ function varargout = plot(varargin)
 % data      Arbitrary data per object that will be stored in the swplot
 %           figure and can be retrieved. It is stored in a cell with
 %           nObject number of elements.
+% translate If true, all plot objects will be translated to the figure
+%           center. Default is true.
 %
 % See also SWPLOT.COLOR.
 %
 
 P0 = swpref.getpref('npatch',[]);
 M0 = swpref.getpref('nmesh',[]);
+fontSize0 = swpref.getpref('fontsize',[]);
 
-inpForm.fname  = {'type' 'name' 'text' 'position' 'label' 'legend' 'color' 'unit' 'figure' 'linestyle'};
+inpForm.fname  = {'type' 'name' 'text' 'position' 'label' 'legend' 'color' 'unit' 'figure' 'lineStyle'};
 inpForm.defval = {[]     []     ''     []         []      []       []      'lu'   []       '-'        };
 inpForm.size   = {[1 -8] [1 -1] [1 -2] [3 -3 -4]  [1 -5]  [1 1]    [-9 -6] [1 -7] [1 1]   [1 -13]     };
 inpForm.soft   = {false  true   true   false      true    true     true    false  true    false       };
@@ -80,10 +86,10 @@ inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []   
 inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] [1 -12] [1 1]    }];
 inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      false   false    }];
 
-inpForm.fname  = [inpForm.fname  {'data'    'replace' 'linewidth'}];
-inpForm.defval = [inpForm.defval {{}        false     0.5        }];
-inpForm.size   = [inpForm.size   {[-13 -14] [1 1]     [1 1]      }];
-inpForm.soft   = [inpForm.soft   {true      false     false      }];
+inpForm.fname  = [inpForm.fname  {'data'    'replace' 'lineWidth' 'fontSize' 'translate'}];
+inpForm.defval = [inpForm.defval {{}        false     0.5         fontSize0  true       }];
+inpForm.size   = [inpForm.size   {[-14 -15] [1 1]     [1 -16]     [1 1]      [1 1]      }];
+inpForm.soft   = [inpForm.soft   {true      false     false       false      false      }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -222,14 +228,14 @@ switch type
         % remove normal vectors (use nans)
         pos(:,:,2) = nan;
     case 'line'
-        handle = swplot.line(hAxis,xyz(:,:,1),xyz(:,:,2),param.linestyle,param.linewidth);
+        handle = swplot.line(hAxis,xyz(:,:,1),xyz(:,:,2),param.lineStyle,param.lineWidth,true);
     case 'text'
         textStr = param.text;
         if ~iscell(textStr)
             textStr = repmat({textStr},[1 nObject]);
         end
         pos(:,:,2) = nan;
-        handle = swplot.text(hAxis,xyz,textStr);
+        handle = swplot.text(hAxis,xyz,textStr,param.fontSize);
 end
 
 handle = num2cell(handle);
@@ -302,7 +308,7 @@ else
     else
         prop0 = 'Color';
     end
-    
+        
     if nCol == 1
         % same color for every object
         set([sObject(:).handle],prop0,color);
@@ -387,6 +393,8 @@ end
 
 % final corrections to make figure nice
 swplot.zoom
-swplot.translate
+if param.translate
+    swplot.translate
+end
 
 end

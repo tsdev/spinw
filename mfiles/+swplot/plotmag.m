@@ -58,6 +58,10 @@ function varargout = plotmag(varargin)
 % shift     Column vector with 3 elements, all vectors will be
 %           shifted by the given value. Default value is [0;0;0].
 % replace   Replace previous magnetic moment plot if true. Default is true.
+% translate If true, all plot objects will be translated to the figure
+%           center. Default is true.
+% zoom      If true, figure will be automatically zoomed to the ideal size.
+%           Default is true.
 %
 % Output:
 %
@@ -96,10 +100,10 @@ inpForm.defval = [inpForm.defval {[0;0;0] true      1        false      }];
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]    [1 1]      }];
 inpForm.soft   = [inpForm.soft   {false   false     false    false      }];
 
-inpForm.fname  = [inpForm.fname  {'lHead' 'alpha' 'centered'}];
-inpForm.defval = [inpForm.defval {0.5      0.07   false     }];
-inpForm.size   = [inpForm.size   {[1 1]   [1 1]   [1 1]     }];
-inpForm.soft   = [inpForm.soft   {false   false   false     }];
+inpForm.fname  = [inpForm.fname  {'lHead' 'alpha' 'centered' 'translate' 'zoom'}];
+inpForm.defval = [inpForm.defval {0.5      0.07   false      true         true }];
+inpForm.size   = [inpForm.size   {[1 1]   [1 1]   [1 1]      [1 1]        [1 1]}];
+inpForm.soft   = [inpForm.soft   {false   false   false      false        false}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -137,17 +141,10 @@ switch param.rangeunit
     case 'lu'
         rangelu = [floor(range(:,1)) ceil(range(:,2))];
     case 'xyz'
-        % calculate the height of the paralellepiped of a unit cell
-        hMax = 1./sqrt(sum(inv(BV').^2,2));
-        
-        % calculate the [111] position and find the cube that fits into the
-        % parallelepiped
-        hMax = min([sum(BV,2) hMax],[],2);
-        
-        % create range that includes the requested xyz box
-        rangelu = bsxfun(@rdivide,range,hMax);
+        % corners of the box
+        corners = BV\[range(1,[1 2 2 1 1 2 2 1]);range(2,[1 1 2 2 1 1 2 2]);range(3,[1 1 1 1 2 2 2 2])];
+        rangelu = [min(corners,[],2) max(corners,[],2)];
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
-        
     otherwise
         error('plotmag:WrongInput','The given rangeunit string is invalid!');
 end
@@ -167,8 +164,6 @@ mAtom    = obj.matom;
 mAtomExt = sw_extendlattice(nExtPlot,mAtom);
 
 pos = bsxfun(@plus,bsxfun(@times,mAtomExt.RRext,nExtPlot'),luOrigin');
-
-
 
 % select atom type to plot
 switch param.mode
@@ -244,39 +239,16 @@ mAtom.name = obj.unit_cell.label(mAtom.idx);
 lLabel = repmat(mAtom.name,[nCell 1]);
 lLabel = lLabel(pIdx);
 
-% % legend data
-% lDat = getappdata(hFigure,'legend');
-% 
-% if param.replace
-%     % remove old legend entries
-%     lIdx = ~ismember(lDat.name,'mag');
-%     lDat.color = lDat.color(:,lIdx);
-%     lDat.type  = lDat.type(:,lIdx);
-%     lDat.name  = lDat.name(:,lIdx);
-%     lDat.text  = lDat.text(:,lIdx);
-%     % redraw legend
-%     swplot.legend('refresh',hFigure);
-% end
-% 
-% if param.legend
-%     % append color
-%     lDat.color = [lDat.color double(obj.unit_cell.color)/255];
-%     % append type
-%     lDat.type = [lDat.type 3*ones(1,obj.natom)];
-%     % append name
-%     lDat.name = [lDat.name repmat({'atom'},1,obj.natom)];
-%     % append text
-%     lDat.text = [lDat.text obj.unit_cell.label];
-%     
-%     setappdata(hFigure,'legend',lDat);
-%     swplot.legend('on',hFigure);
-% end
 
 % plot moment vectors
 swplot.plot('type','arrow','name','mag','position',vpos,'text','',...
     'figure',hFigure,'legend',false,'color',color,'R',param.radius0,...
     'fontsize',param.fontsize,'tooltip',false,'replace',param.replace,...
-    'data',MDat,'label',lLabel,'nmesh',param.nmesh,'ang',param.ang,'lHead',param.lHead);
+    'data',MDat,'label',lLabel,'nmesh',param.nmesh,'ang',param.ang,...
+    'lHead',param.lHead,'translate',param.translate,'zoom',param.zoom);
+
+% save range
+setappdata(hFigure,'range',param.range);
 
 if nargout > 0
     varargout{1} = hFigure;

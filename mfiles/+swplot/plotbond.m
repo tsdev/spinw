@@ -98,6 +98,10 @@ function varargout = plotbond(varargin)
 % shift     Column vector with 3 elements, all atomic positions will be
 %           shifted by the given value. Default value is [0;0;0].
 % replace   Replace previous atom plot if true. Default is true.
+% translate If true, all plot objects will be translated to the figure
+%           center. Default is true.
+% zoom      If true, figure will be automatically zoomed to the ideal size.
+%           Default is true.
 %
 % Output:
 %
@@ -136,10 +140,10 @@ inpForm.defval = [inpForm.defval {[0;0;0] true      []      30    0.3     0.3   
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]   [1 1] [1 1]   [1 1]     [1 1]     }];
 inpForm.soft   = [inpForm.soft   {false   false     true    false false   false     false     }];
 
-inpForm.fname  = [inpForm.fname  {'radius1' 'showWarn'}];
-inpForm.defval = [inpForm.defval {0.08       true     }];
-inpForm.size   = [inpForm.size   {[1 1]      [1 1]    }];
-inpForm.soft   = [inpForm.soft   {false      false    }];
+inpForm.fname  = [inpForm.fname  {'radius1' 'translate' 'zoom'}];
+inpForm.defval = [inpForm.defval {0.08      true         true }];
+inpForm.size   = [inpForm.size   {[1 1]     [1 1]        [1 1]}];
+inpForm.soft   = [inpForm.soft   {false     false        false}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -178,17 +182,10 @@ switch param.rangeunit
     case 'lu'
         rangelu = [floor(range(:,1)) ceil(range(:,2))];
     case 'xyz'
-        % calculate the height of the paralellepiped of a unit cell
-        hMax = 1./sqrt(sum(inv(BV').^2,2));
-        
-        % calculate the [111] position and find the cube that fits into the
-        % parallelepiped
-        hMax = min([sum(BV,2) hMax],[],2);
-        
-        % create range that includes the requested xyz box
-        rangelu = bsxfun(@rdivide,range,hMax);
+        % corners of the box
+        corners = BV\[range(1,[1 2 2 1 1 2 2 1]);range(2,[1 1 2 2 1 1 2 2]);range(3,[1 1 1 1 2 2 2 2])];
+        rangelu = [min(corners,[],2) max(corners,[],2)];
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
-        
     otherwise
         error('plotbond:WrongInput','The given rangeunit string is invalid!');
 end
@@ -220,7 +217,12 @@ matDM  = permute(cat(2,matDM(2,3,:),matDM(3,1,:),matDM(1,2,:)),[2 3 1]);
 
 % are there non-zero DM vectors
 isDM  = any(matDM(:));
-isSym = any(matSym(:));
+
+matSym0 = matSym;
+matSym0(1,1,:) = 0;
+matSym0(2,2,:) = matSym0(2,2,:)-matSym(1,1,:);
+matSym0(3,3,:) = matSym0(3,3,:)-matSym(1,1,:);
+isSym = any(matSym0(:));
 
 % select bond type to plot
 if isempty(param.mode)
@@ -322,8 +324,13 @@ lLabel = obj.matrix.label(matidx);
 switch param.mode2
     case 'none'
         % do nothing, just remove any matrix
-        swplot.plot('type','arrow','name','bond_mat','position',zeros(3,0,2),...
-            'figure',hFigure,'tooltip',false,'replace',param.replace);
+        if param.replace
+            % find objects to be deleted
+            sObj = swplot.findobj(hFigure,'name','bond_mat');
+            % delete them!
+            swplot.delete([sObj(:).number]);
+        end
+
 
     case 'antisym'
         % plot arrows
@@ -341,8 +348,8 @@ switch param.mode2
         swplot.plot('type','arrow','name','bond_mat','position',cat(3,posDM,posDM+vecDM),'text','',...
             'figure',hFigure,'legend',lLabel,'color',colDM,'R',param.radius1,...
             'tooltip',false,'replace',param.replace,'npatch',param.npatch,...
-            'data',{},'label',{},'nmesh',param.nmesh,'ang',param.ang,...
-            'lhead',param.lhead);
+            'data',{},'label',{},'ang',param.ang,...
+            'lhead',param.lhead,'translate',param.translate,'zoom',param.zoom);
         
     case 'sym'
         % plot ellipsoid
@@ -370,8 +377,9 @@ switch param.mode2
         
         swplot.plot('type','ellipsoid','name','bond_mat','position',posSym,'text','',...
             'figure',hFigure,'legend',lLabel,'color',colSym,'T',V,...
-            'tooltip',false,'replace',param.replace,'npatch',param.npatch,...
-            'data',{},'label',{},'nmesh',param.nmesh);
+            'tooltip',false,'replace',param.replace,'nmesh',param.nmesh,...
+            'data',{},'label',{},'nmesh',param.nmesh,'translate',param.translate,...
+            'zoom',param.zoom);
 
     otherwise
         error('plotbond:WrongInput','The given mode2 string is invalid!');
@@ -441,7 +449,8 @@ if ~isempty(type0)
         'figure',hFigure,'legend',[],'color',color,'R',param.radius0,...
         'tooltip',false,'replace',param.replace,'lineStyle',lineStyle0,...
         'data',matDat,'label',lLabel,'nmesh',param.nmesh,'ang',param.ang,...
-        'lineWidth',lineWidth,'lhead',param.lhead);
+        'lineWidth',lineWidth,'lhead',param.lhead,'translate',param.translate,...
+        'zoom',param.zoom,'npatch',param.npatch);
 end
 
 % legend data
@@ -472,6 +481,9 @@ if param.legend
     setappdata(hFigure,'legend',lDat);
     swplot.legend('on',hFigure);
 end
+
+% save range
+setappdata(hFigure,'range',param.range);
 
 if nargout > 0
     varargout{1} = hFigure;

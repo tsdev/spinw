@@ -23,15 +23,31 @@ function varargout = plotcell(varargin)
 %           default value is black ('auto').
 % lineStyle Line style of the cell, default is '--'.
 % lineWdith Line width of the cell, default is 1.
+% translate If true, all plot objects will be translated to the figure
+%           center. Default is true.
+% zoom      If true, figure will be automatically zoomed to the ideal size.
+%           Default is true.
 %
 
 % default values
 range0    = [0 1;0 1;0 1];
+nMesh0    = swpref.getpref('nmesh',[]);
+nPatch0   = swpref.getpref('npatch',[]);
 
 inpForm.fname  = {'range' 'mode'   'figure' 'color' 'linestyle' 'linewidth'};
 inpForm.defval = {range0  'single' []       'auto'  '--'         1         };
 inpForm.size   = {[-1 -2] [1 -3]   [1 1]    [1 -4]  [1 -5]       [1 1]     };
 inpForm.soft   = {false   false    true     false   false        false     };
+
+inpForm.fname  = [inpForm.fname  {'translate' 'zoom' 'tooltip' 'replace'}];
+inpForm.defval = [inpForm.defval { true         true true      true     }];
+inpForm.size   = [inpForm.size   {[1 1]        [1 1] [1 1]     [1 1]    }];
+inpForm.soft   = [inpForm.soft   {false        false false     false    }];
+
+inpForm.fname  = [inpForm.fname  {'npatch' 'nmesh' 'rangeunit'}];
+inpForm.defval = [inpForm.defval {nPatch0  nMesh0  'lu'       }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 -6]     }];
+inpForm.soft   = [inpForm.soft   {false    false   false      }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -64,6 +80,7 @@ switch param.mode
 end
 
 % generate the unit cells
+% TODO rangeunit
 Rz = cell(1,3);
 [Rz{:}] = ndgrid(range(1,1):range(1,2),range(2,1):range(2,2),range(3,:));
 Rz = reshape(permute(cat(4,Rz{:}),[4 1 2 3]),3,[],2);
@@ -79,10 +96,18 @@ R = [Rx Ry Rz];
 % plot the cells already in base units, so no conversion needed
 swplot.plot('type','line','position',R,'figure',hFigure,...
     'linestyle',param.linestyle,'color',param.color,'name','cell',...
-    'legend',false,'tooltip',false,'translate',true);
+    'legend',false,'tooltip',false,'translate',param.translate,...
+    'zoom',param.zoom,'replace',param.replace);
+
+% save range
+setappdata(hFigure,'range',param.range);
 
 if nargout>0
     varargout{1} = hFigure;
+end
+
+if param.tooltip
+    swplot.tooltip('on',hFigure);
 end
 
 end

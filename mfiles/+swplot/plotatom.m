@@ -53,6 +53,10 @@ function varargout = plotatom(varargin)
 % shift     Column vector with 3 elements, all atomic positions will be
 %           shifted by the given value. Default value is [0;0;0].
 % replace   Replace previous atom plot if true. Default is true.
+% translate If true, all plot objects will be translated to the figure
+%           center. Default is true.
+% zoom      If true, figure will be automatically zoomed to the ideal size.
+%           Default is true.
 %
 % Output:
 %
@@ -86,10 +90,10 @@ inpForm.defval = [inpForm.defval {[]       []    'lu'        true     }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]      [1 1]    }];
 inpForm.soft   = [inpForm.soft   {true     true  false       false    }];
 
-inpForm.fname  = [inpForm.fname  {'shift' 'replace' }];
-inpForm.defval = [inpForm.defval {[0;0;0] true      }];
-inpForm.size   = [inpForm.size   {[3 1]   [1 1]     }];
-inpForm.soft   = [inpForm.soft   {false   false     }];
+inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'translate' 'zoom'}];
+inpForm.defval = [inpForm.defval {[0;0;0] true      true         true }];
+inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]        [1 1]}];
+inpForm.soft   = [inpForm.soft   {false   false     false        false}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -133,15 +137,9 @@ switch param.rangeunit
     case 'lu'
         rangelu = [floor(range(:,1)) ceil(range(:,2))];
     case 'xyz'
-        % calculate the height of the paralellepiped of a unit cell
-        hMax = 1./sqrt(sum(inv(BV').^2,2));
-        
-        % calculate the [111] position and find the cube that fits into the
-        % parallelepiped
-        hMax = min([sum(BV,2) hMax],[],2);
-        
-        % create range that includes the requested xyz box
-        rangelu = bsxfun(@rdivide,range,hMax);
+        % corners of the box
+        corners = BV\[range(1,[1 2 2 1 1 2 2 1]);range(2,[1 1 2 2 1 1 2 2]);range(3,[1 1 1 1 2 2 2 2])];
+        rangelu = [min(corners,[],2) max(corners,[],2)];
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
         
     otherwise
@@ -200,6 +198,7 @@ end
 
 pos  = pos(:,pIdx);
 aIdx = aIdx(pIdx);
+aIdx = aIdx(:)';
 
 % color
 if strcmp(param.color,'auto')
@@ -243,7 +242,7 @@ if param.label
     text = text(pIdx);
     
     swplot.plot('type','text','name','atom_label','position',pos+dtext,...
-        'text',text,'figure',hFigure,'legend',false,...
+        'text',text,'figure',hFigure,'legend',false,'translate',false,'zoom',false,...
         'fontsize',param.fontsize,'tooltip',false,'replace',param.replace);
 end
 
@@ -283,11 +282,15 @@ end
 % plot the atoms, text generated automatically
 swplot.plot('type','ellipsoid','name','atom','position',pos,'R',radius,...
     'figure',hFigure,'color',color,'text','','legend',false,'label',lLabel,...
-    'nmesh',param.nmesh,'tooltip',false,'data',posDat,'replace',param.replace);
+    'nmesh',param.nmesh,'tooltip',false,'data',posDat,'replace',param.replace,...
+    'translate',param.translate,'zoom',param.zoom);
 
 if nargout > 0
     varargout{1} = hFigure;
 end
+
+% save range
+setappdata(hFigure,'range',param.range);
 
 if param.tooltip
     swplot.tooltip('on',hFigure);

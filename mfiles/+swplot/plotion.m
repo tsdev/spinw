@@ -23,70 +23,24 @@ function varargout = plotion(varargin)
 %               'lu'        Lattice units (default).
 %               'xyz'       Cartesian coordinate system in Angstrom units.
 % mode      String, defines how the bond is plotted
-%               'cylinder'  Bonds are plotted as cylinders (default).
-%               'arrow'     Bonds are plotted as arrows (default if DM
-%                           interactions are non-zero).
-%               'line'      Bonds are plotted as lines.
-%               'empty'     No bonds are plotted.
-% mode2     String, defines what is plotted on the bond:
-%               'none'      Don't plot anything on the bond (default).
-%               'antisym'   Plot the antisymmetric part (DM vector) of the 
-%                           exchange at the middle point of the bond
-%                           (default if DM vectors are non-zero).
-%               'sym'       Plot the symmetric exchange at the middle
-%                           of the bond as an ellipsoid.
-% linewidth Defines the bond radius if it is drawn by a line:
-%               'fix'       All line will have a width given by linewidth0.
-%                           Default value.
-%               'lin'       Lines will have a width that is depending 
-%                           linearly on the exchange matrix on the bond:
-%                                   Width ~ sum(abs(J)), 
-%                           where the largest line width on
-%                           the strongest bond is given by linewidth0.
-%               'pow'       Same as 'auto', but the line width is a
-%                           power function of J: W~(sum(abs(J))).^widthpow
-% widthpow  Defines the power that determines the linewidth if 'linewidth'
-%           option is 'pow'.
-% linewidth0 Line width in pt used to draw the bond if 'mode' is 'line'. 
-%           Default value is 0.5.
-% lineStyle Determines the line style when bonds plotted as lines. Possible
-%           values:
-%               'auto'      Bonds are plotted as continuous/dashed lines
-%                           depending on the label of the corresponding
-%                           matrix (dashed line is used if the matrix
-%                           label ends with '-', otherwise continuous).
-%                           Default value.
-%               '--'        Bonds are plotted as dashed lines.
-%               '-'         Bonds are plotted as lines.
-% zero      If true, bonds with zero exchange matrix will be plotted as
-%           well. Default is true.
-% radius0   Radius of the cylinder, default value is 0.05.
-% radius1   Radius of the DM vector and the minimum radius of the 
-%           ellipsoid, default value is 0.08.
-% radius2   Constant atom radius, default value is 0.3 Angstrom.
-% radius    Defines the atom radius (important for arrow bonds, to avoid
-%           overlap with the spheres of the atoms):
-%               'fix'       Sets the radius of all atoms to the value
-%                           given by radius2.
-%               'auto'      use radius data from database based on the atom
-%                           label multiplied by radius2 value.
-% ang       Angle of the arrow head in degree units, default is 30 degree.
-% lHead     Length of the arrow head, default value is 0.3.
-% scale     Scaling factor for the length of the DM vector or the size of
-%           the ellipsoid relative to the shortest bond length. Default 
-%           value is 1/3.
+%               'aniso'     Ellipsoid is plotted for single ion anisotropy.
+%               'g'     	Ellipsoid is drawn for g-tensor.
+% scale     Scaling factor for the size of the ellipsoid relative to the 
+%           shortest bond length. Default value is 1/3.
+% alpha     Transparency (alpha value) of the ellipsoid, default value is 
+%           0.3.
+% radius1   Minimum radius of the ellipsoid, default value is 0.08.
+% lineWidth Line width in pt of the main circles surrounding the ellipsoid, 
+%           if zero no circles are drawn. Default is 0.5.
 % figure    Handle of the swplot figure. Default is the selected figure.
 % legend    Whether to add the plot to the legend, default is true.
-% color     Color of the bonds:
-%               'auto'      All bonds get the stored color.
-%               'colorname' All bonds will have the same given color.
+% color     Color of the ellipsoid:
+%               'auto'      All ellipsoid gets the color of the ion.
+%               'colorname' All ellipsoid will have the same given color.
 %               [R G B]     RGB code of the color that fix the color of all
-%                           bonds.
-% color2    Color of the ellipse or DM vector on the bond:
-%               'auto'      All object get the color of the bond.
-%               'colorname' All object will have the same given color.
-%               [R G B]     RGB code of the color that fix the color of all
-%                           object.
+%                           ellipsoid.
+% color2    Color of the main circles, default is [0 0 0] for black. Can be
+%           either a row vector of RGB code or string of a color name.
 % nMesh     Resolution of the ellipse surface mesh. Integer number that is
 %           used to generate an icosahedron mesh with #mesh number of
 %           additional triangulation, default value is stored in
@@ -116,30 +70,25 @@ nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
 range0    = [0 1;0 1;0 1];
 
-inpForm.fname  = {'range' 'legend' 'label' 'zero' 'scale' 'radius0' 'mode2' 'linewidth'};
-inpForm.defval = {range0  true     true    true   1/3     0.05      []      'fix'      };
-inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]  [1 1]   [1 1]     [1 -7]  [1 3]      };
-inpForm.soft   = {false   false    false   false  false   false     true    false      };
+inpForm.fname  = {'range' 'legend' 'label' 'scale' 'linewidth' 'alpha'};
+inpForm.defval = {range0  true     true    1/3     'fix'       0.3    };
+inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 3]       [1 1]  };
+inpForm.soft   = {false   false    false   false   false       false  };
 
-inpForm.fname  = [inpForm.fname  {'radius' 'mode' 'color' 'nmesh' 'npatch' 'linewidth0' }];
-inpForm.defval = [inpForm.defval {'auto'   []     'auto'  nMesh0  nPatch0  0.5          }];
-inpForm.size   = [inpForm.size   {[1 -3]   [1 -4] [1 -5]  [1 1]   [1 1]    [1 1]        }];
-inpForm.soft   = [inpForm.soft   {false    true  false   false   false    false         }];
+inpForm.fname  = [inpForm.fname  {'mode' 'color' 'nmesh' 'npatch'}];
+inpForm.defval = [inpForm.defval {[]     'auto'  nMesh0  nPatch0 }];
+inpForm.size   = [inpForm.size   {[1 -4] [1 -5]  [1 1]   [1 1]   }];
+inpForm.soft   = [inpForm.soft   {true  false   false   false    }];
 
-inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'rangeunit' 'tooltip' 'radius' 'linestyle' }];
-inpForm.defval = [inpForm.defval {[]       []    'lu'        true      'auto'   'auto'      }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]      [1 1]     [1 -8]   [1 -10]     }];
-inpForm.soft   = [inpForm.soft   {true     true  false       false     false    false       }];
+inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'rangeunit' 'tooltip'}];
+inpForm.defval = [inpForm.defval {[]       []    'lu'        true     }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]      [1 1]    }];
+inpForm.soft   = [inpForm.soft   {true     true  false       false    }];
 
-inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'arrow' 'ang' 'lhead' 'radius2' 'widthpow'}];
-inpForm.defval = [inpForm.defval {[0;0;0] true      []      30    0.3     0.3       0.2       }];
-inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]   [1 1] [1 1]   [1 1]     [1 1]     }];
-inpForm.soft   = [inpForm.soft   {false   false     true    false false   false     false     }];
-
-inpForm.fname  = [inpForm.fname  {'radius1' }];
-inpForm.defval = [inpForm.defval {0.08      }];
-inpForm.size   = [inpForm.size   {[1 1]     }];
-inpForm.soft   = [inpForm.soft   {false     }];
+inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'radius1' }];
+inpForm.defval = [inpForm.defval {[0;0;0] true      0.08      }];
+inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]     }];
+inpForm.soft   = [inpForm.soft   {false   false     false     }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -158,12 +107,11 @@ else
     setappdata(hFigure,'base',obj.basisvector);
 end
 
-%lattice = obj.lattice;
 % the basis vectors in columns.
 BV = obj.basisvector;
 
 % set figure title
-set(hFigure,'Name', 'SpinW: Magnetic bonds');
+set(hFigure,'Name', 'SpinW: Single ion properties');
 
 % change range, if the number of unit cells are given
 if numel(param.range) == 3
@@ -178,17 +126,10 @@ switch param.rangeunit
     case 'lu'
         rangelu = [floor(range(:,1)) ceil(range(:,2))];
     case 'xyz'
-        % calculate the height of the paralellepiped of a unit cell
-        hMax = 1./sqrt(sum(inv(BV').^2,2));
-        
-        % calculate the [111] position and find the cube that fits into the
-        % parallelepiped
-        hMax = min([sum(BV,2) hMax],[],2);
-        
-        % create range that includes the requested xyz box
-        rangelu = bsxfun(@rdivide,range,hMax);
+        % corners of the box
+        corners = BV\[range(1,[1 2 2 1 1 2 2 1]);range(2,[1 1 2 2 1 1 2 2]);range(3,[1 1 1 1 2 2 2 2])];
+        rangelu = [min(corners,[],2) max(corners,[],2)];
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
-        
     otherwise
         error('plotion:WrongInput','The given rangeunit string is invalid!');
 end

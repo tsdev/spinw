@@ -60,8 +60,14 @@ function varargout = plot2(obj, varargin)
 % shift     Column vector with 3 elements, all objects will be shifted by
 %           the given value. Default value is [0;0;0].
 % replace   Replace previous plots if true. Default is true.
+% translate If true, all plot objects will be translated to the figure
+%           center. Default is true.
+% zoom      If true, figure will be automatically zoomed to the ideal size.
+%           Default is true.
 %
 
+% preparation
+fprintf0(obj.fileid,'Creating SpinW 3D figure... \n');
 
 if numel(varargin) == 1
     % handle input structures
@@ -84,11 +90,11 @@ end
 optName = lower(input(1:2:end));
 optVal  = input(2:2:end);
 
-% find global options that won't be calles
-inpForm.fname  = {'tooltip' 'figure'};
-inpForm.defval = {true      []      };
-inpForm.size   = {[1 1]     [1 1]   };
-inpForm.soft   = {false     true    };
+% find global options that won't be called
+inpForm.fname  = {'tooltip' 'figure' 'zoom' 'translate' 'replace'};
+inpForm.defval = {true      []       true   true        true     };
+inpForm.size   = {[1 1]     [1 1]    [1 1]  [1 1]       [1 1]    };
+inpForm.soft   = {false     true     false  false       false    };
 
 noName = inpForm.fname;
 selNoG = ismember(optName,noName);
@@ -108,11 +114,11 @@ else
 end
 
 % find global options:
-globalName = {'range' 'rangeunit' 'legend' 'fontsize' 'nmesh' 'npatch' 'shift' 'replace'};
+globalName = {'range' 'rangeunit' 'legend' 'fontsize' 'nmesh' 'npatch' 'shift'};
 selG = ismember(optName,globalName);
 % take care of global figure handle
-optNameG = [optName(selG) {'figure'}];
-optValG  = [optVal(selG) {hFigure}];
+optNameG = [optName(selG) {'figure' 'tooltip' 'zoom' 'translate' 'replace'}];
+optValG  = [optVal(selG)  {hFigure  false     false   false      false    }];
 % all global option
 varargG  = [optNameG;optValG];
 
@@ -181,6 +187,29 @@ vararg  = [optShort;optVal];
 
 warning('on','sw_readparam:UnreadInput')
 
+% remove objects with the same name if necessary
+if param.replace
+    % delete all object that is created by spinw.plot
+    % find objects to be deleted
+    name0 = {'base' 'base_label' 'atom' 'atom_label' 'bond' 'bond_mat' 'cell' 'mag'};
+    sObj = swplot.findobj(hFigure,'name',name0);
+    % delete them!
+    swplot.delete([sObj(:).number]);
+    
+    % remove old legend entries
+    lDat = getappdata(hFigure,'legend');
+    if ~isempty(lDat.name)
+        lIdx = ~ismember(lDat.name,{'atom' 'bond'});
+        lDat.color = lDat.color(:,lIdx);
+        lDat.type  = lDat.type(:,lIdx);
+        lDat.name  = lDat.name(:,lIdx);
+        lDat.text  = lDat.text(:,lIdx);
+        setappdata(hFigure,'legend',lDat);
+        % redraw legend
+        swplot.legend('refresh',hFigure);
+    end
+end
+
 % call plot functions
 for ii = 1:numel(plotFun)
     selArg = vararg(:,plotIdx(ii,:));
@@ -219,5 +248,28 @@ setappdata(hFigure,'range',paramG.range);
 if nargout > 0
     varargout{1} = hFigure;
 end
+
+if param.zoom
+    swplot.zoom('auto',hFigure);
+end
+
+if param.translate
+    swplot.translate('auto',hFigure);
+end
+
+if param.tooltip
+    swplot.tooltip('on',hFigure);
+end
+
+set(hFigure,'Name', 'SpinW plot()');
+drawnow
+
+% patch handles
+hPatch = [getappdata(hFigure,'facepatch') getappdata(hFigure,'edgepatch')];
+nFaces    = sum(cellfun(@(C)size(C,1),get(hPatch,'Faces')));
+nVertices = sum(cellfun(@(C)size(C,1),get(hPatch,'Vertices')));
+
+% ready
+fprintf0(obj.fileid,'%dk faces and %dk vertices are drawn.\nReady!\n',round(nFaces/1e3),round(nVertices/1e3));
 
 end

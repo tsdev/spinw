@@ -37,9 +37,10 @@ function varargout = plot(varargin)
 %           nObject]. Values are RGB triples with values between [0 255].
 %           Can be also string or cell of strings with the name of the
 %           colors, for details see swplot.color. Default is red.
-% unit      String determining the coordinate system, either 'lu' for
-%           lattice units where the lattice is defined by the stored
-%           basis,or 'xyz' for the original matlab units. Default is 'lu'.
+% unit      String that determines the coordinate system:
+%               'lu'    Lattice units are used where the lattice is defined
+%                       by the stored basis (default).
+%               'xyz'   Use the original matlab units.
 % figure    Handle of the swplot figure. Default is the selected figure.
 % R         Radius value of cylinder, sphere (if no 'T' is given) and
 %           arrow, default is 0.06.
@@ -68,6 +69,8 @@ function varargout = plot(varargin)
 %           nObject number of elements.
 % translate If true, all plot objects will be translated to the figure
 %           center. Default is true.
+% zoom      If true, figure will be automatically zoomed to the ideal size.
+%           Default is true.
 %
 % See also SWPLOT.COLOR.
 %
@@ -86,10 +89,10 @@ inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []   
 inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] [1 -12] [1 1]    }];
 inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      false   false    }];
 
-inpForm.fname  = [inpForm.fname  {'data'    'replace' 'lineWidth' 'fontSize' 'translate'}];
-inpForm.defval = [inpForm.defval {{}        false     0.5         fontSize0  true       }];
-inpForm.size   = [inpForm.size   {[-14 -15] [1 1]     [1 -16]     [1 1]      [1 1]      }];
-inpForm.soft   = [inpForm.soft   {true      false     false       false      false      }];
+inpForm.fname  = [inpForm.fname  {'data'    'replace' 'lineWidth' 'fontSize' 'translate' 'zoom' }];
+inpForm.defval = [inpForm.defval {{}        false     0.5         fontSize0  true        true   }];
+inpForm.size   = [inpForm.size   {[-14 -15] [1 1]     [1 -16]     [1 1]      [1 1]       [1 1]  }];
+inpForm.soft   = [inpForm.soft   {true      false     false       false      false       false  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -169,14 +172,19 @@ end
 % number of objects to plot
 nObject = size(pos,2);
 
-% chekc unit selector string
+% basis vectors
+BV = getappdata(hFigure,'base');
+
+% check unit selector string
+% pos will store coordinates in lu units
 switch lower(param.unit)
     case 'lu'
-        BV = getappdata(hFigure,'base');
         % multiply the coordinates with the basis vectors
         xyz = permute(sum(bsxfun(@times,permute(pos,[4 1 2 3]),BV),2),[1 3 4 2]);
     case 'xyz'
+        
         xyz = pos;
+        pos = permute(sum(bsxfun(@times,permute(pos,[4 1 2 3]),inv(BV)),2),[1 3 4 2]);
     otherwise
         error('plot:WrongInput','The selected coordinate system unit option does not exists!');
 end
@@ -392,9 +400,12 @@ if nargout > 0
 end
 
 % final corrections to make figure nice
-swplot.zoom
+if param.zoom
+    swplot.zoom('auto',hFigure);
+end
+
 if param.translate
-    swplot.translate
+    swplot.translate('auto',hFigure);
 end
 
 end

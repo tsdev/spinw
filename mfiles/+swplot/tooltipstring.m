@@ -60,7 +60,7 @@ switch sObject.name
                 % General matrix
                 string = [string 'General exchange matrix' newline 'Value:' newline mat2str(M, [7 3]) ' ' unitE];
         end
-    case {'abc' 'abc_text'}
+    case {'base' 'base_label'}
         BV = sObject.data;
         RL = 2*pi*inv(BV); %#ok<MINV>
         abc = sqrt(sum(BV.^2,1));

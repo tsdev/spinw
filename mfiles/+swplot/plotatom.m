@@ -261,6 +261,7 @@ if param.replace
     lDat.type  = lDat.type(:,lIdx);
     lDat.name  = lDat.name(:,lIdx);
     lDat.text  = lDat.text(:,lIdx);
+    setappdata(hFigure,'legend',lDat);
     % redraw legend
     swplot.legend('refresh',hFigure);
 end
@@ -280,7 +281,7 @@ if param.legend
 end
 
 % plot the atoms, text generated automatically
-swplot.plot('type','ellipsoid','name','atom','position',pos,'R',radius',...
+swplot.plot('type','ellipsoid','name','atom','position',pos,'R',radius,...
     'figure',hFigure,'color',color,'text','','legend',false,'label',lLabel,...
     'nmesh',param.nmesh,'tooltip',false,'data',posDat,'replace',param.replace);
 

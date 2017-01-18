@@ -179,7 +179,7 @@ setappdata(hFigure,'icon',icon);
 setappdata(hFigure,'base',eye(3));
 swplot.zoom('auto',hFigure);
 setappdata(hFigure,'tooltip',struct('handle',gobjects(0)));
-swplot.tooltip('off',hFigure);
+%swplot.tooltip('off',hFigure);
 
 % create empty object to store plot data
 fNames = {'handle' 'number' 'name' 'type' 'label' 'position' 'text' 'legend' 'data'};
@@ -268,17 +268,16 @@ set(hFigure,'Visible','on');
         
         % close the "Set Range" window if it is open
         if verLessThan('matlab','8.4.0')
-            sub1 = findobj('Tag',['setRange_' num2str(hFigure)]);
+            sub{1} = findobj('Tag',['setRange_' num2str(hFigure)]);
+            sub{2} = findobj('Tag',['tooltipfig_' num2str(hFigure)]);
         else
-            sub1 = findobj('Tag',['setRange_' num2str(hFigure.Number)]);
+            sub{1} = findobj('Tag',['setRange_' num2str(hFigure.Number)]);
+            sub{2} = findobj('Tag',['tooltipfig_' num2str(hFigure.Number)]);
         end
         
-        if ~isempty(sub1)
-            close(sub1);
-        end
+        sub = sub(cellfun(@(C)~isempty(C),sub));
+        close([sub{:}]);
         
-        % delete spinw object
-        %delete(getappdata(hFigure,'objects'));
         % delete figure
         delete(hFigure);
         
@@ -296,7 +295,7 @@ if isempty(getappdata(hFigure,'obj'))
     return
 end
 
-param     = getappdata(hFigure,'param');
+range     = getappdata(hFigure,'range');
 parentPos = get(hFigure,'Position');
 fWidth    = 195;
 fHeight   = 240;
@@ -429,7 +428,7 @@ handles.pushbutton_ok = uicontrol(handles.panel(1),...
 
 for ii=1:3
     for jj=1:2
-        set(handles.edit_range(ii,jj),'String',sprintf('%.3f',param.range(ii,jj)));
+        set(handles.edit_range(ii,jj),'String',sprintf('%.3f',range(ii,jj)));
     end
 end
 
@@ -449,20 +448,26 @@ setappdata(objMod,'handles',handles);
     function Callback_Range(~, ~, hFigure, objMod , isclose)
         
         param   = getappdata(hFigure,'param');
+        range   = getappdata(hFigure,'range');
         obj     = getappdata(hFigure,'obj');
         handles = getappdata(objMod,'handles');
         
         
         for iii=1:3
             for jjj=1:2
-                param.range(iii,jjj) = str2double(get(handles.edit_range(iii,jjj),'String'));
+                range(iii,jjj) = str2double(get(handles.edit_range(iii,jjj),'String'));
             end
         end
         
-        if all((param.range(:,1) - param.range(:,2)) < 0)
-            param.hFigure = hFigure;
-            plot(obj, param);
-            figure(objMod);
+        if all((range(:,1) - range(:,2)) < 0)
+            % remove range from parameter list
+            rIdx = find(ismember(param(1:2:end),'range'));
+            if numel(rIdx) > 0
+                param(2*rIdx(1) + [-1 0]) = [];
+            end
+
+            plot2(obj, param{:},'range',range);
+            %figure(objMod);
         end
         
         % Okay button closes the settings window

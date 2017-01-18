@@ -1,12 +1,12 @@
-function varargout = plotbond(varargin)
-% plots magnetic bonds
+function varargout = plotion(varargin)
+% plots magnetic ion properties
 %
-% SWPLOT.PLOTBOND('option1', value1, ...)
+% SWPLOT.PLOTION('option1', value1, ...)
 %
-% hFigure = SWPLOT.PLOTBOND(...)
+% hFigure = SWPLOT.PLOTION(...)
 %
-% The function plots the magnetic bonds stored in a SpinW object onto an
-% swplot figure.
+% The function plots selected properties of magnetic ions stored in a SpinW
+% object onto an swplot figure.
 %
 % Input:
 %
@@ -136,10 +136,10 @@ inpForm.defval = [inpForm.defval {[0;0;0] true      []      30    0.3     0.3   
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]   [1 1] [1 1]   [1 1]     [1 1]     }];
 inpForm.soft   = [inpForm.soft   {false   false     true    false false   false     false     }];
 
-inpForm.fname  = [inpForm.fname  {'radius1' 'showWarn'}];
-inpForm.defval = [inpForm.defval {0.08       true     }];
-inpForm.size   = [inpForm.size   {[1 1]      [1 1]    }];
-inpForm.soft   = [inpForm.soft   {false      false    }];
+inpForm.fname  = [inpForm.fname  {'radius1' }];
+inpForm.defval = [inpForm.defval {0.08      }];
+inpForm.size   = [inpForm.size   {[1 1]     }];
+inpForm.soft   = [inpForm.soft   {false     }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -169,7 +169,7 @@ set(hFigure,'Name', 'SpinW: Magnetic bonds');
 if numel(param.range) == 3
     param.range = [ zeros(3,1) param.range(:)];
 elseif numel(param.range) ~=6
-    error('plotbond:WrongInput','The given plotting range is invalid!');
+    error('plotion:WrongInput','The given plotting range is invalid!');
 end
 
 range = param.range;
@@ -190,7 +190,7 @@ switch param.rangeunit
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
         
     otherwise
-        error('plotbond:WrongInput','The given rangeunit string is invalid!');
+        error('plotion:WrongInput','The given rangeunit string is invalid!');
 end
 
 % atom data
@@ -200,7 +200,7 @@ mAtom  = obj.matom;
 [SS, ~] = intmatrix(obj,'plotmode',true,'extend',false,'sortDM',false,'zeroC',param.zero,'nExt',[1 1 1]);
 
 if isempty(SS.all)
-    warning('plotbond:EmptyPlot','No bonds to plot!')
+    warning('plotion:EmptyPlot','No bonds to plot!')
 end
 
 coupling        = struct;
@@ -281,7 +281,7 @@ switch param.rangeunit
 end
 
 if ~any(pIdx)
-    warning('plotbond:EmptyPlot','There are no bonds in the plotting range!')
+    warning('plotion:EmptyPlot','There are no bonds in the plotting range!')
     return
 end
 
@@ -291,9 +291,6 @@ matidx = matidx(pIdx);
 matSym = matSym(:,:,pIdx);
 mat    = mat(:,:,pIdx);
 matDM  = matDM(:,pIdx);
-
-% number of bonds to plot
-nBond = size(pos1,2);
 
 % bond vector in rlu
 dpos = pos2-pos1;
@@ -308,7 +305,7 @@ pos2 = bsxfun(@plus,pos2,param.shift);
 if strcmp(param.color,'auto')
     color = double(obj.matrix.color(:,matidx));
 else
-    color = repmat(swplot.color(param.color),[1 nBond]);
+    color = swplot.color(param.color);
 end
 
 % save original matrix values into data
@@ -321,10 +318,7 @@ lLabel = obj.matrix.label(matidx);
 % plot ellipse/arrow on top of bond
 switch param.mode2
     case 'none'
-        % do nothing, just remove any matrix
-        swplot.plot('type','arrow','name','bond_mat','position',zeros(3,0,2),...
-            'figure',hFigure,'tooltip',false,'replace',param.replace);
-
+        % do nothing
     case 'antisym'
         % plot arrows
         % remove zero DM vectors
@@ -338,7 +332,7 @@ switch param.mode2
         vecDM = BV\((matDM/maxDM)*param.scale*min(lxyz));
         colDM = color(:,~zeroDM);
         
-        swplot.plot('type','arrow','name','bond_mat','position',cat(3,posDM,posDM+vecDM),'text','',...
+        swplot.plot('type','arrow','name','bond_DM','position',cat(3,posDM,posDM+vecDM),'text','',...
             'figure',hFigure,'legend',lLabel,'color',colDM,'R',param.radius1,...
             'tooltip',false,'replace',param.replace,'npatch',param.npatch,...
             'data',{},'label',{},'nmesh',param.nmesh,'ang',param.ang,...
@@ -365,16 +359,15 @@ switch param.mode2
         maxR  = sqrt(max(sum(Rell.^2,1)));
         Rell = ((Rell+param.radius1)/(maxR+param.radius1))*param.scale*min(lxyz);
         % V*diag(R) vectorized
-        %V = bsxfun(@times,V,permute(Rell,[3 1 2]));
-        V = mmat(bsxfun(@times,V,permute(Rell,[3 1 2])),permute(V,[2 1 3]));
+        V = bsxfun(@times,V,permute(Rell,[3 1 2]));
         
-        swplot.plot('type','ellipsoid','name','bond_mat','position',posSym,'text','',...
+        swplot.plot('type','ellipsoid','name','bond_sym','position',posSym,'text','',...
             'figure',hFigure,'legend',lLabel,'color',colSym,'T',V,...
             'tooltip',false,'replace',param.replace,'npatch',param.npatch,...
             'data',{},'label',{},'nmesh',param.nmesh);
 
     otherwise
-        error('plotbond:WrongInput','The given mode2 string is invalid!');
+        error('plotion:WrongInput','The given mode2 string is invalid!');
 end
 
 
@@ -414,12 +407,12 @@ switch param.mode
             case {'--' '-'}
                 lineStyle0 = param.linestyle;
             otherwise
-                error('plotbond:WrongInput','The given lineStyle string is illegal!')
+                error('plotion:WrongInput','The given lineStyle string is illegal!')
         end
     case 'empty'
         type0 = [];
     otherwise
-        error('plotbond:WrongInput','The given mode string is illegal!')
+        error('plotion:WrongInput','The given mode string is illegal!')
 end
     
 switch param.linewidth
@@ -432,7 +425,7 @@ switch param.linewidth
         absmat = permute(sumn(abs(mat),[1 2]),[1 3 2]);
         lineWidth = (absmat/max(absmat)).^param.widthpow*param.linewidth0;
     otherwise
-        error('plotbond:WrongInput','The given linewidth string is illegal!')
+        error('plotion:WrongInput','The given linewidth string is illegal!')
 end
 
 % plot bond vectors
@@ -454,7 +447,6 @@ if param.replace
     lDat.type  = lDat.type(:,lIdx);
     lDat.name  = lDat.name(:,lIdx);
     lDat.text  = lDat.text(:,lIdx);
-    setappdata(hFigure,'legend',lDat);
     % redraw legend
     swplot.legend('refresh',hFigure);
 end

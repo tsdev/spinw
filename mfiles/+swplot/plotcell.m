@@ -1,7 +1,9 @@
-function plotcell(varargin)
+function varargout = plotcell(varargin)
 % plots the edges of unit cells on swplot figure
 %
 % SWPLOT.PLOTCELL('Option1',Value1,...)
+%
+% hFigure = SWPLOT.PLOTCELL('Option1',Value1,...)
 %
 % Options:
 %
@@ -17,7 +19,8 @@ function plotcell(varargin)
 %               'outside'   Unit cells are plotted inclusive the given
 %                               range.
 % figure    Handle of the swplot figure. Default is the selected figure.
-% color     Color of the lines, default is black ([0 0 0]).
+% color     Color of the lines as a string or row vector with 3 elements, 
+%           default value is black ('auto').
 % lineStyle Line style of the cell, default is '--'.
 % lineWdith Line width of the cell, default is 1.
 %
@@ -26,11 +29,15 @@ function plotcell(varargin)
 range0    = [0 1;0 1;0 1];
 
 inpForm.fname  = {'range' 'mode'   'figure' 'color' 'linestyle' 'linewidth'};
-inpForm.defval = {range0  'single' []       [0 0 0] '--'         1         };
+inpForm.defval = {range0  'single' []       'auto'  '--'         1         };
 inpForm.size   = {[-1 -2] [1 -3]   [1 1]    [1 -4]  [1 -5]       [1 1]     };
 inpForm.soft   = {false   false    true     false   false        false     };
 
 param = sw_readparam(inpForm, varargin{:});
+
+if strcmp(param.color,'auto')
+    param.color = [0 0 0];
+end
 
 if isempty(param.figure)
     hFigure  = swplot.activefigure('plot');
@@ -72,6 +79,10 @@ R = [Rx Ry Rz];
 % plot the cells already in base units, so no conversion needed
 swplot.plot('type','line','position',R,'figure',hFigure,...
     'linestyle',param.linestyle,'color',param.color,'name','cell',...
-    'legend',false,'tooltip',false);
+    'legend',false,'tooltip',false,'translate',true);
+
+if nargout>0
+    varargout{1} = hFigure;
+end
 
 end

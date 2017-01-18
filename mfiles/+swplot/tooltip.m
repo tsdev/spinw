@@ -1,7 +1,7 @@
-function varargout = tooltip(text0,hFigure)
+function varargout = tooltip(text0,hFigure,win)
 % creates tooltip axis on swplot figure
 %
-% SWPLOT.TOOLTIP({text}, {hFigure})
+% SWPLOT.TOOLTIP({text}, {hFigure}, {window})
 %
 % status = SWPLOT.TOOLTIP
 %
@@ -12,6 +12,8 @@ function varargout = tooltip(text0,hFigure)
 %               Default is 'on'.
 % hFigure       Handle of the swplot figure. Default is the selected
 %               figure.
+% window        If true, the tooltips will be shown in a separate window.
+%               Default is false.
 %
 % Output:
 %
@@ -29,12 +31,20 @@ end
 
 fontSize = swpref.getpref('fontsize',[]);
 
-if nargin < 2
+if nargin < 2 || isempty(hFigure)
     % find active figure
     hFigure = swplot.activefigure;
 end
 
+if nargin < 3
+    win = [];
+end
+
 tDat = getappdata(hFigure,'tooltip');
+
+if ~isempty(tDat.handle) && ~isvalid(tDat.handle(1))
+    tDat.handle = gobjects(1,0);
+end
 
 % just get status
 if nargout > 0
@@ -46,13 +56,41 @@ if nargout > 0
     return
 end
 
-if isempty(tDat.handle)
+if isempty(win)
+    % create separate window
+    win = false;
+end
+
+if win
+    % Figure number
+    if verLessThan('matlab','8.4.0')
+        figNum = hFigure;
+    else
+        figNum = hFigure.Number;
+    end
+
+    delete(tDat.handle)
+    tDat.handle = gobjects(1,0);
+    pos0 = get(hFigure,'Position');
+    tFigure = figure(...
+        'Name',         'swplot.tooltip',...
+        'DockControls', 'off',...
+        'Tag',          ['tooltipfig_' num2str(figNum)],...
+        'Toolbar',      'none',...
+        'Position',     [pos0(1)+pos0(3)+5 pos0(2)+pos0(4)-350 250 350],...   
+        'Menubar',      'none');
+    tDat.handle(3) = tFigure;
+else
+    tFigure = hFigure;
+end
+
+if isempty(tDat.handle) || win
     % create tooltip axis
-    tDat.handle    = axes('Parent',hFigure,'Units','Normalized','Position',[0.01 0.9 0.1 0.2],'Visible','off');
+    tDat.handle(1) = axes('Parent',tFigure,'Units','Normalized','Position',[0.01 0.9 0.1 0.2],'Visible','off');
     tDat.handle(2) = text(0.05,0.45,'','units','normalized','horizontalalignment','left',...
-        'FontSize',fontSize,'VerticalAlignment','top','Parent',tDat.handle);
+        'FontSize',fontSize,'VerticalAlignment','top','Parent',tDat.handle(1));
     % avoid object get active for strange zooming effect
-    set(tDat.handle,'hittest','off','tag','tooltip');
+    set(tDat.handle(1:2),'hittest','off','tag','tooltip');
     
     % switch to plot axis where all 3D objects are
     axes(getappdata(hFigure,'axis'));
@@ -67,7 +105,7 @@ switch text0
             set(tDat.handle(2),'String','');
         end
         
-        set(tDat.handle(2),'Visible','on');
+        set(tDat.handle(2:end),'Visible','on');
         % register callbacks
         obj = getappdata(hFigure,'objects');
         if ~isempty(obj)
@@ -75,7 +113,7 @@ switch text0
             set(unique([obj(:).handle]),'ButtonDownFcn',@(obj,hit)swplot.tooltipcallback(obj,hit,hFigure,h));
         end
     case 'off'
-        set(tDat.handle(2),'Visible','off');
+        set(tDat.handle(2:end),'Visible','off');
         % remove callbacks
         obj = getappdata(hFigure,'objects');
         if ~isempty(obj)

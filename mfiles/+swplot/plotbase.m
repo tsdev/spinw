@@ -1,7 +1,9 @@
-function plotbase(varargin)
+function varargout = plotbase(varargin)
 % plots the edges of unit cells on swplot figure
 %
-% SWPLOT.PLOTCELL('Option1',Value1,...)
+% SWPLOT.PLOTBASE('Option1',Value1,...)
+%
+% hFigure = SWPLOT.PLOTBASE('Option1',Value1,...)
 %
 % Options:
 %
@@ -21,10 +23,10 @@ range0 = [0 1;0 1;0 1];
 col0   = swplot.color({'red' 'green' 'blue'});
 d0     = ones(1,3);
 
-inpForm.fname  = {'range' 'mode'    'figure' 'color' 'R'   'alpha' 'lhead' 'd'   'dtext' 'label'};
-inpForm.defval = {range0  'default' []       col0    0.06  30      0.5     d0    0.5     true   };
-inpForm.size   = {[-1 -2] [1 -3]    [1 1]    [-4 -5] [1 1] [1 1]   [1 1]   [1 3] [1 1]   [1 1]  };
-inpForm.soft   = {false   false     true     false   false false   false   false false   false  };
+inpForm.fname  = {'range' 'mode'    'figure' 'color' 'R'   'alpha' 'lhead' 'd'   'dtext' 'label' 'tooltip'};
+inpForm.defval = {range0  'default' []       col0    0.06  30      0.5     d0    0.5     true    true     };
+inpForm.size   = {[-1 -2] [1 -3]    [1 1]    [-4 -5] [1 1] [1 1]   [1 1]   [1 3] [1 1]   [1 1]   [1 1]    };
+inpForm.soft   = {false   false     true     false   false false   false   false false   false   false    };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -41,16 +43,28 @@ BV = swplot.base(hFigure);
 d = param.d/(BV');
 
 R = bsxfun(@minus,cat(3,zeros(3),eye(3)),d');
+
+% generate data
+data = repmat({BV},[1 3]);
+
 % plot the arrows
 swplot.plot('type','arrow','position',R,'figure',hFigure,'color',param.color,...
-    'name','abc','legend',false,'tooltip',false,'translate',false);
+    'name','abc','legend',false,'tooltip',false,'translate',true,'data',data);
 
 if param.label
     % convert d from xyz to base
     Rtext = bsxfun(@minus,bsxfun(@times,eye(3),1+param.dtext./sqrt(sum(BV.^2,1))),d');
     
-    swplot.plot('type','text','position',Rtext,'text',{'a' 'b' 'c'},...
-        'figure',hFigure,'legend',false,'tooltip',false,'translate',false);
+    swplot.plot('type','text','position',Rtext,'text',{'a' 'b' 'c'},'data',data,...
+        'figure',hFigure,'legend',false,'tooltip',false,'translate',true,'name','abc_text');
+end
+
+if param.tooltip
+    swplot.tooltip('on',hFigure);
+end
+
+if nargout>0
+    varargout{1} = hFigure;
 end
 
 end

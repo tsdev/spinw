@@ -33,10 +33,17 @@ if isappdata(obj,'facenumber')
         if ~isempty(nIdx)
             % selected data object
             sObject = sObject(nIdx);
-            if ismember(sObject.name,{'atom' 'mag'})
-                % generate text automatically
-                string = swplot.tooltipstring(sObject);
+            
+            % generate text automatically
+            if isappdata(hFigure,'obj')
+                swobj = getappdata(hFigure,'obj');
+                unit = swobj.unit.label;
             else
+                unit = [];
+            end
+            string = swplot.tooltipstring(sObject,unit);
+            
+            if isempty(string)
                 % use the given text
                 string  = sObject.text;
             end
@@ -75,10 +82,22 @@ elseif isappdata(obj,'vertexnumber')
 else
     % graphical object data on swplot figure
     sObject = getappdata(hFigure,'objects');
-    nIdx = find(obj == [sObject(:).handle]);
+    sObject = sObject(obj == [sObject(:).handle]);
+    
     % find text and show tooltip if there is text
-    if ~isempty(nIdx)
-        swplot.tooltip(sObject(nIdx(1)).text,hFigure)
+    if ~isempty(sObject)
+        if isappdata(hFigure,'obj')
+            swobj = getappdata(hFigure,'obj');
+            unit = swobj.unit.label;
+        else
+            unit = [];
+        end
+        string = swplot.tooltipstring(sObject,unit);
+        
+        if isempty(string)
+            string = sObject.text;
+        end
+        swplot.tooltip(string,hFigure);
     end
     
 end

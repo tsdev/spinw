@@ -43,6 +43,8 @@ if nargout > 0
     return
 end
 
+refresh = false;
+
 switch switch0
     case 'on'
         switchon = true;
@@ -50,18 +52,21 @@ switch switch0
         switchon = false;
     case 'refresh'
         switchon = ~isempty(lDat.handle);
+        refresh  = true;
     case {'-' '--' 'none'} %'frame'
         switchon = true;
     otherwise
         error('legend:WrongInput','Use on/off to switch legend!')
 end
 
-if ~switchon && ~isempty(lDat.handle)
+if (~switchon && ~isempty(lDat.handle)) || refresh
     % remove legend
     delete(lDat.handle)
     lDat.handle = gobjects(0);
     setappdata(hFigure,'legend',lDat);
-    return
+    if ~refresh
+        return
+    end
 end
 
 if isempty(lDat.type)

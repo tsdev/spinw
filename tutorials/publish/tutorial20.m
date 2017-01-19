@@ -23,7 +23,7 @@ ybti.addatom('label','Yb3+','r',[1/2 1/2 1/2],'S',1/2)
 ybti.addatom('label','Ti4+','r',[0 0 0])
 ybti.addatom('label','O2-','r',[0.3318 1/8 1/8])
 ybti.addatom('label','O2-','r',[3/8 3/8 3/8])
-plot(ybti,'labelAtom',false,'zoom',1)
+plot(ybti,'atomLabel',false,'nmesh',2)
 
 %% Plot cubic environment of YbLATEX^{3+}PATEX
 % To the draw oxygen polyhedra around the Yb ions, we use the sw_drawpoly()

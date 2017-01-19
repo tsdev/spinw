@@ -27,7 +27,7 @@ FMkagome.couplingtable.bondv
 
 FMkagome.addmatrix('label','J1','value',-1,'color','orange'); 
 FMkagome.addcoupling('mat','J1','bond',1);
-plot(FMkagome,'range',[2 2 1],'zoom',1.2)
+plot(FMkagome,'range',[20 20 2],'unit','xyz')
 
 %% FM magnetic structure
 % All spins are paralle, pointing along the y-axis (perpendicular to ac

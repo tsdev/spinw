@@ -18,7 +18,7 @@ function varargout = plotion(varargin)
 %           use: [0 1;0 1;0 1]. Also the number unit cells can be given
 %           along the a, b and c directions: [2 1 2], that is equivalent to
 %           [0 2;0 1;0 2]. Default is the single unit cell.
-% rangeunit Unit in which the range is defined. It can be the following
+% unit      Unit in which the range is defined. It can be the following
 %           string:
 %               'lu'        Lattice units (default).
 %               'xyz'       Cartesian coordinate system in Angstrom units.
@@ -68,7 +68,6 @@ function varargout = plotion(varargin)
 %   sObject = swplot.findobj(hFigure,'name','bond')
 %
 
-
 % default values
 %fontSize0 = swpref.getpref('fontsize',[]);
 nMesh0    = swpref.getpref('nmesh',[]);
@@ -85,10 +84,10 @@ inpForm.defval = [inpForm.defval {'aniso' 'auto'  nMesh0  nPatch0  'auto'  }];
 inpForm.size   = [inpForm.size   {[1 -4]  [1 -5]  [1 1]   [1 1]    [1 -7]  }];
 inpForm.soft   = [inpForm.soft   {true    false   false   false    false   }];
 
-inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'rangeunit' 'tooltip'}];
-inpForm.defval = [inpForm.defval {[]       []    'lu'        true     }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]      [1 1]    }];
-inpForm.soft   = [inpForm.soft   {true     true  false       false    }];
+inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'unit' 'tooltip'}];
+inpForm.defval = [inpForm.defval {[]       []    'lu'   true     }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6] [1 1]    }];
+inpForm.soft   = [inpForm.soft   {true     true  false  false    }];
 
 inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'radius1' 'translate' 'zoom'}];
 inpForm.defval = [inpForm.defval {[0;0;0] true      0.08      true        true  }];
@@ -101,6 +100,11 @@ if isempty(param.figure)
     hFigure  = swplot.activefigure('plot');
 else
     hFigure = param.figure;
+end
+
+% take care of return values
+if nargout > 0
+    varargout{1} = hFigure;
 end
 
 % takes care of spinw object saved/loaded in/from figure
@@ -127,7 +131,7 @@ end
 
 range = param.range;
 
-switch param.rangeunit
+switch param.unit
     case 'lu'
         rangelu = [floor(range(:,1)) ceil(range(:,2))];
     case 'xyz'
@@ -138,7 +142,7 @@ switch param.rangeunit
         rangelu = [min(corners,[],2) max(corners,[],2)];
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
     otherwise
-        error('plotion:WrongInput','The given rangeunit string is invalid!');
+        error('plotion:WrongInput','The given unit string is invalid!');
 end
 
 % atom data
@@ -180,7 +184,7 @@ mIdx = repmat(1:nMAtom,[nCell 1]);
 pos  = reshape(pos,3,[]);
 
 % cut out the atoms that are out of range
-switch param.rangeunit
+switch param.unit
     case 'lu'
         % L>= lower range, L<= upper range
         pIdx = all(bsxfun(@ge,pos,range(:,1)) & bsxfun(@le,pos,range(:,2)),1);
@@ -288,12 +292,10 @@ if param.linewidth > 0
         'zoom',param.zoom,'alpha',param.alpha);
 end
 
-if nargout > 0
-    varargout{1} = hFigure;
-end
-
 if param.tooltip
     swplot.tooltip('on',hFigure);
 end
+
+setappdata(hFigure,'range',struct('range',param.range,'unit',param.unit));
 
 end

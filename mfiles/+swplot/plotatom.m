@@ -18,7 +18,7 @@ function varargout = plotatom(varargin)
 %           use: [0 1;0 1;0 1]. Also the number unit cells can be given
 %           along the a, b and c directions: [2 1 2], that is equivalent to
 %           [0 2;0 1;0 2]. Default is the single unit cell.
-% rangeunit Unit in which the range is defined. It can be the following
+% unit      Unit in which the range is defined. It can be the following
 %           string:
 %               'lu'        Lattice units (default).
 %               'xyz'       Cartesian coordinate system in Angstrom units.
@@ -85,10 +85,10 @@ inpForm.defval = [inpForm.defval {'auto'   'all'  'auto'  nMesh0  nPatch0 }];
 inpForm.size   = [inpForm.size   {[1 -3]   [1 -4] [1 -5]  [1 1]   [1 1]   }];
 inpForm.soft   = [inpForm.soft   {false    false  false   false   false   }];
 
-inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'rangeunit' 'tooltip'}];
-inpForm.defval = [inpForm.defval {[]       []    'lu'        true     }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]      [1 1]    }];
-inpForm.soft   = [inpForm.soft   {true     true  false       false    }];
+inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'unit'  'tooltip'}];
+inpForm.defval = [inpForm.defval {[]       []    'lu'    true     }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]  [1 1]    }];
+inpForm.soft   = [inpForm.soft   {true     true  false   false    }];
 
 inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'translate' 'zoom'}];
 inpForm.defval = [inpForm.defval {[0;0;0] true      true         true }];
@@ -133,7 +133,7 @@ end
 
 range = param.range;
 
-switch param.rangeunit
+switch param.unit
     case 'lu'
         rangelu = [floor(range(:,1)) ceil(range(:,2))];
     case 'xyz'
@@ -143,7 +143,7 @@ switch param.rangeunit
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
         
     otherwise
-        error('plotatom:WrongInput','The given rangeunit string is invalid!');
+        error('plotatom:WrongInput','The given unit string is invalid!');
 end
 
 % atom data
@@ -181,7 +181,7 @@ pos  = reshape(pos,3,[]);
 %aIdx = reshape(aIdx,3,[]);
 
 % cut out the atoms that are out of range
-switch param.rangeunit
+switch param.unit
     case 'lu'
         % L>= lower range, L<= upper range
         pIdx = all(bsxfun(@ge,pos,range(:,1)) & bsxfun(@le,pos,range(:,2)),1);
@@ -290,7 +290,7 @@ if nargout > 0
 end
 
 % save range
-setappdata(hFigure,'range',param.range);
+setappdata(hFigure,'range',struct('range',param.range,'unit',param.unit));
 
 if param.tooltip
     swplot.tooltip('on',hFigure);

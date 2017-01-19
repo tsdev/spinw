@@ -12,7 +12,7 @@ FMchain = spinw;
 FMchain.fileid(0)
 FMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0)
 FMchain.addatom('r', [0 0 0],'S', 1,'label','MCu1','color','blue')
-FMchain.plot('range',[3 1 1],'zoom',0.5)
+FMchain.plot2('range',[3 1 1])
 
 %% Determine the list of bonds based on length
 % To consider bonds up to 7 Angstrom length we use the sw.gencoupling()
@@ -45,7 +45,7 @@ cTable.bondv
  
 FMchain.addmatrix('value',-eye(3),'label','Ja','color','green')
 FMchain.addcoupling('mat','Ja','bond',1);
-plot(FMchain,'range',[3 0.2 0.2],'pCell',false,'zoom',0.8)
+plot2(FMchain,'range',[3 0.2 0.2],'cellMode','none','baseMode','none')
 
 %% Definition of FM magnetic structure
 % The classical magnetic ground state of the previously defined Hamiltonian
@@ -60,10 +60,10 @@ plot(FMchain,'range',[3 0.2 0.2],'pCell',false,'zoom',0.8)
 FMchain.genmagstr('mode','direct', 'k',[0 0 0],'n',[1 0 0],'S',[0; 1; 0]); 
 
 display('Magnetic structure:')
-FMchain.mag_str
+FMchain.magstr
 display('Spins 1 2 ... as columns, xyz components as rows:')
-FMchain.mag_str.S
-plot(FMchain,'range',[3 0.9 0.9])
+FMchain.magstr.S
+plot2(FMchain,'range',[3 0.9 0.9],'baseMode','none','cellMode','none')
 
 %% The energy of the ground state per spin
 % The sw.energy() function gives the ground state energy per spin, the
@@ -86,9 +86,10 @@ FMspec = sw_neutron(FMspec);
 FMspec = sw_egrid(FMspec,'component','Sperp');
 
 figure;
+subplot(2,1,1)
 sw_plotspec(FMspec,'mode',1,'colorbar',false)  
 axis([0 1 0 5])
-figure;
+subplot(2,1,2)
 sw_plotspec(FMspec,'mode',2)  
 axis([0 1 0 2])
 

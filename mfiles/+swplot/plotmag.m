@@ -18,7 +18,7 @@ function varargout = plotmag(varargin)
 %           use: [0 1;0 1;0 1]. Also the number unit cells can be given
 %           along the a, b and c directions: [2 1 2], that is equivalent to
 %           [0 2;0 1;0 2]. Default is the single unit cell.
-% rangeunit Unit in which the range is defined. It can be the following
+% unit      Unit in which the range is defined. It can be the following
 %           string:
 %               'lu'        Lattice units (default).
 %               'xyz'       Cartesian coordinate system in Angstrom units.
@@ -90,10 +90,10 @@ inpForm.defval = [inpForm.defval {'all'  'auto'  nMesh0  nPatch0  30    }];
 inpForm.size   = [inpForm.size   {[1 -4] [1 -5]  [1 1]   [1 1]    [1 1] }];
 inpForm.soft   = [inpForm.soft   {false  false   false   false    false }];
 
-inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'rangeunit' 'tooltip'}];
-inpForm.defval = [inpForm.defval {[]       []    'lu'        true     }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]      [1 1]    }];
-inpForm.soft   = [inpForm.soft   {true     true  false       false    }];
+inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'unit' 'tooltip'}];
+inpForm.defval = [inpForm.defval {[]       []    'lu'   true     }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6] [1 1]    }];
+inpForm.soft   = [inpForm.soft   {true     true  false  false    }];
 
 inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'scale' 'normalize' }];
 inpForm.defval = [inpForm.defval {[0;0;0] true      1        false      }];
@@ -139,7 +139,7 @@ end
 
 range = param.range;
 
-switch param.rangeunit
+switch param.unit
     case 'lu'
         rangelu = [floor(range(:,1)) ceil(range(:,2))];
     case 'xyz'
@@ -148,7 +148,7 @@ switch param.rangeunit
         rangelu = [min(corners,[],2) max(corners,[],2)];
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
     otherwise
-        error('plotmag:WrongInput','The given rangeunit string is invalid!');
+        error('plotmag:WrongInput','The given unit string is invalid!');
 end
 
 % magnetic supercell for plotting
@@ -185,7 +185,7 @@ aIdx = repmat(mAtom.idx,[nCell 1])';
 pos  = reshape(pos,3,[]);
 
 % cut out the atoms that are out of range
-switch param.rangeunit
+switch param.unit
     case 'lu'
         % L>= lower range, L<= upper range
         pIdx = all(bsxfun(@ge,pos,range(:,1)) & bsxfun(@le,pos,range(:,2)),1);
@@ -250,7 +250,7 @@ swplot.plot('type','arrow','name','mag','position',vpos,'text','',...
     'lHead',param.lHead,'translate',param.translate,'zoom',param.zoom);
 
 % save range
-setappdata(hFigure,'range',param.range);
+setappdata(hFigure,'range',struct('range',param.range,'unit',param.unit));
 
 if nargout > 0
     varargout{1} = hFigure;

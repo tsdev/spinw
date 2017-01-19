@@ -273,10 +273,19 @@ if isempty(getappdata(hFigure,'obj'))
     return
 end
 
-range     = getappdata(hFigure,'range');
+rDat      = getappdata(hFigure,'range');
+range     = rDat.range;
+unit      = rDat.unit;
 parentPos = get(hFigure,'Position');
 fWidth    = 195;
 fHeight   = 240;
+
+switch unit
+    case 'lu'
+        tLabel = {'a:' 'b:' 'c:'};
+    case 'xyz'
+        tLabel = {'x:' 'y:' 'z:'};
+end
 
 % Figure number
 if verLessThan('matlab','8.4.0')
@@ -336,17 +345,17 @@ handles.panel(3) = uipanel(objMod,...
     'Position',         [1 131 fWidth 109]);
 handles.text(3) = uicontrol(handles.panel(3),...
     'Style',           'text',...
-    'String',          'z:',...
+    'String',          tLabel{3},...
     'Units',           'pixel',...
     'Position',        [5 5 20 15]);
 handles.text(4) = uicontrol(handles.panel(3),...
     'Style',           'text',...
-    'String',          'y:',...
+    'String',          tLabel{2},...
     'Units',           'pixel',...
     'Position',        [5 30 20 15]);
 handles.text(5) = uicontrol(handles.panel(3),...
     'Style',           'text',...
-    'String',          'x:',...
+    'String',          tLabel{1},...
     'Units',           'pixel',...
     'Position',        [5 55 20 15]);
 handles.edit_range(1,1) = uicontrol(handles.panel(3),...
@@ -426,7 +435,8 @@ setappdata(objMod,'handles',handles);
     function Callback_Range(~, ~, hFigure, objMod , isclose)
         
         param   = getappdata(hFigure,'param');
-        range   = getappdata(hFigure,'range');
+        rDat    = getappdata(hFigure,'range');
+        range   = rDat.range;
         obj     = getappdata(hFigure,'obj');
         handles = getappdata(objMod,'handles');
         
@@ -444,7 +454,7 @@ setappdata(objMod,'handles',handles);
                 param(2*rIdx(1) + [-1 0]) = [];
             end
 
-            plot2(obj, param{:},'range',range);
+            plot(obj, param{:},'range',range);
             %figure(objMod);
         end
         

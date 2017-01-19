@@ -44,10 +44,10 @@ inpForm.defval = [inpForm.defval { true         true true      true     }];
 inpForm.size   = [inpForm.size   {[1 1]        [1 1] [1 1]     [1 1]    }];
 inpForm.soft   = [inpForm.soft   {false        false false     false    }];
 
-inpForm.fname  = [inpForm.fname  {'npatch' 'nmesh' 'rangeunit'}];
-inpForm.defval = [inpForm.defval {nPatch0  nMesh0  'lu'       }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 -6]     }];
-inpForm.soft   = [inpForm.soft   {false    false   false      }];
+inpForm.fname  = [inpForm.fname  {'npatch' 'nmesh' 'unit'}];
+inpForm.defval = [inpForm.defval {nPatch0  nMesh0  'lu'  }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 -6]}];
+inpForm.soft   = [inpForm.soft   {false    false   false }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -80,7 +80,7 @@ switch param.mode
 end
 
 % generate the unit cells
-% TODO rangeunit
+% TODO unit
 Rz = cell(1,3);
 [Rz{:}] = ndgrid(range(1,1):range(1,2),range(2,1):range(2,2),range(3,:));
 Rz = reshape(permute(cat(4,Rz{:}),[4 1 2 3]),3,[],2);
@@ -100,7 +100,7 @@ swplot.plot('type','line','position',R,'figure',hFigure,...
     'zoom',param.zoom,'replace',param.replace);
 
 % save range
-setappdata(hFigure,'range',param.range);
+setappdata(hFigure,'range',struct('range',param.range,'unit',param.unit));
 
 if nargout>0
     varargout{1} = hFigure;

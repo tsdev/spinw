@@ -18,7 +18,7 @@ function varargout = plotbond(varargin)
 %           use: [0 1;0 1;0 1]. Also the number unit cells can be given
 %           along the a, b and c directions: [2 1 2], that is equivalent to
 %           [0 2;0 1;0 2]. Default is the single unit cell.
-% rangeunit Unit in which the range is defined. It can be the following
+% unit      Unit in which the range is defined. It can be the following
 %           string:
 %               'lu'        Lattice units (default).
 %               'xyz'       Cartesian coordinate system in Angstrom units.
@@ -130,10 +130,10 @@ inpForm.defval = [inpForm.defval {'auto'   []     'auto'  nMesh0  nPatch0  0.5  
 inpForm.size   = [inpForm.size   {[1 -3]   [1 -4] [1 -5]  [1 1]   [1 1]    [1 1]        }];
 inpForm.soft   = [inpForm.soft   {false    true  false   false   false    false         }];
 
-inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'rangeunit' 'tooltip' 'radius' 'linestyle' }];
-inpForm.defval = [inpForm.defval {[]       []    'lu'        true      'auto'   'auto'      }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]      [1 1]     [1 -8]   [1 -10]     }];
-inpForm.soft   = [inpForm.soft   {true     true  false       false     false    false       }];
+inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'unit' 'tooltip' 'radius' 'linestyle' }];
+inpForm.defval = [inpForm.defval {[]       []    'lu'   true      'auto'   'auto'      }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6] [1 1]     [1 -8]   [1 -10]     }];
+inpForm.soft   = [inpForm.soft   {true     true  false  false     false    false       }];
 
 inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'arrow' 'ang' 'lhead' 'radius2' 'widthpow'}];
 inpForm.defval = [inpForm.defval {[0;0;0] true      []      30    0.3     0.3       0.2       }];
@@ -183,7 +183,7 @@ end
 
 range = param.range;
 
-switch param.rangeunit
+switch param.unit
     case 'lu'
         rangelu = [floor(range(:,1)) ceil(range(:,2))];
     case 'xyz'
@@ -192,7 +192,7 @@ switch param.rangeunit
         rangelu = [min(corners,[],2) max(corners,[],2)];
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
     otherwise
-        error('plotbond:WrongInput','The given rangeunit string is invalid!');
+        error('plotbond:WrongInput','The given unit string is invalid!');
 end
 
 % atom data
@@ -224,10 +224,11 @@ matDM  = permute(cat(2,matDM(2,3,:),matDM(3,1,:),matDM(1,2,:)),[2 3 1]);
 % are there non-zero DM vectors
 isDM  = any(matDM(:));
 
-matSym0 = matSym;
+matSym0 = obj.matrix.mat(:,:,coupling.matidx);
+matSym0 = (matSym0+permute(matSym0,[2 1 3]))/2;
+matSym0(2,2,:) = matSym0(2,2,:)-matSym0(1,1,:);
+matSym0(3,3,:) = matSym0(3,3,:)-matSym0(1,1,:);
 matSym0(1,1,:) = 0;
-matSym0(2,2,:) = matSym0(2,2,:)-matSym(1,1,:);
-matSym0(3,3,:) = matSym0(3,3,:)-matSym(1,1,:);
 isSym = any(matSym0(:));
 
 % select bond type to plot
@@ -273,7 +274,7 @@ pos1  = reshape(pos1,3,[]);
 pos2  = reshape(pos2,3,[]);
 
 % cut out the bonds that are out of range
-switch param.rangeunit
+switch param.unit
     case 'lu'
         % lower range<=L<= upper range
         pIdx1 = all(bsxfun(@ge,pos1,range(:,1)) & bsxfun(@le,pos1,range(:,2)),1);
@@ -496,7 +497,7 @@ if param.legend
 end
 
 % save range
-setappdata(hFigure,'range',param.range);
+setappdata(hFigure,'range',struct('range',param.range,'unit',param.unit));
 
 if param.tooltip
     swplot.tooltip('on',hFigure);

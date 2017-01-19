@@ -39,10 +39,10 @@ inpForm.defval = [inpForm.defval {d0    0.5     true    true      true       }];
 inpForm.size   = [inpForm.size   {[1 3] [1 1]   [1 1]   [1 1]     [1 1]      }];
 inpForm.soft   = [inpForm.soft   {false false   false   false     false      }];
 
-inpForm.fname  = [inpForm.fname  {'zoom' 'replace' 'nmesh' 'npatch' 'rangeunit'}];
-inpForm.defval = [inpForm.defval {true   true      nMesh0  nPatch0  'lu'       }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]     [1 1]   [1 1]    [1 -6]     }];
-inpForm.soft   = [inpForm.soft   {false  false     false   false    false      }];
+inpForm.fname  = [inpForm.fname  {'zoom' 'replace' 'nmesh' 'npatch' 'unit'}];
+inpForm.defval = [inpForm.defval {true   true      nMesh0  nPatch0  'lu'  }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]     [1 1]   [1 1]    [1 -6]}];
+inpForm.soft   = [inpForm.soft   {false  false     false   false    false }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -53,7 +53,9 @@ else
 end
 
 % range of previous plot
-range0 = getappdata(hFigure,'range');
+rDat   = getappdata(hFigure,'range');
+range0 = rDat.range;
+unit   = rDat.unit;
 
 if isempty(range0)
     range0 = [0;0;0];
@@ -64,14 +66,14 @@ end
 % basis vectors
 BV = swplot.base(hFigure);
 
-switch param.rangeunit
+switch unit
     case 'lu'
         % do nothing
     case 'xyz'
         % convert to lu
         range0 = BV\range0;
     otherwise
-        error('plotbase:WrongInput','Option rangeunit has invalid value!');
+        error('plotbase:WrongInput','Option unit has invalid value!');
 end
 
 % convert d from xyz to base

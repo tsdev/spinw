@@ -139,7 +139,7 @@ paramG = sw_readparam(inpForm, varargG{:});
 warning(warn0);
 
 % sort options according to plot name
-plotName = {'atom' 'mag' 'bond' 'base' 'cell'}; % ion
+plotName = {'atom' 'mag' 'bond' 'ion' 'base' 'cell'};
 nFun     = numel(plotName);
 plotIdx  = false(nFun,numel(optName));
 optShort = optName;
@@ -178,7 +178,7 @@ if ~any(switchFun)
 end
 
 % only call selected functions
-plotFun = {@swplot.plotatom @swplot.plotmag @swplot.plotbond @swplot.plotcell @swplot.plotbase}; % @swplot.plotion
+plotFun = {@swplot.plotatom @swplot.plotmag @swplot.plotbond @swplot.plotion @swplot.plotcell @swplot.plotbase};
 plotFun = plotFun(switchFun);
 plotIdx = plotIdx(switchFun,:);
 

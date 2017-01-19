@@ -125,6 +125,8 @@ F = reshape(permute(bsxfun(@plus,F,permute((0:(nObject-1))*2*nPatch,[1 3 2])),[1
 
 % color data
 C = repmat([1 0 0],[size(F,1) 1]);
+% default transparency
+A = ones(size(F,1),1);
 
 if strcmp(get(hAxis,'Tag'),'swaxis')
     % make sure we are on the plot axis of an swobject
@@ -136,15 +138,18 @@ end
 if isempty(hPatch)
     % create patch
     hPatch = patch('Parent',hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
-        'EdgeColor','none','FaceColor','flat','Tag','cylinder','FaceVertexCData',C);
+        'EdgeColor','none','FaceColor','flat','Tag','cylinder','AlphaDataMapping','none',...
+        'FaceAlpha','flat','FaceVertexAlphaData',A,'FaceVertexCData',C);
 else
     % add to existing patch
     V0 = get(hPatch,'Vertices');
     F0 = get(hPatch,'Faces');
     C0 = get(hPatch,'FaceVertexCData');
+    A0 = get(hPatch,'FaceVertexAlphaData');
     % number of existing faces
     nV0 = size(V0,1);
-    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
+    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C],...
+        'FaceVertexAlphaData',[A0;A]);
 end
 
 if strcmp(get(hAxis,'Tag'),'swaxis')

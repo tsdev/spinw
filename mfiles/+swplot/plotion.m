@@ -52,6 +52,10 @@ function varargout = plotion(varargin)
 % shift     Column vector with 3 elements, all atomic positions will be
 %           shifted by the given value. Default value is [0;0;0].
 % replace   Replace previous atom plot if true. Default is true.
+% translate If true, all plot objects will be translated to the figure
+%           center. Default is true.
+% zoom      If true, figure will be automatically zoomed to the ideal size.
+%           Default is true.
 %
 % Output:
 %
@@ -75,20 +79,20 @@ inpForm.defval = {range0  true     true    1/3     'fix'       0.3    };
 inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 3]       [1 1]  };
 inpForm.soft   = {false   false    false   false   false       false  };
 
-inpForm.fname  = [inpForm.fname  {'mode' 'color' 'nmesh' 'npatch'}];
-inpForm.defval = [inpForm.defval {[]     'auto'  nMesh0  nPatch0 }];
-inpForm.size   = [inpForm.size   {[1 -4] [1 -5]  [1 1]   [1 1]   }];
-inpForm.soft   = [inpForm.soft   {true  false   false   false    }];
+inpForm.fname  = [inpForm.fname  {'mode'  'color' 'nmesh' 'npatch'}];
+inpForm.defval = [inpForm.defval {'aniso' 'auto'  nMesh0  nPatch0 }];
+inpForm.size   = [inpForm.size   {[1 -4]  [1 -5]  [1 1]   [1 1]   }];
+inpForm.soft   = [inpForm.soft   {true    false   false   false   }];
 
 inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'rangeunit' 'tooltip'}];
 inpForm.defval = [inpForm.defval {[]       []    'lu'        true     }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]      [1 1]    }];
 inpForm.soft   = [inpForm.soft   {true     true  false       false    }];
 
-inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'radius1' }];
-inpForm.defval = [inpForm.defval {[0;0;0] true      0.08      }];
-inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]     }];
-inpForm.soft   = [inpForm.soft   {false   false     false     }];
+inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'radius1' 'translate' 'zoom'}];
+inpForm.defval = [inpForm.defval {[0;0;0] true      0.08      true        true  }];
+inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]     [1 1]       [1 1] }];
+inpForm.soft   = [inpForm.soft   {false   false     false     false       false }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -127,7 +131,9 @@ switch param.rangeunit
         rangelu = [floor(range(:,1)) ceil(range(:,2))];
     case 'xyz'
         % corners of the box
-        corners = BV\[range(1,[1 2 2 1 1 2 2 1]);range(2,[1 1 2 2 1 1 2 2]);range(3,[1 1 1 1 2 2 2 2])];
+        cIdx    = cell2mat(arrayfun(@(M)bitget(M,1:3)+1,0:7,'UniformOutput',0)')';
+        %corners = BV\[range(1,[1 2 2 1 1 2 2 1]);range(2,[1 1 2 2 1 1 2 2]);range(3,[1 1 1 1 2 2 2 2])];
+        corners = BV\[range(1,cIdx(1,:));range(2,cIdx(2,:));range(3,cIdx(3,:))];
         rangelu = [min(corners,[],2) max(corners,[],2)];
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
     otherwise
@@ -138,273 +144,110 @@ end
 mAtom  = obj.matom;
 
 % generate bonds, but don't sort the bonds on DM interactions
-[SS, ~] = intmatrix(obj,'plotmode',true,'extend',false,'sortDM',false,'zeroC',param.zero,'nExt',[1 1 1]);
+[SS, SI] = intmatrix(obj,'plotmode',true,'extend',false,'sortDM',false,'zeroC',false,'nExt',[1 1 1]);
 
-if isempty(SS.all)
-    warning('plotion:EmptyPlot','No bonds to plot!')
+switch param.mode
+    case 'aniso'
+        if ~any(SI.aniso(:))
+            % do nothing, just remove old plot
+            % TODO
+            return
+        else
+            mat = SI.aniso;
+        end
+    case 'g'
+        mat = SI.g;
+    otherwise
+        error('plotion:WrongInput','The given mode string is invalid!');
 end
 
-coupling        = struct;
-coupling.dl     = double(SS.all(1:3,:));
-coupling.atom1  = SS.all(4,:);
-coupling.atom2  = SS.all(5,:);
-coupling.matidx = SS.all(15,:);
-coupling.idx    = SS.all(16,:);
+% generate the  positions of the magnetic atoms
+nMAtom = size(mAtom.r,2);
 
-% matrix values
-mat   = reshape(SS.all(6:14,:),3,3,[]);
-% DM interaction
-matDM = (mat-permute(mat,[2 1 3]))/2;
-% keep symmetric part of the interactions
-matSym = (mat+permute(mat,[2 1 3]))/2;
-matDM  = permute(cat(2,matDM(2,3,:),matDM(3,1,:),matDM(1,2,:)),[2 3 1]);
-
-% are there non-zero DM vectors
-isDM  = any(matDM(:));
-isSym = any(matSym(:));
-
-% select bond type to plot
-if isempty(param.mode)
-    if isDM
-        param.mode = 'arrow';
-    else
-        param.mode = 'cylinder';
-    end
-end
-
-if isempty(param.mode2)
-    if isDM
-        param.mode2 = 'antisym';
-    elseif isSym
-        param.mode2 = 'sym';
-    else
-        param.mode2 = 'none';
-    end
-end
-  
-
-% generate the  positions of the bonds
 % generate positions from rangelu the inclusive range
 pos = cell(1,3);
 [pos{:}] = ndgrid(rangelu(1,1):rangelu(1,2),rangelu(2,1):rangelu(2,2),rangelu(3,1):rangelu(3,2));
-pos  = reshape(cat(4,pos{:}),[],3)';
-pos1 = bsxfun(@plus,pos,permute(mAtom.r(:,coupling.atom1),[1 3 2]));
-pos2 = bsxfun(@plus,pos,permute(mAtom.r(:,coupling.atom2)+coupling.dl,[1 3 2]));
+pos = bsxfun(@plus,reshape(cat(4,pos{:}),[],3)',permute(mAtom.r,[1 3 2]));
 
 % number of unit cells
 nCell = size(pos,2);
 
-% generate matrix indices
-matidx = repmat(coupling.matidx,[nCell 1]);
+% keep track of types of atoms
+%aIdx = repmat(mAtom.idx,[nCell 1]);
+% keep track of aniso matrix index
+mIdx = repmat(1:nMAtom,[nCell 1]);
+pos  = reshape(pos,3,[]);
 
-% generate matrix values
-matSym = reshape(repmat(permute(matSym,[1 2 4 3]),[1 1 nCell 1]),3,3,[]);
-mat    = reshape(repmat(permute(mat,[1 2 4 3]),[1 1 nCell 1]),3,3,[]);
-matDM  = reshape(repmat(permute(matDM,[1 3 2]),[1 nCell 1]),3,[]);
-
-pos1  = reshape(pos1,3,[]);
-pos2  = reshape(pos2,3,[]);
-
-% cut out the bonds that are out of range
+% cut out the atoms that are out of range
 switch param.rangeunit
     case 'lu'
-        % lower range<=L<= upper range
-        pIdx1 = all(bsxfun(@ge,pos1,range(:,1)) & bsxfun(@le,pos1,range(:,2)),1);
-        pIdx2 = all(bsxfun(@ge,pos2,range(:,1)) & bsxfun(@le,pos2,range(:,2)),1);
-        pIdx  = all([pIdx1;pIdx2],1);
+        % L>= lower range, L<= upper range
+        pIdx = all(bsxfun(@ge,pos,range(:,1)) & bsxfun(@le,pos,range(:,2)),1);
     case 'xyz'
         % convert to xyz
-        posxyz1 = BV*pos1;
-        posxyz2 = BV*pos2;
-        pIdx1   = all(bsxfun(@ge,posxyz1,range(:,1)) & bsxfun(@le,posxyz1,range(:,2)),1);
-        pIdx2   = all(bsxfun(@ge,posxyz2,range(:,1)) & bsxfun(@le,posxyz2,range(:,2)),1);
-        pIdx    = all([pIdx1;pIdx2],1);
+        posxyz = BV*pos;
+        pIdx = all(bsxfun(@ge,posxyz,range(:,1)) & bsxfun(@le,posxyz,range(:,2)),1);
 end
 
 if ~any(pIdx)
-    warning('plotion:EmptyPlot','There are no bonds in the plotting range!')
+    warning('plotatom:EmptyPlot','There are no atoms in the plotting range!')
     return
 end
 
-pos1   = pos1(:,pIdx);
-pos2   = pos2(:,pIdx);
-matidx = matidx(pIdx);
-matSym = matSym(:,:,pIdx);
-mat    = mat(:,:,pIdx);
-matDM  = matDM(:,pIdx);
-
-% bond vector in rlu
-dpos = pos2-pos1;
-% length of bond in Angstrom
-lxyz = sqrt(sum((BV*dpos).^2,1));
-
-% shift positions
-pos1 = bsxfun(@plus,pos1,param.shift);
-pos2 = bsxfun(@plus,pos2,param.shift);
+pos  = pos(:,pIdx);
+%aIdx = aIdx(pIdx);
+mIdx = mIdx(pIdx);
+%aIdx = aIdx(:)';
+mIdx = mIdx(:)';
+mat  = mat(:,:,mIdx);
 
 % color
 if strcmp(param.color,'auto')
-    color = double(obj.matrix.color(:,matidx));
+    color = double(obj.unit_cell.color(:,mAtom.idx(mIdx)));
 else
     color = swplot.color(param.color);
 end
 
-% save original matrix values into data
-%mat0   = obj.matrix.mat(:,:,matidx);
-matDat = mat2cell(mat,3,3,ones(1,numel(matidx)));
+if size(color,2) == 1
+    color = repmat(color,1,numel(mIdx));
+end
 
-% legend label
-lLabel = obj.matrix.label(matidx);
+% save atom coordinates into data
+%posDat = mat2cell(pos,3,ones(1,size(pos,2)));
 
-% plot ellipse/arrow on top of bond
-switch param.mode2
-    case 'none'
-        % do nothing
-    case 'antisym'
-        % plot arrows
-        % remove zero DM vectors
-        matDM2 = sum(matDM.^2,1);
-        zeroDM = matDM2==0;
-        matDM  = matDM(:,~zeroDM);
-        posDM  = (pos1(:,~zeroDM)+pos2(:,~zeroDM))/2;
-        % maximum value of DM
-        maxDM = sqrt(max(matDM2));
-        % scale and convert vectors to RLU
-        vecDM = BV\((matDM/maxDM)*param.scale*min(lxyz));
-        colDM = color(:,~zeroDM);
-        
-        swplot.plot('type','arrow','name','bond_DM','position',cat(3,posDM,posDM+vecDM),'text','',...
-            'figure',hFigure,'legend',lLabel,'color',colDM,'R',param.radius1,...
-            'tooltip',false,'replace',param.replace,'npatch',param.npatch,...
-            'data',{},'label',{},'nmesh',param.nmesh,'ang',param.ang,...
-            'lhead',param.lhead);
-        
-    case 'sym'
-        % plot ellipsoid
-        % remove zero ellipsoids
-        rmSym = permute(sumn(abs(matSym),[1 2])==0,[1 3 2]);
-        % remove Heisenberg interactions
-        diagSym = zeros(size(matSym));
-        diagSym(1,1,:) = matSym(1,1,:);
-        diagSym(2,2,:) = matSym(1,1,:);
-        diagSym(3,3,:) = matSym(1,1,:);
-        rmSym = rmSym | ~any(reshape(bsxfun(@minus,matSym,diagSym),9,[]),1);
-        
-        matSym = matSym(:,:,~rmSym);
-        posSym = (pos1(:,~rmSym)+pos2(:,~rmSym))/2;
-        colSym = color(:,~rmSym);
-        % calculating the main radiuses of the ellipsoid.
-        [V, Rell] = eigorth(matSym,1e-5);
-        % creating positive definite matrix by adding constant to all
-        % eigenvalues.
-        maxR  = sqrt(max(sum(Rell.^2,1)));
-        Rell = ((Rell+param.radius1)/(maxR+param.radius1))*param.scale*min(lxyz);
-        % V*diag(R) vectorized
-        V = bsxfun(@times,V,permute(Rell,[3 1 2]));
-        
-        swplot.plot('type','ellipsoid','name','bond_sym','position',posSym,'text','',...
-            'figure',hFigure,'legend',lLabel,'color',colSym,'T',V,...
-            'tooltip',false,'replace',param.replace,'npatch',param.npatch,...
-            'data',{},'label',{},'nmesh',param.nmesh);
+% shift positions
+pos = bsxfun(@plus,pos,param.shift);
 
-    otherwise
-        error('plotion:WrongInput','The given mode2 string is invalid!');
+% length of shortest bond for scaling
+if ~isempty(SS.all)
+    bondlu = mAtom.r(:,SS.all(5,:))+double(SS.all(1:3,:))-mAtom.r(:,SS.all(4,:));
+    % minimum length of bond in Angstrom
+    lxyz = min(sqrt(sum((BV*bondlu).^2,1)));
 end
 
 
-lineStyle0 = '-';
-switch param.mode
-    case 'cylinder'
-        type0 = 'cylinder';
-    case 'arrow'
-        type0 = 'arrow';
-        % shorten the bonds
-        % radius
-        switch param.radius
-            case 'auto'
-                radius = sw_atomdata(obj.unit_cell.label,'radius');
-                aidx1 = repmat(mAtom.idx(1,coupling.atom1),[nCell 1]);
-                aidx1 = aidx1(pIdx);
-                aidx2 = repmat(mAtom.idx(1,coupling.atom2),[nCell 1]);
-                aidx2 = aidx2(pIdx);
-                rad1 = radius(aidx1)*param.radius2;
-                rad2 = radius(aidx2)*param.radius2;
-            case 'fix'
-                rad1 = param.radius2;
-                rad2 = param.radius2;
-            otherwise
-                error('plotmag:WrongInput','The given radius string is invalid!');
-        end
-        pos1 = pos1 + bsxfun(@times,rad1./lxyz,dpos);
-        pos2 = pos2 - bsxfun(@times,rad2./lxyz,dpos);
-    case 'line'
-        type0 = 'line';
-        % change linestyle based on the matrix label
-        % 1 for continuous line
-        % 2 for dashed line
-        switch param.linestyle
-            case 'auto'
-                lineStyle0 = (cellfun(@(C)C(end),lLabel)=='-')+1;
-            case {'--' '-'}
-                lineStyle0 = param.linestyle;
-            otherwise
-                error('plotion:WrongInput','The given lineStyle string is illegal!')
-        end
-    case 'empty'
-        type0 = [];
-    otherwise
-        error('plotion:WrongInput','The given mode string is illegal!')
-end
-    
-switch param.linewidth
-    case 'fix'
-        lineWidth = param.linewidth0;
-    case 'lin'
-        absmat = permute(sumn(abs(mat),[1 2]),[1 3 2]);
-        lineWidth = absmat/max(absmat)*param.linewidth0;
-    case 'pow'
-        absmat = permute(sumn(abs(mat),[1 2]),[1 3 2]);
-        lineWidth = (absmat/max(absmat)).^param.widthpow*param.linewidth0;
-    otherwise
-        error('plotion:WrongInput','The given linewidth string is illegal!')
-end
+% plot ellipsoid
+% remove zero ellipsoids
+rmMat = permute(sumn(abs(mat),[1 2])==0,[1 3 2]);
 
-% plot bond vectors
-if ~isempty(type0)
-    swplot.plot('type',type0,'name','bond','position',cat(3,pos1,pos2),'text','',...
-        'figure',hFigure,'legend',[],'color',color,'R',param.radius0,...
-        'tooltip',false,'replace',param.replace,'lineStyle',lineStyle0,...
-        'data',matDat,'label',lLabel,'nmesh',param.nmesh,'ang',param.ang,...
-        'lineWidth',lineWidth,'lhead',param.lhead);
-end
+mat   = mat(:,:,~rmMat);
+pos   = pos(:,~rmMat);
+color = color(:,~rmMat);
+% calculating the main radiuses of the ellipsoid.
+[V, Rell] = eigorth(mat,1e-5);
+% creating positive definite matrix by adding constant to all
+% eigenvalues.
+maxR  = sqrt(max(sum(Rell.^2,1)));
+Rell = ((Rell+param.radius1)/(maxR+param.radius1))*param.scale*min(lxyz);
+% V*diag(R) vectorized
+%V = bsxfun(@times,V,permute(Rell,[3 1 2]));
+V = mmat(bsxfun(@times,V,permute(Rell,[3 1 2])),permute(V,[2 1 3]));
 
-% legend data
-lDat = getappdata(hFigure,'legend');
-
-if param.replace
-    % remove old legend entries
-    lIdx = ~ismember(lDat.name,'bond');
-    lDat.color = lDat.color(:,lIdx);
-    lDat.type  = lDat.type(:,lIdx);
-    lDat.name  = lDat.name(:,lIdx);
-    lDat.text  = lDat.text(:,lIdx);
-    % redraw legend
-    swplot.legend('refresh',hFigure);
-end
-
-if param.legend
-    % append color
-    lDat.color = [lDat.color double(obj.matrix.color)/255];
-    % append type
-    lDat.type = [lDat.type (cellfun(@(C)C(end),obj.matrix.label) == '-')+1];
-    % append name
-    lDat.name = [lDat.name repmat({'bond'},1,numel(obj.matrix.label))];
-    % append text
-    lDat.text = [lDat.text obj.matrix.label];
-    
-    setappdata(hFigure,'legend',lDat);
-    swplot.legend('on',hFigure);
-end
+swplot.plot('type','ellipsoid','name','ion','position',pos,'text','',...
+    'figure',hFigure,'legend','','color',color,'T',V,...
+    'tooltip',false,'replace',param.replace,'nmesh',param.nmesh,...
+    'data',{},'label',{},'nmesh',param.nmesh,'translate',param.translate,...
+    'zoom',param.zoom,'alpha',param.alpha);
 
 if nargout > 0
     varargout{1} = hFigure;

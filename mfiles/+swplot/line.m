@@ -92,6 +92,8 @@ F = [2*L-1 2*L];
 
 % black color
 C = repmat([0 0 0],[size(V,1) 1]);
+% transparency
+A = ones(size(V,1),1);
 
 if isnumeric(lineStyle) || numel(lineWidth)>1
     % multiple patch forced
@@ -122,24 +124,28 @@ if isempty(hPatch)
         hPatch = gobjects(1,nObject);
         for ii = 1:nObject
             hPatch(ii) = patch('Parent',hAxis,'Vertices',V(2*ii+[-1 0],:),...
-                'Faces',[1 2],'FaceLighting','none',...
+                'Faces',[1 2],'FaceLighting','none','AlphaDataMapping','none',...
                 'EdgeColor',C(ii,:),'FaceColor','none','Tag','line',...
-                'LineStyle',repmat('-',[1 lineStyle(ii)]),'LineWidth',lineWidth(ii));
+                'LineStyle',repmat('-',[1 lineStyle(ii)]),'LineWidth',lineWidth(ii),...
+                'EdgeAlpha',A(ii));
         end
 
     else
     hPatch = patch('Parent',hAxis,'Vertices',V,'Faces',F,'FaceLighting','none',...
-        'EdgeColor','flat','FaceColor','none','Tag','line',...
-        'FaceVertexCData',C,'LineStyle',lineStyle,'LineWidth',lineWidth);
+        'EdgeColor','flat','FaceColor','none','Tag','line','AlphaDataMapping','none',...
+        'FaceVertexCData',C,'LineStyle',lineStyle,'LineWidth',lineWidth,...
+        'EdgeAlpha','flat','FaceVertexAlphaData',A);
     end
 else
     % add to existing patch
     V0 = get(hPatch,'Vertices');
     F0 = get(hPatch,'Faces');
     C0 = get(hPatch,'FaceVertexCData');
+    A0 = get(hPatch,'FaceVertexAlphaData');
     % number of existing faces
     nV0 = size(V0,1);
-    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
+    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C],...
+        'FaceVertexAlphaData',[A0;A]);
 end
 
 if strcmp(get(hAxis,'Tag'),'swaxis') && strcmp(lineStyle,'-') && lineWidth == 0.5 && ~mPatch

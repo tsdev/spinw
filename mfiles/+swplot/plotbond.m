@@ -140,10 +140,10 @@ inpForm.defval = [inpForm.defval {[0;0;0] true      []      30    0.3     0.3   
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]   [1 1] [1 1]   [1 1]     [1 1]     }];
 inpForm.soft   = [inpForm.soft   {false   false     true    false false   false     false     }];
 
-inpForm.fname  = [inpForm.fname  {'radius1' 'translate' 'zoom'}];
-inpForm.defval = [inpForm.defval {0.08      true         true }];
-inpForm.size   = [inpForm.size   {[1 1]     [1 1]        [1 1]}];
-inpForm.soft   = [inpForm.soft   {false     false        false}];
+inpForm.fname  = [inpForm.fname  {'radius1' 'translate' 'zoom' 'color2'}];
+inpForm.defval = [inpForm.defval {0.08      true         true  'auto'  }];
+inpForm.size   = [inpForm.size   {[1 1]     [1 1]        [1 1] [1 -11] }];
+inpForm.soft   = [inpForm.soft   {false     false        false false   }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -306,11 +306,18 @@ lxyz = sqrt(sum((BV*dpos).^2,1));
 pos1 = bsxfun(@plus,pos1,param.shift);
 pos2 = bsxfun(@plus,pos2,param.shift);
 
-% color
+% color of the bonds
 if strcmp(param.color,'auto')
     color = double(obj.matrix.color(:,matidx));
 else
     color = repmat(swplot.color(param.color),[1 nBond]);
+end
+
+% color of the objects on the bond
+if strcmp(param.color2,'auto')
+    color2 = color;
+else
+    color2 = repmat(swplot.color(param.color2),[1 nBond]);
 end
 
 % save original matrix values into data
@@ -343,7 +350,7 @@ switch param.mode2
         maxDM = sqrt(max(matDM2));
         % scale and convert vectors to RLU
         vecDM = BV\((matDM/maxDM)*param.scale*min(lxyz));
-        colDM = color(:,~zeroDM);
+        colDM = color2(:,~zeroDM);
         
         swplot.plot('type','arrow','name','bond_mat','position',cat(3,posDM,posDM+vecDM),'text','',...
             'figure',hFigure,'legend',lLabel,'color',colDM,'R',param.radius1,...
@@ -364,7 +371,7 @@ switch param.mode2
         
         matSym = matSym(:,:,~rmSym);
         posSym = (pos1(:,~rmSym)+pos2(:,~rmSym))/2;
-        colSym = color(:,~rmSym);
+        colSym = color2(:,~rmSym);
         % calculating the main radiuses of the ellipsoid.
         [V, Rell] = eigorth(matSym,1e-5);
         % creating positive definite matrix by adding constant to all

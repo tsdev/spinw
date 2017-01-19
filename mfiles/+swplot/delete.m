@@ -52,16 +52,18 @@ if ismember(fPatch,handle)
     F  = get(fPatch,'Faces');
     V  = get(fPatch,'Vertices');
     C  = get(fPatch,'FaceVertexCData');
+    A  = get(fPatch,'FaceVertexAlphaData');
     % delete faces and vertices
     fToDel = ismember(fn,number);
     vToDel = F(fToDel,:);
     F(fToDel,:) = [];
     C(fToDel,:) = [];
+    A(fToDel,:) = [];
     V(vToDel(:),:) = [];
     
     % renumber the face indices change old values to new values
     newF = changem(F,1:size(V,1),unique(F(:)'));
-    set(fPatch,'Faces',newF,'Vertices',V,'FaceVertexCData',C);
+    set(fPatch,'Faces',newF,'Vertices',V,'FaceVertexCData',C,'FaceVertexAlphaData',A);
     setappdata(fPatch,'facenumber',fn(~fToDel));
     % remove from handle list
     handle(handle==fPatch) = [];
@@ -73,15 +75,17 @@ if ismember(ePatch,handle)
     F  = get(ePatch,'Faces');
     V  = get(ePatch,'Vertices');
     C  = get(ePatch,'FaceVertexCData');
+    A  = get(fPatch,'FaceVertexAlphaData');
     % delete faces and vertices
     vToDel = ismember(vn,number);
     fToDel = ismember(F(:,1),find(vToDel));
     F(fToDel,:) = [];
     C(vToDel,:) = [];
+    A(vToDel,:) = [];
     V(vToDel,:) = [];
     % renumber the face indices change old values to new values
     newF = changem(F,1:size(V,1),unique(F(:)'));
-    set(ePatch,'Faces',newF,'Vertices',V,'FaceVertexCData',C);
+    set(ePatch,'Faces',newF,'Vertices',V,'FaceVertexCData',C,'FaceVertexAlphaData',A);
     setappdata(ePatch,'vertexnumber',vn(~vToDel));
     % remove from handle list
     handle(handle==ePatch) = [];

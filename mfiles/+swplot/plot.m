@@ -37,6 +37,10 @@ function varargout = plot(varargin)
 %           nObject]. Values are RGB triples with values between [0 255].
 %           Can be also string or cell of strings with the name of the
 %           colors, for details see swplot.color. Default is red.
+% alpha     Transparency of objects (1 non-transparent, 0 transparent)
+%           defined as a single number for unitform transparency or as a
+%           row vector with nObject element to set transparency per object.
+%           Default value is 1.
 % unit      String that determines the coordinate system:
 %               'lu'    Lattice units are used where the lattice is defined
 %                       by the stored basis (default).
@@ -89,10 +93,10 @@ inpForm.defval = [inpForm.defval {0.06    15      0.5     M0      P0       []   
 inpForm.size   = [inpForm.size   {[1 -11] [1 1]   [1 1]   [1 1]   [1 1]    [3 3 -10] [1 -12] [1 1]    }];
 inpForm.soft   = [inpForm.soft   {false   false   false   false   false    true      false   false    }];
 
-inpForm.fname  = [inpForm.fname  {'data'    'replace' 'lineWidth' 'fontSize' 'translate' 'zoom' }];
-inpForm.defval = [inpForm.defval {{}        false     0.5         fontSize0  true        true   }];
-inpForm.size   = [inpForm.size   {[-14 -15] [1 1]     [1 -16]     [1 1]      [1 1]       [1 1]  }];
-inpForm.soft   = [inpForm.soft   {true      false     false       false      false       false  }];
+inpForm.fname  = [inpForm.fname  {'data'    'replace' 'lineWidth' 'fontSize' 'translate' 'zoom' 'alpha'}];
+inpForm.defval = [inpForm.defval {{}        false     0.5         fontSize0  true        true   1      }];
+inpForm.size   = [inpForm.size   {[-14 -15] [1 1]     [1 -16]     [1 1]      [1 1]       [1 1]  [1 -17]}];
+inpForm.soft   = [inpForm.soft   {true      false     false       false      false       false  false  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -202,6 +206,8 @@ end
 color = swplot.color(param.color)/255;
 % number of colors
 nCol  = size(color,2);
+% number of transparency values
+nAlp  = numel(param.alpha);
 
 if nLabel ~= 1 && nLabel ~= nObject
     error('plot:WrongInput','Number of given labels does not agree with the number of object positions!')
@@ -249,7 +255,7 @@ end
 handle = num2cell(handle);
 [sObject(:).handle] = handle{:};
 
-% change color of objects
+% change color and transparency of objects
 if sObject(1).handle == getappdata(hFigure,'facepatch')
     % faces
     % there is only a single unique handle
@@ -260,11 +266,17 @@ if sObject(1).handle == getappdata(hFigure,'facepatch')
     else
         patchCData = color;
     end
+    if nAlp == 1
+        patchAlphaData = repmat(param.alpha,[1 nObject]);
+    else
+        patchAlphaData = param.alpha;
+    end
     
     % set colors per face
     fIdx = getappdata(hPatch,'facenumber');
     nI   = size(fIdx,1);
     C    = get(hPatch,'FaceVertexCData');
+    A    = get(hPatch,'FaceVertexAlphaData');
     nC   = size(C,1);
     
     nNewFace = nC-nI;
@@ -274,8 +286,10 @@ if sObject(1).handle == getappdata(hFigure,'facepatch')
     end
     
     patchCData = reshape(permute(repmat(patchCData,[1 1 nFacePerObject]),[3 2 1]),[],3);
+    patchAlphaData = reshape(repmat(patchAlphaData,[nFacePerObject 1]),[],1);
     C(end+(((-nNewFace+1):0)),:) = patchCData;
-    set(hPatch,'FaceVertexCData',C);
+    A(end+(((-nNewFace+1):0)),:) = patchAlphaData;
+    set(hPatch,'FaceVertexCData',C,'FaceVertexAlphaData',A);
 
 elseif sObject(1).handle == getappdata(hFigure,'edgepatch')
     % lines
@@ -287,11 +301,17 @@ elseif sObject(1).handle == getappdata(hFigure,'edgepatch')
     else
         patchCData = color;
     end
-    
+    if nAlp == 1
+        patchAlphaData = repmat(param.alpha,[1 nObject]);
+    else
+        patchAlphaData = param.alpha;
+    end
+
     % set colors per edge
     fIdx = getappdata(hPatch,'vertexnumber');
     nI   = size(fIdx,1);
     C    = get(hPatch,'FaceVertexCData');
+    A    = get(hPatch,'FaceVertexAlphaData');
     nC   = size(C,1);
     
     nNewEdge = nC-nI;
@@ -301,31 +321,48 @@ elseif sObject(1).handle == getappdata(hFigure,'edgepatch')
     end
     
     patchCData = reshape(permute(repmat(patchCData,[1 1 nEdgePerObject]),[3 2 1]),[],3);
+    patchAlphaData = reshape(repmat(patchAlphaData,[nEdgePerObject 1]),[],1);
     C(end+(((-nNewEdge+1):0)),:) = patchCData;
-    set(hPatch,'FaceVertexCData',C);
+    A(end+(((-nNewEdge+1):0)),:) = patchAlphaData;
+    set(hPatch,'FaceVertexCData',C,'FaceVertexAlphaData',A);
     
 else
-    % set color per handle
+    % set color and transparency per handle
     % change color of object using the right property prop0
     if strcmp(get(sObject(1).handle,'type'),'patch')
         if strcmp(get(sObject(1).handle,'FaceColor'),'none')
-            prop0 = 'EdgeColor';
+            propC = 'EdgeColor';
+            propA = 'EdgeAlpha';
         else
-            prop0 = 'FaceColor';
+            propC = 'FaceColor';
+            propA = 'FaceAlpha';
         end
     else
-        prop0 = 'Color';
+        propC = 'Color';
+        propA = '';
     end
         
     if nCol == 1
         % same color for every object
-        set([sObject(:).handle],prop0,color);
+        set([sObject(:).handle],propC,color);
     else
         % different color for each object
         for ii = 1:nObject
-            set([sObject(ii).handle],prop0,color(:,ii));
+            set([sObject(ii).handle],propC,color(:,ii));
         end
     end
+    if ~isempty(propA)
+        if nAlp == 1
+            % same transparency for every object
+            set([sObject(:).handle],propA,param.alpha);
+        else
+            % different transparency for each object
+            for ii = 1:nObject
+                set([sObject(ii).handle],propA,param.alpha(ii));
+            end
+        end
+    end
+
 end
 
 % save text

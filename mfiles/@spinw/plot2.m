@@ -132,14 +132,15 @@ inpForm.fname  = {'range'};
 inpForm.defval = {range0 };
 inpForm.size   = {[-1 -2]};
 inpForm.soft   = {false  };
-warning('on','sw_readparam:UnreadInput')
+
 warn0 = warning('query');
-warning('off','sw_readparam:UnreadInput');
+warning('off','sw_readparam:UnreadInput')
+warning('off','plotbond:EmptyPlot')
+
 paramG = sw_readparam(inpForm, varargG{:});
-warning(warn0);
 
 % sort options according to plot name
-plotName = {'atom' 'mag' 'bond' 'ion' 'base' 'cell'};
+plotName = {'atom' 'mag' 'bond' 'ion' 'cell' 'base'};
 nFun     = numel(plotName);
 plotIdx  = false(nFun,numel(optName));
 optShort = optName;
@@ -170,6 +171,24 @@ for ii = 1:nFun
         switchFun(ii) = true;
     end
     
+    switch plotName{ii}
+        % additional tests
+        case 'atom'
+        case 'mag'
+            if isempty(obj.mag_str.F)
+                % don't plot magnetic structure
+                switchFun(ii) = false;
+            end
+        case 'bond'
+            if isempty(obj.coupling.atom1)
+                % don't plot bonds
+                switchFun(ii) = false;
+            end
+        case 'ion'
+        case 'cell'
+        case 'base'
+    end
+    
 end
 
 if ~any(switchFun)
@@ -191,7 +210,7 @@ warning('on','sw_readparam:UnreadInput')
 if param.replace
     % delete all object that is created by spinw.plot
     % find objects to be deleted
-    name0 = {'base' 'base_label' 'atom' 'atom_label' 'bond' 'bond_mat' 'cell' 'mag'};
+    name0 = {'base' 'base_label' 'atom' 'atom_label' 'bond' 'bond_mat' 'cell' 'mag' 'ion' 'ion_edge'};
     sObj = swplot.findobj(hFigure,'name',name0);
     % delete them!
     swplot.delete([sObj(:).number]);
@@ -265,11 +284,13 @@ set(hFigure,'Name', 'SpinW plot()');
 drawnow
 
 % patch handles
-hPatch = [getappdata(hFigure,'facepatch') getappdata(hFigure,'edgepatch')];
+hPatch = findobj('type','patch');
 nFaces    = sum(cellfun(@(C)size(C,1),get(hPatch,'Faces')));
 nVertices = sum(cellfun(@(C)size(C,1),get(hPatch,'Vertices')));
 
 % ready
 fprintf0(obj.fileid,'%dk faces and %dk vertices are drawn.\nReady!\n',round(nFaces/1e3),round(nVertices/1e3));
+
+warning(warn0);
 
 end

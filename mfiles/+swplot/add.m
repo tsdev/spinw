@@ -51,7 +51,7 @@ sObject = getappdata(hFigure,'objects');
 
 % % fields of struct to store objects
 fNames = {'handle' 'number' 'name' 'type' 'label' 'position' 'text' 'legend' 'data'};
-% 
+%
 % if isappdata(hFigure,'objects')
 %     sObject = getappdata(hFigure,'objects');
 % else
@@ -160,72 +160,67 @@ for ii = 1:numel(fNames)
     end
 end
 
-% create faceindex data for facepatch type object
+% all handles
 hNew = [hAdd(:).handle];
-% find face patch objects
-hPatch   = getappdata(hFigure,'facepatch');
-facePatchIdx = find(hPatch==hNew);
-nFacePatch   = numel(facePatchIdx);
-
-% find edgepatch objects
-hEPatch      = getappdata(hFigure,'edgepatch');
-edgePatchIdx = find(hEPatch==hNew);
-nVertexPatch   = numel(edgePatchIdx);
-
-if nFacePatch > 0
+% check if single handle has multiple objects
+if nObjAdd>1 && hNew(1) == hNew(2)
+    % multiple objects within one patch
+    
+    % single handle
+    hPatch = hAdd(1).handle;
+    
     % lets check if all new hPatch handles are the same type of object
-    type0 = hAdd(facePatchIdx(1)).type;
-    if ~all(ismember({hAdd(facePatchIdx).type},type0))
+    type0 = hAdd(1).type;
+    if ~all(ismember({hAdd(:).type},type0))
         error('add:WrongInput','All patch objects have to be the same type!');
-    else
+    end
+    
+    if strcmp(get(hPatch,'FaceColor'),'flat')
+        % face patch
+        % lets check if all new hPatch handles are the same type of object
         fIdx = getappdata(hPatch,'facenumber');
-        nI = size(fIdx,1);
-        F  = get(hPatch,'Faces');
-        nF = size(F,1);
+        nI   = size(fIdx,1);
+        F    = get(hPatch,'Faces');
+        nF   = size(F,1);
         
-        nFacePerObject = (nF-nI)/nFacePatch;
+        nFacePerObject = (nF-nI)/nObjAdd;
         if ceil(nFacePerObject)-nFacePerObject > 0
             error('add:WrongInput','All patch objects have to be the same type!');
         end
         
-        fIdxAdd = repmat([hAdd(facePatchIdx).number],[nFacePerObject 1]);
+        fIdxAdd = repmat([hAdd(:).number],[nFacePerObject 1]);
         fIdx = [fIdx; fIdxAdd(:)];
         setappdata(hPatch,'facenumber',fIdx);
         
-    end
-end
-
-if nVertexPatch > 0
-    % lets check if all new hPatch handles are the same type of object
-    type0 = hAdd(edgePatchIdx(1)).type;
-    if ~all(ismember({hAdd(edgePatchIdx).type},type0))
-        error('add:WrongInput','All patch objects have to be the same type!');
-    else
+        
+    elseif strcmp(get(hPatch,'FaceColor'),'flat')
         fIdx = getappdata(hEPatch,'vertexnumber');
         nI = size(fIdx,1);
         V  = get(hEPatch,'Vertices');
         nV = size(V,1);
         
-        nVertexPerObject = (nV-nI)/nVertexPatch;
+        nVertexPerObject = (nV-nI)/nObjAdd;
         if ceil(nVertexPerObject)-nVertexPerObject > 0
             error('add:WrongInput','All patch objects have to be the same type!');
         end
         
-        fIdxAdd = repmat([hAdd(edgePatchIdx).number],[nVertexPerObject 1]);
+        fIdxAdd = repmat([hAdd(:).number],[nVertexPerObject 1]);
         fIdx = [fIdx; fIdxAdd(:)];
-        setappdata(hEPatch,'vertexnumber',fIdx);
+        setappdata(hPatch,'vertexnumber',fIdx);
         
     end
+    
+    if ~isempty(hTransform)
+        set(hPatch,'Parent',hTransform);
+    end
+    set(hPatch,'Clipping','Off');
+else
+    % add all new objects to the hgtransform
+    if ~isempty(hTransform)
+        set(hNew,'Parent',hTransform);
+    end
+    set(hNew,'Clipping','Off');
 end
-
-
-% add all the objects to the hgtransform object except the facepatch
-% handles that are already registered
-hNew([facePatchIdx edgePatchIdx]) = [];
-if ~isempty(hTransform)
-    set(hNew,'Parent',hTransform);
-end
-set(hNew,'Clipping','Off');
 
 % comb together the handles of the old and new graphical objects.
 sObject = [sObject hAdd(:)'];

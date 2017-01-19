@@ -187,30 +187,6 @@ c0 = cell(1,0);
 sInit = [fNames; repmat({c0},[1 numel(fNames)])];
 setappdata(hFigure,'objects',struct(sInit{:}));
 
-% empty patch object for showing graphics with faces
-hPatch = patch('Vertices',[],'Faces',zeros(0,3),'FaceLighting','flat',...
-    'EdgeColor','none','FaceColor','flat','Tag','facepatch','AlphaDataMapping','none',...
-    'FaceVertexCData',zeros(0,3),'Clipping','Off','FaceAlpha','flat',...
-    'FaceVertexAlphaData',zeros(0,1));
-if ~isempty(hTranslate)
-    set(hPatch,'Parent',hTranslate);
-end
-setappdata(hFigure,'facepatch',hPatch);
-% setup the face --> object number translation table
-setappdata(hPatch,'facenumber',zeros(0,1));
-
-% empty patch object for showing graphics with edges
-hPatch2 = patch('Vertices',[],'Faces',zeros(0,2),...
-    'EdgeColor','flat','FaceColor','none','Tag','edgepatch','AlphaDataMapping','none',...
-    'FaceVertexCData',zeros(0,3),'Clipping','Off','EdgeAlpha','flat',...
-    'FaceVertexAlphaData',zeros(0,1));
-if ~isempty(hTranslate)
-    set(hPatch2,'Parent',hTranslate);
-end
-setappdata(hFigure,'edgepatch',hPatch2);
-% setup the edge --> object number translation table
-setappdata(hPatch2,'vertexnumber',zeros(0,1));
-
 if nargout > 0
     hFigureOut = hFigure;
 end

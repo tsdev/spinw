@@ -13,10 +13,12 @@ function varargout = plot(varargin)
 %               'ellipsoid'     position specifies center
 %               'cylinder'      position specifies start and end points
 %               'circle'        position specifies center and normal vector
-%               'line'          position specifies start and end points
+%               'line'          position specifies start and end points (or
+%                               any number of points per curve)
 %               'text'          position specifies the center of the text
 % position  Position of the object/objects in a matrix with dimensions of
-%           [3 nObject 2]/[3 nObject] depending on the type of object.
+%           [3 nObject 2]/[3 nObject]/[3 nObject nPpoint] depending on the
+%           type of object.
 % name      String, the name of the object. It can be used for finding the
 %           object handles after plotting.
 % text      Text to appear in the tooltip of the swplot figure after
@@ -55,7 +57,13 @@ function varargout = plot(varargin)
 %           Dimensions are [3 3 nObject].
 % lineStyle Line style, default value is '-' for continuous lines. It can
 %           be also a vector with as many elements as many line segments.
-%           In this case 1 for continuous line, 2 for dashed line.
+%           In this case the numbers are equivalent to the following style
+%           format string:
+%               1   '-'
+%               2   '--'
+%               3   '-.'
+%               4   ':'
+%               5   'none'
 % lineWidth Line width, default value is 0.5, can be a vector with nObject
 %           columns for different width per line segment.
 % nMesh     Resolution of the ellipse surface mesh. Integer number that is
@@ -169,7 +177,7 @@ end
 % check size of position matrix
 pos0 = [2 1 2 2 2 1];
 pos  = param.position;
-if size(pos,3) ~= pos0(typeNum)
+if size(pos,3) ~= pos0(typeNum) && typeNum~=5
     error('plot:WrongInput','The given position matrix has wrong dimensions!');
 end
 
@@ -242,7 +250,9 @@ switch type
         % remove normal vectors (use nans)
         pos(:,:,2) = nan;
     case 'line'
-        handle = swplot.line(hAxis,xyz(:,:,1),xyz(:,:,2),param.lineStyle,param.lineWidth,true);
+        handle = swplot.line(hAxis,xyz,[],param.lineStyle,param.lineWidth,true);
+        % get the extremum positions
+        pos = cat(3,min(pos,[],3),max(pos,[],3));
     case 'text'
         textStr = param.text;
         if ~iscell(textStr)
@@ -256,76 +266,79 @@ handle = num2cell(handle);
 [sObject(:).handle] = handle{:};
 
 % change color and transparency of objects
-if sObject(1).handle == getappdata(hFigure,'facepatch')
-    % faces
-    % there is only a single unique handle
+if numel(handle)>1 && handle{1}==handle{2}
+    % all handle point to the same object, there is only a single unique
+    % handle
     hPatch = sObject(1).handle;
     
-    if nCol == 1
-        patchCData = repmat(color,[1 nObject]);
+    if strcmp(get(hPatch,'FaceColor'),'flat')
+        % it is a faces object
+        
+        if nCol == 1
+            patchCData = repmat(color,[1 nObject]);
+        else
+            patchCData = color;
+        end
+        if nAlp == 1
+            patchAlphaData = repmat(param.alpha,[1 nObject]);
+        else
+            patchAlphaData = param.alpha;
+        end
+        
+        % set colors per face
+        fIdx = getappdata(hPatch,'facenumber');
+        nI   = size(fIdx,1);
+        C    = get(hPatch,'FaceVertexCData');
+        A    = get(hPatch,'FaceVertexAlphaData');
+        nC   = size(C,1);
+        
+        nNewFace = nC-nI;
+        nFacePerObject = nNewFace/nObject;
+        if ceil(nFacePerObject)-nFacePerObject > 0
+            error('plot:WrongInput','All patch objects have to be the same type!');
+        end
+        
+        patchCData = reshape(permute(repmat(patchCData,[1 1 nFacePerObject]),[3 2 1]),[],3);
+        patchAlphaData = reshape(repmat(patchAlphaData,[nFacePerObject 1]),[],1);
+        C(end+(((-nNewFace+1):0)),:) = patchCData;
+        A(end+(((-nNewFace+1):0)),:) = patchAlphaData;
+        set(hPatch,'FaceVertexCData',C,'FaceVertexAlphaData',A);
+        
+    elseif strcmp(get(hPatch,'EdgeColor'),'flat')
+        % object has only edges
+        
+        if nCol == 1
+            patchCData = repmat(color,[1 nObject]);
+        else
+            patchCData = color;
+        end
+        if nAlp == 1
+            patchAlphaData = repmat(param.alpha,[1 nObject]);
+        else
+            patchAlphaData = param.alpha;
+        end
+        
+        % set colors per edge
+        fIdx = getappdata(hPatch,'vertexnumber');
+        nI   = size(fIdx,1);
+        C    = get(hPatch,'FaceVertexCData');
+        A    = get(hPatch,'FaceVertexAlphaData');
+        nC   = size(C,1);
+        
+        nNewEdge = nC-nI;
+        nEdgePerObject = nNewEdge/nObject;
+        if ceil(nEdgePerObject)-nEdgePerObject > 0
+            error('plot:WrongInput','All patch objects have to be the same type!');
+        end
+        
+        patchCData = reshape(permute(repmat(patchCData,[1 1 nEdgePerObject]),[3 2 1]),[],3);
+        patchAlphaData = reshape(repmat(patchAlphaData,[nEdgePerObject 1]),[],1);
+        C(end+(((-nNewEdge+1):0)),:) = patchCData;
+        A(end+(((-nNewEdge+1):0)),:) = patchAlphaData;
+        set(hPatch,'FaceVertexCData',C,'FaceVertexAlphaData',A);
     else
-        patchCData = color;
+        error('plot:WrongPatchObject','Patch object is wrong!');
     end
-    if nAlp == 1
-        patchAlphaData = repmat(param.alpha,[1 nObject]);
-    else
-        patchAlphaData = param.alpha;
-    end
-    
-    % set colors per face
-    fIdx = getappdata(hPatch,'facenumber');
-    nI   = size(fIdx,1);
-    C    = get(hPatch,'FaceVertexCData');
-    A    = get(hPatch,'FaceVertexAlphaData');
-    nC   = size(C,1);
-    
-    nNewFace = nC-nI;
-    nFacePerObject = nNewFace/nObject;
-    if ceil(nFacePerObject)-nFacePerObject > 0
-        error('plot:WrongInput','All patch objects have to be the same type!');
-    end
-    
-    patchCData = reshape(permute(repmat(patchCData,[1 1 nFacePerObject]),[3 2 1]),[],3);
-    patchAlphaData = reshape(repmat(patchAlphaData,[nFacePerObject 1]),[],1);
-    C(end+(((-nNewFace+1):0)),:) = patchCData;
-    A(end+(((-nNewFace+1):0)),:) = patchAlphaData;
-    set(hPatch,'FaceVertexCData',C,'FaceVertexAlphaData',A);
-
-elseif sObject(1).handle == getappdata(hFigure,'edgepatch')
-    % lines
-    % there is only a single unique handle
-    hPatch = sObject(1).handle;
-    
-    if nCol == 1
-        patchCData = repmat(color,[1 nObject]);
-    else
-        patchCData = color;
-    end
-    if nAlp == 1
-        patchAlphaData = repmat(param.alpha,[1 nObject]);
-    else
-        patchAlphaData = param.alpha;
-    end
-
-    % set colors per edge
-    fIdx = getappdata(hPatch,'vertexnumber');
-    nI   = size(fIdx,1);
-    C    = get(hPatch,'FaceVertexCData');
-    A    = get(hPatch,'FaceVertexAlphaData');
-    nC   = size(C,1);
-    
-    nNewEdge = nC-nI;
-    nEdgePerObject = nNewEdge/nObject;
-    if ceil(nEdgePerObject)-nEdgePerObject > 0
-        error('plot:WrongInput','All patch objects have to be the same type!');
-    end
-    
-    patchCData = reshape(permute(repmat(patchCData,[1 1 nEdgePerObject]),[3 2 1]),[],3);
-    patchAlphaData = reshape(repmat(patchAlphaData,[nEdgePerObject 1]),[],1);
-    C(end+(((-nNewEdge+1):0)),:) = patchCData;
-    A(end+(((-nNewEdge+1):0)),:) = patchAlphaData;
-    set(hPatch,'FaceVertexCData',C,'FaceVertexAlphaData',A);
-    
 else
     % set color and transparency per handle
     % change color of object using the right property prop0
@@ -341,7 +354,7 @@ else
         propC = 'Color';
         propA = '';
     end
-        
+    
     if nCol == 1
         % same color for every object
         set([sObject(:).handle],propC,color);
@@ -362,7 +375,7 @@ else
             end
         end
     end
-
+    
 end
 
 % save text

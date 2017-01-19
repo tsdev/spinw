@@ -105,6 +105,8 @@ inpForm.defval = [inpForm.defval {0.5      0.07   false      true         true }
 inpForm.size   = [inpForm.size   {[1 1]   [1 1]   [1 1]      [1 1]        [1 1]}];
 inpForm.soft   = [inpForm.soft   {false   false   false      false        false}];
 
+% TODO param.scale
+
 param = sw_readparam(inpForm, varargin{:});
 
 if isempty(param.figure)

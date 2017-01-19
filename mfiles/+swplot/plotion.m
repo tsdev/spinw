@@ -39,8 +39,9 @@ function varargout = plotion(varargin)
 %               'colorname' All ellipsoid will have the same given color.
 %               [R G B]     RGB code of the color that fix the color of all
 %                           ellipsoid.
-% color2    Color of the main circles, default is [0 0 0] for black. Can be
-%           either a row vector of RGB code or string of a color name.
+% color2    Color of the main circles, default is 'auto' when the ellipses
+%           will have the same color as the ellipsoids. Can be either a row
+%           vector of RGB code or string of a color name.
 % nMesh     Resolution of the ellipse surface mesh. Integer number that is
 %           used to generate an icosahedron mesh with #mesh number of
 %           additional triangulation, default value is stored in
@@ -75,14 +76,14 @@ nPatch0   = swpref.getpref('npatch',[]);
 range0    = [0 1;0 1;0 1];
 
 inpForm.fname  = {'range' 'legend' 'label' 'scale' 'linewidth' 'alpha'};
-inpForm.defval = {range0  true     true    1/3     'fix'       0.3    };
+inpForm.defval = {range0  true     true    1/3     0.5         0.3    };
 inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 3]       [1 1]  };
 inpForm.soft   = {false   false    false   false   false       false  };
 
-inpForm.fname  = [inpForm.fname  {'mode'  'color' 'nmesh' 'npatch'}];
-inpForm.defval = [inpForm.defval {'aniso' 'auto'  nMesh0  nPatch0 }];
-inpForm.size   = [inpForm.size   {[1 -4]  [1 -5]  [1 1]   [1 1]   }];
-inpForm.soft   = [inpForm.soft   {true    false   false   false   }];
+inpForm.fname  = [inpForm.fname  {'mode'  'color' 'nmesh' 'npatch' 'color2'}];
+inpForm.defval = [inpForm.defval {'aniso' 'auto'  nMesh0  nPatch0  'auto'  }];
+inpForm.size   = [inpForm.size   {[1 -4]  [1 -5]  [1 1]   [1 1]    [1 -7]  }];
+inpForm.soft   = [inpForm.soft   {true    false   false   false    false   }];
 
 inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'rangeunit' 'tooltip'}];
 inpForm.defval = [inpForm.defval {[]       []    'lu'        true     }];
@@ -144,7 +145,7 @@ end
 mAtom  = obj.matom;
 
 % generate bonds, but don't sort the bonds on DM interactions
-[SS, SI] = intmatrix(obj,'plotmode',true,'extend',false,'sortDM',false,'zeroC',false,'nExt',[1 1 1]);
+[~, SI] = intmatrix(obj,'plotmode',true,'extend',false,'sortDM',false,'zeroC',false,'nExt',[1 1 1]);
 
 switch param.mode
     case 'aniso'
@@ -201,6 +202,9 @@ mIdx = mIdx(pIdx);
 mIdx = mIdx(:)';
 mat  = mat(:,:,mIdx);
 
+% number of ellipse to plot
+nEllipse = size(mat,3);
+
 % color
 if strcmp(param.color,'auto')
     color = double(obj.unit_cell.color(:,mAtom.idx(mIdx)));
@@ -219,10 +223,12 @@ end
 pos = bsxfun(@plus,pos,param.shift);
 
 % length of shortest bond for scaling
-if ~isempty(SS.all)
-    bondlu = mAtom.r(:,SS.all(5,:))+double(SS.all(1:3,:))-mAtom.r(:,SS.all(4,:));
+if ~isempty(obj.coupling.atom1)
+    bondlu = mAtom.r(:,obj.coupling.atom2(1))+double(obj.coupling.dl(:,1))-mAtom.r(:,obj.coupling.atom1(1));
     % minimum length of bond in Angstrom
     lxyz = min(sqrt(sum((BV*bondlu).^2,1)));
+else
+    lxyz = 3;
 end
 
 
@@ -246,8 +252,41 @@ V = mmat(bsxfun(@times,V,permute(Rell,[3 1 2])),permute(V,[2 1 3]));
 swplot.plot('type','ellipsoid','name','ion','position',pos,'text','',...
     'figure',hFigure,'legend','','color',color,'T',V,...
     'tooltip',false,'replace',param.replace,'nmesh',param.nmesh,...
-    'data',{},'label',{},'nmesh',param.nmesh,'translate',param.translate,...
+    'data',{},'label',{},'translate',param.translate,...
     'zoom',param.zoom,'alpha',param.alpha);
+
+if param.linewidth > 0
+    % draw circles
+    phi = linspace(0,2*pi,param.npatch+1);
+    circle = [sin(phi);cos(phi);phi*0];
+    % xy, xz and yz plane circles
+    circle = [circle circle([1 3 2],:) circle([3 1 2],:)];
+    
+    %posc = permute(sum(bsxfun(@times,V,permute(circle,[3 1 4 2])),2),[1 3 4 2]);
+    posc = permute(sum(bsxfun(@times,V,permute(circle,[3 1 4 2])),2),[1 3 4 2]);
+    
+    % convert to lu
+    posc = reshape(BV\reshape(posc,3,[]),3,nEllipse,[],3);
+    posc = reshape(permute(posc,[1 2 4 3]),3,3*nEllipse,[]);
+    % shift to the atomic positions
+    % color
+    if strcmp(param.color2,'auto')
+        color2 = color;
+    else
+        color2 = param.color2;
+    end
+    
+    if size(color2,2)>1 && ~ischar(color2)
+        color2 = repmat(color2,1,3);
+    end
+    
+    posc = bsxfun(@plus,posc,repmat(pos,[1 3]));
+    swplot.plot('type','line','name','ion_edge','position',posc,'text','',...
+        'figure',hFigure,'legend','','color',color2,...
+        'tooltip',false,'replace',param.replace,...
+        'data',{},'label',{},'translate',param.translate,...
+        'zoom',param.zoom,'alpha',param.alpha);
+end
 
 if nargout > 0
     varargout{1} = hFigure;

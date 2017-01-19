@@ -153,6 +153,11 @@ else
     hFigure = param.figure;
 end
 
+% take care of output
+if nargout > 0
+    varargout{1} = hFigure;
+end
+
 % takes care of spinw object saved/loaded in/from figure
 if isempty(param.obj)
     obj = getappdata(hFigure,'obj');
@@ -198,6 +203,7 @@ mAtom  = obj.matom;
 
 if isempty(SS.all)
     warning('plotbond:EmptyPlot','No bonds to plot!')
+    return
 end
 
 coupling        = struct;
@@ -491,10 +497,6 @@ end
 
 % save range
 setappdata(hFigure,'range',param.range);
-
-if nargout > 0
-    varargout{1} = hFigure;
-end
 
 if param.tooltip
     swplot.tooltip('on',hFigure);

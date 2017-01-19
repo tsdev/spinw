@@ -127,12 +127,6 @@ C = repmat([1 0 0],[size(F,1) 1]);
 % default transparency
 A = ones(size(F,1),1);
 
-if strcmp(get(hAxis,'Tag'),'swaxis')
-    % only work in the main plot axis of an swplot figure
-    hFigure = get(hAxis,'Parent');
-    hPatch = getappdata(hFigure,'facepatch');
-end
-
 if isempty(hPatch)
     % create patch
     hPatch = patch('Parent',hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...

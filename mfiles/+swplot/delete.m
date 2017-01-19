@@ -33,66 +33,66 @@ if any(number==0)
     swplot.legend('off',hFigure)
     setappdata(hFigure,'legend',struct('handle',gobjects(0),'text',{''},...
         'type',[],'color',[],'name',{''}));
-
+    
 else
     % find objects with the given numbers
     pIdx = ismember([sObj(:).number],number);
 end
 
-% remove facepatch and edgepatch from handle list
-fPatch = getappdata(hFigure,'facepatch');
-ePatch = getappdata(hFigure,'edgepatch');
-
 % all handles to delete
-handle = [sObj(pIdx).handle];
+handle = unique([sObj(pIdx).handle]);
 
-% empty face patch if necessary
-if ismember(fPatch,handle)
-    fn = getappdata(fPatch,'facenumber');
-    F  = get(fPatch,'Faces');
-    V  = get(fPatch,'Vertices');
-    C  = get(fPatch,'FaceVertexCData');
-    A  = get(fPatch,'FaceVertexAlphaData');
-    % delete faces and vertices
-    fToDel = ismember(fn,number);
-    vToDel = F(fToDel,:);
-    F(fToDel,:) = [];
-    C(fToDel,:) = [];
-    A(fToDel,:) = [];
-    V(vToDel(:),:) = [];
-    
-    % renumber the face indices change old values to new values
-    newF = changem(F,1:size(V,1),unique(F(:)'));
-    set(fPatch,'Faces',newF,'Vertices',V,'FaceVertexCData',C,'FaceVertexAlphaData',A);
-    setappdata(fPatch,'facenumber',fn(~fToDel));
-    % remove from handle list
-    handle(handle==fPatch) = [];
+% empty face patches if necessary
+for ii = 1:numel(handle)
+    hPatch = handle(ii);
+    if isappdata(hPatch,'facenumber')
+        fn = getappdata(hPatch,'facenumber');
+        F  = get(hPatch,'Faces');
+        V  = get(hPatch,'Vertices');
+        C  = get(hPatch,'FaceVertexCData');
+        A  = get(hPatch,'FaceVertexAlphaData');
+        % delete faces and vertices
+        fToDel = ismember(fn,number);
+        
+        if all(fToDel)
+            delete(hPatch);
+        elseif any(fToDel)
+            vToDel = F(fToDel,:);
+            F(fToDel,:) = [];
+            C(fToDel,:) = [];
+            A(fToDel,:) = [];
+            V(vToDel(:),:) = [];
+            % renumber the face indices change old values to new values
+            newF = changem(F,1:size(V,1),unique(F(:)'));
+            set(hPatch,'Faces',newF,'Vertices',V,'FaceVertexCData',C,'FaceVertexAlphaData',A);
+            setappdata(hPatch,'facenumber',fn(~fToDel));
+        end
+    elseif isappdata(hPatch,'vertexnumber')
+        vn = getappdata(hPatch,'vertexnumber');
+        F  = get(hPatch,'Faces');
+        V  = get(hPatch,'Vertices');
+        C  = get(hPatch,'FaceVertexCData');
+        A  = get(hPatch,'FaceVertexAlphaData');
+        % delete faces and vertices
+        vToDel = ismember(vn,number);
+        if all(vToDel)
+            delete(hPatch);
+        elseif any(vToDel)
+            fToDel = ismember(F(:,1),find(vToDel));
+            F(fToDel,:) = [];
+            C(vToDel,:) = [];
+            A(vToDel,:) = [];
+            V(vToDel,:) = [];
+            % renumber the face indices change old values to new values
+            newF = changem(F,1:size(V,1),unique(F(:)'));
+            set(hPatch,'Faces',newF,'Vertices',V,'FaceVertexCData',C,'FaceVertexAlphaData',A);
+            setappdata(hPatch,'vertexnumber',vn(~vToDel));
+        end
+    else
+        delete(hPatch);
+    end
 end
 
-% empty edge patch if necessary
-if ismember(ePatch,handle)
-    vn = getappdata(ePatch,'vertexnumber');
-    F  = get(ePatch,'Faces');
-    V  = get(ePatch,'Vertices');
-    C  = get(ePatch,'FaceVertexCData');
-    A  = get(fPatch,'FaceVertexAlphaData');
-    % delete faces and vertices
-    vToDel = ismember(vn,number);
-    fToDel = ismember(F(:,1),find(vToDel));
-    F(fToDel,:) = [];
-    C(vToDel,:) = [];
-    A(vToDel,:) = [];
-    V(vToDel,:) = [];
-    % renumber the face indices change old values to new values
-    newF = changem(F,1:size(V,1),unique(F(:)'));
-    set(ePatch,'Faces',newF,'Vertices',V,'FaceVertexCData',C,'FaceVertexAlphaData',A);
-    setappdata(ePatch,'vertexnumber',vn(~vToDel));
-    % remove from handle list
-    handle(handle==ePatch) = [];
-end
-
-% delete objects
-delete(handle);
 setappdata(hFigure,'objects',sObj(~pIdx));
 
 end

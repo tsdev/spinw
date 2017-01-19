@@ -3,6 +3,13 @@ function hPatch = line(varargin)
 %
 % hLine = SWPLOT.LINE(rStart, rEnd, {lineStyle}, {lineWidth},{multiPatch})
 %
+% Plots line disconnected segments between multiple rStart --> rEnd pairs
+% of coordinates.
+%
+% hLine = SWPLOT.LINE(r, [], {lineStyle}, {lineWidth},{multiPatch})
+%
+% Plots multiple continuous curves defined in the r matrix.
+%
 % hLine = SWPLOT.LINE(handle,...)
 %
 % Handle can be the handle of an axes object or a line object. It either
@@ -20,6 +27,11 @@ function hPatch = line(varargin)
 % rEnd      Coordinate(s) of the end point, either a 3 element vector or
 %           a matrix with dimensions [3 nLineSegment] to plot multiple line
 %           segments.
+% r         Matrix with dimensions [3 nCurve nPointPerCurve]. The function
+%           will plot a nCurve number of disconnected curves. The i-th
+%           curve will follow the x=r(1,i,:), y=r(2,i,:), z=r(3,i,:)
+%           (parameteric) curve.
+%
 % lineStyle Line style, default is '-' for continuous line.
 % lineWidth Line with in pt, default is 0.5.
 % mPatch    If true, a separate patch object will be created per line
@@ -48,47 +60,61 @@ if numel(varargin{1}) == 1
         hPatch = varargin{1};
     end
     rStart  = varargin{2};
-    rEnd    = varargin{3};
-    nArgExt = nargin-3;
-    argExt  = {varargin{4:end}};
+    nArgExt = nargin-2;
+    argExt  = {varargin{3:end}};
     
 else
     hAxis   = gca;
     hPatch  = [];
     rStart  = varargin{1};
-    rEnd    = varargin{2};
-    nArgExt = nargin-2;
-    argExt  = {varargin{3:end}};
+    
+    nArgExt = nargin-1;
+    argExt  = {varargin{2:end}};
     
 end
 
 if nArgExt > 0
-    lineStyle = argExt{1};
+    rEnd    = argExt{1};
+else
+    rEnd = [];
 end
+
 if nArgExt > 1
-    lineWidth = argExt{2};
+    lineStyle = argExt{2};
 end
 if nArgExt > 2
-    mPatch = argExt{3};
+    lineWidth = argExt{3};
+end
+if nArgExt > 3
+    mPatch = argExt{4};
 end
 
 if numel(rStart) == 3
     rStart = rStart(:);
     rEnd   = rEnd(:);
+end
+    
+if ~isempty(rEnd)
+    r = cat(3,rStart,rEnd);
 else
-    if size(rStart,1)~=3 || size(rEnd,1)~=3
-        error('line:WrongInput','To plot multiple line segment use [3 nSegment] matrices!');
-    end
+    r = rStart;
+end
+    
+if size(r,1)~=3
+    error('line:WrongInput','To plot multiple line segments use matrices with dimensions of [3 nSegment]!');
 end
 
 % number of line segments
-nObject = size(rStart,2);
+nObject = size(r,2);
+% number of vertices per curve
+nPoint = size(r,3);
 
 % create the vertices
-V = reshape(permute(cat(3,rStart,rEnd),[1 3 2]),3,[])';
+V = reshape(permute(r,[3 2 1]),[],3);
+%V = reshape(permute(cat(3,rStart,rEnd),[1 3 2]),3,[])';
 
-L = (1:nObject)';
-F = [2*L-1 2*L];
+L = bsxfun(@plus,(1:(nPoint-1))',(0:(nObject-1))*nPoint);
+F = [L(:) L(:)+1];
 
 % black color
 C = repmat([0 0 0],[size(V,1) 1]);
@@ -100,20 +126,19 @@ if isnumeric(lineStyle) || numel(lineWidth)>1
     mPatch = true;
 end
 
-if strcmp(get(hAxis,'Tag'),'swaxis') && ~mPatch && strcmp(lineStyle,'-') && lineWidth == 0.5
-    % make sure we are on the plot axis of an swobject
-    % add object to the existing edge patch, but only for continuous lines
-    hFigure = get(hAxis,'Parent');
-    hPatch = getappdata(hFigure,'edgepatch');
+% all allowed linse style
+lineStyle0 = {'-' '--' '-.' ':' 'none'};
+% line style string in a cell
+if ischar(lineStyle)
+    lineStyle = {lineStyle};
+else
+    lineStyle = lineStyle0(lineStyle);
 end
 
 if isempty(hPatch)
     % create new patch
     if mPatch
         % prepare lineStyle
-        if ischar(lineStyle)
-            lineStyle = numel(lineStyle);
-        end
         if numel(lineStyle) == 1
             lineStyle = repmat(lineStyle,[1 nObject]);
         end
@@ -123,17 +148,17 @@ if isempty(hPatch)
 
         hPatch = gobjects(1,nObject);
         for ii = 1:nObject
-            hPatch(ii) = patch('Parent',hAxis,'Vertices',V(2*ii+[-1 0],:),...
-                'Faces',[1 2],'FaceLighting','none','AlphaDataMapping','none',...
+            hPatch(ii) = patch('Parent',hAxis,'Vertices',V((1:nPoint)+(ii-1)*nPoint,:),...
+                'Faces',F((1:(nPoint-1)),:),'FaceLighting','none','AlphaDataMapping','none',...
                 'EdgeColor',C(ii,:),'FaceColor','none','Tag','line',...
-                'LineStyle',repmat('-',[1 lineStyle(ii)]),'LineWidth',lineWidth(ii),...
+                'LineStyle',lineStyle{ii},'LineWidth',lineWidth(ii),...
                 'EdgeAlpha',A(ii));
         end
 
     else
     hPatch = patch('Parent',hAxis,'Vertices',V,'Faces',F,'FaceLighting','none',...
         'EdgeColor','flat','FaceColor','none','Tag','line','AlphaDataMapping','none',...
-        'FaceVertexCData',C,'LineStyle',lineStyle,'LineWidth',lineWidth,...
+        'FaceVertexCData',C,'LineStyle',lineStyle{1},'LineWidth',lineWidth,...
         'EdgeAlpha','flat','FaceVertexAlphaData',A);
     end
 else
@@ -148,7 +173,7 @@ else
         'FaceVertexAlphaData',[A0;A]);
 end
 
-if strcmp(get(hAxis,'Tag'),'swaxis') && strcmp(lineStyle,'-') && lineWidth == 0.5 && ~mPatch
+if strcmp(get(hAxis,'Tag'),'swaxis') && ~mPatch
     % replicate the arrow handle to give the right number of added objects
     hPatch = repmat(hPatch,[1 nObject]);
 end

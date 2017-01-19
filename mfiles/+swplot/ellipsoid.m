@@ -53,11 +53,7 @@ if numel(varargin{1}) == 1
     else
         mesh = [];
     end
-    if nargin > 4
-        useCommonPatch = varargin{5};
-    else
-        useCommonPatch = true;
-    end
+    
 else
     hAxis  = gca;
     hPatch = [];
@@ -68,12 +64,6 @@ else
     else
         mesh = [];
     end
-    if nargin > 3
-        useCommonPatch = varargin{4};
-    else
-        useCommonPatch = true;
-    end
-
 end
 
 if isempty(mesh)
@@ -112,32 +102,15 @@ end
 NV = size(V0,1);
 
 % fast vertices
-V = reshape(permute(bsxfun(@plus,sum(bsxfun(@times,T,permute(V0,[3 2 4 1])),1),permute(R0,[3 1 2])),[4 3 2 1]),[],3);
+%V = reshape(permute(bsxfun(@plus,sum(bsxfun(@times,T,permute(V0,[3 2 4 1])),1),permute(R0,[3 1 2])),[4 3 2 1]),[],3);
+V = reshape(permute(bsxfun(@plus,sum(bsxfun(@times,T,permute(V0,[3 2 4 1])),2),permute(R0,[1 3 2])),[4 3 1 2]),[],3);
 % fast faces
 F = reshape(bsxfun(@plus,permute(F0,[1 3 2]),((1:nObject)-1)*NV),[],3);
-
-% slow loop
-%NF = size(F0,1);
-%V = zeros(NV*nObject,3);
-%F = zeros(NF*nObject,3);
-%
-% for ii = 1:nObject
-%     % vertices
-%     V((1:NV)+(ii-1)*NV,:) = bsxfun(@plus,T(:,:,ii)*V0',R0(:,ii))';
-%     % faces
-%     %F((1:NF)+(ii-1)*NF,:) = F0+(ii-1)*NV;
-% end
 
 % default red color
 C = repmat([1 0 0],[size(F,1) 1]);
 % default transparency
 A = ones(size(F,1),1);
-
-if strcmp(get(hAxis,'Tag'),'swaxis') && useCommonPatch
-    % only work in the main plot axis of an swplot figure
-    hFigure = get(hAxis,'Parent');
-    hPatch = getappdata(hFigure,'facepatch');
-end
 
 if isempty(hPatch)
     % create patch
@@ -155,8 +128,9 @@ else
         'FaceVertexAlphaData',[A0;A]);
 end
 
-if strcmp(get(hAxis,'Tag'),'swaxis') && useCommonPatch
+if strcmp(get(hAxis,'Tag'),'swaxis')
     % replicate the arrow handle to give the right number of added objects
+    % for swplot figure
     hPatch = repmat(hPatch,[1 nObject]);
 end
 

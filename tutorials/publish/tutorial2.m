@@ -45,8 +45,8 @@ AFMchain.genmagstr('mode','direct','k',[1/2 0 0],'n',[1 0 0],'S',[0 0; 1 -1;0 0]
 
 AFMchain.genmagstr('mode','helical','k',[1/2 0 0],'n',[1 0 0],'S',[0; 1; 0],'nExt',[2 1 1]); 
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AFMchain.mag_str
-AFMchain.mag_str.S
+AFMchain.magstr
+AFMchain.magstr.S
 
 %%% Ground state energy
 display('Ground state energy (meV/spin)')

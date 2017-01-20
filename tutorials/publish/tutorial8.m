@@ -35,8 +35,8 @@ plot(AF33kagome,'range',[3 3 1],'zoom',-0.8)
 S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr('mode','helical','k',[-1/3 -1/3 0],'n',[0 0 1],'unitS','lu','S',S0,'nExt',[3 3 1]);
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AF33kagome.mag_str 
-AF33kagome.mag_str.S 
+AF33kagome.magstr 
+AF33kagome.magstr.S 
 display('Magnetic atoms as columns:')
 AF33kagome.magtable.R
 display('Magnetic spins:')
@@ -67,8 +67,8 @@ sw_plotspec(kag33Spec,'mode',3,'dE',0.05,'axLim',[0 2.5],'dashed',true)
 S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr('mode','helical','k',[-1/3 -1/3 0],'n',[0 0 1],'unitS','lu','S',S0,'nExt',[1 1 1]);
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AF33kagome.mag_str 
-AF33kagome.mag_str.S 
+AF33kagome.magstr 
+AF33kagome.magstr.S 
 display('Magnetic atoms as columns:')
 AF33kagome.magtable.R
 display('Magnetic spins:')

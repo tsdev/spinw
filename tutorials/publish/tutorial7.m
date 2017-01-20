@@ -37,8 +37,8 @@ plot(AFkagome,'range',[3 3 1],'zoom',-0.5)
 S0 = [1 -2 1; 2 -1 -1; 0 0 0];
 AFkagome.genmagstr('mode','direct','k',[0 0 0],'n',[0 0 1],'unitS','lu','S',S0); 
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AFkagome.mag_str
-AFkagome.mag_str.S
+AFkagome.magstr
+AFkagome.magstr.S
 display('Magnetic atoms as columns:')
 AFkagome.magtable.R
 display('Magnetic spins:')

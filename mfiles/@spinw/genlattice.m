@@ -28,8 +28,8 @@ function R = genlattice(obj, varargin)
 % R         Rotation matrix that brings the input basis vector to the SpinW
 %           compatible form. Optional.
 %
-% Alternatively the lattice parameters can be given directly when the sw
-% object is created using: sw(inpStr), where struct contains the fields
+% Alternatively the lattice parameters can be given directly when the spiw
+% object is created using: spinw(inpStr), where struct contains the fields
 % with initial parameters, e.g.:
 %   inpStr.lattice.lat_const = [3 3 4];
 %

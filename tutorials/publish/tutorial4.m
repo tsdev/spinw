@@ -3,7 +3,7 @@
 
 AFsq = spinw; 
 AFsq.fileid(0)
-AFsq.genlattice('lat_const',[3 3 10],'angled',[90 90 90],'sqgr','P 1')
+AFsq.genlattice('lat_const',[3 3 10],'angled',[90 90 90],'spgr','P 1')
 AFsq.addatom('r',[0 0 0],'S', 1,'label','Cu1','color','b');
 display('Atomic positions as columns:') 
 AFsq.atom.r 
@@ -44,8 +44,8 @@ plot(AFsq,'range',[2 2 0.5],'zoom',-1)
 
 AFsq.genmagstr('mode','helical','k',[1/2 1/2 0],'n',[0 0 1], 'S',[1; 0; 0],'nExt',[1 1 1]);  
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AFsq.mag_str 
-AFsq.mag_str.S
+AFsq.magstr 
+AFsq.magstr.S
 display('Magnetic atoms as columns:')
 AFsq.magtable.R
 display('Magnetic spins:')

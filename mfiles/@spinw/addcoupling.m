@@ -188,7 +188,7 @@ param.sym  = int32(param.sym);
 
 if any(ismember(Jmod(:),param.mat))
     warning('sw:addcoupling:CouplingIdxWarning',['Same matrix already '...
-        'assigned on some coupling, dublicate assigments are removed!']);
+        'assigned on some coupling, duplicate assigments are removed!']);
 end
 
 if isempty(param.mat)

@@ -40,8 +40,8 @@ plot(FMkagome,'range',[2 2 1],'zoom',1.2)
 
 FMkagome.genmagstr('mode','helical','k',[0 0 0],'n',[0 1 0],'S',[0 1 0])
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-FMkagome.mag_str
-FMkagome.mag_str.S
+FMkagome.magstr
+FMkagome.magstr.S
 display('Ground state energy before optimization')
 FMkagome.energy
 plot(FMkagome,'range',[2 2 1])

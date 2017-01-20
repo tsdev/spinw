@@ -43,8 +43,8 @@ plot(J1J2chain,'range',[3 0.9 0.9],'zoom',0.8)
 
 J1J2chain.genmagstr('mode','helical', 'k',[0.25 0 0], 'n',[0 0 1], 'S',[1; 0; 0], 'nExt',[1 1 1])
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-J1J2chain.mag_str
-J1J2chain.mag_str.S
+J1J2chain.magstr
+J1J2chain.magstr.S
 display('Ground state energy before optimization (meV/spin)')
 J1J2chain.energy
 plot(J1J2chain,'range',[3 0.9 0.9])
@@ -64,8 +64,8 @@ optRes = J1J2chain.optmagstr('func',@gm_planar,'xmin',x1,'xmax',x2,'nRun',10);
 display('Ground state energy after optimization (meV/spin)')
 J1J2chain.energy
 display('Optimized magnetic structure with spins as columns, xyz as rows:')
-J1J2chain.mag_str 
-J1J2chain.mag_str.S
+J1J2chain.magstr 
+J1J2chain.magstr.S
 plot(J1J2chain,'range',[3 0.9 0.9])
 
 %% Spin wave spectrum

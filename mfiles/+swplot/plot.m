@@ -12,12 +12,14 @@ function varargout = plot(varargin)
 %               'arrow'         position specifies start and end points
 %               'ellipsoid'     position specifies center
 %               'cylinder'      position specifies start and end points
+%               'polyhedron'    position specifies the vertices of the
+%                               convex polyhedron or polygon
 %               'circle'        position specifies center and normal vector
 %               'line'          position specifies start and end points (or
 %                               any number of points per curve)
 %               'text'          position specifies the center of the text
 % position  Position of the object/objects in a matrix with dimensions of
-%           [3 nObject 2]/[3 nObject]/[3 nObject nPpoint] depending on the
+%           [3 nObject 2]/[3 nObject]/[3 nObject nPoint] depending on the
 %           type of object.
 % name      String, the name of the object. It can be used for finding the
 %           object handles after plotting.
@@ -123,12 +125,12 @@ type = lower(param.type);
 % 4 'circle'
 % 5 'line'
 % 6 'text'
-legend0 = [1 3 1 1 0 0];
-type0   = {'arrow' 'ellipsoid' 'cylinder' 'circle' 'line'  'text' };
+legend0 = [1 3 1 1 0 0 1];
+type0   = {'arrow' 'ellipsoid' 'cylinder' 'circle' 'line'  'text' 'polyhedron'};
 % default color per object type :D
-col0    = {'red'   'blue'      'orange'   'gray'   'black' 'black'};
+col0    = {'red'   'blue'      'orange'   'gray'   'black' 'black' 'turquoise'};
 % create dictionary to convert string to number
-K       = containers.Map(type0,1:6);
+K       = containers.Map(type0,1:numel(col0));
 typeNum = K(type);
 
 if isempty(param.legend)
@@ -175,9 +177,9 @@ if param.replace
 end
 
 % check size of position matrix
-pos0 = [2 1 2 2 2 1];
+pos0 = [2 1 2 2 0 1 0];
 pos  = param.position;
-if size(pos,3) ~= pos0(typeNum) && typeNum~=5
+if pos0(typeNum)~=0 && size(pos,3) ~= pos0(typeNum)
     error('plot:WrongInput','The given position matrix has wrong dimensions!');
 end
 
@@ -242,6 +244,11 @@ switch type
         
         handle = swplot.ellipsoid(hAxis,xyz,param.T,param.nMesh);
         pos(:,:,2) = nan;
+    case 'polyhedron'
+        handle = swplot.polyhedron(hAxis,xyz);
+        % get the extremum positions
+        pos = cat(3,min(pos,[],3),max(pos,[],3));
+
     case 'cylinder'
         % closed cylinder
         handle = swplot.cylinder(hAxis,xyz(:,:,1),xyz(:,:,2),param.R,param.nPatch,true);

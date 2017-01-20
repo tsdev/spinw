@@ -6,7 +6,7 @@
 
 kagome4 = spinw; 
 kagome4.fileid(0)
-kagome4.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3');
+kagome4.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'spgr','P -3');
 kagome4.addatom('r', [1/2 0 0],'S', 1,'label','MCu1','color','r');
 display('Atomic positions as columns:') 
 kagome4.atom.r
@@ -43,8 +43,8 @@ plot(kagome4,'range',[2 2 1],'zoom',-0.8)
 
 kagome4.genmagstr('mode','helical','k',[0 0 0],'n',[0 1 0],'S',[0 1 0]); 
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-kagome4.mag_str
-kagome4.mag_str.S
+kagome4.magstr
+kagome4.magstr.S
 display('Ground state energy (meV/spin)')
 kagome4.energy
 plot(kagome4)

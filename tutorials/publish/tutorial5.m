@@ -6,7 +6,7 @@
 % by the sw.atom() function. The magnetic atoms is Cu+ with S=1 spin.
 
 FMkagome = spinw; 
-FMkagome.genlattice('lat_const',[6 6 5],'angled',[90 90 120],'sym','P -3')
+FMkagome.genlattice('lat_const',[6 6 5],'angled',[90 90 120],'spgr','P -3')
 FMkagome.addatom('r', [1/2 0 0], 'S', 1, 'label','MCu1','color','r')
 display('Atomic positions as columns:') 
 FMkagome.atom.r 
@@ -40,8 +40,8 @@ plot(FMkagome,'range',[2 2 1],'zoom',1.2)
 
 FMkagome.genmagstr('mode','helical','k',[0 0 0],'n',[0 1 0],'S',[0 1 0])
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-FMkagome.mag_str
-FMkagome.mag_str.S
+FMkagome.magstr
+FMkagome.magstr.S
 display('Ground state energy before optimization')
 FMkagome.energy
 plot(FMkagome,'range',[2 2 1])

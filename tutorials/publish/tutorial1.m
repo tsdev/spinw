@@ -10,7 +10,7 @@
 
 FMchain = spinw; 
 FMchain.fileid(0)
-FMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0)
+FMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'spgr','P 1')
 FMchain.addatom('r', [0 0 0],'S', 1,'label','MCu1','color','blue')
 FMchain.plot('range',[3 1 1],'zoom',0.5)
 
@@ -60,9 +60,9 @@ plot(FMchain,'range',[3 0.2 0.2],'pCell',false,'zoom',0.8)
 FMchain.genmagstr('mode','direct', 'k',[0 0 0],'n',[1 0 0],'S',[0; 1; 0]); 
 
 display('Magnetic structure:')
-FMchain.mag_str
+FMchain.magstr
 display('Spins 1 2 ... as columns, xyz components as rows:')
-FMchain.mag_str.S
+FMchain.magstr.S
 plot(FMchain,'range',[3 0.9 0.9])
 
 %% The energy of the ground state per spin

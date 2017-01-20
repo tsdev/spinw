@@ -4,7 +4,7 @@
 
 AFMchain = spinw; 
 AFMchain.fileid(0)
-AFMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0);
+AFMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'spgr', 'P 1');
 AFMchain.addatom('r',[0 0 0],'S',1,'label','MCu1','color','blue');
 display('Atomic positions as columns:')
 AFMchain.atom.r
@@ -45,8 +45,8 @@ AFMchain.genmagstr('mode','direct','k',[1/2 0 0],'n',[1 0 0],'S',[0 0; 1 -1;0 0]
 
 AFMchain.genmagstr('mode','helical','k',[1/2 0 0],'n',[1 0 0],'S',[0; 1; 0],'nExt',[2 1 1]); 
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AFMchain.mag_str
-AFMchain.mag_str.S
+AFMchain.magstr
+AFMchain.magstr.S
 
 %%% Ground state energy
 display('Ground state energy (meV/spin)')

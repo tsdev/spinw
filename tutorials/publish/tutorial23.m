@@ -1,7 +1,7 @@
 %% Define crystal structure of Sr3Fe2O7
 
 SrF = sw;
-SrF.genlattice('lat_const', [3.8 3.8 20.4],'sym','I 4/m m m')
+SrF.genlattice('lat_const', [3.8 3.8 20.4],'spgr','I 4/m m m')
 SrF.addatom('r',[0 0 0.0972],'S',2,'label','MFe4','color','blue')
 SrF.gencoupling
 

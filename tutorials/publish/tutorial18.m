@@ -12,7 +12,7 @@ Jip = 0.01;
 
 hK = spinw;
 hK.fileid(0)
-hK.genlattice('lat_const',[10.2 5.94 7.81],'angled',[90 117.7 90],'sym','C 2/m')
+hK.genlattice('lat_const',[10.2 5.94 7.81],'angled',[90 117.7 90],'spgr','C 2/m')
 
 hK.addatom('r',[0   0   0],'S',1/2,'label','MCu2','color','b')
 hK.addatom('r',[1/4 1/4 0],'S',1/2,'label','MCu2','color','k')
@@ -111,5 +111,5 @@ sw_plotspec(powSpec,'dE',0.01,'axlim',[0 0.05])
 
 %%
 %  Written by
-%  Gøran Nilsen and Sandor Toth
+%  G?ran Nilsen and Sandor Toth
 %  27-June-2014

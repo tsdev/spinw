@@ -74,7 +74,7 @@ par_opt.func = @gm_planar;
 par_opt.nRun = 10;
 optRes = yvo3.optmagstr(par_opt);
 Check canting angles (compare phi to theta):
-M   = yvo3.mag_str.S;
+M   = yvo3.magstr.S;
 phi = atan2(M(1,:),M(3,:))*180/pi;
 Calculating spin wave dispersion:
 specYVO3 = yvo3.spinwave({[3/4 3/4 0] [1/2 1/2 0] [1/2 1/2 1] });

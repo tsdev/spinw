@@ -4,7 +4,7 @@
 
 AFMchain = spinw; 
 AFMchain.fileid(0)
-AFMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0);
+AFMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'spgr', 'P 1');
 AFMchain.addatom('r',[0 0 0],'S',1,'label','MCu1','color','blue');
 display('Atomic positions as columns:')
 AFMchain.atom.r

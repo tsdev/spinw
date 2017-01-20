@@ -3,7 +3,7 @@
 % S=1 spin.
 
 J1J2chain = spinw; 
-J1J2chain.genlattice('lat_const',[3 8 10],'angled',[90 90 90],'sym',0);
+J1J2chain.genlattice('lat_const',[3 8 10],'angled',[90 90 90],'spgr','P 1');
 J1J2chain.addatom('r',[0 0 0],'S',1,'label','Cu1','color','blue');
 display('Atomic positions as columns:')
 J1J2chain.atom.r

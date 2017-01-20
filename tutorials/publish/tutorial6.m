@@ -6,7 +6,7 @@
 
 kagome4 = spinw; 
 kagome4.fileid(0)
-kagome4.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3');
+kagome4.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'spgr','P -3');
 kagome4.addatom('r', [1/2 0 0],'S', 1,'label','MCu1','color','r');
 display('Atomic positions as columns:') 
 kagome4.atom.r

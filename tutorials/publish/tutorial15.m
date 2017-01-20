@@ -11,7 +11,7 @@
 
 banb = spinw;
 banb.fileid(0)
-banb.genlattice('lat_const',[8.539 8.539 5.2414],'angled',[90 90 120],'sym','P 3 2 1');
+banb.genlattice('lat_const',[8.539 8.539 5.2414],'angled',[90 90 120],'spgr','P 3 2 1');
 banb.addatom('label','MFe3','r',[0.24964 0 1/2],'S',5/2,'color','gray');
 banb.gencoupling;
 plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'zoom',-0.5)

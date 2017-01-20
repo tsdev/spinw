@@ -5,7 +5,7 @@
 
 linipo = spinw;
 linipo.fileid(0)
-linipo.genlattice('lat_const', [10.02 5.86 4.68],'sym','P n m a');
+linipo.genlattice('lat_const', [10.02 5.86 4.68],'spgr','P n m a');
 linipo.addatom('r',[1/4 1/4 0],'S',1,'label','MNi2','color','b')
 linipo.gencoupling
 plot(linipo,'zoom',2)

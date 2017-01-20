@@ -10,7 +10,7 @@
 
 FMchain = spinw; 
 FMchain.fileid(0)
-FMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0)
+FMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'spgr','P 1')
 FMchain.addatom('r', [0 0 0],'S', 1,'label','MCu1','color','blue')
 FMchain.plot('range',[3 1 1],'zoom',0.5)
 

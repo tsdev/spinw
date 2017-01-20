@@ -3,7 +3,7 @@
 
 AFsq = spinw; 
 AFsq.fileid(0)
-AFsq.genlattice('lat_const',[3 3 10],'angled',[90 90 90],'sym',0)
+AFsq.genlattice('lat_const',[3 3 10],'angled',[90 90 90],'sqgr','P 1')
 AFsq.addatom('r',[0 0 0],'S', 1,'label','Cu1','color','b');
 display('Atomic positions as columns:') 
 AFsq.atom.r 

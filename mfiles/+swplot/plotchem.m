@@ -1,12 +1,12 @@
-function varargout = plotatom(varargin)
-% plots crystal structure
+function varargout = plotchem(varargin)
+% plots polyhedra or chemical bonds
 %
-% SWPLOT.PLOTATOM('option1', value1, ...)
+% SWPLOT.PLOTCHEM('option1', value1, ...)
 %
-% hFigure = SWPLOT.PLOTATOM(...)
+% hFigure = SWPLOT.PLOTCHEM(...)
 %
-% The function plots the crystal structure of a SpinW object onto an swplot
-% figure.
+% The function polyhedra around selected  atoms, or chemical bonds between
+% atoms an swplot figure.
 %
 % Input:
 %
@@ -22,32 +22,37 @@ function varargout = plotatom(varargin)
 %           string:
 %               'lu'        Lattice units (default).
 %               'xyz'       Cartesian coordinate system in Angstrom units.
-% mode      String, defines the types of atoms to plot:
-%               'all'       Plot all atoms (default).
-%               'mag'       Plot magnetic atoms only.
-%               'nonmag'    Plot non-magnetic atoms only.
+% mode      Selects the type of the plot:
+%               'poly'      Draws polyhedra around the center atoms
+%                           (default).
+%               'bond'      Draws bonds between given atoms.
+% atom1     Indices of atoms stored in spinw.unit_cell for the center atom
+%           of the polyhedra or the first atom of the bonds. Can be also a
+%           string that identifies the atoms by their labels.
+% atom2     Indices or label of the atoms stored in spinw.unit_cell. It
+%           determines the vertices of the polyhedra or gives the second
+%           atom of a bond.
+% limit     Can be a single number which will restrict the number of
+%           nearest negihbours of atom1 to connect. Can be also a vector
+%           that defines bonds/polyhedra between atoms that are within the
+%           given distance range stored as a row vector [dmin dmax].
+%           Default is 6 to plot octahedra around atom1.
+% alpha     Transparency of the plotted surfaces between 0 and 1 (1 for
+%           opaque, 0 for transparent). Default value is 1 for bonds and
+%           0.5 for polyhedron.
+% color     Surface color of the objects. Default is 'auto', when they are
+%           set to the color of atom1. [R G B] will fix the color of all
+%           bonds to a uniform one, can be also arbitrary color name (see
+%           swplot.color() function). Can be also 'none', when no faces
+%           will be shown.
+% color2    Color of the edges of the polyhedra (unused for bonds), default
+%           value is 'auto' when the edge gets the same color as the faces.
+%           'none' will remove the edges.
+% radius0   Radius of the cylinder, default value is 0.03.
 % figure    Handle of the swplot figure. Default is the selected figure.
 % legend    Whether to add the plot to the legend, default is true.
-% label     Whether to plot labels for atoms, default is true.
-% dText     Distance between item and its text label, default is 0.1
-%           Angstrom.
-% fontSize  Font size of the atom labels in pt, default is stored in
-%           swpref.getpref('fontsize').
-% radius0   Constant atom radius, default value is 0.3 Angstrom.
-% radius    Defines the atom radius:
-%               'fix'       Sets the radius of all atoms to the value
-%                           stored in radius0.
-%               'auto'      use radius data from database based on the atom
-%                           label multiplied by radius0 value.
-% color     Color of the atoms:
-%               'auto'      All atom gets the color stored in obj.unit_cell.
-%               'colorname' All atoms will have the same color.
-%               [R G B]     RGB code of the color that fix the color of all
-%                           atoms.
-% nMesh     Resolution of the ellipse surface mesh. Integer number that is
-%           used to generate an icosahedron mesh with #mesh number of
-%           additional triangulation, default value is stored in
-%           swpref.getpref('nmesh')
+% nPatch    Number of points on the curve for the cylinder, default
+%           value is stored in swpref.getpref('npatch').
 % tooltip   If true, the tooltips will be shown when clicking on atoms.
 %           Default is true.
 % shift     Column vector with 3 elements, all atomic positions will be
@@ -62,10 +67,10 @@ function varargout = plotatom(varargin)
 %
 % hFigure           Handle of the swplot figure.
 %
-% The name of the objects that are created called 'atom' and 'atom_label'.
-% To find the handles and the stored data on these objects, use e.g.
+% The name of the objects that are created called 'chem'. To find the
+% handles and the stored data on these objects, use e.g.
 %
-%   sObject = swplot.findobj(hFigure,'name','atom')
+%   sObject = swplot.findobj(hFigure,'name','chem')
 %
 
 
@@ -101,11 +106,6 @@ if isempty(param.figure)
     hFigure  = swplot.activefigure('plot');
 else
     hFigure = param.figure;
-end
-
-% take care of output
-if nargout > 0
-    varargout{1} = hFigure;
 end
 
 if isempty(param.obj) && ~isappdata(hFigure,'obj')
@@ -289,6 +289,10 @@ swplot.plot('type','ellipsoid','name','atom','position',pos,'R',radius,...
     'figure',hFigure,'color',color,'text','','legend',false,'label',lLabel,...
     'nmesh',param.nmesh,'tooltip',false,'data',posDat,'replace',param.replace,...
     'translate',param.translate,'zoom',param.zoom);
+
+if nargout > 0
+    varargout{1} = hFigure;
+end
 
 % save range
 setappdata(hFigure,'range',struct('range',param.range,'unit',param.unit));

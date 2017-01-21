@@ -37,11 +37,10 @@ if isappdata(obj,'facenumber')
             % generate text automatically
             if isappdata(hFigure,'obj')
                 swobj = getappdata(hFigure,'obj');
-                unit = swobj.unit.label;
             else
-                unit = [];
+                swobj = [];
             end
-            string = swplot.tooltipstring(sObject,unit);
+            string = swplot.tooltipstring(sObject,swobj);
             
             if isempty(string)
                 % use the given text
@@ -88,11 +87,10 @@ else
     if ~isempty(sObject)
         if isappdata(hFigure,'obj')
             swobj = getappdata(hFigure,'obj');
-            unit = swobj.unit.label;
         else
-            unit = [];
+            swobj = [];
         end
-        string = swplot.tooltipstring(sObject,unit);
+        string = swplot.tooltipstring(sObject,swobj);
         
         if isempty(string)
             string = sObject.text;

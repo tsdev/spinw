@@ -1,17 +1,20 @@
-function string = tooltipstring(sObject,unit)
+function string = tooltipstring(sObject,swobj)
 % generate tooltip string from the data of a graphical object
 %
-% SWPLOT.TOOLTIPSTRING(sObject,{unit})
+% SWPLOT.TOOLTIPSTRING(sObject,{swobj})
 %
 % Input:
 %
 % sObject   Struct, that contains the object data that is clicked on.
-% unit      Cell that defines the physical units.
+% swobj     SpinW object that provides data to the tooltip text, can be
+%           empty.
 %
 
-if nargin < 2
+if isempty(swobj)
     %       distance energy magnetic-field temperature
     unit = {'' '' '' ''};
+else
+    unit = swobj.unit.label;
 end
 
 % units of energy

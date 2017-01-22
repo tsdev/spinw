@@ -30,8 +30,8 @@ yig = spinw('https://drive.google.com/uc?export=download&id=0BzFs7CQXhehScVFfbkh
 % different colors for different atoms, thus the same color for the two Fe
 % sublattice. Here we color differently the two sublattice:
 
-yig.unit_cell.color(:,3) = sw_colorname('red');
-yig.unit_cell.color(:,2) = sw_colorname('blue');
+yig.unit_cell.color(:,3) = swplot.color('red');
+yig.unit_cell.color(:,2) = swplot.color('blue');
 
 % problem with the generators, the calculated generators from the .cif file
 % give only 64 positions, while there should be 96 positions:

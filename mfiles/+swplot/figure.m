@@ -19,14 +19,6 @@ function hFigureOut = figure(mode)
 % See also SWPLOT.ADD, HGTRANSFORM.
 %
 
-% Using code from:
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Copyright (c) 2008 Andrea Tagliasacchi
-% All Rights Reserved
-% email: ata2 at cs dot nospam dot sfu dot ca
-% $Revision: 1.0$ 10 February 2008
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % how to avoid overplotting?
 % if ~isempty(get(0,'CurrentFigure'))
 %     oldAxis = get(gcf,'CurrentAxes');

@@ -5,8 +5,8 @@
 yig = spinw('https://drive.google.com/uc?export=download&id=0BzFs7CQXhehScVFfbkhrZHo1Z1k');
 
 % color differently the two Fe sublattice
-yig.unit_cell.color(:,3) = sw_colorname('r');
-yig.unit_cell.color(:,2) = sw_colorname('b');
+yig.unit_cell.color(:,3) = swplot.color('r');
+yig.unit_cell.color(:,2) = swplot.color('b');
 %yig.unit_cell.color(:,3) = c0(1,:)*255;
 %yig.unit_cell.color(:,2) = c0(end,:)*255;
 

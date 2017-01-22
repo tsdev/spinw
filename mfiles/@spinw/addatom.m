@@ -27,7 +27,7 @@ function addatom(obj, varargin)
 %           atom.
 %           Alternatively a name of the color can be given as a string, for
 %           example 'White', for multiple atoms package it into a cell. For
-%           the list of colors, see sw_colorname().
+%           the list of colors, see swplot.color().
 % ox        Oxidation number given as a double or it will be determined
 %           automatically from label. Default is 0.
 % occ       Occupancy, given as double. Default is 1.
@@ -61,7 +61,7 @@ function addatom(obj, varargin)
 % Adds a magnetic atom (S=1) at position (0,0,0) and a non-magnetic one at
 % (1/2 0 0) with red and blue color respectively.
 %
-% See also SPINW.GENLATTICE, SPINW.ADDMATRIX, SW_COLORNAME, SW_MFF, SW_CFF.
+% See also SPINW.GENLATTICE, SPINW.ADDMATRIX, SWPLOT.COLOR, SW_MFF, SW_CFF.
 %
 
 if nargin < 2
@@ -218,7 +218,7 @@ end
 if isempty(newAtom.color)
     newAtom.color = sw_atomdata(newAtom.Z,'color');
 else
-    newAtom.color = sw_colorname(newAtom.color);
+    newAtom.color = swplot.color(newAtom.color);
 end
 
 % Generate spins and magnetic form factor, default is generated from the label of the atom.

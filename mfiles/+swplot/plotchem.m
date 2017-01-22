@@ -75,25 +75,24 @@ function varargout = plotchem(varargin)
 
 
 % default values
-fontSize0 = swpref.getpref('fontsize',[]);
 nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
 range0    = [0 1;0 1;0 1];
 
-inpForm.fname  = {'range' 'legend' 'label' 'dtext' 'fontsize' 'radius0'};
-inpForm.defval = {range0  true     true    0.1     fontSize0  0.3      };
-inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 1]      [1 1]    };
-inpForm.soft   = {false   false    false   false   false      false    };
+inpForm.fname  = {'range' 'legend' 'label' 'unit' 'mode' 'atom1' 'atom2'};
+inpForm.defval = {range0  true     true    'lu'   'poly' 1       2      };
+inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 -3] [1 -4] [1 -5]  [1 -6] };
+inpForm.soft   = {false   false    false   false  false  false   false  };
 
-inpForm.fname  = [inpForm.fname  {'radius' 'mode' 'color' 'nmesh' 'npatch'}];
-inpForm.defval = [inpForm.defval {'auto'   'all'  'auto'  nMesh0  nPatch0 }];
-inpForm.size   = [inpForm.size   {[1 -3]   [1 -4] [1 -5]  [1 1]   [1 1]   }];
-inpForm.soft   = [inpForm.soft   {false    false  false   false   false   }];
+inpForm.fname  = [inpForm.fname  {'limit' 'alpha' 'color' 'nmesh' 'npatch'}];
+inpForm.defval = [inpForm.defval {6       1       'auto'  nMesh0  nPatch0 }];
+inpForm.size   = [inpForm.size   {[1 -7]  [1 1]   [1 -8]  [1 1]   [1 1]   }];
+inpForm.soft   = [inpForm.soft   {false   false   false   false   false   }];
 
-inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'unit'  'tooltip'}];
-inpForm.defval = [inpForm.defval {[]       []    'lu'    true     }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]  [1 1]    }];
-inpForm.soft   = [inpForm.soft   {true     true  false   false    }];
+inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'color2' 'tooltip' 'radius0'}];
+inpForm.defval = [inpForm.defval {[]       []    'auto'   true      0.03     }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -9]  [1 1]      [1 1]    }];
+inpForm.soft   = [inpForm.soft   {true     true  false   false      false    }];
 
 inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'translate' 'zoom'}];
 inpForm.defval = [inpForm.defval {[0;0;0] true      true         true }];
@@ -109,7 +108,7 @@ else
 end
 
 if isempty(param.obj) && ~isappdata(hFigure,'obj')
-    warning('plotatom:WrongInput','No SpinW object to plot!');
+    warning('plotchem:WrongInput','No SpinW object to plot!');
     return
 end
 
@@ -122,18 +121,17 @@ else
     setappdata(hFigure,'base',obj.basisvector);
 end
 
-%lattice = obj.lattice;
 % the basis vectors in columns.
 BV = obj.basisvector;
 
 % set figure title
-set(hFigure,'Name', 'SpinW: Crystal structure');
+set(hFigure,'Name', 'SpinW: Chemical bonds');
 
 % change range, if the number of unit cells are given
 if numel(param.range) == 3
     param.range = [ zeros(3,1) param.range(:)];
 elseif numel(param.range) ~=6
-    error('plotatom:WrongInput','The given plotting range is invalid!');
+    error('plotchem:WrongInput','The given plotting range is invalid!');
 end
 
 range = param.range;
@@ -148,7 +146,7 @@ switch param.unit
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
         
     otherwise
-        error('plotatom:WrongInput','The given unit string is invalid!');
+        error('plotchem:WrongInput','The given unit string is invalid!');
 end
 
 % atom data
@@ -167,7 +165,7 @@ switch param.mode
         atom.idx = atom.idx(1,~atom.mag);
         atom.mag = atom.mag(1,~atom.mag);
     otherwise
-        error('plotatom:WrongInput','The given mode string is invalid!');
+        error('plotchem:WrongInput','The given mode string is invalid!');
 end
 
 nAtom = size(atom.r,2);
@@ -197,7 +195,7 @@ switch param.unit
 end
 
 if ~any(pIdx)
-    warning('plotatom:EmptyPlot','There are no atoms in the plotting range!')
+    warning('plotchem:EmptyPlot','There are no atoms in the plotting range!')
     return
 end
 
@@ -220,7 +218,7 @@ switch param.radius
     case 'fix'
         radius = param.radius0;
     otherwise
-        error('plotatom:WrongInput','The given radius option is invalid!');
+        error('plotchem:WrongInput','The given radius option is invalid!');
 end
 
 % prepare labels

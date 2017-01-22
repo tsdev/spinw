@@ -19,6 +19,14 @@ function mouse(hFigure, perspective)
 % See also CAMPROJ.
 %
 
+% Using code from:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Copyright (c) 2008 Andrea Tagliasacchi
+% All Rights Reserved
+% email: ata2 at cs dot nospam dot sfu dot ca
+% $Revision: 1.0$ 10 February 2008
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 if nargin == 0
     hFigure = swplot.activefigure;
 end

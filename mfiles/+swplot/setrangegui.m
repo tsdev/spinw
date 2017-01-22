@@ -16,7 +16,7 @@ function setrangegui(varargin)
 
 % take care that it is used as callback or just normally
 if nargin==2 || nargin==0
-    hFigure  = swplot.activefigure('plot');
+    hFigure  = swplot.activefigure;
 elseif nargin==1
     hFigure = varargin{1};
 elseif nargin==3

@@ -100,7 +100,7 @@ end
 end
 
 
-function[Anm]=AssociatedLaguerre(n,m,x)
+function Anm=AssociatedLaguerre(n,m,x)
 % Associated Laguerre
 
 Anm = 0;
@@ -109,7 +109,7 @@ for ii = 0:n
 end
 end
 
-function[Alm]=AssociatedLegendre(l,m,x)
+function Alm=AssociatedLegendre(l,m,x)
 % Associated Legendre
 
 Alm = 0;

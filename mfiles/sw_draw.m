@@ -30,7 +30,7 @@ function varargout = sw_draw(varargin)
 % color     Color of the drawn objects. Default is 'auto', when they are
 %           set to the color of atoms. [R G B] will fix the color of all
 %           bonds to a uniform one, can also arbitrary color name (see
-%           sw_colorname() function).
+%           swplot.color() function).
 % rBond     Radius of the cylinder of the bonds, default is 0.15 Angstrom.
 % surfRes   Number of points on the surface mesh, default is 30.
 %           
@@ -121,8 +121,8 @@ if strcmp(param.color,'auto')
     atom1.color0 = double(unit_cell.color(:,atom1.index0))/255;
     atom2.color0 = double(unit_cell.color(:,atom2.index0))/255;
 else
-    atom1.color0 = repmat(sw_colorname(param.color)/255,[1 numel(atom1.index0)]);
-    atom2.color0 = repmat(sw_colorname(param.color)/255,[1 numel(atom2.index0)]);
+    atom1.color0 = repmat(swplot.color(param.color)/255,[1 numel(atom1.index0)]);
+    atom2.color0 = repmat(swplot.color(param.color)/255,[1 numel(atom2.index0)]);
 end
 
 atom1.r     = [];

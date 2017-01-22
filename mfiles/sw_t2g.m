@@ -58,10 +58,10 @@ switch idx
         m = 1;
         osign = 2;
     otherwise
-        error('sw:sw_t2g:WrongIdx','Idx has to be 1,2 or 3!');
+        error('sw_t2g:WrongIdx','Idx has to be 1,2 or 3!');
 end
 
-% create surface polyeder of the orbital
+% create surface polyhedron of the orbital
 surfO = sw_orbital([n l m osign], varargin{:});
 
 % rotate

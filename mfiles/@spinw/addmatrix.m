@@ -34,7 +34,7 @@ function addmatrix(obj, varargin)
 %
 % Adds a diagonal matrix, that can describe Heisenberg interaction.
 %
-% See also SPINW, SW_COLORNAME.
+% See also SPINW, SWPLOT.COLOR.
 %
 
 if nargin < 2
@@ -96,11 +96,11 @@ if ~isfield(newMat,'color') || isempty([newMat.color])
     for ii = 1:numel(newMat)
         %newMat(ii).color = repmat([255;0;0],1,size(newMat(ii).mat,3));
         % generate random color
-        newMat(ii).color = repmat(sw_colorname(randi(141),1),1,size(newMat(ii).mat,3));
+        newMat(ii).color = repmat(swplot.color(randi(141),1),1,size(newMat(ii).mat,3));
     end
 else
     for ii = 1:numel(newMat)
-        newMat(ii).color = sw_colorname(newMat(ii).color);
+        newMat(ii).color = swplot.color(newMat(ii).color);
     end
     
 end

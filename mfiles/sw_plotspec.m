@@ -132,6 +132,10 @@ if numel(param.mode)>1
     end
 end
 
+% energy units
+unitE = spectra.obj.unit.label{2};
+unitT = spectra.obj.unit.label{4};
+
 % select twins for omega plot
 param.twin = round(param.twin);
 if isfield(spectra,'omega') && iscell(spectra.omega)
@@ -245,7 +249,7 @@ else
     yAxis = [min(spectra.omega(:)) max(spectra.omega(:))];
 end
 
-yLabel = 'Energy transfer (meV)';
+yLabel = ['Energy transfer (' unitE ')'];
 
 if isa(param.aHandle,'matlab.graphics.axis.Axes') || ishandle(param.aHandle) 
 
@@ -643,9 +647,9 @@ if param.mode == 3
         cHandle = colorbar;
         if spectra.norm
             if spectra.obj.unit.nformula > 0
-                cLabelU = '(mbarn/meV/f.u.)';
+                cLabelU = ['(mbarn/' unitE '/f.u.)'];
             else
-                cLabelU = '(mbarn/meV/cell)';
+                cLabelU = ['(mbarn/' unitE '/cell)'];
             end
         else
             cLabelU = '(arb. u.)';
@@ -716,7 +720,7 @@ end
 
 if param.title
     if isfield(spectra,'T')
-        title([titleStr0 sprintf(', T = %5.1f K',spectra.T)],'FontSize',param.fontSize);
+        title([titleStr0 sprintf([', T = %5.1f ' unitT],spectra.T)],'FontSize',param.fontSize);
     else
         title(titleStr0,'FontSize',param.fontSize);
     end

@@ -32,16 +32,64 @@ string = '';
 
 switch sObject.name
     case 'atom'
+        a2Idx = sObject.data(end);
+        aIdx  = swobj.atom.idx(a2Idx);
+        maIdx = sum(swobj.atom.mag(1:a2Idx));
+        
         labelTemp = strword(sObject.label,[1 2],true);
-        label1 = labelTemp{1};
+        %label1 = labelTemp{1};
         label2 = labelTemp{2};
-        string = [label2 ' atom (' label1 ')' newline 'Unit cell:' newline];
+        string = [label2 ' atom (''' sObject.label ''')' newline];
+        if swobj.atom.mag(a2Idx)
+            string = [string sprintf('Magnetic, S = %g',swobj.unit_cell.S(aIdx)) newline];
+        else
+           string = [string 'Non-magnetic' newline];
+        end
+        string = [string sprintf('Index in the spinw.unit\\_cell list: #%d',aIdx) newline];
+        string = [string sprintf('Index in the spinw.atom() list: #%d',a2Idx) newline];
+        if swobj.atom.mag(a2Idx)
+            string = [string sprintf('Index in the spinw.matom() list: #%d',maIdx) newline];
+        end
+        
+        string = [string 'Unit cell:' newline];
         % add cell index and position
-        posi = sObject.data(:)';
-        string = [string sprintf('[%d, %d, %d]',floor(posi)) newline 'Atomic position:' newline sprintf('[%5.3f, %5.3f, %5.3f]',posi-floor(posi))];
+        cellindex = sObject.data(1:3)';
+        pos = swobj.unit_cell.r(:,aIdx);
+        
+        string = [string sprintf('[%d, %d, %d]',cellindex) newline 'Atomic position:' newline sprintf('[%5.3f, %5.3f, %5.3f]',pos)];
     case 'mag'
-        M = sObject.data(:)';
-        string = [sprintf('Spin expectation value:\nM = [%5.3f, %5.3f, %5.3f] ',M+1e-6) symbol('hbar')];
+        Mplot = sObject.data(1:3)';
+        pos   = sObject.data(4:6)';
+        cellindex = floor(pos);
+        maIdx = sObject.data(7);
+        
+        % position in the magnetic list
+        nExt = double(swobj.mag_str.nExt);
+        nMagAtom = numel(swobj.matom.idx);
+        
+        mIdx = nMagAtom*(cellindex(1) + cellindex(2)*nExt(1) + cellindex(3)*prod(nExt(1:2)))+maIdx;
+        
+        string = ['Magnetic moment vector' newline];
+       
+        string = [string sprintf('Size of magnetic supercell: [%d,%d,%d]',swobj.mag_str.nExt) newline];
+        if swobj.magstr.exact
+            string = [string 'The supercell is ideal: S=F!' newline];
+        else
+            string = [string 'The supercell forces an approximation: S~F' newline];
+        end
+        
+        nK = size(swobj.mag_str.k,2);
+        if nK == 1
+            string = [string sprintf('Magnetic propagation vector:\n[%5.3f, %5.3f, %5.3f]',swobj.mag_str.k) newline];
+        else
+            string = [string 'Magnetic propagation vectors:' newline];
+            for ii = 1:nK
+                string = [string sprintf('[%5.3f, %5.3f, %5.3f]\n',swobj.mag_str.k(:,ii))];
+            end
+        end
+        string = [string sprintf('Moment index in spinw.mag\\_str: #%d',mIdx) newline];
+        string = [string sprintf('Spin expectation value:\nM = [%5.3f, %5.3f, %5.3f] ',Mplot+1e-6) symbol('hbar') newline];
+        string = [string sprintf('Normalized value:\nM = [%5.3f, %5.3f, %5.3f] ',(Mplot+1e-6)/norm(Mplot))];
     case 'bond'
         M = sObject.data;
         string = [sObject.label ' bond' newline];

@@ -310,8 +310,8 @@ dpos = pos2-pos1;
 lxyz = sqrt(sum((BV*dpos).^2,1));
 
 % shift positions
-pos1 = bsxfun(@plus,pos1,param.shift);
-pos2 = bsxfun(@plus,pos2,param.shift);
+pos1 = bsxfun(@plus,pos1,BV\param.shift);
+pos2 = bsxfun(@plus,pos2,BV\param.shift);
 
 % color of the bonds
 if strcmp(param.color,'auto')

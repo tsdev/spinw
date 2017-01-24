@@ -140,7 +140,7 @@ warning('off','plotbond:EmptyPlot')
 paramG = sw_readparam(inpForm, varargG{:});
 
 % sort options according to plot name
-plotName = {'atom' 'mag' 'bond' 'ion' 'cell' 'base'};
+plotName = {'atom' 'mag' 'bond' 'ion' 'cell' 'base' 'chem'};
 nFun     = numel(plotName);
 plotIdx  = false(nFun,numel(optName));
 optShort = optName;
@@ -156,8 +156,13 @@ if ~all(any(plotIdx,1))
     error('spinw:plot:WrongInput',['Wrong option: ''' optName{errIdx(1)} '''!']);
 end
 
-% check switches (mode == 'none')
-switchFun = false(1,nFun);
+% list of plot functions
+plotFun = {@swplot.plotatom @swplot.plotmag @swplot.plotbond @swplot.plotion @swplot.plotcell @swplot.plotbase @swplot.plotchem};
+
+% check switches (mode == 'none'), default is to show plot
+switchFun = true(1,nFun);
+% default is not to call swplot.plotchem()
+switchFun(end) = false;
 
 for ii = 1:nFun
     modeIdx = find(ismember(optShort,'mode') & plotIdx(ii,:));
@@ -167,8 +172,6 @@ for ii = 1:nFun
     
     if numel(modeIdx) == 1
         switchFun(ii) = ~strcmp(optVal{modeIdx},'none');
-    else
-        switchFun(ii) = true;
     end
     
     switch plotName{ii}
@@ -197,7 +200,6 @@ if ~any(switchFun)
 end
 
 % only call selected functions
-plotFun = {@swplot.plotatom @swplot.plotmag @swplot.plotbond @swplot.plotion @swplot.plotcell @swplot.plotbase};
 plotFun = plotFun(switchFun);
 plotIdx = plotIdx(switchFun,:);
 
@@ -210,7 +212,7 @@ warning('on','sw_readparam:UnreadInput')
 if param.replace
     % delete all object that is created by spinw.plot
     % find objects to be deleted
-    name0 = {'base' 'base_label' 'atom' 'atom_label' 'bond' 'bond_mat' 'cell' 'mag' 'ion' 'ion_edge'};
+    name0 = {'base' 'base_label' 'atom' 'atom_label' 'bond' 'bond_mat' 'cell' 'mag' 'ion' 'ion_edge' 'chem'};
     sObj = swplot.findobj(hFigure,'name',name0);
     % delete them!
     swplot.delete([sObj(:).number]);

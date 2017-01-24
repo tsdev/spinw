@@ -323,10 +323,10 @@ while ~isFinished && lm_iteration <= param.MaxIter
         switch update
             case 1
                 % Levenberg
-                lambda = max(lambda/param.lDown,1.e-7);
+                lambda = max(lambda/param.lDown,1e-7);
             case 2
                 % Quadratic
-                lambda = max( lambda/(1 + alpha) , 1.e-7 );
+                lambda = max( lambda/(1 + alpha) , 1e-7 );
             case 3
                 % Nielsen
                 lambda = lambda*max( 1/3, 1-(2*rho-1)^3 ); nu = 2;
@@ -345,7 +345,7 @@ while ~isFinished && lm_iteration <= param.MaxIter
         switch update
             case 1
                 % Levenberg
-                lambda = min(lambda*param.lUp,1.e7);
+                lambda = min(lambda*param.lUp,1e7);
             case 2
                 % Quadratic
                 lambda = lambda + abs((X2try - X2)/2/alpha);

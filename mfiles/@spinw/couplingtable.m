@@ -111,7 +111,7 @@ if tTable
     aName1 = obj.unit_cell.label(obj.matom.idx(table0(4,:)))';
     aName2 = obj.unit_cell.label(obj.matom.idx(table0(5,:)))';
 
-    label0 = {'bond' 'dl' 'atom1' 'idx1' 'atom2' 'idx2' 'matrix'};
+    label0 = {'bond' 'dl' 'atom1' 'midx1' 'atom2' 'midx2' 'matrix'};
     cTable = mat2cell(table0(1:6,:)',nCoupling,[3 1 1 1]);
     bonds.table = table(cTable{[4 1]},aName1,cTable{2},aName2,cTable{3},...
         [mLabel(mName(1,:))',mLabel(mName(2,:))',...

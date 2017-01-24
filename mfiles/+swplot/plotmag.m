@@ -181,7 +181,8 @@ end
 nCell = prod(nExtPlot);
 
 % keep track of types of atoms
-aIdx = repmat(mAtom.idx,[nCell 1])';
+aIdx  = repmat(mAtom.idx,[nCell 1])';
+a2Idx = repmat(1:numel(mAtom.idx),[nCell 1])';
 pos  = reshape(pos,3,[]);
 
 % cut out the atoms that are out of range
@@ -200,9 +201,10 @@ if ~any(pIdx)
     return
 end
 
-M    = M(:,pIdx);
-pos  = pos(:,pIdx);
-aIdx = aIdx(pIdx);
+M     = M(:,pIdx);
+pos   = pos(:,pIdx);
+aIdx  = aIdx(pIdx);
+a2Idx = a2Idx(pIdx);
 
 % normalization
 if param.normalize
@@ -211,7 +213,7 @@ if param.normalize
 end
 
 % save magnetic moment vector values into data before rescaling
-MDat = mat2cell(M,3,ones(1,size(M,2)));
+MDat = mat2cell([M;pos;a2Idx],7,ones(1,size(M,2)));
 
 % scale moments
 M = M*param.scale;
@@ -234,7 +236,7 @@ else
 end
 
 % shift positions
-vpos = bsxfun(@plus,vpos,param.shift);
+vpos = bsxfun(@plus,vpos,BV\param.shift);
 
 % prepare legend labels
 mAtom.name = obj.unit_cell.label(mAtom.idx);

@@ -44,10 +44,10 @@ inpForm.defval = [inpForm.defval { true         true true      true     }];
 inpForm.size   = [inpForm.size   {[1 1]        [1 1] [1 1]     [1 1]    }];
 inpForm.soft   = [inpForm.soft   {false        false false     false    }];
 
-inpForm.fname  = [inpForm.fname  {'npatch' 'nmesh' 'unit'}];
-inpForm.defval = [inpForm.defval {nPatch0  nMesh0  'lu'  }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 -6]}];
-inpForm.soft   = [inpForm.soft   {false    false   false }];
+inpForm.fname  = [inpForm.fname  {'npatch' 'nmesh' 'unit' 'shift'}];
+inpForm.defval = [inpForm.defval {nPatch0  nMesh0  'lu'   [0;0;0]}];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 -6] [3 1]  }];
+inpForm.soft   = [inpForm.soft   {false    false   false  false  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -91,10 +91,16 @@ Ry = cell(1,3);
 [Ry{:}] = ndgrid(range(1,1):range(1,2),range(2,:),range(3,1):range(3,2));
 Ry = reshape(permute(cat(4,Ry{:}),[4 1 3 2]),3,[],2);
 
-R = [Rx Ry Rz];
+pos = [Rx Ry Rz];
+
+% basis vectors
+BV = swplot.base(hFigure);
+
+% shift positions
+pos = bsxfun(@plus,pos,BV\param.shift);
 
 % plot the cells already in base units, so no conversion needed
-swplot.plot('type','line','position',R,'figure',hFigure,...
+swplot.plot('type','line','position',pos,'figure',hFigure,...
     'linestyle',param.linestyle,'color',param.color,'name','cell',...
     'legend',false,'tooltip',false,'translate',param.translate,...
     'zoom',param.zoom,'replace',param.replace);

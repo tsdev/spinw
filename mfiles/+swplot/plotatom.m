@@ -28,7 +28,7 @@ function varargout = plotatom(varargin)
 %               'nonmag'    Plot non-magnetic atoms only.
 % figure    Handle of the swplot figure. Default is the selected figure.
 % legend    Whether to add the plot to the legend, default is true.
-% label     Whether to plot labels for atoms, default is true.
+% label     Whether to plot labels for atoms, default is false.
 % dText     Distance between item and its text label, default is 0.1
 %           Angstrom.
 % fontSize  Font size of the atom labels in pt, default is stored in
@@ -76,7 +76,7 @@ nPatch0   = swpref.getpref('npatch',[]);
 range0    = [0 1;0 1;0 1];
 
 inpForm.fname  = {'range' 'legend' 'label' 'dtext' 'fontsize' 'radius0'};
-inpForm.defval = {range0  true     true    0.1     fontSize0  0.3      };
+inpForm.defval = {range0  true     false    0.1     fontSize0  0.3      };
 inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 1]      [1 1]    };
 inpForm.soft   = {false   false    false   false   false      false    };
 
@@ -179,8 +179,10 @@ pos = bsxfun(@plus,reshape(cat(4,pos{:}),[],3)',permute(atom.r,[1 3 2]));
 
 nCell = size(pos,2);
 
-% keep track of types of atoms
+% keep track of types of atoms (index in spinw.unit_cell)
 aIdx = repmat(atom.idx,[nCell 1]);
+% keep track of atom index in spinw.atom list
+a2Idx = repmat(1:numel(atom.idx),[nCell 1]);
 
 pos  = reshape(pos,3,[]);
 %aIdx = reshape(aIdx,3,[]);
@@ -201,9 +203,11 @@ if ~any(pIdx)
     return
 end
 
-pos  = pos(:,pIdx);
-aIdx = aIdx(pIdx);
-aIdx = aIdx(:)';
+pos   = pos(:,pIdx);
+aIdx  = aIdx(pIdx);
+aIdx  = aIdx(:)';
+a2Idx = a2Idx(pIdx);
+a2Idx = a2Idx(:)';
 
 % color
 if strcmp(param.color,'auto')
@@ -235,10 +239,11 @@ for ii = 1:nAtom
 end
 
 % save atom coordinates into data
-posDat = mat2cell(pos,3,ones(1,size(pos,2)));
+posDat = mat2cell([floor(pos);a2Idx],4,ones(1,size(pos,2)));
+
 
 % shift positions
-pos = bsxfun(@plus,pos,param.shift);
+pos = bsxfun(@plus,pos,BV\param.shift);
 
 % plot label on atoms
 if param.label

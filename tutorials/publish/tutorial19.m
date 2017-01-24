@@ -26,7 +26,7 @@ FeCuChain.addmatrix('label','J_{Cu-Fe}','value',-0.1,'color','orange')
 FeCuChain.addcoupling('mat','J_{Cu-Cu}','bond',1)
 FeCuChain.addcoupling('mat','J_{Fe-Fe}','bond',2)
 FeCuChain.addcoupling('mat','J_{Cu-Fe}','bond',[4 5])
-plot(FeCuChain,'range',[2 2 1],'zoom',1)
+plot(FeCuChain,'range',[3 0.7 1],'cellMode','none')
 
 %% Define magnetic structure
 % The classical ground state of the above define Hamiltonian is
@@ -34,9 +34,9 @@ plot(FeCuChain,'range',[2 2 1],'zoom',1)
 % Here we define a magnetic unit cell that is 2x1x1 of the crystal unit
 % cell to incorporate the antiferromagnetic structure.
 
-FeCuChain.genmagstr('mode','direct','S',[0 0;1 1;0 0],'k',[1/2 0 0])
-FeCuChain.genmagstr('mode','helical','nExt',[2 1 1])
-plot(FeCuChain,'range',[2 0.7 1],'zoom',1,'rSpin',0.08,'lHeadSpin',0.75,'sSpin',1.5,'zoom',2)
+FeCuChain.genmagstr('mode','helical','S',[0 0;1 1;0 0],'k',[1/2 0 0])
+FeCuChain.genmagstr('mode','extend','nExt',[2 1 1])
+plot(FeCuChain,'range',[3 0.7 1],'maglHead',0.3)
 
 %% Spin-spin correlation function including the form factor
 % We calculate the spin wave intensity (withouth the polarisation factor)
@@ -48,8 +48,9 @@ plot(FeCuChain,'range',[2 0.7 1],'zoom',1,'rSpin',0.08,'lHeadSpin',0.75,'sSpin',
 spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 501},'formfact',true,'hermit',false);
 spec = sw_egrid(spec,'component','Sxx+Syy+Szz');
 figure
+subplot(2,1,1)
 sw_plotspec(spec,'mode','disp','imag',true,'axLim',[0 4.5])
-figure
+subplot(2,1,2)
 sw_plotspec(spec,'mode','color','dE',0.2)
 
 %% Copper only correlations

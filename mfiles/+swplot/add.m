@@ -222,6 +222,12 @@ else
     set(hNew,'Clipping','Off');
 end
 
+% put lines to the bottom of the stack, otherwise shadows are
+% wrong! MATLAB bug
+if strcmp(get(hNew(1),'Tag'),'line')
+    uistack(hNew,'bottom');
+end
+
 % comb together the handles of the old and new graphical objects.
 sObject = [sObject hAdd(:)'];
 

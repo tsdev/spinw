@@ -113,9 +113,7 @@ powSpec = zeros(nE,nQ);
 
 fprintf0(fid,'Calculating powder spectra:\n');
 
-if fid
-    sw_status(0,1);
-end
+sw_status(0,1,[],'Powder spectrum calculation');
 
 if param.fibo
     % apply the Fibonacci numerical integration on a sphere
@@ -170,13 +168,10 @@ for ii = 1:nQ
     % use edge grid by default
     specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T,'binType',param.binType,'imagChk',param.imagChk);
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
-    if fid
-        sw_status(ii/nQ*100);
-    end
+    sw_status(ii/nQ*100);
 end
-if fid
-    sw_status(100,2);
-end
+
+sw_status(100,2);
 
 % save different field into spectra
 spectra.swConv   = powSpec;

@@ -224,7 +224,7 @@ end
 %posDat = mat2cell(pos,3,ones(1,size(pos,2)));
 
 % shift positions
-pos = bsxfun(@plus,pos,param.shift);
+pos = bsxfun(@plus,pos,BV\param.shift);
 
 % length of shortest bond for scaling
 if ~isempty(obj.coupling.atom1)

@@ -6,23 +6,22 @@ AF33kagome = spinw;
 AF33kagome.fileid(0)
 AF33kagome.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3')
 AF33kagome.addatom('r',[1/2 0 0],'S', 1,'label','MCu1','color','r')
-plot(AF33kagome,'range',[2 2 1],'zoom',-0.5)
+plot(AF33kagome,'range',[2 2 1/2],'cellMode','inside')
 
 %% Create bonds
-% Generate the list of bonds and lists them.
+% Generate the list of bonds and list the first and second neighbor bonds.
 
 AF33kagome.gencoupling('maxDistance',7)
-display('Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3')
-AF33kagome.couplingtable.table 
-display('Bond vectors (first three rows) and bond distances')
-AF33kagome.couplingtable.bondv 
+disp(AF33kagome.couplingtable(-2:-1).table)
+disp('Bond vectors (first three columns) and bond length in Angstrom:')
+disp(AF33kagome.couplingtable(1:2).bondv')
 
 %% Hamiltonian
 % We create AFM first neighbor interactions.
 
 AF33kagome.addmatrix('label','J1','value',1.00,'color','g')
 AF33kagome.addcoupling('mat','J1','bond',1)
-plot(AF33kagome,'range',[3 3 1],'zoom',-0.8)
+plot(AF33kagome,'range',[2 2 1/2],'cellMode','inside')
 
 %% Generate magnetic structure I.
 % We create the k = (1/3 1/3 0) magnetic structure, with the three spin directions
@@ -35,15 +34,15 @@ plot(AF33kagome,'range',[3 3 1],'zoom',-0.8)
 S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr('mode','helical','k',[-1/3 -1/3 0],'n',[0 0 1],'unitS','lu','S',S0,'nExt',[3 3 1]);
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AF33kagome.mag_str 
-AF33kagome.mag_str.S 
+AF33kagome.magstr 
+AF33kagome.magstr.S
 display('Magnetic atoms as columns:')
 AF33kagome.magtable.R
 display('Magnetic spins:')
 AF33kagome.magtable.M
 display('Ground state energy (meV/spin)')
 AF33kagome.energy
-plot(AF33kagome,'range',[3 3 1])
+plot(AF33kagome,'range',[3 3 1/2],'cellMode','inside')
 
 %% Calculate spin wave dispersion I.
 % We plot the real and imaginary part of the dispersion. By observing the
@@ -54,8 +53,9 @@ plot(AF33kagome,'range',[3 3 1])
 kag33Spec = AF33kagome.spinwave({[-1/2 0 0] [0 0 0] [1/2 1/2 0] 100}, 'hermit',false);
 kag33Spec = sw_egrid(kag33Spec,'component','Sxx+Syy+Szz');
 figure
+subplot(2,1,1)
 sw_plotspec(kag33Spec,'mode',1,'axLim',[0 2.5],'colorbar',false','colormap',[0 0 0],'imag',true,'sortMode',true,'dashed',true)
-figure
+subplot(2,1,2)
 sw_plotspec(kag33Spec,'mode',3,'dE',0.05,'axLim',[0 2.5],'dashed',true)
 
 %% Generate magnetic structure II.
@@ -67,8 +67,8 @@ sw_plotspec(kag33Spec,'mode',3,'dE',0.05,'axLim',[0 2.5],'dashed',true)
 S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr('mode','helical','k',[-1/3 -1/3 0],'n',[0 0 1],'unitS','lu','S',S0,'nExt',[1 1 1]);
 display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AF33kagome.mag_str 
-AF33kagome.mag_str.S 
+AF33kagome.magstr 
+AF33kagome.magstr.S 
 display('Magnetic atoms as columns:')
 AF33kagome.magtable.R
 display('Magnetic spins:')
@@ -85,8 +85,9 @@ plot(AF33kagome,'range',[3 3 1])
 kag33Spec = AF33kagome.spinwave({[-1/2 0 0] [0 0 0] [1/2 1/2 0] 100}, 'hermit',false);
 kag33Spec = sw_egrid(kag33Spec,'component','Sxx+Syy+Szz');
 figure
+subplot(2,1,1)
 sw_plotspec(kag33Spec,'mode',1,'axLim',[0 2.5],'colorbar',false','colormap',[0 0 0],'imag',true,'sortMode',true,'dashed',true)
-figure
+subplot(2,1,2)
 sw_plotspec(kag33Spec,'mode',3,'dE',0.05,'axLim',[0 2.5],'dashed',true)
 
 %% Powder spectrum
@@ -96,7 +97,7 @@ sw_plotspec(kag33Spec,'mode',3,'dE',0.05,'axLim',[0 2.5],'dashed',true)
 % of random orientations: T ~ nQ * nRand, it is mostly independent of the
 % number size of the energy bin vector.
 
-kag33Pow = AF33kagome.powspec(linspace(0,2.5,100),'Evect',linspace(0,3,500),'hermit',false,'nRand',1000);
+kag33Pow = AF33kagome.powspec(linspace(0,2.5,100),'Evect',linspace(0,3,500),'hermit',false,'nRand',100);
 figure;
 sw_plotspec(kag33Pow,'axLim',[0 0.2],'dE',0.05)
 

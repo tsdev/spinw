@@ -608,7 +608,9 @@ if param.formfact
     % Angstrom^-1 units for Q
     hklA0 = 2*pi*(hkl0'/obj.basisvector)';
     % store form factor per Q point for each atom in the magnetic supercell
-    FF = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[1 nExt]);
+    % TODO check prod(nExt)? instead of nExt
+    %FF = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[1 nExt]);
+    FF = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[prod(nExt) 1]);
 else
     spectra.formfact = false;
 end

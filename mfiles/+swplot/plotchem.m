@@ -39,7 +39,7 @@ function varargout = plotchem(varargin)
 %           Default is 6 to plot octahedra around atom1.
 % alpha     Transparency of the plotted surfaces between 0 and 1 (1 for
 %           opaque, 0 for transparent). Default value is 1 for bonds and
-%           0.5 for polyhedron.
+%           0.3 for polyhedron.
 % color     Surface color of the objects. Default is 'auto', when they are
 %           set to the color of atom1. [R G B] will fix the color of all
 %           bonds to a uniform one, can be also arbitrary color name (see
@@ -85,9 +85,9 @@ inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 -3] [1 -4] [1 -5]  [1 -6] };
 inpForm.soft   = {false   false    false   false  false  false   false  };
 
 inpForm.fname  = [inpForm.fname  {'limit' 'alpha' 'color' 'nmesh' 'npatch'}];
-inpForm.defval = [inpForm.defval {6       1       'auto'  nMesh0  nPatch0 }];
+inpForm.defval = [inpForm.defval {6       []      'auto'  nMesh0  nPatch0 }];
 inpForm.size   = [inpForm.size   {[1 -7]  [1 1]   [1 -8]  [1 1]   [1 1]   }];
-inpForm.soft   = [inpForm.soft   {false   false   false   false   false   }];
+inpForm.soft   = [inpForm.soft   {false   true    false   false   false   }];
 
 inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'color2' 'tooltip' 'radius0'}];
 inpForm.defval = [inpForm.defval {[]       []    'auto'   true      0.03     }];
@@ -189,7 +189,7 @@ switch param.mode
         error('plotchem:WrongInput','The given mode string is invalid!');
 end
 
-nAtom = size(atom.r,2);
+%nAtom = size(atom.r,2);
 
 % generate atom1 positions from rangelu the inclusive range
 pos1 = cell(1,3);
@@ -237,7 +237,7 @@ pos1 = repmat(permute(pos1,[2 3 1]),[1 numel(atom2idx)]);
 pos2 = repmat(permute(pos2,[3 2 1]),[numel(atom1idx) 1]);
 % atom index matrices
 atom1idx = repmat(atom1idx',[1 numel(atom2idx)]);
-atom2idx = repmat(atom2idx ,[size(atom1idx,1) 1]);
+%atom2idx = repmat(atom2idx ,[size(atom1idx,1) 1]);
 % calculate bond vectors in lu
 dist = bsxfun(@minus,pos1,pos2);
 % convert to xyz and calculate length
@@ -267,7 +267,7 @@ if numel(limit) == 1
     linIdx   = sub2ind(size(dist),sortidx1,sIdx);
     % select the atoms that fulfill the limits
     atom1idx = atom1idx(linIdx);
-    atom2idx = atom2idx(linIdx);
+    %atom2idx = atom2idx(linIdx);
     % also select the position vectors
     pos1 = cat(3,pos1(linIdx),pos1(linIdx+numel(dist)),pos1(linIdx+2*numel(dist)));
     pos2 = cat(3,pos2(linIdx),pos2(linIdx+numel(dist)),pos2(linIdx+2*numel(dist)));
@@ -290,18 +290,22 @@ elseif numel(limit)==2
     linIdx   = sub2ind(size(dist),sortidx1,sIdx);
     % select the atoms that fulfill the limits
     atom1idx = atom1idx(linIdx);
-    atom2idx = atom2idx(linIdx);
+    %atom2idx = atom2idx(linIdx);
     % also select the position vectors
     pos1 = cat(3,pos1(linIdx),pos1(linIdx+numel(dist)),pos1(linIdx+2*numel(dist)));
     pos2 = cat(3,pos2(linIdx),pos2(linIdx+numel(dist)),pos2(linIdx+2*numel(dist)));
 end
 
 % shift positions
-pos1 = bsxfun(@plus,pos1,permute(param.shift,[2 3 1]));
-pos2 = bsxfun(@plus,pos2,permute(param.shift,[2 3 1]));
+pos1 = bsxfun(@plus,pos1,permute(BV\param.shift,[2 3 1]));
+pos2 = bsxfun(@plus,pos2,permute(BV\param.shift,[2 3 1]));
 
 switch param.mode
     case {'poly' 'polyhedron'}
+        if isempty(param.alpha)
+            param.alpha = 0.3;
+        end
+        
         % reshape pos to [3 nObject nVertex]
         pos = permute(pos2,[3 1 2]);
 
@@ -316,8 +320,28 @@ switch param.mode
         swplot.plot('type','polyhedron','name','chem','position',pos,...
             'figure',hFigure,'color',color,'text','','legend',false,'label','',...
             'nmesh',param.nmesh,'tooltip',false,'data',{},'replace',param.replace,...
-            'translate',param.translate,'zoom',param.zoom);
+            'translate',param.translate,'zoom',param.zoom,'alpha',param.alpha);
+        
+        if strcmp(param.color2,'auto')
+            % use the first color
+            color2 = color(:,1);
+            % change edge color of the last object (the poly we added)
+            sObject = getappdata(hFigure,'objects');
+            set(sObject(end).handle,'EdgeColor',color2/255);
+        elseif strcmp(param.color2,'none')
+            % do nothing
+        else
+            color2 = swplot.color(param.color2);
+            % change edge color of the last object (the poly we added)
+            sObject = getappdata(hFigure,'objects');
+            set(sObject(end).handle,'EdgeColor',color2);
+        end
+        
     case 'bond'
+        if isempty(param.alpha)
+            param.alpha = 1;
+        end
+
         % reshape pos to [3 nObject nVertex]
         pos = cat(3,reshape(permute(pos1,[3 1 2]),3,[]),reshape(permute(pos2,[3 1 2]),3,[]));
 

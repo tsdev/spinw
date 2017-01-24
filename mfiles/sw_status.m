@@ -1,7 +1,7 @@
 function sw_status(percent,varargin)
 % timer function that displays also the remaining time
 %
-% SW_STATUS(percent, {mode},{fid})
+% SW_STATUS(percent, {mode},{fid},{title})
 %
 % Input:
 %
@@ -11,7 +11,7 @@ function sw_status(percent,varargin)
 %               0   Displays of the remaining time. (default)
 %               2   Calculation finished.
 % fid       File identifier to print the output:
-%               1   Text output to the Command Window. Defaul.
+%               1   Text output to the Command Window. Default.
 %               2   Graphical output, using the waitbar() function.
 %
 % See also WAITBAR.
@@ -22,10 +22,16 @@ if nargin == 0
     return
 end
 
-if nargin > 2
+if nargin > 2 && ~isempty(varargin{2})
     fid = varargin{2};
 else
-    fid = 1;
+    fid = swpref.getpref('tid',[]);
+end
+
+if nargin>3
+    title0 = varargin{3};
+else
+    title0 = 'sw_status';
 end
 
 if ~ismember(fid,[1 2])
@@ -49,7 +55,7 @@ switch start
                 hBar = waitbar(0,'sw_status() initializing...');
                 hBar.HandleVisibility='on';
                 hBar.Tag = 'sw_status';
-                hBar.Name = 'sw_status';
+                hBar.Name = title0;
         end
     case 0
         % refresh the displayed time
@@ -68,7 +74,9 @@ switch start
                     percent,hou,min,sec);
             case 2
                 hBar = findobj('Tag','sw_status');
-                waitbar(percent/100,hBar,sprintf('%6.2f%%, remained: %03d:%02d:%02d (HH:MM:SS)',percent,hou,min,sec))
+                if ~isempty(hBar)
+                    waitbar(percent/100,hBar,sprintf('%6.2f%%, remained: %03d:%02d:%02d (HH:MM:SS)',percent,hou,min,sec))
+                end
         end
         
     case  2

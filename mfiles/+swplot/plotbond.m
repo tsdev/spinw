@@ -423,8 +423,8 @@ switch param.mode
             otherwise
                 error('plotmag:WrongInput','The given radius string is invalid!');
         end
-        pos1 = pos1 + bsxfun(@times,rad1./lxyz,dpos);
-        pos2 = pos2 - bsxfun(@times,rad2./lxyz,dpos);
+        pos1 = pos1 + bsxfun(@times,rad1(:)'./lxyz,dpos);
+        pos2 = pos2 - bsxfun(@times,rad2(:)'./lxyz,dpos);
     case 'line'
         type0 = 'line';
         % change linestyle based on the matrix label

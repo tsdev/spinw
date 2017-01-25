@@ -46,9 +46,11 @@ switch sObject.name
            string = [string 'Non-magnetic' newline];
         end
         string = [string sprintf('Index in the spinw.unit\\_cell list: #%d',aIdx) newline];
-        string = [string sprintf('Index in the spinw.atom() list: #%d',a2Idx) newline];
+        
         if swobj.atom.mag(a2Idx)
             string = [string sprintf('Index in the spinw.matom() list: #%d',maIdx) newline];
+        else
+            %string = [string sprintf('Index in the spinw.atom() list: #%d',a2Idx) newline];
         end
         
         string = [string 'Unit cell:' newline];

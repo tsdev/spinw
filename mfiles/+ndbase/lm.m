@@ -46,10 +46,12 @@ function [p0,yHat,stat] = lm(dat,func,p0,varargin)
 % MaxIter   Maximum number of iterations, default value is 10*M.
 % MaxFunEvals Maximum number of function evaluations, default value is
 %           100*M.
-% TolX      Convergence tolerance for parameters, default value is 1e-3.
+% TolX      Convergence tolerance for parameters, defines the maximum of 
+%           the relative chande of any parameter value. Default value is
+%           1e-3.
 % eps1      Convergence tolerance for gradient, default value is 1e-3.
 % eps2      Convergence tolerance for reduced Chi-square, default value is
-%           0.1.
+%           1e-2.
 % eps3      Determines acceptance of a L-M step, default value is 0.1.
 % lambda0   Initial value of L-M paramter, default value is 1e-2.
 % lUp       Factor for increasing lambda, default value is 11.
@@ -129,7 +131,7 @@ inpForm.defval = {1e-3   -inf(1,Np) inf(1,Np) 10*Np     1e-3   1e-3   100*Np    
 inpForm.size   = {[1 -1] [1 Np]     [1 Np]    [1 1]     [1 1]  [1 1]  [1 1]         [1 1]          [1 2]     };
 
 inpForm.fname  = [inpForm.fname  {'eps2' 'eps3' 'lambda0' 'lUp' 'lDown' 'update' 'extraStat' 'vary'     }];
-inpForm.defval = [inpForm.defval {0.1    0.1    1e-2      11    9       'nielsen' true       true(1,Np)}];
+inpForm.defval = [inpForm.defval {1e-2    0.1    1e-2      11    9       'nielsen' true       true(1,Np)}];
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]  [1 1]     [1 1] [1 1]   [1 -2]    [1 1]      [1 Np]     }];
 
 param = sw_readparam(inpForm, varargin{:});
@@ -279,7 +281,7 @@ while ~isFinished && lm_iteration <= param.MaxIter
     % apply constraints
     pTry = min(max(param.lb,pTry),param.ub);
     % residual error using p_try
-    dy = dat.y - func(dat.x,pTry);
+    dy = dat.y - func(dat.x,pTry');
     % floating point error, break
     if ~all(isfinite(dy))
         exitFlag = 6;
@@ -301,7 +303,7 @@ while ~isFinished && lm_iteration <= param.MaxIter
         % apply constraints
         pTry = min(max(param.lb,pTry),param.ub);
         % residual error using p_try
-        dy = dat.y - func(dat.x,pTry);
+        dy = dat.y - func(dat.x,pTry');
         lm_func_calls = lm_func_calls + 1;
         X2try = dy' * (dy.*weight);   % Chi-squared error criteria
     end
@@ -394,9 +396,9 @@ switch exitFlag
     case 3
         stat.msg = 'Convergence in reduced Chi-square.';
     case 4
-        stat.msg = 'Maximum Number of iterations is reached without convergence!';
+        stat.msg = 'Maximum Number of iterations is reached without convergence, increase ''MaxIter''!';
     case 5
-        stat.msg = 'Maximum Number of function evaluations is reached without convergence!';
+        stat.msg = 'Maximum Number of function evaluations is reached without convergence, increase ''MaxFunEvals''!';
     case 6
         stat.msg = 'Floating point error, parameter change is smaller than eps!';
     case 7
@@ -405,7 +407,7 @@ end
 
 if exitFlag > 3 && exitFlag < 7
     stat.error = true;
-    warning('lm:convergence','Convergence is not reached!')
+    warning('lm:convergence',stat.msg)
 else
     stat.warning = false;
 end
@@ -477,6 +479,9 @@ end
 % final model value
 yHat = yHat';
 
+% final parameter value
+p0 = p0';
+
 end
 
 
@@ -538,7 +543,7 @@ for ii = 1:Nv
     p(idx)   = ps(idx) + del(idx);
     
     if del(idx)%~=0
-        y1 = func(x,p);
+        y1 = func(x,p');
         lm_func_calls = lm_func_calls + 1;
         
         if dp(idx) < 0
@@ -547,7 +552,7 @@ for ii = 1:Nv
         else
             % central difference, additional func call
             p(idx)   = ps(idx) - del(idx);
-            J(:,ii) = (y1-func(x,p))/(2*del(idx));
+            J(:,ii) = (y1-func(x,p'))/(2*del(idx));
             lm_func_calls = lm_func_calls + 1;
         end
     end
@@ -637,7 +642,7 @@ Np = numel(p);
 Nv = sum(dp~=0);
 
 % evaluate model using parameters 'p'
-yFunc = func(x,p);
+yFunc = func(x,p');
 lm_func_calls = lm_func_calls + 1;
 
 if ~rem(lm_iteration,2*Np) || dX2 > 0

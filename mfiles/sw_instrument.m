@@ -154,7 +154,8 @@ spectra.dE = param.dE;
 Q = spectra.hklA;
 
 if size(Q,1) > 1
-    Q = sqrt(sum(bsxfun(@minus,Q,Q(:,1)).^2,1));
+    %Q = sqrt(sum(bsxfun(@minus,Q,Q(:,1)).^2,1));
+    Q = sqrt(sum(Q.^2,1));
 end
 
 if param.dQ > 0

@@ -132,7 +132,7 @@ end
 Nf = sum(UB>LB);
 
 if param.autoTune
-    param.PopulationSize = 25 + 1.4*Nf;
+    param.PopulationSize = round(25 + 1.4*Nf);
 end
 
 % population size

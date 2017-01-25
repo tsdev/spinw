@@ -86,9 +86,9 @@ end
 
 % create new axis for legend
 hAxis = axes('Parent',hFigure,'Units','pixel','Position',[dA dA lWidth+dA lHeight+dA],...
-    'Visible','off','XLim',[0 lWidth],'YLim',[0 lHeight],'NextPlot','add','box','off');
+    'Visible','off','XLim',[0 lWidth],'YLim',[0 lHeight+2],'NextPlot','add','box','off');
 
-hObject = rectangle('Parent',hAxis,'Position',[1 1 lWidth-2 lHeight-2],'FaceColor','w');
+hObject = rectangle('Parent',hAxis,'Position',[1 1 lWidth-2 lHeight],'FaceColor','w');
 
 lDat.handle = [hAxis hObject];
 
@@ -122,6 +122,17 @@ for ii = 1:numel(lType)
     % add text
     hObject(end+1) = text(30,(lHeight-20*ii+10),lText{ii},'Parent',hAxis,'fontSize',fontSize,'color','k');
 end
+
+hText = hObject(ismember(get(hObject,'Type'),'text'));
+% size of text
+tSize = get(hText,'Extent');
+if iscell(tSize)
+    tSize = reshape([tSize{:}],4,[])';
+end
+tSize = max(sum(tSize(:,[1 3]),2))+5;
+% extend rectangle and axis
+set(hObject(1),'Position',[1 1 tSize lHeight]);
+set(hAxis,'Position',[dA dA tSize+dA lHeight+dA],'XLim',[0 tSize+1]);
 
 if any(lType==3)
     % add light

@@ -23,23 +23,27 @@ ybti.addatom('label','Yb3+','r',[1/2 1/2 1/2],'S',1/2)
 ybti.addatom('label','Ti4+','r',[0 0 0])
 ybti.addatom('label','O2-','r',[0.3318 1/8 1/8])
 ybti.addatom('label','O2-','r',[3/8 3/8 3/8])
-plot(ybti,'atomLabel',false,'nmesh',2)
+plot(ybti,'nMesh',3)
+swplot.legend('none')
 
 %% Plot cubic environment of YbLATEX^{3+}PATEX
-% To the draw oxygen polyhedra around the Yb ions, we use the sw_drawpoly()
-% function, that can draw polyhedra around arbitrary atoms on an existing
-% crystal structure plot. Now we use center atom 'Yb' and polyhedra atoms
-% 'O' for oxygen. Since the oxygen environment of Yb is octahedron, we set
-% the limits to the 8 closes oxygen atom.
+% To the draw oxygen polyhedra around the Yb ions, we use the
+% swplot.plotchem() function, that can draw polyhedra around arbitrary
+% atoms on an existing crystal structure plot. Now we use center atom 'Yb'
+% and polyhedra atoms 'O' for oxygen. Since the oxygen environment of Yb is
+% octahedron, we set the limits to the 8 closes oxygen atom. The same can
+% be achieved within the spinw.plot() function, adding the options below
+% plus a string 'chem', such as 'chemAtom1', 'chemAtom2', 'chemLimit' and
+% 'chemRange' and setting 'chemMode' to 'poly'.
 
-sw_drawpoly('cAtom','Yb','pAtom','O','limits',8);
+swplot.plotchem('atom1','Yb','atom2','O','limit',8,'range',[0.1 0.9;0.1 0.9;0.1 0.9]);
 
 
 %% Create spin Hamiltonian
-% We can remove the non-magnetic atoms from the sw object with a single
+% We can remove the non-magnetic atoms from the spinw object with a single
 % command using the unitcell() function (not to mix with the unit_cell
 % property of the sw object). The unitcell() function can return selected
-% atoms from the list of symmetry inequivalent atoms in the unit cell. IN
+% atoms from the list of symmetry inequivalent atoms in the unit cell. In
 % our case the magnetic Yb ions are the first atom.
 
 ybti.unit_cell = ybti.unitcell(1);
@@ -89,8 +93,19 @@ ybti.getmatrix('label','J1');
 
 ybti.fileid(0);
 J1 = -0.09; J2 = -0.22; J3 = -0.29; J4 = 0.01;
-ybti.setmatrix('label','J1','pref',[J1 J3 J2 J4]);
+ybti.setmatrix('label','J1','pref',[J1 J3 J2 -J4]);
 
+%% Plot the magnetic Hamiltonian
+% With the plot() command, we can plot the magnetic bonds of
+% YbLATEX_2PATEXTiLATEX_2PATEXOLATEX_7PATEX. The arrow pointing from an
+% atom to another denotes the direction of the bond, while the thicker
+% arrow at the middle of the bond denotes the direction of the
+% Dzyaloshinskii-Moriya vector. Is is also possible to visualize the
+% g-tensor by setting the 'ionMode' to 'g'.
+
+plot(ybti,'ionMode','g')
+swplot.zoom(1.3)
+swplot.legend('none')
 
 %% Calculate spin wave spectrum
 % We define two different magnetic field direction and field strength in

@@ -10,11 +10,10 @@
 % with spin quantum number of 5/2.
 
 banb = spinw;
-banb.fileid(0)
 banb.genlattice('lat_const',[8.539 8.539 5.2414],'angled',[90 90 120],'sym','P 3 2 1');
 banb.addatom('label','MFe3','r',[0.24964 0 1/2],'S',5/2,'color','gray');
 banb.gencoupling;
-plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'zoom',-0.5)
+plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5])
 
 %% Chrality
 % We define three chiral properties of the crystal and magnetic order:
@@ -59,7 +58,9 @@ switch eT
         banb.addcoupling('mat','J3','bond',5)
         banb.addcoupling('mat','J5','bond',4)
 end
-plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'zoom',2)
+
+plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'atomLegend',false)
+swplot.zoom(1.3)
 
 %% Magnetic structure
 % We fix the magnetic structure with the predefined chirality. The magnetic
@@ -70,8 +71,8 @@ plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'zoom',2)
 
 S0 = [1 -1/2 -1/2;0 eD*sqrt(3)/2 -eD*sqrt(3)/2;0 0 0];
 banb.genmagstr('mode','helical','S',S0,'k',[0 0 eH*1/7],'n',[0 0 1])
-plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'sSpin',0.5)
-
+plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'magCentered',true)
+swplot.zoom(1.3)
 
 %% Spin wave spectrum
 % We calculate the spin wave spectrum and compare it to published results.

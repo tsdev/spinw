@@ -201,6 +201,8 @@ end
 
 title0 = 'Numerical LSWT spectrum';
 
+tid0 = swpref.getpref('tid',[]);
+
 inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' 'hermit'};
 inpForm.defval = {false     false    true       0        1e-4  true    };
 inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]   };
@@ -213,9 +215,9 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
-inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase'}];
-inpForm.defval = [inpForm.defval {false    false      }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]      }];
+inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase' 'tid'}];
+inpForm.defval = [inpForm.defval {false    false       tid0 }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]       [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -596,9 +598,7 @@ if param.saveH
     Hsave = zeros(2*nMagExt,2*nMagExt,nHkl);
 end
 
-if fid == 1
-    sw_status(0,1);
-end
+sw_status(0,1,param.tid,'Spin wave spectrum calculation');
 
 warn1 = false;
 
@@ -827,9 +827,7 @@ for jj = 1:nSlice
     % Normalizes the intensity to single unit cell.
     Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     
-    if fid == 1
-        sw_status(jj/nSlice*100);
-    end
+    sw_status(jj/nSlice*100,0,param.tid);
 end
 
 % If number of formula units are given per cell normalize to formula
@@ -838,13 +836,9 @@ if obj.unit.nformula > 0
     Sab = Sab/double(obj.unit.nformula);
 end
 
-if fid == 1
-    sw_status(100,2);
-else
-    if fid ~= 0
-        fprintf0(fid,'Calculation finished.\n');
-    end
-end
+sw_status(100,2,param.tid);
+
+fprintf0(fid,'Calculation finished.\n');
 
 if warn1 && ~param.fitmode
     warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...

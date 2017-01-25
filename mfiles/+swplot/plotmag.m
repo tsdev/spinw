@@ -40,7 +40,8 @@ function varargout = plotmag(varargin)
 %                           atom.
 %               'colorname' All moments will have the same color.
 %               [R G B]     RGB code of the color.
-% scale     Scaling factor for the lenght of the magnetic moments.
+% scale     Scaling factor for the lenght of the magnetic moments relative
+%           to the length of the shortest bond. Default is 0.4.
 % normalize If true, all moment length will be normalized to the scale
 %           factor, default is false.
 % radius0   Radius value of arrow body, default is 0.06.
@@ -96,7 +97,7 @@ inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6] [1 1]    }];
 inpForm.soft   = [inpForm.soft   {true     true  false  false    }];
 
 inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'scale' 'normalize' }];
-inpForm.defval = [inpForm.defval {[0;0;0] true      1        false      }];
+inpForm.defval = [inpForm.defval {[0;0;0] true      0.4      false      }];
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]    [1 1]      }];
 inpForm.soft   = [inpForm.soft   {false   false     false    false      }];
 
@@ -104,8 +105,6 @@ inpForm.fname  = [inpForm.fname  {'lHead' 'alpha' 'centered' 'translate' 'zoom'}
 inpForm.defval = [inpForm.defval {0.5      0.07   false      true         true }];
 inpForm.size   = [inpForm.size   {[1 1]   [1 1]   [1 1]      [1 1]        [1 1]}];
 inpForm.soft   = [inpForm.soft   {false   false   false      false        false}];
-
-% TODO param.scale
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -216,7 +215,22 @@ end
 MDat = mat2cell([M;pos;a2Idx],7,ones(1,size(M,2)));
 
 % scale moments
-M = M*param.scale;
+% get the length of the shortest bond
+if ~isempty(obj.coupling.atom2)
+    apos1 = obj.matom.r(:,obj.coupling.atom1(1));
+    apos2 = obj.matom.r(:,obj.coupling.atom2(1))+double(obj.coupling.dl(:,1));
+    lBond = norm(BV*(apos2-apos1));
+else
+    lBond = 1;
+end
+
+% normalize the longest moment vector to scale*(shortest bond length)
+M = M/sqrt(max(sum(M.^2,1)))*param.scale*lBond;
+
+if param.centered
+    % double the length for centered moments
+    M = 2*M;
+end
 
 % convert to lu units
 Mlu = BV\M;

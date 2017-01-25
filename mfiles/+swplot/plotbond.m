@@ -222,14 +222,14 @@ matSym = (mat+permute(mat,[2 1 3]))/2;
 matDM  = permute(cat(2,matDM(2,3,:),matDM(3,1,:),matDM(1,2,:)),[2 3 1]);
 
 % are there non-zero DM vectors
-isDM  = any(matDM(:));
+isDM  = any(abs(matDM(:))>5*eps);
 
 matSym0 = obj.matrix.mat(:,:,coupling.matidx);
 matSym0 = (matSym0+permute(matSym0,[2 1 3]))/2;
 matSym0(2,2,:) = matSym0(2,2,:)-matSym0(1,1,:);
 matSym0(3,3,:) = matSym0(3,3,:)-matSym0(1,1,:);
 matSym0(1,1,:) = 0;
-isSym = any(matSym0(:));
+isSym = any(abs(matSym0(:))>5*eps);
 
 % select bond type to plot
 if isempty(param.mode)

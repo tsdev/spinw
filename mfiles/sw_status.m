@@ -11,6 +11,7 @@ function sw_status(percent,varargin)
 %               0   Displays of the remaining time. (default)
 %               2   Calculation finished.
 % fid       File identifier to print the output:
+%               0   Do nothing.
 %               1   Text output to the Command Window. Default.
 %               2   Graphical output, using the waitbar() function.
 %
@@ -26,6 +27,11 @@ if nargin > 2 && ~isempty(varargin{2})
     fid = varargin{2};
 else
     fid = swpref.getpref('tid',[]);
+end
+
+if fid == 0
+    % do nothing
+    return
 end
 
 if nargin>3
@@ -52,10 +58,11 @@ switch start
             case 1
                 fprintf([repmat(' ',[1 40]) '\n']);
             case 2
-                hBar = waitbar(0,'sw_status() initializing...');
+                hBar = waitbar(0,'Initializing...');
                 hBar.HandleVisibility='on';
                 hBar.Tag = 'sw_status';
                 hBar.Name = title0;
+                drawnow;
         end
     case 0
         % refresh the displayed time
@@ -75,7 +82,8 @@ switch start
             case 2
                 hBar = findobj('Tag','sw_status');
                 if ~isempty(hBar)
-                    waitbar(percent/100,hBar,sprintf('%6.2f%%, remained: %03d:%02d:%02d (HH:MM:SS)',percent,hou,min,sec))
+                    waitbar(percent/100,hBar(1),sprintf('%6.2f%%, remained: %03d:%02d:%02d (HH:MM:SS)',percent,hou,min,sec))
+                    drawnow;
                 end
         end
         
@@ -99,5 +107,24 @@ switch start
                 fprintf('Calculation is finished in %02d:%02d:%02d (hh:mm:ss).\n',hou,min,sec);
         end
 end
+
+end
+
+function extended_waitbar()
+% extended waitbar to stop execution and start debug mode
+
+h = waitbar(0,'Progress','Name','Waitbar',...
+    'CreateCancelBtn',...
+    'setappdata(gcbf,''canceling'',1)');
+
+hChild = get(h,'Children');
+hCancelBtn = hChild(ismember(get(hChild,'Tag'),'TMWWaitbarCancelButton'));
+pauseBtnPos = get(hCancelBtn,'Position');
+pauseBtnPos(1) = pauseBtnPos(1) - pauseBtnPos(3) - 1;
+pauseBtnPos(2) = pauseBtnPos(2)+1;
+
+hPauseBtn = uicontrol(h, 'Style', 'pushbutton', 'String', 'Debug',...
+    'Position', pauseBtnPos,...
+    'Callback', 'dbstop in sw_status.m at 23');
 
 end

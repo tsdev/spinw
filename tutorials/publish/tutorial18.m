@@ -19,19 +19,21 @@ hK.addatom('r',[1/4 1/4 0],'S',1/2,'label','MCu2','color','k')
 
 hK.gencoupling
 
-hK.addmatrix('label','J',  'color','r',   'value',J)
+hK.addmatrix('label','J-',  'color','r',   'value',J)
 hK.addmatrix('label','J''','color','g',   'value',Jp)
 hK.addmatrix('label','Ja', 'color','b',   'value',Ja)
 hK.addmatrix('label','Jab','color','cyan','value',Jab)
 hK.addmatrix('label','Jip','color','gray','value',Jip)
 
-hK.addcoupling('mat','J','bond',1)
+hK.addcoupling('mat','J-','bond',1)
 hK.addcoupling('mat','J''','bond',2)
 hK.addcoupling('mat','Ja','bond',3)
 hK.addcoupling('mat','Jab','bond',5)
 hK.addcoupling('mat','Jip','bond',10)
 
-hK.plot('range',[2 2 0.3],'zoom',-2)
+hK.plot('range',[2 2 0.3],'bondMode','line','bondLineWidth0',2,...
+    'cellMode','none','atomLegend',false,'baseShift',[4 -3 0]')
+swplot.zoom(1.4)
 
 %% Magnetic ground
 % Approximate ground magnetic ground state with a single k-vector:
@@ -39,7 +41,9 @@ hK.plot('range',[2 2 0.3],'zoom',-2)
 % The magnetic unit cell is defined using the rotating coordinate system.
 
 hK.genmagstr('mode','helical','n',[0 0 1],'S',[1 0 0]','k',[0.77 0 0.115],'next',[1 1 1]);
-plot(hK,'range',[2 2 0.3],'sSpin',2,'zoom',2)
+hK.plot('range',[2 2 0.3],'bondMode','line','bondLineWidth0',2,...
+    'cellMode','inside','atomLegend',false,'baseShift',[4 -3 0]')
+swplot.zoom(1.4)
 
 disp('Ground state energy (meV/spin):')
 hK.energy
@@ -58,9 +62,11 @@ optpar.xmax = [2*pi*ones(1,6), 1.0 0 0.5, 0 0];
 magoptOut = hK.optmagstr(optpar);
 
 kOpt = hK.mag_str.k;
-hK.genmagstr('mode','helical','n',[0 0 1],'S',[1 0 0]','k',kOpt,'next',[1 1 1]);
+hK.genmagstr('mode','helical','n',[0 0 1],'S',[1 0 0]','k',kOpt','next',[1 1 1]);
 
-plot(hK,'range',[2 2 0.3],'sSpin',2)
+hK.plot('range',[2 2 0.3],'bondMode','line','bondLineWidth0',2,...
+    'cellMode','inside','atomLegend',false,'baseShift',[4 -3 0]')
+swplot.zoom(1.4)
 
 disp('Ground state energy (meV/spin):')
 hK.energy
@@ -81,15 +87,15 @@ caxis([0 20])
 
 %% Test dispersion on commensurate cell
 % We recalculate the dispersion on a superlattice, that should give the
-% same S(Q,omega), but it is much slower. We approximate the ordering
-% k-vector within 0.05 rlu using the rat() built-in Matlab function. We
-% create the magnetic superlattice and then define the k-vector as zero. In
-% this case the sw.spinwave() function will be run in commensurate mode.
+% same S(Q,omega), but it is much slower. We choose the superlattice, that
+% approximates the propagation vector within 0.05 rlu by giving this number
+% to the 'nExt' option in spinw.genmagstr() instead of the vector with
+% three integers. We create the magnetic superlattice and then define the
+% k-vector as zero. In this case the sw.spinwave() function will be run in
+% commensurate mode.
 
-[~,nSuperlat] = rat(hK.mag_str.k,0.05);
-
-hK.genmagstr('mode','helical','next',nSuperlat)
-hK.mag_str.k = [0 0 0];
+hK.genmagstr('mode','helical','next',0.05)
+hK.mag_str.k = [0 0 0]';
 
 hkSpec = hK.spinwave({[0 0 0] [1 0 0] 50},'Hermit',false);
 hK.fileid(0)
@@ -103,7 +109,7 @@ sw_plotspec(hkSpec,'mode','color','axlim',[0 20],'dE',0.3);
 % We calculate the powder spectrum on the smaller unit cell between Q = 0 -
 % 3 Angstrom^-1.
 
-hK.genmagstr('mode','helical','n',[0 0 1],'S',[1 0 0]','k',kOpt,'next',[1 1 1]);
+hK.genmagstr('mode','helical','n',[0 0 1],'S',[1 0 0]','k',kOpt','next',[1 1 1]);
 powSpec = hK.powspec(linspace(0,3,80),'nrand',500,'Evect',linspace(0,5,500));
 
 figure;
@@ -111,5 +117,5 @@ sw_plotspec(powSpec,'dE',0.01,'axlim',[0 0.05])
 
 %%
 %  Written by
-%  Gøran Nilsen and Sandor Toth
+%  G?ran Nilsen and Sandor Toth
 %  27-June-2014

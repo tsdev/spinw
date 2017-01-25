@@ -48,6 +48,8 @@ function addatom(obj, varargin)
 %           Debye-Waller factor as:
 %               Wd = 1/8*biso/d^2
 %           including in the structure factor as exp(-2Wd).
+% update    If true, existing atom with the same label and position as a
+%           new one will be updated. Default is true.
 %   
 % Output:
 %
@@ -69,10 +71,10 @@ if nargin < 2
     return
 end
 
-inpForm.fname  = {'r'     'S'      'label' 'color' 'ox'   'occ'  'bn'   'biso' };
-inpForm.defval = {[]      []       {}      []      []     []     []     []     };
-inpForm.size   = {[-1 -2] [-3 -4]  [1 -5] [1 -6]   [1 -7] [1 -7] [1 -7] [1 -10]};
-inpForm.soft   = {false   true     true    true    true   true   true   true   };
+inpForm.fname  = {'r'     'S'      'label' 'color' 'ox'   'occ'  'bn'   'biso'  'update'};
+inpForm.defval = {[]      []       {}      []      []     []     []     []      true    };
+inpForm.size   = {[-1 -2] [-3 -4]  [1 -5] [1 -6]   [1 -7] [1 -7] [1 -7] [1 -10] [1 1]   };
+inpForm.soft   = {false   true     true    true    true   true   true   true    false   };
 
 inpForm.fname  = [inpForm.fname  {'bx'   'formfactn' 'formfactx' 'b'    'formfact' 'A'    'Z'   }];
 inpForm.defval = [inpForm.defval {[]     []          []          []     []         []     []    }];
@@ -243,6 +245,17 @@ end
 if ischar(newAtom.formfactn)
     newAtom.formfactn = {newAtom.formfactn};
 end
+
+if isnumeric(newAtom.formfactn)
+    newAtom.formfactn = newAtom.formfactn(:)';
+    switch numel(newAtom.formfactn)
+        case 1
+            newAtom.formfactn = [zeros(1,10) newAtom.formfactn];
+        case 9
+            newAtom.formfactn = [newAtom.formfactn(1:8) 0 0 newAtom.formfactn(9)];
+    end
+end
+
 if iscell(newAtom.formfactn)
     [~,newAtom.ffn] = sw_mff(newAtom.formfactn,[],11);
     newAtom.ffn = permute(newAtom.ffn,[3 2 1]);
@@ -292,14 +305,40 @@ newAtom.color     = int32(newAtom.color);
 newObj.unit_cell  = newAtom;
 validate(newObj,'unit_cell');
 
-cField = {'r' 'S' 'label' 'color' 'ox' 'occ' 'b' 'A' 'Z' 'biso'};
-for ii = 1:numel(cField)
-    obj.unit_cell.(cField{ii}) = [obj.unit_cell.(cField{ii}) newObj.unit_cell.(cField{ii})];
+cField = {'r' 'label' 'S' 'color' 'ox' 'occ' 'b' 'A' 'Z' 'biso'};
+
+if newAtom.update
+    % find identical labels and positions between the new atoms and
+    % existing atoms
+    [iLabel, lIdx] = ismember(newObj.unit_cell.label,obj.unit_cell.label);
+    [iPos, pIdx]   = ismember(newObj.unit_cell.r',obj.unit_cell.r','rows');
+    % index in the new atoms
+    newIdx  = iLabel&iPos;
+    % index in the existing atoms
+    oldIdx = lIdx(ismember(lIdx,pIdx));
+
+    if any(newIdx)
+        for ii = 3:numel(cField)
+            % update values
+            obj.unit_cell.(cField{ii})(:,oldIdx) = newObj.unit_cell.(cField{ii})(:,newIdx);
+            % remove these new atoms
+            newObj.unit_cell.(cField{ii}) = newObj.unit_cell.(cField{ii})(:,~newIdx);
+        end
+        % same for form factor
+        obj.unit_cell.ff(:,:,oldIdx) = newObj.unit_cell.ff(:,:,newIdx);
+        newObj.unit_cell.ff          = newObj.unit_cell.ff(:,:,~newIdx);
+    end
 end
 
-obj.unit_cell.ff    = cat(3,obj.unit_cell.ff,newObj.unit_cell.ff);
-
-validate(obj);
+if ~isempty(newObj.unit_cell.S)
+    % if there are some unique new atoms left add them
+    for ii = 1:numel(cField)
+        obj.unit_cell.(cField{ii}) = [obj.unit_cell.(cField{ii}) newObj.unit_cell.(cField{ii})];
+    end
+    
+    obj.unit_cell.ff    = cat(3,obj.unit_cell.ff,newObj.unit_cell.ff);
+end
+%validate(obj);
 
 [~,~,rIdx] = unique(obj.unit_cell.r','rows');
 

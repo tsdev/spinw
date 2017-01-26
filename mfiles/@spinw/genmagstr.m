@@ -189,10 +189,10 @@ else
     k0 = obj.mag_str.k';
 end
 
-inpForm.fname  = {'mode'   'nExt'            'k'           'n'   };
-inpForm.defval = {'tile' obj.mag_str.nExt    k0            []    };
-inpForm.size   = {[1 -1]   [1 -4]            [-6 3]        [-6 3] };
-inpForm.soft   = {false    false             false         true  };
+inpForm.fname  = {'mode'   'nExt'            'k'           'n'     };
+inpForm.defval = {'tile' obj.mag_str.nExt    k0            nan(1,3)};
+inpForm.size   = {[1 -1]   [1 -4]            [-6 3]        [-6 3]  };
+inpForm.soft   = {false    false             false         false   };
 
 inpForm.fname  = [inpForm.fname  {'func'          'x0'   'norm' 'r0' }];
 inpForm.defval = [inpForm.defval {@gm_spherical3d []     true   true }];
@@ -269,7 +269,7 @@ end
 mAtom    = sw_extendlattice(nExt, mAtom);
 
 % normalized axis of rotation, size (nK,3)
-if isempty(param.n)
+if isnan(param.n(1))
     % default value
     param.n = repmat([0 0 1],[nK 1]);
 end

@@ -294,7 +294,7 @@ nFaces    = sum(cellfun(@(C)size(C,1),get(hPatch,'Faces')));
 nVertices = sum(cellfun(@(C)size(C,1),get(hPatch,'Vertices')));
 
 % ready
-fprintf0(obj.fileid,'%dk faces and %dk vertices are drawn.\nReady!\n',round(nFaces/1e3),round(nVertices/1e3));
+fprintf0(obj.fileid,'...%dk faces and %dk vertices are drawn!\n',round(nFaces/1e3),round(nVertices/1e3));
 
 warning(warn0);
 

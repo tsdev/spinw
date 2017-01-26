@@ -190,7 +190,9 @@ classdef spinw < handle
         symb  = false;
         % stores the file ID of the text output, default is the Command Window (see swpref)
         fid   = 1;
-        ver   = '';
+        % use the version property as contant, this will be executed only
+        % once
+        ver   = sw_version;
     end
     
     methods
@@ -200,8 +202,6 @@ classdef spinw < handle
             
             % update fid value
             obj.fid = swpref.getpref('fid',[]);
-            % define the version property
-            obj.ver = sw_version;
 
             if nargin==0
                 objS = initfield(struct);

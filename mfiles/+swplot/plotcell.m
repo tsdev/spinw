@@ -15,7 +15,7 @@ function varargout = plotcell(varargin)
 % mode      String, determined how the cells are plotted:
 %               'single'    A single unit cell is plotted at the origin.
 %               'inside'    Unit cells are plotted inside the given
-%                           range.
+%                           range. Default.
 %               'outside'   Unit cells are plotted inclusive the given
 %                               range.
 % figure    Handle of the swplot figure. Default is the selected figure.
@@ -35,7 +35,7 @@ nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
 
 inpForm.fname  = {'range' 'mode'   'figure' 'color' 'linestyle' 'linewidth'};
-inpForm.defval = {range0  'single' []       'auto'  '--'         1         };
+inpForm.defval = {range0  'inside' []       'auto'  '--'         1         };
 inpForm.size   = {[-1 -2] [1 -3]   [1 1]    [1 -4]  [1 -5]       [1 1]     };
 inpForm.soft   = {false   false    true     false   false        false     };
 

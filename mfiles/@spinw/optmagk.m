@@ -1,4 +1,4 @@
-function res = optmagk(obj,hkl,varargin)
+function [hkl, Eopt, n, stat] = optmagk(obj,varargin)
 % determines the magnetic propagation vector
 %
 % res = OPTMAGK(obj,hkl,'option1', value1 ...)
@@ -39,59 +39,31 @@ function res = optmagk(obj,hkl,varargin)
 %
 %param = sw_readparam(inpForm, varargin{:});
 
-% for linear scans create the Q line(s)
-if nargin > 1
-    if iscell(hkl)
-        hkl = sw_qscan(hkl);
-    elseif numel(hkl)==3
-        hkl = hkl(:);
-    end
-else
-    hkl = [];
-end
+
 
 % calculate symbolic Fourier transformation if obj is in symbolic mode
 if obj.symbolic
-    if numel(hkl) == 3
-        hkl = sym(hkl);
-    end
-    
-    if ~isa(hkl,'sym')
-        inpForm.fname  = {'fitmode'};
-        inpForm.defval = {false    };
-        inpForm.size   = {[1 1]    };
-        param0 = sw_readparam(inpForm, varargin{:});
-        
-        if ~param0.fitmode
-            fprintf0(obj.fileid,['No symbolic hkl value was given, Fourier'...
-                ' transformation for general Q (h,k,l) will be calculated!\n']);
-        end
-        res = obj.fouriersym(varargin{:});
-    else
-        res = obj.fouriersym(varargin{:},'hkl',hkl);
-    end
+    warning('spinw:optmagk:NoSymbolic','The function does not work in symbolic mode!');
     return
 end
 
+
 % generate exchange couplings
-[SS, SI, RR] = obj.intmatrix('fitmode',2,'extend',true,'conjugate',true);
+[SS, SI, RR] = obj.intmatrix('fitmode',2,'extend',false,'conjugate',true);
 
 % list of magnetic atoms in the unit cell
 matom = obj.matom;
-% number of Q points
-nHkl    = size(hkl,2);
-% number of magnetic atoms in the magnetic supercell
-nMagExt = prod(obj.mag_str.N_ext)*numel(matom.idx);
+% number of magnetic atoms in the unit cell
+nMagAtom = numel(matom.idx);
 % number of bonds
 nBond   = size(SS.all,2);
 
 % interacting atom1
-atom1 = SS.all(4,:);
+%atom1 = SS.all(4,:);
+atom1 = mod(SS.all(4,:)-1,numel(matom.S))+1;
 % interacting atom1
-atom2 = SS.all(5,:);
-
-% magnetic couplings, 3x3xnJ
-JJ = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
+%atom2 = SS.all(5,:);
+atom2 = mod(SS.all(5,:)-1,numel(matom.S))+1;
 
 % exchange energy: J_ij*S_i*S_j
 JJ = bsxfun(@times,SS.all(6:14,:),matom.S(atom1).*matom.S(atom2));
@@ -99,11 +71,8 @@ JJ = bsxfun(@times,SS.all(6:14,:),matom.S(atom1).*matom.S(atom2));
 % distance vector between interacting atoms in l.u.
 dR = SS.all(1:3,:)+RR(:,atom2)-RR(:,atom1);
 
-% exponents, dimension: 1 x nHkl x nBond
-ExpF = permute(exp(1i*2*pi*sum(bsxfun(@times,hkl',permute(dR,[3 1 2])),2)),[2 1 3]);
-
-% J*exp(ikr), dimensions 9 x nBond x nHkl
-Jexp = permute(bsxfun(@times,permute(JJ,[1 3 2]),ExpF),[1 3 2]);
+% number of Q points
+nHkl    = 1;
 
 % J^\alpha^\beta component indices in numbers 1:9
 idx1 = repmat((1:9)',[1 nBond nHkl]);
@@ -116,17 +85,37 @@ idx4 = repmat(permute(1:nHkl,[1 3 2]),[9 nBond 1]);
 % indices all
 idxAll = [idx1(:) idx2(:) idx3(:) idx4(:)];
 
-% Exchange energy: A_ij = S_i*S_j*J_ij*exp(ik*2pi*(R_i-R_j))
-% Summed up on all bonds
-% Dimensions: 9 x nMagExt x nMagExt x nHkl
-%                 atom1     atom2
-ft = accumarray(idxAll,Jexp(:)',[9 nMagExt nMagExt nHkl]);
+% optimise the energy
+[hkl, ~, stat] = ndbase.pso([],@optfun,[1/4 1/4 1/4],'lb',[0 0 0],'ub',[1/2 1/2 1/2],varargin{:});
 
-% reshape into 3 x 3 x nMagExt x nMagExt x nHkl
-ft = reshape(ft,[3 3 nMagExt nMagExt nHkl]);
+[Eopt, V] = optfun(hkl);
 
-% save results in a struct
-res.ft  = ft;
-res.hkl = hkl;
+n = cross(real(V(1:3)),imag(V(1:3)));
+n = n/norm(n);
+n = n(:)';
+
+    function [E, V] = optfun(p)
+        %
+        
+        % exponents, dimension: 1 x nHkl x nBond
+        ExpF = permute(exp(1i*2*pi*sum(bsxfun(@times,p(:)',permute(dR,[3 1 2])),2)),[2 1 3]);
+        
+        % J*exp(ikr), dimensions 9 x nBond x nHkl
+        Jexp = permute(bsxfun(@times,permute(JJ,[1 3 2]),ExpF),[1 3 2]);
+        
+        % Exchange energy: A_ij = S_i*S_j*J_ij*exp(ik*2pi*(R_i-R_j))
+        % Summed up on all bonds
+        % Dimensions: 9 x nMagExt x nMagExt x nHkl
+        %                 atom1     atom2
+        ft = accumarray(idxAll,Jexp(:)',[9 nMagAtom nMagAtom nHkl]);
+        
+        % reshape into 3 x 3 x nMagExt x nMagExt x nHkl
+        E = min(eig(reshape(permute(reshape(ft,[3 3 nMagAtom nMagAtom nHkl]),[1 3 2 4 5]),3*nMagAtom,3*nMagAtom,[])));
+        
+        if nargout > 1
+            [V,~] = eig(reshape(permute(reshape(ft,[3 3 nMagAtom nMagAtom nHkl]),[1 3 2 4 5]),3*nMagAtom,3*nMagAtom,[]));
+            V = V(:,1);
+        end
+    end
 
 end

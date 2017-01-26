@@ -248,7 +248,15 @@ color = color(:,~rmMat);
 % creating positive definite matrix by adding constant to all
 % eigenvalues.
 maxR  = sqrt(max(sum(Rell.^2,1)));
-Rell = ((Rell+param.radius1)/(maxR+param.radius1))*param.scale*min(lxyz);
+switch param.mode
+    case 'aniso'
+        % large value --> short radius
+        Rell = bsxfun(@minus,max(Rell,[],1),Rell);
+    case 'g'
+        
+end
+%Rell = ((Rell+param.radius1)/(maxR+param.radius1))*param.scale*min(lxyz);
+Rell = (Rell/maxR)*param.scale*min(lxyz)+param.radius1;
 % V*diag(R) vectorized
 %V = bsxfun(@times,V,permute(Rell,[3 1 2]));
 V = mmat(bsxfun(@times,V,permute(Rell,[3 1 2])),permute(V,[2 1 3]));

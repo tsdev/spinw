@@ -1,4 +1,4 @@
-function [p0,yHat,stat] = lm(dat,func,p0,varargin)
+function [p0,yHat,stat] = lm(dat,func0,p0,varargin)
 % least square refinement of parameters using Levenberg Marquardt method
 %
 % [pOpt,fVal,stat] = NDBASE.LM(dat,func,p0,'Option1','Value1',...)
@@ -54,8 +54,10 @@ function [p0,yHat,stat] = lm(dat,func,p0,varargin)
 %           1e-2.
 % eps3      Determines acceptance of a L-M step, default value is 0.1.
 % lambda0   Initial value of L-M paramter, default value is 1e-2.
-% lUp       Factor for increasing lambda, default value is 11.
-% lDown     Factor for decreasing lambda, default value is 9.
+% nu0       Value that determines the speed of convergence. Default value
+%           is 10. It should be larger than 1.
+% lUp       Factor for increasing lambda, default value is 30.
+% lDown     Factor for decreasing lambda, default value is 7.
 % update    Type of parameter update:
 %                   'lm'        Levenberg-Marquardt lambda update,
 %                   'quadratic' Quadratic update,
@@ -125,14 +127,16 @@ end
 
 % number of parameters
 Np    = numel(p0);
+% vertical parameter vector
+p0    = p0(:);
 
 inpForm.fname  = {'dp'   'lb'       'ub'      'MaxIter' 'eps1' 'TolX' 'MaxFunEvals' 'confLev'      'win'     };
 inpForm.defval = {1e-3   -inf(1,Np) inf(1,Np) 10*Np     1e-3   1e-3   100*Np        erf(1/sqrt(2)) [-inf inf]};
 inpForm.size   = {[1 -1] [1 Np]     [1 Np]    [1 1]     [1 1]  [1 1]  [1 1]         [1 1]          [1 2]     };
 
-inpForm.fname  = [inpForm.fname  {'eps2' 'eps3' 'lambda0' 'lUp' 'lDown' 'update' 'extraStat' 'vary'     }];
-inpForm.defval = [inpForm.defval {1e-2    0.1    1e-2      11    9       'nielsen' true       true(1,Np)}];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]  [1 1]     [1 1] [1 1]   [1 -2]    [1 1]      [1 Np]     }];
+inpForm.fname  = [inpForm.fname  {'eps2' 'eps3' 'lambda0' 'lUp' 'lDown' 'update' 'extraStat' 'vary'      'nu0'}];
+inpForm.defval = [inpForm.defval {1e-2    0.1    1e-2      30    7       'nielsen' true       true(1,Np) 10   }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]  [1 1]     [1 1] [1 1]   [1 -2]    [1 1]      [1 Np]      [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -148,29 +152,40 @@ switch param.update
 end
 
 % check input function
-if ischar(func)
+if ischar(func0)
     % convert to fuction handle
-    func = str2func(func);
+    func0 = str2func(func0);
 end
 
-if ~isa(func,'function_handle')
+if ~isa(func0,'function_handle')
     error('lm:WrongInput','The input function is neither a string, not function handle!');
 end
 
-% TODO: lb = -100*abs(p0); ub = 100*abs(p0)
-
-% make column vectors of all input
-p0    = p0(:);
-dat.x = dat.x(:);
-dat.y = dat.y(:);
-
-% remove unnecessary data
-xKeep = dat.x>param.win(1) & dat.x<param.win(2);
-dat.x = dat.x(xKeep);
-dat.y = dat.y(xKeep);
-if isfield(dat,'e')
-    dat.e = dat.e(xKeep);
+if isempty(dat)
+    % define fake data if is not given
+    dat   = struct; 
+    dat.x = (1:Np)';
+    dat.y = dat.x*0;
+    dat.e = dat.x*0+1;
+    
+    func = @(x,p)func0(p)*ones(Np,1);
+else
+    % just use the given function
+    func = func0;
+    % make column vectors of all input
+    dat.x = dat.x(:);
+    dat.y = dat.y(:);
+    
+    % remove unnecessary data
+    xKeep = dat.x>param.win(1) & dat.x<param.win(2);
+    dat.x = dat.x(xKeep);
+    dat.y = dat.y(xKeep);
+    if isfield(dat,'e')
+        dat.e = dat.e(xKeep);
+    end
 end
+
+% TODO: lb = -100*abs(p0); ub = 100*abs(p0)
 
 % number of independent variables
 Nx    = numel(dat.x);
@@ -247,8 +262,11 @@ switch update
     otherwise
         % Quadratic and Nielsen
         lambda  = param.lambda0 * max(diag(JtWJ));
-        nu=2;
+        nu = param.nu0;
 end
+
+% default dy value
+dy = dat.y*0;
 
 % previous value of X2
 X2old = X2;
@@ -331,7 +349,8 @@ while ~isFinished && lm_iteration <= param.MaxIter
                 lambda = max( lambda/(1 + alpha) , 1e-7 );
             case 3
                 % Nielsen
-                lambda = lambda*max( 1/3, 1-(2*rho-1)^3 ); nu = 2;
+                lambda = lambda*max(1/3,1-(2*rho-1)^3);
+                nu = param.nu0;
         end
     else
         % it IS NOT better
@@ -354,7 +373,7 @@ while ~isFinished && lm_iteration <= param.MaxIter
             case 3
                 % Nielsen
                 lambda = lambda * nu;
-                nu     = 2*nu;
+                nu     = nu*param.nu0;
         end
         
     end
@@ -446,7 +465,12 @@ if param.extraStat
     
     % coefficient of multiple determination
     %stat.Rsq = corr([dat.y yHat]);
-    stat.Rsq = cov(dat.y,yHat)./std(dat.y)./std(yHat);
+    stdy = std(dat.y)*std(yHat);
+    if stdy == 0
+        stdy = 1;
+    end
+    
+    stat.Rsq = cov(dat.y,yHat)./stdy;
     stat.Rsq = stat.Rsq(1,2).^2;
     
     % convergence history

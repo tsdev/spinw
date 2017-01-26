@@ -190,9 +190,9 @@ else
 end
 
 inpForm.fname  = {'mode'   'nExt'            'k'           'n'     };
-inpForm.defval = {'tile' obj.mag_str.nExt    k0            nan(1,3)};
+inpForm.defval = {'tile' obj.mag_str.nExt    []            nan(1,3)};
 inpForm.size   = {[1 -1]   [1 -4]            [-6 3]        [-6 3]  };
-inpForm.soft   = {false    false             false         false   };
+inpForm.soft   = {false    false             true          false   };
 
 inpForm.fname  = [inpForm.fname  {'func'          'x0'   'norm' 'r0' }];
 inpForm.defval = [inpForm.defval {@gm_spherical3d []     true   true }];
@@ -205,6 +205,13 @@ inpForm.size   = [inpForm.size   {[3 -7 -6] [1 1] [1 1]  [1 1]     [1 -5] }];
 inpForm.soft   = [inpForm.soft   {true      true  false  false     false  }];
 
 param = sw_readparam(inpForm, varargin{:});
+
+if isempty(param.k)
+    noK = true;
+    param.k = k0;
+else
+    noK = false;
+end
 
 if prod(double(param.nExt)) == 0
     error('spinw:genmagstr:WrongInput','''nExt'' has to be larger than 0!');
@@ -319,7 +326,9 @@ switch param.mode
         S  = randn(nMagExt,3);
         S  = bsxfun(@rdivide,S,sqrt(sum(S.^2,2)));
         S  = bsxfunsym(@times,S,mAtom.Sext')';
-        k  = [0 0 0];
+        if noK
+            k  = [0 0 0];
+        end
         
     case 'helical'
         S0 = param.S;

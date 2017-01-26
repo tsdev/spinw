@@ -196,6 +196,11 @@ trIdx = reshape(reshape(1:9,[3 3])',[9 1])+5;
 % magnetic ordering wave vector
 km = magStr.k;
 
+if any(km) && numel(km)>3
+    warning('spinw:optmagsteep:Multik','Multi-k structures cannot be optimized!')
+    return
+end
+
 % for non-zero km, rotate the exchange matrices that couple spins between
 % different unit cell
 if any(km)

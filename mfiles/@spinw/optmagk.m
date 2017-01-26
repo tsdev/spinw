@@ -1,37 +1,36 @@
-function [hkl, Eopt, n, stat] = optmagk(obj,varargin)
+function result = optmagk(obj,varargin)
 % determines the magnetic propagation vector
 %
-% res = OPTMAGK(obj,hkl,'option1', value1 ...)
+% res = OPTMAGK(obj,'option1', value1 ...)
+%
+% The function determines the optimal propagation vector by calculating the
+% Fourier transform of the Hamiltonian as a function of wave vector and
+% finding the wave vector that corresponds to the smalles eigenvalue of the
+% Hamiltonian. It also returns the normal vector that corresponds to the
+% rotating coordinate system. The optimization is achieved via
+% Particle-Swarm optimization.
 %
 % Input:
 %
-% obj           Input structure, spinw class object.
-% hkl           Defines the Q points where the Fourier transform is
-%               calculated, in reciprocal lattice units, size is [3 nHkl].
-%               Q can be also defined by several linear scan in reciprocal
-%               space. In this case hkl is cell type, where each element of
-%               the cell defines a point in Q space. Linear scans are
-%               assumed between consecutive points. Also the number of Q
-%               points can be specified as a last element, it is 100 by
-%               defaults. For example: hkl = {[0 0 0] [1 0 0]  50}, defines
-%               a scan along (h,0,0) from 0 to 1 and 50 Q points are
-%               calculated along the scan.
-%
-%               For symbolic calculation at a general reciprocal space
-%               point use sym class input. For example to calculate the
-%               spectrum along (h,0,0): hkl = [sym('h') 0 0]. To do
-%               calculation at a specific point do for example sym([0 1
-%               0]), to calculate the spectrum at (0,1,0).
+% obj       Input structure, spinw class object.
 %
 % Options:
 %
-% fitmode       Speedup (for fitting mode only), default is false.
+% Accepts all options of ndbase.pso.
 %
+% Output:
 %
-% See also SPINW.TISZA.
+% res       Structure with the following fields:
+%               k       Value of the optimal k-vector, with values between 0
+%                       and 1/2.
+%               n       Normal vector, defines the rotation axis of the
+%                       rotating coordinate system.
+%               E       The most negative eigenvalue at the given propagation
+%                       vector.
+%               stat    Full output of the ndbase.pso() optimizer.
 %
-
-% TODO: test for magnetic supercell
+% See also NDBASE.PSO.
+%
 
 %inpForm.fname  = {'fitmode' };
 %inpForm.defval = {false     };
@@ -49,7 +48,7 @@ end
 
 
 % generate exchange couplings
-[SS, SI, RR] = obj.intmatrix('fitmode',2,'extend',false,'conjugate',true);
+[SS, ~, RR] = obj.intmatrix('fitmode',2,'extend',false,'conjugate',true,'zeroC',false);
 
 % list of magnetic atoms in the unit cell
 matom = obj.matom;
@@ -85,20 +84,62 @@ idx4 = repmat(permute(1:nHkl,[1 3 2]),[9 nBond 1]);
 % indices all
 idxAll = [idx1(:) idx2(:) idx3(:) idx4(:)];
 
+% find the dimensionality of the bonds
+% bond vectors of non-zero couplings
+dl = SS.all(1:3,:);
+% system dimensionality
+D = rank(dl);
+% k-vector directions
+kbase = orth(dl);
+
+kones = ones(1,D);
+
 % optimise the energy
-[hkl, ~, stat] = ndbase.pso([],@optfun,[1/4 1/4 1/4],'lb',[0 0 0],'ub',[1/2 1/2 1/2],varargin{:});
+[pOpt, ~, stat] = ndbase.pso([],@optfun,1/4*kones,'lb',0*kones,'ub',kones,varargin{:},...
+    'TolFun',1e-5,'TolX',1e-5,'MaxIter',1e3);
 
-[Eopt, V] = optfun(hkl);
+kOpt = (kbase*pOpt(:));
 
+% is there any value larger than 1/2
+kOpt = mod(kOpt,1);
+kOpt(kOpt>1/2) = 1-kOpt(kOpt>1/2);
+
+[Eopt, V] = optfun(pOpt);
+
+% sum up on all atoms
+V = sum(reshape(V,3,[]),2);
+% find normal vector
 n = cross(real(V(1:3)),imag(V(1:3)));
 n = n/norm(n);
 n = n(:)';
 
+% save the optimized values
+if isempty(obj.mag_str.F)
+    % generate random magnetic structure
+    obj.genmagstr('mode','random','k',kOpt','n',n);
+else
+    % there is already magnetic structure, just overwrite k and n
+    obj.mag_str.n = n;
+    obj.mag_str.k = kOpt;
+end
+
+% output results
+result.k = kOpt;
+result.E = Eopt;
+result.n = n;
+result.stat = stat;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% fit function
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     function [E, V] = optfun(p)
         %
         
+        kvect = (kbase*p(:))';
+        
         % exponents, dimension: 1 x nHkl x nBond
-        ExpF = permute(exp(1i*2*pi*sum(bsxfun(@times,p(:)',permute(dR,[3 1 2])),2)),[2 1 3]);
+        ExpF = permute(exp(1i*2*pi*sum(bsxfun(@times,kvect,permute(dR,[3 1 2])),2)),[2 1 3]);
         
         % J*exp(ikr), dimensions 9 x nBond x nHkl
         Jexp = permute(bsxfun(@times,permute(JJ,[1 3 2]),ExpF),[1 3 2]);

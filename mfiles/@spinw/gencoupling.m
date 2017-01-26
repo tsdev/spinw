@@ -101,7 +101,7 @@ end
 
 if fid ~= 0
     fprintf0(fid,['Creating the bond list (maxDistance = %g ' symbol('ang')...
-        ', nCell = %dx%dx%d) ...\n'],param.maxDistance-tol,nC);
+        ', nCell = %dx%dx%d)...\n'],param.maxDistance-tol,nC);
 end
 
 % save the sym/nosym method into obj
@@ -230,7 +230,7 @@ aniso = int32(zeros(1,nMagAtom));
 g     = int32(zeros(1,nMagAtom));
 
 if fid ~= 0
-    fprintf0(fid,'... %d bonds are retained out of %d generated!\n',size(cMat,2),nHalfCube*nMagAtom^2);
+    fprintf0(fid,'...%d bonds are retained out of %d generated!\n',size(cMat,2),nHalfCube*nMagAtom^2);
 end
 
 % save output structure

@@ -67,7 +67,7 @@ function varargout = plot(obj, varargin)
 %
 
 % preparation
-fprintf0(obj.fileid,'Creating SpinW 3D figure... \n');
+fprintf0(obj.fileid,'Creating 3D plot... \n');
 
 if numel(varargin) == 1
     % handle input structures

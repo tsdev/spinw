@@ -94,9 +94,15 @@ kbase = orth(dl);
 
 kones = ones(1,D);
 
-% optimise the energy
-[pOpt, ~, stat] = ndbase.pso([],@optfun,1/4*kones,'lb',0*kones,'ub',kones,varargin{:},...
+% optimise the energy using particle swarm
+[pOpt0, ~, ~] = ndbase.pso([],@optfun,1/4*kones,'lb',0*kones,'ub',kones,varargin{:},...
     'TolFun',1e-5,'TolX',1e-5,'MaxIter',1e3);
+
+% generate an R-value
+optfun2 = @(p)(1e-2+optfun(p)-optfun(pOpt0))^2;
+
+% optimize further using LM
+[pOpt, ~, stat] = ndbase.lm2([],optfun2,pOpt0,'TolFun',1e-16,'TolX',1e-6);
 
 kOpt = (kbase*pOpt(:));
 

@@ -29,7 +29,7 @@ function basisVector = basisvector(obj, varargin)
 % reciprocal lattice units --> Angstrom^-1 (xyz coordinate system)
 %   Q_xyz =  [h k l] * 2*pi*inv(basisvector);
 %
-% See also SPINW, SPINW.ABC.
+% See also SPINW, SPINW.ABC, SPINW.RL.
 %
 
 if nargin < 2

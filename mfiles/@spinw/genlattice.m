@@ -16,7 +16,8 @@ function R = genlattice(obj, varargin)
 %           operators in a matrix with dimensions [3 4 nOp].
 % label     Optional label for the space group if the generators are given
 %           in the 'spgr' option.
-% bv        Basis vectors given in a matrix with dimensions of [3 3].
+% bv        Basis vectors given in a matrix with dimensions of [3 3], where
+%           each column defines a basis vector.
 % origin    Origin for the space group operators. Default is [0 0 0].
 % perm      Permutation of the abc axes of the space group operators.
 % nformula  Gives the number of formula units in the unit cell. It is used
@@ -26,7 +27,8 @@ function R = genlattice(obj, varargin)
 % Output:
 %
 % R         Rotation matrix that brings the input basis vector to the SpinW
-%           compatible form. Optional.
+%           compatible form:
+%                   BVspinw = R*BV
 %
 % Alternatively the lattice parameters can be given directly when the sw
 % object is created using: sw(inpStr), where struct contains the fields

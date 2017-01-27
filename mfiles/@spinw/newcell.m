@@ -9,11 +9,15 @@ function varargout = newcell(obj,bvect, bshift)
 % fill the new unit cell. Also the magnetic structure and bond and single
 % ion property definitions will be erased from the structure.
 %
+% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
+%
 % There might be problem, if there are atoms on the faces and corners of
 % the new lattice (due to numerical error). In this case use small bshift
 % to move the atoms. Always recommended to check the new structure by
 % plotting it, generating new bonds and checking that their length agree
 % with the bonds of the original structure.
+%
+% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
 %
 % Input:
 %
@@ -50,6 +54,8 @@ if nargin <= 1
     help spinw.newcell
     return
 end
+
+warning('spinw:newcell:PossibleBug','There might be an error, if there are atoms at the faces of the original cell!')
 
 if ~iscell(bvect) || numel(bvect)~=3
     error('spinw:newcell:WrongInput','Input has to be cell type with 3 vectors inside!');
@@ -93,8 +99,11 @@ pp = [zeros(3,1) Tn_o Tn_o(:,1)+Tn_o(:,3) Tn_o(:,2)+Tn_o(:,3) Tn_o(:,1)+Tn_o(:,2
 nExt  = ceil(max(pp,[],2) - min(pp,[],2))'+2;
 %obj.mag_str.N_ext = int32(nExt);
 
+
 % generated atoms
 atomList   = obj.atom;
+% original number of atoms in the unit cell
+nAtom0 = numel(atomList.idx);
 atomList.S = obj.unit_cell.S(atomList.idx);
 atomList = sw_extendlattice(nExt,atomList);
 rExt   = bsxfun(@plus,bsxfun(@times,atomList.RRext,nExt'),(min(pp,[],2)-1));
@@ -154,9 +163,15 @@ for ii = 1:numel(fNames)
 end
 
 % reset the magnetic structure
-obj.mag_str.F     = zeros(3,0,0);
-obj.mag_str.k     = zeros(3,0);
-obj.mag_str.N_ext = int32([1 1 1]);
+% obj.mag_str.F     = zeros(3,0,0);
+% obj.mag_str.k     = zeros(3,0);
+% obj.mag_str.N_ext = int32([1 1 1]);
+
+% reset the magnetic structure and the bonds
+obj.initfield({'coupling' 'mag_str'});
+
+% correct for formula units
+obj.unit.nformula = obj.unit.nformula*numel(obj.unit_cell.S)/nAtom0;
 
 % transformation from the original reciprocal lattice into the new
 % reciprocal lattice

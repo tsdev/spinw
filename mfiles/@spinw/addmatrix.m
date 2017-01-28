@@ -49,6 +49,11 @@ inpForm.soft   = {true       true       true    true    };
 
 newMat = sw_readparam(inpForm, varargin{:});
 
+if ~isnumeric(newMat.value) && ~isa(newMat.value,'sym')
+    warning('spinw:addmatrix:WrongInput','Matrix value has to be numeric or symbolic variable!')
+    return
+end
+
 if ~isempty(newMat.value)
     newMat.mat = newMat.value;
 end

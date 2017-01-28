@@ -76,7 +76,7 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %    end
 %end
 
-nExt0 = obj.magstr.N_ext;
+nExt0 = obj.magstr('exact',false).N_ext;
 inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate' 'sortDM' 'nExt'};
 inpForm.defval = {0          false     false   true     false       false    nExt0 };
 inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]    [1 3] };

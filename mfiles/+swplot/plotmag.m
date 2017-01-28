@@ -41,7 +41,8 @@ function varargout = plotmag(varargin)
 %               'colorname' All moments will have the same color.
 %               [R G B]     RGB code of the color.
 % scale     Scaling factor for the lenght of the magnetic moments relative
-%           to the length of the shortest bond. Default is 0.4.
+%           to the length of the shortest bond (if there are no bonds, 3A 
+%           is taken as bond length). Default is 0.4.
 % normalize If true, all moment length will be normalized to the scale
 %           factor, default is false.
 % radius0   Radius value of arrow body, default is 0.06.
@@ -154,7 +155,7 @@ end
 nExtPlot = diff(rangelu,1,2)'+1;
 luOrigin = rangelu(:,1)';
 % magnetic moment data
-magStr   = obj.magstr('nExt',nExtPlot,'origin',luOrigin);
+magStr   = obj.magstr('nExt',nExtPlot,'origin',luOrigin,'exact',false);
 M        = magStr.S;
 
 % magnetic atom position data
@@ -221,7 +222,7 @@ if ~isempty(obj.coupling.atom2)
     apos2 = obj.matom.r(:,obj.coupling.atom2(1))+double(obj.coupling.dl(:,1));
     lBond = norm(BV*(apos2-apos1));
 else
-    lBond = 1;
+    lBond = 3;
 end
 
 % normalize the longest moment vector to scale*(shortest bond length)

@@ -59,14 +59,6 @@ else
     bondIdx = bondIdx(:)';
 end
 
-% output proper Matlab table
-if all(bondIdx<0)
-    tTable = true;
-    bondIdx = -bondIdx;
-else
-    tTable = false;
-end
-
 % create the table
 table0 = [obj.coupling.dl;obj.coupling.atom1;obj.coupling.atom2;obj.coupling.idx;obj.coupling.mat_idx];
 table0 = table0(:,ismember(obj.coupling.idx,bondIdx));
@@ -103,22 +95,7 @@ for ii = 1:size(Jall,2)
     end
 end
 
-if tTable
-    mLabel = [obj.matrix.label {''}];
-    mName  = table0(7:9,:);
-    mName(mName==0) = numel(mLabel);
-    
-    aName1 = obj.unit_cell.label(obj.matom.idx(table0(4,:)))';
-    aName2 = obj.unit_cell.label(obj.matom.idx(table0(5,:)))';
-
-    label0 = {'bond' 'dl' 'atom1' 'midx1' 'atom2' 'midx2' 'matrix'};
-    cTable = mat2cell(table0(1:6,:)',nCoupling,[3 1 1 1]);
-    bonds.table = table(cTable{[4 1]},aName1,cTable{2},aName2,cTable{3},...
-        [mLabel(mName(1,:))',mLabel(mName(2,:))',...
-        mLabel(mName(3,:))'],'VariableNames',label0);
-else
-    bonds.label = {'dl_x' 'dl_y' 'dl_z' 'atom1' 'atom2' 'idx' 'mat_idx1' 'mat_idx2' 'mat_idx3'};
-    bonds.table = table0;
-end
+bonds.label = {'dl_x' 'dl_y' 'dl_z' 'atom1' 'atom2' 'idx' 'mat_idx1' 'mat_idx2' 'mat_idx3'};
+bonds.table = table0;
 
 end

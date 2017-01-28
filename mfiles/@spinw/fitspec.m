@@ -229,7 +229,7 @@ for ii = 1:nConv
     data = dataCell{ii};
     
     % calculate spin-spin correlation function
-    spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit);
+    spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit,'tid',0);
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy

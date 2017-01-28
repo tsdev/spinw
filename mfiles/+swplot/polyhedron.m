@@ -54,7 +54,7 @@ F = cell(1,nObject);
 
 for ii = 1:nObject
     V = vertices(:,:,ii);
-    switch rank(V)
+    switch rank(bsxfun(@minus,V,V(:,1)))
         case 3
             % calculate the faces of the 3D polyhedra
             F{ii}  = convhulln(V');

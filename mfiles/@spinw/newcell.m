@@ -9,16 +9,6 @@ function varargout = newcell(obj,bvect, bshift)
 % fill the new unit cell. Also the magnetic structure and bond and single
 % ion property definitions will be erased from the structure.
 %
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-%
-% There might be problem, if there are atoms on the faces and corners of
-% the new lattice (due to numerical error). In this case use small bshift
-% to move the atoms. Always recommended to check the new structure by
-% plotting it, generating new bonds and checking that their length agree
-% with the bonds of the original structure.
-%
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-%
 % Input:
 %
 % obj       spinw class object.
@@ -55,7 +45,7 @@ if nargin <= 1
     return
 end
 
-warning('spinw:newcell:PossibleBug','There might be an error, if there are atoms at the faces of the original cell!')
+%warning('spinw:newcell:PossibleBug','There might be an error, if there are atoms at the faces of the original cell!')
 
 if ~iscell(bvect) || numel(bvect)~=3
     error('spinw:newcell:WrongInput','Input has to be cell type with 3 vectors inside!');
@@ -115,33 +105,16 @@ rExt = bsxfun(@plus,rExt,bshift);
 % atomic positions in the new unit cell
 rNew = inv(Tn_o)*rExt; %#ok<MINV>
 
+epsilon = 10*eps;
 % cut atoms outside of the unit cell
 %idxCut = any((rNew<0) | (rNew>=(1-eps)),1);
-idxCut = any((rNew<0) | (rNew>=1),1);
+idxCut = any((rNew<-epsilon) | (rNew>(1-epsilon)),1);
 rNew(:,idxCut) = [];
 idxExt(idxCut) = [];
 atomList.Sext(idxCut)   = [];
 
-% find equivalent positions for dubious border atoms
-idxB = find(any(rNew>=(1-eps),1));
-% find the axis which is problematic
-idxA = rNew(:,idxB)>=(1-eps);
-% loop over and check whether the atom exists already
-idxCut = [];
-for ii = 1:numel(idxB)
-    rTemp = rNew(:,idxB(ii));
-    rTemp(idxA(:,ii)) = 0;
-    % atoms indices in rNew that are equivalent to the bad atom
-    if any(sum(bsxfun(@minus,rNew,rTemp).^2,1)<eps)
-        % remove the bad behaving atom
-        idxCut = [idxCut idxB(ii)]; %#ok<AGROW>
-    end
-end
-
-% remove the necessary bad behaving atoms
-rNew(:,idxCut) = [];
-idxExt(idxCut) = [];
-atomList.Sext(idxCut)   = [];
+% atoms are close to the face or origin --> put them exactly
+rNew(rNew<epsilon) = 0;
 
 % new lattice simmetry is no-symmetry
 obj.lattice.sym     = zeros(3,4,0);

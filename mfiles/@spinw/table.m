@@ -65,16 +65,11 @@ switch type
         T = table(num,matom,idx,S,realFhat,imagFhat,pos);
     case 'bond'
         
-        [SS,~] = obj.intmatrix('extend',false,'zeroC',true,'plotmode',true);
+        [SS,~] = obj.intmatrix('extend',false,'zeroC',true);
         
         % selector
         sel = ismember(obj.coupling.idx,index);
-        
-        value  = zeros(3,3,numel(obj.coupling.idx));
-        % exchange values
-        JJ = reshape(SS.all(6:14,:),3,3,[]);
-        value(:,:,any(obj.coupling.mat_idx,1)) = JJ;
-        
+                
         bond   = obj.coupling.idx(sel)';
         dl     = double(obj.coupling.dl(:,sel))';
         idx1   = obj.coupling.atom1(sel)';
@@ -87,7 +82,25 @@ switch type
         matIdx = obj.coupling.mat_idx;
         matIdx(matIdx==0) = numel(mLabel);
         matrix = mLabel(matIdx(:,sel))';
+        
+        bondSym = logical(obj.coupling.sym(:,sel)');
+        
+        matrix(bondSym) = cellfun(@(C)[char(187) C],matrix(bondSym),'UniformOutput',false);
         if showVal
+            % show the values of the matrices
+            value  = zeros(3,3,numel(obj.coupling.idx));
+            % exchange values
+            JJ = reshape(SS.all(6:14,:),3,3,[]);
+            
+            % find the right exchange values
+            cList = [obj.coupling.dl;obj.coupling.atom1;obj.coupling.atom2];
+            jList = SS.all(1:5,:);
+            [~,jSel] = ismember(jList',cList','rows');
+            
+            for ii = 1:numel(jSel)
+                value(:,:,jSel(ii)) = value(:,:,jSel(ii))+JJ(:,:,ii);
+            end
+            
             value  = permute(value(:,:,sel),[3 2 1]);
             value  = round(value*1e5)/1e5;
             Jx     = value(:,:,1);

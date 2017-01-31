@@ -99,9 +99,13 @@ function varargout = plotbond(varargin)
 %           shifted by the given value. Default value is [0;0;0].
 % replace   Replace previous atom plot if true. Default is true.
 % translate If true, all plot objects will be translated to the figure
-%           center. Default is true.
+%           center. Default is false.
 % zoom      If true, figure will be automatically zoomed to the ideal size.
-%           Default is true.
+%           Default is false.
+% copy      If true, a hardcopy of the spinw object will be sved in the
+%           figure data, otherwise just the handle of the spinw object, 
+%           thus the figure can be updated when the spin object changed.
+%           Default value is false. 
 %
 % Output:
 %
@@ -140,10 +144,10 @@ inpForm.defval = [inpForm.defval {[0;0;0] true      []      30    0.3     0.3   
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]   [1 1] [1 1]   [1 1]     [1 1]     }];
 inpForm.soft   = [inpForm.soft   {false   false     true    false false   false     false     }];
 
-inpForm.fname  = [inpForm.fname  {'radius1' 'translate' 'zoom' 'color2'}];
-inpForm.defval = [inpForm.defval {0.08      true         true  'auto'  }];
-inpForm.size   = [inpForm.size   {[1 1]     [1 1]        [1 1] [1 -11] }];
-inpForm.soft   = [inpForm.soft   {false     false        false false   }];
+inpForm.fname  = [inpForm.fname  {'radius1' 'translate' 'zoom' 'color2' 'copy'}];
+inpForm.defval = [inpForm.defval {0.08      false        false 'auto'   false }];
+inpForm.size   = [inpForm.size   {[1 1]     [1 1]        [1 1] [1 -11]  [1 1] }];
+inpForm.soft   = [inpForm.soft   {false     false        false false    false }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -162,7 +166,11 @@ end
 if isempty(param.obj)
     obj = getappdata(hFigure,'obj');
 else
-    setappdata(hFigure,'obj',copy(param.obj));
+    if param.copy
+        setappdata(hFigure,'obj',copy(param.obj));
+    else
+        setappdata(hFigure,'obj',param.obj);
+    end
     obj = param.obj;
     setappdata(hFigure,'base',obj.basisvector);
 end

@@ -24,9 +24,9 @@ function varargout = plotcell(varargin)
 % lineStyle Line style of the cell, default is '--'.
 % lineWdith Line width of the cell, default is 1.
 % translate If true, all plot objects will be translated to the figure
-%           center. Default is true.
+%           center. Default is false.
 % zoom      If true, figure will be automatically zoomed to the ideal size.
-%           Default is true.
+%           Default is false.
 %
 
 % default values
@@ -40,14 +40,14 @@ inpForm.size   = {[-1 -2] [1 -3]   [1 1]    [1 -4]  [1 -5]       [1 1]     };
 inpForm.soft   = {false   false    true     false   false        false     };
 
 inpForm.fname  = [inpForm.fname  {'translate' 'zoom' 'tooltip' 'replace'}];
-inpForm.defval = [inpForm.defval { true         true true      true     }];
+inpForm.defval = [inpForm.defval { false       false true      true     }];
 inpForm.size   = [inpForm.size   {[1 1]        [1 1] [1 1]     [1 1]    }];
 inpForm.soft   = [inpForm.soft   {false        false false     false    }];
 
-inpForm.fname  = [inpForm.fname  {'npatch' 'nmesh' 'unit' 'shift'}];
-inpForm.defval = [inpForm.defval {nPatch0  nMesh0  'lu'   [0;0;0]}];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 -6] [3 1]  }];
-inpForm.soft   = [inpForm.soft   {false    false   false  false  }];
+inpForm.fname  = [inpForm.fname  {'npatch' 'nmesh' 'unit' 'shift' 'copy'}];
+inpForm.defval = [inpForm.defval {nPatch0  nMesh0  'lu'   [0;0;0] false }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 -6] [3 1]   [1 1] }];
+inpForm.soft   = [inpForm.soft   {false    false   false  false   false }];
 
 param = sw_readparam(inpForm, varargin{:});
 

@@ -25,7 +25,7 @@ folName = fileparts(mfilename('fullpath'));
 % adding new path
 fprintf('Adding path to new SpinW installation: %s!\n',folName);
 ww = warning;
-warning('off'); %#ok<WNOFF>
+warning('off');
 addpath(genpath(folName));
 warning(ww);
 
@@ -42,6 +42,12 @@ if ~verLessThan('matlab', '8.1')
     for ii = 1:numel(fList)
         delete([folName filesep 'external' filesep fList(ii).name]);
     end
+    % gobjects()
+    fList = dir([folName filesep 'external' filesep 'gobjects*']);
+    for ii = 1:numel(fList)
+        delete([folName filesep 'external' filesep fList(ii).name]);
+    end
+
 else
     % rename the functions to be used in Matlab versions prior to R2014a
     % strjoin()
@@ -50,6 +56,10 @@ else
     % strsplit()
     movefile([folName filesep 'external' filesep 'strsplit0.m'],...
         [folName filesep 'external' filesep 'strsplit.m']);
+    % gobjects()
+    movefile([folName filesep 'external' filesep 'gobjects0.m'],...
+        [folName filesep 'external' filesep 'gobjects.m']);
+
 end
 
 % functions introduced in R2015a

@@ -59,9 +59,13 @@ function varargout = plotchem(varargin)
 %           shifted by the given value. Default value is [0;0;0].
 % replace   Replace previous atom plot if true. Default is true.
 % translate If true, all plot objects will be translated to the figure
-%           center. Default is true.
+%           center. Default is false.
 % zoom      If true, figure will be automatically zoomed to the ideal size.
-%           Default is true.
+%           Default is false.
+% copy      If true, a hardcopy of the spinw object will be sved in the
+%           figure data, otherwise just the handle of the spinw object, 
+%           thus the figure can be updated when the spin object changed.
+%           Default value is false. 
 %
 % Output:
 %
@@ -79,10 +83,10 @@ nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
 range0    = [0 1;0 1;0 1];
 
-inpForm.fname  = {'range' 'legend' 'label' 'unit' 'mode' 'atom1' 'atom2'};
-inpForm.defval = {range0  true     true    'lu'   'poly' 1       2      };
-inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 -3] [1 -4] [1 -5]  [1 -6] };
-inpForm.soft   = {false   false    false   false  false  false   false  };
+inpForm.fname  = {'range' 'legend' 'label' 'unit' 'mode' 'atom1' 'atom2' 'copy'};
+inpForm.defval = {range0  true     true    'lu'   'poly' 1       2       false };
+inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 -3] [1 -4] [1 -5]  [1 -6]  [1 1] };
+inpForm.soft   = {false   false    false   false  false  false   false   false };
 
 inpForm.fname  = [inpForm.fname  {'limit' 'alpha' 'color' 'nmesh' 'npatch'}];
 inpForm.defval = [inpForm.defval {6       []      'auto'  nMesh0  nPatch0 }];
@@ -95,7 +99,7 @@ inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -9]  [1 1]      [1 1]    }];
 inpForm.soft   = [inpForm.soft   {true     true  false   false      false    }];
 
 inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'translate' 'zoom' 'extend' }];
-inpForm.defval = [inpForm.defval {[0;0;0] true      true         true   2       }];
+inpForm.defval = [inpForm.defval {[0;0;0] true      false        false  2       }];
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]        [1 1]  [1 1]   }];
 inpForm.soft   = [inpForm.soft   {false   false     false        false  false   }];
 
@@ -122,7 +126,11 @@ end
 if isempty(param.obj)
     obj = getappdata(hFigure,'obj');
 else
-    setappdata(hFigure,'obj',copy(param.obj));
+    if param.copy
+        setappdata(hFigure,'obj',copy(param.obj));
+    else
+        setappdata(hFigure,'obj',param.obj);
+    end
     obj = param.obj;
     setappdata(hFigure,'base',obj.basisvector);
 end

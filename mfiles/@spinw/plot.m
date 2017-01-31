@@ -114,7 +114,7 @@ else
 end
 
 % find global options:
-globalName = {'range' 'unit' 'legend' 'fontsize' 'nmesh' 'npatch' 'shift'};
+globalName = {'range' 'unit' 'legend' 'fontsize' 'nmesh' 'npatch' 'shift' 'copy'};
 selG = ismember(optName,globalName);
 % take care of global figure handle
 optNameG = [optName(selG) {'figure' 'tooltip' 'zoom' 'translate' 'replace'}];

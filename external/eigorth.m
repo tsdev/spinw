@@ -46,7 +46,9 @@ nMat   = size(M,1);
 nStack = size(M,3);
 
 % Use OpenMP parallelised mex file if it exists
-if nStack>1 && useMex && exist('eig_omp','file')==3
+%if nStack>1 && useMex && exist('eig_omp','file')==3
+% check existence of mex files outside of this function
+if nStack>1 && useMex
     if sortMode
         [V, D] = eigenshuffle(M,useMex,'orth');
     else

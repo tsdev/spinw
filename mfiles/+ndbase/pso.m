@@ -176,6 +176,45 @@ end
 % set EXITFLAG to default value
 exitFlag = 0;
 
+if all(UB==LB)
+    % just call func once and return
+    pOpt = p0;
+    fVal = func(pOpt);
+    
+    % store number of iterations
+    stat.p          = pOpt;
+    stat.sigP       = [];
+    if isempty(dat)
+        stat.redX2 = fVal;
+    else
+        % divide R2 with the statistical degrees of freedom
+        stat.redX2   = fVal/(numel(dat.x)-Np+1);
+    end
+    
+    stat.Rsq        = [];
+    stat.sigY       = [];
+    stat.corrP      = [];
+    stat.cvgHst     = [];
+    stat.nIter      = 0;
+    stat.nFunEvals  = 1;
+    stat.algorithm  = 'Particle Swarm Optimization';
+    if isempty(dat)
+        stat.func   = func;
+    else
+        stat.func   = func0;
+    end
+    
+    stat.exitFlag   = exitFlag;
+    stat.param      = param;
+    
+    % store number of function evaluations
+    if ~isempty(dat)
+        fVal = func0(dat.x,pOpt);
+    end
+    
+    return
+end
+
 % seed the random number generator
 rng(param.seed);
 

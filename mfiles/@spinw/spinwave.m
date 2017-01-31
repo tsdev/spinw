@@ -156,9 +156,6 @@ function spectra = spinwave(obj, hkl, varargin)
 % See also SPINW, SPINW.SPINWAVESYM, SW_NEUTRON, SPINW.POWSPEC, SPINW.OPTMAGSTR, SPINW.FILEID, SW_INSTRUMENT.
 %
 
-% save the time of the beginning of the calculation
-spectra.datestart = datestr(now);
-
 % for linear scans create the Q line(s)
 if nargin > 1
     %    if iscell(hkl)
@@ -201,8 +198,6 @@ end
 
 title0 = 'Numerical LSWT spectrum';
 
-tid0 = swpref.getpref('tid',[]);
-
 inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' 'hermit'};
 inpForm.defval = {false     false    true       0        1e-4  true    };
 inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]   };
@@ -216,17 +211,31 @@ inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
 inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase' 'tid'}];
-inpForm.defval = [inpForm.defval {false    false       tid0 }];
+inpForm.defval = [inpForm.defval {false    false       -1   }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]       [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
-if param.fitmode
-    param.sortMode = false;
+if ~param.fitmode
+    % save the time of the beginning of the calculation
+    spectra.datestart = datestr(now);
 end
 
-if ~(param.useMex && exist('chol_omp','file')==3 && ...
+if param.fitmode
+    param.sortMode = false;
+    param.tid = 0;
+end
+
+if param.tid == -1
+    param.tid = swpref.getpref('tid',[]);
+end
+
+if param.useMex == -1
+    % don't check files (takes too much time)
+    param.useMex = true;
+elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
         exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
+    % check if mex files exist
     param.useMex = false;
 end
 

@@ -22,7 +22,7 @@ function data = sw_readspec(path)
 % In        intensity of the n-th spin wave mode,
 % En        center of the n-th spin wave mode, has to be in increasing
 %           order,
-% sn        errorbar of the corresponding energy (standard deviation)
+% sn        standard deviation of the corresponding energy
 %
 % The number of modes in a single line of the data file is unlimited,
 % however in every line the number of modes have to be the same. Scans with
@@ -52,12 +52,12 @@ function data = sw_readspec(path)
 % 0     1.1000   2.0000   15      30      1   22.7032   1.0   0   0.0       0.0
 % 0     1.2000   2.0000   20      35      1   25.1516   1.0   0   0.0       0.0
 %
-% See also SW.FITSPEC, SW_PARSTR.
+% See also SW.FITSPEC.
 %
 
 if nargin == 0
-    help sw_readspec;
-    return;
+    help sw_readspec
+    return
 end
 
 fid = fopen(path);

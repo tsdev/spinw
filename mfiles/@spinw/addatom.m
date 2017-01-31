@@ -105,7 +105,7 @@ if isempty(newAtom.label)
     warning('off','sw_mff:WrongInput');
     warning('off','sw_cff:WrongInput');
     warning('off','sw_nb:WrongInput');
-elseif isempty(newAtom.S)
+elseif ~any(newAtom.S)
     % the atom is not intentionally mgnetic
     warning('off','sw_mff:WrongInput');
 end

@@ -253,6 +253,7 @@ chisqr = chi2Best/nnorm;
 
 % best values for parameters at start
 pBest = p0;
+p     = pBest;
 
 % function values at start
 yBest = yCalc(:);

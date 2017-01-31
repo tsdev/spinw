@@ -21,9 +21,9 @@ function varargout = plotbase(varargin)
 % d         Distance from origin in xyz units.
 % dtext     Distance from arrow and in xyz units.
 % translate If true, all plot objects will be translated to the figure
-%           center. Default is true.
+%           center. Default is false.
 % zoom      If true, figure will be automatically zoomed to the ideal size.
-%           Default is true.
+%           Default is false.
 %
 
 % default values
@@ -38,13 +38,13 @@ inpForm.defval = {range0  'default' []       col0    0.06  30      0.5     [0;0;
 inpForm.size   = {[-1 -2] [1 -3]    [1 1]    [-4 -5] [1 1] [1 1]   [1 1]   [3 1]  };
 inpForm.soft   = {false   false     true     false   false false   false   false  };
 
-inpForm.fname  = [inpForm.fname  {'d'   'dtext' 'label' 'tooltip' 'translate'}];
-inpForm.defval = [inpForm.defval {d0    0.5     true    true      true       }];
-inpForm.size   = [inpForm.size   {[1 3] [1 1]   [1 1]   [1 1]     [1 1]      }];
-inpForm.soft   = [inpForm.soft   {false false   false   false     false      }];
+inpForm.fname  = [inpForm.fname  {'d'   'dtext' 'label' 'tooltip' 'translate' 'copy'}];
+inpForm.defval = [inpForm.defval {d0    0.5     true    true      false       false }];
+inpForm.size   = [inpForm.size   {[1 3] [1 1]   [1 1]   [1 1]     [1 1]       [1 1] }];
+inpForm.soft   = [inpForm.soft   {false false   false   false     false       false }];
 
 inpForm.fname  = [inpForm.fname  {'zoom' 'replace' 'nmesh' 'npatch' 'unit' 'length'}];
-inpForm.defval = [inpForm.defval {true   true      nMesh0  nPatch0  'lu'   2       }];
+inpForm.defval = [inpForm.defval {false  true      nMesh0  nPatch0  'lu'   2       }];
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]     [1 1]   [1 1]    [1 -6] [1 1]   }];
 inpForm.soft   = [inpForm.soft   {false  false     false   false    false  false   }];
 

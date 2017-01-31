@@ -28,7 +28,7 @@ function res = fourier(obj,hkl,varargin)
 % fitmode       Speedup (for fitting mode only), default is false.
 %
 %
-% See also SPINW.TISZA.
+% See also SPINW.OPTMAGK.
 %
 
 % TODO: test for magnetic supercell

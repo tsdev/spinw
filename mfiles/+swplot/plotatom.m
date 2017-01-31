@@ -54,9 +54,13 @@ function varargout = plotatom(varargin)
 %           shifted by the given value. Default value is [0;0;0].
 % replace   Replace previous atom plot if true. Default is true.
 % translate If true, all plot objects will be translated to the figure
-%           center. Default is true.
+%           center. Default is false.
 % zoom      If true, figure will be automatically zoomed to the ideal size.
-%           Default is true.
+%           Default is false.
+% copy      If true, a hardcopy of the spinw object will be sved in the
+%           figure data, otherwise just the handle of the spinw object, 
+%           thus the figure can be updated when the spin object changed.
+%           Default value is false. 
 %
 % Output:
 %
@@ -85,13 +89,13 @@ inpForm.defval = [inpForm.defval {'auto'   'all'  'auto'  nMesh0  nPatch0 }];
 inpForm.size   = [inpForm.size   {[1 -3]   [1 -4] [1 -5]  [1 1]   [1 1]   }];
 inpForm.soft   = [inpForm.soft   {false    false  false   false   false   }];
 
-inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'unit'  'tooltip'}];
-inpForm.defval = [inpForm.defval {[]       []    'lu'    true     }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]  [1 1]    }];
-inpForm.soft   = [inpForm.soft   {true     true  false   false    }];
+inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'unit'  'tooltip' 'copy'}];
+inpForm.defval = [inpForm.defval {[]       []    'lu'    true      false }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6]  [1 1]     [1 1] }];
+inpForm.soft   = [inpForm.soft   {true     true  false   false     false }];
 
 inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'translate' 'zoom'}];
-inpForm.defval = [inpForm.defval {[0;0;0] true      true         true }];
+inpForm.defval = [inpForm.defval {[0;0;0] true      false        false}];
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]        [1 1]}];
 inpForm.soft   = [inpForm.soft   {false   false     false        false}];
 
@@ -117,7 +121,11 @@ end
 if isempty(param.obj)
     obj = getappdata(hFigure,'obj');
 else
-    setappdata(hFigure,'obj',copy(param.obj));
+    if param.copy
+        setappdata(hFigure,'obj',copy(param.obj));
+    else
+        setappdata(hFigure,'obj',param.obj);
+    end
     obj = param.obj;
     setappdata(hFigure,'base',obj.basisvector);
 end

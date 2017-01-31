@@ -146,6 +146,9 @@ if isempty(hPatch)
             lineWidth = repmat(lineWidth,[1 nObject]);
         end
 
+        % there is no zero linewidth
+        lineWidth(lineWidth<=0) = 1e-3;
+        
         hPatch = gobjects(1,nObject);
         for ii = 1:nObject
             hPatch(ii) = patch('Parent',hAxis,'Vertices',V((1:nPoint)+(ii-1)*nPoint,:),...

@@ -1,4 +1,4 @@
-function fitsp = fitspec(obj, varargin)
+function fitsp = fitspec2(obj, varargin)
 % fits spin wave spectra to experimental spectral data
 %
 % fitsp = FITSPEC(obj, 'Option1', Value1, ...)
@@ -17,6 +17,11 @@ function fitsp = fitspec(obj, varargin)
 % xmax      Maximum limit of the optimisation parameters, optional.
 % x0        Starting value of the optimisation parameters. If empty
 %           or undefined, then random values are used.
+% optimizer String that determines the optimizer to use, possible values:
+%               'pso'       Particle-swarm optimizer, see ndbase.pso,
+%                           default.
+%               'simplex'   Matlab built-in simplex optimizer, see
+%                           fminsearch.
 % nRun      Number of consecutive fitting runs, each result is saved in the
 %           output fitsp.x and R arrays. If the Hamiltonian given by the
 %           random x parameters is incompatible with the ground state,
@@ -50,12 +55,14 @@ function fitsp = fitspec(obj, varargin)
 %
 % Optimisation options:
 %
-% tolx          Minimum change of x when convergence reached, default
+% TolX          Minimum change of x when convergence reached, default
 %               value is 1e-4.
-% tolfun        Minimum change of the R value when convergence reached,
+% TolFun        Minimum change of the R value when convergence reached,
 %               default value is 1e-5.
-% maxfunevals   Maximum number of function evaluations, default value is
+% MaxFunEvals   Maximum number of function evaluations, default value is
 %               1e7.
+% MaxIter       Maximum number of iterations for the ndbse.pso optimizer.
+%               Default value is 20.
 %
 % Output:
 %
@@ -70,25 +77,32 @@ function fitsp = fitspec(obj, varargin)
 % exitflag  Exit flag of the fminsearch command.
 % output    Output of the fminsearch command.
 %
-% Any option used by SW.SPINWAVE function are also accepted.
+% Any option used by SPINW.SPINWAVE function are also accepted.
 %
-% See also SPINW.SPINWAVE, SW_EGRID, SW_NEUTRON, SW_READSPEC.
+% See also SPINW.SPINWAVE, SPINW.MATPARSER, SW_EGRID, SW_NEUTRON, SW_READSPEC.
 %
+
+tid0 = swpref.getpref('tid',[]);
 
 inpForm.fname  = {'epsilon' 'datapath' 'xmin'   'xmax'  'x0'    'func' 'plot'};
 inpForm.defval = {1e-5      ' '        []       []      []      []     true  };
 inpForm.size   = {[1 1]     [1 -1]     [1 -3]   [1 -4]  [1 -5]  [1 1]  [1 1] };
-inpForm.soft   = {1         0          1        1       1       0      0     };
+inpForm.soft   = {true      false      true     true    true    false  false };
 
 inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'Evect' 'nRun'}];
-inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           []      1     }];
+inpForm.defval = [inpForm.defval {1e-4   1e-5     1e3           []      1     }];
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 -6]  [1 1] }];
-inpForm.soft   = [inpForm.soft   {0      0        0             0       0     }];
+inpForm.soft   = [inpForm.soft   {false  false    false         false   false }];
 
-inpForm.fname  = [inpForm.fname  {'nMax' 'hermit' 'iFact' 'lShift'}];
-inpForm.defval = [inpForm.defval {1e3    true     1/30     0      }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]    [1 1]  }];
-inpForm.soft   = [inpForm.soft   {0      0        0        0      }];
+inpForm.fname  = [inpForm.fname  {'nMax' 'hermit' 'iFact' 'lShift' 'optimizer'}];
+inpForm.defval = [inpForm.defval {1e3    true     1/30     0       'pso'      }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]    [1 1]   [1 -7]     }];
+inpForm.soft   = [inpForm.soft   {false  false    false    false   false      }];
+
+inpForm.fname  = [inpForm.fname  {'maxiter' 'sw'  'optmem' 'usemex' 'tid' }];
+inpForm.defval = [inpForm.defval {20        1     0        false    tid0  }];
+inpForm.size   = [inpForm.size   {[1 1]  	[1 1] [1 1]    [1 1]    [1 1] }];
+inpForm.soft   = [inpForm.soft   {false  	false false    false    false }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -118,16 +132,26 @@ for ii = 1:numel(data)
     data{ii}.sigma(data{ii}.sigma==0) = 1;
 end
 
-
+% setup parameters for spinw.spinwave()
 param0      = param;
 param0.plot = false;
+param0.tid  = 0;
 
 x = zeros(nRun,nPar);
 R = zeros(nRun,1);
-%exitflag = zeros(nRun,1);
-%output   = struct;
 
-sw_status(0,1);
+
+% convert data into standard xye format
+dat = struct('x',[],'y',[],'e',[]);
+for ii = 1:numel(data)
+    sel   = data{ii}.I~=0;
+    dat.y = [dat.y;data{ii}.E(sel)];
+    dat.e = [dat.e;data{ii}.sigma(sel)];
+end
+dat.x = (1:numel(dat.y))';
+
+
+sw_status(0,1,param.tid,'Fitting spin wave spectra');
 
 idx = 1;
 idxAll = 1;
@@ -136,38 +160,56 @@ fidSave = obj.fileid;
 obj.fileid (0);
 
 while idx <= nRun
-    try
-        if ~isempty(param.x0)
-            x0 = param.x0;
-        elseif isempty(param.xmax) && isempty(param.xmin)
-            x0 = rand(1,nPar);
-        elseif isempty(param.xmax)
-            x0 = param.xmin + rand(1,nPar);
-        elseif isempty(param.xmin)
-            x0 = param.xmax - rand(1,nPar);
-        else
-            x0 = rand(1,nPar).*(param.xmax-param.xmin)+param.xmin;
-        end
-        
-        [x(idx,:), R(idx), exitflag(idx), output(idx)] = sw_fminsearchbnd(@(x)sw_fitfun(obj, data, param.func, x, param0),x0,param.xmin,param.xmax,...
-            optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
-        
-        idx = idx + 1;
-    catch
-        warning('Hamiltonian is not compatible with the magnetic ground state!');
-        if ~isempty(param.x0)
-            error('sw:fitspec:WrongInput','x0 input incompatible with ground state!');
-        end
-        
-        if idxAll >= param.nMax
-            warning('sw:fitspec:WrongInput','Maximum number of wrong runs (param.nMax) reached, calculation is terminated!');
-            break;
-        end
+    %try
+    if ~isempty(param.x0)
+        x0 = param.x0;
+    elseif isempty(param.xmax) && isempty(param.xmin)
+        x0 = rand(1,nPar);
+    elseif isempty(param.xmax)
+        x0 = param.xmin + rand(1,nPar);
+    elseif isempty(param.xmin)
+        x0 = param.xmax - rand(1,nPar);
+    else
+        x0 = rand(1,nPar).*(param.xmax-param.xmin)+param.xmin;
     end
+    
+    switch param.optimizer
+        case 'pso'
+            [x(idx,:),fVal, output(idx)] = ndbase.pso(dat,@(x,p)spec_fitfun(obj, data, param.func, p, param0),x0,'lb',param.xmin,'ub',param.xmax,...
+                'TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'MaxIter',param.maxiter);
+            R(ii) = sqrt(sum(((dat.y-fVal(:))./dat.e).^2));
+            
+        case 'simplex'
+            [x(idx,:), R(idx), ~, output(idx)] = sw_fminsearchbnd(@(p)spec_fitfun(obj, data, param.func, p, param0),x0,param.xmin,param.xmax,...
+                optimset('TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'Display','off'));
+        otherwise
+            error('spinw:fitspec:WrongOption','The given optimizer is not supported!')
+            
+            %case 'both'
+            %    [xPSO, fPSO] = ndbase.pso(dat,@(x,p)spec_fitfun(obj, data, param.func, p, param0),x0,'lb',param.xmin,'ub',param.xmax,...
+            %        'TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'MaxIter',20);
+            %    [x(idx,:),fVal, output(ii)] = ndbase.lm3(dat,@(x,p)spec_fitfun(obj, data, param.func, p, param0),xPSO,'lb',param.xmin,'ub',param.xmax,...
+            %        'TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals);
+            
+    end
+    
+    idx = idx + 1;
+    %     catch
+    %         warning('Hamiltonian is not compatible with the magnetic ground state!');
+    %         if ~isempty(param.x0)
+    %             error('sw:fitspec:WrongInput','x0 input incompatible with ground state!');
+    %         end
+    %
+    %         if idxAll >= param.nMax
+    %             warning('sw:fitspec:WrongInput','Maximum number of wrong runs (param.nMax) reached, calculation is terminated!');
+    %             break;
+    %         end
+    %     end
     idxAll = idxAll + 1;
-    sw_status(idx/nRun*100);
+    sw_status(idx/nRun*100,0,param.tid);
 end
-sw_status(100,2);
+
+sw_status(100,2,param.tid);
 
 % Sort results
 [R, sortIdx] = sort(R);
@@ -178,7 +220,7 @@ if param.plot
     figure;
     param0.plot = true;
     % plot the best result if requested
-    sw_fitfun(obj, data, param.func, x(1,:), param0);
+    spec_fitfun(obj, data, param.func, x(1,:), param0);
 end
 
 % set the best fit to the sw object
@@ -190,14 +232,15 @@ obj.fileid(fidSave);
 fitsp.obj      = copy(obj);
 fitsp.x        = x;
 fitsp.R        = R;
-fitsp.exitflag = exitflag;
+%fitsp.exitflag = exitflag;
 fitsp.output   = output;
 
 end
 
-function [R, pHandle] = sw_fitfun(obj, dataCell, parfunc, x, param)
-% [R, pHandle] = SW_FITFUN(obj, data, param, swfunc, x) calculates the
-% agreement factor between simulated and measured data.
+function [yCalc, pHandleOut] = spec_fitfun(obj, dataCell, parfunc, x, param)
+% calculates the spin wave energies to directly compare to data
+%
+% [yCalc, pHandle] = SW_FITFUN(obj, data, param, swfunc, x)
 %
 % swobj         sw type object contains the magnetic structure and the
 %               Hamiltonian for the spin wave calculation.
@@ -215,11 +258,10 @@ param.nPoints = 50;
 
 parfunc(obj,x);
 
-%nExt = double(obj.mag_str.N_ext);
-
 % Number of different correlation functions measured.
 nConv = numel(dataCell);
-R  = 0;
+yCalc = [];
+R     = 0;
 
 sim = struct;
 Qc = 0;
@@ -229,11 +271,14 @@ for ii = 1:nConv
     data = dataCell{ii};
     
     % calculate spin-spin correlation function
-    spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit,'tid',0);
+    spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit,...
+        'tid',0,'optMem',param.optmem,'useMex',param.usemex,'tid',param.tid);
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy
     spec = sw_egrid(spec,'component',data.corr,'Evect',param.Evect);
+    % generate center bin
+    spec.Evect = (spec.Evect(1:(end-1))+spec.Evect(2:end))/2;
     
     nQ = size(data.Q,2);
     pHandle = [];
@@ -258,8 +303,6 @@ for ii = 1:nConv
         data.Iii  = data.I(1:data.nii,jj)';
         data.sii  = data.sigma(1:data.nii,jj)';
         data.wii  = data.sii.^(-2);
-        %data.wii  = 1./(data.sigma(1:data.nii,jj).^2)';
-        
         
         simVect   = [repmat(data.minE(jj),[1 data.nii]) sim.E repmat(data.maxE(jj),[1 data.nii])];
         
@@ -269,7 +312,9 @@ for ii = 1:nConv
             % R-value calculated as weight(Data)*(E(simulation)-E(Data))^2
             d(kk) = sum(data.wii.*(simVect((1:data.nii)+kk-1)-data.Eii).^2);
         end
-        R = R + min(d);
+        [mind,Eidx] = min(d);
+        yCalc = [yCalc;simVect((1:data.nii)+Eidx-1)'];
+        R = R + mind;
         
         if param.plot
             plot(jj+Qc+sim.E*0,sim.E,'ko');
@@ -285,7 +330,7 @@ for ii = 1:nConv
                 cPoints = sw_circle([jj+Qc data.Eii(kk) 0]',[0 0 1]',sqrt(data.Eii(kk))*param.iFact,param.nPoints);
                 pHandle(end+1) = plot(cPoints(1,:),cPoints(2,:));
                 set(pHandle(end),'Color','r');
-                pHandle(end+1) = line([0 0]+jj+Qc,[-1 1]*data.sii(kk)+data.Eii(kk),'Color','r','LineWidth',2);
+                pHandle(end+1) = line([0 0]+jj+Qc,[-1 1]*data.sii(kk)*param.sw+data.Eii(kk),'Color','r','LineWidth',2);
             end
             
             pHandle(end+1) = line([-0.2 0.2]+jj+Qc,data.minE(jj)*[1 1],'Color','g');
@@ -307,6 +352,10 @@ if param.plot
     set(gca,'XTick',1:nQ)
     hold off
     drawnow;
+end
+
+if nargout>1
+    pHandleOut = pHandle;
 end
 
 end

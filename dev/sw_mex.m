@@ -37,6 +37,7 @@ if param.compile
         %cd([sw_rootdir filesep 'external' filesep 'mtimesx']);
         %mex('-DDEFINEUNIX','-largeArrayDims','mtimesx.c','-lmwblas');
     else
+        % linux?
         cd([sw_rootdir filesep 'external' filesep 'eig_omp']);
         mex('-v','-largeArrayDims','eig_omp.cpp','-lmwlapack','CXXFLAGS=$CXXFLAGS -fopenmp -pthread','LDFLAGS=$LDFLAGS -liomp5')
         cd([sw_rootdir filesep 'external' filesep 'chol_omp']);

@@ -120,7 +120,12 @@ for ii = 1:numel(mFiles)
     
     while numel(tLines)>0 && (strcmp(tLines(1),'%'))
         mLines{end+1} = fgets(fid);
-        tLines = strtrim(mLines{end});
+        if ischar(mLines{end})
+            tLines = strtrim(mLines{end});
+        else
+            tLines = 0;
+            mLines{end} = newline;
+        end
     end
     
     % add revision number

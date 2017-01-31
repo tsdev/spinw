@@ -1,5 +1,5 @@
-function cmap=fireprint(n,varargin)
-%FIREPRINT Colormap that increases linearly in lightness (with colors)
+function cmap = cm_fireprint(n,varargin)
+% colormap that increases linearly in lightness (with colors)
 %
 %   Colormap that increases linearly in lightness (such as a pure black to white
 %   map) but incorporates additional colors that help to emphasize the
@@ -46,7 +46,7 @@ function cmap=fireprint(n,varargin)
 %     colorbar
 %
 
-%   Copyright 2011 Matthias Geissbuehler - matthias.geissbuehler@a3.epfl.ch 
+%   Copyright 2011 Matthias Geissbuehler - matthias.geissbuehler@a3.epfl.ch
 %   $Revision: 1.1 $  $Date: 2011/06/14 12:00:00 $
 p=inputParser;
 p.addParamValue('minColor','none');
@@ -146,4 +146,6 @@ if ischar(config.maxColor)
     end
 else
     cmap(end,:) = config.maxColor;
+end
+
 end

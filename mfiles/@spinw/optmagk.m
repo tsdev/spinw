@@ -111,43 +111,44 @@ kOpt = mod(kOpt,1);
 kOpt(kOpt>1/2) = 1-kOpt(kOpt>1/2);
 
 [Eopt, V] = optfun(pOpt);
+% 
+% % sum up on all atoms
+% if isreal(V)
+%     n = [];
+% else
+%     %V = sum(reshape(V,3,[]),2);
+%     V = reshape(V,3,[]);
+%     % find normal vector
+%     %n = cross(real(V(1:3)),imag(V(1:3)));
+%     n = cross(real(V),imag(V));
+%     n = bsxfun(@rdivide,n,sqrt(sum(n.^2,1)));
+%     %n = n(:)';
+%     
+%     if any(isnan(n))
+%         warning('spinw:optmagk:NormalVector','The normal vector is undefined, using [001]!')
+%         n = [];
+%     end
+% end
+% 
+% if isempty(n)
+%     n = repmat([0;0;1],1,nMagAtom);
+% end
+% 
+% % direction of the imaginary moment
+% iM = repmat([0;1;0],1,nMagAtom);
+% rM = cross(iM,n);
+% nZero = sum(~any(rM,1));
+% iM(:,~any(rM,1)) = repmat([1;0;0],1,nZero);
+% rM = cross(iM,n);
 
-% sum up on all atoms
-if isreal(V)
-    n = [];
-else
-    %V = sum(reshape(V,3,[]),2);
-    V = reshape(V,3,[]);
-    % find normal vector
-    %n = cross(real(V(1:3)),imag(V(1:3)));
-    n = cross(real(V),imag(V));
-    n = bsxfun(@rdivide,n,sqrt(sum(n.^2,1)));
-    %n = n(:)';
-    
-    if any(isnan(n))
-        warning('spinw:optmagk:NormalVector','The normal vector is undefined, using [001]!')
-        n = [];
-    end
-end
-
-if isempty(n)
-    n = repmat([0;0;1],1,nMagAtom);
-end
-
-% direction of the imaginary moment
-iM = repmat([0;1;0],1,nMagAtom);
-rM = cross(iM,n);
-nZero = sum(~any(rM,1));
-iM(:,~any(rM,1)) = repmat([1;0;0],1,nZero);
-rM = cross(iM,n);
-
+F = reshape(V,3,[]);
 % save the optimized values
-obj.genmagstr('mode','fourier','k',kOpt','S',1i*iM+rM);
+obj.genmagstr('mode','fourier','k',kOpt','S',F);
 
 % output results
 result.k = kOpt;
 result.E = Eopt;
-result.n = n;
+result.F = F;
 result.stat = stat;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

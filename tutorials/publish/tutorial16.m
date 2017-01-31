@@ -52,6 +52,7 @@ nairo.addcoupling('mat','J3','bond',[7 8]);
 plot(nairo,'range',[2 2 0.5],'atomMode','mag','cellMode','inside',...
     'atomLegend',false,'cellcolor','gray','bondMode','line','bondLinewidth0',2)
 swplot.zoom(1.4)
+%%
 snapnow
 
 % add JJxx, Jyy and Jzz couplings
@@ -62,6 +63,20 @@ nairo.addcoupling('mat','Jzz','bond',2);
 plot(nairo,'range',[2 2 0.5],'atomMode','mag','cellMode','inside',...
     'atomLegend',false,'cellcolor','gray','bondMode','line','bondLinewidth0',2)
 swplot.zoom(1.4)
+
+%% Plot Kitaev term
+
+nairo.addmatrix('label','Jxx','value',diag([1 0 0]),'color','r')
+nairo.addmatrix('label','Jyy','value',diag([0 1 0]),'color','g')
+nairo.addmatrix('label','Jzz','value',diag([0 0 1]),'color','b')
+
+nairo.addmatrix('label','J1-','value',0);
+nairo.addmatrix('label','J2','value', 0);
+nairo.addmatrix('label','J3','value', 0);
+
+plot(nairo,'range',[1 1 1/2],'atomMode','mag','bondRadius1',0.15,'bondMode','line',...
+    'bondLineWidth','lin','bondLinewidth0',4,'atomLegend',false)
+set(gcf,'color',swplot.color('gold')/255)
 
 %% Q scans
 % We define a list of Q points, linear scans will be claculated between

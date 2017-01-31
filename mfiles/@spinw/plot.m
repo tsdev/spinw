@@ -165,7 +165,12 @@ switchFun = true(1,nFun);
 switchFun(end) = false;
 
 for ii = 1:nFun
-    modeIdx = find(ismember(optShort,'mode') & plotIdx(ii,:));
+    if isempty(optShort) || isempty(plotIdx)
+        modeIdx = [];
+    else
+        modeIdx = find(ismember(optShort,'mode') & plotIdx(ii,:));
+    end
+    
     if numel(modeIdx)>1
         error('spinw:plot:WrongInput',['Muiltiple options: ''' optName{modeIdx(1)} '''!']);
     end

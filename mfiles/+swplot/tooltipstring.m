@@ -10,6 +10,8 @@ function string = tooltipstring(sObject,swobj)
 %           empty.
 %
 
+newline = char(10);
+
 if isempty(swobj)
     %       distance energy magnetic-field temperature
     unit = {'' '' '' ''};

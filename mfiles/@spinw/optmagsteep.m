@@ -348,10 +348,12 @@ if rIdx == nRun
 end
 
 % Save optimised magnetic structure into the sw object.
-obj.genmagstr('mode','helical','S',M(:,1:end-1),'k',km,'n',magStr.n,'nExt',nExt);
-% obj.mag_str.F = M(:,1:end-1);
-% obj.mag_str.k = km';
-% obj.mag_str.nExt = int32(nExt);
+%obj.genmagstr('mode','helical','S',M(:,1:end-1),'k',km,'n',magStr.n,'nExt',nExt);
+M = M(:,1:(end-1));
+obj.mag_str.F    = M + 1i*cross(repmat(permute(magStr.n,[2 3 1]),[1 size(M,2) 1]),M);
+obj.mag_str.k    = km';
+obj.mag_str.nExt = int32(nExt);
+
 
 % Create output structure.
 if nargout > 0

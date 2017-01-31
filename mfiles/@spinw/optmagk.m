@@ -143,6 +143,17 @@ kOpt(kOpt>1/2) = 1-kOpt(kOpt>1/2);
 
 F = reshape(V,3,[]);
 % save the optimized values
+if isreal(F)
+    F = bsxfun(@rdivide,F,sqrt(sum(F.^2,1)));
+    % find normal vectors
+    v = repmat([0;1;0],1,nMagAtom);
+    iM = cross(v,F);
+    nZero = sum(~any(iM,1));
+    v(:,~any(iM,1)) = repmat([1;0;0],1,nZero);
+    iM = cross(v,F);
+    iM = bsxfun(@rdivide,iM,sqrt(sum(iM.^2,1)));
+    F  = F+1i*iM;
+end
 obj.genmagstr('mode','fourier','k',kOpt','S',F);
 
 % output results
@@ -185,6 +196,9 @@ result.stat = stat;
             V = sum(V(:,sel),2);
             E = E(1);
         end
+        
+        E = real(E);
+        
     end
 
 end

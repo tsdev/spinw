@@ -94,7 +94,7 @@ end
 verNum2 = verNum;
 verNum2(verNum2=='.') = '-';
 
-swDirName = ['spinw_' verNum2 '_rev' num2str(revNum)];
+swDirName = ['spinw' verNum2(1) '_R' num2str(revNum)];
 
 mkdir([tempDirName filesep swDirName]);
 tempDirName0 = tempDirName;

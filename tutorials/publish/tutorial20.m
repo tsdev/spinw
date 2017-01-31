@@ -85,7 +85,7 @@ ybti.matrix.mat(:,:,2) =  -0.84*ones(3)+4.32*eye(3);
 % necessary identical with the bond where the exchange values define in the
 % paper. 
 
-ybti.getmatrix('label','J1');
+ybti.getmatrix('mat','J1');
 
 %%
 % We assign the exchange values from the paper to the right matrix
@@ -93,7 +93,7 @@ ybti.getmatrix('label','J1');
 
 ybti.fileid(0);
 J1 = -0.09; J2 = -0.22; J3 = -0.29; J4 = 0.01;
-ybti.setmatrix('label','J1','pref',[J1 J3 J2 -J4]);
+ybti.setmatrix('mat','J1','pref',[J1 J3 J2 -J4]);
 
 %% Plot the magnetic Hamiltonian
 % With the plot() command, we can plot the magnetic bonds of

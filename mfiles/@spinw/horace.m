@@ -1,7 +1,7 @@
 function [w, s] = horace(obj, qh, qk, ql, varargin)
 % calculates spin wave dispersion/correlation functions to be called from Horace
 %
-% [w, s] = HORACE(obj, qh, qk, ql, p)
+% [w, s] = HORACE(obj, qh, qk, ql, 'Option1', Value1, ...)
 %
 % The function produces spin wave dispersion and intensity for Horace
 % (<a href=http://horace.isis.rl.ac.uk>http://horace.isis.rl.ac.uk</a>).
@@ -10,7 +10,6 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %
 % obj           Input spinw object.
 % qh, qk, ql    Reciprocal lattice components in reciprocal lattice units.
-% p             Parameters, currently unused.
 %
 % Options:
 %
@@ -46,12 +45,17 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %           of sw.horace will be forwarded. In this case it is recommended
 %           to use sw_readparam() function to handle the variable number
 %           arguments within func().
-% func      Parser function of the 'param' input. Default is
+% parfunc   Parser function of the 'param' input. Default is
 %           @sw.matparser which can be used directly by Tobyfit. For user
 %           defined functions the minimum header has to be:
 %               func(obj,param)
-%           where obj is an sw type object, param is the parameter values
-%           forwarded from sw.horace directly.
+%           where obj is an spinw type object, param is the parameter
+%           values forwarded from spinw.horace directly.
+% func      User function that will be called after the parameters set on
+%           the SpinW object. It can be used to optimize magnetic
+%           structure for the new parameters, etc. The input should be a
+%           function handle of a function with a header:
+%               fun(obj)
 %
 % Output:
 %
@@ -79,32 +83,37 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %
 
 if nargin <= 1
-    help spinw.horace;
-    return;
+    help spinw.horace
+    return
 end
 
-inpForm.fname  = {'component' 'norm' 'dE'  'func'         'param'};
-inpForm.defval = {'Sperp'     false  0     @obj.matparser []     };
-inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2] };
-inpForm.soft   = {false       false  false false          true   };
+inpForm.fname  = {'component' 'norm' 'dE'  'parfunc'      'param' 'func'};
+inpForm.defval = {'Sperp'     false  0     @obj.matparser []      []    };
+inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1] };
+inpForm.soft   = {false       false  false false          true    true  };
 
 warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});
 
 if ~isempty(param.param)
     % change matrix values for Horace data fitting
-    if nargin(param.func) < 0
-        param.func(varargin{:});
-    elseif nargin(param.func) == 2
-        param.func(param.param);
+    if nargin(param.parfunc) < 0
+        param.parfunc(varargin{:});
+    elseif nargin(param.parfunc) == 2
+        param.parfunc(param.param);
     else
-        error('sw:horace:WrongInput','User defined function with incompatible header!');
+        error('spinw:horace:WrongInput','User defined function with incompatible header!');
     end
 end
 
 if param.norm && param.dE == 0
-    error('sw:horace:WrongInput',['To convert spin wave intensity to mbarn/meV/cell/sr'...
+    error('spinw:horace:WrongInput',['To convert spin wave intensity to mbarn/meV/cell/sr'...
         ' units, give the energy bin step.'])
+end
+
+% call user defined function on the spinw object
+if ~isempty(param.func)
+    param.func(obj);
 end
 
 % calculate spin wave spectrum
@@ -174,7 +183,7 @@ for tt = 1:nTwin
                 case 2
                     DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*permute(Sab{tt}(par0.type{jj}(2),par0.type{jj}(3),:,:),[3 4 1 2]);
                 otherwise
-                    error('sw:horace:WrongPar','Wrong ''component'' parameter!');
+                    error('spinw:horace:WrongPar','Wrong ''component'' parameter!');
             end
         end
     end

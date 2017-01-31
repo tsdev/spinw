@@ -18,6 +18,16 @@ function setpref(prefName, varargin)
 % See also SWPREF.SETPREF.
 %
 
-swpref.pref(prefName,'set',varargin{:});
+if nargin<=2
+    swpref.pref(prefName,'set',varargin{:});
+elseif mod(nargin,2)==0
+    arg = [{prefName} varargin];
+    % multiple variable
+    for ii = 1:2:numel(arg)
+        swpref.pref(arg{ii},'set',arg{ii+1});
+    end
+else
+    error('setpref:WrongNumberOfArgument','Wrong number of input arguments!')
+end
 
 end

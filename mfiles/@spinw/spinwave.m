@@ -233,8 +233,10 @@ end
 if param.useMex == -1
     % don't check files (takes too much time)
     param.useMex = true;
+% elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
+%         exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
 elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
-        exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
+        exist('eig_omp','file')==3)
     % check if mex files exist
     param.useMex = false;
 end

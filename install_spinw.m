@@ -13,6 +13,8 @@ function install_spinw()
 %     return
 % end
 
+newline = char(10);
+
 % remove old SpinW installation from path
 fprintf('\nRemoving path to old SpinW installation if exists!\n')
 try %#ok<TRYNC>
@@ -79,7 +81,7 @@ fprintf('  addpath(genpath(''%s''));\n',folName);
 sfLoc = which('startup');
 uPath = userpath;
 % remove ':' and ';' characters from the userpath
-uPath = [uPath(~ismember(uPath,':;')) filesep 'startup.m'];
+uPath = [uPath(~ismember(uPath,';')) filesep 'startup.m'];
 
 % create new startup.m file
 if isempty(sfLoc)
@@ -93,14 +95,14 @@ end
 
 if ~isempty(sfLoc)
     
-    answer = getinput(sprintf(['Would you like to add the following line:\n'...
-        sprintf('addpath(genpath(''%s''));',folName) '\nto the end of '...
-        'your Matlab startup file (%s)? (y/n)'],sfLoc),'yn');
+    answer = getinput(['Would you like to add the following line:' newline...
+        'addpath(genpath('''  esc(folName) '''));' newline 'to the end of '...
+        'your Matlab startup file (' esc(sfLoc) ')? (y/n)'],'yn');
     
     if answer == 'y'
         fid = fopen(sfLoc,'a');
         fprintf(fid,['\n%%###SW_UPDATE\n%% Path to the SpinW installation\n'...
-            'addpath(genpath(''%s''));\n%%###SW_UPDATE\n'],folName);
+            'addpath(genpath('''  esc(folName) '''));\n%%###SW_UPDATE\n']);
         fclose(fid);
     end
 end
@@ -114,12 +116,19 @@ answer = getinput(...
     'Do you want to issue the command "clear classes" now? (y/n)'],'yn');
 
 if answer == 'y'
-    clear('classes'); %#ok<CLCLS>
+    clear('classes'); %#ok<CLFUN>
     disp('Matlab class memory is refreshed!')
 end
 
 
 disp('The installation of SpinW was successful!')
+
+end
+
+function str = esc(str)
+% escape \ characters
+
+str = regexprep(str,'\\','\\\\');
 
 end
 

@@ -119,7 +119,7 @@ if ~flat
     end
     
     % find the right face(s)
-    fIdx = pIdx(all(bCoord>=-tLim & bCoord<=1+tLim & sum(bCoord,2)<=1+tLim,2));
+    fIdx = pIdx(all(bCoord>=-tLim & bCoord<=1+tLim & repmat(sum(bCoord,2)<=1+tLim,1,2),2));
 else
     % flat patch, all triangles are in the plane
     % determine barycentric coordinates
@@ -129,7 +129,7 @@ else
     end
     
     % find the right face(s)
-    fIdx = find(all(bCoord>=0 & bCoord<=1 & sum(bCoord,2)<=1,2));
+    fIdx = find(all(bCoord>=0 & bCoord<=1 & repmat(sum(bCoord,2)<=1,1,2),2));
     
 end
 

@@ -243,7 +243,7 @@ for ii = 1:nAtom
     label1 = labelTemp{1};
     %label2 = labelTemp{2};
     atom.text{ii}  = [label1 '(' num2str(atom.idx(ii)) ')_' num2str(ii)];
-    %atom.ttip{ii}  = [label2 ' atom (' label1 ')' newline 'Unit cell:' newline];
+    %atom.ttip{ii}  = [label2 ' atom (' label1 ')' char(10) 'Unit cell:' char(10)];
 end
 
 % save atom coordinates into data

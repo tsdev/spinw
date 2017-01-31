@@ -1,4 +1,4 @@
-function [aMatOut, paramOut, pOplOut] = getmatrix(obj, varargin)
+function [aMatOut, paramOut, pOpOut] = getmatrix(obj, varargin)
 % gives the symmetry allowed matrices for a given coupling or anisotropy
 %
 % aMat = GETMATRIX(obj, 'Option1', Value1, ...)
@@ -455,8 +455,9 @@ end
 
 if nargout>0
     aMatOut  = aMat;
+    param.matIdx = matIdx;
     paramOut = param;
-    pOplOut  = pOpl;
+    pOpOut  = pOp;
 end
 
 end

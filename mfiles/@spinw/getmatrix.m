@@ -1,4 +1,4 @@
-function [aMat, param, pOp] = getmatrix(obj, varargin)
+function [aMatOut, paramOut, pOpOut] = getmatrix(obj, varargin)
 % gives the symmetry allowed matrices for a given coupling or anisotropy
 %
 % aMat = GETMATRIX(obj, 'Option1', Value1, ...)
@@ -11,20 +11,14 @@ function [aMat, param, pOp] = getmatrix(obj, varargin)
 %
 % One of the following options has to be given in the input:
 %
-% label         Label of the matrix that is already assigned to either as
-%               anisotropy or coupling only once.
-% mat_idx       Index of the matrix, stored in obj.matrix. Alternative to
-%               the 'label' option.
-% coupling_idx  Value of the obj.coupling.idx, that defines the coupling,
-%               for which the symmetry allowed matrix elements have to be
-%               determined.
-% aniso_idx     Value of the obj.matom.idx, that selects a magnetic atom,
-%               for which the symmetry allowed anisotropy matrix elements
-%               have to be determined.
-% g_idx         Value of the obj.matom.idx, that selects a magnetic atom,
-%               for which the symmetry allowed elemtns of the g-tensor
-%               have to be determined.
-% subIdx        Select a certain bond. Default value is 1.
+% mat           Label or index of the matrix that is already assigned to
+%               a bond, anisotropy or g-tensor.
+% bond          Index of the bond in spinw.coupling.idx.
+% subIdx        Selects a certain bond, within efault value is 1.
+% aniso         Label or index of the magnetic atom that has a single ion
+%               anisotropy matrix is assigned.
+% gtensor       Label or index of the magnetic atom that has a g-tensor is 
+%               assigned.
 %
 % Optional inputs:
 %
@@ -68,7 +62,7 @@ function [aMat, param, pOp] = getmatrix(obj, varargin)
 % cryst.addmatrix('label','A','value',eye(3))
 % cryst.gencoupling
 % cryst.addaniso('A')
-% cryst.getmatrix('label','A');
+% cryst.getmatrix('mat','A');
 %
 % The above example determines the allowed anisotropy matrix elements in
 % the C4 point group symmetry (the symmetry at the [0 0 0] atomic
@@ -78,10 +72,10 @@ function [aMat, param, pOp] = getmatrix(obj, varargin)
 % See also SPINW.SETMATRIX.
 %
 
-inpForm.fname  = {'label' 'mat_idx' 'aniso_idx' 'coupling_idx' 'tol' 'pref' 'g_idx' 'subIdx'};
-inpForm.defval = {zeros(1,0) 0       0          0              1e-5  []     0       1        };
-inpForm.size   = {[1 -1]  [1 1]      [1 1]      [1 1]          [1 1] [1 -2] [1 1]   [1 1]    };
-inpForm.soft   = {false   false      false      false          false true   false   false    };
+inpForm.fname  = {'mat'      'aniso' 'bond' 'tol' 'pref' 'gtensor' 'subIdx' };
+inpForm.defval = {zeros(1,0) 0       0       1e-5  []     0        1        };
+inpForm.size   = {[1 -1]     [1 1]   [1 1]   [1 1] [1 -2] [1 1]    [1 1]    };
+inpForm.soft   = {false      false   false   false true   false    false    };
 
 param0 = sw_readparam(inpForm, varargin{:});
 param  = param0;
@@ -95,30 +89,50 @@ if nargin == 1
 end
 
 % Check for appropriate input
-inpL = [~isempty(param.label) [param.mat_idx param.aniso_idx param.coupling_idx param.g_idx]~=0];
+inpL = [~isempty(param.mat) [param.aniso param.bond param.gtensor]~=0];
 
 if sum(inpL) ~= 1
-    error('sw:getmatrix:WrongInput','Exactly one of the following options have to be defined: label, mat_idx, aniso_idx, g_idx or coupling_idx!');
+    error('spinw:getmatrix:WrongInput','Exactly one of the following options have to be defined: label, mat_idx, aniso_idx, g_idx or coupling_idx!');
 end
+    
+bondIdx = param.bond;
 
-if ~isempty(param.label)
-    mat_idx = find(strcmp(obj.matrix.label, param.label));
-    if isempty(mat_idx)
-        error('sw:setmatrix:WrongInput','Matrix label cannot be found (case sensitive)!');
-    elseif numel(mat_idx) > 1
-        error('sw:setmatrix:WrongInput','Multiple identical matrix labels exist!');
+if ischar(param.aniso)
+    anisoIdx = find(strcmp(obj.matom.label, param.aniso));
+    if isempty(anisoIdx)
+        anisoIdx = 0;
     else
-        param.mat_idx = mat_idx;
+        anisoIdx = anisoIdx(1);
     end
+end
+    
+if ischar(param.gtensor)
+    gIdx = find(strcmp(obj.matom.label, param.gtensor));
+    if isempty(gIdx)
+        gIdx = 0;
+    else
+        gIdx = gIdx(1);
+    end
+end
+    
+if ischar(param.mat) 
+    matIdx = find(strcmp(obj.matrix.label, param.mat));
+    if isempty(matIdx)
+        error('spinw:getmatrix:WrongInput','Matrix label cannot be found (case sensitive)!');
+    elseif numel(matIdx) > 1
+        error('spinw:getmatrix:WrongInput','Multiple identical matrix labels exist!');
+    end
+else
+    matIdx = param.mat;
 end
 
 % Identify the coupling, anisotropy or g-tensor
-if param.mat_idx ~= 0
+if matIdx ~= 0
     
     % search to which coupling/anisotropy the matrix is assigned to
-    [~, selCpIdx] = find(obj.coupling.mat_idx == param.mat_idx);
-    [~, selAnIdx] = find(obj.single_ion.aniso == param.mat_idx);
-    [~, selGIdx ] = find(obj.single_ion.g     == param.mat_idx);
+    [~, selCpIdx] = find(obj.coupling.mat_idx == matIdx);
+    [~, selAnIdx] = find(obj.single_ion.aniso == matIdx);
+    [~, selGIdx ] = find(obj.single_ion.g     == matIdx);
     
     Cpidx = unique(obj.coupling.idx(selCpIdx));
     Anidx = unique(obj.matom.idx(selAnIdx));
@@ -127,26 +141,26 @@ if param.mat_idx ~= 0
     sumNum = numel(Cpidx) + numel(Anidx) + numel(Gidx);
     
     if isempty(Cpidx) && isempty(Anidx) && isempty(Gidx)
-        error('sw:setmatrix:WrongInput','Matrix is not assigned to any coupling/anisotropy/g-tensor, define idx!');
+        error('spinw:getmatrix:WrongInput','Matrix is not assigned to any coupling/anisotropy/g-tensor, define idx!');
     elseif sumNum > 1
-        error('sw:setmatrix:WrongInput','Matrix is assigned to multiple coupling/anisotropy/g-tensor idx, define idx!');
+        error('spinw:getmatrix:WrongInput','Matrix is assigned to multiple coupling/anisotropy/g-tensor idx, define idx!');
     else
         if ~isempty(Cpidx)
-            param.coupling_idx = Cpidx;
+            bondIdx = Cpidx;
         elseif ~isempty(Anidx)
-            param.aniso_idx = Anidx;
+            anisoIdx = Anidx;
         else
-            param.g_idx = Gidx;
+            gIdx = Gidx;
         end
     end
 end
 
-if param.coupling_idx
+if bondIdx
     % Coupling is defined
-    iSel = find(obj.coupling.idx == param.coupling_idx);
+    iSel = find(obj.coupling.idx == bondIdx);
     
     if isempty(iSel)
-        error('sw:getmatrix:WrongInput','The given obj.coupling.idx does not existst, check your input!');
+        error('spinw:getmatrix:WrongInput','The given bond index does not existst, check your input!');
     end
 
     if param.subIdx ~=1
@@ -166,40 +180,40 @@ if param.coupling_idx
     dr     = r2 + dl - r1;
     % centers of the selected couplings
     center = mod((r1+r2+dl)/2,1);
-    mat_idx = obj.coupling.mat_idx(:,iSel(1));
-    if sum(mat_idx>0) == 1
-        param.mat_idx = sum(mat_idx);
+    matIdx0 = obj.coupling.mat_idx(:,iSel(1));
+    if sum(matIdx0>0) == 1
+        matIdx = sum(matIdx0);
     end
-elseif param.aniso_idx
+elseif anisoIdx
     % Anisotropy is defined
-    center = obj.unit_cell.r(:,param.aniso_idx);
+    center = obj.unit_cell.r(:,anisoIdx);
     dr     = 0;
     
-    mat_idx = obj.single_ion.aniso(obj.matom.idx == param.aniso_idx);
-    if isempty(mat_idx)
-        error('sw:getmatrix:WrongInput','The given obj.matom.idx does not exists, check your input!');
+    matIdx0 = obj.single_ion.aniso(obj.matom.idx == anisoIdx);
+    if isempty(matIdx0)
+        error('spinw:getmatrix:WrongInput','The given obj.matom.idx does not exists, check your input!');
     end
-    if mat_idx(1) > 0
-        param.mat_idx = mat_idx(1);
+    if matIdx0(1) > 0
+        matIdx = matIdx0(1);
     end
 else
     % g-tensor is defined
-    center = obj.unit_cell.r(:,param.g_idx);
+    center = obj.unit_cell.r(:,gIdx);
     dr     = 0;
     
-    mat_idx = obj.single_ion.g(obj.matom.idx == param.g_idx);
-    if isempty(mat_idx)
-        error('sw:getmatrix:WrongInput','The given obj.matom.idx does not exists, check your input!');
+    matIdx0 = obj.single_ion.g(obj.matom.idx == gIdx);
+    if isempty(matIdx0)
+        error('spinw:getmatrix:WrongInput','The given obj.matom.idx does not exists, check your input!');
     end
-    if mat_idx(1) > 0
-        param.mat_idx = mat_idx(1);
+    if matIdx0(1) > 0
+        matIdx = matIdx0(1);
     end
     
 end
 
-if param.mat_idx ~= 0
+if matIdx ~= 0
     % determine the label of the matrix
-    param.label = obj.matrix.label{param.mat_idx};
+    param.mat = obj.matrix.label{matIdx};
 end
 
 % get the point group symmetry operators of the center position
@@ -216,7 +230,7 @@ pOp = mmat(A,mmat(pOp,inv(A)));
 [aMat, aSym] = sw_basismat(pOp,A*dr(:,1));
 
 aMatS = aMat(:,:,~aSym);
-if param.coupling_idx
+if bondIdx
     aMatA = aMat(:,:,aSym);
 else
     aMat  = aMatS;
@@ -228,7 +242,7 @@ nSymMat = size(aMat,3);
 
 % convert aMat in case subIdx is non-zero for coupling matrices
 mod_mat = false;
-if param.subIdx > 1 && param.aniso_idx == 0 && param.g_idx == 0
+if param.subIdx > 1 && anisoIdx == 0 && gIdx == 0
     mod_mat = true;
     % get the matrices for the first bond
     % TODO use cache.symop
@@ -240,12 +254,12 @@ if param.subIdx > 1 && param.aniso_idx == 0 && param.g_idx == 0
     obj.fileid(f0);
     
     % save the original matrix of the object
-    mat0 = obj.matrix.mat(:,:,param.mat_idx);
+    mat0 = obj.matrix.mat(:,:,matIdx);
     
     tMat = zeros(3,3,nSymMat);
     for ii = 1:nSymMat
-        obj.matrix.mat(:,:,param.mat_idx) = aMat0(:,:,ii);
-        tMat(:,:,ii) = obj.couplingtable(param.coupling_idx).matrix(:,:,param.subIdx);
+        obj.matrix.mat(:,:,matIdx) = aMat0(:,:,ii);
+        tMat(:,:,ii) = obj.couplingtable(bondIdx).matrix(:,:,param.subIdx);
     end
         
     aMat1 = zeros(3,3,nSymMat);
@@ -253,7 +267,7 @@ if param.subIdx > 1 && param.aniso_idx == 0 && param.g_idx == 0
         aMat1(:,:,ii) = sum(bsxfun(@times,aMat0,permute(linsolve(reshape(tMat,9,[]),reshape(aMat(:,:,ii),[9 1])),[2 3 1])),3);
     end
     
-    obj.matrix.mat(:,:,param.mat_idx) = mat0;
+    obj.matrix.mat(:,:,matIdx) = mat0;
     aMat = aMat1;
 end
 
@@ -272,15 +286,15 @@ if iscell(param.pref)
         % use prefactors for the antisymmtric matrices only
         % select antisymmetric matrices
         if sum(aSym) == 0
-            error('sw:setmatrix:NoAsym','No asymmmetric matrix is allowed by symmetry!');
+            error('spinw:getmatrix:NoAsym','No asymmmetric matrix is allowed by symmetry!');
         elseif sum(aSym) > 3
-            error('sw:setmatrix:SymError','Error of point group symmetry!');
+            error('spinw:getmatrix:SymError','Error of point group symmetry!');
         elseif sum(aSym) < 3
-            warning('sw:setmatrix:Asym','Less than 3 assymetric matrices are allowed by symmetry!');
+            warning('spinw:getmatrix:Asym','Less than 3 assymetric matrices are allowed by symmetry!');
         end
         pref(aSym) = param.pref{1}(1:sum(aSym));
     else
-        error('sw:setmatrix:WrongInput','Wrong value of pref, see help!');
+        error('spinw:getmatrix:WrongInput','Wrong value of pref, see help!');
     end
     param.pref = pref;
 end
@@ -400,25 +414,25 @@ if fid
     amatStr = ['[' eStr{1} ',' eStr{2} ',' eStr{3} ']'];
     
     % print the answer
-    if param.coupling_idx
+    if bondIdx
         fprintf0(fid,'\nThe symmetry analysis of the coupling between atom %d and atom %d:\n',atom1(1),atom2(1));
         fprintf0(fid,' lattice translation vector: [%d,%d,%d]\n',dl(:,1));
         fprintf0(fid,' distance: %5.3f Angstrom\n',norm(obj.basisvector*dr(:,1)));
         fprintf0(fid,' center of bond (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
-    elseif param.aniso_idx
+    elseif anisoIdx
         fprintf0(fid,'\nThe symmetry analysis of the anisotropy matrix of atom %d (''%s''):\n',param.aniso_idx,obj.unit_cell.label{param.aniso_idx});
         fprintf0(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
     else
         fprintf0(fid,'\nThe symmetry analysis of the g-tensor of atom %d (''%s''):\n',param.g_idx,obj.unit_cell.label{param.g_idx});
         fprintf0(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));        
     end
-    if ~isempty(param.label)
-        fprintf0(fid,' label of the assigned matrix: ''%s''\n',param.label);
+    if ~isempty(param.mat)
+        fprintf0(fid,' label of the assigned matrix: ''%s''\n',param.mat);
     end
     
     fprintf0(fid,' allowed elements in the symmetric matrix:\n');
     fprintf0(fid,'  S = %s\n',smatStr);
-    if param.coupling_idx
+    if bondIdx
         fprintf0(fid,' allowed components of the Dzyaloshinskii-Moriya vector:\n');
         fprintf0(fid,'  D = %s\n\n',amatStr);
     end
@@ -437,6 +451,13 @@ if numel(param.pref) > 1
     aMat = sum(repmat(permute(param.pref,[2 3 1]),[3 3 1]).*aMat,3);
 elseif numel(param.pref) == 1
     aMat = eye(3)*param.pref;
+end
+
+if nargout>0
+    aMatOut  = aMat;
+    param.matIdx = matIdx;
+    paramOut = param;
+    pOpOut  = pOp;
 end
 
 end

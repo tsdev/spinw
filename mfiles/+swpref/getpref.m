@@ -1,4 +1,4 @@
-function rPref = getpref(prefName, simple)
+function rPref = getpref(prefName, varargin)
 % returns SpinW global preferences
 %
 % rPref = swpref.getpref
@@ -24,75 +24,8 @@ function rPref = getpref(prefName, simple)
 %
 % Returns the default names, values and labels of each preferences.
 %
-% See also GETPREF, SETPREF, SWPREF.SETPREF.
+% See also SWPREF.SETPREF.
 
-% the storage name within built-in getpref/setpref
-store = 'spinw_global';
-
-% default values
-dn = {      'fid'       'pid'             'expert'};
-dv = {      1           feature('getpid') 0       };
-
-dl = {...
-    'file identifier for text output, default value is 1 (Command Window)'...
-    'PID value assigned to the running Matlab session, used to reset all pref after restart'...
-    'expert mode (1) gives less warnings (not recommended), default value is 0'...
-    };
-
-dPref = struct('val',{},'name',{},'label',{});
-
-[dPref(1:numel(dv),1).name] = dn{:};
-[dPref(:).label]            = dl{:};
-[dPref(:).val]              = dv{:};
-
-% get stored preferences
-sPref = getpref(store);
-
-pidNow = feature('getpid');
-
-if ~isempty(sPref) && sPref.pid~=pidNow
-    rmpref(store);
-    setpref(store,'pid',pidNow);
-    sPref = struct('pid',pidNow);
-end
-
-if nargin>0
-    if strcmp(prefName,'default')
-        % return default preference values
-        rPref = dPref;
-        return
-    end
-    
-    % if a specific value is requested, check if it exist in the default value
-    % list
-    iPref = find(strcmp(prefName,{dPref(:).name}),1);
-    if isempty(iPref)
-        error('swpref:getpref:WrongName','The requested SpinW preference does not exists!');
-    end
-    
-    % if a specific value is requested and it exists, return it
-    rPref = dPref(iPref);
-    
-    if isfield(sPref,prefName)
-        rPref.val = sPref.(prefName);
-    end
-    
-    if nargin > 1
-        rPref = rPref.val;
-    end
-    
-    return
-else
-    % return all stored values
-    rPref = dPref;
-    % overwrite default values for existing preferences
-    if ~isempty(sPref)
-        fPref = fieldnames(sPref);
-        for ii = 1:numel(fPref)
-            rPref(strcmp(fPref{ii},{dPref(:).name})).val = sPref.(fPref{ii});
-        end
-    end
-    
-end
+rPref = swpref.pref(prefName,'get',varargin{:});
 
 end

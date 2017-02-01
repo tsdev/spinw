@@ -155,7 +155,7 @@ end
 
 if nargout == 0
     if isempty(param.fName)
-        fprintf('SpinW variables of the Matlab base workspace:\n');
+        fprintf('SpinW variables in the Matlab base workspace:\n');
     else
         fprintf('SpinW variables stored in the "%s" file:\n',param.fName);
     end
@@ -167,7 +167,11 @@ if nargout == 0
         else
             strSp{2} = ['{' strSp{2}];
         end
-        fprintf('%15s%-5s %40s %25s %25s\n',strSp{:},varTitle{ii},varDateStart{ii},varDateEnd{ii})
+        varTitle0 = varTitle{ii};
+        if numel(varTitle0)>37
+            varTitle0 = [varTitle0(1:37) '...'];
+        end
+        fprintf('%15s%-5s %40s %25s %25s\n',strSp{:},varTitle0,varDateStart{ii},varDateEnd{ii})
     end
 else
     varargout{1}.name = varName;

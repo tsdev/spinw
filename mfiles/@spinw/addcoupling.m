@@ -42,14 +42,14 @@ function addcoupling(obj, varargin)
 % Output:
 %
 % The function adds extra entries in the 'coupling.matrix' field of the obj
-% sw object.
+% spinw object.
 %
 % Example:
 %
 % ...
 % cryst.addmatrix('label','J1','value',0.123)
 % cryst.gencoupling
-% cryst.addcoupling('J1',1)
+% cryst.addcoupling('mat','J1','bond',1)
 %
 % This will add the 'J1' diagonal matrix to all second shortes bonds
 % between magnetic atoms.
@@ -58,7 +58,7 @@ function addcoupling(obj, varargin)
 %
 
 if isempty(obj.matom.r)
-    error('sw:addcoupling:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+    error('spinw:addcoupling:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 
 inpForm.fname  = {'mat'  'bond' 'atom' 'subIdx' 'type' 'sym' };
@@ -88,7 +88,7 @@ if iscell(param.type)
     param.type(qSel)  = 0;
     param.type(bqSel) = 1;
     if any(isnan(param.type))
-        error(['sw:addcoupling:WrongInput','Wrong coupling type, '...
+        error(['spinw:addcoupling:WrongInput','Wrong coupling type, '...
             'currently only quadratic and biquadratic exchanges '...
             'are supported!']);
     end
@@ -96,11 +96,14 @@ if iscell(param.type)
 end
 
 if isempty(param.sym)
+    nosympar = true;
     if isempty(param.subIdx)
         param.sym = true;
     else
         param.sym = false;
     end
+else
+    nosympar = false;
 end
 
 if numel(param.sym) == 1
@@ -108,7 +111,7 @@ if numel(param.sym) == 1
 end
 
 if any(size(param.mat)~=size(param.type))
-    error('sw:addcoupling:WrongInput',['A coupling type has to be '...
+    error('spinw:addcoupling:WrongInput',['A coupling type has to be '...
         'provided for each input matrix!'])
 end
 
@@ -118,7 +121,7 @@ if ~isnumeric(param.atom)
         param.atom = {param.atom};
     end
     if numel(param.atom)>2
-        error('sw:addcoupling:WrongInput','Only two different atom label can be given at once!');
+        error('spinw:addcoupling:WrongInput','Only two different atom label can be given at once!');
     end
     aIdx1 = find(ismember(obj.unit_cell.label,param.atom{1}));
     if numel(param.atom)>1
@@ -130,19 +133,19 @@ end
 
 if ~isempty(param.atom) || ~isempty(param.subIdx)
     if numel(param.bond) > 1
-        warning('sw:addcoupling:CouplingSize',['bond parameter has to be '...
+        warning('spinw:addcoupling:CouplingSize',['bond parameter has to be '...
             'scalar, only the first bond is selected!']);
         param.bond = param.bond(1);
     end
     %     if obj.sym
-    %         error('sw:addcoupling:SymmetryProblem',['atom and subIdx options are not allowed '...
+    %         error('spinw:addcoupling:SymmetryProblem',['atom and subIdx options are not allowed '...
     %             'when crystal symmetry is not P0!']);
     %     end
 end
 
 idx = ismember(obj.coupling.idx,param.bond);
 if ~any(idx)
-    error('sw:addcoupling:CouplingError',['Coupling with idx=%d does '...
+    error('spinw:addcoupling:CouplingError',['Coupling with idx=%d does '...
         'not exist, use gencoupling with larger maxDistance and '...
         'nUnitCell parameters!'],param.bond(1));
 end
@@ -174,7 +177,7 @@ if ~isempty(param.subIdx)
 end
 
 if isempty(idx)
-    warning('sw:addcoupling:NoBond','No matrix assigned, since no bond fulfilled the given options!')
+    warning('spinw:addcoupling:NoBond','No matrix assigned, since no bond fulfilled the given options!')
     return
 end
 
@@ -187,17 +190,17 @@ param.type = int32(param.type);
 param.sym  = int32(param.sym);
 
 if any(ismember(Jmod(:),param.mat))
-    warning('sw:addcoupling:CouplingIdxWarning',['Same matrix already '...
+    warning('spinw:addcoupling:CouplingIdxWarning',['Same matrix already '...
         'assigned on some coupling, dublicate assigments are removed!']);
 end
 
 if isempty(param.mat)
-    warning('sw:addcoupling:WrongMatrixLabel','The selected matrix label does not exists!')
+    warning('spinw:addcoupling:WrongMatrixLabel','The selected matrix label does not exists!')
     return
 end
 
 if any(Jmod(3,:))
-    error('sw:addcoupling:TooManyCoupling',['The maximum '...
+    error('spinw:addcoupling:TooManyCoupling',['The maximum '...
         'number of allowed couplings (3) per bond is reached!']);
 end
 
@@ -206,10 +209,14 @@ for ii = 1:numel(param.mat)
     idxSel = sub2ind(size(Jmod),sum(Jmod>0,1)+1,1:size(Jmod,2));
     % remove index where Jmod already contains param.mat
     idxSel = idxSel(~any(Jmod==param.mat(ii),1));
-    
+        
     Jmod(idxSel)   = param.mat(ii);
     Tmod(idxSel)   = param.type(ii);
     Symmod(idxSel) = param.sym(ii);
+end
+
+if obj.symmetry && nosympar && any(~param.sym)
+    warning('spinw:addcoupling:SymetryLowered','By subselecting equivalent bonds, the symmetry of the corresponding bond(s) are reduced to P1!');
 end
 
 obj.coupling.mat_idx(:,idx) = Jmod;

@@ -13,14 +13,14 @@ function S = symbol(sName)
 % S         A char type variable containing the symbol.
 %
 
-nList = {'angstrom' 'copy' 'reg' 'deg' 'pm' 'square' 'cube' 'cross' 'par'...
+nList = {'hbar' 'angstrom' 'copy' 'reg' 'deg' 'pm' 'square' 'cube' 'cross' 'par'...
     'perp' 'int' 'alpha','beta','gamma' 'delta' 'epsilon' 'zeta' 'eta'...
     'theta' 'iota' 'kappa' 'lambda' 'mu' 'nu' 'xi' 'omicron' 'pi' 'rho'...
     'ssigma' 'sigma' 'tau' 'upsilon' 'phi' 'chi' 'psi' 'omega'};
 
 nList = [nList cellfun(@(C)[upper(C(1)) C(2:end)],nList([12:28 30:end]),'UniformOutput',false)];
 
-cList = char([197 169 174 176:179 215 449 10178 8747 945:969 913:929 931:937]);
+cList = char([295 197 169 174 176:179 215 449 10178 8747 945:969 913:929 931:937]);
 
 nL = numel(nList);
 

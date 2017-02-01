@@ -12,12 +12,12 @@
 % the structure.
 
 nairo = spinw;
-nairo.fileid(0)
 nairo.genlattice('lat_const',[5.427 9.395 5.614],'angled',[90 109.037 90],'spgr','C 2/m')
 nairo.addatom('label','MIr4','r',[1/2; 0.167; 0],'S',1/2,'color','DarkCyan');
 nairo.addatom('r',[0 1/2 1/2;0 0 0.340; 0 1/2 1/2],'S',[0 0 0],'label',{'Na1 Na1+' 'Na2 Na1+' 'Na3 Na1+'},'color',{'lightGray' 'lightGray' 'lightGray'});
 nairo.addatom('r',[0.748 0.711; 0.178 0; 0.789 0.204],'S',[0 0],'label',{'O1 O2-', 'O2 O2-'},'color',{'r' 'r'});
-plot(nairo,'zoom',1)
+plot(nairo,'baseShift',[-2;0;0])
+swplot.zoom(1.3)
 
 % We generate all bonds up to 8 Angstrom length.
 nairo.gencoupling('maxDistance',8);
@@ -45,18 +45,38 @@ nairo.addmatrix('label','J2','value',1,'color','orange');
 nairo.addmatrix('label','J3','value',1,'color','cyan');
 
 % add J1, J2 and J3 and JK couplings
-nairo.addcoupling('mat','Jxx','bond',1,'subidx',[3 4]);
-nairo.addcoupling('mat','Jyy','bond',1,'subidx',[1 2]);
-nairo.addcoupling('mat','Jzz','bond',2);
-% Plot Kitaev couplings only.
-plot(nairo,'range',[2 2 0.5],'pNonMagAtom',false,'zoom',1)
-snapnow
-
 nairo.addcoupling('mat','J1-','bond',[1 2]);
 nairo.addcoupling('mat','J2','bond',[3 4]);
 nairo.addcoupling('mat','J3','bond',[7 8]);
 % Plot all couplings.
-plot(nairo,'range',[2 2 0.5],'pNonMagAtom',false)
+plot(nairo,'range',[2 2 0.5],'atomMode','mag','cellMode','inside',...
+    'atomLegend',false,'cellcolor','gray','bondMode','line','bondLinewidth0',2)
+swplot.zoom(1.4)
+%%
+snapnow
+
+% add JJxx, Jyy and Jzz couplings
+nairo.addcoupling('mat','Jxx','bond',1,'subidx',[3 4]);
+nairo.addcoupling('mat','Jyy','bond',1,'subidx',[1 2]);
+nairo.addcoupling('mat','Jzz','bond',2);
+% Plot Kitaev couplings only.
+plot(nairo,'range',[2 2 0.5],'atomMode','mag','cellMode','inside',...
+    'atomLegend',false,'cellcolor','gray','bondMode','line','bondLinewidth0',2)
+swplot.zoom(1.4)
+
+%% Plot Kitaev term
+
+nairo.addmatrix('label','Jxx','value',diag([1 0 0]),'color','r')
+nairo.addmatrix('label','Jyy','value',diag([0 1 0]),'color','g')
+nairo.addmatrix('label','Jzz','value',diag([0 0 1]),'color','b')
+
+nairo.addmatrix('label','J1-','value',0);
+nairo.addmatrix('label','J2','value', 0);
+nairo.addmatrix('label','J3','value', 0);
+
+plot(nairo,'range',[1 1 1/2],'atomMode','mag','bondRadius1',0.15,'bondMode','line',...
+    'bondLineWidth','lin','bondLinewidth0',4,'atomLegend',false)
+set(gcf,'color',swplot.color('gold')/255)
 
 %% Q scans
 % We define a list of Q points, linear scans will be claculated between

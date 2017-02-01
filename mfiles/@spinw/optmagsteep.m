@@ -196,6 +196,11 @@ trIdx = reshape(reshape(1:9,[3 3])',[9 1])+5;
 % magnetic ordering wave vector
 km = magStr.k;
 
+if any(km) && numel(km)>3
+    warning('spinw:optmagsteep:Multik','Multi-k structures cannot be optimized!')
+    return
+end
+
 % for non-zero km, rotate the exchange matrices that couple spins between
 % different unit cell
 if any(km)
@@ -234,7 +239,7 @@ fSpin = squeeze(sumn(abs(AA),[1 2]))==0 & nNeighG==0 & sum(abs(Bloc'),2)==0;
 Sindex(:,fSpin) = false;
 
 if ~any(Sindex)
-    error('sw:optmagsteep:NoField','No spin Hamiltonian is defined!');
+    error('sw:optmagsteep:NoField','There nothing to optimise!');
 end
 
 % Speeds up the code by storing every sublattice data in different cells
@@ -343,9 +348,12 @@ if rIdx == nRun
 end
 
 % Save optimised magnetic structure into the sw object.
-obj.mag_str.F = M(:,1:end-1);
-obj.mag_str.k = km';
+%obj.genmagstr('mode','helical','S',M(:,1:end-1),'k',km,'n',magStr.n,'nExt',nExt);
+M = M(:,1:(end-1));
+obj.mag_str.F    = M + 1i*cross(repmat(permute(magStr.n,[2 3 1]),[1 size(M,2) 1]),M);
+obj.mag_str.k    = km';
 obj.mag_str.nExt = int32(nExt);
+
 
 % Create output structure.
 if nargout > 0

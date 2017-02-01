@@ -76,11 +76,18 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %    end
 %end
 
-inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate' 'sortDM'};
-inpForm.defval = {0          false     false   true     false       false   };
-inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]   };
+nExt0 = obj.magstr('exact',false).N_ext;
+inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate' 'sortDM' 'nExt'};
+inpForm.defval = {0          false     false   true     false       false    nExt0 };
+inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]    [1 3] };
 
 param = sw_readparam(inpForm, varargin{:});
+
+nExt = param.nExt;
+
+if prod(nExt) == 1
+    param.extend = false;
+end
 
 % create parameters of magnetic atoms in the unit cell
 mAtom    = obj.matom;
@@ -352,7 +359,7 @@ end
 
 if param.extend
     % Extend the lattice for magnetic interactions
-    nExt = obj.magstr.N_ext;
+    %nExt = obj.magstr.N_ext;
     [mAtom, SS] = sw_extendlattice(nExt, mAtom, SS);
     SI.aniso = repmat(SI.aniso, [1 1 prod(nExt)]);
     SI.g     = repmat(SI.g, [1 1 prod(nExt)]);

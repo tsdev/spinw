@@ -31,9 +31,9 @@ yvo3.addmatrix('labe','Jab','value',Jab,'color','b')
 yvo3.addmatrix('labe','Jc1','value',Jab,'color','b')
 yvo3.addmatrix('labe','Jc2','value',Jab,'color','b')
 
-Calculate the canting angle in the ac-plane:
+%Calculate the canting angle in the ac-plane:
 theta = 1/2*atan(2*d/(2*Jc-K1-K2));
-Define matrices for the Hamiltonian:
+%Define matrices for the Hamiltonian:
 sJab.mat = Jab*eye(3);
 sJab.label = {'Jab'};
 sJab.color = [0 0 255];
@@ -50,12 +50,15 @@ sK1.mat   = -diag([K1 0 0]);
 sK1.label = {'K1'};
 sK1.color = [128 128 0];
 
-yvo3.addmatrix([sJab sJc1 sJc2 sK1])
-Assign the matrices to the magnetic atoms:
+yvo3.addmatrix(sJab)
+yvo3.addmatrix(sJc1)
+yvo3.addmatrix(sJc2)
+yvo3.addmatrix(sK1)
+%Assign the matrices to the magnetic atoms:
 yvo3.addcoupling('mat','Jab','bond',[1 3])
 yvo3.addcoupling('mat','Jc1','bond',2,'subidx',2)
 yvo3.addcoupling('mat','Jc2','bond',2,'subidx',1)
-Add K1 matrix to the single-ion anisotropy:
+%Add K1 matrix to the single-ion anisotropy:
 yvo3.addaniso('K1')
 %Create test magnetic structure, G-type antiferromagnet:
 par_ms.mode = 'helical';
@@ -65,22 +68,23 @@ par_ms.k    = [1/2 1/2 1];
 par_ms.n    = [0 1 0];
 
 yvo3.genmagstr(par_ms);
-Plotting magnetic structure with anisotropy ellipsoids:
-plot(yvo3,'ellAniso',1.5)
-Optimising magnetic structure, assuming it is planar, the meaning of the x parameters are the following: (phi1, phi2, ... phiN, kx, ky kz, nTheta, nPhi):
+%Plotting magnetic structure with anisotropy ellipsoids:
+plot(yvo3)
+%Optimising magnetic structure, assuming it is planar, the meaning of the x parameters are the following: (phi1, phi2, ... phiN, kx, ky kz, nTheta, nPhi):
 par_opt.xmin = [zeros(1,8)    , 0 0 0, 0  0 ];
 par_opt.xmax = [ones(1,8)*2*pi, 0 0 0, pi pi];
 par_opt.func = @gm_planar;
 par_opt.nRun = 10;
+
 optRes = yvo3.optmagstr(par_opt);
-Check canting angles (compare phi to theta):
-M   = yvo3.mag_str.S;
+% Check canting angles (compare phi to theta):
+M   = yvo3.magstr.S;
 phi = atan2(M(1,:),M(3,:))*180/pi;
-Calculating spin wave dispersion:
+%Calculating spin wave dispersion:
 specYVO3 = yvo3.spinwave({[3/4 3/4 0] [1/2 1/2 0] [1/2 1/2 1] });
 specYVO3 = sw_neutron(specYVO3);
 specYVO3 = sw_conv(specYVO3,'Evect',linspace(0,25,nE));
-Plotting of spin wave spectra with imaginary components:
+%Plotting of spin wave spectra with imaginary components:
 figure
 subplot(3,1,1);
 sw_plotspec(specYVO3,'mode',1,'aHandle',gca,'imag',true);

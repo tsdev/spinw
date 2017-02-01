@@ -85,10 +85,11 @@ hklA = hklA(:)';
 T0 = obj.single_ion.T;
 
 title0 = 'Powder LSWT spectrum';
+tid0   = swpref.getpref('tid',[]);
 
-inpForm.fname  = {'nRand' 'Evect'             'T'   'formfact' 'formfactfun'};
-inpForm.defval = {100     linspace(0,1.1,101) T0    false      @sw_mff      };
-inpForm.size   = {[1 1]   [1 -1]              [1 1] [1 -2]     [1 1]        };
+inpForm.fname  = {'nRand' 'Evect'             'T'   'formfact' 'formfactfun' 'tid'};
+inpForm.defval = {100     linspace(0,1.1,101) T0    false      @sw_mff       tid0 };
+inpForm.size   = {[1 1]   [1 -1]              [1 1] [1 -2]     [1 1]         [1 1]};
 
 inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' 'imagChk'}];
 inpForm.defval = [inpForm.defval {true     false     title0  @spinwave  true   }];
@@ -113,9 +114,7 @@ powSpec = zeros(nE,nQ);
 
 fprintf0(fid,'Calculating powder spectra:\n');
 
-if fid
-    sw_status(0,1);
-end
+sw_status(0,1,param.tid,'Powder spectrum calculation');
 
 if param.fibo
     % apply the Fibonacci numerical integration on a sphere
@@ -160,7 +159,7 @@ for ii = 1:nQ
         specQ = param.specfun(obj,hkl,'fitmode',true,'notwin',true,...
             'Hermit',param.hermit,'formfact',param.formfact,...
             'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-            'optmem',param.optmem,'useMex',param.useMex);
+            'optmem',param.optmem,'useMex',param.useMex,'tid',0);
     end
     
     % reset output to original value
@@ -170,13 +169,12 @@ for ii = 1:nQ
     % use edge grid by default
     specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T,'binType',param.binType,'imagChk',param.imagChk);
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
-    if fid
-        sw_status(ii/nQ*100);
-    end
+    sw_status(ii/nQ*100,0,param.tid);
 end
-if fid
-    sw_status(100,2);
-end
+
+sw_status(100,2,param.tid);
+
+fprintf0(fid,'Calculation finished.\n');
 
 % save different field into spectra
 spectra.swConv   = powSpec;

@@ -16,7 +16,8 @@ function R = genlattice(obj, varargin)
 %           operators in a matrix with dimensions [3 4 nOp].
 % label     Optional label for the space group if the generators are given
 %           in the 'spgr' option.
-% bv        Basis vectors given in a matrix with dimensions of [3 3].
+% bv        Basis vectors given in a matrix with dimensions of [3 3], where
+%           each column defines a basis vector.
 % origin    Origin for the space group operators. Default is [0 0 0].
 % perm      Permutation of the abc axes of the space group operators.
 % nformula  Gives the number of formula units in the unit cell. It is used
@@ -26,7 +27,8 @@ function R = genlattice(obj, varargin)
 % Output:
 %
 % R         Rotation matrix that brings the input basis vector to the SpinW
-%           compatible form. Optional.
+%           compatible form:
+%                   BVspinw = R*BV
 %
 % Alternatively the lattice parameters can be given directly when the sw
 % object is created using: sw(inpStr), where struct contains the fields
@@ -146,6 +148,10 @@ else
     
 end
 
+if numel(param.sym) == 1 && param.sym==0
+    param.sym = [];
+end
+
 % copy the apporiate label string
 if ~isempty(param.sym) && isempty(param.label)
     if ischar(param.sym)
@@ -160,16 +166,21 @@ if ~isempty(param.sym)
     if ~iscell(param.sym)
         param.sym = {param.sym};
     end
-    param.sym = swsym.operator(param.sym{1});
+    [symOp, symInfo] = swsym.operator(param.sym{1});
     
     % permute the symmetry operators if necessary
     if ischar(param.perm)
         param.perm = param.perm-'a'+1;
     end
-    obj.lattice.sym = param.sym(param.perm,[param.perm 4],:);
+    obj.lattice.sym = symOp(param.perm,[param.perm 4],:);
     % assign the origin for space group operators
     obj.lattice.origin = param.origin;
-    obj.lattice.label = strtrim(param.label);
+    
+    if isnumeric(param.sym{1}) && numel(param.sym{1})==1
+        obj.lattice.label = symInfo.name;
+    else
+        obj.lattice.label = strtrim(param.label);
+    end
 
 else
     if ~isempty(param.label)

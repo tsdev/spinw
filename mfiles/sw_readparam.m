@@ -20,8 +20,8 @@ function input = sw_readparam(format, varargin)
 %
 
 if nargin == 0
-    help sw_readparam;
-    return;
+    help sw_readparam
+    return
 end
 
 if nargin == 2 && ischar(varargin{1}) && varargin{1} == '-'

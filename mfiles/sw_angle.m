@@ -13,6 +13,11 @@ function phi = sw_angle(V1,V2)
 % phi   Angle in radian.
 %
 
+if nargin == 0
+    help sw_angle;
+    return
+end
+
 phi = atan2(norm(cross(V1,V2)),dot(V1,V2));
 
 end

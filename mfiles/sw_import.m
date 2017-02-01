@@ -173,7 +173,7 @@ switch fExt
         if numel(xyz0) > 3
             % save symmetry opreators into spinw pbject
             obj0.lattice.label = sym0;
-            obj0.lattice.sym   = swsym.generator(sym0,xyz0);
+            obj0.lattice.sym   = swsym.generator(xyz0);
         end
         
         nAtom = size(r0,2);

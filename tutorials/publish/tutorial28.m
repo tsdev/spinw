@@ -52,7 +52,7 @@ plot(real(omega)/15/J,'-')
 
 %% spinw
 
-fcc = sw;
+fcc = spinw;
 fcc.genlattice('lat_const',[8 8 8])
 fcc.addatom('r',[0   0   0],'S',S)
 fcc.addatom('r',[1/2 1/2 0],'S',S)
@@ -65,14 +65,14 @@ fcc.addmatrix('label','J2','value',J2,'color','g')
 % there is a factor 2 difference between SpinW and paper
 fcc.addmatrix('label','B','value',-0.5*Q/S^3*2)
 
-fcc.addcoupling2('matrix','J1','bond',1)
-fcc.addcoupling2('matrix','J2','bond',2)
-fcc.addcoupling2('matrix','B','bond',1,'type','biquadratic')
+fcc.addcoupling('mat','J1','bond',1)
+fcc.addcoupling('mat','J2','bond',2)
+fcc.addcoupling('mat','B','bond',1,'type','biquadratic')
 
 
 fcc.genmagstr('mode','helical','S',[1 -1 -1 -1;1 -1 -1 -1;zeros(1,4)],'k',[1/2 1/2 1/2],'next',[2 2 2],'n',[0 0 1]);
 
-plot(fcc,'sspin',1/2)
+plot(fcc)
 
 %% spin wave
 

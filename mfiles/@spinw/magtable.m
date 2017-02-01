@@ -15,7 +15,7 @@ function moments = magtable(obj)
 % Output:
 %
 % 'moments' is struct type data that contains the following fields:
-%   M           Matrix, where every columndefines a magnetic moment,
+%   M           Matrix, where every column defines a magnetic moment,
 %               dimensions are [3 nMagExt].
 %   e1,e2,e3    Unit vectors of the coordinate system used for the spin
 %               wave calculation, the i-th column contains a normalized

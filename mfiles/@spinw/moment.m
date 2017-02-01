@@ -73,10 +73,12 @@ param = sw_readparam(inpForm, varargin{:});
 % no modesorting
 param.sortMode = false;
 
+magstr = obj.magstr;
+
 % size of the extended magnetic unit cell
-nExt    = double(obj.mag_str.N_ext);
+nExt    = magstr.N_ext;
 % magnetic ordering wavevector in the extended magnetic unit cell
-km = obj.mag_str.k.*nExt;
+km = magstr.k.*nExt;
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
 
@@ -104,14 +106,14 @@ SS.all         = SS.new;
 hklExt  = bsxfun(@times,hkl,nExt')*2*pi;
 
 % Calculates parameters eta and zed.
-if isempty(obj.mag_str.S)
+if isempty(magstr.S)
     error('sw:moment:NoMagneticStr','No magnetic structure defined in obj!');
 end
 
-M0 = obj.mag_str.S;
+M0 = magstr.S;
 S0 = sqrt(sum(M0.^2,1));
 % normal to rotation of the magnetic moments
-n  = obj.mag_str.n;
+n  = magstr.n;
 nMagExt = size(M0,2);
 
 if fid ~= 0

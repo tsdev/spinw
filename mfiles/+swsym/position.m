@@ -42,6 +42,11 @@ if nargin == 0
     return
 end
 
+% for empty operator, just return the original positions
+if isempty(symOp)
+    symOp = [eye(3) zeros(3,1)];
+end
+
 if nargin == 2
     fid = 0;
 end

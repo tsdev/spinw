@@ -156,9 +156,6 @@ function spectra = spinwave(obj, hkl, varargin)
 % See also SPINW, SPINW.SPINWAVESYM, SW_NEUTRON, SPINW.POWSPEC, SPINW.OPTMAGSTR, SPINW.FILEID, SW_INSTRUMENT.
 %
 
-% save the time of the beginning of the calculation
-spectra.datestart = datestr(now);
-
 % for linear scans create the Q line(s)
 if nargin > 1
     %    if iscell(hkl)
@@ -183,7 +180,7 @@ if obj.symbolic
         param0 = sw_readparam(inpForm, varargin{:});
         
         if ~param0.fitmode
-            fprintf0(obj.fileid,'No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!\n');
+            fprintf0(fid,'No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!\n');
         end
         spectra = obj.spinwavesym(varargin{:});
     else
@@ -213,18 +210,38 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
-inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase'}];
-inpForm.defval = [inpForm.defval {false    false      }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]      }];
+inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase' 'tid'}];
+inpForm.defval = [inpForm.defval {false    false       -1   }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]       [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
-if param.fitmode
-    param.sortMode = false;
+if ~param.fitmode
+    % save the time of the beginning of the calculation
+    spectra.datestart = datestr(now);
 end
 
-if ~(param.useMex && exist('chol_omp','file')==3 && ...
-        exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
+% Print output into the following file
+fid = obj.fid;
+
+
+if param.fitmode
+    param.sortMode = false;
+    param.tid = 0;
+end
+
+if param.tid == -1
+    param.tid = swpref.getpref('tid',[]);
+end
+
+if param.useMex == -1
+    % don't check files (takes too much time)
+    param.useMex = true;
+    % elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
+    %         exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
+elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
+        exist('eig_omp','file')==3)
+    % check if mex files exist
     param.useMex = false;
 end
 
@@ -245,10 +262,6 @@ hklA = 2*pi*(hkl'/obj.basisvector)';
 % Check for 2*km
 tol = param.tol*2;
 helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
-
-
-% Print output into the following file
-fid = obj.fid;
 
 % number of Q points
 nHkl0 = size(hkl,2);
@@ -357,14 +370,12 @@ S0 = sqrt(sum(M0.^2,1));
 n  = magStr.n;
 nMagExt = size(M0,2);
 
-if fid ~= 0
-    if incomm
-        fprintf0(fid,['Calculating INCOMMENSURATE spin wave spectra '...
-            '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
-    else
-        fprintf0(fid,['Calculating COMMENSURATE spin wave spectra '...
-            '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
-    end
+if incomm
+    fprintf0(fid,['Calculating INCOMMENSURATE spin wave spectra '...
+        '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
+else
+    fprintf0(fid,['Calculating COMMENSURATE spin wave spectra '...
+        '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
 end
 
 % Local (e1,e2,e3) coordinate system fixed to the moments,
@@ -484,7 +495,7 @@ if any(bq)
     bqAtom2 = SS.bq(5,:);
     bqJJ    = SS.bq(6,:);
     nbqCoupling = numel(bqJJ);
-
+    
     % matrix elements: M,N,P,Q
     bqM = sum(eta(:,bqAtom1).*eta(:,bqAtom2),1);
     bqN = sum(eta(:,bqAtom1).*zed(:,bqAtom2),1);
@@ -499,7 +510,7 @@ if any(bq)
     bqB0 = (Si.*Sj).^(3/2).*(bqM.*bqO + bqQ.*bqN).*bqJJ;
     bqC  = Si.*Sj.^2.*(conj(bqQ).*bqQ - 2*bqM.^2).*bqJJ;
     bqD  = Si.*Sj.^2.*(bqQ).^2.*bqJJ;
-
+    
     % Creates the serial indices for every matrix element in ham matrix.
     % Aij(k) matrix elements (b^+ b)
     idxbqA  = [bqAtom1' bqAtom2'];
@@ -516,7 +527,7 @@ if any(bq)
     
     idxbqD  = [bqAtom1' bqAtom1'+nMagExt];
     %idxbqD2 = [bqAtom1'+nMagExt bqAtom1]; % SP2
-
+    
 end
 
 
@@ -540,16 +551,12 @@ else
 end
 
 if nHkl < nSlice
-    if fid ~= 0
-        fprintf0(fid,['Memory allocation is not optimal, nMagExt is'...
-            ' too large compared to the free memory!\n']);
-    end
+    fprintf0(fid,['Memory allocation is not optimal, nMagExt is'...
+        ' too large compared to the free memory!\n']);
     nSlice = nHkl;
 elseif nSlice > 1
-    if fid ~= 0
-        fprintf0(fid,['To optimise memory allocation, Q is cut'...
-            ' into %d pieces!\n'],nSlice);
-    end
+    fprintf0(fid,['To optimise memory allocation, Q is cut'...
+        ' into %d pieces!\n'],nSlice);
 end
 
 % message for magnetic form factor calculation
@@ -596,9 +603,7 @@ if param.saveH
     Hsave = zeros(2*nMagExt,2*nMagExt,nHkl);
 end
 
-if fid == 1
-    sw_status(0,1);
-end
+sw_status(0,1,param.tid,'Spin wave spectrum calculation');
 
 warn1 = false;
 
@@ -608,7 +613,9 @@ if param.formfact
     % Angstrom^-1 units for Q
     hklA0 = 2*pi*(hkl0'/obj.basisvector)';
     % store form factor per Q point for each atom in the magnetic supercell
-    FF = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[1 nExt]);
+    % TODO check prod(nExt)? instead of nExt
+    %FF = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[1 nExt]);
+    FF = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[prod(nExt) 1]);
 else
     spectra.formfact = false;
 end
@@ -629,14 +636,14 @@ for jj = 1:nSlice
     %     ExpF = exp(1i*permute(sum(repmat(dR,[1 1 nHklMEM]).*repmat(...
     %         permute(hklExtMEM,[1 3 2]),[1 nCoupling 1]),1),[2 3 1]))';
     ExpF = exp(1i*permute(sum(bsxfun(@times,dR,permute(hklExtMEM,[1 3 2])),1),[2 3 1]))';
-
+    
     % Creates the matrix elements containing zed.
     A1 = bsxfun(@times,     AD0 ,ExpF);
     B  = bsxfun(@times,     BC0 ,ExpF);
     D1 = bsxfun(@times,conj(AD0),ExpF);
-
-
-        
+    
+    
+    
     % Store all indices
     % SP1: speedup for creating the matrix elements
     %idxAll = [idxA1; idxB; idxC; idxD1]; % SP1
@@ -650,9 +657,9 @@ for jj = 1:nSlice
     idx3   = repmat(1:nHklMEM,[3*nCoupling 1]);
     idxAll = [repmat(idxAll,[nHklMEM 1]) idx3(:)];
     idxAll = idxAll(:,[2 1 3]);
-
+    
     ABCD   = ABCD';
-
+    
     
     % quadratic form of the boson Hamiltonian stored as a square matrix
     ham = accumarray(idxAll,ABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
@@ -663,7 +670,7 @@ for jj = 1:nSlice
         % bqExpF = exp(1i*permute(sum(repmat(bqdR,[1 1 nHklMEM]).*repmat(...
         %     permute(hklExtMEM,[1 3 2]),[1 nbqCoupling 1]),1),[2 3 1]))';
         bqExpF = exp(1i*permute(sum(bsxfun(@times,bqdR,permute(hklExtMEM,[1 3 2])),1),[2 3 1]))';
-
+        
         bqA  = bsxfun(@times,     bqA0, bqExpF);
         bqA2 = bsxfun(@times,conj(bqA0),bqExpF);
         bqB  = bsxfun(@times,     bqB0, bqExpF);
@@ -678,7 +685,7 @@ for jj = 1:nSlice
         ham = ham + accumarray(idxbqAll,bqABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
         % add diagonal terms
         ham = ham + repmat(accumarray([idxbqC; idxbqC2; idxbqD],[bqC bqC 2*bqD],[1 1]*2*nMagExt),[1 1 nHklMEM]);
-
+        
     end
     if any(SI.field)
         % different field for different twin
@@ -825,9 +832,7 @@ for jj = 1:nSlice
     % Normalizes the intensity to single unit cell.
     Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     
-    if fid == 1
-        sw_status(jj/nSlice*100);
-    end
+    sw_status(jj/nSlice*100,0,param.tid);
 end
 
 % If number of formula units are given per cell normalize to formula
@@ -836,13 +841,9 @@ if obj.unit.nformula > 0
     Sab = Sab/double(obj.unit.nformula);
 end
 
-if fid == 1
-    sw_status(100,2);
-else
-    if fid ~= 0
-        fprintf0(fid,'Calculation finished.\n');
-    end
-end
+sw_status(100,2,param.tid);
+
+fprintf0(fid,'Calculation finished.\n');
 
 if warn1 && ~param.fitmode
     warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...

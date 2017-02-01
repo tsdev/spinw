@@ -189,8 +189,10 @@ classdef spinw < handle
         % stores whether the calculation are done symbolically
         symb  = false;
         % stores the file ID of the text output, default is the Command Window (see swpref)
-        fid   = swpref.getpref('fid',nan);
-        ver   = '';
+        fid   = 1;
+        % use the version property as contant, this will be executed only
+        % once
+        ver   = sw_version;
     end
     
     methods
@@ -198,6 +200,9 @@ classdef spinw < handle
             % SPINW constructor
             %
             
+            % update fid value
+            obj.fid = swpref.getpref('fid',[]);
+
             if nargin==0
                 objS = initfield(struct);
                 fNames = fieldnames(objS);
@@ -259,9 +264,6 @@ classdef spinw < handle
                 obj = sw_import(firstArg,false,obj);
                 
             end
-            
-            % define the version property
-            obj.ver = sw_version;
             
         end % .spinw
         

@@ -28,7 +28,7 @@ function res = fourier(obj,hkl,varargin)
 % fitmode       Speedup (for fitting mode only), default is false.
 %
 %
-% See also SPINW.TISZA.
+% See also SPINW.OPTMAGK.
 %
 
 % TODO: test for magnetic supercell
@@ -81,17 +81,19 @@ matom = obj.matom;
 % number of Q points
 nHkl    = size(hkl,2);
 % number of magnetic atoms in the magnetic supercell
-nMagExt = prod(obj.mag_str.N_ext)*numel(matom.idx);
+nMagExt = prod(double(obj.mag_str.nExt))*numel(matom.idx);
 % number of bonds
 nBond   = size(SS.all,2);
 
 % interacting atom1
-atom1 = SS.all(4,:);
+%atom1 = SS.all(4,:);
+atom1 = mod(SS.all(4,:)-1,numel(matom.S))+1;
 % interacting atom1
-atom2 = SS.all(5,:);
+%atom2 = SS.all(5,:);
+atom2 = mod(SS.all(5,:)-1,numel(matom.S))+1;
 
 % magnetic couplings, 3x3xnJ
-JJ = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
+%JJ = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);
 
 % exchange energy: J_ij*S_i*S_j
 JJ = bsxfun(@times,SS.all(6:14,:),matom.S(atom1).*matom.S(atom2));

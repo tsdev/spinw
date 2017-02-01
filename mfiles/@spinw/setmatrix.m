@@ -89,8 +89,8 @@ if isempty(param.pref)
     end
 end
 
-if param.mat_idx > 0
-    obj.matrix.mat(:,:,param.mat_idx) = aMat;
+if param.matIdx > 0
+    obj.matrix.mat(:,:,param.matIdx) = aMat;
 else
     error('spinw:setmatrix:WrongInput','It is not possible to unambiguously select a matrix from the input options!')
 end

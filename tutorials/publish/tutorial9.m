@@ -6,7 +6,8 @@ DMkag = spinw;
 DMkag.fileid(0)
 DMkag.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3')
 DMkag.addatom('r', [1/2 0 0],'S',1,'label', 'Cu1', 'color','r')
-plot(DMkag,'range',[2 2 1],'zoom',-0.5)
+plot(DMkag,'range',[2 2 1])
+swplot.zoom(4)
 
 %% Create bonds and Hamiltonian
 % Generate the list of bonds and assign a Heisenberg exchange and weak
@@ -22,10 +23,9 @@ DMkag.addmatrix('label','DM1','value',1,'color','b')
 DMkag.addmatrix('label','J1','value',1,'color','g')
 DMkag.addcoupling('mat','DM1','bond',1)
 DMkag.addcoupling('mat','J1','bond',1)
-DMkag.setmatrix('label','DM1','pref',{[0 0 -0.08]});
+DMkag.setmatrix('mat','DM1','pref',{[0 0 -0.08]});
 plot(DMkag,'range',[3 3 1],'zoom',-0.8)
-display('J1='); DMkag.matrix.mat(:,:,2)
-display('DM1='); DMkag.matrix.mat(:,:,1)
+DMkag.table('mat')
 
 %% Generate magnetic structure
 % We create a k = (0 0 0) magnetic structure, with the three spin directions
@@ -35,14 +35,15 @@ display('DM1='); DMkag.matrix.mat(:,:,1)
 
 S0 = [1 -2 1; 2 -1 -1; 0 0 0];
 DMkag.genmagstr('mode','direct','k',[0 0 0],'n',[0 0 1],'unitS','lu', 'S',S0); 
-display('Ground state energy (meV/spin)')
 DMkag.energy
+
 plot(DMkag,'range',[3 3 1])
 
 %% Calculate spin wave dispersion
 
 Qlist = {[-1/2 0 0] [0 0 0] [1/2 1/2 0] 100};
 dmkSpec = DMkag.spinwave(Qlist,'hermit',false);
+figure
 sw_plotspec(dmkSpec,'mode',1,'axLim',[0 3],'colorbar',false,'colormap',[0 0 0],'dashed',true)
 
 
@@ -51,7 +52,7 @@ sw_plotspec(dmkSpec,'mode',1,'axLim',[0 3],'colorbar',false,'colormap',[0 0 0],'
 % is well visible on the powder spectrum.
 
 dmkPow = DMkag.powspec(linspace(0,2.5,150),'Evect',linspace(0,3,250),'nRand',1000,'hermit',false,'imagChk',false);
-figure;
+figure
 sw_plotspec(dmkPow,'axLim',[0 0.5],'dE',0.02)
 
 %%

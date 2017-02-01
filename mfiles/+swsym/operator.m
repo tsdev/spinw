@@ -21,7 +21,9 @@ function [symOp, symInfo] = operator(sym, fid)
 %               are [3 3 nSym].
 % symInfo       Structure containing additional information about the space
 %               group with the following fields:
-%   name            Name of the space group, stored in cells.
+%   name            Name of the space group in string. If function called
+%                   with no input, name stores the name of all spase groups
+%                   from symmetry.dat in a cell.
 %   str             The string of the symmetry operations.
 %   num             The index of the symmetry in the symmetry.dat file.
 %

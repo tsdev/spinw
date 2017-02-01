@@ -72,7 +72,7 @@ function fitsp = fitspec(obj, varargin)
 %
 % Any option used by SW.SPINWAVE function are also accepted.
 %
-% See also SPINW.SPINWAVE, SW_EGRID, SW_NEUTRON, SW_READSPEC, FMINSEARCH.
+% See also SPINW.SPINWAVE, SW_EGRID, SW_NEUTRON, SW_READSPEC.
 %
 
 inpForm.fname  = {'epsilon' 'datapath' 'xmin'   'xmax'  'x0'    'func' 'plot'};
@@ -229,7 +229,7 @@ for ii = 1:nConv
     data = dataCell{ii};
     
     % calculate spin-spin correlation function
-    spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit);
+    spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit,'tid',0);
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy

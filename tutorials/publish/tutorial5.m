@@ -27,7 +27,7 @@ FMkagome.couplingtable.bondv
 
 FMkagome.addmatrix('label','J1','value',-1,'color','orange'); 
 FMkagome.addcoupling('mat','J1','bond',1);
-plot(FMkagome,'range',[2 2 1],'zoom',1.2)
+plot(FMkagome,'range',[20 20 2],'unit','xyz')
 
 %% FM magnetic structure
 % All spins are paralle, pointing along the y-axis (perpendicular to ac
@@ -38,11 +38,9 @@ plot(FMkagome,'range',[2 2 1],'zoom',1.2)
 % only the direction of the first spin in the unit cell, the code will
 % create all other spin parallel to the first.
 
-FMkagome.genmagstr('mode','helical','k',[0 0 0],'n',[0 1 0],'S',[0 1 0])
-display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-FMkagome.mag_str
-FMkagome.mag_str.S
-display('Ground state energy before optimization')
+FMkagome.genmagstr('mode','helical','k',[0 0 0],'n',[0 1 0],'S',[0 1 0]')
+display('Magnetic structure:')
+FMkagome.table('mag')
 FMkagome.energy
 plot(FMkagome,'range',[2 2 1])
 

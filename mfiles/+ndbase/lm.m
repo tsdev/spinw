@@ -1,4 +1,4 @@
-function [p0,yHat,stat] = lm(dat,func,p0,varargin)
+function [p0,yHat,stat] = lm(dat,func0,p0,varargin)
 % least square refinement of parameters using Levenberg Marquardt method
 %
 % [pOpt,fVal,stat] = NDBASE.LM(dat,func,p0,'Option1','Value1',...)
@@ -46,14 +46,18 @@ function [p0,yHat,stat] = lm(dat,func,p0,varargin)
 % MaxIter   Maximum number of iterations, default value is 10*M.
 % MaxFunEvals Maximum number of function evaluations, default value is
 %           100*M.
-% TolX      Convergence tolerance for parameters, default value is 1e-3.
+% TolX      Convergence tolerance for parameters, defines the maximum of 
+%           the relative chande of any parameter value. Default value is
+%           1e-3.
 % eps1      Convergence tolerance for gradient, default value is 1e-3.
 % eps2      Convergence tolerance for reduced Chi-square, default value is
-%           0.1.
+%           1e-2.
 % eps3      Determines acceptance of a L-M step, default value is 0.1.
 % lambda0   Initial value of L-M paramter, default value is 1e-2.
-% lUp       Factor for increasing lambda, default value is 11.
-% lDown     Factor for decreasing lambda, default value is 9.
+% nu0       Value that determines the speed of convergence. Default value
+%           is 10. It should be larger than 1.
+% lUp       Factor for increasing lambda, default value is 30.
+% lDown     Factor for decreasing lambda, default value is 7.
 % update    Type of parameter update:
 %                   'lm'        Levenberg-Marquardt lambda update,
 %                   'quadratic' Quadratic update,
@@ -123,14 +127,16 @@ end
 
 % number of parameters
 Np    = numel(p0);
+% vertical parameter vector
+p0    = p0(:);
 
 inpForm.fname  = {'dp'   'lb'       'ub'      'MaxIter' 'eps1' 'TolX' 'MaxFunEvals' 'confLev'      'win'     };
 inpForm.defval = {1e-3   -inf(1,Np) inf(1,Np) 10*Np     1e-3   1e-3   100*Np        erf(1/sqrt(2)) [-inf inf]};
 inpForm.size   = {[1 -1] [1 Np]     [1 Np]    [1 1]     [1 1]  [1 1]  [1 1]         [1 1]          [1 2]     };
 
-inpForm.fname  = [inpForm.fname  {'eps2' 'eps3' 'lambda0' 'lUp' 'lDown' 'update' 'extraStat' 'vary'     }];
-inpForm.defval = [inpForm.defval {0.1    0.1    1e-2      11    9       'nielsen' true       false(1,Np)}];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]  [1 1]     [1 1] [1 1]   [1 -2]    [1 1]      [1 Np]     }];
+inpForm.fname  = [inpForm.fname  {'eps2' 'eps3' 'lambda0' 'lUp' 'lDown' 'update' 'extraStat' 'vary'      'nu0'}];
+inpForm.defval = [inpForm.defval {1e-2    0.1    1e-2      30    7       'nielsen' true       true(1,Np) 10   }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]  [1 1]     [1 1] [1 1]   [1 -2]    [1 1]      [1 Np]      [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -146,29 +152,40 @@ switch param.update
 end
 
 % check input function
-if ischar(func)
+if ischar(func0)
     % convert to fuction handle
-    func = str2func(func);
+    func0 = str2func(func0);
 end
 
-if ~isa(func,'function_handle')
+if ~isa(func0,'function_handle')
     error('lm:WrongInput','The input function is neither a string, not function handle!');
 end
 
-% TODO: lb = -100*abs(p0); ub = 100*abs(p0)
-
-% make column vectors of all input
-p0    = p0(:);
-dat.x = dat.x(:);
-dat.y = dat.y(:);
-
-% remove unnecessary data
-xKeep = dat.x>param.win(1) & dat.x<param.win(2);
-dat.x = dat.x(xKeep);
-dat.y = dat.y(xKeep);
-if isfield(dat,'e')
-    dat.e = dat.e(xKeep);
+if isempty(dat)
+    % define fake data if is not given
+    dat   = struct; 
+    dat.x = (1:Np)';
+    dat.y = dat.x*0;
+    dat.e = dat.x*0+1;
+    
+    func = @(x,p)func0(p)*ones(Np,1);
+else
+    % just use the given function
+    func = func0;
+    % make column vectors of all input
+    dat.x = dat.x(:);
+    dat.y = dat.y(:);
+    
+    % remove unnecessary data
+    xKeep = dat.x>param.win(1) & dat.x<param.win(2);
+    dat.x = dat.x(xKeep);
+    dat.y = dat.y(xKeep);
+    if isfield(dat,'e')
+        dat.e = dat.e(xKeep);
+    end
 end
+
+% TODO: lb = -100*abs(p0); ub = 100*abs(p0)
 
 % number of independent variables
 Nx    = numel(dat.x);
@@ -184,7 +201,7 @@ else
 end
 
 % previous set of parameters
-pOld  = zeros(Np,1);
+pOld  = zeros(1,Np);
 % previous model values: yOld = func(x,pOld)
 yOld  = zeros(Nx,1);
 % empty Jacobian matrix
@@ -202,7 +219,11 @@ param.lb = param.lb(:);
 param.ub = param.ub(:);
 
 if numel(param.dp) == 1
-    param.dp = param.dp*ones(Np,1);
+    param.dp = repmat(param.dp,[1 Np]);
+end
+
+if numel(param.vary) == 1
+    param.vary = repmat(param.vary,[1 Np]);
 end
 
 % fixed the requested parameters
@@ -241,8 +262,11 @@ switch update
     otherwise
         % Quadratic and Nielsen
         lambda  = param.lambda0 * max(diag(JtWJ));
-        nu=2;
+        nu = param.nu0;
 end
+
+% default dy value
+dy = dat.y*0;
 
 % previous value of X2
 X2old = X2;
@@ -275,7 +299,7 @@ while ~isFinished && lm_iteration <= param.MaxIter
     % apply constraints
     pTry = min(max(param.lb,pTry),param.ub);
     % residual error using p_try
-    dy = dat.y - func(dat.x,pTry);
+    dy = dat.y - func(dat.x,pTry');
     % floating point error, break
     if ~all(isfinite(dy))
         exitFlag = 6;
@@ -297,7 +321,7 @@ while ~isFinished && lm_iteration <= param.MaxIter
         % apply constraints
         pTry = min(max(param.lb,pTry),param.ub);
         % residual error using p_try
-        dy = dat.y - func(dat.x,pTry);
+        dy = dat.y - func(dat.x,pTry');
         lm_func_calls = lm_func_calls + 1;
         X2try = dy' * (dy.*weight);   % Chi-squared error criteria
     end
@@ -319,13 +343,14 @@ while ~isFinished && lm_iteration <= param.MaxIter
         switch update
             case 1
                 % Levenberg
-                lambda = max(lambda/param.lDown,1.e-7);
+                lambda = max(lambda/param.lDown,1e-7);
             case 2
                 % Quadratic
-                lambda = max( lambda/(1 + alpha) , 1.e-7 );
+                lambda = max( lambda/(1 + alpha) , 1e-7 );
             case 3
                 % Nielsen
-                lambda = lambda*max( 1/3, 1-(2*rho-1)^3 ); nu = 2;
+                lambda = lambda*max(1/3,1-(2*rho-1)^3);
+                nu = param.nu0;
         end
     else
         % it IS NOT better
@@ -341,14 +366,14 @@ while ~isFinished && lm_iteration <= param.MaxIter
         switch update
             case 1
                 % Levenberg
-                lambda = min(lambda*param.lUp,1.e7);
+                lambda = min(lambda*param.lUp,1e7);
             case 2
                 % Quadratic
                 lambda = lambda + abs((X2try - X2)/2/alpha);
             case 3
                 % Nielsen
                 lambda = lambda * nu;
-                nu     = 2*nu;
+                nu     = nu*param.nu0;
         end
         
     end
@@ -390,9 +415,9 @@ switch exitFlag
     case 3
         stat.msg = 'Convergence in reduced Chi-square.';
     case 4
-        stat.msg = 'Maximum Number of iterations is reached without convergence!';
+        stat.msg = 'Maximum Number of iterations is reached without convergence, increase ''MaxIter''!';
     case 5
-        stat.msg = 'Maximum Number of function evaluations is reached without convergence!';
+        stat.msg = 'Maximum Number of function evaluations is reached without convergence, increase ''MaxFunEvals''!';
     case 6
         stat.msg = 'Floating point error, parameter change is smaller than eps!';
     case 7
@@ -401,7 +426,7 @@ end
 
 if exitFlag > 3 && exitFlag < 7
     stat.error = true;
-    warning('lm:convergence','Convergence is not reached!')
+    warning('lm:convergence',stat.msg)
 else
     stat.warning = false;
 end
@@ -440,7 +465,12 @@ if param.extraStat
     
     % coefficient of multiple determination
     %stat.Rsq = corr([dat.y yHat]);
-    stat.Rsq = cov(dat.y,yHat)./std(dat.y)./std(yHat);
+    stdy = std(dat.y)*std(yHat);
+    if stdy == 0
+        stdy = 1;
+    end
+    
+    stat.Rsq = cov(dat.y,yHat)./stdy;
     stat.Rsq = stat.Rsq(1,2).^2;
     
     % convergence history
@@ -472,6 +502,9 @@ end
 
 % final model value
 yHat = yHat';
+
+% final parameter value
+p0 = p0';
 
 end
 
@@ -534,7 +567,7 @@ for ii = 1:Nv
     p(idx)   = ps(idx) + del(idx);
     
     if del(idx)%~=0
-        y1 = func(x,p);
+        y1 = func(x,p');
         lm_func_calls = lm_func_calls + 1;
         
         if dp(idx) < 0
@@ -543,7 +576,7 @@ for ii = 1:Nv
         else
             % central difference, additional func call
             p(idx)   = ps(idx) - del(idx);
-            J(:,ii) = (y1-func(x,p))/(2*del(idx));
+            J(:,ii) = (y1-func(x,p'))/(2*del(idx));
             lm_func_calls = lm_func_calls + 1;
         end
     end
@@ -633,7 +666,7 @@ Np = numel(p);
 Nv = sum(dp~=0);
 
 % evaluate model using parameters 'p'
-yFunc = func(x,p);
+yFunc = func(x,p');
 lm_func_calls = lm_func_calls + 1;
 
 if ~rem(lm_iteration,2*Np) || dX2 > 0

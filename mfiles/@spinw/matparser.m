@@ -43,12 +43,12 @@ function matparser(obj, varargin)
 %               S = cat(3,[0 0 0;0 0 1;0 -1 0],[0 0 -1;0 0 0;1 0 0],[0 1 0;-1 0 0;0 0 0])
 %               sw.matparser('param',P,'mat',M,'selector',S)
 % init          Initialize the matrices of sw.matrix.mat with zeros for all
-%               selected labels before assigning paramter values. Default
+%               selected labels before assigning parameter values. Default
 %               is false.
 %
 % Output:
 %
-% The sw object will contain the modified matrix.mat field.
+% The spinw object will contain the modified matrix.mat field.
 %
 % See also SPINW, SPINW.HORACE, SPINW.ADDMATRIX.
 %

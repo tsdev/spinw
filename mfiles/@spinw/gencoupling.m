@@ -82,7 +82,13 @@ end
 fid = obj.fileid;
 
 % calculate the height of the paralellepiped of a unit cell
-hMax = 1./sqrt(sum(inv(obj.basisvector).^2,2));
+hMax1 = 1./sqrt(sum(inv(obj.basisvector').^2,2));
+
+% calculate the distance of the [1 1 1] point from the origin
+hMax2 = sum(obj.basisvector,2);
+        
+% calculate the closest point to the origin
+hMax = min([hMax1 hMax2],[],2);
 
 % gives the number of extra unit cells along all 3 axes
 % that are necessary to cover the minimum bond distance
@@ -95,7 +101,7 @@ end
 
 if fid ~= 0
     fprintf0(fid,['Creating the bond list (maxDistance = %g ' symbol('ang')...
-        ', nCell = %dx%dx%d) ...\n'],param.maxDistance-tol,nC);
+        ', nCell = %dx%dx%d)...\n'],param.maxDistance-tol,nC);
 end
 
 % save the sym/nosym method into obj
@@ -108,7 +114,7 @@ mAtom = obj.matom;
 nMagAtom = size(mAtom.r,2);
 
 if nMagAtom == 0
-    error('sw:gencoupling:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+    error('sw:gencoupling:NoMagAtom','There is no magnetic atom (S>0) in the unit cell!');
 end
 
 % Use half 'cube' around the center unit cell and remove the identical
@@ -224,7 +230,7 @@ aniso = int32(zeros(1,nMagAtom));
 g     = int32(zeros(1,nMagAtom));
 
 if fid ~= 0
-    fprintf0(fid,'... %d bonds are retained out of %d generated!\n',size(cMat,2),nHalfCube*nMagAtom^2);
+    fprintf0(fid,'...%d bonds are retained out of %d generated!\n',size(cMat,2),nHalfCube*nMagAtom^2);
 end
 
 % save output structure

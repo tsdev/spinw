@@ -23,20 +23,20 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           energy resolution. Only works for mode=3. If zero, no
 %           convolution performed. Default is 0.
 % fontSize  Font size on the plot, default is 14 pt.
-% colormap  Colormap for plotting, default is @fireprint (good for color
-%           and B&W printing) for single plot and for multiple plot it will
-%           be a continuous scale from white to different color. This is
-%           the 'auto' mode. Also colormap can be given directly using
-%           standard colormaps, like @jet. To overplot multiple spectras
-%           'colormap' option will be a matrix, with dimensions [3 nConv],
-%           where every column defines a color for the maximum intensity.
-%           It is also used for plotting dispersion curves. In case a
-%           single color all dispersion curves have the same color (e.g.
-%           [255 0 0] for red), or as many colors as dispersion curves
-%           (dimensions are [3 nMode]), or any colormap can be given, like
-%           @jet. In this case every mode will have different colors, the
-%           color is determined from the index of the mode. Default is
-%           'auto'.
+% colormap  Colormap for plotting, default is stored in 
+%           swpref.getpref('colormap'). For single plot and for multiple
+%           plot it will be a continuous scale from white to different
+%           color. This is the 'auto' mode. Also colormap can be given
+%           directly using standard colormaps, like @jet. To overplot
+%           multiple spectras 'colormap' option will be a matrix, with
+%           dimensions [3 nConv], where every column defines a color for
+%           the maximum intensity. It is also used for plotting dispersion
+%           curves. In case a single color all dispersion curves have the
+%           same color (e.g. [255 0 0] for red), or as many colors as
+%           dispersion curves (dimensions are [3 nMode]), or any colormap
+%           can be given, like @jet. In this case every mode will have
+%           different colors, the color is determined from the index of the
+%           mode. Default is 'auto'.
 % sortMode  Sorting the modes before plotting. Default is false.
 % axLim     Upper limit for y axis (mode 1,2) or z axis (mode 3), default
 %           is 'auto'. For color plot of multiple cross section the c axis
@@ -60,17 +60,6 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           non-zero 'dE' option) keeps the energy integrated intensity. If
 %           false the amplitude is kept constant. Default is the input
 %           spectra.norm value.
-% figPos    Position of the figure window on the screen. Works similarly as
-%           subplot(), just positions figure windows relative to the screen
-%           instead of axes relative to the figure. Three number vector, 
-%           [m n p]. It divides the screen into an m-by-n grid and
-%           positions the figure in the position specified by p. The window 
-%           positions are numbered by row, such that the first window 
-%           position is the first column of the first row, the second
-%           window position is the second column of the first row, and so
-%           on. If m or n equal to zero, the original size of the figure
-%           window is used to determine the grid. If only a single number 
-%           p is given, it is converted to [0 0 p] type input.
 % x0        Vector with two numbers [x0_min x0_max]. By default the x range
 %           of the plots is [0 1] irrespective of the given Q points. To
 %           change this the lower and upper limits can be given here.
@@ -110,9 +99,9 @@ inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
 inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
 inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'log' 'plotf'  'maxPatch' 'figPos' 'x0'}];
-inpForm.defval = [inpForm.defval {false @sw_surf 1000       0       [0 1]}];
-inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      [1 -7]  [1 2]}];
+inpForm.fname  = [inpForm.fname  {'log' 'plotf'  'maxPatch' 'x0' }];
+inpForm.defval = [inpForm.defval {false @sw_surf 1000       [0 1]}];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      [1 2]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -131,6 +120,10 @@ if numel(param.mode)>1
             param.mode = 4;
     end
 end
+
+% energy units
+unitE = spectra.obj.unit.label{2};
+unitT = spectra.obj.unit.label{4};
 
 % select twins for omega plot
 param.twin = round(param.twin);
@@ -245,7 +238,7 @@ else
     yAxis = [min(spectra.omega(:)) max(spectra.omega(:))];
 end
 
-yLabel = 'Energy transfer (meV)';
+yLabel = ['Energy transfer (' unitE ')'];
 
 if isa(param.aHandle,'matlab.graphics.axis.Axes') || ishandle(param.aHandle) 
 
@@ -265,15 +258,6 @@ else
 end
 % set Tag to find window later easily
 set(fHandle,'Tag','sw_spectra');
-
-% Position figure window on the screen
-if numel(param.figPos) == 1
-    param.figPos = [0 0 param.figPos];
-end
-
-if param.figPos(3)>0
-    subwin(param.figPos(1),param.figPos(2),param.figPos(3));
-end
 
 setappdata(fHandle,'param',param);
 setappdata(fHandle,'spectra',spectra);
@@ -329,7 +313,7 @@ if ~powmode
             colors = flipud(param.colormap(nMode+2));
         else
             if strcmpi(param.colormap,'auto')
-                colors = flipud(fireprint(nMode+2));
+                colors = flipud(cm_fireprint(nMode+2));
             else
                 if numel(param.colormap) == 3
                     param.colormap = param.colormap(:);
@@ -503,7 +487,7 @@ if param.mode == 3
             if nPlot>1
                 param.colormap = hsv2rgb([(1:nPlot)'/nPlot ones(nPlot,2)])'*255;
             else
-                param.colormap = {@fireprint};
+                param.colormap = {swpref.getpref('colormap',[])};
             end
         end
         if ~iscell(param.colormap)
@@ -643,9 +627,9 @@ if param.mode == 3
         cHandle = colorbar;
         if spectra.norm
             if spectra.obj.unit.nformula > 0
-                cLabelU = '(mbarn/meV/f.u.)';
+                cLabelU = ['(mbarn/' unitE '/f.u.)'];
             else
-                cLabelU = '(mbarn/meV/cell)';
+                cLabelU = ['(mbarn/' unitE '/cell)'];
             end
         else
             cLabelU = '(arb. u.)';
@@ -716,7 +700,7 @@ end
 
 if param.title
     if isfield(spectra,'T')
-        title([titleStr0 sprintf(', T = %5.1f K',spectra.T)],'FontSize',param.fontSize);
+        title([titleStr0 sprintf([', T = %5.1f ' unitT],spectra.T)],'FontSize',param.fontSize);
     else
         title(titleStr0,'FontSize',param.fontSize);
     end

@@ -16,19 +16,26 @@ function magOut = magstr(obj, varargin)
 %           Default is true.
 % nExt      Size of the magnetic supercell, default is the value stored in
 %           the SpinW object (on which the Fourier expansion is defined).
-% phi0      Additional phase for generating the magnetic structure. Default
-%           is zero.
+% origin    Origin in lattice units, the magnetic structure will be
+%           calculated relative to this point. Default value is [0 0 0].
+%           Shifting the origin introduces an overall phase factor.
 %
 % See also spinw.genmagstr.
 
 
 nExt0 = double(obj.mag_str.nExt);
 
-inpForm.fname  = {'nExt' 'exact' 'phi0'};
-inpForm.defval = {nExt0  true    0     };
-inpForm.size   = {[1 3]  [1 1]   [1 1] };
+inpForm.fname  = {'nExt' 'exact' 'origin'};
+inpForm.defval = {nExt0  true    [0 0 0] };
+inpForm.size   = {[1 3]  [1 1]   [1 3]   };
 
 param = sw_readparam(inpForm, varargin{:});
+
+if any(param.origin-round(param.origin))
+    error('swplot:magstr:WrongInput','Shifting the origin is only allowed by multiples of lattice vectors!')
+end
+
+orig = param.origin;
 
 % size of the supercell where the magnetic structure is generated
 nExtNew = param.nExt;
@@ -55,7 +62,7 @@ end
 
 % create the cell indices for all magnetic atoms in the new supercell
 nExt1 = nExtNew-1;
-[cIdx{1:3}] = ndgrid(0:nExt1(1),0:nExt1(2),0:nExt1(3));
+[cIdx{1:3}] = ndgrid((0:nExt1(1))+orig(1),(0:nExt1(2))+orig(2),(0:nExt1(3))+orig(3));
 % dimensions: nExtNew(1) x nExtNew(2) x nExtNew(3) x 3
 cIdx        = cat(4,cIdx{:});
 
@@ -66,7 +73,8 @@ kExt0 = bsxfun(@times,obj.mag_str.k,nExt0');
 % calculate the phases that generate the rotations for the new supercell
 phi  = sum(bsxfun(@times,tIdx,permute(kExt0,[3 4 5 1 2])),4);
 % complex phase factors
-M = real(bsxfun(@times,M0,exp(-2*pi*1i*permute(phi+param.phi0,[4 6 1:3 5]))));
+%M = real(bsxfun(@times,M0,exp(-2*pi*1i*permute(phi+param.phi0,[4 6 1:3 5]))));
+M = real(bsxfun(@times,M0,exp(-2*pi*1i*permute(phi,[4 6 1:3 5]))));
 % sum up the wave vectors and reshape to standard dimensions
 magOut.S = reshape(sum(M,6),3,[]);
 % keep only the first non-zero wave vector

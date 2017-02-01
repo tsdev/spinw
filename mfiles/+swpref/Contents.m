@@ -5,6 +5,6 @@
 %
 % List of functions:
 %
-% getpref       Get a certain setting.
-% setpref       Set a certain setting.
+% <a href="matlab: doc swpref.getpref">getpref</a>       Get a certain setting.
+% <a href="matlab: doc swpref.setpref">setpref</a>       Set a certain setting.
 %

@@ -8,7 +8,6 @@
 % by the Symbolic Toolbox.
 
 FMchain = spinw;
-FMchain.fileid(0)
 FMchain.symbolic(true)
 
 FMchain.genlattice('lat_const',[3 4 4])

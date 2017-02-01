@@ -156,7 +156,7 @@ switch type
         Ax = A(:,:,1); Ay = A(:,:,2); Az = A(:,:,3);
         gx = g(:,:,1); gy = g(:,:,2); gz = g(:,:,3);
         
-        if param.showVal
+        if showVal
             T = table(matom,idx,aniso,gtensor,Ax,Ay,Az,gx,gy,gz);
         else
             T = table(matom,idx,aniso,gtensor);

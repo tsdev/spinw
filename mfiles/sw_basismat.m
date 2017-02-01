@@ -69,7 +69,7 @@ for ii = 1:nSym
         
     else
         % check that the rotation operator is valid
-        ordR = swsym.oporder(R);
+        ordR = swsym.oporder([R zeros(3,1)]);
         parR = 1;
     end
     if ordR == 10

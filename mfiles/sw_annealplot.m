@@ -1,13 +1,13 @@
-function sw_annealplot(T, E, rate, param,fid)
+function hFigure = sw_annealplot(T, E, rate, param,fid, varargin)
 % displays information about the annealing simulation
 %
 % SW_ANNEALPLOT(T, E, rate, param,fid)
 %
-% See also SW.ANNEAL, SW_ANNEALFIGURE.
+% See also SPINW.ANNEAL, SW_ANNEALFIGURE.
 %
 
 if nargin == 0
-    help sw_annealplot;
+    help sw_annealplot
     return
 end
 
@@ -18,6 +18,8 @@ if  (param.verbosity > 0) && ~any(any(E))
     timeStr = sprintf('%02d:%02d:%02d',floor(clockV(4:6)));
     fprintf0(fid,'Starting time: %s %s.\n',dateStr,timeStr);
 end
+
+hFigure = [];
 
 if (param.verbosity > 0) && ~isempty(E)
     MCTime = toc; tic;
@@ -32,10 +34,11 @@ if (param.verbosity > 0) && ~isempty(E)
     end
     
     if param.verbosity > 1
-        % Handle of figure window to plot.
-        hFigure = sw_getfighandle('sw_anneal');
-        if isempty(hFigure)
-            sw_annealfigure;
+        % create figure for annealing
+        if isempty(varargin)
+            hFigure = sw_annealfigure(varargin{:});
+        else
+            hFigure = varargin{:};
         end
         
         if size(E,2) == 1

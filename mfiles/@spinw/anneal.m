@@ -130,7 +130,7 @@ function stat = anneal(obj, varargin)
 % save the beginning of the calculation
 datestart = datestr(now);
 
-nExt   = double(obj.mag_str.N_ext);
+nExt   = double(obj.mag_str.nExt);
 
 title0 = 'Simulated annealing stat.';
 
@@ -179,10 +179,10 @@ end
 mag_param.nExt = param.nExt;
 
 obj.genmagstr(mag_param);
-M0  = obj.mag_str.S;
+M0  = obj.magstr.S;
 
 % Produce the interaction matrices
-[SS, SI] = obj.intmatrix;
+[SS, SI] = obj.intmatrix();
 % Save DM, anisotropic and general interactions into the SS.gen matrix
 % Add SS.ani
 zAni   = zeros(3,size(SS.ani,2));
@@ -286,7 +286,7 @@ rate = zeros(nMC,1);
 E    = [];
 
 % Initialise plot.
-sw_annealplot(T,E,rate,param,fid);
+hFigure = sw_annealplot(T,E,rate,param,fid);
 
 % Assing moments to sublattices for parallel calculation. There are no
 % coupling between moments on the same sublattice, thus annealing can be
@@ -718,7 +718,7 @@ while 1
     % Calculates the system energy at the end of the temperature step.
     E(end+1,1) = ETemp/nMagExt; %#ok<AGROW>
     % Monitor annealing process.
-    sw_annealplot(T,E,rate,param,fid);
+    sw_annealplot(T,E,rate,param,fid,hFigure);
     % End annealing process if final temperature reached.
     if T(end) <= endT
         break;
@@ -733,7 +733,8 @@ statT.kB = obj.unit.kB;
 stat = fStat(3, statT, T(end), E(end), M, param.nExt);
 
 % For anneal, the result is the average spin value.
-obj.mag_str.S  = stat.M;
+obj.mag_str.F  = stat.M;
+obj.mag_str.k  = [0;0;0];
 stat.obj       = copy(obj);
 stat.param     = param;
 stat.T         = T(end);

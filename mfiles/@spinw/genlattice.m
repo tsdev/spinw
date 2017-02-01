@@ -148,6 +148,10 @@ else
     
 end
 
+if numel(param.sym) == 1 && param.sym==0
+    param.sym = [];
+end
+
 % copy the apporiate label string
 if ~isempty(param.sym) && isempty(param.label)
     if ischar(param.sym)

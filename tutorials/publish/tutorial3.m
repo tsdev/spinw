@@ -5,27 +5,24 @@
 J1J2chain = spinw; 
 J1J2chain.genlattice('lat_const',[3 8 10],'angled',[90 90 90],'sym',0);
 J1J2chain.addatom('r',[0 0 0],'S',1,'label','Cu1','color','blue');
-display('Atomic positions as columns:')
-J1J2chain.atom.r
-plot2(J1J2chain,'range',[3 1 1],'zoom',0.5)
+display('Magnetic lattice:')
+J1J2chain.table('atom')
+plot(J1J2chain,'range',[3 1 1],'zoom',0.5)
 
 %% Couplings
 % First and second neighbor antiferromagnetic couplings. If the name of the
 % matrix ends with '-' the bond is plotted with dashed line.
 
 J1J2chain.gencoupling('maxDistance',7); 
-display('Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3')
-J1J2chain.couplingtable.table 
-J1J2chain.coupling
-display('Bond vectors (first three rows) and bond distances')
-J1J2chain.couplingtable.bondv
+display('Bonds:')
+J1J2chain.table('bond')
 
 J1J2chain.addmatrix('label','J1', 'value',-1,'color','r');
 J1J2chain.addmatrix('label','J2-','value', 2,'color','g'); 
 
 J1J2chain.addcoupling('mat','J1','bond',1);
 J1J2chain.addcoupling('mat','J2-','bond',2);
-plot2(J1J2chain,'range',[3 0.9 0.9],'bondMode','line','bondLinewidth0',3)
+plot(J1J2chain,'range',[3 0.9 0.9],'bondMode','line','bondLinewidth0',3)
 
 %% Magnetic structure is a helix
 % We use two different methods to define the ground state magnetic
@@ -42,12 +39,12 @@ plot2(J1J2chain,'range',[3 0.9 0.9],'bondMode','line','bondLinewidth0',3)
 %
 
 J1J2chain.genmagstr('mode','helical', 'k',[0.25 0 0], 'n',[0 0 1], 'S',[1; 0; 0], 'nExt',[1 1 1])
-display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-J1J2chain.magstr
-J1J2chain.magstr.S
-display('Ground state energy before optimization (meV/spin)')
+display('Magnetic structure:')
+J1J2chain.table('mag')
+display('Ground state energy before optimization')
 J1J2chain.energy
-plot2(J1J2chain,'range',[3 0.9 0.9])
+
+plot(J1J2chain,'range',[3 0.9 0.9])
 
 %% We optimise the helix pitch angle
 % We are unsure about the right pitch angle of the helix, thus we want to
@@ -61,12 +58,12 @@ plot2(J1J2chain,'range',[3 0.9 0.9])
 x1 = [0      0   0   0      0    0];
 x2 = [0    1/2   0   0      0    0];
 optRes = J1J2chain.optmagstr('func',@gm_planar,'xmin',x1,'xmax',x2,'nRun',10);
-display('Ground state energy after optimization (meV/spin)')
+display('Ground state energy after optimization')
 J1J2chain.energy
-display('Optimized magnetic structure with spins as columns, xyz as rows:')
-J1J2chain.magstr 
-J1J2chain.magstr.S
-plot2(J1J2chain,'range',[3 0.9 0.9],'bondMode','line','bondLineWidth0',3)
+display('Optimized magnetic structure:')
+J1J2chain.table('mag')
+
+plot(J1J2chain,'range',[3 0.9 0.9],'bondMode','line','bondLineWidth0',3)
 
 %% Spin wave spectrum
 % We calculate the spin wave spectrum, the code automatically uses the

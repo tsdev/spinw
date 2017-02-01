@@ -1,4 +1,4 @@
-function  E = energy(obj, varargin)
+function  Eout = energy(obj, varargin)
 % calculates the ground state energy per spin
 %
 % E = ENERGY(obj, Option1, Value1 ...)
@@ -120,6 +120,12 @@ if nMagExt>0
 else
     % for undefined magnetic structure, energy returns NaN
     E = NaN;
+end
+
+if nargout > 0
+    Eout = E;
+else
+    fprintf0(obj.fid,['Ground state energy: %5.3f ' obj.unit.label{2} '/spin.\n'],E);
 end
 
 end

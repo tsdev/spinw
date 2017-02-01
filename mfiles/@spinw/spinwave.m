@@ -180,7 +180,7 @@ if obj.symbolic
         param0 = sw_readparam(inpForm, varargin{:});
         
         if ~param0.fitmode
-            fprintf0(obj.fileid,'No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!\n');
+            fprintf0(fid,'No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!\n');
         end
         spectra = obj.spinwavesym(varargin{:});
     else
@@ -221,6 +221,10 @@ if ~param.fitmode
     spectra.datestart = datestr(now);
 end
 
+% Print output into the following file
+fid = obj.fid;
+
+
 if param.fitmode
     param.sortMode = false;
     param.tid = 0;
@@ -233,8 +237,8 @@ end
 if param.useMex == -1
     % don't check files (takes too much time)
     param.useMex = true;
-% elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
-%         exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
+    % elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
+    %         exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
 elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
         exist('eig_omp','file')==3)
     % check if mex files exist
@@ -258,10 +262,6 @@ hklA = 2*pi*(hkl'/obj.basisvector)';
 % Check for 2*km
 tol = param.tol*2;
 helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
-
-
-% Print output into the following file
-fid = obj.fid;
 
 % number of Q points
 nHkl0 = size(hkl,2);
@@ -370,14 +370,12 @@ S0 = sqrt(sum(M0.^2,1));
 n  = magStr.n;
 nMagExt = size(M0,2);
 
-if fid ~= 0
-    if incomm
-        fprintf0(fid,['Calculating INCOMMENSURATE spin wave spectra '...
-            '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
-    else
-        fprintf0(fid,['Calculating COMMENSURATE spin wave spectra '...
-            '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
-    end
+if incomm
+    fprintf0(fid,['Calculating INCOMMENSURATE spin wave spectra '...
+        '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
+else
+    fprintf0(fid,['Calculating COMMENSURATE spin wave spectra '...
+        '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
 end
 
 % Local (e1,e2,e3) coordinate system fixed to the moments,
@@ -497,7 +495,7 @@ if any(bq)
     bqAtom2 = SS.bq(5,:);
     bqJJ    = SS.bq(6,:);
     nbqCoupling = numel(bqJJ);
-
+    
     % matrix elements: M,N,P,Q
     bqM = sum(eta(:,bqAtom1).*eta(:,bqAtom2),1);
     bqN = sum(eta(:,bqAtom1).*zed(:,bqAtom2),1);
@@ -512,7 +510,7 @@ if any(bq)
     bqB0 = (Si.*Sj).^(3/2).*(bqM.*bqO + bqQ.*bqN).*bqJJ;
     bqC  = Si.*Sj.^2.*(conj(bqQ).*bqQ - 2*bqM.^2).*bqJJ;
     bqD  = Si.*Sj.^2.*(bqQ).^2.*bqJJ;
-
+    
     % Creates the serial indices for every matrix element in ham matrix.
     % Aij(k) matrix elements (b^+ b)
     idxbqA  = [bqAtom1' bqAtom2'];
@@ -529,7 +527,7 @@ if any(bq)
     
     idxbqD  = [bqAtom1' bqAtom1'+nMagExt];
     %idxbqD2 = [bqAtom1'+nMagExt bqAtom1]; % SP2
-
+    
 end
 
 
@@ -553,16 +551,12 @@ else
 end
 
 if nHkl < nSlice
-    if fid ~= 0
-        fprintf0(fid,['Memory allocation is not optimal, nMagExt is'...
-            ' too large compared to the free memory!\n']);
-    end
+    fprintf0(fid,['Memory allocation is not optimal, nMagExt is'...
+        ' too large compared to the free memory!\n']);
     nSlice = nHkl;
 elseif nSlice > 1
-    if fid ~= 0
-        fprintf0(fid,['To optimise memory allocation, Q is cut'...
-            ' into %d pieces!\n'],nSlice);
-    end
+    fprintf0(fid,['To optimise memory allocation, Q is cut'...
+        ' into %d pieces!\n'],nSlice);
 end
 
 % message for magnetic form factor calculation
@@ -642,14 +636,14 @@ for jj = 1:nSlice
     %     ExpF = exp(1i*permute(sum(repmat(dR,[1 1 nHklMEM]).*repmat(...
     %         permute(hklExtMEM,[1 3 2]),[1 nCoupling 1]),1),[2 3 1]))';
     ExpF = exp(1i*permute(sum(bsxfun(@times,dR,permute(hklExtMEM,[1 3 2])),1),[2 3 1]))';
-
+    
     % Creates the matrix elements containing zed.
     A1 = bsxfun(@times,     AD0 ,ExpF);
     B  = bsxfun(@times,     BC0 ,ExpF);
     D1 = bsxfun(@times,conj(AD0),ExpF);
-
-
-        
+    
+    
+    
     % Store all indices
     % SP1: speedup for creating the matrix elements
     %idxAll = [idxA1; idxB; idxC; idxD1]; % SP1
@@ -663,9 +657,9 @@ for jj = 1:nSlice
     idx3   = repmat(1:nHklMEM,[3*nCoupling 1]);
     idxAll = [repmat(idxAll,[nHklMEM 1]) idx3(:)];
     idxAll = idxAll(:,[2 1 3]);
-
+    
     ABCD   = ABCD';
-
+    
     
     % quadratic form of the boson Hamiltonian stored as a square matrix
     ham = accumarray(idxAll,ABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
@@ -676,7 +670,7 @@ for jj = 1:nSlice
         % bqExpF = exp(1i*permute(sum(repmat(bqdR,[1 1 nHklMEM]).*repmat(...
         %     permute(hklExtMEM,[1 3 2]),[1 nbqCoupling 1]),1),[2 3 1]))';
         bqExpF = exp(1i*permute(sum(bsxfun(@times,bqdR,permute(hklExtMEM,[1 3 2])),1),[2 3 1]))';
-
+        
         bqA  = bsxfun(@times,     bqA0, bqExpF);
         bqA2 = bsxfun(@times,conj(bqA0),bqExpF);
         bqB  = bsxfun(@times,     bqB0, bqExpF);
@@ -691,7 +685,7 @@ for jj = 1:nSlice
         ham = ham + accumarray(idxbqAll,bqABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
         % add diagonal terms
         ham = ham + repmat(accumarray([idxbqC; idxbqC2; idxbqD],[bqC bqC 2*bqD],[1 1]*2*nMagExt),[1 1 nHklMEM]);
-
+        
     end
     if any(SI.field)
         % different field for different twin

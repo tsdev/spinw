@@ -12,7 +12,7 @@ FMchain = spinw;
 FMchain.fileid(0)
 FMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0)
 FMchain.addatom('r', [0 0 0],'S', 1,'label','MCu1','color','blue')
-FMchain.plot2('range',[3 1 1])
+FMchain.plot('range',[3 1 1])
 
 %% Determine the list of bonds based on length
 % To consider bonds up to 7 Angstrom length we use the sw.gencoupling()
@@ -23,19 +23,7 @@ FMchain.plot2('range',[3 1 1])
 FMchain.gencoupling('maxDistance',7)
 
 % list the 1st and 2nd neighbor bonds
-display('1st neigbor bonds:')
-display('Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3')
-cTable = FMchain.couplingtable(1);
-cTable.table 
-display('Bond vectors (first three rows) and bond distances')
-cTable.bondv 
-
-display('2nd neigbor bonds:')
-display('Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3')
-cTable = FMchain.couplingtable(2);
-cTable.table 
-display('Bond vectors (first three rows) and bond distances')
-cTable.bondv 
+FMchain.table('bond',1:2)
 
 %% Defining the spin Hamiltonian
 % We create a matrix with a label 'Ja', ferromagnetic heisenberg
@@ -45,7 +33,7 @@ cTable.bondv
  
 FMchain.addmatrix('value',-eye(3),'label','Ja','color','green')
 FMchain.addcoupling('mat','Ja','bond',1);
-plot2(FMchain,'range',[3 0.2 0.2],'cellMode','none','baseMode','none')
+plot(FMchain,'range',[3 0.2 0.2],'cellMode','none','baseMode','none')
 
 %% Definition of FM magnetic structure
 % The classical magnetic ground state of the previously defined Hamiltonian
@@ -60,17 +48,14 @@ plot2(FMchain,'range',[3 0.2 0.2],'cellMode','none','baseMode','none')
 FMchain.genmagstr('mode','direct', 'k',[0 0 0],'n',[1 0 0],'S',[0; 1; 0]); 
 
 display('Magnetic structure:')
-FMchain.magstr
-display('Spins 1 2 ... as columns, xyz components as rows:')
-FMchain.magstr.S
-plot2(FMchain,'range',[3 0.9 0.9],'baseMode','none','cellMode','none')
+FMchain.table('mag')
+plot(FMchain,'range',[3 0.9 0.9],'baseMode','none','cellMode','none')
 
 %% The energy of the ground state per spin
-% The sw.energy() function gives the ground state energy per spin, the
+% The spinw.energy() function gives the ground state energy per spin, the
 % value is dinamically calculated at every call.
 
-display('Ground state energy (meV/spin):')
-FMchain.energy
+fprintf(['Ground state energy: %5.3f ' FMchain.unit.label{2} '/spin.' char(10)],FMchain.energy)
 
 
 %% Calculate spin wave dispersion and spin-spin correlation function

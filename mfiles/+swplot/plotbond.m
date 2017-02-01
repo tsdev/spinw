@@ -337,7 +337,11 @@ end
 
 % save original matrix values into data
 %mat0   = obj.matrix.mat(:,:,matidx);
-matDat = mat2cell(mat,3,3,ones(1,numel(matidx)));
+if numel(matidx)==1
+    matDat = mat2cell(mat,3,3);
+else
+    matDat = mat2cell(mat,3,3,ones(1,numel(matidx)));
+end
 
 % legend label
 lLabel = obj.matrix.label(matidx);

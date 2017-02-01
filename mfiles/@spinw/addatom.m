@@ -313,7 +313,7 @@ if newAtom.update
     [iLabel, lIdx] = ismember(newObj.unit_cell.label,obj.unit_cell.label);
     [iPos, pIdx]   = ismember(newObj.unit_cell.r',obj.unit_cell.r','rows');
     % index in the new atoms
-    newIdx  = iLabel&iPos;
+    newIdx  = iLabel&iPos';
     % index in the existing atoms
     oldIdx = lIdx(ismember(lIdx,pIdx));
 

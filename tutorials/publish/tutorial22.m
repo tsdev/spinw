@@ -1,6 +1,6 @@
 %% antiferromagnetic chain
 
-afc = sw;
+afc = spinw;
 afc.genlattice('lat_const',[3 4 4])
 afc.addatom('r',[  0 0 0],'S',1)
 afc.addmatrix('label','A','value',diag([0 0 0.1]))

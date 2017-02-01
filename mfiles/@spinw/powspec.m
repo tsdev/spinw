@@ -174,6 +174,8 @@ end
 
 sw_status(100,2,param.tid);
 
+fprintf0(fid,'Calculation finished.\n');
+
 % save different field into spectra
 spectra.swConv   = powSpec;
 spectra.hklA     = hklA;

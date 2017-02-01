@@ -8,7 +8,7 @@ AFMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0);
 AFMchain.addatom('r',[0 0 0],'S',1,'label','MCu1','color','blue');
 display('Atomic positions as columns:')
 AFMchain.atom.r
-plot2(AFMchain,'range',[3 1 1],'zoom',0.5)
+plot(AFMchain,'range',[3 1 1],'zoom',0.5)
 
 %% Create antiferromagnetic interactions
 % Ja = 1 meV, positive sign denotes antiferromagnetic interaction.
@@ -22,7 +22,7 @@ AFMchain.couplingtable.bondv
 
 AFMchain.addmatrix('label','Ja','value',1,'color','red'); 
 AFMchain.addcoupling('mat','Ja','bond',1);
-plot2(AFMchain,'range',[3 0.9 0.9])
+plot(AFMchain,'range',[3 0.9 0.9])
 
 %% Two ways of defining the magnetic structure
 
@@ -51,7 +51,7 @@ AFMchain.magstr.S
 %%% Ground state energy
 display('Ground state energy (meV/spin)')
 AFMchain.energy
-plot2(AFMchain,'range',[3 0.9 0.9],'cellMode','none','baseMode','none')
+plot(AFMchain,'range',[3 0.9 0.9],'cellMode','none','baseMode','none')
 
 %% Spin wave spectrum
 % We calculate the spin wave spectrum and neutron scattering cross

@@ -43,6 +43,12 @@ end
 switch type
     case {'matom' 'atom'}
         matom = obj.unit_cell.label(obj.matom.idx)';
+        
+        if isempty(matom)
+            T = table;
+            return
+        end
+        
         idx   = (1:numel(obj.matom.idx))';
         S     = obj.matom.S';
         pos   = round(obj.matom.r'*1e3)/1e3;
@@ -58,12 +64,14 @@ switch type
         absRF = sqrt(sum(real(obj.mag_str.F(:,:,1)).^2,1));
         absIF = sqrt(sum(imag(obj.mag_str.F(:,:,1)).^2,1));
         S     = max(absRF,absIF)';
+        absRF(absRF==0) = 1;
+        absIF(absIF==0) = 1;
         realFhat = round(bsxfun(@rdivide,real(obj.mag_str.F(:,:,1)),absRF)'*1e3)/1e3;
         imagFhat = round(bsxfun(@rdivide,imag(obj.mag_str.F(:,:,1)),absIF)'*1e3)/1e3;
         pos   = round(obj.magtable.R'*1e3)/1e3;
         num   = (1:numel(matom))';
-        T = table(num,matom,idx,S,realFhat,imagFhat,pos);
-    case 'bond'
+        T = table(num,matom(:),idx,S,realFhat,imagFhat,pos);
+    case {'bond' 'coupling'}
         
         [SS,~] = obj.intmatrix('extend',false,'zeroC',true);
         
@@ -71,6 +79,12 @@ switch type
         sel = ismember(obj.coupling.idx,index);
                 
         bond   = obj.coupling.idx(sel)';
+        
+        if isempty(bond)
+            T = table;
+            return
+        end
+        
         dl     = double(obj.coupling.dl(:,sel))';
         idx1   = obj.coupling.atom1(sel)';
         idx2   = obj.coupling.atom2(sel)';
@@ -86,6 +100,11 @@ switch type
         bondSym = logical(obj.coupling.sym(:,sel)');
         
         matrix(bondSym) = cellfun(@(C)[char(187) C],matrix(bondSym),'UniformOutput',false);
+        
+        if numel(matrix) == 3
+            matrix = matrix(:)';
+        end
+        
         if showVal
             % show the values of the matrices
             value  = zeros(3,3,numel(obj.coupling.idx));
@@ -107,16 +126,22 @@ switch type
             Jy     = value(:,:,2);
             Jz     = value(:,:,3);
             
-            T = table(bond,dl,length,matom1,idx1,matom2,idx2,matrix,Jx,Jy,Jz);
+            T = table(bond,dl,length,matom1(:),idx1,matom2(:),idx2,matrix,Jx,Jy,Jz);
         else
-            T = table(bond,dl,length,matom1,idx1,matom2,idx2,matrix);
+            T = table(bond,dl,length,matom1(:),idx1,matom2(:),idx2,matrix);
         end
         
-    case 'ion'
+    case {'ion' 'aniso'}
         
         [~,SI] = obj.intmatrix('extend',false,'zeroC',true,'plotmode',true);
         
         matom   = obj.unit_cell.label(obj.matom.idx)';
+        
+        if isempty(matom)
+            T = table;
+            return
+        end
+        
         idx     = (1:numel(matom))';
         mLabel  = [obj.matrix.label {''}];
         aIdx    = obj.single_ion.aniso;
@@ -136,8 +161,14 @@ switch type
         else
             T = table(matom,idx,aniso,gtensor);
         end
-    case 'matrix'
+    case {'mat' 'matrix'}
         matrix = obj.matrix.label';
+        
+        if isempty(matrix)
+            T = table;
+            return
+        end
+        
         M = round(permute(obj.matrix.mat,[3 2 1])*1e5)/1e5;
         Mx = M(:,:,1); My = M(:,:,2); Mz = M(:,:,3);
         

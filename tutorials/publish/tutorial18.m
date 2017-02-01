@@ -45,7 +45,6 @@ hK.plot('range',[2 2 0.3],'bondMode','line','bondLineWidth0',2,...
     'cellMode','inside','atomLegend',false,'baseShift',[4 -3 0]')
 swplot.zoom(1.4)
 
-disp('Ground state energy (meV/spin):')
 hK.energy
 
 %% Optimised ground state
@@ -68,7 +67,6 @@ hK.plot('range',[2 2 0.3],'bondMode','line','bondLineWidth0',2,...
     'cellMode','inside','atomLegend',false,'baseShift',[4 -3 0]')
 swplot.zoom(1.4)
 
-disp('Ground state energy (meV/spin):')
 hK.energy
 
 %% Spin wave dispersion
@@ -76,10 +74,10 @@ hK.energy
 % S(Q,omega) and plot S^perp that gives the neutron scattering cross
 % section.
 
-hK.fileid(1)
-hkSpec = hK.spinwave({[0 0 0] [1 0 0] 500});
+
+hkSpec = hK.spinwave({[0 0 0] [1 0 0] 500},'hermit',false);
 hkSpec = sw_neutron(hkSpec);
-hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500));
+hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500),'imagChk',false);
 
 figure
 sw_plotspec(hkSpec,'mode','pretty','linestyle','-');

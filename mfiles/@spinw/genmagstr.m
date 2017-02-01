@@ -334,22 +334,33 @@ switch param.mode
             else
                 r = bsxfun(@minus,mAtom.RRext,mAtom.RRext(:,1));
             end
+            % add phase
+            addPhase = true;
         elseif nSpin == nMagAtom
             % moments in the crystallographic unit cell are defined, use
             % only unit cell position.
             r = bsxfun(@rdivide,floor(bsxfun(@times,mAtom.RRext,nExt')),nExt');
+            % add phase
+            addPhase = true;
+
+        elseif nSpin == nMagExt
+            % no phase, magnetic structure is already in superstructure
+            addPhase = false;
         else
             error('sw:genmagstr:WrongNumberSpin','Wrong number of input spins!');
         end
-                
-        % additional phase for each spin in the magnetic supercell
-        %phi = sum(bsxfun(@times,2*pi*kExt',r),1);
-        phi = sum(bsxfun(@times,2*pi*permute(kExt,[2 3 1]),r),1);
-
-        % add the extra phase for each spin in the unit cell
-        % TODO check
-        S = bsxfun(@times,S0(:,mod(0:(nMagExt-1),nSpin)+1,:),exp(-1i*phi));
-        
+               
+        if addPhase
+            % additional phase for each spin in the magnetic supercell
+            %phi = sum(bsxfun(@times,2*pi*kExt',r),1);
+            phi = sum(bsxfun(@times,2*pi*permute(kExt,[2 3 1]),r),1);
+            
+            % add the extra phase for each spin in the unit cell
+            % TODO check
+            S = bsxfun(@times,S0(:,mod(0:(nMagExt-1),nSpin)+1,:),exp(-1i*phi));
+        else
+            S = S0;
+        end
     case 'direct'
         % direct input of real magnetic moments
         S = param.S;

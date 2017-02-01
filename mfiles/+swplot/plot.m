@@ -392,7 +392,11 @@ end
 [sObject(:).text] = param.text{:};
 
 % save position
-posC = mat2cell(permute(pos,[1 3 2]),3,size(pos,3),ones(1,nObject));
+if nObject == 1
+    posC = mat2cell(permute(pos,[1 3 2]),3,size(pos,3));
+else
+    posC = mat2cell(permute(pos,[1 3 2]),3,size(pos,3),ones(1,nObject));
+end
 [sObject(:).position] = posC{:};
 
 % save label

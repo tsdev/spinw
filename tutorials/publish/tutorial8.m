@@ -2,7 +2,7 @@
 % We create a lattice with space group "P -3" where all first neighbor
 % bonds are symmetry equivalent and add a magnetic Cr+ with S=1 spin.
 
-AF33kagome = spinw; 
+AF33kagome = spinw;
 AF33kagome.fileid(0)
 AF33kagome.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3')
 AF33kagome.addatom('r',[1/2 0 0],'S', 1,'label','MCu1','color','r')
@@ -12,9 +12,8 @@ plot(AF33kagome,'range',[2 2 1/2],'cellMode','inside')
 % Generate the list of bonds and list the first and second neighbor bonds.
 
 AF33kagome.gencoupling('maxDistance',7)
-disp(AF33kagome.couplingtable(-2:-1).table)
-disp('Bond vectors (first three columns) and bond length in Angstrom:')
-disp(AF33kagome.couplingtable(1:2).bondv')
+disp('Bonds:')
+AF33kagome.table('bond')
 
 %% Hamiltonian
 % We create AFM first neighbor interactions.
@@ -33,15 +32,10 @@ plot(AF33kagome,'range',[2 2 1/2],'cellMode','inside')
 
 S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr('mode','helical','k',[-1/3 -1/3 0],'n',[0 0 1],'unitS','lu','S',S0,'nExt',[3 3 1]);
-display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AF33kagome.magstr 
-AF33kagome.magstr.S
-display('Magnetic atoms as columns:')
-AF33kagome.magtable.R
-display('Magnetic spins:')
-AF33kagome.magtable.M
-display('Ground state energy (meV/spin)')
+display('Magnetic structure:')
+AF33kagome.table('mag')
 AF33kagome.energy
+
 plot(AF33kagome,'range',[3 3 1/2],'cellMode','inside')
 
 %% Calculate spin wave dispersion I.
@@ -66,15 +60,10 @@ sw_plotspec(kag33Spec,'mode',3,'dE',0.05,'axLim',[0 2.5],'dashed',true)
 
 S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr('mode','helical','k',[-1/3 -1/3 0],'n',[0 0 1],'unitS','lu','S',S0,'nExt',[1 1 1]);
-display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AF33kagome.magstr 
-AF33kagome.magstr.S 
-display('Magnetic atoms as columns:')
-AF33kagome.magtable.R
-display('Magnetic spins:')
-AF33kagome.magtable.M
-display('Ground state energy (meV/spin)')
+display('Magnetic structure:')
+AF33kagome.table('mag')
 AF33kagome.energy
+
 plot(AF33kagome,'range',[3 3 1])
 
 %% Calculate spin wave dispersion II.
@@ -91,14 +80,14 @@ subplot(2,1,2)
 sw_plotspec(kag33Spec,'mode',3,'dE',0.05,'axLim',[0 2.5],'dashed',true)
 
 %% Powder spectrum
-% Using the small magnetic cell, the calculation of the powder spectrum 
+% Using the small magnetic cell, the calculation of the powder spectrum
 % is ~4.5 times faster than for the 3x3x1 magnetic supercell. The speed of
 % the powder calculation is depending on the nomber of Q points and nomber
 % of random orientations: T ~ nQ * nRand, it is mostly independent of the
 % number size of the energy bin vector.
 
 kag33Pow = AF33kagome.powspec(linspace(0,2.5,100),'Evect',linspace(0,3,500),'hermit',false,'nRand',100);
-figure;
+figure
 sw_plotspec(kag33Pow,'axLim',[0 0.2],'dE',0.05)
 
 

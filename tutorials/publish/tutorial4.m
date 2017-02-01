@@ -1,12 +1,10 @@
 %% Antiferromagnetic square lattice
 % We define a square lattice in the ab plane, with Cu+ ions with S=1 spin.
 
-AFsq = spinw; 
-AFsq.fileid(0)
+AFsq = spinw;
 AFsq.genlattice('lat_const',[3 3 10],'angled',[90 90 90],'sym',0)
-AFsq.addatom('r',[0 0 0],'S', 1,'label','Cu1','color','b');
-display('Atomic positions as columns:') 
-AFsq.atom.r 
+AFsq.addatom('r',[0 0 0],'S', 1,'label','Cu1','color','b')
+AFsq.table('atom')
 plot(AFsq)
 
 %% Couplings
@@ -15,11 +13,7 @@ plot(AFsq)
 % corresponding matrix.
 
 AFsq.gencoupling('maxDistance',9)
-display('Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3')
-AFsq.couplingtable.table
-AFsq.coupling
-display('Bond vectors (first three rows) and bond distances')
-AFsq.couplingtable.bondv
+AFsq.table('bond')
 
 AFsq.addmatrix('label','J1','value',1,'color','red')
 AFsq.addmatrix('label','J2','value',-0.1,'color','green')
@@ -43,14 +37,9 @@ plot(AFsq,'range',[2 2 0.5],'zoom',-1)
 % vectors to the spin value of the magnetic atoms.
 
 AFsq.genmagstr('mode','helical','k',[1/2 1/2 0],'n',[0 0 1], 'S',[1; 0; 0],'nExt',[1 1 1]);  
-display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AFsq.mag_str 
-AFsq.mag_str.S
-display('Magnetic atoms as columns:')
-AFsq.magtable.R
-display('Magnetic spins:')
-AFsq.magtable.M
-display('Ground state energy (meV/spin)')
+display('Magnetic structure:')
+AFsq.table('mag')
+
 AFsq.energy
 plot(AFsq,'range',[2 2 1])
 
@@ -67,6 +56,7 @@ sqSpec = sw_egrid(sqSpec,'Evect',linspace(0,6.5,500));
 figure
 sw_plotspec(sqSpec,'mode',3,'dashed',true,'dE',0.25)
 caxis([0 4])
+
 %%
 %  Written by
 %  Bjorn Fak & Sandor Toth

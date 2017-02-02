@@ -93,7 +93,18 @@ inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1] };
 inpForm.soft   = {false       false  false false          true    true  };
 
 warnState = warning('off','sw_readparam:UnreadInput');
-param = sw_readparam(inpForm, varargin{:});
+% To handle matlab fitting syntax, which may set the first argument to the
+% fittable parameter (without keyword).
+if ~ischar(varargin{1})
+    param = sw_readparam(inpForm, varargin{2:end});
+    if isempty(param.param)
+        varargin = {varargin{:} 'param' varargin{1}};
+    end
+    param.param = varargin{1};  % Always override keyword specified parameters
+    varargin(1) = [];
+else
+    param = sw_readparam(inpForm, varargin{:});
+end
 
 if ~isempty(param.param)
     % change matrix values for Horace data fitting
@@ -105,6 +116,7 @@ if ~isempty(param.param)
         error('spinw:horace:WrongInput','User defined function with incompatible header!');
     end
 end
+%}
 
 if param.norm && param.dE == 0
     error('spinw:horace:WrongInput',['To convert spin wave intensity to mbarn/meV/cell/sr'...

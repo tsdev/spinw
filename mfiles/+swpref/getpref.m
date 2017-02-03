@@ -8,17 +8,14 @@ function rPref = getpref(prefName, varargin)
 % If you want certain preferences to keep after closing matlab, define them
 % in the <a href="matlab:edit('startup.m')">startup.m</a> file.
 %
-% swpref.getpref() returns the names, values and labels of each
-% preferences. Default values are returned, if no values are saved. rPref
-% is a struct with field names 'name', 'label' and 'val'. Each field is a
-% cell.
+% swpref.getpref() returns the names and current values for all
+% preferences. rPref is a struct.
 %
-% rPref = swpref.getpref(pName, {simple})
+% rPref = swpref.getpref(pName, {true})
 %
 % Returns only the requested SpinW preference name, value and label in a
 % struct. Each field contains the requested value. If a second argument is
-% given (simple) with any value, only the value of the preference is
-% returned.
+% given (true), only the value of the preference is returned.
 %
 % rPref = swpref.getpref('default')
 %
@@ -26,6 +23,15 @@ function rPref = getpref(prefName, varargin)
 %
 % See also SWPREF.SETPREF.
 
-rPref = swpref.pref(prefName,'get',varargin{:});
+if nargin == 0
+    % return all current values
+    rPref = swpref.pref([]);
+    % convert into single struct
+    rPref = [{rPref(:).name};{rPref(:).val}];
+    rPref = struct(rPref{:});
+else
+    rPref = swpref.pref(prefName,'get',varargin{:});
+end
+
 
 end

@@ -1,5 +1,5 @@
 function hFigureOut = figure(mode)
-% creates figure for crystal structure plot
+% creates swplot figure
 %
 % hFigure = SWPLOT.FIGURE({mode})
 %

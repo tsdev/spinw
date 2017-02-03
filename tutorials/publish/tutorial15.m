@@ -73,6 +73,15 @@ S0 = [1 -1/2 -1/2;0 eD*sqrt(3)/2 -eD*sqrt(3)/2;0 0 0];
 banb.genmagstr('mode','helical','S',S0,'k',[0 0 eH*1/7],'n',[0 0 1])
 plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'magCentered',true)
 swplot.zoom(1.3)
+E0 = banb.energy;
+
+%% Alternatively you can optimize the magnetic structure
+% First we find the propagation vector, then determine the moment
+% directions.
+
+banb.optmagk
+banb.optmagsteep('nRun',1e4)
+banb.energy-E0
 
 %% Spin wave spectrum
 % We calculate the spin wave spectrum and compare it to published results.

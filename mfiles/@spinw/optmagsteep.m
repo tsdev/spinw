@@ -101,7 +101,7 @@ if param.random || isempty(obj.mag_str.F) || any(param.nExt~=nExt)
 end
 
 % get the magnetic structure
-magStr = obj.magstr;
+magStr = obj.magstr('exact',false);
 
 M = magStr.S;
 

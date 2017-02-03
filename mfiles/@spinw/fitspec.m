@@ -132,9 +132,6 @@ sw_status(0,1);
 idx = 1;
 idxAll = 1;
 
-fidSave = obj.fileid;
-obj.fileid (0);
-
 while idx <= nRun
     try
         if ~isempty(param.x0)
@@ -178,13 +175,11 @@ if param.plot
     figure;
     param0.plot = true;
     % plot the best result if requested
-    sw_fitfun(obj, data, param.func, x(1,:), param0);
+    sw_fitfun(objFit, data, param.func, x(1,:), param0);
 end
 
 % set the best fit to the sw object
 param.func(obj,x(1,:));
-
-obj.fileid(fidSave);
 
 % Store all output in a struct variable.
 fitsp.obj      = copy(obj);
@@ -229,7 +224,7 @@ for ii = 1:nConv
     data = dataCell{ii};
     
     % calculate spin-spin correlation function
-    spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit,'tid',0);
+    spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit,'tid',0,'fid',0);
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy

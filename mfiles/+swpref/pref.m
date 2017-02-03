@@ -63,6 +63,12 @@ if isempty(sPref)
     sPref = dPref;
 end
 
+if isempty(prefName)
+    % just return all current values
+    rPref = sPref;
+    return
+end
+
 switch mode
     case 'get'
                 

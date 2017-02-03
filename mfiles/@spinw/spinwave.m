@@ -158,11 +158,7 @@ function spectra = spinwave(obj, hkl, varargin)
 
 % for linear scans create the Q line(s)
 if nargin > 1
-    %    if iscell(hkl)
     hkl = sw_qscan(hkl);
-    %    elseif numel(hkl)==3
-    %        hkl = hkl(:);
-    %    end
 else
     hkl = [];
 end
@@ -180,7 +176,7 @@ if obj.symbolic
         param0 = sw_readparam(inpForm, varargin{:});
         
         if ~param0.fitmode
-            fprintf0(fid,'No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!\n');
+            warning('spinw:spinwave:MissingInput','No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!');
         end
         spectra = obj.spinwavesym(varargin{:});
     else
@@ -210,20 +206,23 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
-inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase' 'tid'}];
-inpForm.defval = [inpForm.defval {false    false       -1   }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]       [1 1]}];
+inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase' 'tid' 'fid' }];
+inpForm.defval = [inpForm.defval {false    false       -1    nan   }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]       [1 1] [1 1] }];
 
 param = sw_readparam(inpForm, varargin{:});
+
+if isnan(param.fid)
+    % Print output into the following file
+    fid = obj.fid;
+else
+    fid = param.fid;
+end
 
 if ~param.fitmode
     % save the time of the beginning of the calculation
     spectra.datestart = datestr(now);
 end
-
-% Print output into the following file
-fid = obj.fid;
-
 
 if param.fitmode
     param.sortMode = false;
@@ -327,11 +326,7 @@ twinIdx = twinIdx(:);
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
-if param.fitmode
-    [SS, SI, RR] = obj.intmatrix('fitmode',true,'conjugate',true);
-else
-    [SS, SI, RR] = obj.intmatrix('conjugate',true);
-end
+[SS, SI, RR] = obj.intmatrix('fitmode',true,'conjugate',true);
 
 % add the dipolar interactions to SS.all
 SS.all = [SS.all SS.dip];

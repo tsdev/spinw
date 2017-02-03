@@ -28,7 +28,7 @@ N  = 1;
 RN = symOp(:,1:3);
 TN = round(symOp(:,4)*12);
 
-while (norm(RN-eye(3)) || norm(TN)) && (N<10)
+while (norm(RN-eye(3))>10*eps || norm(TN)) && (N<10)
     RN = symOp(:,1:3)*RN;
     TN = mod(round(symOp(:,1:3)*TN+symOp(:,4)),12);
     N  = N + 1;

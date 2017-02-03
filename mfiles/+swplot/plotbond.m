@@ -386,7 +386,7 @@ switch param.mode2
         diagSym(1,1,:) = matSym(1,1,:);
         diagSym(2,2,:) = matSym(1,1,:);
         diagSym(3,3,:) = matSym(1,1,:);
-        rmSym = rmSym | ~any(reshape(bsxfun(@minus,matSym,diagSym),9,[]),1);
+        rmSym = rmSym | sum(abs(reshape(bsxfun(@minus,matSym,diagSym),9,[])),1)<10*eps;
         
         matSym = matSym(:,:,~rmSym);
         posSym = (pos1(:,~rmSym)+pos2(:,~rmSym))/2;
@@ -461,10 +461,18 @@ switch param.linewidth
         lineWidth = param.linewidth0;
     case 'lin'
         absmat = permute(sumn(abs(mat),[1 2]),[1 3 2]);
-        lineWidth = absmat/max(absmat)*param.linewidth0;
+        normat = max(absmat);
+        if normat<=0
+            normat = 1;
+        end
+        lineWidth = absmat/normat*param.linewidth0;
     case 'pow'
         absmat = permute(sumn(abs(mat),[1 2]),[1 3 2]);
-        lineWidth = (absmat/max(absmat)).^param.widthpow*param.linewidth0;
+        normat = max(absmat);
+        if normat<=0
+            normat = 1;
+        end
+        lineWidth = (absmat/normat).^param.widthpow*param.linewidth0;
     otherwise
         error('plotbond:WrongInput','The given linewidth string is illegal!')
 end

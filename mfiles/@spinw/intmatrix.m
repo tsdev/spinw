@@ -34,7 +34,7 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 %
 % Output:
 %
-% SS            Structure with  fields {iso,aniso,dm,gen,bq,dip}. It
+% SS            Structure with  fields {iso,ani,dm,gen,bq,dip}. It
 %               describes the interactions between spins. Every field is a
 %               matrix, where every column is a coupling between two spins.
 %               The first 3 rows contain the unit cell translation vector
@@ -71,12 +71,13 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 
 %if obj.symbolic && obj.symmetry
 %    if any(sw_mattype(obj.matrix.mat)~=1)
-%        warning('sw:intmatrix:symmetry',['The non-isotropic symbolic matrices '...
+%        warning('spinw:intmatrix:symmetry',['The non-isotropic symbolic matrices '...
 %            'will be rotated unsing the point group operators, the result can be ugly!']);
 %    end
 %end
 
-nExt0 = obj.magstr('exact',false).N_ext;
+nExt0 = double(obj.mag_str.nExt);
+
 inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate' 'sortDM' 'nExt'};
 inpForm.defval = {0          false     false   true     false       false    nExt0 };
 inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]    [1 3] };
@@ -223,12 +224,12 @@ idxTemp  = SS.all(6,:);
 SS.all   = SS.all(1:5,:);
 
 % don't calculate these for speedup in case of fitting
-if param.fitmode
+if ~param.fitmode
     JJ.type = sw_mattype(JJ.mat);
     
     % new type for biquadratic exchange
     if any(JJ.type(mat_type==1)~=1)
-        error('sw:intmatrix:DataError','Biquadratic exchange matrix has to be isotropic!')
+        error('spinw:intmatrix:DataError','Biquadratic exchange matrix has to be isotropic!')
     end
     % for biquadratic exchange type = 5
     JJ.type(mat_type==1) = 5;

@@ -163,9 +163,6 @@ else
     hkl = [];
 end
 
-% Print output into the following file
-fid = obj.fid;
-
 % calculate symbolic spectrum if obj is in symbolic mode
 if obj.symbolic
     if numel(hkl) == 3
@@ -179,7 +176,7 @@ if obj.symbolic
         param0 = sw_readparam(inpForm, varargin{:});
         
         if ~param0.fitmode
-            fprintf0(fid,'No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!\n');
+            warning('spinw:spinwave:MissingInput','No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!');
         end
         spectra = obj.spinwavesym(varargin{:});
     else
@@ -209,11 +206,18 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
-inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase' 'tid'}];
-inpForm.defval = [inpForm.defval {false    false       -1   }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]       [1 1]}];
+inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase' 'tid' 'fid' }];
+inpForm.defval = [inpForm.defval {false    false       -1    nan   }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]       [1 1] [1 1] }];
 
 param = sw_readparam(inpForm, varargin{:});
+
+if isnan(param.fid)
+    % Print output into the following file
+    fid = obj.fid;
+else
+    fid = param.fid;
+end
 
 if ~param.fitmode
     % save the time of the beginning of the calculation

@@ -105,6 +105,9 @@ switch type
             matrix = matrix(:)';
         end
         
+        matom1 = matom1(:);
+        matom2 = matom2(:);
+        
         if showVal
             % show the values of the matrices
             value  = zeros(3,3,numel(obj.coupling.idx));
@@ -126,9 +129,9 @@ switch type
             Jy     = value(:,:,2);
             Jz     = value(:,:,3);
             
-            T = table(bond,dl,length,matom1(:),idx1,matom2(:),idx2,matrix,Jx,Jy,Jz);
+            T = table(bond,dl,length,matom1,idx1,matom2,idx2,matrix,Jx,Jy,Jz);
         else
-            T = table(bond,dl,length,matom1(:),idx1,matom2(:),idx2,matrix);
+            T = table(bond,dl,length,matom1,idx1,matom2,idx2,matrix);
         end
         
     case {'ion' 'aniso'}

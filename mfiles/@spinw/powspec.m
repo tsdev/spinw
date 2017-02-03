@@ -146,8 +146,6 @@ for ii = 1:nQ
     end
     hkl = (Q'*obj.basisvector)'/2/pi;
     
-    % no output from spinwave() function
-    obj.fileid(0);
     if param.extrap
         % allow arbitrary additional parameters to pass to the spectral
         % calculation function
@@ -159,11 +157,8 @@ for ii = 1:nQ
         specQ = param.specfun(obj,hkl,'fitmode',true,'notwin',true,...
             'Hermit',param.hermit,'formfact',param.formfact,...
             'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-            'optmem',param.optmem,'useMex',param.useMex,'tid',0);
+            'optmem',param.optmem,'useMex',param.useMex,'tid',0,'fid',0);
     end
-    
-    % reset output to original value
-    obj.fileid(fid);
     specQ = sw_neutron(specQ,'pol',false);
     specQ.obj = obj;
     % use edge grid by default

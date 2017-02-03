@@ -63,6 +63,8 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % x0        Vector with two numbers [x0_min x0_max]. By default the x range
 %           of the plots is [0 1] irrespective of the given Q points. To
 %           change this the lower and upper limits can be given here.
+% qlabel    Provide a list of strings for the Q points between linear
+%           segments.
 %
 % Output:
 %
@@ -99,9 +101,9 @@ inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
 inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
 inpForm.size   = [inpForm.size   {[1 -5]          [1 1]       [1 1]     }];
 
-inpForm.fname  = [inpForm.fname  {'log' 'plotf'  'maxPatch' 'x0' }];
-inpForm.defval = [inpForm.defval {false @sw_surf 1000       [0 1]}];
-inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      [1 2]}];
+inpForm.fname  = [inpForm.fname  {'log' 'plotf'  'maxPatch' 'x0'  'qlabel' }];
+inpForm.defval = [inpForm.defval {false @sw_surf 1000       [0 1] cell(1,0)}];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      [1 2] [1 -7]   }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -188,7 +190,8 @@ if param.mode == 4
         end
         
         [fHandle, pHandle] = sw_plotspec(spectra,'mode',3,'dE',Eres,...
-            'dashed',true,'colorbar',false,'axLim',param.axLim,'lineStyle',param.lineStyle,'maxPatch',param.maxPatch);
+            'dashed',true,'colorbar',false,'axLim',param.axLim,...
+            'lineStyle',param.lineStyle,'maxPatch',param.maxPatch,'qLabel',param.qlabel);
     end
     if ~powmode
         hold on
@@ -207,7 +210,9 @@ if param.mode == 4
         end
 
         [fHandle, pHandle] = sw_plotspec(spectra,'mode',1,'colorbar',~pColor,...
-            'dashed',false,'title',~pColor,'legend',~pColor,'imag',~pColor,'lineStyle',param.lineStyle,'colormap',cMap0,'axLim',[0 1.1*Emax]);
+            'dashed',false,'title',~pColor,'legend',~pColor,'imag',~pColor,...
+            'lineStyle',param.lineStyle,'colormap',cMap0,'axLim',[0 1.1*Emax],...
+            'qLabel',param.qlabel);
     end
     
     if nargout >0
@@ -226,6 +231,17 @@ if powmode
     xAxis   = spectra.hklA;
 else
     [xLabel, xAxis] = sw_label(spectra.hkl,spectra.hklA);
+    if ~isempty(param.qlabel) && iscell(xLabel)
+        if numel(param.qlabel)~=(numel(xLabel)-1)
+            error('sw_plotspec:WrongInput','The number of q labels is wrong!')
+        end
+        % change labels
+        xLabel(1:(end-1)) = param.qlabel;
+        xLabel0 = 'Momentum';
+    else
+        xLabel0 = 'Momentum (r.l.u.)';
+    end
+    
     % shift the x-axis if requested
     xAxis = xAxis*diff(param.x0)+param.x0(1);
 end
@@ -718,7 +734,7 @@ if iscell(xLabel)
             line([1 1]*xTickLoc(jj),autAxis(3:4),'LineStyle','--','color',[0 0 0]);
         end
     end
-    xlabel('Momentum (r.l.u.)');
+    xlabel(xLabel0);
 else
     xlabel(xLabel);
 end

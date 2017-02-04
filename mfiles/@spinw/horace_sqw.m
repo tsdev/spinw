@@ -29,7 +29,7 @@ function weight = horace_sqw(obj, qh, qk, ql, en, pars, varargin)
 %                    function to get S(q,w). It can be either a string: 
 %                      'gauss' - gaussian with single fixed (fittable) FWHM
 %                      'lor' - lorentzian with single fixed (fittable) FWHM
-%                      'voigt' - pseudo-voigt with two fixed (fittable) FWHMs
+%                      'voigt' - pseudo-voigt with single fixed (fittable) FWHM
 %                      @fun - a function handle satisfying the requirements of
 %                             the 'fwhm' parameter of disp2sqw.
 %                    NB. For 'gauss' and 'lor' only one fwhm parameter may be
@@ -43,8 +43,8 @@ function weight = horace_sqw(obj, qh, qk, ql, en, pars, varargin)
 %                    [default: @(y)y  % identity operation]
 %
 %               In addition, the following parameters are used by this function                         
-%                    and will also passed on (to spinw.matparser which will
-%                    do the actual modification of spinW model parameters)
+%                    and will also be passed on to spinw.matparser which will
+%                    do the actual modification of spinW model parameters:
 %                  
 %               - 'mat' - A cell array of labels of spinW named 'matrix' or
 %                    matrix elements. E.g. {'J1', 'J2', 'D(3,3)'}. These will
@@ -152,7 +152,8 @@ function out = voigt_internal(Emat, center, fwhm)
 % Calculates a pseudo-Voigt function for disp2sqw.
     lorfrac = fwhm(2);
     fwhm = fwhm(1);
+    sig = fwhm / sqrt(log(256));
     Ediff2 = bsxfun(@minus, center, Emat).^2;
     out = (abs(fwhm/pi) ./ (Ediff2 + fwhm^2)) .* lorfrac + ...
-          (exp(-Ediff2 ./ (2*fwhm^2)) ./ (fwhm*sqrt(2*pi))) .* (1 - lorfrac);
+          (exp(-Ediff2 ./ (2*sig^2)) ./ (sig*sqrt(2*pi))) .* (1 - lorfrac);
 end

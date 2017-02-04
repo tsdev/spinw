@@ -3,7 +3,7 @@ function hFigure = sw_annealfigure()
 %
 % hFigure = SW_ANNEALFIGURE()
 %
-% See also SW.ANNEAL.
+% See also SPINW.ANNEAL.
 %
 
 % Position of the new figure window.
@@ -12,6 +12,7 @@ posFig = [posFig(1:2) 400 400];
 
 % Create new figure.
 hFigure = figure;
+
 set(0,'Showhidden','on')
 
 set(hFigure,...

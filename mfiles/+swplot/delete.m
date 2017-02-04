@@ -1,5 +1,5 @@
 function delete(varargin)
-% deletes objectsand their data on swplot figure
+% deletes objects and their data on swplot figure
 %
 % swplot.delete(hFigure,number)
 %

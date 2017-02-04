@@ -10,6 +10,9 @@ function sObj = findobj(varargin)
 %   number      Unique number of the object (increasing integer numbers).
 %   name        Name of the object, identifies groups, such as 'atom' for
 %               all atoms.
+%   label       Label of the objects, can identify types of atoms, etc. if
+%               will accept sub strings. E.g. 'Cr' option would match 'Cr1
+%               Cr3+' and 'Cr2 Cr3+' labels.
 %
 % sObj is a struct that contains all the stored data corresponding to the
 % found objects.
@@ -38,7 +41,7 @@ if isempty(sObj)
 end
 
 % find the given properties
-if ~all(ismember(propName,{'handle' 'number' 'name'}))
+if ~all(ismember(propName,{'handle' 'number' 'name' 'label'}))
     error('findobj:WrongInput','The given property name is not searchable!')
 end
 
@@ -46,10 +49,15 @@ end
 pIdx = zeros(numel(propName),numel(sObj));
 % find the right property
 for ii = 1:numel(propName)
-    if strcmp(propName{ii},'name')
-        pIdx(ii,:) = ismember({sObj(:).(propName{ii})},propVal{ii});
-    else
-        pIdx(ii,:) = ismember([sObj(:).(propName{ii})],propVal{ii});
+    switch propName{ii}
+        case 'label'
+            % find substrings
+            pIdx(ii,:) = cellfun(@(C)~isempty(C),strfind({sObj(:).(propName{ii})},propVal{ii}));
+        case 'name'
+            % find exact match
+            pIdx(ii,:) = ismember({sObj(:).(propName{ii})},propVal{ii});
+        case {'number' 'handle'}
+            pIdx(ii,:) = ismember([sObj(:).(propName{ii})],propVal{ii});
     end
 end
 

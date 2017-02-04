@@ -51,7 +51,8 @@ function varargout = plotatom(varargin)
 % tooltip   If true, the tooltips will be shown when clicking on atoms.
 %           Default is true.
 % shift     Column vector with 3 elements, all atomic positions will be
-%           shifted by the given value. Default value is [0;0;0].
+%           shifted by the given value in Angstrom units. Default value is
+%           [0;0;0].
 % replace   Replace previous atom plot if true. Default is true.
 % translate If true, all plot objects will be translated to the figure
 %           center. Default is false.

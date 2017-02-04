@@ -36,6 +36,89 @@ classdef spinw < handle
     % See also: SPINW.COPY, SPINW.STRUCT,
     % <a href='/Applications/MATLAB_R2012b.app/help/matlab/matlab_oop/comparing-handle-and-value-classes.html'>Comparing handle and value classes</a>.
     %
+    % spinw Methods:
+    % Lattice operations:
+    %   genlattice      - defines lattice parameters, angles and symmetry
+    %   basisvector     - returns the basis vectors in a matrix
+    %   rl              - returns the reciprocal lattice vectors in a matrix
+    %   nosym           - reduces the lattice symmetry to P0
+    %   newcell         - generates an arbitrary new cell and reduces symmetry to P0
+    %   addatom         - adds a new atoms to the lattice
+    %   unitcell        - selects a subset of the symmetry inequivalent atoms 
+    %   abc             - returns a vector [a b c alpha beta gamma]
+    %   atom            - returns all symmetry generated atom
+    %   matom           - returns all symmetry generated magnetic atoms
+    %   natom           - returns the number of symmetry inequivalent atoms
+    %   formula         - returns basic unit cell information
+    %   disp            - return basic lattice information
+    %   symmetry        - returns whether symmetry is on (>P0)
+    %   
+    % Plotting:
+    %   plot            - plots crystal, magnetic structure and spin Hamiltonian
+    %
+    % Crystallographic twin operations:
+    %   addtwin         - adds crystallographic twin
+    %   twinq           - determines reciprocal lattice positions in twins
+    %   notwin          - removes the twins
+    %   ntwin           - number of twins
+    %
+    % Magnetic structure operations:
+    %   genmagstr       - generate different types of magnetic structures
+    %   magstr          - returns the magnetic structure in a rotating frame representation
+    %   magtable        - returns a table of the magnetic structure
+    %   nmagext         - returns the number of magnetic moments in the supercell
+    %   optmagstr       - optimizes magnetic structure with constraints
+    %   optmagk         - optimizes the magnetic propagation vector
+    %   optmagsteep     - optimizes the moment directions for fixed-k
+    %   anneal          - simulated annealing of magnetic structures
+    %   annealloop      - simulated annealing and scanning a parameter in the Hamiltonian
+    %   structfact      - calculates magnetic structure factor (EXPERIMENTAL)
+    %   
+    % Matrix operations:
+    %   addmatrx        - add a new matrix to the internal data
+    %   getmatrix       - determines the symmetry allowed elements of a matrix
+    %   setmatrix       - generates matrix values based on symmetry allowed elements
+    %   nmat            - number of matrices
+    %   
+    % Spin Hamiltonian generations:
+    %   quickham        - quick generation of Heisenberg Hamiltonian
+    %   gencoupling     - generates the list of bonds
+    %   addcoupling     - assigns a matrix to a bond
+    %   couplingtable   - lists information on the bonds
+    %   addaniso        - assigns a matrix to a magnetic ion as anisotropy
+    %   addg            - assigns a matrix to a magnetic ion as g-tensor
+    %   field           - stores the magnetic field
+    %   nbond           - number of bonds
+    %   temperature     - temperature for thermal population calculation
+    %   intmatrix       - returns the spin Hamiltonian after symmetry applied
+    %   
+    % Calculators:
+    %   spinwave        - linear spin wave solver
+    %   powspec         - powder spectrum calculator
+    %   energy          - ground state energy
+    %   moment          - moment reduction due to quantum fluctuations
+    %   spinwavesym     - symbolic spin wave solver
+    %   symbolic        - returns whether symbolic mode is on
+    %   meanfield       - mean field calculation of q-dependent susceptibility (EXPERIMENTAL)
+    %   fourier         - fourier transformation of the Hamiltonian (EXPERIMENTAL)
+    %   fouriersym      - symbolic fourier transformation (EXPERIMENTAL)
+    %
+    % Fitting spin wave spectrum:
+    %   fitspec         - fits spin wave energies using global optimization
+    %   matparser       - assigns new matrix values based on selectors
+    %   horace          - outputs spectrum for Horace
+    %   
+    % Misc.:
+    %   copy            - hard copy of SpinW object
+    %   export          - exports magnetic structure into file
+    %   fileid          - controls text output of commands
+    %   table           - formatted output of internal data
+    %   validate        - validates SpinW object
+    %   version         - version of SpinW used to create the object
+    %   struct          - convert SpinW ojbect to struct
+    %   spinw           - constructor
+    %
+    %
     % Tutorials and documentation can be found here:
     % <a href='https://www.psi.ch/spinw'>https://www.psi.ch/spinw</a>
     % Forum for questions:
@@ -329,8 +412,22 @@ classdef spinw < handle
         
     methods(Hidden=true)
         function clearcache(obj, chgField)
+            % clears the cache
+            %
+            % CLEARCACHE(obj)
+            %
+            
             % listening to changes of the spinw object to clear cache is
             % necessary
+            
+            if nargin<2
+                % delete the existing listener handles
+                delete(obj.propl(ishandle(obj.propl)));
+                % remove cache
+                obj.cache.matom = [];
+                obj.cache.symop = [];
+                return
+            end
             
             switch chgField
                 case 1

@@ -11,18 +11,14 @@ function setmatrix(obj, varargin)
 %
 % One of the below options has to be given:
 %
-% label         Label of the matrix that is already assigned to either as
-%               anisotropy, g-tensor or coupling.
-% mat_idx       Index of the matrix, stored in obj.matrix. Alternative to
-%               the 'label' option.
-% coupling_idx  Value of the obj.coupling.idx, that defines the coupling,
-%               for which the symmetry allowed matrix elements will be set.
-% aniso_idx     Value of the obj.matom.idx, that selects a magnetic atom,
-%               for which the symmetry allowed matrix elements will be
-%               set for single ion anisotropy.
-% g_idx         Value of the obj.matom.idx, that selects a magnetic atoms,
-%               for which the symmetry allowed matrix elements will be
-%               set for the g-tensor.
+% mat           Label or index of the matrix that is already assigned to
+%               a bond, anisotropy or g-tensor.
+% bond          Index of the bond in spinw.coupling.idx.
+% subIdx        Selects a certain bond, within efault value is 1.
+% aniso         Label or index of the magnetic atom that has a single ion
+%               anisotropy matrix is assigned.
+% gtensor       Label or index of the magnetic atom that has a g-tensor is 
+%               assigned.
 %
 % Optional inputs:
 %

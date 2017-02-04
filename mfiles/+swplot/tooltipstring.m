@@ -58,7 +58,7 @@ switch sObject.name
         string = [string 'Unit cell:' newline];
         % add cell index and position
         cellindex = sObject.data(1:3)';
-        pos = swobj.unit_cell.r(:,aIdx);
+        pos = swobj.atom.r(:,a2Idx);
         
         string = [string sprintf('[%d, %d, %d]',cellindex) newline 'Atomic position:' newline sprintf('[%5.3f, %5.3f, %5.3f]',pos)];
     case 'mag'

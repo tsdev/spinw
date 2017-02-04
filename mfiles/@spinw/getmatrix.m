@@ -74,7 +74,7 @@ function [aMatOut, paramOut, pOpOut] = getmatrix(obj, varargin)
 
 inpForm.fname  = {'mat'      'aniso' 'bond' 'tol' 'pref' 'gtensor' 'subIdx' };
 inpForm.defval = {zeros(1,0) 0       0       1e-5  []     0        1        };
-inpForm.size   = {[1 -1]     [1 1]   [1 1]   [1 1] [1 -2] [1 1]    [1 1]    };
+inpForm.size   = {[1 -1]     [1 -2]  [1 1]   [1 1] [1 -2] [1 -3]   [1 1]    };
 inpForm.soft   = {false      false   false   false true   false    false    };
 
 param0 = sw_readparam(inpForm, varargin{:});
@@ -89,30 +89,40 @@ if nargin == 1
 end
 
 % Check for appropriate input
-inpL = [~isempty(param.mat) [param.aniso param.bond param.gtensor]~=0];
-
-if sum(inpL) ~= 1
-    error('spinw:getmatrix:WrongInput','Exactly one of the following options have to be defined: label, mat_idx, aniso_idx, g_idx or coupling_idx!');
-end
+%inpL = [~isempty(param.mat) [param.aniso param.bond param.gtensor]~=0];
+% 
+% if sum(inpL) ~= 1
+%     error('spinw:getmatrix:WrongInput','Exactly one of the following options have to be defined: label, mat_idx, aniso_idx, g_idx or coupling_idx!');
+% end
     
 bondIdx = param.bond;
 
 if ischar(param.aniso)
-    anisoIdx = find(strcmp(obj.matom.label, param.aniso));
+    % find atom labels
+    anisoIdx = find(cellfun(@(C)~isempty(C),strfind(obj.unit_cell.label, param.aniso)));
     if isempty(anisoIdx)
         anisoIdx = 0;
-    else
+    elseif numel(anisoIdx) == 1
         anisoIdx = anisoIdx(1);
+    else
+        error('spinw:getmatrix:WrongInput','The given atom label is not unique!')
     end
+else
+    anisoIdx = param.aniso;
 end
     
 if ischar(param.gtensor)
-    gIdx = find(strcmp(obj.matom.label, param.gtensor));
+    % find atom labels
+    gIdx = find(cellfun(@(C)~isempty(C),strfind(obj.unit_cell.label, param.gtensor)));
     if isempty(gIdx)
         gIdx = 0;
-    else
+    elseif numel(gIdx)==1
         gIdx = gIdx(1);
+    else
+        error('spinw:getmatrix:WrongInput','The given atom label is not unique!')
     end
+else
+    gIdx = param.gtensor;
 end
     
 if ischar(param.mat) 
@@ -141,9 +151,9 @@ if matIdx ~= 0
     sumNum = numel(Cpidx) + numel(Anidx) + numel(Gidx);
     
     if isempty(Cpidx) && isempty(Anidx) && isempty(Gidx)
-        error('spinw:getmatrix:WrongInput','Matrix is not assigned to any coupling/anisotropy/g-tensor, define idx!');
+        error('spinw:getmatrix:WrongInput','Matrix is not assigned to any coupling/anisotropy/g-tensor!');
     elseif sumNum > 1
-        error('spinw:getmatrix:WrongInput','Matrix is assigned to multiple coupling/anisotropy/g-tensor idx, define idx!');
+        error('spinw:getmatrix:WrongInput','Matrix is assigned to multiple coupling/anisotropy/g-tensor!');
     else
         if ~isempty(Cpidx)
             bondIdx = Cpidx;
@@ -420,10 +430,10 @@ if fid
         fprintf0(fid,' distance: %5.3f Angstrom\n',norm(obj.basisvector*dr(:,1)));
         fprintf0(fid,' center of bond (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
     elseif anisoIdx
-        fprintf0(fid,'\nThe symmetry analysis of the anisotropy matrix of atom %d (''%s''):\n',param.aniso_idx,obj.unit_cell.label{param.aniso_idx});
+        fprintf0(fid,'\nThe symmetry analysis of the anisotropy matrix of atom %d (''%s''):\n',anisoIdx,obj.unit_cell.label{anisoIdx});
         fprintf0(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
     else
-        fprintf0(fid,'\nThe symmetry analysis of the g-tensor of atom %d (''%s''):\n',param.g_idx,obj.unit_cell.label{param.g_idx});
+        fprintf0(fid,'\nThe symmetry analysis of the g-tensor of atom %d (''%s''):\n',gIdx,obj.unit_cell.label{gIdx});
         fprintf0(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));        
     end
     if ~isempty(param.mat)

@@ -185,13 +185,15 @@ result.stat = stat;
         
         if nargout == 1
             % reshape into 3 x 3 x nMagExt x nMagExt x nHkl
-            E = min(eig(reshape(permute(reshape(ft,[3 3 nMagAtom nMagAtom nHkl]),[1 3 2 4 5]),3*nMagAtom,3*nMagAtom,[])));
+            E = min(real(eig(reshape(permute(reshape(ft,[3 3 nMagAtom nMagAtom nHkl]),[1 3 2 4 5]),3*nMagAtom,3*nMagAtom,[]))));
             
         else
             % reshape into 3 x 3 x nMagExt x nMagExt x nHkl
             [V,E] = eig(reshape(permute(reshape(ft,[3 3 nMagAtom nMagAtom nHkl]),[1 3 2 4 5]),3*nMagAtom,3*nMagAtom,[]));
             % find degenerate eigenvalues
             E = diag(E);
+            [E,idxE] = sort(real(E));
+            V = V(:,idxE);
             sel = (E-E(1))<10*eps;
             V = sum(V(:,sel),2);
             E = E(1);

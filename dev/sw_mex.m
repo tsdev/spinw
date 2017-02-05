@@ -20,28 +20,36 @@ param = sw_readparam(inpForm, varargin{:});
 if param.compile
     % save current folder
     aDir = pwd;
+    eig_omp_dir = [sw_rootdir filesep 'external' filesep 'eig_omp'];
+    chol_omp_dir = [sw_rootdir filesep 'external' filesep 'chol_omp'];
+    mtimesx_dir = [sw_rootdir filesep 'external' filesep 'mtimesx'];
     % compile the mex files
     if ispc
-        cd([sw_rootdir filesep 'external' filesep 'eig_omp']);
+        cd(eig_omp_dir);
         mex('-v','-largeArrayDims','eig_omp.cpp','-lmwlapack',...
             'COMPFLAGS=$COMPFLAGS /openmp','LINKFLAGS=$LINKFLAGS /nodefaultlib:vcomp "$MATLABROOT\bin\win64\libiomp5md.lib"')
-        cd([sw_rootdir filesep 'external' filesep 'chol_omp']);
+        cd(chol_omp_dir);
         mex('-v','-largeArrayDims','chol_omp.cpp','-lmwlapack',...
             '-lmwblas','COMPFLAGS=$COMPFLAGS /openmp',...
             'LINKFLAGS=$LINKFLAGS /nodefaultlib:vcomp "$MATLABROOT\bin\win64\libiomp5md.lib"')
+        cd(mtimesx_dir);
+        mex('-v','-largeArrayDims','sw_mtimesx.c','-lmwblas','COMPFLAGS=$COMPFLAGS /openmp',...
+            'LINKFLAGS=$LINKFLAGS /nodefaultlib:vcomp "$MATLABROOT\bin\win64\libiomp5md.lib"')
     elseif ismac
-        cd([sw_rootdir filesep 'external' filesep 'eig_omp']);
+        cd(eig_omp_dir);
         mex('-v','-largeArrayDims','eig_omp.cpp','-lmwlapack','COMPFLAGS="/openmp $COMPFLAGS"','CXXFLAGS=$CXXFLAGS -fopenmp -pthread');
-        cd([sw_rootdir filesep 'external' filesep 'chol_omp']);
+        cd(chol_omp_dir);
         mex('-v','-largeArrayDims','chol_omp.cpp','-lmwlapack','-lmwblas','COMPFLAGS="/openmp $COMPFLAGS"','CXXFLAGS=$CXXFLAGS -fopenmp -pthread');
-        %cd([sw_rootdir filesep 'external' filesep 'mtimesx']);
-        %mex('-DDEFINEUNIX','-largeArrayDims','mtimesx.c','-lmwblas');
+        cd(mtimesx_dir);
+        mex('-DDEFINEUNIX','-largeArrayDims','sw_mtimesx.c','-lmwblas');
     else
         % linux?
-        cd([sw_rootdir filesep 'external' filesep 'eig_omp']);
-        mex('-v','-largeArrayDims','eig_omp.cpp','-lmwlapack','CXXFLAGS=$CXXFLAGS -fopenmp -pthread','LDFLAGS=$LDFLAGS -liomp5')
-        cd([sw_rootdir filesep 'external' filesep 'chol_omp']);
-        mex('-v','-largeArrayDims','chol_omp.cpp','-lmwlapack','-lmwblas','CXXFLAGS=$CXXFLAGS -fopenmp -pthread','LDFLAGS=$LDFLAGS -liomp5')
+        cd(eig_omp_dir);
+        mex('-v','-largeArrayDims','eig_omp.cpp','-lmwlapack','CXXFLAGS=$CXXFLAGS -fopenmp -pthread','LDFLAGS=$LDFLAGS -fopenmp')
+        cd(chol_omp_dir);
+        mex('-v','-largeArrayDims','chol_omp.cpp','-lmwlapack','-lmwblas','CXXFLAGS=$CXXFLAGS -fopenmp -pthread','LDFLAGS=$LDFLAGS -fopenmp')
+        cd(mtimesx_dir);
+        mex('-v','-largeArrayDims','sw_mtimesx.c','-lmwblas','CXXFLAGS=$CXXFLAGS -fopenmp -pthread','LDFLAGS=$LDFLAGS -fopenmp')
     end
     % return back to original folder
     cd(aDir);
@@ -226,13 +234,15 @@ end
 if param.swtest
     
     % Antiferromagnetic square lattice (tutorial 4, Cu+1 S=1) - small system [3 spins, n=6]
-    AFsq = sw;
+    AFsq = spinw;
     AFsq.genlattice('lat_const',[3 3 10],'angled',[90 90 90],'sym',0)
     AFsq.addatom('r',[0 0 0],'S', 1,'label','Cu1','color','b');
     AFsq.gencoupling('maxDistance',9)
-    AFsq.addmatrix('label','J1','value',1,'color','red');      AFsq.addcoupling('J1',1)
-    AFsq.addmatrix('label','J2','value',-0.1,'color','green'); AFsq.addcoupling('J2',2)
-    AFsq.genmagstr('mode','helical','k',[1/2 1/2 0],'n',[0 0 1], 'S',[1; 0; 0],'nExt',[1 1 1]);
+    AFsq.addmatrix('label','J1','value',1,'color','red');      AFsq.addcoupling('mat','J1','bond',1)
+    AFsq.addmatrix('label','J2','value',-0.1,'color','green'); AFsq.addcoupling('mat','J2','bond',2)
+    AFsq.addmatrix('label','D','value',diag([-0.2 0 0]));      AFsq.addaniso('D');
+    AFsq.genmagstr('mode','helical','k',[1/2 1/2 0],'n',[0 0 1], 'S',[1; 0; 0],'nExt',[2 2 1]);
+    AFsq.optmagsteep
     %plot(AFsq,'range',[2 2 0.5],'zoom',-1)
     AFsq.fileid(0);
     % Runs test
@@ -253,16 +263,16 @@ if param.swtest
     
     % KCu3As2O7(OD)3 kagome (Nilsen PRB 89 140412) - Tutorial 18, medium sized [18 spins, n=36]
     J   = -2; Jp  = -1; Jab = 0.75; Ja  = -J/.66 - Jab; Jip = 0.01;
-    hK = sw;
+    hK = spinw;
     hK.genlattice('lat_const',[10.2 5.94 7.81],'angled',[90 117.7 90],'sym','C 2/m');
     hK.addatom('r',[0   0   0],'S',1/2,'label','MCu2','color','b');
     hK.addatom('r',[1/4 1/4 0],'S',1/2,'label','MCu2','color','k');
     hK.gencoupling;
-    hK.addmatrix('label','J',  'color','r',   'value',J);   hK.addcoupling('J',1);
-    hK.addmatrix('label','J''','color','g',   'value',Jp);  hK.addcoupling('J''',2);
-    hK.addmatrix('label','Ja', 'color','b',   'value',Ja);  hK.addcoupling('Ja',3);
-    hK.addmatrix('label','Jab','color','cyan','value',Jab); hK.addcoupling('Jab',5);
-    hK.addmatrix('label','Jip','color','gray','value',Jip); hK.addcoupling('Jip',10);
+    hK.addmatrix('label','J',  'color','r',   'value',J);   hK.addcoupling('mat','J','bond',1);
+    hK.addmatrix('label','J''','color','g',   'value',Jp);  hK.addcoupling('mat','J''','bond',2);
+    hK.addmatrix('label','Ja', 'color','b',   'value',Ja);  hK.addcoupling('mat','Ja','bond',3);
+    hK.addmatrix('label','Jab','color','cyan','value',Jab); hK.addcoupling('mat','Jab','bond',5);
+    hK.addmatrix('label','Jip','color','gray','value',Jip); hK.addcoupling('mat','Jip','bond',10);
     hK.genmagstr('mode','helical','n',[0 0 1],'S',[1 0 0]','k',[0.77 0 0.115],'next',[1 1 1]);
     optpar.func = @gm_planar;
     optpar.nRun = 5;
@@ -305,17 +315,17 @@ disp(sprintf('Supercell    % 16.6f  % 16.6f  % 16.6f    % 16.6f',t5,t6,t7,t8));
     
     % Bi4Fe5O13F - large(ish) system [80 spins, n=160]
     ff=11.6*2.5; Jc1 = 34/ff; Jc2 = 20/ff; Jab1 = 45/ff; Jab2 = 74/ff; Jd = 191/ff;
-    bfof = sw();
+    bfof = spinw();
     bfof.genlattice('lat_const',[8.29950 8.29950 18.05730],'angled',[90 90 90],'sym','P 42/m b c');
     bfof.addatom('r',[0.5  0.   0.0800],'S',2.5,'color',[0 0 255],'label','Fe1');
     bfof.addatom('r',[0.8515 0.8388 0], 'S',2.5,'color',[255 0 0],'label','Fe2');
     bfof.addatom('r',[0.5  0.   0.25  ],'S',2.5,'color',[0 0 128],'label','Fe1_3');
     bfof.gencoupling('maxBond',99,'maxDistance',10);
-    bfof.addmatrix('value',Jc1,'label','Jc1','color','r');         bfof.addcoupling('Jc1',1);
-    bfof.addmatrix('value',Jc2,'label','Jc2','color',[128 0 0]);   bfof.addcoupling('Jc2',2);
-    bfof.addmatrix('value',Jab1,'label','Jab1','color','b');       bfof.addcoupling('Jab1',3);
-    bfof.addmatrix('value',Jab2,'label','Jab2','color',[0 255 0]); bfof.addcoupling('Jab2',4);
-    bfof.addmatrix('value',Jd,'label','Jd','color','k');           bfof.addcoupling('Jd',5);
+    bfof.addmatrix('value',Jc1,'label','Jc1','color','r');         bfof.addcoupling('mat','Jc1','bond',1);
+    bfof.addmatrix('value',Jc2,'label','Jc2','color',[128 0 0]);   bfof.addcoupling('mat''Jc2','bond',2);
+    bfof.addmatrix('value',Jab1,'label','Jab1','color','b');       bfof.addcoupling('mat''Jab1','bond',3);
+    bfof.addmatrix('value',Jab2,'label','Jab2','color',[0 255 0]); bfof.addcoupling('mat''Jab2','bond',4);
+    bfof.addmatrix('value',Jd,'label','Jd','color','k');           bfof.addcoupling('mat''Jd','bond',5);
     bfof.addmatrix('value',diag([0 0 0.2]),'label','D');           bfof.addaniso('D');
     S2a = -[4.05 -0.35 0]; S2b = -[-0.35 4.05 0]; S1a = [2.18 -2.53 0]; S1b = [2.53 2.18 0];
     S = [S1b; S1a; S1a; S1b; S1b; S1a; S1a; S1b; S2a; -S2a; -S2b; S2b; S2b; -S2b; S2a; -S2a; -S1b; -S1a; -S1b; -S1a];

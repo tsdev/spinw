@@ -237,7 +237,7 @@ if param.useMex == -1
     % don't check files (takes too much time)
     param.useMex = true;
     % elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
-    %         exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
+    %         exist('eig_omp','file')==3 && exist('sw_mtimesx','file')==3)
 elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
         exist('eig_omp','file')==3)
     % check if mex files exist
@@ -717,8 +717,7 @@ for jj = 1:nSlice
             for ii = 1:nHklMEM
                 V(:,:,ii) = V(:,:,ii)*diag(sqrt(gCommd.*omega(:,hklIdxMEM(ii))));
             end
-            %V = mtimesx(invK,V);
-            V = bsxfun(@times,invK,V);
+            V = sw_mtimesx(invK,V);
         else
             for ii = 1:nHklMEM
                 [K, posDef]  = chol(ham(:,:,ii));
@@ -767,18 +766,21 @@ for jj = 1:nSlice
         %    gham(:,:,ii) = gComm*ham(:,:,ii);
         %end
         
-        gham = mmat(gComm,ham);
-        %gham = mtimesx(gComm,ham);
+        if param.useMex
+            gham = sw_mtimesx(gComm,ham);
+        else
+            gham = mmat(gComm,ham);
+        end
         
-        [V, D] = eigorth(gham,param.omega_tol, param.sortMode,param.useMex);
+        [V, omega(:,hklIdxMEM)] = eigorth(gham, param.omega_tol, param.sortMode, param.useMex);
         
         for ii = 1:nHklMEM
             % multiplication with g removed to get negative and positive
             % energies as well
-            omega(:,end+1) = D(:,ii); %#ok<AGROW>
             M              = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
             V(:,:,ii)      = V(:,:,ii)*diag(sqrt(1./M));
         end
+        %V = sw_mtimesx(V,sqrt(1./sw_mtimesx(sw_mtimesx(gComm,V,'C'),sw_mtimesx(gComm,V))));
     end
     
     if param.saveV
@@ -787,45 +789,71 @@ for jj = 1:nSlice
     if param.saveH
         Hsave(:,:,hklIdxMEM) = ham;
     end
-    
+
     % Calculates correlation functions.
-    % V right
-    VExtR = repmat(permute(V  ,[4 5 1 2 3]),[3 3 1 1 1]);
-    % V left: conjugate transpose of V
-    VExtL = conj(permute(VExtR,[1 2 4 3 5]));
+    if param.useMex %&& size(V,1)>10
+        ExpF = exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
+        ExpF = reshape(ExpF,[numel(S0) nHklMEM]).*repmat(sqrt(S0.'/2),[1 nHklMEM]);
+        ExpF = repmat(ExpF,[2 1]); 
+        if iscell(param.formfact) || param.formfact; 
+            ExpF = ExpF .* repmat(FF(:,hklIdxMEM),[2 1]); 
+        end
+        z1=zed;
+        if param.gtensor; 
+            for i1=1:size(gtensor,3); 
+                z1(:,i1)=gtensor(:,:,i1)*zed(:,i1); 
+            end
+        end
+        z1=[z1 conj(z1)].'; 
+        zExp = zeros(numel(S0)*2,1,nHklMEM,3);
+        for i1=1:3; 
+            zExp(:,:,:,i1) = bsxfun(@times,z1(:,i1),ExpF);
+        end
+        
+        for i1=1:3; 
+            for i2=1:3; 
+                Sab(i1,i2,:,hklIdxMEM) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
+            end
+        end
+    else
+        % V right
+        VExtR = repmat(permute(V  ,[4 5 1 2 3]),[3 3 1 1 1]);
+        % V left: conjugate transpose of V
+        VExtL = conj(permute(VExtR,[1 2 4 3 5]));
     
-    % Introduces the exp(-ikR) exponential factor.
-    ExpF =  exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
-    % Includes the sqrt(Si/2) prefactor.
-    ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHklMEM]);
+        % Introduces the exp(-ikR) exponential factor.
+        ExpF =  exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
+        % Includes the sqrt(Si/2) prefactor.
+        ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHklMEM]);
     
-    ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt 2]);
-    % conj transpose of ExpFL
-    ExpFR = conj(permute(ExpFL,[1 2 4 3 5]));
+        ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt 2]);
+        % conj transpose of ExpFL
+        ExpFR = conj(permute(ExpFL,[1 2 4 3 5]));
     
-    zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1 nHklMEM]);
-    % conj transpose of zeda
-    zedb = conj(permute(zeda,[2 1 4 3 5]));
+        zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1 nHklMEM]);
+        % conj transpose of zeda
+        zedb = conj(permute(zeda,[2 1 4 3 5]));
     
-    % calculate magnetic structure factor using the hklExt0 Q-values
-    % since the S(Q+/-k,omega) correlation functions also belong to the
-    % F(Q)^2 form factor
+        % calculate magnetic structure factor using the hklExt0 Q-values
+        % since the S(Q+/-k,omega) correlation functions also belong to the
+        % F(Q)^2 form factor
     
-    if param.formfact
-        % include the form factor in the z^alpha, z^beta matrices
-        zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 2*nMagExt 2 1]);
-        zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 2*nMagExt 1]);
+        if iscell(param.formfact) || param.formfact
+            % include the form factor in the z^alpha, z^beta matrices
+            zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 2*nMagExt 2 1]);
+            zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 2*nMagExt 1]);
+        end
+    
+        if param.gtensor
+            % include the g-tensor
+            zeda = mmat(repmat(permute(gtensor,[1 2 4 3]),[1 1 1 2]),zeda);
+            zedb = mmat(zedb,repmat(gtensor,[1 1 2]));
+        end
+        % Dynamical for factor from S^alpha^beta(k) correlation function.
+        % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
+        % Normalizes the intensity to single unit cell.
+        Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     end
-    
-    if param.gtensor
-        % include the g-tensor
-        zeda = mmat(repmat(permute(gtensor,[1 2 4 3]),[1 1 1 2]),zeda);
-        zedb = mmat(zedb,repmat(gtensor,[1 1 2]));
-    end
-    % Dynamical structure factor from S^alpha^beta(k) correlation function.
-    % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
-    % Normalizes the intensity to single unit cell.
-    Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     
     sw_status(jj/nSlice*100,0,param.tid);
 end
@@ -844,6 +872,8 @@ if warn1 && ~param.fitmode
     warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...
         'positive definite, a small omega_tol value was added to its diagonal!'])
 end
+
+%fprintf0(fid,'t/c: %g %g %g %e\n',[sum(t1) sum(t2b) sum(t2) sum(abs(Sab(:)-Sabt(:)))]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % END MEMORY MANAGEMENT LOOP

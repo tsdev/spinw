@@ -714,8 +714,9 @@ for jj = 1:nSlice
             [K2, invK] = chol_omp(ham,'Colpa','tol',param.omega_tol);
             [V, omega(:,hklIdxMEM)] = eig_omp(K2,'sort','descend');
             % the inverse of the para-unitary transformation V
-            for ii = 1:nHklMEM
-                V(:,:,ii) = V(:,:,ii)*diag(sqrt(gCommd.*omega(:,hklIdxMEM(ii))));
+            for ii=1:nMagExt; 
+                V(:,ii,:) = bsxfun(@times, squeeze(V(:,ii,:)), sqrt(omega(ii,hklIdxMEM))); 
+                V(:,ii+nMagExt,:) = bsxfun(@times, squeeze(V(:,ii+nMagExt,:)), sqrt(-omega(ii+nMagExt,hklIdxMEM))); 
             end
             V = sw_mtimesx(invK,V);
         else
@@ -780,7 +781,6 @@ for jj = 1:nSlice
             M              = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
             V(:,:,ii)      = V(:,:,ii)*diag(sqrt(1./M));
         end
-        %V = sw_mtimesx(V,sqrt(1./sw_mtimesx(sw_mtimesx(gComm,V,'C'),sw_mtimesx(gComm,V))));
     end
     
     if param.saveV

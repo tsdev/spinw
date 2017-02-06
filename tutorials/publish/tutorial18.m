@@ -11,8 +11,7 @@ Ja  = -J/.66 - Jab;
 Jip = 0.01;
 
 hK = spinw;
-hK.fileid(0)
-hK.genlattice('lat_const',[10.2 5.94 7.81],'angled',[90 117.7 90],'sym','C 2/m')
+hK.genlattice('lat_const',[10.2 5.94 7.81],'angled',[90 117.7 90],'spgr','C 2/m')
 
 hK.addatom('r',[0   0   0],'S',1/2,'label','MCu2','color','b')
 hK.addatom('r',[1/4 1/4 0],'S',1/2,'label','MCu2','color','k')
@@ -74,7 +73,6 @@ hK.energy
 % S(Q,omega) and plot S^perp that gives the neutron scattering cross
 % section.
 
-
 hkSpec = hK.spinwave({[0 0 0] [1 0 0] 500},'hermit',false);
 hkSpec = sw_neutron(hkSpec);
 hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500),'imagChk',false);
@@ -115,5 +113,5 @@ sw_plotspec(powSpec,'dE',0.01,'axlim',[0 0.05])
 
 %%
 %  Written by
-%  G?ran Nilsen and Sandor Toth
-%  27-June-2014
+%  Goran Nilsen and Sandor Toth
+%  27-Jun-2014, 06-Feb-2017

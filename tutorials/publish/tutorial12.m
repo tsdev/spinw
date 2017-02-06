@@ -29,7 +29,7 @@ plot(tri,'range',[2 2 1])
 % single-k structure: nExt=(1,1,1).
 
 tri.genmagstr('mode','helical','S',[0; 1; 0],'k',[1/3 1/3 0],'n', [0 0 1]);
-plot(tri,'range',[2 2 1])
+plot(tri,'range',[2 2 1],'magColor','purple','baseShift',[0;-1;0],'atomLegend',false)
 
 %% Spin wave spectrum
 % We calculate the spin wave spectrum using the incommensurate magnetic

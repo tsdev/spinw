@@ -1,4 +1,4 @@
-%% model YIG spin wave spectrum
+%% Model YIG spin wave spectrum
 % We will reproduce the calculation of the YIG spin wave spectrum to
 % compare to this paper:
 % PRL 117, 217201 (2016)    http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.117.217201

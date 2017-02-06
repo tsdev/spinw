@@ -20,6 +20,7 @@ function M = sw_resconv(M,x,dx,func0)
 %       standard deviation. In this case in the function the following line
 %       will be executed:
 %           fwhm = polyval(dx,xVal)
+%       or a constant fwhm value.
 %       The standard deviation of the Gaussian is calculated from the given
 %       dx value using the following formula:
 %           stdG = fwhmG/2/sqrt(2*log(2)) ~ fwhmG/2.35482
@@ -56,24 +57,32 @@ end
 Mtemp = M * 0;
 
 % calculate bin size from center bins (x)
-bin = diff(x(:))';
-bin = [bin(1) (bin(1:(end-1))+bin(2:end))/2 bin(end)];
+diffx = diff(x(:))';
+bin   = diffx;
+bin   = [bin(1) (bin(1:(end-1))+bin(2:end))/2 bin(end)];
 
-for ii = 1:numel(x)
-    % standard deviation of the energy resolution Gaussian
-    if isa(dx,'function_handle')
-        fwhm = dx(x(ii));
-    else
-        fwhm = polyval(dx,x(ii));
+if isnumeric(dx) && numel(dx)==1 && ~any(abs(bin-bin(1))>20*eps)
+    % simple convolution
+    % works only for equal bins
+    fG = func0(((-3*dx):bin(1):(3*dx))',[1 0 dx])*bin(1);
+    Mtemp = conv2(M,fG,'same');
+else
+    for ii = 1:numel(x)
+        % standard deviation of the energy resolution Gaussian
+        if isa(dx,'function_handle')
+            fwhm = dx(x(ii));
+        else
+            fwhm = polyval(dx,x(ii));
+        end
+        
+        % Gaussian with intensity normalised to 1, centered on E(ii)
+        %fG = 1/sqrt(2*pi)/stdG*exp(-((x-x(ii))/stdG).^2/2);
+        % proper normalization should work also for unequal bins
+        fG = func0(x,[1 x(ii) fwhm])*bin(ii);
+        
+        Mtemp = Mtemp + fG * M(ii,:);
+        
     end
-    
-    % Gaussian with intensity normalised to 1, centered on E(ii)
-    %fG = 1/sqrt(2*pi)/stdG*exp(-((x-x(ii))/stdG).^2/2);
-    % proper normalization should work also for unequal bins
-    fG = func0(x,[1 x(ii) fwhm])*bin(ii);
-    
-    Mtemp = Mtemp + fG * M(ii,:);
-    
 end
 
 M = Mtemp;

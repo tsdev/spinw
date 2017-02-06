@@ -17,7 +17,7 @@ swplot.zoom(2)
 % square lattice plane by calling ndgrid() function.
 
 nQ = 201;
-nE = 201;
+nE = 501;
 Qhv = linspace(0,2,nQ);
 Qkv = linspace(0,2,nQ);
 Qlv = 0;
@@ -71,7 +71,7 @@ colorbar
 % d3d object with the simulated spin wave data and finally we plot a
 % constant energy cut.
 
-d3dobj = d3d(sq.abc,[1 0 0 0],[0,0.01,2],[0 1 0 0],[0,0.01,2],[0 0 0 1],[0,0.025,5]);
+d3dobj = d3d(sq.abc,[1 0 0 0],[0,0.01,2],[0 1 0 0],[0,0.01,2],[0 0 0 1],[0,0.01,5]);
 d3dobj = disp2sqw_eval(d3dobj,@sq.horace,{'component','Sxx+Syy+Szz'},0.1);
 plot(cut(d3dobj,[],[],[3.5 4]));
 colorslider('delete')

@@ -9,8 +9,7 @@
 % the lattice.
 
 FMchain = spinw; 
-FMchain.fileid(0)
-FMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0)
+FMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90])
 FMchain.addatom('r', [0 0 0],'S', 1,'label','MCu1','color','blue')
 FMchain.plot('range',[3 1 1])
 
@@ -47,7 +46,7 @@ plot(FMchain,'range',[3 0.2 0.2],'cellMode','none','baseMode','none')
 
 FMchain.genmagstr('mode','direct', 'k',[0 0 0],'n',[1 0 0],'S',[0; 1; 0]); 
 
-display('Magnetic structure:')
+disp('Magnetic structure:')
 FMchain.table('mag')
 plot(FMchain,'range',[3 0.9 0.9],'baseMode','none','cellMode','none')
 
@@ -93,4 +92,4 @@ caxis([0 .05]);
 %%
 %  Written by
 %  Bjorn Fak & Sandor Toth
-%  06-June-2014
+%  06-June-2014, 06-Feb-2017

@@ -6,7 +6,7 @@ tri = spinw;
 tri.genlattice('lat_const',[3 3 4],'angled',[90 90 120])
 tri.addatom('r',[0 0 0],'S',3/2,'label','MCr3','color','orange')
 tri.gencoupling
-plot(tri,'range',[2 2 1],'zoom',-2)
+plot(tri,'range',[2 2 1])
 
 %% Magnetic Hamiltonian
 % We create first neighbor natiferromagnetic interactions in the *ab*-plane
@@ -66,17 +66,21 @@ sw_plotspec(triSpec,'mode','disp','axLim',[0 7],'colormap',[0 0 0],'colorbar',fa
 
 % Finite energy resolution is simulated by convoluting the spectra with a
 % Gaussian function, with the following FWHM.
-dE    = 0.15;
+dE = 0.15;
 
-% Start Horace if it is not running yet (see documentation of Horace).
-%horace_on;
+% The calculated spectra using the plotting function of Horace and assuming
+% Horace is installed and setup. Calculate spectra using disp2sqw_eval
+% Horace function.
 
-% The calculated spectra using the plotting function of Horace.
-% Calculate spectra using disp2sqw_plot Horace function.
-horaceObj = d3d(tri.abc,[1 0 0 0],[0,0.01,1],[0 1 0 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
+horaceObj = d3d(tri.abc,[1 0 0 0],[0,0.005,1],[0 1 0 0],[0,0.005,1],[0 0 0 1],[0,0.1,10]);
 horaceObj = disp2sqw_eval(horaceObj,@tri.horace,{'component','Sperp'},dE);
-cut1 = cut(horaceObj,[0,0.01,1],[0,0.01,1],[2.0 2.1]);
+cut1 = cut(horaceObj,[],[],[3.0 3.5]);
+
+% We use the honest colormap cm_inferno.
 plot(cut1)
+colorslider('delete')
+colormap(flipud(cm_inferno))
+colorbar
 
 %%
 %  Written by

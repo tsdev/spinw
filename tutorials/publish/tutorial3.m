@@ -3,9 +3,9 @@
 % S=1 spin.
 
 J1J2chain = spinw; 
-J1J2chain.genlattice('lat_const',[3 8 10],'angled',[90 90 90],'sym',0);
+J1J2chain.genlattice('lat_const',[3 8 10],'angled',[90 90 90],'spgr',0);
 J1J2chain.addatom('r',[0 0 0],'S',1,'label','Cu1','color','blue');
-display('Magnetic lattice:')
+disp('Magnetic lattice:')
 J1J2chain.table('atom')
 plot(J1J2chain,'range',[3 1 1],'zoom',0.5)
 
@@ -14,8 +14,8 @@ plot(J1J2chain,'range',[3 1 1],'zoom',0.5)
 % matrix ends with '-' the bond is plotted with dashed line.
 
 J1J2chain.gencoupling('maxDistance',7); 
-display('Bonds:')
-J1J2chain.table('bond')
+disp('Bonds:')
+J1J2chain.table('bond',[])
 
 J1J2chain.addmatrix('label','J1', 'value',-1,'color','r');
 J1J2chain.addmatrix('label','J2-','value', 2,'color','g'); 
@@ -39,9 +39,9 @@ plot(J1J2chain,'range',[3 0.9 0.9],'bondMode','line','bondLinewidth0',3)
 %
 
 J1J2chain.genmagstr('mode','helical', 'k',[0.25 0 0], 'n',[0 0 1], 'S',[1; 0; 0], 'nExt',[1 1 1])
-display('Magnetic structure:')
+disp('Magnetic structure:')
 J1J2chain.table('mag')
-display('Ground state energy before optimization')
+disp('Ground state energy before optimization:')
 J1J2chain.energy
 
 plot(J1J2chain,'range',[3 0.9 0.9])
@@ -58,9 +58,9 @@ plot(J1J2chain,'range',[3 0.9 0.9])
 x1 = [0      0   0   0      0    0];
 x2 = [0    1/2   0   0      0    0];
 optRes = J1J2chain.optmagstr('func',@gm_planar,'xmin',x1,'xmax',x2,'nRun',10);
-display('Ground state energy after optimization')
+disp('Ground state energy after optimization')
 J1J2chain.energy
-display('Optimized magnetic structure:')
+disp('Optimized magnetic structure:')
 J1J2chain.table('mag')
 
 plot(J1J2chain,'range',[3 0.9 0.9],'bondMode','line','bondLineWidth0',3)
@@ -82,4 +82,4 @@ axis([0 1 0 6])
 %%
 %  Written by
 %  Bjorn Fak & Sandor Toth
-%  06-June-2014
+%  06-Jun-2014, 06-Feb-2017

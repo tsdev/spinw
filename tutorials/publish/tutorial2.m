@@ -3,10 +3,9 @@
 % Cu+ atoms with S=1 spin.
 
 AFMchain = spinw; 
-AFMchain.fileid(0)
-AFMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'sym',0);
+AFMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'spgr',0);
 AFMchain.addatom('r',[0 0 0],'S',1,'label','MCu1','color','blue');
-display('Atomic positions as columns:')
+disp('Atomic positions as columns:')
 AFMchain.atom.r
 plot(AFMchain,'range',[3 1 1],'zoom',0.5)
 
@@ -14,14 +13,12 @@ plot(AFMchain,'range',[3 1 1],'zoom',0.5)
 % Ja = 1 meV, positive sign denotes antiferromagnetic interaction.
 
 AFMchain.gencoupling('maxDistance',7)
-display('Rows: dlx, dly, dlz, at1, at2, idx, ma1, ma2, ma3')
-AFMchain.couplingtable.table 
-AFMchain.coupling
-display('Bond vectors (first three rows) and bond distances')
-AFMchain.couplingtable.bondv
+AFMchain.table('bond',[1 2])
 
 AFMchain.addmatrix('label','Ja','value',1,'color','red'); 
 AFMchain.addcoupling('mat','Ja','bond',1);
+disp('After assigning a matrix to a bond:')
+AFMchain.table('bond',[1 2])
 plot(AFMchain,'range',[3 0.9 0.9])
 
 %% Two ways of defining the magnetic structure
@@ -44,12 +41,10 @@ AFMchain.genmagstr('mode','direct','k',[1/2 0 0],'n',[1 0 0],'S',[0 0; 1 -1;0 0]
 % structure, all stored values in the afchain.mag_str field are the same.
 
 AFMchain.genmagstr('mode','helical','k',[1/2 0 0],'n',[1 0 0],'S',[0; 1; 0],'nExt',[2 1 1]); 
-display('Magnetic structure with spins 1 2 ... as columns, xyz as rows:')
-AFMchain.magstr
-AFMchain.magstr.S
+disp('Magnetic structure:')
+AFMchain.table('mag')
 
-%%% Ground state energy
-display('Ground state energy (meV/spin)')
+% Ground state energy
 AFMchain.energy
 plot(AFMchain,'range',[3 0.9 0.9],'cellMode','none','baseMode','none')
 
@@ -60,6 +55,7 @@ plot(AFMchain,'range',[3 0.9 0.9],'cellMode','none','baseMode','none')
 
 afcSpec = AFMchain.spinwave({[0 0 0] [1 0 0] 523}, 'hermit',true);
 figure
+subplot(2,1,1)
 sw_plotspec(afcSpec,'mode',4,'dE',0.2,'axLim',[0 3])
 
 % To calculate the intensity, we need to sum up the intensity of the two
@@ -69,10 +65,14 @@ sw_plotspec(afcSpec,'mode',4,'dE',0.2,'axLim',[0 3])
 afcSpec = sw_neutron(afcSpec);
 afcSpec = sw_egrid(afcSpec,'Evect',linspace(0,6.5,500),'component','Sperp');
 afcSpec = sw_omegasum(afcSpec,'zeroint',1e-6);
-figure
+subplot(2,1,2)
 sw_plotspec(afcSpec,'mode',2,'log',true,'axLim',[-4 10])
+
+% Position the figure on the screen, similarly how subplot() positions the
+% axes on the figure.
+swplot.subfigure(2,4,1)
 
 %%
 %  Written by
 %  Bjorn Fak & Sandor Toth
-%  06-June-2014
+%  06-Jun-2014, 06-Feb-2015

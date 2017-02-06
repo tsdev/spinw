@@ -107,13 +107,13 @@ sw_initialize;
 copyfile([sw_rootdir '*'],tempDirName);
 
 % include extra comment to all m files
-mFiles = rdir([tempDirName filesep 'mfiles' filesep '**' filesep '*.m']);
+swFiles = rdir([tempDirName filesep 'swfiles' filesep '**' filesep '*.m']);
 
 % go through all files and add comments
-for ii = 1:numel(mFiles)
+for ii = 1:numel(swFiles)
     mLines = {};
     
-    fid = fopen(mFiles(ii).name);
+    fid = fopen(swFiles(ii).name);
     mLines{end+1} = fgets(fid); %#ok<*AGROW>
     mLines{end+1} = fgets(fid);
     tLines = strtrim(mLines{end});
@@ -138,7 +138,7 @@ for ii = 1:numel(mFiles)
     fclose(fid);
     
     % open file for rewriting it
-    fid = fopen(mFiles(ii).name,'wt');
+    fid = fopen(swFiles(ii).name,'wt');
     
     for jj = 1:numel(mLines)
         fprintf(fid,'%s',mLines{jj});

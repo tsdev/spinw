@@ -77,7 +77,7 @@ if isempty(hFigure)
     %figure(hFigure);
 else
     
-    if ~(isgraphics(hFigure) || isnumeric(hFigure))
+    if ~(isnumeric(hFigure) || isgraphics(hFigure))
         error('activefigure:WrongInput','The given input is not a handle of an swplot figure!');
     elseif isnumeric(hFigure)
         hFigure = figure(hFigure);

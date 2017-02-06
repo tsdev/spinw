@@ -45,7 +45,7 @@ end
 
 if isempty(param.filename)
     % get file name from UI
-    [fName, pathName, ~] = uigetfile({'*.png' 'PNG (raster image)'; '*.eps' 'EPS (vector graphics)'},'Export image as');
+    [fName, pathName, ~] = uiputfile({'*.png' 'PNG (raster image)'; '*.eps' 'EPS (vector graphics)'},'Export image as');
     if isnumeric(fName) && fName==0
         warning('export:NoFile','File name is missing!')
         return

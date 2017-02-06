@@ -65,7 +65,7 @@ else
         'software\nincluding (via compiler) GPL-licensed code must\nalso be '...
         'made available under the GPL along with\nbuild & install instructions.']);
     tt = text(0.65,0.5,txt0,'units','normal');
-    tt.FontSize = 9.2;
+    set(tt,'FontSize',9.2);
     
 end
 

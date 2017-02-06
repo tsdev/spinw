@@ -42,7 +42,7 @@ end
 
 tDat = getappdata(hFigure,'tooltip');
 
-if ~isempty(tDat.handle) && ~isvalid(tDat.handle(1))
+if ~isempty(tDat.handle) && ~ishandle(tDat.handle(1))
     tDat.handle = gobjects(1,0);
 end
 

@@ -145,10 +145,12 @@ nFun     = numel(plotName);
 plotIdx  = false(nFun,numel(optName));
 optShort = optName;
 
-for ii = 1:nFun
-    fIdx = strfind(optName,plotName{ii});
-    plotIdx(ii,:) = cellfun(@(C)~isempty(C) && C(1)==1,fIdx);
-    optShort(plotIdx(ii,:)) = cellfun(@(C)C((numel(plotName{ii})+1):end),optName(plotIdx(ii,:)),'UniformOutput',false);
+if ~isempty(optName)
+    for ii = 1:nFun
+        fIdx = strfind(optName,plotName{ii});
+        plotIdx(ii,:) = cellfun(@(C)~isempty(C) && C(1)==1,fIdx);
+        optShort(plotIdx(ii,:)) = cellfun(@(C)C((numel(plotName{ii})+1):end),optName(plotIdx(ii,:)),'UniformOutput',false);
+    end
 end
 
 if ~all(any(plotIdx,1))

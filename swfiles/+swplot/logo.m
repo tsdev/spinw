@@ -25,7 +25,8 @@ y  = linspace(0,0.4,11);
 z = 0.2*sin(ds*xx*2*pi+pi/2);
 
 surf(xx,yy,z);
-
+colormap(cm_inferno)
+caxis([-0.4 0.2])
 axis equal
 axis off
 

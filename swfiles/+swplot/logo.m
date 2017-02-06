@@ -3,6 +3,13 @@ function logo(varargin)
 %
 % SWPLOT.LOGO({fName})
 %
+% The logo is using an honest colormap (cm_inferno) and removed the tiles
+% of the sine wave to symbolize the increase of quality of code (measured
+% as a number of eliminated for loops). :D The logo will be used for SpinW
+% 3.0. Colormap is expected to change next time when version increases to
+% the next integer.
+%
+%
 % Input:
 %
 % fName     File name to save the logo. Optional, if not given the logo
@@ -17,19 +24,26 @@ hold on
 
 % plot wave
 ds = 1.8;
-x  = linspace(0,2/ds,41);
-y  = linspace(0,0.4,11);
+%x  = linspace(0,2/ds,41);
+%y  = linspace(0,0.4,11);
+x  = linspace(0,2/ds,401);
+y  = linspace(0,0.4,101);
 
 [xx,yy] = ndgrid(x,y);
 
 z = 0.2*sin(ds*xx*2*pi+pi/2);
 
-surf(xx,yy,z);
+surf(xx,yy,z,'edgecolor','none');
 colormap(cm_inferno)
-caxis([-0.4 0.2])
+caxis([-0.4 0.25])
 axis equal
 axis off
-
+hold on
+% plot3(xx(:,1)',yy(:,1)',z(:,1)','k-')
+% plot3(xx(:,end)',yy(:,end)',z(:,end)','k-')
+% plot3(xx(1,:)',yy(1,:)',z(1,:)','k-')
+% plot3(xx(end,:)',yy(end,:)',z(end,:)','k-')
+% plot3((xx(1,:)'+xx(end,:)')/2,yy(end,:)',z(end,:)','k-')
 
 ax = axis;
 axis(ax*2)

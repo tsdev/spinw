@@ -116,8 +116,8 @@ sw_plotspec(specH,<span class="string">'mode'</span>,<span class="string">'color
 sw_plotspec(specH,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'dashed'</span>,true,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,<span class="keyword">...</span>
     false,<span class="string">'title'</span>,false,<span class="string">'sortMode'</span>,true,<span class="string">'colormap'</span>,[255  20 147]);
 title(<span class="string">'h) zig-zag, J_{1,2,3}, S^{xx}(=S^{yy})'</span>,<span class="string">'fontsize'</span>,15)
-</pre><pre class="codeoutput">Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised at
-some q-point! 
+</pre><pre class="codeoutput">Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised at some
+q-point! 
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial16_09.png" style="width:560px;height:420px;" alt=""> <h2 id="11">Fig. S3(i-j) zig-zag order</h2><p>Magnetic structure, where spins are pointing along the b-axis. In the paper the Sy'y' direction is the correlation function component perpendicular to the magnetic moment direction, that is Sxx for S||b moments.</p><pre class="codeinput">J1 =  1; J2 =  0.23; J3 =  0.51; JK =  1.33;
 nairo.matrix.mat = Jfun([J1 J2 J3 JK]);
 nairo.genmagstr(<span class="string">'mode'</span>,<span class="string">'func'</span>,<span class="string">'func'</span>,@gm_planar,<span class="string">'x0'</span>,[[0 1 1 0]*pi 0 0 0 pi/2 0]);

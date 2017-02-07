@@ -62,7 +62,7 @@ banb.mag_str = Mag0;
     stat: [1&times;1 struct]
 Warning: Some spins are coupled to themselves in the present magnetic cell! 
 ans =
-   5.4107e-06
+  -1.1400e-06
 </pre><h2 id="6">Spin wave spectrum</h2><p>We calculate the spin wave spectrum and compare it to published results. Since the momentum transfer vector <b>Q</b> has opposite sign in SpinW and in the published PRL paper, we change the sign manually here. Also for direct comparison, we calculate the spin-spin correlation function in the coordinate system commonly used for polarised neutron scattering (x||Q, z perpendicular to the scattering plane). To define the scattering plane, we give two reciprocal space vectors in that plane: <b>u</b>=(0,1,0) and <b>v</b>=(0,0,1).</p><pre class="codeinput">banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 500});
 banbSpec.hkl  = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;

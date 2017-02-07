@@ -18,13 +18,13 @@ elseif numel(dataStr) < 200
     catch
         error('cif:importcif:WrongInput','The requested data cannot be found!')
     end
-    cifStr = strsplit(cifStr,char(10));
+    cifStr = strsplit(cifStr,'\n');
     
     source = dataStr;
     isfile = false;
 else
     % take it as a string storing the .cif file content
-    cifStr = strsplit(char(dataStr(:))',char(10));
+    cifStr = strsplit(char(dataStr(:))','\n');
     %cifStr = mat2cell(cifStr,ones(size(cifStr,1),1));
     source = '';
     isfile = false;

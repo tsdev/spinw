@@ -103,7 +103,7 @@ else
         nt = numel(p) + 1;
         terms = cell(1, nt);
         sp = 1;
-        dl = length(delimiter);
+        dl = numel(d);
         for i = 1 : nt-1
             terms{i} = strtrim(s(sp:p(i)-1));
             sp = p(i) + dl;

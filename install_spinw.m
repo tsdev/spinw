@@ -116,7 +116,7 @@ answer = getinput(...
     'Do you want to issue the command "clear classes" now? (y/n)'],'yn');
 
 if answer == 'y'
-    clear('classes'); %#ok<CLFUN>
+    clear('classes'); %#ok<CLCLS>
     disp('Matlab class memory is refreshed!')
 end
 

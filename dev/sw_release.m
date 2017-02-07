@@ -24,7 +24,7 @@ end
 
 swVer = sw_version;
 
-if isfield(swVer,'Version')
+if ~isempty(swVer.Version)
     disp('The current version of SpinW is already released!');
     return
 end

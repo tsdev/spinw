@@ -13,17 +13,18 @@ if exist(dataStr,'file') == 2
 elseif numel(dataStr) < 200
     % try to load it from the web
     try
-        cifStr = webread(dataStr);
+        %cifStr = char(webread(dataStr)');
+        cifStr = urlread(dataStr);
     catch
         error('cif:importcif:WrongInput','The requested data cannot be found!')
     end
-    cifStr = strsplit(char(cifStr'),'\n');
+    cifStr = strsplit(cifStr,char(10));
     
     source = dataStr;
     isfile = false;
 else
     % take it as a string storing the .cif file content
-    cifStr = strsplit(char(dataStr(:))','\n');
+    cifStr = strsplit(char(dataStr(:))',char(10));
     %cifStr = mat2cell(cifStr,ones(size(cifStr,1),1));
     source = '';
     isfile = false;

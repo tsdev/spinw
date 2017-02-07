@@ -463,7 +463,7 @@ classdef spinw < handle
             % remove property change listeners
             delete(obj.propl);
             % empty pointers
-            obj.propl = event.listener.empty;
+            obj.propl = event.proplistener.empty;
         end
 
         function lh = addlistener(varargin)

@@ -58,7 +58,7 @@ subplot(2,1,1)
 sw_plotspec(linipoSpec,'mode','disp','axLim',[0 8],'colormap',[0 0 0],'colorbar',false)
 subplot(2,1,2)
 sw_plotspec(linipoSpec,'mode','int','axLim',[0 15],'colormap',[0 0 0],'colorbar',false)
-swplot.subfigure(2,4,1)
+swplot.subfigure(1,3,1)
 
 linipoSpec = linipo.spinwave({[0 0 0] [0 2 0]});
 linipoSpec = sw_egrid(linipoSpec);
@@ -68,7 +68,7 @@ subplot(2,1,1)
 sw_plotspec(linipoSpec,'mode','disp','axLim',[0 8],'colormap',[0 0 0],'colorbar',false)
 subplot(2,1,2)
 sw_plotspec(linipoSpec,'mode','int','axLim',[0 15],'colormap',[0 0 0],'colorbar',false)
-swplot.subfigure(2,4,1)
+swplot.subfigure(1,3,1)
 
 linipoSpec = linipo.spinwave({[0 1 0] [0 1 2]});
 linipoSpec = sw_egrid(linipoSpec);
@@ -78,7 +78,7 @@ subplot(2,1,1)
 sw_plotspec(linipoSpec,'mode','disp','axLim',[0 8],'colormap',[0 0 0],'colorbar',false)
 subplot(2,1,2)
 sw_plotspec(linipoSpec,'mode','int','axLim',[0 15],'colormap',[0 0 0],'colorbar',false)
-swplot.subfigure(2,4,1)
+swplot.subfigure(1,3,1)
 
 %% Mode crossing
 % On the last figure, the two spin wave mode cross each other, where the

@@ -1,18 +1,16 @@
-<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Triangular lattice AF with easy plane anisotropy</a></li><li><a href="#2">Magnetic Hamiltonian</a></li><li><a href="#3">Magnetic structure</a></li><li><a href="#4">Spin wave spectrum</a></li><li><a href="#5">Plotting with Horace</a></li></ul></div><h2>Triangular lattice AF with easy plane anisotropy<a name="1"></a></h2><p>We create a triangular lattice in the <b>ab</b>-plane with Cr3+ magnetic atoms with spin quantum number S=3/2.</p><pre class="codeinput">tri = spinw;
+<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Triangular lattice AF with easy plane anisotropy</a></li><li><a href="#2">Magnetic Hamiltonian</a></li><li><a href="#3">Magnetic structure</a></li><li><a href="#4">Spin wave spectrum</a></li><li><a href="#5">Plotting with Horace</a></li></ul></div><h2 id="1">Triangular lattice AF with easy plane anisotropy</h2><p>We create a triangular lattice in the <b>ab</b>-plane with Cr3+ magnetic atoms with spin quantum number S=3/2.</p><pre class="codeinput">tri = spinw;
 tri.genlattice(<span class="string">'lat_const'</span>,[3 3 4],<span class="string">'angled'</span>,[90 90 120])
 tri.addatom(<span class="string">'r'</span>,[0 0 0],<span class="string">'S'</span>,3/2,<span class="string">'label'</span>,<span class="string">'MCr3'</span>,<span class="string">'color'</span>,<span class="string">'orange'</span>)
 tri.gencoupling
-plot(tri,<span class="string">'range'</span>,[2 2 1],<span class="string">'zoom'</span>,-2)
-</pre><pre class="codeoutput">Creating the bond list (maxDistance = 8 &Aring;, nCell = 4x4x3) ...
-... 35 bonds are retained out of 315 generated!
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_01.png" alt=""> <h2>Magnetic Hamiltonian<a name="2"></a></h2><p>We create first neighbor natiferromagnetic interactions in the <b>ab</b>-plane with J = 1 meV and a weak easy-plane anisotropy in the <b>ab</b>-plane. On the crystal structure plot, the red ellipsoids symbolize the easy-plane anisotropy, where easy directions are shown by the longer principal axis directions of the ellipsoid.</p><pre class="codeinput">tri.addmatrix(<span class="string">'value'</span>,1,<span class="string">'label'</span>,<span class="string">'J'</span>,<span class="string">'color'</span>,<span class="string">'SteelBlue'</span>)
+plot(tri,<span class="string">'range'</span>,[2 2 1])
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_01.png" style="width:560px;height:420px;" alt=""> <h2 id="2">Magnetic Hamiltonian</h2><p>We create first neighbor natiferromagnetic interactions in the <b>ab</b>-plane with J = 1 meV and a weak easy-plane anisotropy in the <b>ab</b>-plane. On the crystal structure plot, the red ellipsoids symbolize the easy-plane anisotropy, where easy directions are shown by the longer principal axis directions of the ellipsoid.</p><pre class="codeinput">tri.addmatrix(<span class="string">'value'</span>,1,<span class="string">'label'</span>,<span class="string">'J'</span>,<span class="string">'color'</span>,<span class="string">'SteelBlue'</span>)
 tri.addmatrix(<span class="string">'value'</span>,diag([0 0 0.2]),<span class="string">'label'</span>,<span class="string">'D'</span>,<span class="string">'color'</span>,<span class="string">'r'</span>)
 tri.addcoupling(<span class="string">'mat'</span>,<span class="string">'J'</span>,<span class="string">'bond'</span>,1)
 tri.addaniso(<span class="string">'D'</span>)
 plot(tri,<span class="string">'range'</span>,[2 2 1])
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_02.png" alt=""> <h2>Magnetic structure<a name="3"></a></h2><p>we define the 120 degree ground state magnetic structure in the <b>ab</b>-plane with ordering wave vector of <b>k</b>=(1/3,1/3,0). Due to the anisotropy, the normal vector to the spin plane is <b>n</b>=(0,0,1) and we can use a single unit cell to describe the magnetic structure, since it is a single-k structure: nExt=(1,1,1).</p><pre class="codeinput">tri.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'S'</span>,[0; 1; 0],<span class="string">'k'</span>,[1/3 1/3 0],<span class="string">'n'</span>, [0 0 1]);
-plot(tri,<span class="string">'range'</span>,[2 2 1],<span class="string">'sEll'</span>,0)
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_03.png" alt=""> <h2>Spin wave spectrum<a name="4"></a></h2><p>We calculate the spin wave spectrum using the incommensurate magnetic structure in the (H,H,0) reciprocal space direction. In this direction, there are two magnetic Bragg peaks at (1/3,1/3,0) and (2/3,2/3,0). There are three spin wave modes: S(Q,omega) and S(Q+/-k,omega) due to the incommensurate ordering wave vector. There is one Goldstone mode at the magnetic Bragg peaks. By plotting only selected spin wave polarisations we can see, that the gapped modes at the Bragg peaks are polarised along the <b>c</b>-axis, while the Goldstone mode has a polarisation in the easy-plane.</p><pre class="codeinput">triSpec = tri.spinwave({[0 0 0] [1 1 0] 500});
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_02.png" style="width:560px;height:420px;" alt=""> <h2 id="3">Magnetic structure</h2><p>we define the 120 degree ground state magnetic structure in the <b>ab</b>-plane with ordering wave vector of <b>k</b>=(1/3,1/3,0). Due to the anisotropy, the normal vector to the spin plane is <b>n</b>=(0,0,1) and we can use a single unit cell to describe the magnetic structure, since it is a single-k structure: nExt=(1,1,1).</p><pre class="codeinput">tri.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'S'</span>,[0; 1; 0],<span class="string">'k'</span>,[1/3 1/3 0],<span class="string">'n'</span>, [0 0 1]);
+plot(tri,<span class="string">'range'</span>,[2 2 1],<span class="string">'magColor'</span>,<span class="string">'purple'</span>,<span class="string">'baseShift'</span>,[0;-1;0],<span class="string">'atomLegend'</span>,false)
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_03.png" style="width:560px;height:420px;" alt=""> <h2 id="4">Spin wave spectrum</h2><p>We calculate the spin wave spectrum using the incommensurate magnetic structure in the (H,H,0) reciprocal space direction. In this direction, there are two magnetic Bragg peaks at (1/3,1/3,0) and (2/3,2/3,0). There are three spin wave modes: S(Q,omega) and S(Q+/-k,omega) due to the incommensurate ordering wave vector. There is one Goldstone mode at the magnetic Bragg peaks. By plotting only selected spin wave polarisations we can see, that the gapped modes at the Bragg peaks are polarised along the <b>c</b>-axis, while the Goldstone mode has a polarisation in the easy-plane.</p><pre class="codeinput">triSpec = tri.spinwave({[0 0 0] [1 1 0] 500});
 triSpec = sw_neutron(triSpec);
 
 figure
@@ -26,37 +24,30 @@ triSpec = sw_egrid(triSpec,<span class="string">'Evect'</span>,linspace(0,7,500)
 figure
 sw_plotspec(triSpec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'axLim'</span>,[0 1],<span class="string">'dE'</span>,0.4)
 sw_plotspec(triSpec,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'axLim'</span>,[0 7],<span class="string">'colormap'</span>,[0 0 0],<span class="string">'colorbar'</span>,false,<span class="string">'lineStyle'</span>,<span class="string">'-'</span>,<span class="string">'legend'</span>,false)
-</pre><pre class="codeoutput">Calculating INCOMMENSURATE spin wave spectra (nMagExt = 1, nHkl = 1500, nTwin = 1)...
-No magnetic form factor is included in the spin-spin correlation function.
-No g-tensor is included in the spin-spin correlation function.
-Finished in 00:00:00 (hh:mm:ss).
-Warning: To make the Hamiltonian positive definite, a small omega_tol value was
-added to its diagonal! 
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_04.png" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_05.png" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_06.png" alt=""> <h2>Plotting with Horace<a name="5"></a></h2><p>The convoluted color spin wave spectra also can be plotted using the Horace package, see: [[http://horace.isis.rl.ac.uk]]. The spectrum will be calculated in the (H,K,0) plane and a constant energy cut is plotted. The disp2sqw_eval() function can be called Horace objects with any dimensions.</p><pre class="codeinput"><span class="comment">% Finite energy resolution is simulated by convoluting the spectra with a</span>
+</pre><pre class="codeoutput">Warning: To make the Hamiltonian positive definite, a small omega_tol value
+was added to its diagonal! 
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_04.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_05.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_06.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Plotting with Horace</h2><p>The convoluted color spin wave spectra also can be plotted using the Horace package, see: [[http://horace.isis.rl.ac.uk]]. The spectrum will be calculated in the (H,K,0) plane and a constant energy cut is plotted. The disp2sqw_eval() function can be called Horace objects with any dimensions.</p><pre class="codeinput"><span class="comment">% Finite energy resolution is simulated by convoluting the spectra with a</span>
 <span class="comment">% Gaussian function, with the following FWHM.</span>
-dE    = 0.15;
+dE = 0.15;
 
-<span class="comment">% Start Horace if it is not running yet (see documentation of Horace).</span>
-<span class="comment">%horace_on;</span>
+<span class="comment">% The calculated spectra using the plotting function of Horace and assuming</span>
+<span class="comment">% Horace is installed and setup. Calculate spectra using disp2sqw_eval</span>
+<span class="comment">% Horace function.</span>
 
-<span class="comment">% The calculated spectra using the plotting function of Horace.</span>
-<span class="comment">% Calculate spectra using disp2sqw_plot Horace function.</span>
-horaceObj = d3d(tri.abc,[1 0 0 0],[0,0.01,1],[0 1 0 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
+horaceObj = d3d(tri.abc,[1 0 0 0],[0,0.005,1],[0 1 0 0],[0,0.005,1],[0 0 0 1],[0,0.1,10]);
 horaceObj = disp2sqw_eval(horaceObj,@tri.horace,{<span class="string">'component'</span>,<span class="string">'Sperp'</span>},dE);
-cut1 = cut(horaceObj,[0,0.01,1],[0,0.01,1],[2 2.5]);
+cut1 = cut(horaceObj,[],[],[3.0 3.5]);
+
+<span class="comment">% We use the honest colormap cm_inferno.</span>
 plot(cut1)
-</pre><pre class="codeoutput">Warning: NARGCHK will be removed in a future release. Use NARGINCHK or
-NARGOUTCHK instead. 
-Calculating INCOMMENSURATE spin wave spectra (nMagExt = 1, nHkl = 30603, nTwin = 1)...
-To optimise memory allocation, Q is cut into 17 pieces!
-No magnetic form factor is included in the spin-spin correlation function.
-No g-tensor is included in the spin-spin correlation function.
-Finished in 00:00:01 (hh:mm:ss).
---------------------------------------------------------------------------------
+colorslider(<span class="string">'delete'</span>)
+colormap(flipud(cm_inferno))
+colorbar
+</pre><pre class="codeoutput">--------------------------------------------------------------------------------
 Taking cut from dnd object...
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_07.png" alt=""> <pre>Written by
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_07.png" style="width:560px;height:420px;" alt=""> <pre>Written by
 Sandor Toth
-16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####
 %% Triangular lattice AF with easy plane anisotropy
 % We create a triangular lattice in the *ab*-plane with Cr3+ magnetic atoms
@@ -66,7 +57,7 @@ tri = spinw;
 tri.genlattice('lat_const',[3 3 4],'angled',[90 90 120])
 tri.addatom('r',[0 0 0],'S',3/2,'label','MCr3','color','orange')
 tri.gencoupling
-plot(tri,'range',[2 2 1],'zoom',-2)
+plot(tri,'range',[2 2 1])
 
 %% Magnetic Hamiltonian
 % We create first neighbor natiferromagnetic interactions in the *ab*-plane
@@ -89,7 +80,7 @@ plot(tri,'range',[2 2 1])
 % single-k structure: nExt=(1,1,1).
 
 tri.genmagstr('mode','helical','S',[0; 1; 0],'k',[1/3 1/3 0],'n', [0 0 1]);
-plot(tri,'range',[2 2 1],'sEll',0)
+plot(tri,'range',[2 2 1],'magColor','purple','baseShift',[0;-1;0],'atomLegend',false)
 
 %% Spin wave spectrum
 % We calculate the spin wave spectrum using the incommensurate magnetic
@@ -126,17 +117,21 @@ sw_plotspec(triSpec,'mode','disp','axLim',[0 7],'colormap',[0 0 0],'colorbar',fa
 
 % Finite energy resolution is simulated by convoluting the spectra with a
 % Gaussian function, with the following FWHM.
-dE    = 0.15;
+dE = 0.15;
 
-% Start Horace if it is not running yet (see documentation of Horace).
-%horace_on;
+% The calculated spectra using the plotting function of Horace and assuming
+% Horace is installed and setup. Calculate spectra using disp2sqw_eval
+% Horace function.
 
-% The calculated spectra using the plotting function of Horace.
-% Calculate spectra using disp2sqw_plot Horace function.
-horaceObj = d3d(tri.abc,[1 0 0 0],[0,0.01,1],[0 1 0 0],[0,0.01,1],[0 0 0 1],[0,0.1,10]);
+horaceObj = d3d(tri.abc,[1 0 0 0],[0,0.005,1],[0 1 0 0],[0,0.005,1],[0 0 0 1],[0,0.1,10]);
 horaceObj = disp2sqw_eval(horaceObj,@tri.horace,{'component','Sperp'},dE);
-cut1 = cut(horaceObj,[0,0.01,1],[0,0.01,1],[2 2.5]);
+cut1 = cut(horaceObj,[],[],[3.0 3.5]);
+
+% We use the honest colormap cm_inferno.
 plot(cut1)
+colorslider('delete')
+colormap(flipud(cm_inferno))
+colorbar
 
 %%
 %  Written by

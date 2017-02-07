@@ -18,6 +18,20 @@ function setpref(prefName, varargin)
 % See also SWPREF.SETPREF.
 %
 
+if nargin>0 && mod(nargin,2)==0
+    % check for usemex option
+    mexopt = find(strcmpi('usemex',varargin));
+    
+    if ~isempty(mexopt) && varargin{mexopt+1}
+        % check for the existence of the necessary mex files
+        if exist('chol_omp','file')==3 && exist('eig_omp','file')==3
+        else
+            warning('setpref:MissingMex','Necessary mex files are missing, compile them!')
+            varargin{mexopt+1} = false;
+        end
+    end
+end
+
 if nargin<=2
     swpref.pref(prefName,'set',varargin{:});
 elseif mod(nargin,2)==0

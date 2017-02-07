@@ -52,7 +52,7 @@ sw_plotspec(kag33Spec,'mode',1,'axLim',[0 2.5],'colorbar',false',...
     'colormap',[0 0 0],'imag',true,'sortMode',true,'dashed',true)
 subplot(2,1,2)
 sw_plotspec(kag33Spec,'mode',3,'dE',0.05,'axLim',[0 2.5],'dashed',true)
-swplot.subfigure(2,4,1)
+swplot.subfigure(1,3,1)
 colorbar off
 legend off
 
@@ -91,7 +91,7 @@ subplot(2,1,2)
 sw_plotspec(kag33Spec,'mode',3,'dE',0.05,'axLim',[0 2.5],'dashed',true)
 colorbar off
 legend off
-swplot.subfigure(2,4,1)
+swplot.subfigure(1,3,1)
 
 %% Powder spectrum
 % Using the small magnetic cell, the calculation of the powder spectrum

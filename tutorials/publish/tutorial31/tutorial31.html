@@ -1,0 +1,415 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>tutorial31</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-07"><meta name="DC.source" content="tutorial31.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Internal data structure of SpinW</a></li><li><a href="#2">Check out internal data structure of SpinW</a></li><li><a href="#3">Test cordinate transformations</a></li><li><a href="#4">Rotate a vector</a></li><li><a href="#5">Magnetic atoms</a></li><li><a href="#6">Space groups</a></li><li><a href="#7">Bond symmetry</a></li><li><a href="#8">Lets do something crazy</a></li><li><a href="#9">Lets add a few matrices</a></li><li><a href="#10">Lets add some matrices and plot</a></li><li><a href="#11">Plot a single triangular layer from LiCrO2</a></li><li><a href="#12">Single ion properties</a></li><li><a href="#13">Magnetic structure</a></li><li><a href="#14">Rotating frame representation</a></li><li><a href="#15">Let's do some animation by rotating the moments</a></li><li><a href="#16">Check the spin wave dispersion</a></li><li><a href="#17">Case when the rotating frame representation fails</a></li></ul></div><h2 id="1">Internal data structure of SpinW</h2><p>Import the LiCrO2 crystal structure from a web link. It has space group R-3m, rhombohedrl crystal structure in hexagonal settings. What is the density? Where does all the data comes from? edit atom.dat</p><pre class="codeinput">licro = spinw(<span class="string">'https://goo.gl/do6oTh'</span>);
+
+licro.formula
+</pre><pre class="codeoutput error">Error using cif/importcif (line 18)
+The requested data cannot be found!
+Error in cif (line 36)
+                [obj.cifdat, obj.source, obj.isfile] = obj.importcif(path);
+Error in sw_import (line 129)
+        cif0 = cif(fName);
+Error in spinw (line 347)
+                obj = sw_import(firstArg,false,obj);
+Error in tutorial31 (line 8)
+licro = spinw('https://goo.gl/do6oTh');</pre><h2 id="2">Check out internal data structure of SpinW</h2><p>What do you see?</p><pre class="codeinput">properties(spinw)
+
+licro.lattice
+</pre><h2 id="3">Test cordinate transformations</h2><p>Convert (1,1,0) in the reciprocal lattice of LiCrO2 to A^-1 and convert (1,0,0) in lattice units to the crystal Descartes coordinate system (denoted by xyz in SpinW).</p><p>How are Trl and Tr related?</p><pre class="codeinput">Trl = licro.rl;
+Q = [0 1 0];
+QinvA = Q*Trl
+
+Tl = licro.basisvector;
+pos = [1;0;0];
+RA = Tl*pos
+</pre><h2 id="4">Rotate a vector</h2><p>Using the rotation axis and Rotation angle in degree, the sw_rotmatd can generate the corresponding rotation matrix.</p><pre class="codeinput">R = sw_rotmatd([0 0 1],60);
+
+<span class="comment">% Rotate polar vector</span>
+R*pos
+</pre><h2 id="5">Magnetic atoms</h2><p>Can you find the magnetic atom positions on the plot and connect them to the list in mAtom and in licro.unit_cell?</p><pre class="codeinput">plot(licro)
+mAtom = licro.matom
+</pre><h2 id="6">Space groups</h2><p>Check out symmetry.dat: What does it mean P0~=P1? In case P0 the equivalent bonds are determined based on length, while for P1 (or any other space group), the equivalent bonds are determined based on the symmetry operators.</p><pre class="codeinput">edit <span class="string">symmetry.dat</span>
+</pre><h2 id="7">Bond symmetry</h2><p>Generate the bond list of LiCrO2. Are the bonds generated usign the space group? What does it mean?</p><pre class="codeinput">licro.gencoupling
+
+<span class="comment">% The first neighbor bonds</span>
+licro.table(<span class="string">'bond'</span>,1)
+</pre><h2 id="8">Lets do something crazy</h2><p>Lets convert the hexagonal cell to the primitive cell and see what happens.</p><p>Why copy()? The spinw object is handle object, the copy() command creates a hard copy to avoid modifying the original object. Check spinw.formula() to see how much the new cell is smaller</p><pre class="codeinput">licroR = copy(licro);
+T = licroR.newcell({[-1 1 1]/3 [2 1 1]/3 [-1 -2 1]/3})
+plot(licroR,<span class="string">'cellMode'</span>,<span class="string">'outside'</span>)
+swplot.zoom(1.5)
+</pre><h2 id="9">Lets add a few matrices</h2><p>What does the different input do? Check the result by inspecting the licro.matrix.mat array.</p><pre class="codeinput">licro.addmatrix(<span class="string">'label'</span>,<span class="string">'J'</span>,<span class="string">'value'</span>,1)
+licro.addmatrix(<span class="string">'label'</span>,<span class="string">'D'</span>,<span class="string">'value'</span>,[0 1 0])
+licro.addmatrix(<span class="string">'label'</span>,<span class="string">'A'</span>,<span class="string">'value'</span>,diag([1 0.5 0.5]))
+</pre><h2 id="10">Lets add some matrices and plot</h2><p>Do both for the primitive and the hexagonal cell Are they the same?</p><pre class="codeinput">licroR.gencoupling
+licroR.addmatrix(<span class="string">'label'</span>,<span class="string">'J'</span>,<span class="string">'value'</span>,1)
+licroR.addcoupling(<span class="string">'bond'</span>,1,<span class="string">'mat'</span>,<span class="string">'J'</span>)
+plot(licroR,<span class="string">'range'</span>,[3 3 3],<span class="string">'unit'</span>,<span class="string">'lu'</span>,<span class="string">'atomMode'</span>,<span class="string">'mag'</span>,<span class="string">'cellMode'</span>,<span class="string">'none'</span>,<span class="string">'atomLegend'</span>,false)
+swplot.zoom(1.5)
+</pre><h2 id="11">Plot a single triangular layer from LiCrO2</h2><pre class="codeinput">licro.addcoupling(<span class="string">'bond'</span>,1,<span class="string">'mat'</span>,<span class="string">'J'</span>)
+plot(licro,<span class="string">'range'</span>,[15 15 5],<span class="string">'unit'</span>,<span class="string">'xyz'</span>,<span class="string">'atomMode'</span>,<span class="string">'mag'</span>,<span class="string">'cellMode'</span>,<span class="string">'none'</span>,<span class="string">'atomLegend'</span>,false)
+</pre><h2 id="12">Single ion properties</h2><p>Assing the A matrix to single ion anisotropy.</p><pre class="codeinput">licro.addaniso(<span class="string">'A'</span>)
+plot(licro)
+</pre><h2 id="13">Magnetic structure</h2><p>Lets start with a simpler lattice: square lattice. Define a (1/2,1/2,0) magnetic structure using complex magnetization vectors.</p><p>What does [1-1i;1+1i;0] vector means? These are the complex magnetization vectors. SpinW 3.0 stores complex magnetization vectors internally and generates the real magnetic structure on the fly.</p><p>How is this stored in the spinw object? check spinw.mag_str and check spinw.magstr for the generated real structure.</p><p>Let's create a magnetic supercell! 2x2x1 cell What will be the k-vector now? (1/2,1/2,0) or (1,1,0)? They are indeed equivalent.</p><p>To check that we are doing the right thing, we will keep track of the enrgy of the system, after adding a J=1 meV Heisenberg exchange on the square lattice. To create Heisenberg Hamiltonian quickly we use square.quickham(1.25), to create the first neighbor bonds with J=1.25 meV.</p><p>What was the energy/spin for the original magnetic structure? S=1, J = 1.25 meV?</p><pre class="codeinput">square = sw_model(<span class="string">'squareAF'</span>);
+plot(square,<span class="string">'range'</span>,[2 2 1/2])
+
+square.genmagstr(<span class="string">'mode'</span>,<span class="string">'direct'</span>,<span class="string">'S'</span>,[1-1i;1+1i;0],<span class="string">'k'</span>,[1/2 1/2 0],<span class="string">'nExt'</span>,[1 1 1])
+plot(square,<span class="string">'range'</span>,[2 2 1/2])
+
+square.quickham(1)
+
+square.energy
+
+<span class="comment">% Create supercell, which k-vector is right? k is always in the units of</span>
+<span class="comment">% the crystal reciprocal lattice!</span>
+
+square.genmagstr(<span class="string">'mode'</span>,<span class="string">'direct'</span>,<span class="string">'S'</span>,[1 -1 -1 1;0 0 0 0;0 0 0 0],<span class="string">'nExt'</span>,[2 2 1],<span class="string">'k'</span>,[0 0 0])
+square.energy
+
+square.genmagstr(<span class="string">'mode'</span>,<span class="string">'direct'</span>,<span class="string">'S'</span>,[1 -1 -1 1;0 0 0 0;0 0 0 0],<span class="string">'nExt'</span>,[2 2 1],<span class="string">'k'</span>,[1/2 1/2 0])
+square.energy
+</pre><h2 id="14">Rotating frame representation</h2><p>Let's generate a spiral using the J1-J2 model of a zig-zag chain. Check the spinw.mag_str and spinw.magstr and compare them.</p><pre class="codeinput">ch = spinw;
+ch.genlattice(<span class="string">'lat_const'</span>,[3 5 4])
+ch.addatom(<span class="string">'r'</span>,[0 .3 0],<span class="string">'S'</span>,1)
+ch.addatom(<span class="string">'r'</span>,[1/2 0.7 0],<span class="string">'S'</span>,1)
+ch.quickham([1 1/2])
+
+ch.optmagk
+ch.optmagsteep
+ch.energy
+
+plot(ch,<span class="string">'range'</span>,[5 1 1/2])
+</pre><h2 id="15">Let's do some animation by rotating the moments</h2><pre class="codeinput"><span class="keyword">for</span> ii = 1:100
+    ch.genmagstr(<span class="string">'mode'</span>,<span class="string">'rotate'</span>,<span class="string">'n'</span>,[0 0 1],<span class="string">'phid'</span>,1)
+    swplot.plotmag(<span class="string">'range'</span>,[5 1 1/2])
+    drawnow
+<span class="keyword">end</span>
+</pre><h2 id="16">Check the spin wave dispersion</h2><pre class="codeinput">spec = ch.spinwave({[0 0 0] [1 0 0] 501});
+spec = sw_egrid(spec);
+spec = sw_instrument(spec,<span class="string">'dE'</span>,0.1);
+figure
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>)
+legend <span class="string">off</span>
+
+<span class="comment">% Plot the neutron scattering cross section per spin wave mode.</span>
+figure
+spec = sw_omegasum(spec,<span class="string">'zeroint'</span>,1e-5,<span class="string">'tol'</span>,1e-3);
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'int'</span>,<span class="string">'axLim'</span>,[0 5],<span class="string">'colormap'</span>,[0 0 0])
+</pre><h2 id="17">Case when the rotating frame representation fails</h2><p>We show here what happens when there are counterrotating spirals.</p><pre class="codeinput">ch = spinw;
+ch.genlattice(<span class="string">'lat_const'</span>,[3 7 4])
+ch.addatom(<span class="string">'r'</span>,[1/2 1/4 0],<span class="string">'S'</span>,1)
+ch.addatom(<span class="string">'r'</span>,[1/2 3/4 0],<span class="string">'S'</span>,1)
+ch.addmatrix(<span class="string">'label'</span>,<span class="string">'DM1'</span>,<span class="string">'value'</span>,[0  1 0])
+ch.addmatrix(<span class="string">'label'</span>,<span class="string">'DM2'</span>,<span class="string">'value'</span>,[0 -1 0])
+
+ch.gencoupling
+ch.addcoupling(<span class="string">'mat'</span>,<span class="string">'DM1'</span>,<span class="string">'bond'</span>,1,<span class="string">'subIdx'</span>,1)
+ch.addcoupling(<span class="string">'mat'</span>,<span class="string">'DM2'</span>,<span class="string">'bond'</span>,1,<span class="string">'subIdx'</span>,2)
+
+optRes = ch.optmagk;
+plot(ch,<span class="string">'range'</span>,[5 1 1/2])
+
+<span class="comment">% Rotating frame representation fails!</span>
+ch.magstr
+
+<span class="comment">% Lets check how the structure would look like in a magnetic supercell.</span>
+ch.magstr(<span class="string">'nExt'</span>,[4 1 1])
+
+<span class="comment">% Let's generate this supercell and keep it.</span>
+ch.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'nExt'</span>,[4 1 1])
+
+<span class="comment">% Let's check the energy if we are right, -1 meV/spin looks fine.</span>
+ch.energy
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Internal data structure of SpinW
+% Import the LiCrO2 crystal structure from a web link. It has space group
+% R-3m, rhombohedrl crystal structure in hexagonal settings.
+% What is the density?
+% Where does all the data comes from? edit atom.dat
+%
+
+licro = spinw('https://goo.gl/do6oTh');
+
+licro.formula
+
+%% Check out internal data structure of SpinW
+% What do you see?
+
+properties(spinw)
+
+licro.lattice
+
+
+%% Test cordinate transformations
+% Convert (1,1,0) in the reciprocal lattice of LiCrO2 to A^-1 and convert
+% (1,0,0) in lattice units to the crystal Descartes coordinate system
+% (denoted by xyz in SpinW).
+%
+% How are Trl and Tr related?
+%
+
+Trl = licro.rl;
+Q = [0 1 0];
+QinvA = Q*Trl
+
+Tl = licro.basisvector;
+pos = [1;0;0];
+RA = Tl*pos
+
+
+%% Rotate a vector
+% Using the rotation axis and Rotation angle in degree, the sw_rotmatd can
+% generate the corresponding rotation matrix.
+
+R = sw_rotmatd([0 0 1],60);
+
+% Rotate polar vector
+R*pos
+
+%% Magnetic atoms
+% Can you find the magnetic atom positions on the plot and connect them to
+% the list in mAtom and in licro.unit_cell?
+%
+
+plot(licro)
+mAtom = licro.matom
+
+%% Space groups
+% Check out symmetry.dat: What does it mean P0~=P1? In case P0 the
+% equivalent bonds are determined based on length, while for P1 (or any
+% other space group), the equivalent bonds are determined based on the
+% symmetry operators.
+
+edit symmetry.dat
+
+%% Bond symmetry
+% Generate the bond list of LiCrO2.
+% Are the bonds generated usign the space group?
+% What does it mean?
+
+licro.gencoupling
+
+% The first neighbor bonds
+licro.table('bond',1)
+
+%% Lets do something crazy
+% Lets convert the hexagonal cell to the primitive cell and see what
+% happens.
+%
+% Why copy()? The spinw object is handle object, the copy() command creates
+% a hard copy to avoid modifying the original object.
+% Check spinw.formula() to see how much the new cell is smaller
+
+licroR = copy(licro);
+T = licroR.newcell({[-1 1 1]/3 [2 1 1]/3 [-1 -2 1]/3})
+plot(licroR,'cellMode','outside')
+swplot.zoom(1.5)
+
+%% Lets add a few matrices
+% What does the different input do? Check the result by inspecting the
+% licro.matrix.mat array.
+
+licro.addmatrix('label','J','value',1)
+licro.addmatrix('label','D','value',[0 1 0])
+licro.addmatrix('label','A','value',diag([1 0.5 0.5]))
+
+%% Lets add some matrices and plot
+% Do both for the primitive and the hexagonal cell
+% Are they the same?
+
+licroR.gencoupling
+licroR.addmatrix('label','J','value',1)
+licroR.addcoupling('bond',1,'mat','J')
+plot(licroR,'range',[3 3 3],'unit','lu','atomMode','mag','cellMode','none','atomLegend',false)
+swplot.zoom(1.5)
+
+%% Plot a single triangular layer from LiCrO2
+
+licro.addcoupling('bond',1,'mat','J')
+plot(licro,'range',[15 15 5],'unit','xyz','atomMode','mag','cellMode','none','atomLegend',false)
+
+%% Single ion properties
+% Assing the A matrix to single ion anisotropy.
+
+licro.addaniso('A')
+plot(licro)
+
+%% Magnetic structure
+% Lets start with a simpler lattice: square lattice. Define a (1/2,1/2,0)
+% magnetic structure using complex magnetization vectors.
+%
+% What does [1-1i;1+1i;0] vector means? These are the complex magnetization
+% vectors. SpinW 3.0 stores complex magnetization vectors internally and
+% generates the real magnetic structure on the fly.
+%
+% How is this stored in the spinw object? check spinw.mag_str and check
+% spinw.magstr for the generated real structure.
+%
+% Let's create a magnetic supercell! 2x2x1 cell
+% What will be the k-vector now? (1/2,1/2,0) or (1,1,0)? They are indeed
+% equivalent.
+%
+% To check that we are doing the right thing, we will keep track of the
+% enrgy of the system, after adding a J=1 meV Heisenberg exchange on the
+% square lattice.
+% To create Heisenberg Hamiltonian quickly we use square.quickham(1.25), to
+% create the first neighbor bonds with J=1.25 meV.
+%
+% What was the energy/spin for the original magnetic structure? S=1, J =
+% 1.25 meV?
+
+square = sw_model('squareAF');
+plot(square,'range',[2 2 1/2])
+
+square.genmagstr('mode','direct','S',[1-1i;1+1i;0],'k',[1/2 1/2 0],'nExt',[1 1 1])
+plot(square,'range',[2 2 1/2])
+
+square.quickham(1)
+
+square.energy
+
+% Create supercell, which k-vector is right? k is always in the units of
+% the crystal reciprocal lattice!
+
+square.genmagstr('mode','direct','S',[1 -1 -1 1;0 0 0 0;0 0 0 0],'nExt',[2 2 1],'k',[0 0 0])
+square.energy
+
+square.genmagstr('mode','direct','S',[1 -1 -1 1;0 0 0 0;0 0 0 0],'nExt',[2 2 1],'k',[1/2 1/2 0])
+square.energy
+
+%% Rotating frame representation
+% Let's generate a spiral using the J1-J2 model of a zig-zag chain. Check
+% the spinw.mag_str and spinw.magstr and compare them.
+
+ch = spinw;
+ch.genlattice('lat_const',[3 5 4])
+ch.addatom('r',[0 .3 0],'S',1)
+ch.addatom('r',[1/2 0.7 0],'S',1)
+ch.quickham([1 1/2])
+
+ch.optmagk
+ch.optmagsteep
+ch.energy
+
+plot(ch,'range',[5 1 1/2])
+
+%% Let's do some animation by rotating the moments
+
+for ii = 1:100
+    ch.genmagstr('mode','rotate','n',[0 0 1],'phid',1)
+    swplot.plotmag('range',[5 1 1/2])
+    drawnow
+end
+
+%% Check the spin wave dispersion
+
+spec = ch.spinwave({[0 0 0] [1 0 0] 501});
+spec = sw_egrid(spec);
+spec = sw_instrument(spec,'dE',0.1);
+figure
+sw_plotspec(spec,'mode','color')
+legend off
+
+% Plot the neutron scattering cross section per spin wave mode.
+figure
+spec = sw_omegasum(spec,'zeroint',1e-5,'tol',1e-3);
+sw_plotspec(spec,'mode','int','axLim',[0 5],'colormap',[0 0 0])
+
+%% Case when the rotating frame representation fails
+% We show here what happens when there are counterrotating spirals.
+
+ch = spinw;
+ch.genlattice('lat_const',[3 7 4])
+ch.addatom('r',[1/2 1/4 0],'S',1)
+ch.addatom('r',[1/2 3/4 0],'S',1)
+ch.addmatrix('label','DM1','value',[0  1 0])
+ch.addmatrix('label','DM2','value',[0 -1 0])
+
+ch.gencoupling
+ch.addcoupling('mat','DM1','bond',1,'subIdx',1)
+ch.addcoupling('mat','DM2','bond',1,'subIdx',2)
+
+optRes = ch.optmagk;
+plot(ch,'range',[5 1 1/2])
+
+% Rotating frame representation fails!
+ch.magstr
+
+% Lets check how the structure would look like in a magnetic supercell.
+ch.magstr('nExt',[4 1 1])
+
+% Let's generate this supercell and keep it.
+ch.genmagstr('mode','helical','nExt',[4 1 1])
+
+% Let's check the energy if we are right, -1 meV/spin looks fine.
+ch.energy
+
+
+##### SOURCE END #####
+--></body></html>

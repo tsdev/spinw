@@ -58,7 +58,7 @@ sw_plotspec(spec,'mode','disp','imag',true,'axLim',[0 4.5])
 subplot(2,1,2)
 sw_plotspec(spec,'mode','color','dE',0.2)
 legend off
-swplot.subfigure(2,4,1)
+swplot.subfigure(1,3,1)
 
 %% Copper only correlations
 % To see only the spin-spin correlations on the Cu2+ ions, we can change

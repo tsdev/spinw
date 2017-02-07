@@ -54,8 +54,7 @@ plot(FMchain,'range',[3 0.9 0.9],'baseMode','none','cellMode','none')
 % The spinw.energy() function gives the ground state energy per spin, the
 % value is dinamically calculated at every call.
 
-fprintf(['Ground state energy: %5.3f ' FMchain.unit.label{2} '/spin.' char(10)],FMchain.energy)
-
+FMchain.energy
 
 %% Calculate spin wave dispersion and spin-spin correlation function
 % We calculate spin wave dispersion and correlation function along the
@@ -76,7 +75,7 @@ axis([0 1 0 5])
 subplot(2,1,2)
 sw_plotspec(FMspec,'mode',2)  
 axis([0 1 0 2])
-
+swplot.subfigure(1,3,1)
 
 %% Calculate powder average spectrum
 % We calculate powder spectrum for Q = 0:2.5 Angstrom^-1 100 steps

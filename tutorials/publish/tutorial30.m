@@ -201,7 +201,7 @@ axis([0 1 0 5.5])
 caxis([0 3])
 legend off
 colorbar off
-swplot.subfigure(2,4,1)
+swplot.subfigure(1,3,1)
 
 %%
 %  Written by

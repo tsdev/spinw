@@ -3,6 +3,11 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % spectra = POWSPEC(obj, hklA, 'Option1', Value1, ...)
 %
+% The function calculates powder averaged spin wave spectrum by doing a 3D
+% average in momentum space. This method is not efficient for low
+% dimensional (2D, 1D) structures. To speed up the calculation with mex
+% files use the swpref.setpref('usemex',true) option.
+%
 % Input:
 %
 % obj       spinw class object.
@@ -34,9 +39,6 @@ function spectra = powspec(obj, hklA, varargin)
 %           J. Phys. A: Math. Gen. 37 (2004) 11591
 %           The number of points on the sphere is given by the largest
 %           Fibonacci number below nRand. Default is false.
-% useMex        If true, the code will use compiled mex files (if they
-%               exist) to speed up the calculation, for details see
-%               sw_mex() function. Default is false.
 % imagChk   Checks that the imaginary part of the spin wave dispersion is
 %           smaller than the energy bin size. Default is true.
 %
@@ -95,9 +97,9 @@ inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' 'imagChk'
 inpForm.defval = [inpForm.defval {true     false     title0  @spinwave  true   }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]      [1 1]  }];
 
-inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType' 'useMex'}];
-inpForm.defval = [inpForm.defval {false    false  0        'ebin'    false   }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]    [1 1]   }];
+inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType'}];
+inpForm.defval = [inpForm.defval {false    false  0        'ebin'   }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]   }];
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -157,7 +159,7 @@ for ii = 1:nQ
         specQ = param.specfun(obj,hkl,'fitmode',true,'notwin',true,...
             'Hermit',param.hermit,'formfact',param.formfact,...
             'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-            'optmem',param.optmem,'useMex',param.useMex,'tid',0,'fid',0);
+            'optmem',param.optmem,'tid',0,'fid',0);
     end
     specQ = sw_neutron(specQ,'pol',false);
     specQ.obj = obj;

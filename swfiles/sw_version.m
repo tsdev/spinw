@@ -5,7 +5,7 @@ function varargout = sw_version()
 %
 
 % read file header from sw.m file
-fid = fopen('spinw.m');
+fid = fopen('sw_version.m');
 
 % first line
 fgets(fid);
@@ -54,9 +54,11 @@ end
 if nField == 0
     aDir = pwd;
     cd(sw_rootdir);
-    [~, revNum] = system('svn info |grep Revision: |cut -c11-');
+    [~, revNum] = system('git rev-list --count HEAD');
+    revNum = strtrim(revNum);
+    %[~, revNum] = system('svn info |grep Revision: |cut -c11-');
     cd(aDir);
-    revNum = str2double(revNum);
+    revNum = str2double(revNum)+1e3;
 end
 
 % Matlab version & Symbolic Toolbox
@@ -90,15 +92,23 @@ if nargout == 0
     fprintf(['MATLAB version: ' version ', ' strSym '\n']);
     
 else
+    ver0 = struct;
+    ver0.Name     = 'SpinW';
+    ver0.Version  = '';
+    ver0.Author   = 'S. Toth';
+    ver0.Contact  = 'sandor.toth@psi.ch';
+    ver0.Revision = '';
+    ver0.Date     = datestr(now,'dd-mmm-yyyy');
+    ver0.License  = 'GNU GENERAL PUBLIC LICENSE';
+
     if nField == 0
         if any(revNum)
-            varargout{1}.Revision = num2str(revNum);
-        else
-            varargout{1} = struct;
+            ver0.Revision = num2str(revNum);
         end
+        varargout{1} = ver0;
     else
-        if isempty(verStruct)
-            varargout{1} = 'beta';
+        if isempty(fieldnames(verStruct))
+            varargout{1} = ver0;
         else
             varargout{1} = verStruct;
         end

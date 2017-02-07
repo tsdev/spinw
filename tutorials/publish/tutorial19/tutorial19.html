@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Spin-spin correlation function of two different coupled magnetic ion</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-02-24"><meta name="DC.source" content="tutorial19.m"><style type="text/css">
+      --><title>Spin-spin correlation function of two different coupled magnetic ion</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-07"><meta name="DC.source" content="tutorial19.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,9 +66,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Spin-spin correlation function of two different coupled magnetic ion</h1><!--introduction--><p>In this tutorial, we demonstrate how the spin wave spectrum of two different coupled ion can be calculated. Using the magnetic form factor, the spin-spin correlation function on the two ions can be separated. This method is also usefull for simulating RIXS (Resonant Inelastic X-ray Scattering) on spin waves, that typically measures only the spin waves on the resonant ion.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Cu and Fe chain</a></li><li><a href="#2">Define magnetic structure</a></li><li><a href="#3">Spin-spin correlation function including the form factor</a></li><li><a href="#4">Copper only correlations</a></li><li><a href="#5">Iron only correlations</a></li><li><a href="#6">Reduced moments</a></li></ul></div><h2>Cu and Fe chain<a name="1"></a></h2><p>We define a unit cell with an Fe2+ and Cu2+ ions, the size of the spin is determined by the code using the information stored in the  ion.dat file. We couple antiferromagnetically the Fe and Cu atoms in separate chains running along the a-axis. The chains are weakly coupled along the b-axis.</p><pre class="codeinput">FeCuChain = spinw;
-FeCuChain.fileid(0)
-FeCuChain.genlattice(<span class="string">'lat_const'</span>,[3 8 4],<span class="string">'sym'</span>,<span class="string">'P 1'</span>)
+  </style></head><body><div class="content"><h1>Spin-spin correlation function of two different coupled magnetic ion</h1><!--introduction--><p>In this tutorial, we demonstrate how the spin wave spectrum of two different coupled ion can be calculated. Using the magnetic form factor, the spin-spin correlation function on the two ions can be separated. This method is also usefull for simulating RIXS (Resonant Inelastic X-ray Scattering) on spin waves, that typically measures only the spin waves on the resonant ion.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Cu and Fe chain</a></li><li><a href="#2">Define magnetic structure</a></li><li><a href="#3">Spin-spin correlation function including the form factor</a></li><li><a href="#4">Copper only correlations</a></li><li><a href="#5">Iron only correlations</a></li><li><a href="#6">Reduced moments</a></li></ul></div><h2 id="1">Cu and Fe chain</h2><p>We define a unit cell with an Fe2+ and Cu2+ ions, the size of the spin is determined by the code using the information stored in the  ion.dat file. We couple antiferromagnetically the Fe and Cu atoms in separate chains running along the a-axis. The chains are weakly coupled along the b-axis.</p><pre class="codeinput">FeCuChain = spinw;
+FeCuChain.genlattice(<span class="string">'lat_const'</span>,[3 8 4],<span class="string">'spgr'</span>,<span class="string">'P 1'</span>)
 FeCuChain.addatom(<span class="string">'label'</span>,<span class="string">'MCu2'</span>,<span class="string">'r'</span>,[0 0 0])
 FeCuChain.addatom(<span class="string">'label'</span>,<span class="string">'MFe2'</span>,<span class="string">'r'</span>,[0 1/2 0])
 
@@ -80,38 +79,51 @@ FeCuChain.addmatrix(<span class="string">'label'</span>,<span class="string">'J_
 FeCuChain.addcoupling(<span class="string">'mat'</span>,<span class="string">'J_{Cu-Cu}'</span>,<span class="string">'bond'</span>,1)
 FeCuChain.addcoupling(<span class="string">'mat'</span>,<span class="string">'J_{Fe-Fe}'</span>,<span class="string">'bond'</span>,2)
 FeCuChain.addcoupling(<span class="string">'mat'</span>,<span class="string">'J_{Cu-Fe}'</span>,<span class="string">'bond'</span>,[4 5])
-plot(FeCuChain,<span class="string">'range'</span>,[2 2 1],<span class="string">'zoom'</span>,1)
-</pre><img vspace="5" hspace="5" src="tutorial19_01.png" alt=""> <h2>Define magnetic structure<a name="2"></a></h2><p>The classical ground state of the above define Hamiltonian is antiferromagnetic chains ordered ferromagnetically along the b-direction. Here we define a magnetic unit cell that is 2x1x1 of the crystal unit cell to incorporate the antiferromagnetic structure.</p><pre class="codeinput">FeCuChain.genmagstr(<span class="string">'mode'</span>,<span class="string">'direct'</span>,<span class="string">'S'</span>,[0 0;1 1;0 0],<span class="string">'k'</span>,[1/2 0 0])
-FeCuChain.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'nExt'</span>,[2 1 1])
-plot(FeCuChain,<span class="string">'range'</span>,[2 0.7 1],<span class="string">'zoom'</span>,1,<span class="string">'rSpin'</span>,0.08,<span class="string">'lHeadSpin'</span>,0.75,<span class="string">'sSpin'</span>,1.5,<span class="string">'zoom'</span>,2)
-</pre><img vspace="5" hspace="5" src="tutorial19_02.png" alt=""> <h2>Spin-spin correlation function including the form factor<a name="3"></a></h2><p>We calculate the spin wave intensity (withouth the polarisation factor) and include the magnetic form factor of both the Cu2+ and Fe2+. The spin wave dispersion plot includes the imaginary part of the spin wave energies as well (plotted as red dots) to check that the magnetic ground state is right.</p><pre class="codeinput">spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 501},<span class="string">'formfact'</span>,true,<span class="string">'hermit'</span>,false);
-spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>);
-figure
-sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'imag'</span>,true,<span class="string">'axLim'</span>,[0 4.5])
-figure
-sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.2)
-</pre><img vspace="5" hspace="5" src="tutorial19_03.png" alt=""> <img vspace="5" hspace="5" src="tutorial19_04.png" alt=""> <h2>Copper only correlations<a name="4"></a></h2><p>To see only the spin-spin correlations on the Cu2+ ions, the sw.spinwave() function has an option 'formfact', this option allows to change separately the form factor function of each magnetic ion in the unit cell separately. Since we have two magnetic ions, {1 0} means that the Cu2+ (defined first) will have a form factor of identity, while the Fe2+ ion will have form factor of zero (zero intensity). As the resulting plot shows, the upper branch comes from mostly the Fe2+ chain. This is resonable, since the spin wave energy is ~J*S and the Fe2+ ions have larger S. There is also a small mixing around the zone center and boundaries due to the weak J_{Cu-Fe} coupling.</p><pre class="codeinput">spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 503},<span class="string">'formfact'</span>,{1 0},<span class="string">'hermit'</span>,false);
-spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>);
-figure
-sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.2)
-</pre><img vspace="5" hspace="5" src="tutorial19_05.png" alt=""> <h2>Iron only correlations<a name="5"></a></h2><p>By changing the form factor option value to {0 1} the spin-spin correlations on the Fe ions are plotted. It is clearly visible, that the goldstone mode at (1/2,0,0) has a strong Fe2+ component as well.</p><pre class="codeinput">spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 500},<span class="string">'formfact'</span>,{0 1});
-spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>);
-figure
-sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.2)
-</pre><pre class="codeoutput">Warning: To make the Hamiltonian positive definite, a small omega_tol value was
-added to its diagonal! 
-</pre><img vspace="5" hspace="5" src="tutorial19_06.png" alt=""> <h2>Reduced moments<a name="6"></a></h2><p>The size of the reduced moment due to the zero point energy of the spin waves can be calculated as well. The calculated momen reduction is finite, that shows that within the spin wave approach, the 2D coupled plane of Heisenberg spins at zero temperature is ordered. The moment reduction is much larger on the spin-2 Fe ion (dS = 0.577) than on the spin-1/2 (dS = 0.137) Cu ions. This is due to the fact, that for the Fe ions the interchain coupling is much weaker than the chain coupling, this leads to large moment reduction, while the Cu ions the interchain coupling is much larger relative to the intrachain exchange.</p><pre class="codeinput">FeCuChain.moment(<span class="string">'nRand'</span>,1e5)
-</pre><pre class="codeoutput">
-ans = 
 
-    moment: [0.3635 1.4247 0.3635 1.4247]
-       obj: [1x1 spinw]
+plot(FeCuChain,<span class="string">'range'</span>,[3 0.7 1],<span class="string">'cellMode'</span>,<span class="string">'none'</span>)
+</pre><img vspace="5" hspace="5" src="tutorial19_01.png" style="width:560px;height:420px;" alt=""> <h2 id="2">Define magnetic structure</h2><p>The classical ground state of the above define Hamiltonian is antiferromagnetic chains ordered ferromagnetically along the b-direction. Here we define a magnetic unit cell that is 2x1x1 of the crystal unit cell to incorporate the antiferromagnetic structure.</p><pre class="codeinput">FeCuChain.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'S'</span>,[0 0;1 1;0 0],<span class="string">'k'</span>,[1/2 0 0])
+FeCuChain.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'nExt'</span>,[2 1 1])
+plot(FeCuChain,<span class="string">'range'</span>,[3 0.7 1],<span class="string">'maglHead'</span>,0.3)
+</pre><img vspace="5" hspace="5" src="tutorial19_02.png" style="width:560px;height:420px;" alt=""> <h2 id="3">Spin-spin correlation function including the form factor</h2><p>We calculate the spin wave intensity (withouth the polarisation factor) and include the magnetic form factor of both the Cu2+ and Fe2+. The magnetic form factor is automatically assigned to the ions based on the given labels in the spniw.addatom() method. The magnetic form factor is applied to the calculated spin-spin correlation funcion in the spinw.spinwave() function, when the 'formfact' option is set to true. The spin wave dispersion plot includes the imaginary part of the spin wave energies as well (plotted as red dots) to check that the magnetic ground state is right.</p><pre class="codeinput">spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 501},<span class="string">'formfact'</span>,true,<span class="string">'hermit'</span>,false);
+spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>);
+figure
+subplot(2,1,1)
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'imag'</span>,true,<span class="string">'axLim'</span>,[0 4.5])
+subplot(2,1,2)
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.2)
+legend <span class="string">off</span>
+swplot.subfigure(1,3,1)
+</pre><img vspace="5" hspace="5" src="tutorial19_03.png" style="width:427px;height:700px;" alt=""> <h2 id="4">Copper only correlations</h2><p>To see only the spin-spin correlations on the Cu2+ ions, we can change the form factor of the Fe ions to zero. To do this, we can use the spinw.addatom() function, giving a new form factor setting the 'formfactn' option to 0. The spinw.addatom() method updates properties of existing atoms that have the label and position identical to the given one. The 'formfactn' option can be also used to give the value of the form factor as a vector with 9 or 11 numbers. As the resulting plot shows, the upper branch comes from mostly the Fe2+ chain. This is resonable, since the spin wave energy is ~J*S and the Fe2+ ions have larger S. There is also a small mixing around the zone center and boundaries due to the weak J_{Cu-Fe} coupling.</p><pre class="codeinput">FeCuChain.addatom(<span class="string">'label'</span>,<span class="string">'MCu2'</span>,<span class="string">'r'</span>,[0 0 0],<span class="string">'formfactn'</span>,1)
+FeCuChain.addatom(<span class="string">'label'</span>,<span class="string">'MFe2'</span>,<span class="string">'r'</span>,[0 1/2 0],<span class="string">'formfactn'</span>,0)
+
+spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 503},<span class="string">'hermit'</span>,false,<span class="string">'formfact'</span>,true);
+spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>);
+figure
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.2)
+</pre><img vspace="5" hspace="5" src="tutorial19_04.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Iron only correlations</h2><p>By exchanging the form factor values between Cu and Fe, the spin-spin correlations on the Fe ions are plotted. It is clearly visible, that the goldstone mode at (1/2,0,0) has a strong Fe2+ component as well.</p><pre class="codeinput">FeCuChain.addatom(<span class="string">'label'</span>,<span class="string">'MCu2'</span>,<span class="string">'r'</span>,[0 0 0],<span class="string">'formfactn'</span>,0)
+FeCuChain.addatom(<span class="string">'label'</span>,<span class="string">'MFe2'</span>,<span class="string">'r'</span>,[0 1/2 0],<span class="string">'formfactn'</span>,1)
+
+spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 500},<span class="string">'formfact'</span>,true);
+spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>);
+figure
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.2)
+</pre><pre class="codeoutput">Warning: To make the Hamiltonian positive definite, a small omega_tol value
+was added to its diagonal! 
+</pre><img vspace="5" hspace="5" src="tutorial19_05.png" style="width:560px;height:420px;" alt=""> <h2 id="6">Reduced moments</h2><p>The size of the reduced moment due to the zero point energy of the spin waves can be calculated as well. The calculated momen reduction is finite, that shows that within the spin wave approach, the 2D coupled plane of Heisenberg spins at zero temperature is ordered. The moment reduction is much larger on the spin-2 Fe ion (dS = 0.577) than on the spin-1/2 (dS = 0.137) Cu ions. This is due to the fact, that for the Fe ions the interchain coupling is much weaker than the chain coupling, this leads to large moment reduction, while the Cu ions the interchain coupling is much larger relative to the intrachain exchange.</p><pre class="codeinput">Red = FeCuChain.moment(<span class="string">'nRand'</span>,1e5)
+
+dM = repmat(FeCuChain.matom.S,1,prod(FeCuChain.magstr.N_ext)) - Red.moment
+</pre><pre class="codeoutput">Red = 
+  struct with fields:
+
+    moment: [0.3649 1.4304 0.3649 1.4304]
+       obj: [1&times;1 spinw]
          T: 0
      nRand: 100000
-
+dM =
+    0.1351    0.5696    0.1351    0.5696
 </pre><pre>Written by
 Sandor Toth
-2-September-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+02-Sep-2014, 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Spin-spin correlation function of two different coupled magnetic ion
 % In this tutorial, we demonstrate how the spin wave spectrum of two
@@ -127,9 +139,9 @@ Sandor Toth
 % We couple antiferromagnetically the Fe and Cu atoms in separate chains
 % running along the a-axis. The chains are weakly coupled along the b-axis.
 
+
 FeCuChain = spinw;
-FeCuChain.fileid(0)
-FeCuChain.genlattice('lat_const',[3 8 4],'sym','P 1')
+FeCuChain.genlattice('lat_const',[3 8 4],'spgr','P 1')
 FeCuChain.addatom('label','MCu2','r',[0 0 0])
 FeCuChain.addatom('label','MFe2','r',[0 1/2 0])
 
@@ -141,7 +153,8 @@ FeCuChain.addmatrix('label','J_{Cu-Fe}','value',-0.1,'color','orange')
 FeCuChain.addcoupling('mat','J_{Cu-Cu}','bond',1)
 FeCuChain.addcoupling('mat','J_{Fe-Fe}','bond',2)
 FeCuChain.addcoupling('mat','J_{Cu-Fe}','bond',[4 5])
-plot(FeCuChain,'range',[2 2 1],'zoom',1)
+
+plot(FeCuChain,'range',[3 0.7 1],'cellMode','none')
 
 %% Define magnetic structure
 % The classical ground state of the above define Hamiltonian is
@@ -149,47 +162,61 @@ plot(FeCuChain,'range',[2 2 1],'zoom',1)
 % Here we define a magnetic unit cell that is 2x1x1 of the crystal unit
 % cell to incorporate the antiferromagnetic structure.
 
-FeCuChain.genmagstr('mode','direct','S',[0 0;1 1;0 0],'k',[1/2 0 0])
+FeCuChain.genmagstr('mode','helical','S',[0 0;1 1;0 0],'k',[1/2 0 0])
 FeCuChain.genmagstr('mode','helical','nExt',[2 1 1])
-plot(FeCuChain,'range',[2 0.7 1],'zoom',1,'rSpin',0.08,'lHeadSpin',0.75,'sSpin',1.5,'zoom',2)
+plot(FeCuChain,'range',[3 0.7 1],'maglHead',0.3)
 
 %% Spin-spin correlation function including the form factor
 % We calculate the spin wave intensity (withouth the polarisation factor)
-% and include the magnetic form factor of both the Cu2+ and Fe2+. The spin
-% wave dispersion plot includes the imaginary part of the spin wave
+% and include the magnetic form factor of both the Cu2+ and Fe2+. The
+% magnetic form factor is automatically assigned to the ions based on the
+% given labels in the spniw.addatom() method. The magnetic form factor is
+% applied to the calculated spin-spin correlation funcion in the
+% spinw.spinwave() function, when the 'formfact' option is set to true. The
+% spin wave dispersion plot includes the imaginary part of the spin wave
 % energies as well (plotted as red dots) to check that the magnetic ground
 % state is right.
 
 spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 501},'formfact',true,'hermit',false);
 spec = sw_egrid(spec,'component','Sxx+Syy+Szz');
 figure
+subplot(2,1,1)
 sw_plotspec(spec,'mode','disp','imag',true,'axLim',[0 4.5])
-figure
+subplot(2,1,2)
 sw_plotspec(spec,'mode','color','dE',0.2)
+legend off
+swplot.subfigure(1,3,1)
 
 %% Copper only correlations
-% To see only the spin-spin correlations on the Cu2+ ions, the
-% sw.spinwave() function has an option 'formfact', this option allows to
-% change separately the form factor function of each magnetic ion in the
-% unit cell separately. Since we have two magnetic ions, {1 0} means that
-% the Cu2+ (defined first) will have a form factor of identity, while the
-% Fe2+ ion will have form factor of zero (zero intensity). As the resulting
-% plot shows, the upper branch comes from mostly the Fe2+ chain. This is
+% To see only the spin-spin correlations on the Cu2+ ions, we can change
+% the form factor of the Fe ions to zero. To do this, we can use the
+% spinw.addatom() function, giving a new form factor setting the
+% 'formfactn' option to 0. The spinw.addatom() method updates properties of
+% existing atoms that have the label and position identical to the given
+% one. The 'formfactn' option can be also used to give the value of the
+% form factor as a vector with 9 or 11 numbers. As the resulting plot
+% shows, the upper branch comes from mostly the Fe2+ chain. This is
 % resonable, since the spin wave energy is ~J*S and the Fe2+ ions have
 % larger S. There is also a small mixing around the zone center and
 % boundaries due to the weak J_{Cu-Fe} coupling.
 
-spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 503},'formfact',{1 0},'hermit',false);
+FeCuChain.addatom('label','MCu2','r',[0 0 0],'formfactn',1)
+FeCuChain.addatom('label','MFe2','r',[0 1/2 0],'formfactn',0)
+
+spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 503},'hermit',false,'formfact',true);
 spec = sw_egrid(spec,'component','Sxx+Syy+Szz');
 figure
 sw_plotspec(spec,'mode','color','dE',0.2)
 
 %% Iron only correlations
-% By changing the form factor option value to {0 1} the spin-spin
+% By exchanging the form factor values between Cu and Fe, the spin-spin
 % correlations on the Fe ions are plotted. It is clearly visible, that
 % the goldstone mode at (1/2,0,0) has a strong Fe2+ component as well.
 
-spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 500},'formfact',{0 1});
+FeCuChain.addatom('label','MCu2','r',[0 0 0],'formfactn',0)
+FeCuChain.addatom('label','MFe2','r',[0 1/2 0],'formfactn',1)
+
+spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 500},'formfact',true);
 spec = sw_egrid(spec,'component','Sxx+Syy+Szz');
 figure
 sw_plotspec(spec,'mode','color','dE',0.2)
@@ -205,13 +232,14 @@ sw_plotspec(spec,'mode','color','dE',0.2)
 % leads to large moment reduction, while the Cu ions the interchain
 % coupling is much larger relative to the intrachain exchange.
 
-FeCuChain.moment('nRand',1e5)
+Red = FeCuChain.moment('nRand',1e5)
+
+dM = repmat(FeCuChain.matom.S,1,prod(FeCuChain.magstr.N_ext)) - Red.moment
 
 %%
 %  Written by
 %  Sandor Toth
-%  2-September-2014
-
+%  02-Sep-2014, 06-Feb-2017
 
 ##### SOURCE END #####
 --></body></html>

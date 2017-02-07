@@ -89,7 +89,7 @@ phi = atan2(M(1,:),M(3,:))*180/pi;
 %Calculating spin wave dispersion:
 specYVO3 = yvo3.spinwave({[3/4 3/4 0] [1/2 1/2 0] [1/2 1/2 1] });
 specYVO3 = sw_neutron(specYVO3);
-specYVO3 = sw_conv(specYVO3,'Evect',linspace(0,25,nE));
+specYVO3 = sw_egrid(specYVO3,'Evect',linspace(0,25,nE));
 %Plotting of spin wave spectra with imaginary components:
 figure
 subplot(3,1,1);

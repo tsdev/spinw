@@ -37,7 +37,7 @@ function T = table(obj,type,index,showVal)
 % T         Matlab table object.
 %
 
-if verLessThan('MATLAB','R2013b')
+if verLessThan('MATLAB','8.2')
     warning('spinw:table:Version','This function is supported only on MATLAB R2013b or newer!')
     return
 end

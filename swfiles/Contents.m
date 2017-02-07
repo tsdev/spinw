@@ -103,3 +103,4 @@
 %   sw_uniquetol     - returns the unique column vectors within tolerance
 %   sw_update        - updates the SpinW installation from the internet
 %   sw_version       - returns the installed version of SpinW
+%   sw_mex           - compiles the mex files and test them

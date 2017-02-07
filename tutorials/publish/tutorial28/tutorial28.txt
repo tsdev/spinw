@@ -1,0 +1,188 @@
+<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">biquadratic test 2</a></li><li><a href="#2">spinw</a></li><li><a href="#3">spin wave</a></li></ul></div><h2 id="1">biquadratic test 2</h2><p>FCC lattice from: PHYSICAL REVIEW B 85, 054409 (2012)</p><pre class="codeinput"><span class="comment">% MnO parameter set</span>
+<span class="comment">%S = 5/2, J? = 5 K, J =5.5 K</span>
+
+S  = 5/2;
+J2 = 5.5;
+J1 = 5.0;
+B  = 0;
+g  = 1;
+muB = 1;
+a  = 1;
+
+
+J = J2;
+
+j = J1/J2/6;
+
+lambda = 0.002*6*J*0;
+H  = 0.15*6*J*0;
+<span class="comment">%Q = -2*B*S^2;</span>
+Q = 0.01*J;
+
+delta = [1 0 0;0 1 0;0 0 1];
+delta = [delta;-delta];
+theta = asin(-g*muB*H/(12*J*S+2*S*lambda));
+
+nQ = 200;
+qscan = sw_qscan({[1 0 0] [0 0 0] [1/2 1/2 0] [1/2 1/2 1/2] [0 0 0] nQ});
+
+<span class="keyword">for</span> ii = 1:size(qscan,2)
+    q = qscan(:,ii)*2*pi;
+
+    gamma = 1/6*sum(exp(1i*q'*delta'));
+
+
+    h1 = cos(a*(q(1)-q(2))/2) + cos(a*(q(2)-q(3))/2) + cos(a*(q(3)-q(1))/2);
+    h2 = cos(a*(q(1)+q(2))/2) + cos(a*(q(2)+q(3))/2) + cos(a*(q(3)+q(1))/2);
+
+    H1 = 1+lambda/3/J+gamma*sin(theta)^2 + 2*Q/J/S + <span class="keyword">...</span>
+        (2*j-Q/3/J/S)*h1 + 2*j*sin(theta)^2*h2;
+
+    H2 = gamma*cos(theta)^2 + (2*j*cos(theta)^2+Q/3/J/S)*h2;
+
+    omega(ii) = 6*J*S*sqrt((H1-H2)*(H1+H2));
+<span class="keyword">end</span>
+
+figure
+plot(real(omega)/15/J,<span class="string">'-'</span>)
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial28_01.png" style="width:560px;height:420px;" alt=""> <h2 id="2">spinw</h2><pre class="codeinput">fcc = spinw;
+fcc.genlattice(<span class="string">'lat_const'</span>,[8 8 8])
+fcc.addatom(<span class="string">'r'</span>,[0   0   0],<span class="string">'S'</span>,S)
+fcc.addatom(<span class="string">'r'</span>,[1/2 1/2 0],<span class="string">'S'</span>,S)
+fcc.addatom(<span class="string">'r'</span>,[1/2 0 1/2],<span class="string">'S'</span>,S)
+fcc.addatom(<span class="string">'r'</span>,[0 1/2 1/2],<span class="string">'S'</span>,S)
+
+fcc.gencoupling
+fcc.addmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>,<span class="string">'value'</span>,J1)
+fcc.addmatrix(<span class="string">'label'</span>,<span class="string">'J2'</span>,<span class="string">'value'</span>,J2,<span class="string">'color'</span>,<span class="string">'g'</span>)
+<span class="comment">% there is a factor 2 difference between SpinW and paper</span>
+fcc.addmatrix(<span class="string">'label'</span>,<span class="string">'B'</span>,<span class="string">'value'</span>,-0.5*Q/S^3*2)
+
+fcc.addcoupling(<span class="string">'mat'</span>,<span class="string">'J1'</span>,<span class="string">'bond'</span>,1)
+fcc.addcoupling(<span class="string">'mat'</span>,<span class="string">'J2'</span>,<span class="string">'bond'</span>,2)
+fcc.addcoupling(<span class="string">'mat'</span>,<span class="string">'B'</span>,<span class="string">'bond'</span>,1,<span class="string">'type'</span>,<span class="string">'biquadratic'</span>)
+
+
+fcc.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'S'</span>,[1 -1 -1 -1;1 -1 -1 -1;zeros(1,4)],<span class="string">'k'</span>,[1/2 1/2 1/2],<span class="string">'next'</span>,[2 2 2],<span class="string">'n'</span>,[0 0 1]);
+
+plot(fcc)
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial28_02.png" style="width:560px;height:420px;" alt=""> <h2 id="3">spin wave</h2><pre class="codeinput">spec = fcc.spinwave(qscan);
+<span class="comment">%spec.omega = spec.omega/15/J;</span>
+spec = sw_egrid(spec);
+spec = sw_omegasum(spec,<span class="string">'zeroint'</span>,1e-5,<span class="string">'emptyval'</span>,0);
+</pre><pre class="codeinput">figure
+subplot(2,1,1)
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'colormap'</span>,[0 0 0],<span class="string">'axlim'</span>,[0 2],<span class="string">'colorbar'</span>,false)
+
+subplot(2,1,2)
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'colorbar'</span>,false,<span class="string">'dE'</span>,0.01)
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial28_03.png" style="width:560px;height:420px;" alt=""> <pre class="codeinput">figure
+plot(real(omega)/15/J,<span class="string">'-'</span>)
+
+hold <span class="string">on</span>
+plot(spec.omega(1,:)/15/J,<span class="string">'ro'</span>)
+axis([0 20 0 0.2])
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial28_04.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+<literal>##### SOURCE BEGIN #####
+%% biquadratic test 2
+% FCC lattice from:
+% PHYSICAL REVIEW B 85, 054409 (2012)
+
+% MnO parameter set
+%S = 5/2, J? = 5 K, J =5.5 K
+
+S  = 5/2;
+J2 = 5.5;
+J1 = 5.0;
+B  = 0;
+g  = 1;
+muB = 1;
+a  = 1;
+
+
+J = J2;
+
+j = J1/J2/6;
+
+lambda = 0.002*6*J*0;
+H  = 0.15*6*J*0;
+%Q = -2*B*S^2;
+Q = 0.01*J;
+
+delta = [1 0 0;0 1 0;0 0 1];
+delta = [delta;-delta];
+theta = asin(-g*muB*H/(12*J*S+2*S*lambda));
+
+nQ = 200;
+qscan = sw_qscan({[1 0 0] [0 0 0] [1/2 1/2 0] [1/2 1/2 1/2] [0 0 0] nQ});
+
+for ii = 1:size(qscan,2)
+    q = qscan(:,ii)*2*pi;
+    
+    gamma = 1/6*sum(exp(1i*q'*delta'));
+    
+    
+    h1 = cos(a*(q(1)-q(2))/2) + cos(a*(q(2)-q(3))/2) + cos(a*(q(3)-q(1))/2);
+    h2 = cos(a*(q(1)+q(2))/2) + cos(a*(q(2)+q(3))/2) + cos(a*(q(3)+q(1))/2);
+    
+    H1 = 1+lambda/3/J+gamma*sin(theta)^2 + 2*Q/J/S + ...
+        (2*j-Q/3/J/S)*h1 + 2*j*sin(theta)^2*h2;
+    
+    H2 = gamma*cos(theta)^2 + (2*j*cos(theta)^2+Q/3/J/S)*h2;
+    
+    omega(ii) = 6*J*S*sqrt((H1-H2)*(H1+H2));
+end
+
+figure
+plot(real(omega)/15/J,'-')
+
+%% spinw
+
+fcc = spinw;
+fcc.genlattice('lat_const',[8 8 8])
+fcc.addatom('r',[0   0   0],'S',S)
+fcc.addatom('r',[1/2 1/2 0],'S',S)
+fcc.addatom('r',[1/2 0 1/2],'S',S)
+fcc.addatom('r',[0 1/2 1/2],'S',S)
+
+fcc.gencoupling
+fcc.addmatrix('label','J1','value',J1)
+fcc.addmatrix('label','J2','value',J2,'color','g')
+% there is a factor 2 difference between SpinW and paper
+fcc.addmatrix('label','B','value',-0.5*Q/S^3*2)
+
+fcc.addcoupling('mat','J1','bond',1)
+fcc.addcoupling('mat','J2','bond',2)
+fcc.addcoupling('mat','B','bond',1,'type','biquadratic')
+
+
+fcc.genmagstr('mode','helical','S',[1 -1 -1 -1;1 -1 -1 -1;zeros(1,4)],'k',[1/2 1/2 1/2],'next',[2 2 2],'n',[0 0 1]);
+
+plot(fcc)
+
+%% spin wave
+
+spec = fcc.spinwave(qscan);
+%spec.omega = spec.omega/15/J;
+spec = sw_egrid(spec);
+spec = sw_omegasum(spec,'zeroint',1e-5,'emptyval',0);
+
+%%
+figure
+subplot(2,1,1)
+sw_plotspec(spec,'mode','disp','colormap',[0 0 0],'axlim',[0 2],'colorbar',false)
+
+subplot(2,1,2)
+sw_plotspec(spec,'mode','color','colorbar',false,'dE',0.01)
+
+%%
+
+figure
+plot(real(omega)/15/J,'-')
+
+hold on
+plot(spec.omega(1,:)/15/J,'ro')
+axis([0 20 0 0.2])
+
+##### SOURCE END #####</literal>
+-->

@@ -1,0 +1,69 @@
+<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">antiferromagnetic chain</a></li><li><a href="#2">opt magnetic structure</a></li><li><a href="#3">magnetic field</a></li><li><a href="#4">spin wave</a></li></ul></div><h2 id="1">antiferromagnetic chain</h2><pre class="codeinput">afc = spinw;
+afc.genlattice(<span class="string">'lat_const'</span>,[3 4 4])
+afc.addatom(<span class="string">'r'</span>,[  0 0 0],<span class="string">'S'</span>,1)
+afc.addmatrix(<span class="string">'label'</span>,<span class="string">'A'</span>,<span class="string">'value'</span>,diag([0 0 0.1]))
+afc.addmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>,<span class="string">'value'</span>,1)
+afc.addmatrix(<span class="string">'label'</span>,<span class="string">'J2-'</span>,<span class="string">'value'</span>,1/3,<span class="string">'color'</span>,<span class="string">'orange'</span>)
+afc.gencoupling
+afc.addcoupling(<span class="string">'J1'</span>,1)
+afc.addcoupling(<span class="string">'J2-'</span>,5)
+afc.addaniso(<span class="string">'A'</span>)
+<span class="comment">%afc.optmagsteep;</span>
+plot(afc,<span class="string">'range'</span>,[2 1 1])
+</pre><pre class="codeoutput error">Error using sw_readparam (line 105)
+Necessary input option is missing 'mat'
+Error in spinw/addcoupling (line 69)
+param = sw_readparam(inpForm, varargin{:});
+Error in tutorial22 (line 10)
+afc.addcoupling('J1',1)</pre><h2 id="2">opt magnetic structure</h2><pre class="codeinput"><span class="comment">%afc.field([0 0 7])</span>
+afc.optmagstr(<span class="string">'func'</span>,@gm_spherical3d,<span class="string">'xmin'</span>,[0 0, 0 0 0,0 0],<span class="string">'xmax'</span>,[pi/2 0,1/2 0 0,0 0])
+E0 = afc.energy;
+</pre><h2 id="3">magnetic field</h2><pre class="codeinput">optRes = afc.optmagsteep(<span class="string">'random'</span>,false,<span class="string">'nRun'</span>,400);
+<span class="comment">%plot(afc)</span>
+figure;
+plot(optRes.e,<span class="string">'o-'</span>)
+</pre><h2 id="4">spin wave</h2><pre class="codeinput">spec = afc.spinwave({[0 0 0] [2 0 0] 500},<span class="string">'hermit'</span>,true);
+spec = sw_egrid(spec,<span class="string">'Evect'</span>,linspace(0,3,300));
+figure
+sw_plotspec(spec);<span class="comment">%,'mode','disp','imag',true);</span>
+axis([0 2 0 3])
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+<literal>##### SOURCE BEGIN #####
+%% antiferromagnetic chain
+
+afc = spinw;
+afc.genlattice('lat_const',[3 4 4])
+afc.addatom('r',[  0 0 0],'S',1)
+afc.addmatrix('label','A','value',diag([0 0 0.1]))
+afc.addmatrix('label','J1','value',1)
+afc.addmatrix('label','J2-','value',1/3,'color','orange')
+afc.gencoupling
+afc.addcoupling('J1',1)
+afc.addcoupling('J2-',5)
+afc.addaniso('A')
+%afc.optmagsteep;
+plot(afc,'range',[2 1 1])
+
+%% opt magnetic structure
+
+%afc.field([0 0 7])
+afc.optmagstr('func',@gm_spherical3d,'xmin',[0 0, 0 0 0,0 0],'xmax',[pi/2 0,1/2 0 0,0 0])
+E0 = afc.energy;
+%% magnetic field
+
+optRes = afc.optmagsteep('random',false,'nRun',400);
+%plot(afc)
+figure;
+plot(optRes.e,'o-')
+
+%% spin wave
+spec = afc.spinwave({[0 0 0] [2 0 0] 500},'hermit',true);
+spec = sw_egrid(spec,'Evect',linspace(0,3,300));
+figure
+sw_plotspec(spec);%,'mode','disp','imag',true);
+axis([0 2 0 3])
+
+
+
+##### SOURCE END #####</literal>
+-->

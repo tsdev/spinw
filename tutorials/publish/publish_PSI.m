@@ -10,6 +10,11 @@ function publish_PSI(fName, DirName)
 % creates .txt files for publishing on the PSI website
 %
 
+% switch of text outputs from code
+fid0 = swpref.getpref('fid',[]);
+tid0 = swpref.getpref('tid',[]);
+swpref.setpref('fid',0,'tid',0)
+
 if nargin < 2
     % list of files in the publish folder:
     pubfolder = [sw_rootdir 'tutorials' filesep 'publish'];
@@ -87,7 +92,7 @@ for ii = 1:numel(pubfiles)
         % latex formatting
         htmlOut{end,1} = regexprep(htmlOut{end,1},'LATEX','<latex>');
         htmlOut{end,1} = regexprep(htmlOut{end,1},'PATEX','</latex>');
-
+        
         htmlOut{end+1,1} = htmlFile{jj}; %#ok<*AGROW>
         
         jj = jj+1;
@@ -114,5 +119,8 @@ for ii = 1:numel(pubfiles)
     fclose(fid);
     
 end
+
+% restore SpinW preferences
+swpref.setpref('fid',fid0,'tid',tid0);
 
 end

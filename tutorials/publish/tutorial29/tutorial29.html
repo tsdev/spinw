@@ -1,0 +1,122 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>tutorial29</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-07"><meta name="DC.source" content="tutorial29.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">antiferromagnetic chain</a></li><li><a href="#2">magnetic field</a></li><li><a href="#3">spin wave</a></li></ul></div><h2 id="1">antiferromagnetic chain</h2><pre class="codeinput">afc = sw;
+afc.genlattice(<span class="string">'lat_const'</span>,[4 4 6])
+afc.addatom(<span class="string">'r'</span>,[  0 0 0],<span class="string">'S'</span>,1)
+afc.addatom(<span class="string">'r'</span>,[1/2 0 0],<span class="string">'S'</span>,1)
+afc.addmatrix(<span class="string">'label'</span>,<span class="string">'A'</span>,<span class="string">'value'</span>,diag([0 0 -0.1]))
+afc.addmatrix(<span class="string">'label'</span>,<span class="string">'J'</span>,<span class="string">'value'</span>,1)
+afc.gencoupling
+afc.addcoupling(<span class="string">'J'</span>,1)
+afc.addaniso(<span class="string">'A'</span>)
+afc.optmagsteep;
+plot(afc)
+</pre><pre class="codeoutput error">Undefined function or variable 'sw'.
+Error in tutorial29 (line 3)
+afc = sw;</pre><h2 id="2">magnetic field</h2><pre class="codeinput">afc.field([0 0 7])
+afc.optmagsteep(<span class="string">'random'</span>,true,<span class="string">'nRun'</span>,400);
+plot(afc)
+</pre><h2 id="3">spin wave</h2><pre class="codeinput">spec = afc.spinwave({[0 0 0] [2 0 0] 500},<span class="string">'hermit'</span>,true);
+spec = sw_egrid(spec,<span class="string">'Evect'</span>,linspace(0,3,300));
+figure
+sw_plotspec(spec);<span class="comment">%,'mode','disp','imag',true);</span>
+axis([0 2 0 3])
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% antiferromagnetic chain
+
+afc = sw;
+afc.genlattice('lat_const',[4 4 6])
+afc.addatom('r',[  0 0 0],'S',1)
+afc.addatom('r',[1/2 0 0],'S',1)
+afc.addmatrix('label','A','value',diag([0 0 -0.1]))
+afc.addmatrix('label','J','value',1)
+afc.gencoupling
+afc.addcoupling('J',1)
+afc.addaniso('A')
+afc.optmagsteep;
+plot(afc)
+
+%% magnetic field
+
+afc.field([0 0 7])
+afc.optmagsteep('random',true,'nRun',400);
+plot(afc)
+
+%% spin wave
+spec = afc.spinwave({[0 0 0] [2 0 0] 500},'hermit',true);
+spec = sw_egrid(spec,'Evect',linspace(0,3,300));
+figure
+sw_plotspec(spec);%,'mode','disp','imag',true);
+axis([0 2 0 3])
+
+
+
+##### SOURCE END #####
+--></body></html>

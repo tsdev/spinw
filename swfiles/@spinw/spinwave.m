@@ -13,6 +13,11 @@ function spectra = spinwave(obj, hkl, varargin)
 % calculated using a coordinate system rotating from cell to cell. In this
 % case the spin Hamiltonian has to fulfill this extra rotational symmetry.
 %
+% Some of the code of the function can run faster is mex files are used. To
+% switch on mex files, use the swpref.setpref('usemex',true) command. For
+% details see the <a href="matlab:help('sw_mex.m')">sw_mex</a> function.
+%
+%
 % Input:
 %
 % obj           Input structure, spinw class object.
@@ -97,9 +102,6 @@ function spectra = spinwave(obj, hkl, varargin)
 %               frame is saved S'(k,omega). Default is false.
 % title         Gives a title string to the simulation that is saved in the
 %               output.
-% useMex        If true, the code will use compiled mex files (if they
-%               exist) to speed up the calculation, for details see
-%               sw_mex() function. Default is false.
 %
 % Output:
 %
@@ -153,7 +155,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % triangular lattice antiferromagnet (S=1, J=1) along the [H H 0] direction
 % in reciprocal space.
 %
-% See also SPINW, SPINW.SPINWAVESYM, SW_NEUTRON, SPINW.POWSPEC, SPINW.OPTMAGSTR, SPINW.FILEID, SW_INSTRUMENT.
+% See also SPINW, SPINW.SPINWAVESYM, SW_MEX, SPINW.POWSPEC.
 %
 
 % for linear scans create the Q line(s)
@@ -165,6 +167,9 @@ end
 
 % save warning of eigorth
 orthWarn0 = false;
+
+% use mex file by default?
+useMex = swpref.getpref('usemex',[]);
 
 % calculate symbolic spectrum if obj is in symbolic mode
 if obj.symbolic
@@ -209,9 +214,9 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
-inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase' 'tid' 'fid' }];
-inpForm.defval = [inpForm.defval {false    false       -1    nan   }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]       [1 1] [1 1] }];
+inpForm.fname  = [inpForm.fname  {'cmplxBase' 'tid' 'fid' }];
+inpForm.defval = [inpForm.defval {false       -1    nan   }];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1] [1 1] }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -234,17 +239,6 @@ end
 
 if param.tid == -1
     param.tid = swpref.getpref('tid',[]);
-end
-
-if param.useMex == -1
-    % don't check files (takes too much time)
-    param.useMex = true;
-    % elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
-    %         exist('eig_omp','file')==3 && exist('mtimesx','file')==3)
-elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
-        exist('eig_omp','file')==3)
-    % check if mex files exist
-    param.useMex = false;
 end
 
 % generate magnetic structure in the rotating noation
@@ -711,7 +705,7 @@ for jj = 1:nSlice
         % basis functions of the magnon modes
         V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
         
-        if param.useMex && nHklMEM>1
+        if useMex && nHklMEM>1
             % use mex files to speed up the calculation
             % mex file will return an error if the matrix is not positive definite.
             [K2, invK] = chol_omp(ham,'Colpa','tol',param.omega_tol);
@@ -773,7 +767,7 @@ for jj = 1:nSlice
         gham = mmat(gComm,ham);
         %gham = mtimesx(gComm,ham);
         
-        [V, D, orthWarn] = eigorth(gham,param.omega_tol, param.sortMode,param.useMex);
+        [V, D, orthWarn] = eigorth(gham,param.omega_tol, param.sortMode,useMex);
         
         orthWarn0 = orthWarn || orthWarn0;
         

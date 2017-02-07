@@ -81,9 +81,8 @@ yig.quickham([Jad Jdd Jaa]/Scl)
 
 % add external field and convert from the standard SpinW unit (meV) to THz
 yig.field([0 0 0.01]*sw_converter(1,'meV','THz','photon'))
-yig.optmagsteep
+yig.optmagsteep('nRun',1e4)
 yig.genmagstr('mode','rotate','n',[0 0 1])
-yig.optmagsteep
 
 if sum(yig.mag_str.F(3,:),2)<0
     yig.mag_str.F = -yig.mag_str.F;

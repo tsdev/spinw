@@ -1,5 +1,7 @@
-function publish_PSI(fName, DirName)
+function publish_PSI(fName, dirName)
 % publishing all examples in the publish folder and convert it to PSI web format
+%
+% PUBLISH_PSI(fName, dirName)
 %
 % The online source can be imported to Matlab using the web address of the
 % tutorial file:
@@ -7,7 +9,14 @@ function publish_PSI(fName, DirName)
 % Example:
 % grabcode('http://www.psi.ch/spinw/tutorial-2')
 %
-% creates .txt files for publishing on the PSI website
+% The function also creates .txt files for publishing on the PSI website.
+%
+% Input:
+%
+% fName         List of files to publish. If empty all *.m files from the
+%               dirName folder will be published.
+% dirName       Name of the directory where the .m files are located.
+%               Default is the SpinW publish folder.
 %
 
 % switch of text outputs from code
@@ -19,10 +28,10 @@ if nargin < 2
     % list of files in the publish folder:
     pubfolder = [sw_rootdir 'tutorials' filesep 'publish'];
 else
-    pubfolder = DirName;
+    pubfolder = dirName;
 end
 
-if nargin == 0
+if nargin == 0 || isempty(fName)
     pubfiles  = dir([pubfolder filesep '*.m']);
 else
     pubfiles  = dir([pubfolder filesep fName]);

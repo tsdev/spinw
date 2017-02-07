@@ -15,7 +15,10 @@ Q = [Qh(:) Qk(:) Ql(:)]';
 Ev = linspace(0,5,nE);
 spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>,<span class="string">'Evect'</span>,Ev);
 spec = sw_instrument(spec,<span class="string">'dE'</span>,0.1);
-</pre><h2 id="4">Creat the Q map</h2><p>The calculated intensity map is stored in spec.swConv, we reshape it into a 3D matrix using Matlab commands.</p><pre class="codeinput">spec3D = reshape(spec.swConv,nE-1,nQ,nQ);
+</pre><pre class="codeoutput error">Error using sw_egrid (line 345)
+The imaginary part of the spin wave energes is larger than the bin size! Improve your calculation or disable imagChk option!
+Error in tutorial10 (line 37)
+spec = sw_egrid(spec,'component','Sxx+Syy+Szz','Evect',Ev);</pre><h2 id="4">Creat the Q map</h2><p>The calculated intensity map is stored in spec.swConv, we reshape it into a 3D matrix using Matlab commands.</p><pre class="codeinput">spec3D = reshape(spec.swConv,nE-1,nQ,nQ);
 </pre><h2 id="5">Plotting E=const cut</h2><p>A constant energy cut takes the (Eidx,:,:) elements of the matrix and plots it using the Matlab function imagesc(). We also integrate in energy the same way Horace does by taking the average of the points and rescaling with the energy bin size.</p><pre class="codeinput">Ecut = [3.5 4.0]; <span class="comment">%meV</span>
 Eidx = find(Ev&gt;Ecut(1) &amp; Ev&lt;Ecut(2));
 figure;
@@ -27,16 +30,14 @@ ylabel(<span class="string">'(0 K 0) (r.l.u.)'</span>)
 title(<span class="string">'Spin wave spectrum at E = 3 meV, square lattice Heisenberg AF'</span>)
 caxis([0 3])
 colorbar
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial10_02.png" style="width:560px;height:420px;" alt=""> <h2 id="6">Constant energy cut using Horace</h2><p>We can do the same cut much easyer using Horace (<a href="http://horace.isis.rl.ac.uk">http://horace.isis.rl.ac.uk</a>). Assuming that Horace is installed and initialized we can do the same constant energy cut with just three steps. First we create an empty d3d object that defines the (h,k,0) plane with ranges in momentum and energy. Second we call Horace to fill up the empty d3d object with the simulated spin wave data and finally we plot a constant energy cut.</p><pre class="codeinput">d3dobj = d3d(sq.abc,[1 0 0 0],[0,0.01,2],[0 1 0 0],[0,0.01,2],[0 0 0 1],[0,0.01,5]);
+</pre><h2 id="6">Constant energy cut using Horace</h2><p>We can do the same cut much easyer using Horace (<a href="http://horace.isis.rl.ac.uk">http://horace.isis.rl.ac.uk</a>). Assuming that Horace is installed and initialized we can do the same constant energy cut with just three steps. First we create an empty d3d object that defines the (h,k,0) plane with ranges in momentum and energy. Second we call Horace to fill up the empty d3d object with the simulated spin wave data and finally we plot a constant energy cut.</p><pre class="codeinput">d3dobj = d3d(sq.abc,[1 0 0 0],[0,0.01,2],[0 1 0 0],[0,0.01,2],[0 0 0 1],[0,0.01,5]);
 d3dobj = disp2sqw_eval(d3dobj,@sq.horace,{<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>},0.1);
 plot(cut(d3dobj,[],[],[3.5 4]));
 colorslider(<span class="string">'delete'</span>)
 title(<span class="string">''</span>)
 caxis([0 3])
 colorbar
-</pre><pre class="codeoutput">--------------------------------------------------------------------------------
-Taking cut from dnd object...
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial10_03.png" style="width:560px;height:420px;" alt=""> <pre>Written by
+</pre><pre>Written by
 Sandor Toth
 06-Jun-2014, 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####

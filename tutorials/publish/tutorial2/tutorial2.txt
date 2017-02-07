@@ -61,7 +61,10 @@ sw_plotspec(afcSpec,<span class="string">'mode'</span>,2,<span class="string">'l
 <span class="comment">% Position the figure on the screen, similarly how subplot() positions the</span>
 <span class="comment">% axes on the figure.</span>
 swplot.subfigure(1,3,1)
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial2_04.png" style="width:427px;height:700px;" alt=""> <pre>Written by
+</pre><pre class="codeoutput error">Error using sw_egrid (line 345)
+The imaginary part of the spin wave energes is larger than the bin size! Improve your calculation or disable imagChk option!
+Error in tutorial2 (line 66)
+afcSpec = sw_egrid(afcSpec,'Evect',linspace(0,6.5,500),'component','Sperp');</pre><pre>Written by
 Bjorn Fak &amp; Sandor Toth
 06-Jun-2014, 06-Feb-2015</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####

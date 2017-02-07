@@ -34,7 +34,7 @@ Q = [Qh(:) Qk(:) Ql(:)]';
 spec = sq.spinwave(Q);
 
 Ev = linspace(0,5,nE);
-spec = sw_egrid(spec,'component','Sxx+Syy+Szz','Evect',Ev);
+spec = sw_egrid(spec,'component','Sxx+Syy+Szz','Evect',Ev,'imagChk',false);
 spec = sw_instrument(spec,'dE',0.1);
 
 

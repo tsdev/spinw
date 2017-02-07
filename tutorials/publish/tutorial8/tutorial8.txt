@@ -69,8 +69,6 @@ sw_plotspec(kag33Spec,<span class="string">'mode'</span>,3,<span class="string">
 swplot.subfigure(1,3,1)
 colorbar <span class="string">off</span>
 legend <span class="string">off</span>
-</pre><pre class="codeoutput">Warning: To make the Hamiltonian positive definite, a small omega_tol value
-was added to its diagonal! 
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial8_04.png" style="width:427px;height:700px;" alt=""> <h2 id="6">Generate magnetic structure II.</h2><p>Alternatively we can use the original unit cell, in this case the spin wave algorithm will calculate the dispersion on the assumption that the structure is incommensurate. The advantage of this method is that it produces less number of spin wave modes, more stable and faster.</p><pre class="codeinput">S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'k'</span>,[-1/3 -1/3 0],<span class="keyword">...</span>
     <span class="string">'n'</span>,[0 0 1],<span class="string">'unitS'</span>,<span class="string">'lu'</span>,<span class="string">'S'</span>,S0,<span class="string">'nExt'</span>,[1 1 1]);

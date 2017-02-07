@@ -39,6 +39,7 @@ optpar.nRun = 5;
 optpar.xmin = [    zeros(1,6), 0.5 0 0.0, 0 0];
 optpar.xmax = [2*pi*ones(1,6), 1.0 0 0.5, 0 0];
 
+hK.genmagstr(<span class="string">'mode'</span>,<span class="string">'random'</span>,<span class="string">'nExt'</span>,[1 1 1])
 magoptOut = hK.optmagstr(optpar);
 
 kOpt = hK.mag_str.k;
@@ -57,23 +58,17 @@ hkSpec = sw_egrid(hkSpec,<span class="string">'Evect'</span>,linspace(0,5,500),<
 figure
 sw_plotspec(hkSpec,<span class="string">'mode'</span>,<span class="string">'pretty'</span>,<span class="string">'linestyle'</span>,<span class="string">'-'</span>);
 caxis([0 20])
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial18_04.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Test dispersion on commensurate cell</h2><p>We recalculate the dispersion on a superlattice, that should give the same S(Q,omega), but it is much slower. We choose the superlattice, that approximates the propagation vector within 0.05 rlu by giving this number to the 'nExt' option in spinw.genmagstr() instead of the vector with three integers. We create the magnetic superlattice and then define the k-vector as zero. In this case the sw.spinwave() function will be run in commensurate mode.</p><pre class="codeinput">hK.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'next'</span>,0.05)
-hK.mag_str.k = [0 0 0]';
-
-hkSpec = hK.spinwave({[0 0 0] [1 0 0] 50},<span class="string">'Hermit'</span>,false);
-hK.fileid(0)
-hkSpec = sw_neutron(hkSpec,<span class="string">'pol'</span>,false);
-hkSpec = sw_egrid(hkSpec,<span class="string">'Evect'</span>,linspace(0,5,500),<span class="string">'imagChk'</span>,false);
-
-figure
-sw_plotspec(hkSpec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'axlim'</span>,[0 20],<span class="string">'dE'</span>,0.3);
-</pre><pre class="codeoutput">Warning: In the extended unit cell k is still larger than epsilon! 
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial18_05.png" style="width:560px;height:420px;" alt=""> <h2 id="6">Powder averaged spectrum</h2><p>We calculate the powder spectrum on the smaller unit cell between Q = 0 - 3 Angstrom^-1.</p><pre class="codeinput">hK.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'n'</span>,[0 0 1],<span class="string">'S'</span>,[1 0 0]',<span class="string">'k'</span>,kOpt',<span class="string">'next'</span>,[1 1 1]);
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial18_04.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Test dispersion on commensurate cell</h2><p>We recalculate the dispersion on a superlattice, that should give the same S(Q,omega), but it is much slower. We choose the superlattice, that approximates the propagation vector within 0.05 rlu by giving this number to the 'nExt' option in spinw.genmagstr() instead of the vector with three integers. We create the magnetic superlattice and then define the k-vector as zero. In this case the spinw.spinwave function will be run in commensurate mode. Carefull, this code will create a magnetic supercell with 270 atoms.</p><p>hK.genmagstr('mode','helical','next',0.05) hK.mag_str.k = [0 0 0]';</p><p>hkSpec = hK.spinwave({[0 0 0] [1 0 0] 50},'Hermit',false); hK.fileid(0) hkSpec = sw_neutron(hkSpec,'pol',false); hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500),'imagChk',false);</p><p>figure sw_plotspec(hkSpec,'mode','color','axlim',[0 20],'dE',0.3);</p><h2 id="6">Powder averaged spectrum</h2><p>We calculate the powder spectrum on the smaller unit cell between Q = 0 - 3 Angstrom^-1.</p><pre class="codeinput">hK.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'n'</span>,[0 0 1],<span class="string">'S'</span>,[1 0 0]',<span class="string">'k'</span>,kOpt',<span class="string">'next'</span>,[1 1 1]);
 powSpec = hK.powspec(linspace(0,3,80),<span class="string">'nrand'</span>,500,<span class="string">'Evect'</span>,linspace(0,5,500));
 
 figure;
 sw_plotspec(powSpec,<span class="string">'dE'</span>,0.01,<span class="string">'axlim'</span>,[0 0.05])
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial18_06.png" style="width:560px;height:420px;" alt=""> <pre>Written by
+</pre><pre class="codeoutput error">Error using sw_egrid (line 345)
+The imaginary part of the spin wave energes is larger than the bin size! Improve your calculation or disable imagChk option!
+Error in spinw/powspec (line 167)
+    specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T,'binType',param.binType,'imagChk',param.imagChk);
+Error in tutorial18 (line 111)
+powSpec = hK.powspec(linspace(0,3,80),'nrand',500,'Evect',linspace(0,5,500));</pre><pre>Written by
 Goran Nilsen and Sandor Toth
 27-Jun-2014, 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####
@@ -136,6 +131,7 @@ optpar.nRun = 5;
 optpar.xmin = [    zeros(1,6), 0.5 0 0.0, 0 0];
 optpar.xmax = [2*pi*ones(1,6), 1.0 0 0.5, 0 0];
 
+hK.genmagstr('mode','random','nExt',[1 1 1])
 magoptOut = hK.optmagstr(optpar);
 
 kOpt = hK.mag_str.k;
@@ -166,19 +162,20 @@ caxis([0 20])
 % approximates the propagation vector within 0.05 rlu by giving this number
 % to the 'nExt' option in spinw.genmagstr() instead of the vector with
 % three integers. We create the magnetic superlattice and then define the
-% k-vector as zero. In this case the sw.spinwave() function will be run in
-% commensurate mode.
-
-hK.genmagstr('mode','helical','next',0.05)
-hK.mag_str.k = [0 0 0]';
-
-hkSpec = hK.spinwave({[0 0 0] [1 0 0] 50},'Hermit',false);
-hK.fileid(0)
-hkSpec = sw_neutron(hkSpec,'pol',false);
-hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500),'imagChk',false);
-
-figure
-sw_plotspec(hkSpec,'mode','color','axlim',[0 20],'dE',0.3);
+% k-vector as zero. In this case the spinw.spinwave function will be run in
+% commensurate mode. Carefull, this code will create a magnetic supercell
+% with 270 atoms.
+% 
+% hK.genmagstr('mode','helical','next',0.05)
+% hK.mag_str.k = [0 0 0]';
+% 
+% hkSpec = hK.spinwave({[0 0 0] [1 0 0] 50},'Hermit',false);
+% hK.fileid(0)
+% hkSpec = sw_neutron(hkSpec,'pol',false);
+% hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500),'imagChk',false);
+% 
+% figure
+% sw_plotspec(hkSpec,'mode','color','axlim',[0 20],'dE',0.3);
 
 %% Powder averaged spectrum
 % We calculate the powder spectrum on the smaller unit cell between Q = 0 -

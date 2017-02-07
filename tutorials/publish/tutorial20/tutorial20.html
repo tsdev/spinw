@@ -168,7 +168,10 @@ figure(<span class="string">'position'</span>,[20 20 1100 500])
     caxis([0 60])
     colormap(jet)
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="tutorial20_04.png" style="width:1100px;height:500px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+</pre><pre class="codeoutput error">Error using sw_egrid (line 345)
+The imaginary part of the spin wave energes is larger than the bin size! Improve your calculation or disable imagChk option!
+Error in tutorial20 (line 156)
+    ybtiSpec = sw_egrid(ybtiSpec,'Evect',linspace(0,2,500),'component','Sperp');</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Description
 % This tutorial reproduces the calculated spin wave spectrum of

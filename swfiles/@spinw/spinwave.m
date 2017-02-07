@@ -168,6 +168,9 @@ end
 % save warning of eigorth
 orthWarn0 = false;
 
+% save warning for singular matrix
+singWarn0 = warning('off','MATLAB:nearlySingularMatrix');
+
 % use mex file by default?
 useMex = swpref.getpref('usemex',[]);
 
@@ -829,6 +832,10 @@ for jj = 1:nSlice
     sw_status(jj/nSlice*100,0,param.tid);
 end
 
+[~,singWarn] = lastwarn;
+% restore warning for singular matrix
+warning(singWarn0.state,'MATLAB:nearlySingularMatrix');
+
 % If number of formula units are given per cell normalize to formula
 % unit
 if obj.unit.nformula > 0
@@ -967,6 +974,14 @@ end
 % issue eigorth warning
 if orthWarn0
     warning('spinw:spinwave:NoOrth','Eigenvectors of defective eigenvalues cannot be orthogonalised at some q-point!');
+end
+
+lineLink = ['<a href="matlab:opentoline([''' sw_rootdir 'swfiles' filesep '@spinw' filesep 'spinwave.m''' '],758,0)">line 758</a>'];
+
+if strcmp(singWarn,'MATLAB:nearlySingularMatrix')
+    warning('spinw:spinwave:nearlySingularMatrix',['Matrix is close '...
+        'to singular or badly scaled. Results may be inaccurate.\n> In spinw/spinwave (' lineLink ')']);
+    fprintf(repmat('\b',[1 30]));
 end
 
 end

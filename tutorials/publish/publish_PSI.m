@@ -26,7 +26,8 @@ swpref.setpref('fid',0,'tid',0)
 
 if nargin < 2
     % list of files in the publish folder:
-    pubfolder = [sw_rootdir 'tutorials' filesep 'publish'];
+    %pubfolder = [sw_rootdir 'tutorials' filesep 'publish'];
+    pubfolder = fileparts(mfilename('fullpath'));
 else
     pubfolder = dirName;
 end

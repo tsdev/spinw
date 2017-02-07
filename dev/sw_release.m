@@ -146,6 +146,11 @@ for ii = 1:numel(swFiles)
     fclose(fid);
 end
 
+% change the Contents file
+cId = fopen([tempDirName filesep 'Contents.m'],'w');
+fprintf(cId,['%% SpinW\n%% Version ' verNum ' (R' num2str(revNum) ') ' swVer.Date '\n%%']);
+fclose(cId);
+
 cd(tempDirName0);
 
 zipName = [swDirName '.zip'];

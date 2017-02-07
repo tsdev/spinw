@@ -53,14 +53,20 @@ if ~verLessThan('matlab', '8.1')
 else
     % rename the functions to be used in Matlab versions prior to R2014a
     % strjoin()
-    movefile([folName filesep 'external' filesep 'strjoin0.m'],...
-        [folName filesep 'external' filesep 'strjoin.m']);
+    try %#ok<*TRYNC>
+        movefile([folName filesep 'external' filesep 'strjoin0.m'],...
+            [folName filesep 'external' filesep 'strjoin.m']);
+    end
     % strsplit()
-    movefile([folName filesep 'external' filesep 'strsplit0.m'],...
-        [folName filesep 'external' filesep 'strsplit.m']);
+    try
+        movefile([folName filesep 'external' filesep 'strsplit0.m'],...
+            [folName filesep 'external' filesep 'strsplit.m']);
+    end
     % gobjects()
-    movefile([folName filesep 'external' filesep 'gobjects0.m'],...
-        [folName filesep 'external' filesep 'gobjects.m']);
+    try
+        movefile([folName filesep 'external' filesep 'gobjects0.m'],...
+            [folName filesep 'external' filesep 'gobjects.m']);
+    end
 
 end
 

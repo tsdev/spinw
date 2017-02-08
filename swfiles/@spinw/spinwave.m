@@ -95,6 +95,8 @@ function spectra = spinwave(obj, hkl, varargin)
 %               Default is false.
 % saveSabp      If true, the dynamical structure factorin the rotating
 %               frame is saved S'(k,omega). Default is false.
+% outSperp      Instead of the full S(q,w) tensor Sab, only output the
+%               compopent perpedincular to q. Default is false.
 % title         Gives a title string to the simulation that is saved in the
 %               output.
 % useMex        If true, the code will use compiled mex files (if they
@@ -112,6 +114,9 @@ function spectra = spinwave(obj, hkl, varargin)
 %               9 correlation functions: Sxx, Sxy, Sxz, etc. If given,
 %               magnetic form factor is included. Intensity is in hBar
 %               units, normalized to the crystallographic unit cell.
+% Sperp         The dynamical structure factor component perpedicular to Q
+%               (e.g. the unpolarised neutron scattering cross-section).
+%               Dimension: [nMode nHkl]. Only output if 'outSperp' is true.
 % H             Quadratic form of the Hamiltonian.
 %               Only saved if saveH is true.
 % V             Transformation matrix from the normal magnon modes to the
@@ -209,9 +214,9 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
-inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase' 'tid' 'fid' }];
-inpForm.defval = [inpForm.defval {false    false       -1    nan   }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]       [1 1] [1 1] }];
+inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase' 'tid' 'fid' 'outSperp'}];
+inpForm.defval = [inpForm.defval {false    false       -1    nan   false}];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]       [1 1] [1 1] [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -703,6 +708,10 @@ for jj = 1:nSlice
     % boson commutator matrix
     gComm  = diag(gCommd);
     %gd = diag(g);
+
+    if param.outSperp
+        Sab = zeros(3,3,2*nMagExt,nHklMEM);
+    end
     
     if param.hermit
         % All the matrix calculations are according to Colpa's paper
@@ -796,7 +805,7 @@ for jj = 1:nSlice
     end
 
     % Calculates correlation functions.
-    if param.useMex %&& size(V,1)>10
+    if param.useMex
         ExpF = exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
         ExpF = reshape(ExpF,[numel(S0) nHklMEM]).*repmat(sqrt(S0.'/2),[1 nHklMEM]);
         ExpF = repmat(ExpF,[2 1]); 
@@ -817,7 +826,11 @@ for jj = 1:nSlice
         
         for i1=1:3; 
             for i2=1:3; 
-                Sab(i1,i2,:,hklIdxMEM) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
+                if param.outSperp
+                    Sab(i1,i2,:,:) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
+                else
+                    Sab(i1,i2,:,hklIdxMEM) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
+                end
             end
         end
     else
@@ -857,7 +870,44 @@ for jj = 1:nSlice
         % Dynamical for factor from S^alpha^beta(k) correlation function.
         % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
         % Normalizes the intensity to single unit cell.
-        Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
+        if param.outSperp
+            Sab = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
+        else
+            Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
+        end
+    end
+
+    if param.outSperp
+        for ii = 1:nTwin
+            nMode   = size(Sab,3);
+    
+            % get symmetric component of Sab only
+            Sab = (Sab + permute(Sab,[2 1 3 4]))/2;
+    
+            % Normalized scattering wavevector in xyz coordinate system.
+            hklAN = bsxfun(@rdivide,hklA(:,hklIdxMEM),sqrt(sum(hklA(:,hklIdxMEM).^2,1)));
+    
+            % avoid NaN for Q=0
+            NaNidx = find(any(isnan(hklAN)));
+            for jj = 1:numel(NaNidx)
+                if NaNidx(jj) < size(hklAN,2)
+                    hklAN(:,NaNidx(jj)) = hklAN(:,NaNidx(jj)+1);
+                else
+                    hklAN(:,NaNidx(jj)) = [1;0;0];
+                end
+            end
+    
+            hkla = repmat(permute(hklAN,[1 3 2]),[1 3 1]);
+            hklb = repmat(permute(hklAN,[3 1 2]),[3 1 1]);
+    
+            % Perpendicular part of the scattering wavevector.
+            qPerp = repmat(eye(3),[1 1 nHklMEM])- hkla.*hklb;
+            qPerp = repmat(permute(qPerp,[1 2 4 3]),[1 1 nMode 1]);
+    
+            % Dynamical structure factor for neutron scattering
+            % Sperp: nMode x nHkl.
+            Sperp(:,hklIdxMEM) = permute(sumn(qPerp.*Sab,[1 2]),[3 4 1 2]);
+        end
     end
     
     sw_status(jj/nSlice*100,0,param.tid);
@@ -877,8 +927,6 @@ if warn1 && ~param.fitmode
     warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...
         'positive definite, a small omega_tol value was added to its diagonal!'])
 end
-
-%fprintf0(fid,'t/c: %g %g %g %e\n',[sum(t1) sum(t2b) sum(t2) sum(abs(Sab(:)-Sabt(:)))]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % END MEMORY MANAGEMENT LOOP
@@ -959,13 +1007,17 @@ end
 
 % Creates output structure with the calculated values.
 spectra.omega    = omega;
-spectra.Sab      = Sab;
 spectra.hkl      = hkl(:,1:nHkl0);
 spectra.hklA     = hklA;
 spectra.incomm   = incomm;
 spectra.helical  = helical;
 spectra.norm     = false;
 spectra.nformula = double(obj.unit.nformula);
+if param.outSperp
+    spectra.Sperp = Sperp;
+else
+    spectra.Sab = Sab;
+end
 
 % Save different intermediate results.
 if param.saveV

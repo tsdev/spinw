@@ -133,17 +133,17 @@ if nargin > 5
     % include the fitmode option to speed up calculation
     if numel(varargin) == 1
         varargin{1}.fitmode = 2;
-        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{1});
+        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{1},'outSperp',true);
     else
-        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true);
+        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true,'outSperp',true);
     end
 else
-    spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',true);
+    spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',true,'outSperp',true);
 end
 warning(warnState);
 
 % calculate Sperp
-spectra = sw_neutron(spectra,'pol',false);
+%spectra = sw_neutron(spectra,varargin{:},'pol',false);
 
 
 % parse the component string
@@ -167,13 +167,13 @@ end
 if iscell(spectra.omega)
     nTwin = numel(spectra.omega);
     omega = spectra.omega;
-    Sab   = spectra.Sab;
+%   Sab   = spectra.Sab;
     Sperp = spectra.Sperp;
     
 else
     nTwin = 1;
     omega = {spectra.omega};
-    Sab   = {spectra.Sab};
+%   Sab   = {spectra.Sab};
     Sperp = {spectra.Sperp};
 end
 
@@ -192,8 +192,8 @@ for tt = 1:nTwin
             switch par0.type{jj}(1)
                 case 1
                     DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*Sperp{tt};
-                case 2
-                    DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*permute(Sab{tt}(par0.type{jj}(2),par0.type{jj}(3),:,:),[3 4 1 2]);
+                %case 2
+                %    DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*permute(Sab{tt}(par0.type{jj}(2),par0.type{jj}(3),:,:),[3 4 1 2]);
                 otherwise
                     error('spinw:horace:WrongPar','Wrong ''component'' parameter!');
             end

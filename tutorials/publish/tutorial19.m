@@ -86,8 +86,8 @@ sw_plotspec(spec,'mode','color','dE',0.2)
 % correlations on the Fe ions are plotted. It is clearly visible, that
 % the goldstone mode at (1/2,0,0) has a strong Fe2+ component as well.
 
-FeCuChain.addatom('label','MCu2','r',[0 0 0],'formfactn',0)
-FeCuChain.addatom('label','MFe2','r',[0 1/2 0],'formfactn',1)
+FeCuChain.addatom('label','MCu2','r',[0 0 0],'formfactn',0,'S',1/2)
+FeCuChain.addatom('label','MFe2','r',[0 1/2 0],'formfactn',1,'S',2)
 
 spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 500},'formfact',true);
 spec = sw_egrid(spec,'component','Sxx+Syy+Szz');

@@ -32,23 +32,27 @@ spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 503},<span class="string">'hermit'</s
 spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>);
 figure
 sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.2)
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial19_04.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Iron only correlations</h2><p>By exchanging the form factor values between Cu and Fe, the spin-spin correlations on the Fe ions are plotted. It is clearly visible, that the goldstone mode at (1/2,0,0) has a strong Fe2+ component as well.</p><pre class="codeinput">FeCuChain.addatom(<span class="string">'label'</span>,<span class="string">'MCu2'</span>,<span class="string">'r'</span>,[0 0 0],<span class="string">'formfactn'</span>,0)
-FeCuChain.addatom(<span class="string">'label'</span>,<span class="string">'MFe2'</span>,<span class="string">'r'</span>,[0 1/2 0],<span class="string">'formfactn'</span>,1)
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial19_04.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Iron only correlations</h2><p>By exchanging the form factor values between Cu and Fe, the spin-spin correlations on the Fe ions are plotted. It is clearly visible, that the goldstone mode at (1/2,0,0) has a strong Fe2+ component as well.</p><pre class="codeinput">FeCuChain.addatom(<span class="string">'label'</span>,<span class="string">'MCu2'</span>,<span class="string">'r'</span>,[0 0 0],<span class="string">'formfactn'</span>,0,<span class="string">'S'</span>,1/2)
+FeCuChain.addatom(<span class="string">'label'</span>,<span class="string">'MFe2'</span>,<span class="string">'r'</span>,[0 1/2 0],<span class="string">'formfactn'</span>,1,<span class="string">'S'</span>,2)
 
 spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 500},<span class="string">'formfact'</span>,true);
 spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>);
 figure
 sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.2)
-</pre><pre class="codeoutput error">Error using reshape
-To RESHAPE the number of elements must not change.
-Error in spinw/magstr (line 60)
-    M0 = reshape(obj.mag_str.F,[3 nAtom nExt0 nK]);
-Error in spinw/spinwave (line 248)
-magStr = obj.magstr;
-Error in tutorial19 (line 92)
-spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 500},'formfact',true);</pre><h2 id="6">Reduced moments</h2><p>The size of the reduced moment due to the zero point energy of the spin waves can be calculated as well. The calculated momen reduction is finite, that shows that within the spin wave approach, the 2D coupled plane of Heisenberg spins at zero temperature is ordered. The moment reduction is much larger on the spin-2 Fe ion (dS = 0.577) than on the spin-1/2 (dS = 0.137) Cu ions. This is due to the fact, that for the Fe ions the interchain coupling is much weaker than the chain coupling, this leads to large moment reduction, while the Cu ions the interchain coupling is much larger relative to the intrachain exchange.</p><pre class="codeinput">Red = FeCuChain.moment(<span class="string">'nRand'</span>,1e5)
+</pre><pre class="codeoutput">Warning: To make the Hamiltonian positive definite, a small omega_tol value was
+added to its diagonal! 
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial19_05.png" style="width:560px;height:420px;" alt=""> <h2 id="6">Reduced moments</h2><p>The size of the reduced moment due to the zero point energy of the spin waves can be calculated as well. The calculated momen reduction is finite, that shows that within the spin wave approach, the 2D coupled plane of Heisenberg spins at zero temperature is ordered. The moment reduction is much larger on the spin-2 Fe ion (dS = 0.577) than on the spin-1/2 (dS = 0.137) Cu ions. This is due to the fact, that for the Fe ions the interchain coupling is much weaker than the chain coupling, this leads to large moment reduction, while the Cu ions the interchain coupling is much larger relative to the intrachain exchange.</p><pre class="codeinput">Red = FeCuChain.moment(<span class="string">'nRand'</span>,1e5)
 
 dM = repmat(FeCuChain.matom.S,1,prod(FeCuChain.magstr.N_ext)) - Red.moment
+</pre><pre class="codeoutput">Red = 
+  struct with fields:
+
+    moment: [0.3629 1.4198 0.3629 1.4198]
+       obj: [1&times;1 spinw]
+         T: 0
+     nRand: 100000
+dM =
+    0.1371    0.5802    0.1371    0.5802
 </pre><pre>Written by
 Sandor Toth
 02-Sep-2014, 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
@@ -141,8 +145,8 @@ sw_plotspec(spec,'mode','color','dE',0.2)
 % correlations on the Fe ions are plotted. It is clearly visible, that
 % the goldstone mode at (1/2,0,0) has a strong Fe2+ component as well.
 
-FeCuChain.addatom('label','MCu2','r',[0 0 0],'formfactn',0)
-FeCuChain.addatom('label','MFe2','r',[0 1/2 0],'formfactn',1)
+FeCuChain.addatom('label','MCu2','r',[0 0 0],'formfactn',0,'S',1/2)
+FeCuChain.addatom('label','MFe2','r',[0 1/2 0],'formfactn',1,'S',2)
 
 spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 500},'formfact',true);
 spec = sw_egrid(spec,'component','Sxx+Syy+Szz');

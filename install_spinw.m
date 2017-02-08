@@ -92,7 +92,7 @@ uPath = [uPath(~ismember(uPath,';')) filesep 'startup.m'];
 % create new startup.m file
 if isempty(sfLoc)
     answer = getinput(sprintf(['You don''t have a Matlab startup.m file,\n'...
-        'do you want it to be created at %s? (y/n)'],uPath),'yn');
+        'do you want it to be created at %s? (y/n)'],esc(uPath)),'yn');
     if answer == 'y'
         fclose(fopen(uPath,'w'));
         sfLoc = uPath;

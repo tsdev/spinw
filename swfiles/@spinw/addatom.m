@@ -32,9 +32,9 @@ function addatom(obj, varargin)
 %           automatically from label. Default is 0.
 % occ       Occupancy, given as double. Default is 1.
 % formfact  Neutron scattering form factor, given as 9 numbers, for details
-%           see the help of sw_mff().
+%           see the help of sw_mff(). Also string labels can be used.
 % formfactn  Neutron scattering form factor, given as 9 numbers, for details
-%           see the help of sw_mff().
+%           see the help of sw_mff(). Also string labels can be used.
 % formfactx X-ray scattering form factor, given as 9 numbers, for details
 %           see the help of sw_cff().
 % Z         Atomic number, given as integer or determined from label
@@ -228,20 +228,17 @@ if size(newAtom.S,2) == 1
     newAtom.S = newAtom.S';
 end
 
-% get form factors from label
-% 11 coefficients for the magnetic atoms
-[~,newAtom.ffn,newAtom.S0] = sw_mff(newAtom.label,[],11);
-[~,newAtom.ffx]            = sw_cff(newAtom.label);
+% get form factors
 
-newAtom.ffn = permute(newAtom.ffn,[3 2 1]);
-newAtom.ffx = permute(newAtom.ffx,[3 2 1]);
-
-% get the auto size of the magnetic moments if not given
-if isempty(newAtom.S)
-    newAtom.S = newAtom.S0;
+% get neutron scattering form factor if given
+if isempty(newAtom.formfactn)
+    [~,newAtom.ffn,newAtom.S0] = sw_mff(newAtom.label,[],11);
+    % get the auto size of the magnetic moments if not given
+    if isempty(newAtom.S)
+        newAtom.S = newAtom.S0;
+    end
 end
 
-% get scattering form factor if given
 if ischar(newAtom.formfactn)
     newAtom.formfactn = {newAtom.formfactn};
 end
@@ -258,21 +255,35 @@ end
 
 if iscell(newAtom.formfactn)
     [~,newAtom.ffn] = sw_mff(newAtom.formfactn,[],11);
-    newAtom.ffn = permute(newAtom.ffn,[3 2 1]);
+    %newAtom.ffn = permute(newAtom.ffn,[3 2 1]);
 elseif ~isempty(newAtom.formfactn)
     newAtom.ffn = newAtom.formfactn;
 end
 
+newAtom.ffn = permute(newAtom.ffn,[3 2 1]);
+
+% define non-magnetic atoms if S is empty
+if isempty(newAtom.S)
+    newAtom.S = zeros(1,nNewAtom);
+end
+
 % x-ray scattering form factor
+if isempty(newAtom.formfactx)
+    % 11 coefficients for the magnetic atoms
+    [~,newAtom.ffx]            = sw_cff(newAtom.label);
+end
+
 if ischar(newAtom.formfactx)
     newAtom.formfactx = {newAtom.formfactx};
 end
 if iscell(newAtom.formfactx)
     [~,newAtom.ffx] = sw_cff(newAtom.fromfactx);
-    newAtom.ffx = permute(newAtom.ffx,[3 2 1]);
+    %newAtom.ffx = permute(newAtom.ffx,[3 2 1]);
 elseif ~isempty(newAtom.formfactx)
     newAtom.ffx = newAtom.formfactx;
 end
+
+newAtom.ffx = permute(newAtom.ffx,[3 2 1]);
 
 % include 2 zeros to make both form factor the same size
 %newAtom.ffn = [newAtom.ffn(1,1:8,:) zeros(1,2,size(newAtom.ffn,3)) newAtom.ffn(1,9,:)];

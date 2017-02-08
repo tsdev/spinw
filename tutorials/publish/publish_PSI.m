@@ -19,10 +19,16 @@ function publish_PSI(fName, dirName)
 %               Default is the SpinW publish folder.
 %
 
-% switch of text outputs from code
-fid0 = swpref.getpref('fid',[]);
-tid0 = swpref.getpref('tid',[]);
-swpref.setpref('fid',0,'tid',0)
+% switch off text outputs from code and change to high resolution rendering
+% and start horace
+fid0    = swpref.getpref('fid',[]);
+tid0    = swpref.getpref('tid',[]);
+nmesh0  = swpref.getpref('nmesh',[]);
+npatch0 = swpref.getpref('npatch',[]);
+hor0    = horace;
+swpref.setpref('fid',0,'tid',0,'nmesh',3,'npatch',50);
+% start horace
+horace('on')
 
 if nargin < 2
     % list of files in the publish folder:
@@ -130,7 +136,8 @@ for ii = 1:numel(pubfiles)
     
 end
 
-% restore SpinW preferences
-swpref.setpref('fid',fid0,'tid',tid0);
+% restore SpinW and Horace state
+swpref.setpref('fid',fid0,'tid',tid0,'nmesh',nmesh0,'npatch',npatch0);
+horace(hor0);
 
 end

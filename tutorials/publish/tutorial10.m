@@ -9,6 +9,13 @@
 % with S = 1 and J = 1 is created.
 
 sq = sw_model('squareAF',1,0);
+
+% We add magnetic form factor after the model is defined. Using the same
+% atom label and position as an existing atom in the model, the atom
+% properties will be updated, no new atom is created using the
+% spinw.addatom method. We will use the form factor of Ni2+ that has S=1.
+
+sq.addatom('label','atom_1','r',[0 0 0],'formfact','MNi2+','S',1)
 plot(sq)
 swplot.zoom(2)
 
@@ -34,7 +41,7 @@ Q = [Qh(:) Qk(:) Ql(:)]';
 spec = sq.spinwave(Q);
 
 Ev = linspace(0,5,nE);
-spec = sw_egrid(spec,'component','Sxx+Syy+Szz','Evect',Ev,'imagChk',false);
+spec = sw_egrid(spec,'component','Sxx+Syy+Szz','Evect',Ev);
 spec = sw_instrument(spec,'dE',0.1);
 
 
@@ -71,16 +78,34 @@ colorbar
 % d3d object with the simulated spin wave data and finally we plot a
 % constant energy cut.
 
-d3dobj = d3d(sq.abc,[1 0 0 0],[0,0.01,2],[0 1 0 0],[0,0.01,2],[0 0 0 1],[0,0.01,5]);
-d3dobj = disp2sqw_eval(d3dobj,@sq.horace,{'component','Sxx+Syy+Szz'},0.1);
+Ebin   = [0,0.01,5];
+fwhm0  = 0.1; 
+d3dobj = d3d(sq.abc,[1 0 0 0],[0,0.01,2],[0 1 0 0],[0,0.01,2],[0 0 0 1],Ebin);
+d3dobj = disp2sqw_eval(d3dobj,@sq.horace,{'component','Sxx+Syy+Szz'},fwhm0);
 plot(cut(d3dobj,[],[],[3.5 4]));
 colorslider('delete')
 title('')
 caxis([0 3])
 colorbar
 
+%% Spaghetti plot using Horace
+% Horace can be also used to generate cuts along certain line in the
+% Brillouin zone. The advantage of this approach is that it can be better
+% combined with data treatment in Horace. Where the sample plot can be
+% calculated on real pixel data using the spaghetti_plot function.
+
+Qlist  = [0 0 0;0 1/2 0;1/2 1/2 0;0 0 0];
+Qlabel = {'\Gamma' 'X' 'M' '\Gamma'};
+Ebin   = [0 0.01 5];
+fwhm0  = 0.1;
+
+disp2sqw_plot(Qlist,@sq.horace,{},Ebin,fwhm0,'labels',Qlabel)
+colorslider('delete')
+caxis([0 3])
+colormap(flipud(cm_inferno))
+colorbar
 
 %%
 %  Written by
 %  Sandor Toth
-%  06-Jun-2014, 06-Feb-2017
+%  06-Jun-2014, 08-Feb-2017

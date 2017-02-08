@@ -33,7 +33,7 @@
 %   sw_intsf         - integrates the structure factor along given Q directions
 %   sw_model         - creates different predefined spin models
 %
-% Contraint functions for spinw.optmagstr():
+% Constraint functions for spinw.optmagstr():
 %
 %   gm_planar        - planar magnetic structure constraint function 
 %   gm_planard       - planar magnetic structure constraint function 
@@ -82,7 +82,6 @@
 %   sw_bose          - coefficient for boson correlation functions for different temperatures
 %   sw_converter     - converts energy and momentum units for a given particle
 %   sw_fibo          - returns the last two Fibonacci number smaller or equal to the
-%
 %
 % Import functions:
 %

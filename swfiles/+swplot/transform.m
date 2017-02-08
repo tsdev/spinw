@@ -8,11 +8,13 @@ function varargout = transform(varargin)
 %
 % Input:
 %
-% M         Transformation matrix, either has dimensions of 4x4 following
-%           the Matlab standard for hgtransform, or 3x4 following the SpinW
-%           format for space group transformations. Setting it to 0,
-%           returns to the original orientation of the objects (equivalent
-%           to eye(4)).
+% M         Transformation matrix with possible dimensions:
+%               4x4     This follows the Matlab standard for hgtransform.
+%               3x4     This is the SpinW format for space group 
+%                       transformations. 
+%               3x3     This defines the rotation matrix only.
+%           Setting M to 0 returns to the plot to the original orientation
+%           (equivalent to M=eye(4)).
 % hFigure   Handle of the swplot figure window, optional.
 %
 %
@@ -48,6 +50,10 @@ h = getappdata(hFigure,'h');
 if numel(M)==1 && M==0
     % generate unit matrix for special input 0
     M = eye(4);
+end
+
+if ~isempty(M) && all(size(M)==[3 3])
+    M = [[M [0;0;0]];[0 0 0 1]];
 end
 
 if ~isempty(M) && all(size(M)==[3 4])

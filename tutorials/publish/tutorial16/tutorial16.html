@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Spin wave spectrum of the honeycomb lattice Na2IrO3</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-07"><meta name="DC.source" content="tutorial16.m"><style type="text/css">
+      --><title>Spin wave spectrum of the honeycomb lattice Na2IrO3</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-08"><meta name="DC.source" content="tutorial16.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -139,10 +139,7 @@ sw_plotspec(specD,<span class="string">'mode'</span>,<span class="string">'color
 sw_plotspec(specD,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'dashed'</span>,true,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,<span class="keyword">...</span>
     false,<span class="string">'title'</span>,false,<span class="string">'sortMode'</span>,true,<span class="string">'colormap'</span>,[255  20 147]);
 title(<span class="string">'e) stripy, KH, S^{xx}'</span>,<span class="string">'fontsize'</span>,15)
-</pre><pre class="codeoutput error">Error using sw_egrid (line 345)
-The imaginary part of the spin wave energes is larger than the bin size! Improve your calculation or disable imagChk option!
-Error in tutorial16 (line 111)
-specD = sw_egrid(specD,'component','Sxx','Evect',linspace(0,4,1001));</pre><h2 id="8">Fig. S3(e-f) stripy order</h2><p>Here we have only J1 and Kitaev exchange. The magnetic ground state is stripy and parallel to the c-axis. The energy per spin is -0.375 meV.</p><pre class="codeinput">J1 = 1; J2 = 0; J3 = 0; JK = 2;
+</pre><img vspace="5" hspace="5" src="tutorial16_05.png" style="width:560px;height:420px;" alt=""> <h2 id="8">Fig. S3(e-f) stripy order</h2><p>Here we have only J1 and Kitaev exchange. The magnetic ground state is stripy and parallel to the c-axis. The energy per spin is -0.375 meV.</p><pre class="codeinput">J1 = 1; J2 = 0; J3 = 0; JK = 2;
 nairo.matrix.mat = Jfun([J1 J2 J3 JK]);
 nairo.genmagstr(<span class="string">'mode'</span>,<span class="string">'func'</span>,<span class="string">'func'</span>,@gm_planar,<span class="string">'x0'</span>,[[1/2 3/2 1/2 3/2]*pi 0 0 0 pi/2 0]);
 specEF = nairo.spinwave(Qp,<span class="string">'hermit'</span>,false);
@@ -161,7 +158,7 @@ sw_plotspec(specEF,<span class="string">'mode'</span>,<span class="string">'colo
 sw_plotspec(specEF,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'dashed'</span>,true,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,<span class="keyword">...</span>
     false,<span class="string">'title'</span>,false,<span class="string">'sortMode'</span>,true,<span class="string">'colormap'</span>,[255  20 147]);
 title(<span class="string">'f) stripy, KH, S^{yy}'</span>,<span class="string">'fontsize'</span>,15)
-</pre><h2 id="9">Fig. S3(g) stripy order</h2><p>Stripy order again along c-axis.</p><pre class="codeinput">J1 =  1; J2 =  0.26; J3 = -0.2; JK = 0;
+</pre><img vspace="5" hspace="5" src="tutorial16_06.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="tutorial16_07.png" style="width:560px;height:420px;" alt=""> <h2 id="9">Fig. S3(g) stripy order</h2><p>Stripy order again along c-axis.</p><pre class="codeinput">J1 =  1; J2 =  0.26; J3 = -0.2; JK = 0;
 nairo.matrix.mat = Jfun([J1 J2 J3 JK]);
 nairo.genmagstr(<span class="string">'mode'</span>,<span class="string">'func'</span>,<span class="string">'func'</span>,@gm_planar,<span class="string">'x0'</span>,[[1/2 3/2 1/2 3/2]*pi 0 0 0 pi/2 0]);
 
@@ -174,7 +171,7 @@ sw_plotspec(specG,<span class="string">'mode'</span>,<span class="string">'color
 sw_plotspec(specG,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'dashed'</span>,true,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,<span class="keyword">...</span>
     false,<span class="string">'title'</span>,false,<span class="string">'sortMode'</span>,true,<span class="string">'colormap'</span>,[255  20 147]);
 title(<span class="string">'g) stripy, J_{1,2,3}, S^{xx}(=S^{yy})'</span>,<span class="string">'fontsize'</span>,15)
-</pre><h2 id="10">Fig. S3(h) zig-zag order</h2><p>Zig-zag order along the b-axis.</p><pre class="codeinput">J1 =  1; J2 =  0.78; J3 =  0.9; JK =  0;
+</pre><img vspace="5" hspace="5" src="tutorial16_08.png" style="width:560px;height:420px;" alt=""> <h2 id="10">Fig. S3(h) zig-zag order</h2><p>Zig-zag order along the b-axis.</p><pre class="codeinput">J1 =  1; J2 =  0.78; J3 =  0.9; JK =  0;
 nairo.matrix.mat = Jfun([J1 J2 J3 JK]);
 nairo.genmagstr(<span class="string">'mode'</span>,<span class="string">'func'</span>,<span class="string">'func'</span>,@gm_planar,<span class="string">'x0'</span>,[[0 1 1 0]*pi 0 0 0 pi/2 0]);
 
@@ -187,7 +184,9 @@ sw_plotspec(specH,<span class="string">'mode'</span>,<span class="string">'color
 sw_plotspec(specH,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'dashed'</span>,true,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,<span class="keyword">...</span>
     false,<span class="string">'title'</span>,false,<span class="string">'sortMode'</span>,true,<span class="string">'colormap'</span>,[255  20 147]);
 title(<span class="string">'h) zig-zag, J_{1,2,3}, S^{xx}(=S^{yy})'</span>,<span class="string">'fontsize'</span>,15)
-</pre><h2 id="11">Fig. S3(i-j) zig-zag order</h2><p>Magnetic structure, where spins are pointing along the b-axis. In the paper the Sy'y' direction is the correlation function component perpendicular to the magnetic moment direction, that is Sxx for S||b moments.</p><pre class="codeinput">J1 =  1; J2 =  0.23; J3 =  0.51; JK =  1.33;
+</pre><pre class="codeoutput">Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised at some
+q-point! 
+</pre><img vspace="5" hspace="5" src="tutorial16_09.png" style="width:560px;height:420px;" alt=""> <h2 id="11">Fig. S3(i-j) zig-zag order</h2><p>Magnetic structure, where spins are pointing along the b-axis. In the paper the Sy'y' direction is the correlation function component perpendicular to the magnetic moment direction, that is Sxx for S||b moments.</p><pre class="codeinput">J1 =  1; J2 =  0.23; J3 =  0.51; JK =  1.33;
 nairo.matrix.mat = Jfun([J1 J2 J3 JK]);
 nairo.genmagstr(<span class="string">'mode'</span>,<span class="string">'func'</span>,<span class="string">'func'</span>,@gm_planar,<span class="string">'x0'</span>,[[0 1 1 0]*pi 0 0 0 pi/2 0]);
 
@@ -207,7 +206,7 @@ sw_plotspec(specIJ,<span class="string">'mode'</span>,<span class="string">'colo
 sw_plotspec(specIJ,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'dashed'</span>,true,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,<span class="keyword">...</span>
     false,<span class="string">'title'</span>,false,<span class="string">'sortMode'</span>,true,<span class="string">'colormap'</span>,[255  20 147]);
 title(<span class="string">'j) zig-zag, KH-J_2-J_3, S^{y''y''}=S^{xx}'</span>,<span class="string">'fontsize'</span>,15)
-</pre><pre>Written by
+</pre><img vspace="5" hspace="5" src="tutorial16_10.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="tutorial16_11.png" style="width:560px;height:420px;" alt=""> <pre>Written by
 Sandor Toth
 16-Jun-2014, 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####

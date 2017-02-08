@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>How to produce constant energy cut of spin wave spectrum?</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-07"><meta name="DC.source" content="tutorial10.m"><style type="text/css">
+      --><title>How to produce constant energy cut of spin wave spectrum?</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-08"><meta name="DC.source" content="tutorial10.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,9 +66,21 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>How to produce constant energy cut of spin wave spectrum?</h1><!--introduction--><p>This example shows how to calculate the spin wave spectrum of the square lattice Heisenberg antiferromagnet and to produce a constant energy cut of the spectrum.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Crystal &amp; magnetic structure</a></li><li><a href="#2">Spin wave</a></li><li><a href="#3">Spin wave spectrum</a></li><li><a href="#4">Creat the Q map</a></li><li><a href="#5">Plotting E=const cut</a></li><li><a href="#6">Constant energy cut using Horace</a></li></ul></div><h2 id="1">Crystal &amp; magnetic structure</h2><p>Using sw_model, the crystal and magnetic structure are readily available. Using the 'squareAF' option, a square lattice Heisenberg Antiferromagnet with S = 1 and J = 1 is created.</p><pre class="codeinput">sq = sw_model(<span class="string">'squareAF'</span>,1,0);
+  </style></head><body><div class="content"><h1>How to produce constant energy cut of spin wave spectrum?</h1><!--introduction--><p>This example shows how to calculate the spin wave spectrum of the square lattice Heisenberg antiferromagnet and to produce a constant energy cut of the spectrum.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Crystal &amp; magnetic structure</a></li><li><a href="#2">Spin wave</a></li><li><a href="#3">Spin wave spectrum</a></li><li><a href="#4">Creat the Q map</a></li><li><a href="#5">Plotting E=const cut</a></li><li><a href="#6">Constant energy cut using Horace</a></li><li><a href="#7">Spaghetti plot using Horace</a></li></ul></div><h2 id="1">Crystal &amp; magnetic structure</h2><p>Using sw_model, the crystal and magnetic structure are readily available. Using the 'squareAF' option, a square lattice Heisenberg Antiferromagnet with S = 1 and J = 1 is created.</p><pre class="codeinput">sq = sw_model(<span class="string">'squareAF'</span>,1,0);
+
+<span class="comment">% We add magnetic form factor after the model is defined. Using the same</span>
+<span class="comment">% atom label and position as an existing atom in the model, the atom</span>
+<span class="comment">% properties will be updated, no new atom is created using the</span>
+<span class="comment">% spinw.addatom method. We will use the form factor of Ni2+ that has S=1.</span>
+
+sq.addatom(<span class="string">'label'</span>,<span class="string">'atom_1'</span>,<span class="string">'r'</span>,[0 0 0],<span class="string">'formfact'</span>,<span class="string">'MNi2+'</span>,<span class="string">'S'</span>,1)
 plot(sq)
 swplot.zoom(2)
+</pre><pre class="codeoutput">Warning: The x-ray scattering form factor for atom_1+ is undefined, constant 1
+will be used instead! If you don't want to see this message add a line to
+xrayion.dat for the corresponding ion! 
+Warning: The neutron scattering length for atom_1 is undefined, constant 1 will
+be used instead! 
 </pre><img vspace="5" hspace="5" src="tutorial10_01.png" style="width:560px;height:420px;" alt=""> <h2 id="2">Spin wave</h2><p>We need to define a grid in reciprocal space, here we use the (Qh, Qk, 0) square lattice plane by calling ndgrid() function.</p><pre class="codeinput">nQ = 201;
 nE = 501;
 Qhv = linspace(0,2,nQ);
@@ -83,10 +95,11 @@ Q = [Qh(:) Qk(:) Ql(:)]';
 Ev = linspace(0,5,nE);
 spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>,<span class="string">'Evect'</span>,Ev);
 spec = sw_instrument(spec,<span class="string">'dE'</span>,0.1);
-</pre><pre class="codeoutput error">Error using sw_egrid (line 345)
-The imaginary part of the spin wave energes is larger than the bin size! Improve your calculation or disable imagChk option!
-Error in tutorial10 (line 37)
-spec = sw_egrid(spec,'component','Sxx+Syy+Szz','Evect',Ev);</pre><h2 id="4">Creat the Q map</h2><p>The calculated intensity map is stored in spec.swConv, we reshape it into a 3D matrix using Matlab commands.</p><pre class="codeinput">spec3D = reshape(spec.swConv,nE-1,nQ,nQ);
+</pre><pre class="codeoutput">Warning: To make the Hamiltonian positive definite, a small omega_tol value was
+added to its diagonal! 
+Warning: Matrix is close to singular or badly scaled. Results may be inaccurate.
+&gt; In spinw/spinwave (&lt;a
+href="matlab:opentoline(['/Users/tothsa/spinw_git/swfiles/@spinw/spinwa</pre><h2 id="4">Creat the Q map</h2><p>The calculated intensity map is stored in spec.swConv, we reshape it into a 3D matrix using Matlab commands.</p><pre class="codeinput">spec3D = reshape(spec.swConv,nE-1,nQ,nQ);
 </pre><h2 id="5">Plotting E=const cut</h2><p>A constant energy cut takes the (Eidx,:,:) elements of the matrix and plots it using the Matlab function imagesc(). We also integrate in energy the same way Horace does by taking the average of the points and rescaling with the energy bin size.</p><pre class="codeinput">Ecut = [3.5 4.0]; <span class="comment">%meV</span>
 Eidx = find(Ev&gt;Ecut(1) &amp; Ev&lt;Ecut(2));
 figure;
@@ -98,16 +111,34 @@ ylabel(<span class="string">'(0 K 0) (r.l.u.)'</span>)
 title(<span class="string">'Spin wave spectrum at E = 3 meV, square lattice Heisenberg AF'</span>)
 caxis([0 3])
 colorbar
-</pre><h2 id="6">Constant energy cut using Horace</h2><p>We can do the same cut much easyer using Horace (<a href="http://horace.isis.rl.ac.uk">http://horace.isis.rl.ac.uk</a>). Assuming that Horace is installed and initialized we can do the same constant energy cut with just three steps. First we create an empty d3d object that defines the (h,k,0) plane with ranges in momentum and energy. Second we call Horace to fill up the empty d3d object with the simulated spin wave data and finally we plot a constant energy cut.</p><pre class="codeinput">d3dobj = d3d(sq.abc,[1 0 0 0],[0,0.01,2],[0 1 0 0],[0,0.01,2],[0 0 0 1],[0,0.01,5]);
-d3dobj = disp2sqw_eval(d3dobj,@sq.horace,{<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>},0.1);
+</pre><img vspace="5" hspace="5" src="tutorial10_02.png" style="width:560px;height:420px;" alt=""> <h2 id="6">Constant energy cut using Horace</h2><p>We can do the same cut much easyer using Horace (<a href="http://horace.isis.rl.ac.uk">http://horace.isis.rl.ac.uk</a>). Assuming that Horace is installed and initialized we can do the same constant energy cut with just three steps. First we create an empty d3d object that defines the (h,k,0) plane with ranges in momentum and energy. Second we call Horace to fill up the empty d3d object with the simulated spin wave data and finally we plot a constant energy cut.</p><pre class="codeinput">Ebin   = [0,0.01,5];
+fwhm0  = 0.1;
+d3dobj = d3d(sq.abc,[1 0 0 0],[0,0.01,2],[0 1 0 0],[0,0.01,2],[0 0 0 1],Ebin);
+d3dobj = disp2sqw_eval(d3dobj,@sq.horace,{<span class="string">'component'</span>,<span class="string">'Sxx+Syy+Szz'</span>},fwhm0);
 plot(cut(d3dobj,[],[],[3.5 4]));
 colorslider(<span class="string">'delete'</span>)
 title(<span class="string">''</span>)
 caxis([0 3])
 colorbar
-</pre><pre>Written by
+</pre><pre class="codeoutput">Warning: Matrix is close to singular or badly scaled. Results may be inaccurate.
+&gt; In spinw/spinwave (&lt;a
+href="matlab:opentoline(['/Users/tothsa/spinw_git/swfiles/@spinw/spinwa--------------------------------------------------------------------------------
+Taking cut from dnd object...
+</pre><img vspace="5" hspace="5" src="tutorial10_03.png" style="width:560px;height:420px;" alt=""> <h2 id="7">Spaghetti plot using Horace</h2><p>Horace can be also used to generate cuts along certain line in the Brillouin zone. The advantage of this approach is that it can be better combined with data treatment in Horace. Where the sample plot can be calculated on real pixel data using the spaghetti_plot function.</p><pre class="codeinput">Qlist  = [0 0 0;0 1/2 0;1/2 1/2 0;0 0 0];
+Qlabel = {<span class="string">'\Gamma'</span> <span class="string">'X'</span> <span class="string">'M'</span> <span class="string">'\Gamma'</span>};
+Ebin   = [0 0.01 5];
+fwhm0  = 0.1;
+
+disp2sqw_plot(Qlist,@sq.horace,{},Ebin,fwhm0,<span class="string">'labels'</span>,Qlabel)
+colorslider(<span class="string">'delete'</span>)
+caxis([0 3])
+colormap(flipud(cm_inferno))
+colorbar
+</pre><pre class="codeoutput">Warning: Matrix is close to singular or badly scaled. Results may be inaccurate.
+&gt; In spinw/spinwave (&lt;a
+href="matlab:opentoline(['/Users/tothsa/spinw_git/swfiles/@spinw/spinwa</pre><img vspace="5" hspace="5" src="tutorial10_04.png" style="width:560px;height:420px;" alt=""> <pre>Written by
 Sandor Toth
-06-Jun-2014, 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+06-Jun-2014, 08-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% How to produce constant energy cut of spin wave spectrum?
 % This example shows how to calculate the spin wave spectrum of the square
@@ -120,6 +151,13 @@ Sandor Toth
 % with S = 1 and J = 1 is created.
 
 sq = sw_model('squareAF',1,0);
+
+% We add magnetic form factor after the model is defined. Using the same
+% atom label and position as an existing atom in the model, the atom
+% properties will be updated, no new atom is created using the
+% spinw.addatom method. We will use the form factor of Ni2+ that has S=1.
+
+sq.addatom('label','atom_1','r',[0 0 0],'formfact','MNi2+','S',1)
 plot(sq)
 swplot.zoom(2)
 
@@ -182,18 +220,36 @@ colorbar
 % d3d object with the simulated spin wave data and finally we plot a
 % constant energy cut.
 
-d3dobj = d3d(sq.abc,[1 0 0 0],[0,0.01,2],[0 1 0 0],[0,0.01,2],[0 0 0 1],[0,0.01,5]);
-d3dobj = disp2sqw_eval(d3dobj,@sq.horace,{'component','Sxx+Syy+Szz'},0.1);
+Ebin   = [0,0.01,5];
+fwhm0  = 0.1; 
+d3dobj = d3d(sq.abc,[1 0 0 0],[0,0.01,2],[0 1 0 0],[0,0.01,2],[0 0 0 1],Ebin);
+d3dobj = disp2sqw_eval(d3dobj,@sq.horace,{'component','Sxx+Syy+Szz'},fwhm0);
 plot(cut(d3dobj,[],[],[3.5 4]));
 colorslider('delete')
 title('')
 caxis([0 3])
 colorbar
 
+%% Spaghetti plot using Horace
+% Horace can be also used to generate cuts along certain line in the
+% Brillouin zone. The advantage of this approach is that it can be better
+% combined with data treatment in Horace. Where the sample plot can be
+% calculated on real pixel data using the spaghetti_plot function.
+
+Qlist  = [0 0 0;0 1/2 0;1/2 1/2 0;0 0 0];
+Qlabel = {'\Gamma' 'X' 'M' '\Gamma'};
+Ebin   = [0 0.01 5];
+fwhm0  = 0.1;
+
+disp2sqw_plot(Qlist,@sq.horace,{},Ebin,fwhm0,'labels',Qlabel)
+colorslider('delete')
+caxis([0 3])
+colormap(flipud(cm_inferno))
+colorbar
 
 %%
 %  Written by
 %  Sandor Toth
-%  06-Jun-2014, 06-Feb-2017
+%  06-Jun-2014, 08-Feb-2017
 ##### SOURCE END #####
 --></body></html>

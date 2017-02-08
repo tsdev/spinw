@@ -1,0 +1,318 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>tutorial35</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-08"><meta name="DC.source" content="tutorial35.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Crystal structure of LuVO3</a></li><li><a href="#2">Generate Hamiltonian</a></li><li><a href="#3">Plot crystal structure with octahedral environment</a></li><li><a href="#4">Direct input of the magnetic structure</a></li><li><a href="#5">Check out matparser that can change the matrices in a spinw object</a></li><li><a href="#6">Fit experimental spin wave dispersion</a></li><li><a href="#7">Check the calculated spin wave spectrum</a></li></ul></div><h2 id="1">Crystal structure of LuVO3</h2><p>We generate crystal structure of LuVO3 including the non-magnetic atoms and using a non-standard space-group setting of Pnma.</p><pre class="codeinput">luvo = spinw;
+luvo.genlattice(<span class="string">'lat_const'</span>,[5.2821 5.6144 7.5283],<span class="keyword">...</span>
+    <span class="string">'spgr'</span>,<span class="string">'x+1/2,-y+1/2,-z; -x,-y,z+1/2; -x,-y,-z'</span>,<span class="string">'label'</span>,<span class="string">'P n m a'</span>)
+
+<span class="comment">% Lu atom</span>
+luvo.addatom(<span class="string">'r'</span>,[0.003 0.031 1/4],<span class="string">'label'</span>,<span class="string">'Lu1 Lu3+'</span>,<span class="string">'color'</span>,[0 171 36])
+<span class="comment">% V atom</span>
+luvo.addatom(<span class="string">'r'</span>,[1/2 0 0],<span class="string">'label'</span>,<span class="string">'V1 V3+'</span>,<span class="string">'S'</span>,1,<span class="string">'color'</span>,[166 166 171])
+<span class="comment">% O(1) atom</span>
+luvo.addatom(<span class="string">'r'</span>,[0.082 0.487 1/4],<span class="string">'label'</span>,<span class="string">'O1 O2-'</span>,<span class="string">'color'</span>,[255 13 13])
+<span class="comment">% O(2) atom</span>
+luvo.addatom(<span class="string">'r'</span>,[0.223 0.216 0.534],<span class="string">'label'</span>,<span class="string">'O2 O2-'</span>,<span class="string">'color'</span>,[255 13 13])
+
+luvo.plot
+</pre><img vspace="5" hspace="5" src="tutorial35_01.png" style="width:560px;height:420px;" alt=""> <h2 id="2">Generate Hamiltonian</h2><p>We generate the spin Hamiltonian.</p><pre class="codeinput">luvo.gencoupling
+
+<span class="comment">% Parameters the describe the experimental data in the low T phase.</span>
+Jab   =  4.24;
+Jc    =  5.95;
+K     =  diag([0 -0.42 -0.48]);
+
+luvo.addmatrix(<span class="string">'value'</span>,Jab,<span class="string">'label'</span>,<span class="string">'Jab'</span>,<span class="string">'color'</span>,<span class="string">'b'</span>)
+luvo.addmatrix(<span class="string">'value'</span>,Jc,<span class="string">'label'</span>,<span class="string">'Jc'</span>,<span class="string">'color'</span>,<span class="string">'g'</span>)
+luvo.addmatrix(<span class="string">'value'</span>,K,<span class="string">'label'</span>,<span class="string">'K'</span>,<span class="string">'color'</span>,<span class="string">'orange'</span>)
+
+<span class="comment">% The assigned the easy plane</span>
+luvo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jab'</span>,<span class="string">'bond'</span>,2)
+luvo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jc'</span>,<span class="string">'bond'</span>,1)
+luvo.addaniso(<span class="string">'K'</span>)
+</pre><h2 id="3">Plot crystal structure with octahedral environment</h2><p>We plot the VO6 octahedra and rotate the view.</p><pre class="codeinput">plot(luvo,<span class="string">'chemMode'</span>,<span class="string">'poly'</span>,<span class="string">'chemAtom1'</span>,<span class="string">'V'</span>,<span class="string">'chemAtom2'</span>,<span class="string">'O'</span>,<span class="string">'chemLimit'</span>,6,<span class="keyword">...</span>
+    <span class="string">'atomMode'</span>,<span class="string">'mag'</span>,<span class="string">'chemColor'</span>,<span class="string">'yellow'</span>,<span class="string">'ionColor'</span>,<span class="string">'r'</span>,<span class="string">'copy'</span>,false);
+
+R = sw_rotmatd([1 0 -0.2],-80);
+swplot.transform(R)
+swplot.translate
+</pre><img vspace="5" hspace="5" src="tutorial35_02.png" style="width:560px;height:420px;" alt=""> <h2 id="4">Direct input of the magnetic structure</h2><p>We input directly the antiferromagnetic structure.</p><pre class="codeinput">luvo.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'S'</span>,[0 0 1]',<span class="string">'n'</span>,[0 1 0],<span class="string">'k'</span>,[0 1 1]);
+
+<span class="comment">% Overplot the magnetic structure without replotting the crystal</span>
+swplot.plotmag
+</pre><img vspace="5" hspace="5" src="tutorial35_03.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Check out matparser that can change the matrices in a spinw object</h2><p>We will use the spinw.matparser mothod to parameterize the Hamiltonian. These will be out fitting parameters later. After calling matparser, we can check the resulting matrices using the spinw.table method.</p><pre class="codeinput">x1 = [4.24 5.95 -0.46 -0.48];
+luvo.matparser(<span class="string">'param'</span>,x1,<span class="string">'mat'</span>,{<span class="string">'Jab'</span> <span class="string">'Jc'</span> <span class="string">'K(2,2)'</span> <span class="string">'K(3,3)'</span>},<span class="string">'init'</span>,true)
+
+luvo.table(<span class="string">'matrix'</span>)
+</pre><pre class="codeoutput">ans = 
+    matrix             Mx                     My                     Mz                 type         assigned
+    ______    ____________________    ___________________    ___________________    _____________    ________
+    'Jab'     4.24       0       0    0     4.24        0    0        0     4.24    'Heisenberg'     'bond'  
+    'Jc'      5.95       0       0    0     5.95        0    0        0     5.95    'Heisenberg'     'bond'  
+    'K'          0       0       0    0    -0.46        0    0        0    -0.48    'anisotropic'    'aniso' 
+</pre><h2 id="6">Fit experimental spin wave dispersion</h2><p>We use the spinw.fitspec command to fit experimental data stored in the LuVO3_fitted_modes.txt' file. For details on the file format check sw_readspec, for details on the fitting check spinw.fitspec. To switch of the timer function we use the swpref.setpref command setting tid to 0. The fitspec command similarly to all other commands accept a struct instead of a list of optionname value pairs. We also slightly change the input of spinw.matparser, fitting K(1,1) and K(2,2) and restricting them to positive values. This ensures that the magnetic structure (parallel to c-axis) is always the right ground state. The data file is stored here: https://goo.gl/8guwPF Please save it with the name LuVO3_fitted_modes.txt into a location that is visible to Matlab.</p><pre class="codeinput">swpref.setpref(<span class="string">'tid'</span>,0)
+
+par_fit          = struct;
+par_fit.datapath = <span class="string">'LuVO3_fitted_modes.txt'</span>;
+
+par_fit.Evect    = linspace(0,45,71);
+par_fit.func     = @(obj,p)matparser(obj,<span class="string">'param'</span>,p,<span class="keyword">...</span>
+                    <span class="string">'mat'</span>,{<span class="string">'Jab'</span> <span class="string">'Jc'</span> <span class="string">'K(1,1)'</span> <span class="string">'K(2,2)'</span>},<span class="string">'init'</span>,true);
+
+par_fit.xmin      = [ 3   1  0   0    ];
+par_fit.xmax      = [ 9  10  1   1    ];
+par_fit.x0        = [ 6   4  0.1 0.04 ];
+par_fit.plot      = true;
+par_fit.hermit    = false;
+par_fit.optimizer = <span class="string">'pso'</span>;
+par_fit.maxiter   = 10;
+par_fit.optmem    = 1;
+par_fit.nrun      = 3;
+
+fitStr = luvo.fitspec(par_fit);
+</pre><pre class="codeoutput">Warning: Convergence is not reached! 
+Warning: Convergence is not reached! 
+Warning: Convergence is not reached! 
+</pre><img vspace="5" hspace="5" src="tutorial35_04.png" style="width:560px;height:420px;" alt=""> <h2 id="7">Check the calculated spin wave spectrum</h2><p>After fitting, the best result is stored in the spinw object. The data includes 2 straight lines in reciprocal space: (0,1,L) and (0,1+K,3+K). We tile the two scans together onto the same plot using a bit of Matlab coding.</p><pre class="codeinput">Q1 = [0 1.0 2.0];
+Q2 = [0 1.0 3.0];
+Q3 = [0 1.5 3.5];
+
+spec = luvo.spinwave({Q1 Q2 Q3 501});
+
+spec = sw_egrid(spec);
+
+figure
+sw_plotspec(spec,<span class="string">'dE'</span>,1.5)
+legend(<span class="string">'off'</span>)
+
+<span class="comment">% Plot over the experimental data after loading the data.</span>
+T = sw_readtable(<span class="string">'LuVO3_fitted_modes.txt'</span>);
+
+<span class="comment">% List of Q values from data.</span>
+Q = [[T(:).QH];[T(:).QK];[T(:).QL]]';
+<span class="comment">% List of energy values from data.</span>
+w1 = [T(:).EN1];
+w2 = [T(:).EN2];
+<span class="comment">% We remove  zero energy points.</span>
+w2(w2==0) = nan;
+
+<span class="comment">% (0,1,L) line</span>
+Qabs = sqrt(sum((bsxfun(@minus,Q(1:10,:),[0 1 2])*luvo.rl).^2,2));
+
+<span class="comment">% (0,1+K,3+K) line</span>
+Qabs2 = sqrt(sum((bsxfun(@minus,Q(11:end,:),[0 1 3])*luvo.rl).^2,2));
+Qabs = [Qabs; Qabs2 + sqrt(sum(([0 0 1]*luvo.rl).^2))];
+
+hold <span class="string">on</span>
+plot3(Qabs,w1,1e2+w1*0,<span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>)
+plot3(Qabs,w2,1e2+w2*0,<span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>)
+</pre><img vspace="5" hspace="5" src="tutorial35_05.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Crystal structure of LuVO3
+% We generate crystal structure of LuVO3 including the non-magnetic atoms
+% and using a non-standard space-group setting of Pnma.
+
+luvo = spinw;
+luvo.genlattice('lat_const',[5.2821 5.6144 7.5283],...
+    'spgr','x+1/2,-y+1/2,-z; -x,-y,z+1/2; -x,-y,-z','label','P n m a')
+
+% Lu atom
+luvo.addatom('r',[0.003 0.031 1/4],'label','Lu1 Lu3+','color',[0 171 36])
+% V atom
+luvo.addatom('r',[1/2 0 0],'label','V1 V3+','S',1,'color',[166 166 171])
+% O(1) atom
+luvo.addatom('r',[0.082 0.487 1/4],'label','O1 O2-','color',[255 13 13])
+% O(2) atom
+luvo.addatom('r',[0.223 0.216 0.534],'label','O2 O2-','color',[255 13 13])
+
+luvo.plot
+
+%% Generate Hamiltonian
+% We generate the spin Hamiltonian.
+
+luvo.gencoupling
+
+% Parameters the describe the experimental data in the low T phase.
+Jab   =  4.24;
+Jc    =  5.95;
+K     =  diag([0 -0.42 -0.48]);
+
+luvo.addmatrix('value',Jab,'label','Jab','color','b')
+luvo.addmatrix('value',Jc,'label','Jc','color','g')
+luvo.addmatrix('value',K,'label','K','color','orange')
+
+% The assigned the easy plane
+luvo.addcoupling('mat','Jab','bond',2)
+luvo.addcoupling('mat','Jc','bond',1)
+luvo.addaniso('K')
+
+%% Plot crystal structure with octahedral environment
+% We plot the VO6 octahedra and rotate the view.
+
+plot(luvo,'chemMode','poly','chemAtom1','V','chemAtom2','O','chemLimit',6,...
+    'atomMode','mag','chemColor','yellow','ionColor','r','copy',false);
+
+R = sw_rotmatd([1 0 -0.2],-80);
+swplot.transform(R)
+swplot.translate
+
+%% Direct input of the magnetic structure
+% We input directly the antiferromagnetic structure.
+
+luvo.genmagstr('mode','helical','S',[0 0 1]','n',[0 1 0],'k',[0 1 1]);
+
+% Overplot the magnetic structure without replotting the crystal
+swplot.plotmag
+
+%% Check out matparser that can change the matrices in a spinw object
+% We will use the spinw.matparser mothod to parameterize the Hamiltonian.
+% These will be out fitting parameters later. After calling matparser, we
+% can check the resulting matrices using the spinw.table method.
+
+x1 = [4.24 5.95 -0.46 -0.48];
+luvo.matparser('param',x1,'mat',{'Jab' 'Jc' 'K(2,2)' 'K(3,3)'},'init',true)
+
+luvo.table('matrix')
+
+%% Fit experimental spin wave dispersion
+% We use the spinw.fitspec command to fit experimental data stored in the 
+% LuVO3_fitted_modes.txt' file. For details on the file format check
+% sw_readspec, for details on the fitting check spinw.fitspec. To switch of
+% the timer function we use the swpref.setpref command setting tid to 0.
+% The fitspec command similarly to all other commands accept a struct
+% instead of a list of optionname value pairs. We also slightly change the
+% input of spinw.matparser, fitting K(1,1) and K(2,2) and restricting them
+% to positive values. This ensures that the magnetic structure (parallel to
+% c-axis) is always the right ground state. The data file is stored here:
+% https://goo.gl/8guwPF
+% Please save it with the name LuVO3_fitted_modes.txt into a location that
+% is visible to Matlab.
+
+swpref.setpref('tid',0)
+
+par_fit          = struct;
+par_fit.datapath = 'LuVO3_fitted_modes.txt';
+
+par_fit.Evect    = linspace(0,45,71);
+par_fit.func     = @(obj,p)matparser(obj,'param',p,...
+                    'mat',{'Jab' 'Jc' 'K(1,1)' 'K(2,2)'},'init',true);
+
+par_fit.xmin      = [ 3   1  0   0    ];
+par_fit.xmax      = [ 9  10  1   1    ];
+par_fit.x0        = [ 6   4  0.1 0.04 ];
+par_fit.plot      = true;
+par_fit.hermit    = false;
+par_fit.optimizer = 'pso';
+par_fit.maxiter   = 10;
+par_fit.optmem    = 1;
+par_fit.nrun      = 3;
+
+fitStr = luvo.fitspec(par_fit);
+
+%% Check the calculated spin wave spectrum
+% After fitting, the best result is stored in the spinw object. The data
+% includes 2 straight lines in reciprocal space: (0,1,L) and (0,1+K,3+K).
+% We tile the two scans together onto the same plot using a bit of Matlab
+% coding.
+
+Q1 = [0 1.0 2.0];
+Q2 = [0 1.0 3.0];
+Q3 = [0 1.5 3.5];
+
+spec = luvo.spinwave({Q1 Q2 Q3 501});
+
+spec = sw_egrid(spec);
+
+figure
+sw_plotspec(spec,'dE',1.5)
+legend('off')
+
+% Plot over the experimental data after loading the data.
+T = sw_readtable('LuVO3_fitted_modes.txt');
+
+% List of Q values from data.
+Q = [[T(:).QH];[T(:).QK];[T(:).QL]]';
+% List of energy values from data.
+w1 = [T(:).EN1];
+w2 = [T(:).EN2];
+% We remove  zero energy points.
+w2(w2==0) = nan;
+
+% (0,1,L) line
+Qabs = sqrt(sum((bsxfun(@minus,Q(1:10,:),[0 1 2])*luvo.rl).^2,2));
+
+% (0,1+K,3+K) line
+Qabs2 = sqrt(sum((bsxfun(@minus,Q(11:end,:),[0 1 3])*luvo.rl).^2,2));
+Qabs = [Qabs; Qabs2 + sqrt(sum(([0 0 1]*luvo.rl).^2))];
+
+hold on
+plot3(Qabs,w1,1e2+w1*0,'ko','MarkerFaceColor','g')
+plot3(Qabs,w2,1e2+w2*0,'ko','MarkerFaceColor','g')
+
+##### SOURCE END #####
+--></body></html>

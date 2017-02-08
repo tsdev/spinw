@@ -24,10 +24,9 @@ triSpec = sw_egrid(triSpec,<span class="string">'Evect'</span>,linspace(0,7,500)
 figure
 sw_plotspec(triSpec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'axLim'</span>,[0 1],<span class="string">'dE'</span>,0.4)
 sw_plotspec(triSpec,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'axLim'</span>,[0 7],<span class="string">'colormap'</span>,[0 0 0],<span class="string">'colorbar'</span>,false,<span class="string">'lineStyle'</span>,<span class="string">'-'</span>,<span class="string">'legend'</span>,false)
-</pre><pre class="codeoutput error">Error using sw_egrid (line 345)
-The imaginary part of the spin wave energes is larger than the bin size! Improve your calculation or disable imagChk option!
-Error in tutorial12 (line 51)
-triSpec = sw_egrid(triSpec,'Evect',linspace(0,7,500),'component','Sperp');</pre><h2 id="5">Plotting with Horace</h2><p>The convoluted color spin wave spectra also can be plotted using the Horace package, see: [[http://horace.isis.rl.ac.uk]]. The spectrum will be calculated in the (H,K,0) plane and a constant energy cut is plotted. The disp2sqw_eval() function can be called Horace objects with any dimensions.</p><pre class="codeinput"><span class="comment">% Finite energy resolution is simulated by convoluting the spectra with a</span>
+</pre><pre class="codeoutput">Warning: To make the Hamiltonian positive definite, a small omega_tol value was
+added to its diagonal! 
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_04.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_05.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_06.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Plotting with Horace</h2><p>The convoluted color spin wave spectra also can be plotted using the Horace package, see: [[http://horace.isis.rl.ac.uk]]. The spectrum will be calculated in the (H,K,0) plane and a constant energy cut is plotted. The disp2sqw_eval() function can be called Horace objects with any dimensions.</p><pre class="codeinput"><span class="comment">% Finite energy resolution is simulated by convoluting the spectra with a</span>
 <span class="comment">% Gaussian function, with the following FWHM.</span>
 dE = 0.15;
 
@@ -44,7 +43,9 @@ plot(cut1)
 colorslider(<span class="string">'delete'</span>)
 colormap(flipud(cm_inferno))
 colorbar
-</pre><pre>Written by
+</pre><pre class="codeoutput">--------------------------------------------------------------------------------
+Taking cut from dnd object...
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial12_07.png" style="width:560px;height:420px;" alt=""> <pre>Written by
 Sandor Toth
 16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####

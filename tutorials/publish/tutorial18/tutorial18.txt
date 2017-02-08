@@ -63,12 +63,7 @@ powSpec = hK.powspec(linspace(0,3,80),<span class="string">'nrand'</span>,500,<s
 
 figure;
 sw_plotspec(powSpec,<span class="string">'dE'</span>,0.01,<span class="string">'axlim'</span>,[0 0.05])
-</pre><pre class="codeoutput error">Error using sw_egrid (line 345)
-The imaginary part of the spin wave energes is larger than the bin size! Improve your calculation or disable imagChk option!
-Error in spinw/powspec (line 167)
-    specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T,'binType',param.binType,'imagChk',param.imagChk);
-Error in tutorial18 (line 111)
-powSpec = hK.powspec(linspace(0,3,80),'nrand',500,'Evect',linspace(0,5,500));</pre><pre>Written by
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial18_05.png" style="width:560px;height:420px;" alt=""> <pre>Written by
 Goran Nilsen and Sandor Toth
 27-Jun-2014, 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####

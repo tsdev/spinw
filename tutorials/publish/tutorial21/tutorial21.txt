@@ -109,10 +109,7 @@ ylabel(<span class="string">'Energy (THz)'</span>)
 legend <span class="string">off</span>
 colorbar <span class="string">off</span>
 caxis([-0.05 0.05])
-</pre><pre class="codeoutput error">Error using sw_egrid (line 345)
-The imaginary part of the spin wave energes is larger than the bin size! Improve your calculation or disable imagChk option!
-Error in tutorial21 (line 107)
-spec = sw_egrid(spec,'component','Sxy-Syx','Evect',linspace(0,28,501));</pre><pre>Written by
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial21_04.png" style="width:560px;height:420px;" alt=""> <pre>Written by
 Sandor Toth
 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####

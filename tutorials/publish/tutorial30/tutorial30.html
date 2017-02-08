@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tutorial30</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-07"><meta name="DC.source" content="tutorial30.m"><style type="text/css">
+      --><title>tutorial30</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-08"><meta name="DC.source" content="tutorial30.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -122,7 +122,7 @@ swpref.getpref
     sw_intsf         - integrates the structure factor along given Q directions
     sw_model         - creates different predefined spin models
  
-  Contraint functions for spinw.optmagstr():
+  Constraint functions for spinw.optmagstr():
  
     gm_planar        - planar magnetic structure constraint function 
     gm_planard       - planar magnetic structure constraint function 
@@ -172,7 +172,6 @@ swpref.getpref
     sw_converter     - converts energy and momentum units for a given particle
     sw_fibo          - returns the last two Fibonacci number smaller or equal to the
  
- 
   Import functions:
  
     sw_import        - create SpinW object from .cif and FullProf Studio .fst files
@@ -208,7 +207,7 @@ ans =
     fontsize: 12
          tid: 0
     colormap: @cm_inferno
-      usemex: 1
+      usemex: 0
 </pre><h2 id="2">Generate lattice</h2><p>We create a triangular lattice of magnetic atoms.</p><pre class="codeinput">tri = spinw;
 
 <span class="comment">% The lattice parameters in Angstrom and angles in degree can be defined.</span>
@@ -243,6 +242,8 @@ plot(tri,<span class="string">'range'</span>,[3 3 1/2],<span class="string">'cel
 figure
 sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'imag'</span>,true,<span class="string">'colormap'</span>,[0 0 0],<span class="string">'colorbar'</span>,false)
 axis([0 1 0 5])
+</pre><pre class="codeoutput">Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised at some
+q-point! 
 </pre><img vspace="5" hspace="5" src="tutorial30_05.png" style="width:560px;height:420px;" alt=""> <h2 id="7">Spin-spin correlation functions</h2><p>The spin-spin correlations is already calculated, however the result contains 9 numbers per Q-point per mode. It is not possible to show this on a single plot.</p><p>BUT!</p><p>1. we  can calculate the neutron scattering cross section 2. we can select one of the components S_alpha_beta(Q,w) 3. we can sum up the diagonal S_alpha_alpha(Q,w)</p><p>What do you see? Where is the largest intensity? How is it related to the magnetic propagation vector?</p><p>Why are some modes gapped? What type of spin-spin correlations are gapped?</p><p>Why do we have Szz?</p><p>Shouldn't the spins precess around M? Shouldn't each spin wave mode corresponds to a precession in a specific plane not a motion along a specific axis?</p><pre class="codeinput"><span class="comment">%spec = sw_egrid(spec,'component','Sperp','Evect',0:0.01:5.5);</span>
 spec = sw_egrid(spec,<span class="string">'component'</span>,{<span class="string">'Sxx+Syy'</span> <span class="string">'Szz'</span>},<span class="string">'Evect'</span>,0:0.01:5);
 <span class="comment">%spec = sw_egrid(spec,'component','Syz','Evect',0:0.01:5);</span>
@@ -306,6 +307,8 @@ caxis([0 3])
 legend <span class="string">off</span>
 colorbar <span class="string">off</span>
 swplot.subfigure(1,3,1)
+</pre><pre class="codeoutput">Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised at some
+q-point! 
 </pre><img vspace="5" hspace="5" src="tutorial30_08.png" style="width:427px;height:700px;" alt=""> <pre>Written by
 Sandor Toth
 06-Feb-2016</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--

@@ -73,8 +73,8 @@ swplot.subfigure(1,3,1)
 % larger S. There is also a small mixing around the zone center and
 % boundaries due to the weak J_{Cu-Fe} coupling.
 
-FeCuChain.addatom('label','MCu2','r',[0 0 0],'formfactn',1)
-FeCuChain.addatom('label','MFe2','r',[0 1/2 0],'formfactn',0)
+FeCuChain.addatom('label','MCu2','r',[0 0 0],'formfactn',1,'S',1/2)
+FeCuChain.addatom('label','MFe2','r',[0 1/2 0],'formfactn',0,'S',2)
 
 spec = FeCuChain.spinwave({[0 0 0] [1 0 0] 503},'hermit',false,'formfact',true);
 spec = sw_egrid(spec,'component','Sxx+Syy+Szz');

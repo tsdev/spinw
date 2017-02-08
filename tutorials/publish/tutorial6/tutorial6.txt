@@ -75,14 +75,13 @@ kag4Spec = sw_neutron(kag4Spec);
 kag4Spec = sw_egrid(kag4Spec,<span class="string">'Evect'</span>,linspace(0,6.5,100)) ;
 figure
 sw_plotspec(kag4Spec,<span class="string">'mode'</span>,1,<span class="string">'axLim'</span>,[0 8],<span class="string">'colorbar'</span>,false,<span class="string">'colormap'</span>,[0 0 0])
-</pre><pre class="codeoutput error">Error using sw_egrid (line 345)
-The imaginary part of the spin wave energes is larger than the bin size! Improve your calculation or disable imagChk option!
-Error in tutorial6 (line 57)
-kag4Spec = sw_egrid(kag4Spec,'Evect',linspace(0,6.5,100)) ;</pre><h2 id="5">Powder averaged spectrum</h2><pre class="codeinput">kag4Pow = kagome4.powspec(linspace(0,2.5,100),<span class="string">'Evect'</span>,linspace(0,7,250),<span class="keyword">...</span>
+</pre><pre class="codeoutput">Warning: To make the Hamiltonian positive definite, a small omega_tol value was
+added to its diagonal! 
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial6_04.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Powder averaged spectrum</h2><pre class="codeinput">kag4Pow = kagome4.powspec(linspace(0,2.5,100),<span class="string">'Evect'</span>,linspace(0,7,250),<span class="keyword">...</span>
     <span class="string">'nRand'</span>,1e3,<span class="string">'hermit'</span>,false);
 figure
 sw_plotspec(kag4Pow,<span class="string">'axLim'</span>,[0 0.2],<span class="string">'colorbar'</span>,true)
-</pre><pre>Written by
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial6_05.png" style="width:560px;height:420px;" alt=""> <pre>Written by
 Bjorn Fak &amp; Sandor Toth
 06-Jun-2014, 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####

@@ -62,6 +62,8 @@ J1J2spec = sw_egrid(J1J2spec, <span class="string">'Evect'</span>,linspace(0,6.5
 figure
 sw_plotspec(J1J2spec, <span class="string">'mode'</span>,1,<span class="string">'colorbar'</span>,false)
 axis([0 1 0 6])
+</pre><pre class="codeoutput">Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised at some
+q-point! 
 </pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial3_05.png" style="width:560px;height:420px;" alt=""> <pre>Written by
 Bjorn Fak &amp; Sandor Toth
 06-Jun-2014, 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--

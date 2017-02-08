@@ -1,6 +1,11 @@
 <div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Internal data structure of SpinW</a></li><li><a href="#2">Check out internal data structure of SpinW</a></li><li><a href="#3">Test cordinate transformations</a></li><li><a href="#4">Rotate a vector</a></li><li><a href="#5">Magnetic atoms</a></li><li><a href="#6">Space groups</a></li><li><a href="#7">Bond symmetry</a></li><li><a href="#8">Lets do something crazy</a></li><li><a href="#9">Lets add a few matrices</a></li><li><a href="#10">Lets add some matrices and plot</a></li><li><a href="#11">Plot a single triangular layer from LiCrO2</a></li><li><a href="#12">Single ion properties</a></li><li><a href="#13">Magnetic structure</a></li><li><a href="#14">Rotating frame representation</a></li><li><a href="#15">Let's do some animation by rotating the moments</a></li><li><a href="#16">Check the spin wave dispersion</a></li><li><a href="#17">Case when the rotating frame representation fails</a></li></ul></div><h2 id="1">Internal data structure of SpinW</h2><p>Import the LiCrO2 crystal structure from a web link. It has space group R-3m, rhombohedrl crystal structure in hexagonal settings. What is the density? Where does all the data comes from? edit atom.dat</p><pre class="codeinput">licro = spinw(<span class="string">'https://goo.gl/do6oTh'</span>);
 
 licro.formula
+</pre><pre class="codeoutput">     &lt;strong&gt;Chemical formula:&lt;/strong&gt;  Cr1Li1O2
+     &lt;strong&gt;Formula mass:&lt;/strong&gt;        90.936 g/mol
+     &lt;strong&gt;Formula in cell:&lt;/strong&gt;          3 units
+     &lt;strong&gt;Cell volume:&lt;/strong&gt;        105.178 Angstrom^3
+     &lt;strong&gt;Density:&lt;/strong&gt;              4.307 g/cm^3
 </pre><h2 id="2">Check out internal data structure of SpinW</h2><p>What do you see?</p><pre class="codeinput">properties(spinw)
 
 licro.lattice
@@ -153,10 +158,9 @@ legend <span class="string">off</span>
 figure
 spec = sw_omegasum(spec,<span class="string">'zeroint'</span>,1e-5,<span class="string">'tol'</span>,1e-3);
 sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'int'</span>,<span class="string">'axLim'</span>,[0 5],<span class="string">'colormap'</span>,[0 0 0])
-</pre><pre class="codeoutput error">Error using sw_egrid (line 345)
-The imaginary part of the spin wave energes is larger than the bin size! Improve your calculation or disable imagChk option!
-Error in tutorial31 (line 184)
-spec = sw_egrid(spec);</pre><h2 id="17">Case when the rotating frame representation fails</h2><p>We show here what happens when there are counterrotating spirals.</p><pre class="codeinput">ch = spinw;
+</pre><pre class="codeoutput">Warning: To make the Hamiltonian positive definite, a small omega_tol value was
+added to its diagonal! 
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial31_09.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial31_10.png" style="width:560px;height:420px;" alt=""> <h2 id="17">Case when the rotating frame representation fails</h2><p>We show here what happens when there are counterrotating spirals.</p><pre class="codeinput">ch = spinw;
 ch.genlattice(<span class="string">'lat_const'</span>,[3 7 4])
 ch.addatom(<span class="string">'r'</span>,[1/2 1/4 0],<span class="string">'S'</span>,1)
 ch.addatom(<span class="string">'r'</span>,[1/2 3/4 0],<span class="string">'S'</span>,1)
@@ -181,7 +185,32 @@ ch.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</
 
 <span class="comment">% Let's check the energy if we are right, -1 meV/spin looks fine.</span>
 ch.energy
-</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+</pre><pre class="codeoutput">Warning: Convergence is not reached! 
+Warning: The stored magnetic structure does not have an exact representation in
+the rotating frame formalism! 
+ans = 
+  struct with fields:
+
+        S: [3&times;2 double]
+        k: [0.2499 0 0]
+        n: [0 -1 0]
+    N_ext: [1 1 1]
+    exact: 0
+Warning: The stored magnetic structure does not have an exact representation in
+the rotating frame formalism! 
+ans = 
+  struct with fields:
+
+        S: [3&times;8 double]
+        k: [0.2499 0 0]
+        n: [0 -1 0]
+    N_ext: [4 1 1]
+    exact: 0
+Warning: In the extended unit cell k is still larger than epsilon! 
+Warning: The stored magnetic structure does not have an exact representation in
+the rotating frame formalism! 
+Ground state energy: -1.000 meV/spin.
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial31_11.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial31_12.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####
 %% Internal data structure of SpinW
 % Import the LiCrO2 crystal structure from a web link. It has space group

@@ -89,13 +89,13 @@ par_fit.func     = @(obj,p)matparser(obj,'param',p,...
 
 par_fit.xmin      = [ 3   1  0   0    ];
 par_fit.xmax      = [ 9  10  1   1    ];
-par_fit.x0        = [ 6   4  0.1 0.04 ];
+%par_fit.x0        = [ 6   4  0.1 0.04 ];
 par_fit.plot      = true;
 par_fit.hermit    = false;
 par_fit.optimizer = 'pso';
 par_fit.maxiter   = 10;
 par_fit.optmem    = 1;
-par_fit.nrun      = 3;
+par_fit.nrun      = 5;
 
 fitStr = luvo.fitspec(par_fit);
 

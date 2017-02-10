@@ -286,13 +286,6 @@ if (nTwin == 1) && norm(rotc1(:))==0
 end
 
 nHkl = nHkl0;
-%hkl = {hkl};
-%hkl0   = hkl;
-%hklExt = hkl;
-
-%hkl    = cell2mat(hkl);
-%hkl0   = cell2mat(hkl0);
-%hklExt = cell2mat(hklExt);
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
@@ -593,66 +586,61 @@ end
 for jj = 1:nSlice
     % q indices selected for every chunk
     hklIdxMEM  = hklIdx(jj):(hklIdx(jj+1)-1);
-%%
-if ~param.notwin
-    % In the abc coordinate system of the selected twin the scan is
-    % rotated opposite direction to rotC.
-    hklMEM  = obj.twinq(hkl(:,hklIdxMEM));
-%    nHkl = nHkl0*nTwin;
-else
-%    nHkl = nHkl0;
-%    hkl  = {hkl};
-    hklMEM = {hkl(:,hklIdxMEM)};
-end
 
-if incomm
-    % TODO
-    if ~helical
-        warning('sw:spinwave:Twokm',['The two times the magnetic ordering '...
-            'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
+    if ~param.notwin
+        % In the abc coordinate system of the selected twin the scan is
+        % rotated opposite direction to rotC.
+        hklMEM  = obj.twinq(hkl(:,hklIdxMEM));
+    else
+        hklMEM = {hkl(:,hklIdxMEM)};
     end
+
+    if incomm
+        % TODO
+        if ~helical
+            warning('sw:spinwave:Twokm',['The two times the magnetic ordering '...
+                'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
+        end
     
-    hklExt0MEM = cell(1,nTwin);
-    hklExtMEM = cell(1,nTwin);
+        hklExt0MEM = cell(1,nTwin);
+        hklExtMEM = cell(1,nTwin);
     
-    for tt = 1:nTwin
-        % without the k_m: (k, k, k)
-        hklExt0MEM{tt} = repmat(hklMEM{tt},[1 3]);
+        for tt = 1:nTwin
+            % without the k_m: (k, k, k)
+            hklExt0MEM{tt} = repmat(hklMEM{tt},[1 3]);
         
-        % for wavevectors in the extended unit cell km won't be multiplied by
-        % nExt (we devide here to cancel the multiplication later)
-        kme = km./nExt;
-        hklExtMEM{tt}  = [bsxfun(@minus,hklMEM{tt},kme') hklMEM{tt} bsxfun(@plus,hklMEM{tt},kme')];
+            % for wavevectors in the extended unit cell km won't be multiplied by
+            % nExt (we devide here to cancel the multiplication later)
+            kme = km./nExt;
+            hklExtMEM{tt}  = [bsxfun(@minus,hklMEM{tt},kme') hklMEM{tt} bsxfun(@plus,hklMEM{tt},kme')];
         
-        % calculate dispersion for (k-km, k, k+km)
-        hklMEM{tt}  = [bsxfun(@minus,hklMEM{tt},km') hklMEM{tt} bsxfun(@plus,hklMEM{tt},km')];
+            % calculate dispersion for (k-km, k, k+km)
+            hklMEM{tt}  = [bsxfun(@minus,hklMEM{tt},km') hklMEM{tt} bsxfun(@plus,hklMEM{tt},km')];
+        end
+    else
+        hklExt0MEM = hklMEM;
+        hklExtMEM  = hklMEM;
     end
-%   nHkl  = nHkl*3;
-%   nHkl0 = nHkl0*3;
-else
-    hklExt0MEM = hklMEM;
-    hklExtMEM  = hklMEM;
-end
-%%
-hklExt0MEM = cell2mat(hklExt0MEM);
-hklExtMEM = cell2mat(hklExtMEM);
-%%
-% Converts wavevctor list into the extended unit cell
-hklExtMEM = bsxfun(@times,hklExtMEM,nExt')*2*pi;
-% q values without the +/-k_m value
-hklExt0MEM = bsxfun(@times,hklExt0MEM,nExt')*2*pi;
-%%
+
+    hklExt0MEM = cell2mat(hklExt0MEM);
+    hklExtMEM = cell2mat(hklExtMEM);
+
+    % Converts wavevctor list into the extended unit cell
+    hklExtMEM = bsxfun(@times,hklExtMEM,nExt')*2*pi;
+    % q values without the +/-k_m value
+    hklExt0MEM = bsxfun(@times,hklExt0MEM,nExt')*2*pi;
+
 %   hklExtMEM  = hklExt(:,hklIdxMEM);
     % q values without the +/-k_m vector
 %   hklExt0MEM = hklExt0(:,hklIdxMEM);
     % twin indices for every q point
 %   twinIdxMEM = twinIdx(hklIdxMEM);
     nHklMEM = size(hklExtMEM,2);
-%%
-% determines a twin index for every q point
-twinIdxMEM = repmat(1:nTwin,[nHklMEM 1]);
-twinIdxMEM = twinIdxMEM(:);
-%%
+
+    % determines a twin index for every q point
+    twinIdxMEM = repmat(1:nTwin,[nHklMEM 1]);
+    twinIdxMEM = twinIdxMEM(:);
+
     % q values contatining the k_m vector
     
     % Creates the matrix of exponential factors nCoupling x nHkl size.
@@ -846,11 +834,7 @@ twinIdxMEM = twinIdxMEM(:);
         
         for i1=1:3; 
             for i2=1:3; 
-                %if param.outSperp
-                    tSab(i1,i2,:,:) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
-                %else
-                %    Sab(i1,i2,:,hklIdxMEM) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
-                %end
+                tSab(i1,i2,:,:) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
             end
         end
     else
@@ -890,91 +874,79 @@ twinIdxMEM = twinIdxMEM(:);
         % Dynamical for factor from S^alpha^beta(k) correlation function.
         % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
         % Normalizes the intensity to single unit cell.
-        %if param.outSperp
-            tSab = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
-        %else
-        %    Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
-        %end
+        tSab = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
     end
-%%
-if incomm
-    % resize matrices due to the incommensurability (k-km,k,k+km) multiplicity
-    kmIdx = repmat(sort(repmat([1 2 3],1,nHklMEM/3)),1,nTwin);
-    % Rodrigues' rotation formula.
-    nx  = [0 -n(3) n(2); n(3) 0 -n(1); -n(2) n(1) 0];
-    nxn = n'*n;
-    K1 = 1/2*(eye(3) - nxn - 1i*nx);
-    K2 = nxn;
-    
-    % keep the rotation invariant part of Sab
-    %nx  = [0 -n(3) n(2);n(3) 0 -n(1);-n(2) n(1) 0];
-    %nxn = n'*n;
-    m1  = eye(3);
-    
-    % if the 2*km vector is integer, the magnetic structure is not a true
-    % helix
-    %tol = param.tol*2;
-    %helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
-    
-    if helical
-        % integrating out the arbitrary initial phase of the helix
-        tSab = 1/2*tSab - 1/2*mmat(mmat(nx,tSab),nx) + 1/2*mmat(mmat(nxn-m1,tSab),nxn) + 1/2*mmat(mmat(nxn,tSab),2*nxn-m1);
-    end
-    
-    % Save the structure factor in the rotating frame
-    if param.saveSabp
-        Sabp(:,:,:,hklIdxMEM) = tSab(:,:,:,kmIdx==2);
-        omegap(:,hklIdxMEM) = DD(:,kmIdx==2);
-    end
-    
-    % dispersion
-    omega(:,hklIdxMEM) = [DD(:,kmIdx==1); DD(:,kmIdx==2); DD(:,kmIdx==3)];
-    % exchange matrices
-    tSab   = cat(3,mmat(tSab(:,:,:,kmIdx==1),K1), mmat(tSab(:,:,:,kmIdx==2),K2), ...
-        mmat(tSab(:,:,:,kmIdx==3),conj(K1)));
-    
-    %hkl   = hkl(:,kmIdx==2);
-    %nHkl0 = nHkl0/3;
-else
-    omega(:,hklIdxMEM) = DD;
-    helical = false;
-end
-clear DD;
 
-%%
-if ~param.notwin
-    % Rotate the calculated correlation function into the twin coordinate
-    % system using rotC
-    SabAll = cell(1,nTwin);
-    for ii = 1:nTwin
-        % select the ii-th twin from the Q points
-        idx    = (1:nHklMEM) + (ii-1)*nHklMEM;
-        % select correlation function of twin ii
-        SabT   = tSab(:,:,:,idx);
-        % size of the correlation function matrix
-        sSabT  = size(SabT);
-        % convert the matrix into cell of 3x3 matrices
-        SabT   = reshape(SabT,3,3,[]);
-        % select the rotation matrix of twin ii
-        rotC   = obj.twin.rotc(:,:,ii);
-        % rotate correlation function using arrayfun
-        SabRot = arrayfun(@(idx)(rotC*SabT(:,:,idx)*(rotC')),1:size(SabT,3),'UniformOutput',false);
-        SabRot = cat(3,SabRot{:});
-        % resize back the correlation matrix
-        SabAll{ii} = reshape(SabRot,sSabT);
-    end
-    tSab = SabAll;
+    if incomm
+        % resize matrices due to the incommensurability (k-km,k,k+km) multiplicity
+        kmIdx = repmat(sort(repmat([1 2 3],1,nHklMEM/3)),1,nTwin);
+        % Rodrigues' rotation formula.
+        nx  = [0 -n(3) n(2); n(3) 0 -n(1); -n(2) n(1) 0];
+        nxn = n'*n;
+        K1 = 1/2*(eye(3) - nxn - 1i*nx);
+        K2 = nxn;
     
-    if nTwin == 1
-        tSab = tSab{1};
-    %else
-    %    omega = mat2cell(omega,size(omega,1),repmat(nHkl0,[1 nTwin]));
-    end
+        % keep the rotation invariant part of Sab
+        %nx  = [0 -n(3) n(2);n(3) 0 -n(1);-n(2) n(1) 0];
+        %nxn = n'*n;
+        m1  = eye(3);
     
-else
-    tSab = {tSab};
-end
-%%
+        % if the 2*km vector is integer, the magnetic structure is not a true
+        % helix
+        %tol = param.tol*2;
+        %helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
+    
+        if helical
+            % integrating out the arbitrary initial phase of the helix
+            tSab = 1/2*tSab - 1/2*mmat(mmat(nx,tSab),nx) + 1/2*mmat(mmat(nxn-m1,tSab),nxn) + 1/2*mmat(mmat(nxn,tSab),2*nxn-m1);
+        end
+    
+        % Save the structure factor in the rotating frame
+        if param.saveSabp
+            Sabp(:,:,:,hklIdxMEM) = tSab(:,:,:,kmIdx==2);
+            omegap(:,hklIdxMEM) = DD(:,kmIdx==2);
+        end
+    
+        % dispersion
+        omega(:,hklIdxMEM) = [DD(:,kmIdx==1); DD(:,kmIdx==2); DD(:,kmIdx==3)];
+        % exchange matrices
+        tSab   = cat(3,mmat(tSab(:,:,:,kmIdx==1),K1), mmat(tSab(:,:,:,kmIdx==2),K2), ...
+                       mmat(tSab(:,:,:,kmIdx==3),conj(K1)));
+    else
+        omega(:,hklIdxMEM) = DD;
+        helical = false;
+    end
+    clear DD;
+
+    if ~param.notwin
+        % Rotate the calculated correlation function into the twin coordinate
+        % system using rotC
+        SabAll = cell(1,nTwin);
+        for ii = 1:nTwin
+            % select the ii-th twin from the Q points
+            idx    = (1:nHklMEM) + (ii-1)*nHklMEM;
+            % select correlation function of twin ii
+            SabT   = tSab(:,:,:,idx);
+            % size of the correlation function matrix
+            sSabT  = size(SabT);
+            % convert the matrix into cell of 3x3 matrices
+            SabT   = reshape(SabT,3,3,[]);
+            % select the rotation matrix of twin ii
+            rotC   = obj.twin.rotc(:,:,ii);
+            % rotate correlation function using arrayfun
+            SabRot = arrayfun(@(idx)(rotC*SabT(:,:,idx)*(rotC')),1:size(SabT,3),'UniformOutput',false);
+            SabRot = cat(3,SabRot{:});
+            % resize back the correlation matrix
+            SabAll{ii} = reshape(SabRot,sSabT);
+        end
+        tSab = SabAll;
+    
+        if nTwin == 1
+            tSab = tSab{1};
+        end
+    else
+        tSab = {tSab};
+    end
     
     if param.outSperp
         for ii = 1:nTwin

@@ -285,52 +285,14 @@ if (nTwin == 1) && norm(rotc1(:))==0
     param.notwin = true;
 end
 
-if ~param.notwin
-    % In the abc coordinate system of the selected twin the scan is
-    % rotated opposite direction to rotC.
-    hkl  = obj.twinq(hkl);
-    nHkl = nHkl0*nTwin;
-else
-    nHkl = nHkl0;
-    hkl  = {hkl};
-end
+nHkl = nHkl0;
+%hkl = {hkl};
+%hkl0   = hkl;
+%hklExt = hkl;
 
-if incomm
-    % TODO
-    if ~helical
-        warning('sw:spinwave:Twokm',['The two times the magnetic ordering '...
-            'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
-    end
-    
-    hkl0 = cell(1,nTwin);
-    hklExt = cell(1,nTwin);
-    
-    for tt = 1:nTwin
-        % without the k_m: (k, k, k)
-        hkl0{tt} = repmat(hkl{tt},[1 3]);
-        
-        % for wavevectors in the extended unit cell km won't be multiplied by
-        % nExt (we devide here to cancel the multiplication later)
-        kme = km./nExt;
-        hklExt{tt}  = [bsxfun(@minus,hkl{tt},kme') hkl{tt} bsxfun(@plus,hkl{tt},kme')];
-        
-        % calculate dispersion for (k-km, k, k+km)
-        hkl{tt}  = [bsxfun(@minus,hkl{tt},km') hkl{tt} bsxfun(@plus,hkl{tt},km')];
-    end
-    nHkl  = nHkl*3;
-    nHkl0 = nHkl0*3;
-else
-    hkl0   = hkl;
-    hklExt = hkl;
-end
-
-hkl    = cell2mat(hkl);
-hkl0   = cell2mat(hkl0);
-hklExt = cell2mat(hklExt);
-
-% determines a twin index for every q point
-twinIdx = repmat(1:nTwin,[nHkl 1]);
-twinIdx = twinIdx(:);
+%hkl    = cell2mat(hkl);
+%hkl0   = cell2mat(hkl0);
+%hklExt = cell2mat(hklExt);
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
@@ -356,11 +318,6 @@ if any(bq)
     % Keep only the quadratic exchange couplings
     SS.all = SS.all(1:14,SS.all(15,:)==0);
 end
-
-% Converts wavevctor list into the extended unit cell
-hklExt  = bsxfun(@times,hklExt,nExt')*2*pi;
-% q values without the +/-k_m value
-hklExt0 = bsxfun(@times,hkl0,nExt')*2*pi;
 
 % Calculates parameters eta and zed.
 if isempty(magStr.S)
@@ -543,6 +500,12 @@ if param.optmem == 0
     freeMem = sw_freemem;
     if freeMem > 0
         nSlice = ceil(nMagExt^2*nHkl*6912/freeMem*2);
+        if ~param.notwin
+            nSlice = nSlice*nTwin;
+        end
+        if incomm
+            nSlice = nSlice*3;
+        end
     else
         nSlice = 1;
         if ~param.fitmode
@@ -591,7 +554,11 @@ end
 hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 
 % Empty omega dispersion of all spin wave modes, size: 2*nMagExt x nHkl.
-omega = zeros(2*nMagExt,0);
+if incomm
+    omega = zeros(6*nMagExt,0);
+else
+    omega = zeros(2*nMagExt,0);
+end
 
 % empty Sab
 Sab = zeros(3,3,2*nMagExt,0);
@@ -614,7 +581,7 @@ warn1 = false;
 if param.formfact
     spectra.formfact = true;
     % Angstrom^-1 units for Q
-    hklA0 = 2*pi*(hkl0'/obj.basisvector)';
+    hklA0 = 2*pi*(hkl'/obj.basisvector)';
     % store form factor per Q point for each atom in the magnetic supercell
     % TODO check prod(nExt)? instead of nExt
     %FF = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[1 nExt]);
@@ -626,13 +593,67 @@ end
 for jj = 1:nSlice
     % q indices selected for every chunk
     hklIdxMEM  = hklIdx(jj):(hklIdx(jj+1)-1);
-    % q values contatining the k_m vector
-    hklExtMEM  = hklExt(:,hklIdxMEM);
+%%
+if ~param.notwin
+    % In the abc coordinate system of the selected twin the scan is
+    % rotated opposite direction to rotC.
+    hklMEM  = obj.twinq(hkl(:,hklIdxMEM));
+%    nHkl = nHkl0*nTwin;
+else
+%    nHkl = nHkl0;
+%    hkl  = {hkl};
+    hklMEM = {hkl(:,hklIdxMEM)};
+end
+
+if incomm
+    % TODO
+    if ~helical
+        warning('sw:spinwave:Twokm',['The two times the magnetic ordering '...
+            'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
+    end
+    
+    hklExt0MEM = cell(1,nTwin);
+    hklExtMEM = cell(1,nTwin);
+    
+    for tt = 1:nTwin
+        % without the k_m: (k, k, k)
+        hklExt0MEM{tt} = repmat(hklMEM{tt},[1 3]);
+        
+        % for wavevectors in the extended unit cell km won't be multiplied by
+        % nExt (we devide here to cancel the multiplication later)
+        kme = km./nExt;
+        hklExtMEM{tt}  = [bsxfun(@minus,hklMEM{tt},kme') hklMEM{tt} bsxfun(@plus,hklMEM{tt},kme')];
+        
+        % calculate dispersion for (k-km, k, k+km)
+        hklMEM{tt}  = [bsxfun(@minus,hklMEM{tt},km') hklMEM{tt} bsxfun(@plus,hklMEM{tt},km')];
+    end
+%   nHkl  = nHkl*3;
+%   nHkl0 = nHkl0*3;
+else
+    hklExt0MEM = hklMEM;
+    hklExtMEM  = hklMEM;
+end
+%%
+hklExt0MEM = cell2mat(hklExt0MEM);
+hklExtMEM = cell2mat(hklExtMEM);
+%%
+% Converts wavevctor list into the extended unit cell
+hklExtMEM = bsxfun(@times,hklExtMEM,nExt')*2*pi;
+% q values without the +/-k_m value
+hklExt0MEM = bsxfun(@times,hklExt0MEM,nExt')*2*pi;
+%%
+%   hklExtMEM  = hklExt(:,hklIdxMEM);
     % q values without the +/-k_m vector
-    hklExt0MEM = hklExt0(:,hklIdxMEM);
+%   hklExt0MEM = hklExt0(:,hklIdxMEM);
     % twin indices for every q point
-    twinIdxMEM = twinIdx(hklIdxMEM);
+%   twinIdxMEM = twinIdx(hklIdxMEM);
     nHklMEM = size(hklExtMEM,2);
+%%
+% determines a twin index for every q point
+twinIdxMEM = repmat(1:nTwin,[nHklMEM 1]);
+twinIdxMEM = twinIdxMEM(:);
+%%
+    % q values contatining the k_m vector
     
     % Creates the matrix of exponential factors nCoupling x nHkl size.
     % Extends dR into 3 x 3 x nCoupling x nHkl
@@ -709,9 +730,7 @@ for jj = 1:nSlice
     gComm  = diag(gCommd);
     %gd = diag(g);
 
-    if param.outSperp
-        Sab = zeros(3,3,2*nMagExt,nHklMEM);
-    end
+    tSab = zeros(3,3,2*nMagExt,nHklMEM);
     
     if param.hermit
         % All the matrix calculations are according to Colpa's paper
@@ -724,11 +743,11 @@ for jj = 1:nSlice
             % use mex files to speed up the calculation
             % mex file will return an error if the matrix is not positive definite.
             [K2, invK] = chol_omp(ham,'Colpa','tol',param.omega_tol);
-            [V, omega(:,hklIdxMEM)] = eig_omp(K2,'sort','descend');
+            [V, DD] = eig_omp(K2,'sort','descend');
             % the inverse of the para-unitary transformation V
             for ii=1:nMagExt; 
-                V(:,ii,:) = bsxfun(@times, squeeze(V(:,ii,:)), sqrt(omega(ii,hklIdxMEM))); 
-                V(:,ii+nMagExt,:) = bsxfun(@times, squeeze(V(:,ii+nMagExt,:)), sqrt(-omega(ii+nMagExt,hklIdxMEM))); 
+                V(:,ii,:) = bsxfun(@times, squeeze(V(:,ii,:)), sqrt(DD(ii,:))); 
+                V(:,ii+nMagExt,:) = bsxfun(@times, squeeze(V(:,ii+nMagExt,:)), sqrt(-DD(ii+nMagExt,:))); 
             end
             V = sw_mtimesx(invK,V);
         else
@@ -764,10 +783,11 @@ for jj = 1:nSlice
                 U = U(:,idx);
                 
                 % omega dispersion
-                omega(:,end+1) = D; %#ok<AGROW>
+                %omega(:,end+1) = D; %#ok<AGROW>
+                DD(:,end+1) = D; %#ok<AGROW>
                 
                 % the inverse of the para-unitary transformation V
-                V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*omega(:,end))); %#ok<MINV>
+                V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*D)); %#ok<MINV>
             end
         end
     else
@@ -785,7 +805,7 @@ for jj = 1:nSlice
             gham = mmat(gComm,ham);
         end
         
-        [V, omega(:,hklIdxMEM), orthWarn] = eigorth(gham, param.omega_tol, param.sortMode, param.useMex);
+        [V, DD, orthWarn] = eigorth(gham, param.omega_tol, param.sortMode, param.useMex);
         
         orthWarn0 = orthWarn || orthWarn0;
         
@@ -826,11 +846,11 @@ for jj = 1:nSlice
         
         for i1=1:3; 
             for i2=1:3; 
-                if param.outSperp
-                    Sab(i1,i2,:,:) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
-                else
-                    Sab(i1,i2,:,hklIdxMEM) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
-                end
+                %if param.outSperp
+                    tSab(i1,i2,:,:) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
+                %else
+                %    Sab(i1,i2,:,hklIdxMEM) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
+                %end
             end
         end
     else
@@ -870,71 +890,16 @@ for jj = 1:nSlice
         % Dynamical for factor from S^alpha^beta(k) correlation function.
         % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
         % Normalizes the intensity to single unit cell.
-        if param.outSperp
-            Sab = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
-        else
-            Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
-        end
+        %if param.outSperp
+            tSab = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
+        %else
+        %    Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
+        %end
     end
-
-    if param.outSperp
-        for ii = 1:nTwin
-            nMode   = size(Sab,3);
-    
-            % get symmetric component of Sab only
-            Sab = (Sab + permute(Sab,[2 1 3 4]))/2;
-    
-            % Normalized scattering wavevector in xyz coordinate system.
-            hklAN = bsxfun(@rdivide,hklA(:,hklIdxMEM),sqrt(sum(hklA(:,hklIdxMEM).^2,1)));
-    
-            % avoid NaN for Q=0
-            NaNidx = find(any(isnan(hklAN)));
-            for jj = 1:numel(NaNidx)
-                if NaNidx(jj) < size(hklAN,2)
-                    hklAN(:,NaNidx(jj)) = hklAN(:,NaNidx(jj)+1);
-                else
-                    hklAN(:,NaNidx(jj)) = [1;0;0];
-                end
-            end
-    
-            hkla = repmat(permute(hklAN,[1 3 2]),[1 3 1]);
-            hklb = repmat(permute(hklAN,[3 1 2]),[3 1 1]);
-    
-            % Perpendicular part of the scattering wavevector.
-            qPerp = repmat(eye(3),[1 1 nHklMEM])- hkla.*hklb;
-            qPerp = repmat(permute(qPerp,[1 2 4 3]),[1 1 nMode 1]);
-    
-            % Dynamical structure factor for neutron scattering
-            % Sperp: nMode x nHkl.
-            Sperp(:,hklIdxMEM) = permute(sumn(qPerp.*Sab,[1 2]),[3 4 1 2]);
-        end
-    end
-    
-    sw_status(jj/nSlice*100,0,param.tid);
-end
-
-% If number of formula units are given per cell normalize to formula
-% unit
-if obj.unit.nformula > 0
-    Sab = Sab/double(obj.unit.nformula);
-end
-
-sw_status(100,2,param.tid);
-
-fprintf0(fid,'Calculation finished.\n');
-
-if warn1 && ~param.fitmode
-    warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...
-        'positive definite, a small omega_tol value was added to its diagonal!'])
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% END MEMORY MANAGEMENT LOOP
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%%
 if incomm
     % resize matrices due to the incommensurability (k-km,k,k+km) multiplicity
-    kmIdx = repmat(sort(repmat([1 2 3],1,nHkl0/3)),1,nTwin);
+    kmIdx = repmat(sort(repmat([1 2 3],1,nHklMEM/3)),1,nTwin);
     % Rodrigues' rotation formula.
     nx  = [0 -n(3) n(2); n(3) 0 -n(1); -n(2) n(1) 0];
     nxn = n'*n;
@@ -953,36 +918,39 @@ if incomm
     
     if helical
         % integrating out the arbitrary initial phase of the helix
-        Sab = 1/2*Sab - 1/2*mmat(mmat(nx,Sab),nx) + 1/2*mmat(mmat(nxn-m1,Sab),nxn) + 1/2*mmat(mmat(nxn,Sab),2*nxn-m1);
+        tSab = 1/2*tSab - 1/2*mmat(mmat(nx,tSab),nx) + 1/2*mmat(mmat(nxn-m1,tSab),nxn) + 1/2*mmat(mmat(nxn,tSab),2*nxn-m1);
     end
     
     % Save the structure factor in the rotating frame
     if param.saveSabp
-        Sabp = Sab(:,:,:,kmIdx==2);
-        omegap = omega(:,kmIdx==2);
+        Sabp(:,:,:,hklIdxMEM) = tSab(:,:,:,kmIdx==2);
+        omegap(:,hklIdxMEM) = DD(:,kmIdx==2);
     end
     
     % dispersion
-    omega = [omega(:,kmIdx==1); omega(:,kmIdx==2); omega(:,kmIdx==3)];
+    omega(:,hklIdxMEM) = [DD(:,kmIdx==1); DD(:,kmIdx==2); DD(:,kmIdx==3)];
     % exchange matrices
-    Sab   = cat(3,mmat(Sab(:,:,:,kmIdx==1),K1), mmat(Sab(:,:,:,kmIdx==2),K2), ...
-        mmat(Sab(:,:,:,kmIdx==3),conj(K1)));
+    tSab   = cat(3,mmat(tSab(:,:,:,kmIdx==1),K1), mmat(tSab(:,:,:,kmIdx==2),K2), ...
+        mmat(tSab(:,:,:,kmIdx==3),conj(K1)));
     
-    hkl   = hkl(:,kmIdx==2);
-    nHkl0 = nHkl0/3;
+    %hkl   = hkl(:,kmIdx==2);
+    %nHkl0 = nHkl0/3;
 else
+    omega(:,hklIdxMEM) = DD;
     helical = false;
 end
+clear DD;
 
+%%
 if ~param.notwin
     % Rotate the calculated correlation function into the twin coordinate
     % system using rotC
     SabAll = cell(1,nTwin);
     for ii = 1:nTwin
         % select the ii-th twin from the Q points
-        idx    = (1:nHkl0) + (ii-1)*nHkl0;
+        idx    = (1:nHklMEM) + (ii-1)*nHklMEM;
         % select correlation function of twin ii
-        SabT   = Sab(:,:,:,idx);
+        SabT   = tSab(:,:,:,idx);
         % size of the correlation function matrix
         sSabT  = size(SabT);
         % convert the matrix into cell of 3x3 matrices
@@ -995,15 +963,91 @@ if ~param.notwin
         % resize back the correlation matrix
         SabAll{ii} = reshape(SabRot,sSabT);
     end
-    Sab = SabAll;
+    tSab = SabAll;
     
     if nTwin == 1
-        Sab = Sab{1};
-    else
-        omega = mat2cell(omega,size(omega,1),repmat(nHkl0,[1 nTwin]));
+        tSab = tSab{1};
+    %else
+    %    omega = mat2cell(omega,size(omega,1),repmat(nHkl0,[1 nTwin]));
     end
     
+else
+    tSab = {tSab};
 end
+%%
+    
+    if param.outSperp
+        for ii = 1:nTwin
+            nMode   = size(tSab{ii},3);
+    
+            % get symmetric component of Sab only
+            tSab{ii} = (tSab{ii} + permute(tSab{ii},[2 1 3 4]))/2;
+    
+            % Normalized scattering wavevector in xyz coordinate system.
+            hklAN = bsxfun(@rdivide,hklA(:,hklIdxMEM),sqrt(sum(hklA(:,hklIdxMEM).^2,1)));
+    
+            % avoid NaN for Q=0
+            NaNidx = find(any(isnan(hklAN)));
+            for jj = 1:numel(NaNidx)
+                if NaNidx(jj) < size(hklAN,2)
+                    hklAN(:,NaNidx(jj)) = hklAN(:,NaNidx(jj)+1);
+                else
+                    hklAN(:,NaNidx(jj)) = [1;0;0];
+                end
+            end
+    
+            hkla = repmat(permute(hklAN,[1 3 2]),[1 3 1]);
+            hklb = repmat(permute(hklAN,[3 1 2]),[3 1 1]);
+    
+            % Perpendicular part of the scattering wavevector.
+            qPerp = repmat(eye(3),[1 1 numel(hklIdxMEM)])- hkla.*hklb;
+            qPerp = repmat(permute(qPerp,[1 2 4 3]),[1 1 nMode 1]);
+    
+            % Dynamical structure factor for neutron scattering
+            % Sperp: nMode x nHkl.
+            Sperp(:,hklIdxMEM) = permute(sumn(qPerp.*tSab{ii},[1 2]),[3 4 1 2]);
+        end
+    else
+        if ~param.notwin
+            for ii = 1:nTwin
+                Sab{ii}(:,:,:,hklIdxMEM) = tSab{ii};
+            end
+        else
+            Sab(:,:,:,hklIdxMEM) = tSab{1};
+        end
+    end
+    
+    sw_status(jj/nSlice*100,0,param.tid);
+end
+
+% If number of formula units are given per cell normalize to formula
+% unit
+if ~param.outSperp && obj.unit.nformula > 0
+    if ~param.notwin
+        for ii = 1:nTwin
+            Sab{ii} = Sab{ii}/double(obj.unit.nformula);
+        end
+    else
+        Sab = Sab/double(obj.unit.nformula);
+    end
+end
+
+if ~param.notwin && nTwin ~= 1
+    omega = mat2cell(omega,size(omega,1),repmat(nHkl0,[1 nTwin]));
+end
+
+sw_status(100,2,param.tid);
+
+fprintf0(fid,'Calculation finished.\n');
+
+if warn1 && ~param.fitmode
+    warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...
+        'positive definite, a small omega_tol value was added to its diagonal!'])
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END MEMORY MANAGEMENT LOOP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Creates output structure with the calculated values.
 spectra.omega    = omega;

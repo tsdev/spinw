@@ -895,7 +895,11 @@ for jj = 1:nSlice
     
         if helical
             % integrating out the arbitrary initial phase of the helix
-            tSab = 1/2*tSab - 1/2*mmat(mmat(nx,tSab),nx) + 1/2*mmat(mmat(nxn-m1,tSab),nxn) + 1/2*mmat(mmat(nxn,tSab),2*nxn-m1);
+            if useMex
+                tSab = 1/2*tSab - 1/2*sw_mtimesx(sw_mtimesx(nx,tSab),nx) + 1/2*sw_mtimesx(sw_mtimesx(nxn-m1,tSab),nxn) + 1/2*sw_mtimesx(sw_mtimesx(nxn,tSab),2*nxn-m1);
+            else
+                tSab = 1/2*tSab - 1/2*mmat(mmat(nx,tSab),nx) + 1/2*mmat(mmat(nxn-m1,tSab),nxn) + 1/2*mmat(mmat(nxn,tSab),2*nxn-m1);
+            end
         end
     
         % Save the structure factor in the rotating frame
@@ -907,8 +911,11 @@ for jj = 1:nSlice
         % dispersion
         omega(:,hklIdxMEM) = [DD(:,kmIdx==1); DD(:,kmIdx==2); DD(:,kmIdx==3)];
         % exchange matrices
-        tSab   = cat(3,mmat(tSab(:,:,:,kmIdx==1),K1), mmat(tSab(:,:,:,kmIdx==2),K2), ...
-                       mmat(tSab(:,:,:,kmIdx==3),conj(K1)));
+        if useMex
+            tSab   = cat(3,sw_mtimesx(tSab(:,:,:,kmIdx==1),K1), sw_mtimesx(tSab(:,:,:,kmIdx==2),K2), sw_mtimesx(tSab(:,:,:,kmIdx==3),conj(K1)));
+        else
+            tSab   = cat(3,mmat(tSab(:,:,:,kmIdx==1),K1), mmat(tSab(:,:,:,kmIdx==2),K2), mmat(tSab(:,:,:,kmIdx==3),conj(K1)));
+        end
     else
         omega(:,hklIdxMEM) = DD;
         helical = false;

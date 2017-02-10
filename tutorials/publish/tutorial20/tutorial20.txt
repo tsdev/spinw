@@ -1,41 +1,50 @@
-<div class="content"><h1>Description</h1><!--introduction--><p>This tutorial reproduces the calculated spin wave spectrum of Yb<latex>_2</latex>Ti<latex>_2</latex>O<latex>_7</latex> with the magnetic Hamiltonian proposed in the following paper: <a href="http://journals.aps.org/prx/abstract/10.1103/PhysRevX.1.021002">PRX <b>1</b> , 021002 (2011)</a>.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Create crystal structure</a></li><li><a href="#2">Plot cubic environment of Yb<latex>^{3+}</latex></a></li><li><a href="#3">Create spin Hamiltonian</a></li><li><a href="#9">Calculate spin wave spectrum</a></li></ul></div><h2>Create crystal structure<a name="1"></a></h2><p>To create the cubic crystal structure of Yb<latex>_2</latex>Ti<latex>_2</latex>O<latex>_7</latex>, we add a user defined space group with the symmetry generators using the sw_addsym() function. We use the room temperature lattice parameter, however the exact lattice parameter is unimportant for the spin wave calculation as long as we are using lattice units. The spin of the magnetic atoms are automatically created from the ion label that contains the ionic charge after the element label. We also define the non-magnetic atoms for plotting. ALternatively a .cif file of the crystal structure can be imported.</p><pre class="codeinput">sw_addsym(<span class="string">'-z, y+3/4, x+3/4; z+3/4, -y, x+3/4; z+3/4, y+3/4, -x; y+3/4, x+3/4, -z; x+3/4, -z, y+3/4; -z, x+3/4, y+3/4'</span>,<span class="string">'F d -3 m Z'</span>);
+<div class="content"><h1>Description</h1><!--introduction--><p>This tutorial reproduces the calculated spin wave spectrum of Yb<latex>_2</latex>Ti<latex>_2</latex>O<latex>_7</latex> with the magnetic Hamiltonian proposed in the following paper: <a href="http://journals.aps.org/prx/abstract/10.1103/PhysRevX.1.021002">PRX <b>1</b> , 021002 (2011)</a>.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Create crystal structure</a></li><li><a href="#2">Plot cubic environment of Yb<latex>^{3+}</latex></a></li><li><a href="#3">Create spin Hamiltonian</a></li><li><a href="#7">Plot the magnetic Hamiltonian</a></li><li><a href="#8">Calculate spin wave spectrum</a></li></ul></div><h2 id="1">Create crystal structure</h2><p>To create the cubic crystal structure of Yb<latex>_2</latex>Ti<latex>_2</latex>O<latex>_7</latex>, we add a user defined space group with the symmetry generators using the sw_addsym() function. We use the room temperature lattice parameter, however the exact lattice parameter is unimportant for the spin wave calculation as long as we are using lattice units. The spin of the magnetic atoms are automatically created from the ion label that contains the ionic charge after the element label. We also define the non-magnetic atoms for plotting. ALternatively a .cif file of the crystal structure can be imported.</p><pre class="codeinput">symStr = <span class="string">'-z, y+3/4, x+3/4; z+3/4, -y, x+3/4; z+3/4, y+3/4, -x; y+3/4, x+3/4, -z; x+3/4, -z, y+3/4; -z, x+3/4, y+3/4'</span>;
 
-ybti = sw;
+ybti = spinw;
 a = 10.0307;
-ybti.genlattice(<span class="string">'lat_const'</span>,[a a a],<span class="string">'angled'</span>,[90 90 90],<span class="string">'sym'</span>,<span class="string">'F d -3 m Z'</span>)
-ybti.addatom(<span class="string">'label'</span>,<span class="string">'Yb3+'</span>,<span class="string">'r'</span>,[1/2 1/2 1/2])
+ybti.genlattice(<span class="string">'lat_const'</span>,[a a a],<span class="string">'angled'</span>,[90 90 90],<span class="string">'spgr'</span>,symStr,<span class="string">'label'</span>,<span class="string">'F d -3 m Z'</span>)
+ybti.addatom(<span class="string">'label'</span>,<span class="string">'Yb3+'</span>,<span class="string">'r'</span>,[1/2 1/2 1/2],<span class="string">'S'</span>,1/2)
 ybti.addatom(<span class="string">'label'</span>,<span class="string">'Ti4+'</span>,<span class="string">'r'</span>,[0 0 0])
 ybti.addatom(<span class="string">'label'</span>,<span class="string">'O2-'</span>,<span class="string">'r'</span>,[0.3318 1/8 1/8])
 ybti.addatom(<span class="string">'label'</span>,<span class="string">'O2-'</span>,<span class="string">'r'</span>,[3/8 3/8 3/8])
-plot(ybti,<span class="string">'labelAtom'</span>,false,<span class="string">'zoom'</span>,1)
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial20_01.png" alt=""> <h2>Plot cubic environment of Yb<latex>^{3+}</latex><a name="2"></a></h2><p>To the draw oxygen polyhedra around the Yb ions, we use the sw_drawpoly() function, that can draw polyhedra around arbitrary atoms on an existing crystal structure plot. Now we use center atom 'Yb' and polyhedra atoms 'O' for oxygen. Since the oxygen environment of Yb is octahedron, we set the limits to the 8 closes oxygen atom.</p><pre class="codeinput">sw_drawpoly(<span class="string">'cAtom'</span>,<span class="string">'Yb'</span>,<span class="string">'pAtom'</span>,<span class="string">'O'</span>,<span class="string">'limits'</span>,8);
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial20_02.png" alt=""> <h2>Create spin Hamiltonian<a name="3"></a></h2><p>We can remove the non-magnetic atoms from the sw object with a single command using the unitcell() function (not to mix with the unit_cell property of the sw object). The unitcell() function can return selected atoms from the list of symmetry inequivalent atoms in the unit cell. IN our case the magnetic Yb ions are the first atom.</p><pre class="codeinput">ybti.unit_cell = ybti.unitcell(1);
-</pre><p>We generate the list of bonds.</p><pre class="codeinput">ybti.gencoupling
-</pre><p>We create two 3x3 matrix, one for the first neighbor anisotropic exchange and one for the anisotropic g-tensor. And assign them appropriately.</p><pre class="codeinput">ybti.addmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>,<span class="string">'value'</span>,1)
+plot(ybti,<span class="string">'nMesh'</span>,3)
+swplot.legend(<span class="string">'none'</span>)
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial20_01.png" style="width:560px;height:420px;" alt=""> <h2 id="2">Plot cubic environment of Yb<latex>^{3+}</latex></h2><p>To the draw oxygen polyhedra around the Yb ions, we use the swplot.plotchem() function, that can draw polyhedra around arbitrary atoms on an existing crystal structure plot. Now we use center atom 'Yb' and polyhedra atoms 'O' for oxygen. Since the oxygen environment of Yb is octahedron, we set the limits to the 8 closes oxygen atom. The same can be achieved within the spinw.plot() function, adding the options below plus a string 'chem', such as 'chemAtom1', 'chemAtom2', 'chemLimit' and 'chemRange' and setting 'chemMode' to 'poly'.</p><pre class="codeinput">swplot.plotchem(<span class="string">'atom1'</span>,<span class="string">'Yb'</span>,<span class="string">'atom2'</span>,<span class="string">'O'</span>,<span class="string">'limit'</span>,8,<span class="string">'range'</span>,[0.1 0.9;0.1 0.9;0.1 0.9]);
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial20_02.png" style="width:560px;height:420px;" alt=""> <h2 id="3">Create spin Hamiltonian</h2><p>We can remove the non-magnetic atoms from the spinw object with a single command using the unitcell() function (not to mix with the unit_cell property of the sw object). The unitcell() function can return selected atoms from the list of symmetry inequivalent atoms in the unit cell. In our case the magnetic Yb ions are the first atom.</p><pre class="codeinput">ybti.unit_cell = ybti.unitcell(1);
+
+<span class="comment">% We generate the list of bonds.</span>
+ybti.gencoupling
+
+<span class="comment">% We create two 3x3 matrix, one for the first neighbor anisotropic exchange</span>
+<span class="comment">% and one for the anisotropic g-tensor. And assign them appropriately.</span>
+
+ybti.addmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>,<span class="string">'value'</span>,1)
 ybti.addmatrix(<span class="string">'label'</span>,<span class="string">'g0'</span>,<span class="string">'value'</span>,1);
 
-ybti.addcoupling(<span class="string">'J1'</span>,1)
+ybti.addcoupling(<span class="string">'mat'</span>,<span class="string">'J1'</span>,<span class="string">'bond'</span>,1)
 ybti.addg(<span class="string">'g0'</span>)
 </pre><p>In the paper the anisotropic g-tensor is defined in the local coordinate system of the magnetic ions. Where the <latex>g_z</latex> component is along the local [1 1 1] direction, while the two perpendicular components are <latex>g_{xy}</latex>. In the lattice corrdinate system the g-tensor has the matrix form: [A B B;B A B;B B A]. One can check the eigenvalues of this matrix, that has to match with the published values: <latex>g_{xy}=4.32</latex> and <latex>g_z=1.8</latex>. From the eigenvalue calculation we get: <latex>g_{xy}=A-B</latex>; <latex>g_z = A + 2*B</latex>. We store the calculated g-tensor in the sw object. When calculating the spin wave intensities, the code takes care the rotation of the g-tensor according the symmetry operators for every magnetic ion.</p><pre class="codeinput">ybti.matrix.mat(:,:,2) =  -0.84*ones(3)+4.32*eye(3);
-</pre><p>The SpinW code also enables the calculation of the symmetry allowed exchange matrix elements usign the sw.getmatrix() function (it also works g-tensor and anisotropy matrix). The allowed matrix elements are defined on the first bond in the ybti.couplingtable(1), thus this is not necessary identical with the bond where the exchange values define in the paper.</p><pre class="codeinput">ybti.getmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>);
+</pre><p>The SpinW code also enables the calculation of the symmetry allowed exchange matrix elements usign the spinw.getmatrix() function (it also works g-tensor and anisotropy matrix). The allowed matrix elements are defined on the first bond in the ybti.couplingtable(1), thus this is not necessary identical with the bond where the exchange values define in the paper.</p><pre class="codeinput">ybti.getmatrix(<span class="string">'mat'</span>,<span class="string">'J1'</span>);
 </pre><pre class="codeoutput">
-The symmetry analysis of the coupling between atom 4 and atom 6:
- lattice translation vector: [1,0,0]
+The symmetry analysis of the coupling between atom 1 and atom 2:
+ lattice translation vector: [0,0,0]
  distance: 3.546 Angstrom
- center of bond (in lattice units): [0.875,0.750,0.375]
+ center of bond (in lattice units): [0.500,0.375,0.375]
  label of the assigned matrix: 'J1'
  allowed elements in the symmetric matrix:
-  S = | A| 0| B|
-      | 0| C| 0|
-      | B| 0| A|
+  S = | C| 0| 0|
+      | 0| A| B|
+      | 0| B| A|
 
  allowed components of the Dzyaloshinskii-Moriya vector:
-  D = [ D1, 0 ,D1 ]
+  D = [ 0 , D1,-D1]
 
-</pre><p>We assign the exchange values from the paper to the right matrix elements.</p><pre class="codeinput">ybti.fileid(0);
-J1 = -0.09; J2 = -0.22; J3 = -0.29; J4 = 0.01;
-ybti.setmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>,<span class="string">'pref'</span>,[J1 -J3 J2 -J4]);
-</pre><h2>Calculate spin wave spectrum<a name="9"></a></h2><p>We define two different magnetic field direction and field strength in Tesla units same as in the paper and define the list of Q scans.</p><pre class="codeinput">n = [1 -1 0];
+</pre><p>We assign the exchange values from the paper to the right matrix elements.</p><pre class="codeinput">J1 = -0.09; J2 = -0.22; J3 = -0.29; J4 = 0.01;
+ybti.setmatrix(<span class="string">'mat'</span>,<span class="string">'J1'</span>,<span class="string">'pref'</span>,[J1 J3 J2 -J4]);
+</pre><h2 id="7">Plot the magnetic Hamiltonian</h2><p>With the plot() command, we can plot the magnetic bonds of Yb<latex>_2</latex>Ti<latex>_2</latex>O<latex>_7</latex>. The arrow pointing from an atom to another denotes the direction of the bond, while the thicker arrow at the middle of the bond denotes the direction of the Dzyaloshinskii-Moriya vector. Is is also possible to visualize the g-tensor by setting the 'ionMode' to 'g'.</p><pre class="codeinput">plot(ybti,<span class="string">'ionMode'</span>,<span class="string">'g'</span>)
+swplot.zoom(1.3)
+swplot.legend(<span class="string">'none'</span>)
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial20_03.png" style="width:560px;height:420px;" alt=""> <h2 id="8">Calculate spin wave spectrum</h2><p>We define two different magnetic field direction and field strength in Tesla units same as in the paper and define the list of Q scans.</p><pre class="codeinput">n = [1 -1 0];
 B1 = 5;
 B2 = 2;
 
@@ -45,7 +54,19 @@ Q{2} = {[1 1 -2] [1 1 1.5]};
 Q{3} = {[2 2 -2] [2 2 1.5]};
 Q{4} = {[-0.5 -0.5 0] [2.5 2.5 0]};
 Q{5} = {[0 0 1] [2.3 2.3 1]};
-</pre><p>To reproduce the simulated spin wave dispersions, we loop over the different Q direction. To determine the ground state structure in the external field, we use polarised starting state, then using a steepest descendent method, we determine the optimum magnetic structure (see sw.optmagsteep() function). For the spin wave spectrum calculation we set the 'gtensor' option to true. In this case the code takes care that the anisotropic g-tensor is included in the calculated spin wave intensity. For the plotting of the spin wave spectrum, a Gaussing with FWHM=0.09 meV is convoluted to the spectrum to simulate the finite energy resolution.</p><pre class="codeinput">figure(<span class="string">'position'</span>,[20 20 1100 500])
+
+<span class="comment">% To reproduce the simulated spin wave dispersions, we loop over the</span>
+<span class="comment">% different Q direction. To determine the ground state structure in the</span>
+<span class="comment">% external field, we use polarised starting state, then using a steepest</span>
+<span class="comment">% descendent method, we determine the optimum magnetic structure (see</span>
+<span class="comment">% spinw.optmagsteep() function). For the spin wave spectrum calculation we</span>
+<span class="comment">% set the 'gtensor' option to true. In this case the code takes care that</span>
+<span class="comment">% the anisotropic g-tensor is included in the calculated spin wave</span>
+<span class="comment">% intensity. For the plotting of the spin wave spectrum, a Gaussing with</span>
+<span class="comment">% FWHM=0.09 meV is convoluted to the spectrum to simulate the finite energy</span>
+<span class="comment">% resolution.</span>
+
+figure(<span class="string">'position'</span>,[20 20 1100 500])
 <span class="keyword">for</span> ii = 1:10
 
     <span class="keyword">if</span> ii &lt;= 5
@@ -60,7 +81,7 @@ Q{5} = {[0 0 1] [2.3 2.3 1]};
         <span class="comment">% create fully polarised magnetic structure along the field direction</span>
         ybti.genmagstr(<span class="string">'S'</span>,n',<span class="string">'mode'</span>,<span class="string">'helical'</span>);
         <span class="comment">% find best structure using steepest descendend</span>
-        ybti.optmagsteep(<span class="string">'nRun'</span>,100)
+        ybti.optmagsteep
     <span class="keyword">end</span>
 
     <span class="comment">% spin wave spectrum</span>
@@ -72,19 +93,19 @@ Q{5} = {[0 0 1] [2.3 2.3 1]};
 
     <span class="comment">% subplot</span>
     subplot(2,5,ii)
-    <span class="comment">% colorplot with finite energy resolution FWHM 0.09 meV</span>
+    <span class="comment">% colorplot with finite energy resolution of FWHM = 0.09 meV</span>
     sw_plotspec(ybtiSpec,<span class="string">'axLim'</span>,[0 0.5],<span class="string">'mode'</span>,3,<span class="string">'dE'</span>,0.09,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,false);
     title(<span class="string">''</span>)
 
     caxis([0 60])
     colormap(jet)
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial20_03.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="%ATTACHURLPATH%/tutorial20_04.png" style="width:1100px;height:500px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 <literal>##### SOURCE BEGIN #####
 %% Description
 % This tutorial reproduces the calculated spin wave spectrum of
 % Yb<latex>_2</latex>Ti<latex>_2</latex>O<latex>_7</latex> with the magnetic Hamiltonian
-% proposed in the following paper: <http://journals.aps.org/prx/abstract/10.1103/PhysRevX.1.021002 PRX *1* , 021002 (2011)>. 
+% proposed in the following paper: <http://journals.aps.org/prx/abstract/10.1103/PhysRevX.1.021002 PRX *1* , 021002 (2011)>.
 
 %% Create crystal structure
 % To create the cubic crystal structure of Yb<latex>_2</latex>Ti<latex>_2</latex>O<latex>_7</latex>,
@@ -97,48 +118,50 @@ Q{5} = {[0 0 1] [2.3 2.3 1]};
 % atoms for plotting. ALternatively a .cif file of the crystal structure
 % can be imported.
 
-sw_addsym('-z, y+3/4, x+3/4; z+3/4, -y, x+3/4; z+3/4, y+3/4, -x; y+3/4, x+3/4, -z; x+3/4, -z, y+3/4; -z, x+3/4, y+3/4','F d -3 m Z');
+symStr = '-z, y+3/4, x+3/4; z+3/4, -y, x+3/4; z+3/4, y+3/4, -x; y+3/4, x+3/4, -z; x+3/4, -z, y+3/4; -z, x+3/4, y+3/4';
 
-ybti = sw;
+ybti = spinw;
 a = 10.0307;
-ybti.genlattice('lat_const',[a a a],'angled',[90 90 90],'sym','F d -3 m Z')
-ybti.addatom('label','Yb3+','r',[1/2 1/2 1/2])
+ybti.genlattice('lat_const',[a a a],'angled',[90 90 90],'spgr',symStr,'label','F d -3 m Z')
+ybti.addatom('label','Yb3+','r',[1/2 1/2 1/2],'S',1/2)
 ybti.addatom('label','Ti4+','r',[0 0 0])
 ybti.addatom('label','O2-','r',[0.3318 1/8 1/8])
 ybti.addatom('label','O2-','r',[3/8 3/8 3/8])
-plot(ybti,'labelAtom',false,'zoom',1)
+plot(ybti,'nMesh',3)
+swplot.legend('none')
 
 %% Plot cubic environment of Yb<latex>^{3+}</latex>
-% To the draw oxygen polyhedra around the Yb ions, we use the sw_drawpoly()
-% function, that can draw polyhedra around arbitrary atoms on an existing
-% crystal structure plot. Now we use center atom 'Yb' and polyhedra atoms
-% 'O' for oxygen. Since the oxygen environment of Yb is octahedron, we set
-% the limits to the 8 closes oxygen atom.
+% To the draw oxygen polyhedra around the Yb ions, we use the
+% swplot.plotchem() function, that can draw polyhedra around arbitrary
+% atoms on an existing crystal structure plot. Now we use center atom 'Yb'
+% and polyhedra atoms 'O' for oxygen. Since the oxygen environment of Yb is
+% octahedron, we set the limits to the 8 closes oxygen atom. The same can
+% be achieved within the spinw.plot() function, adding the options below
+% plus a string 'chem', such as 'chemAtom1', 'chemAtom2', 'chemLimit' and
+% 'chemRange' and setting 'chemMode' to 'poly'.
 
-sw_drawpoly('cAtom','Yb','pAtom','O','limits',8);
+swplot.plotchem('atom1','Yb','atom2','O','limit',8,'range',[0.1 0.9;0.1 0.9;0.1 0.9]);
 
 
 %% Create spin Hamiltonian
-% We can remove the non-magnetic atoms from the sw object with a single
+% We can remove the non-magnetic atoms from the spinw object with a single
 % command using the unitcell() function (not to mix with the unit_cell
 % property of the sw object). The unitcell() function can return selected
-% atoms from the list of symmetry inequivalent atoms in the unit cell. IN
+% atoms from the list of symmetry inequivalent atoms in the unit cell. In
 % our case the magnetic Yb ions are the first atom.
 
 ybti.unit_cell = ybti.unitcell(1);
 
-%%
 % We generate the list of bonds.
 ybti.gencoupling
 
-%%
 % We create two 3x3 matrix, one for the first neighbor anisotropic exchange
 % and one for the anisotropic g-tensor. And assign them appropriately.
 
 ybti.addmatrix('label','J1','value',1)
 ybti.addmatrix('label','g0','value',1);
 
-ybti.addcoupling('J1',1)
+ybti.addcoupling('mat','J1','bond',1)
 ybti.addg('g0')
 
 %%
@@ -158,22 +181,32 @@ ybti.matrix.mat(:,:,2) =  -0.84*ones(3)+4.32*eye(3);
 
 %%
 % The SpinW code also enables the calculation of the symmetry allowed
-% exchange matrix elements usign the sw.getmatrix() function (it also works
-% g-tensor and anisotropy matrix). The allowed matrix elements are defined
-% on the first bond in the ybti.couplingtable(1), thus this is not
+% exchange matrix elements usign the spinw.getmatrix() function (it also
+% works g-tensor and anisotropy matrix). The allowed matrix elements are
+% defined on the first bond in the ybti.couplingtable(1), thus this is not
 % necessary identical with the bond where the exchange values define in the
-% paper. 
+% paper.
 
-ybti.getmatrix('label','J1');
+ybti.getmatrix('mat','J1');
 
 %%
 % We assign the exchange values from the paper to the right matrix
 % elements.
 
-ybti.fileid(0);
 J1 = -0.09; J2 = -0.22; J3 = -0.29; J4 = 0.01;
-ybti.setmatrix('label','J1','pref',[J1 -J3 J2 -J4]);
+ybti.setmatrix('mat','J1','pref',[J1 J3 J2 -J4]);
 
+%% Plot the magnetic Hamiltonian
+% With the plot() command, we can plot the magnetic bonds of
+% Yb<latex>_2</latex>Ti<latex>_2</latex>O<latex>_7</latex>. The arrow pointing from an
+% atom to another denotes the direction of the bond, while the thicker
+% arrow at the middle of the bond denotes the direction of the
+% Dzyaloshinskii-Moriya vector. Is is also possible to visualize the
+% g-tensor by setting the 'ionMode' to 'g'.
+
+plot(ybti,'ionMode','g')
+swplot.zoom(1.3)
+swplot.legend('none')
 
 %% Calculate spin wave spectrum
 % We define two different magnetic field direction and field strength in
@@ -190,16 +223,15 @@ Q{3} = {[2 2 -2] [2 2 1.5]};
 Q{4} = {[-0.5 -0.5 0] [2.5 2.5 0]};
 Q{5} = {[0 0 1] [2.3 2.3 1]};
 
-%%
 % To reproduce the simulated spin wave dispersions, we loop over the
 % different Q direction. To determine the ground state structure in the
 % external field, we use polarised starting state, then using a steepest
 % descendent method, we determine the optimum magnetic structure (see
-% sw.optmagsteep() function). For the spin wave spectrum calculation we set
-% the 'gtensor' option to true. In this case the code takes care that the
-% anisotropic g-tensor is included in the calculated spin wave intensity.
-% For the plotting of the spin wave spectrum, a Gaussing with FWHM=0.09
-% meV is convoluted to the spectrum to simulate the finite energy
+% spinw.optmagsteep() function). For the spin wave spectrum calculation we
+% set the 'gtensor' option to true. In this case the code takes care that
+% the anisotropic g-tensor is included in the calculated spin wave
+% intensity. For the plotting of the spin wave spectrum, a Gaussing with
+% FWHM=0.09 meV is convoluted to the spectrum to simulate the finite energy
 % resolution.
 
 figure('position',[20 20 1100 500])
@@ -217,7 +249,7 @@ for ii = 1:10
         % create fully polarised magnetic structure along the field direction
         ybti.genmagstr('S',n','mode','helical');
         % find best structure using steepest descendend
-        ybti.optmagsteep('nRun',100)
+        ybti.optmagsteep
     end
     
     % spin wave spectrum
@@ -229,12 +261,13 @@ for ii = 1:10
     
     % subplot
     subplot(2,5,ii)
-    % colorplot with finite energy resolution FWHM 0.09 meV
+    % colorplot with finite energy resolution of FWHM = 0.09 meV
     sw_plotspec(ybtiSpec,'axLim',[0 0.5],'mode',3,'dE',0.09,'colorbar',false,'legend',false);
     title('')
-
+    
     caxis([0 60])
     colormap(jet)
 end
+
 ##### SOURCE END #####</literal>
 -->

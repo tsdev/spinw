@@ -24,7 +24,7 @@ end
 
 swVer = sw_version;
 
-if isfield(swVer,'Version')
+if ~isempty(swVer.Version)
     disp('The current version of SpinW is already released!');
     return
 end
@@ -146,6 +146,11 @@ for ii = 1:numel(swFiles)
     fclose(fid);
 end
 
+% change the Contents file
+cId = fopen([tempDirName filesep 'Contents.m'],'w');
+fprintf(cId,['%% SpinW\n%% Version ' verNum ' (R' num2str(revNum) ') ' swVer.Date '\n%%']);
+fclose(cId);
+
 cd(tempDirName0);
 
 zipName = [swDirName '.zip'];
@@ -158,8 +163,9 @@ fListZip = {};
 for ii = 1:numel(fList)
     if (~any(strfind(fList(ii).name,[filesep '.']))) && (~any(strfind(fList(ii).name,'~'))) ...
             && (~any(strfind(fList(ii).name,[filesep 'dev' filesep]))) ...
-            && (~any(strfind(fList(ii).name,[filesep 'doc' filesep]))) ...
-            && (~any(strfind(fList(ii).name,[filesep 'test' filesep])))
+            && (~any(strfind(fList(ii).name,[filesep 'docs' filesep]))) ...
+            && (~any(strfind(fList(ii).name,[filesep 'test' filesep]))) ...
+            && (~any(strfind(fList(ii).name,[filesep 'tutorials' filesep])))
         fListZip{end+1} = fList(ii).name;
     end
 end

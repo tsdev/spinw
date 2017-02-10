@@ -39,7 +39,7 @@ objS = struct(obj);
 objC = spinw(objS);
 
 % copy the private properties
-objC.propl  = event.listener.empty;
+objC.propl  = event.proplistener.empty;
 objC.sym    = obj.sym;
 objC.symb   = obj.symb;
 objC.fid    = obj.fid;

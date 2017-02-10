@@ -5,9 +5,9 @@
 AFMchain = spinw; 
 AFMchain.genlattice('lat_const',[3 8 8],'angled',[90 90 90],'spgr',0);
 AFMchain.addatom('r',[0 0 0],'S',1,'label','MCu1','color','blue');
-disp('Atomic positions as columns:')
-AFMchain.atom.r
-plot(AFMchain,'range',[3 1 1],'zoom',0.5)
+disp('Magnetic lattice:')
+AFMchain.table('matom')
+plot(AFMchain,'range',[3 1 1])
 
 %% Create antiferromagnetic interactions
 % Ja = 1 meV, positive sign denotes antiferromagnetic interaction.
@@ -70,7 +70,7 @@ sw_plotspec(afcSpec,'mode',2,'log',true,'axLim',[-4 10])
 
 % Position the figure on the screen, similarly how subplot() positions the
 % axes on the figure.
-swplot.subfigure(2,4,1)
+swplot.subfigure(1,3,1)
 
 %%
 %  Written by

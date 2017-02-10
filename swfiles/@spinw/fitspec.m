@@ -1,7 +1,33 @@
-function fitsp = fitspec2(obj, varargin)
+function fitsp = fitspec(obj, varargin)
 % fits spin wave spectra to experimental spectral data
 %
 % fitsp = FITSPEC(obj, 'Option1', Value1, ...)
+%
+% The function uses a heuristic method to fit spin wave spectrum using a
+% few simple rules to define the R-value of the fit:
+%   1 All calculated spin wave modes that are outside of the measured
+%     energy range will be omitted.
+%   2 Spin wave modes that are closer to each other than the given energy
+%     bin will be binned together and considered as one mode in the fit.
+%   3 If the number of calculated spin wave modes after applying rule 1&2 
+%     is larger than the observed number, the weakes simulated modes will
+%     be removed from the fit.
+%   4 If the number of observed spin wave modes is larger than the observed
+%     number, fake spin wave modes are added with energy equal to the
+%     limits of the scan; at the upper or lower limit depending on which is
+%     closer to the observed spin wave mode.
+% After these rules the number of observed and simulated spin wave modes
+% will be equal. The R-value is defined as:
+%
+%       R = sqrt( nE^(-1) * sum_i_q (E_i_q_sim - E_i_q_meas)^2/sigma_i_q^2 ),
+%
+% where (i,q) indexing the spin wave mode and momentum. E_sim and E_meas
+% are the simulated and measured spin wave energies, sigma is the standard
+% deviation of the measured spin wave energy determined previously by
+% fitting the inelastic peak. nE is the number of energies to fit.
+%
+% The R value is optimized using particle swarm algorithm to find the
+% global minimum.
 %
 % Options:
 %
@@ -99,10 +125,10 @@ inpForm.defval = [inpForm.defval {1e3    true     1/30     0       'pso'      }]
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]    [1 1]   [1 -7]     }];
 inpForm.soft   = [inpForm.soft   {false  false    false    false   false      }];
 
-inpForm.fname  = [inpForm.fname  {'maxiter' 'sw'  'optmem' 'usemex' 'tid' }];
-inpForm.defval = [inpForm.defval {20        1     0        false    tid0  }];
-inpForm.size   = [inpForm.size   {[1 1]  	[1 1] [1 1]    [1 1]    [1 1] }];
-inpForm.soft   = [inpForm.soft   {false  	false false    false    false }];
+inpForm.fname  = [inpForm.fname  {'maxiter' 'sw'  'optmem' 'tid' }];
+inpForm.defval = [inpForm.defval {20        1     0        tid0  }];
+inpForm.size   = [inpForm.size   {[1 1]  	[1 1] [1 1]    [1 1] }];
+inpForm.soft   = [inpForm.soft   {false  	false false    false }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -110,10 +136,6 @@ param = sw_readparam(inpForm, varargin{:});
 nPar = max(max(length(param.xmin),length(param.xmax)),length(param.x0));
 nRun = param.nRun;
 
-% Initial parameters are random if param.x0 is undefined.
-if ~isempty(param.x0)
-    nRun = 1;
-end
 % elseif isempty(param.xmax) && isempty(param.xmin)
 %     x0 = rand(nRun,nPar);
 % elseif isempty(param.xmax)
@@ -177,7 +199,7 @@ while idx <= nRun
         case 'pso'
             [x(idx,:),fVal, output(idx)] = ndbase.pso(dat,@(x,p)spec_fitfun(obj, data, param.func, p, param0),x0,'lb',param.xmin,'ub',param.xmax,...
                 'TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'MaxIter',param.maxiter);
-            R(ii) = sqrt(sum(((dat.y-fVal(:))./dat.e).^2));
+            R(idx) = sqrt(sum(((dat.y-fVal(:))./dat.e).^2)/numel(fVal));
             
         case 'simplex'
             [x(idx,:), R(idx), ~, output(idx)] = sw_fminsearchbnd(@(p)spec_fitfun(obj, data, param.func, p, param0),x0,param.xmin,param.xmax,...
@@ -272,7 +294,7 @@ for ii = 1:nConv
     
     % calculate spin-spin correlation function
     spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit,...
-        'tid',0,'optMem',param.optmem,'useMex',param.usemex,'tid',param.tid);
+        'tid',0,'optMem',param.optmem,'tid',param.tid);
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy
@@ -342,8 +364,10 @@ for ii = 1:nConv
     Qc = Qc + nQ;
 end
 
+R = R/numel(yCalc);
+
 if param.plot
-    text(0.05,0.9,['x = [' sprintf('%6.4f ',x) sprintf(']\nRw = %6.4f',R)],'Units','normalized','fontsize',12);
+    text(0.05,0.9,['x = [' sprintf('%6.4f ',x) sprintf(']\nRw = %6.4f',sqrt(R))],'Units','normalized','fontsize',12);
     axis([0.5 Qc+0.5 param.Evect(1) param.Evect(end)]);
     legend(pHandle(1:2),'simulation','data')
     xlabel('Scan index')

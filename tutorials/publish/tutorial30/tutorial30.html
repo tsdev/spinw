@@ -1,0 +1,527 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>tutorial30</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-08"><meta name="DC.source" content="tutorial30.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Help on SpinW</a></li><li><a href="#2">Generate lattice</a></li><li><a href="#3">Adding atoms</a></li><li><a href="#4">Definition of the spin-Hamiltonian</a></li><li><a href="#5">Magnetic structure</a></li><li><a href="#6">Spin wave dispersion</a></li><li><a href="#7">Spin-spin correlation functions</a></li><li><a href="#8">k=0 magnetic structure</a></li><li><a href="#9">Spin wave dispersion on the k=0 magnetic structure</a></li></ul></div><h2 id="1">Help on SpinW</h2><p>Use the help command to get help on any SpinW function. For any function that starts with 'sw_' use help swfiles, for spinw class methods use help spinw.function_name. For help on plotting commands, use help swplot.</p><pre class="codeinput">help <span class="string">swfiles</span>
+
+<span class="comment">% To find the location of the spinw library use</span>
+sw_rootdir
+
+<span class="comment">% To open any of the functions in the Matlab editor, use</span>
+edit <span class="string">spinw.plot</span>
+
+<span class="comment">% To look at any of the spinw object properties, double click on the</span>
+<span class="comment">% "Workspace" view on the name of the object. Also the data files</span>
+<span class="comment">% (symmetry.dat, atom.dat, color.dat, magion.dat) can be easily edited, for</span>
+<span class="comment">% example</span>
+
+edit <span class="string">symmetry.dat</span>
+
+<span class="comment">% Some settings are ekpt during the active Matlab session, these can be</span>
+<span class="comment">% set/get using the swpref.setpref and swpref.getpref commands. To change</span>
+<span class="comment">% the default values, it can be defined in the startup.m file. To get all</span>
+<span class="comment">% current value use</span>
+
+swpref.getpref
+</pre><pre class="codeoutput">  This folder contains all the files related to SpinW but not yet split out
+  into separate libraries.
+ 
+  Files
+ 
+  Transforming and plotting calculated spin wave spectrum:
+ 
+    sw_econtract     - converts (Q,omega) values to Qm values for diffraction instrument
+    sw_egrid         - creates energy for spectrum color plot
+    sw_filelist      - lists spinw data in the Matlab workspace or in a .mat file
+    sw_instrument    - includes instrumental factors into the calculated spectrum
+    sw_magdomain     - calculates the spin-spin correlation function for magnetic domains
+    sw_neutron       - calculates neutron scattering intensity for spin wave spectrum
+    sw_omegasum      - removes degenerate and ghost magnon modes from spectrum
+    sw_plotspec      - plots spin wave spectrum
+    sw_xray          - calculates X-ray scattering intensity for phonon spectrum
+ 
+  Generate list of vectors in reciprocal space:
+ 
+    sw_qgrid         - creates a Q grid
+    sw_qscan         - creates linear scans between Q points in 3D
+ 
+  Resolution claculation and convolution:
+ 
+    sw_res           - reads a tabulated energy resolution from a file and fits with polynomial
+    sw_resconv       - Convolute Gaussian with variable width along the first dimension of a matrix
+    sw_tofres        - includes Q resolution to the spectrum
+ 
+  SpinW model related functions:
+ 
+    sw_extendlattice - creates superlattice
+    sw_fstat         - calculates termodynamical averages during an annealing simulation
+    sw_intsf         - integrates the structure factor along given Q directions
+    sw_model         - creates different predefined spin models
+ 
+  Constraint functions for spinw.optmagstr():
+ 
+    gm_planar        - planar magnetic structure constraint function 
+    gm_planard       - planar magnetic structure constraint function 
+    gm_spherical3d   - magnetic structure constraint function with spherical parameterisation
+    gm_spherical3dd  - magnetic structure constraint function with spherical parameterisation
+ 
+  Geometrical calculations:
+    sw_angle         - calculates the angle between 2 vectors
+    sw_cartesian     - creates a right handed Cartesian coordinate system
+    sw_cmod          - modulo one with tolerance
+    sw_fsub          - simple graph vertex coloring
+    sw_mattype       - determines the type of square input matrix
+    sw_nvect         - determines the best normal vector for the set of vectors
+    sw_quadell       - calculates and plots the parameters of an ellipsoid from a quadratic form
+    sw_rot           - rotates vectors around arbitrary axis in 3D
+    sw_rotmat        - rotates vectors around arbitrary axis in 3D
+    sw_rotmatd       - rotates vectors around arbitrary axis in 3D
+ 
+  Text and graphical input/output for different high level commands:
+ 
+    sw_annealfigure  - creates a figure for displaying the status of the annealing simulation
+    sw_annealplot    - displays information about the annealing simulation
+    sw_label         - returns axis labels for spectrum plot
+    sw_circle        - creates an array of the 3D coordinates of the circle circumference
+    sw_counter       - print the number of calls to this functio to the Command Line
+    sw_multicolor    - creates RGB color data for multiple 2D overlapping plots
+    sw_parstr        - parses input string
+    sw_plotcell      - plots cell structure with circles
+    sw_plotsf        - plots the structure factor in the selected Q range in 1D or 2D
+    sw_status        - timer function that displays also the remaining time
+ 
+  Acessing the SpinW database:
+ 
+    sw_atomdata      - returns information on elements stored in the atom.dat file
+    sw_cff           - returns the atomic charge form factor values for X-ray scattering
+    sw_mff           - returns the magnetic form factor values and the coefficients
+    sw_nb            - returns the bound coherent neutron scattering length (fm)
+ 
+  Symmetry calculations:
+ 
+    sw_basismat      - determines allowed tensor components in a given point group symmetry
+    sw_mirror        - mirrors a 3D vector
+ 
+  Useful functions for physics:
+ 
+    sw_bose          - coefficient for boson correlation functions for different temperatures
+    sw_converter     - converts energy and momentum units for a given particle
+    sw_fibo          - returns the last two Fibonacci number smaller or equal to the
+ 
+  Import functions:
+ 
+    sw_import        - create SpinW object from .cif and FullProf Studio .fst files
+    sw_readspec      - read spin wave dispersion data from file
+    sw_readtable     - reads tabular data
+ 
+  Export functions:
+ 
+    sw_idata         - creates iData object
+ 
+  Other files:
+ 
+    sw_freemem       - gives the amount of free RAM in bytes
+    sw_initialize    - initializes spinw by removing user entries from the symmetry.dat file
+    sw_readparam     - parse input arguments (option, value pairs)
+    sw_rootdir       - gives the path to the SpinW code
+    sw_uniquetol     - returns the unique column vectors within tolerance
+    sw_update        - updates the SpinW installation from the internet
+    sw_version       - returns the installed version of SpinW
+    sw_mex           - compiles the mex files and test them
+
+ans =
+/Users/tothsa/spinw_git/
+ans = 
+  struct with fields:
+
+         fid: 0
+      expert: 1
+         tag: 'swplot'
+       nmesh: 3
+     maxmesh: 6
+      npatch: 50
+    fontsize: 12
+         tid: 0
+    colormap: @cm_inferno
+      usemex: 0
+</pre><h2 id="2">Generate lattice</h2><p>We create a triangular lattice of magnetic atoms.</p><pre class="codeinput">tri = spinw;
+
+<span class="comment">% The lattice parameters in Angstrom and angles in degree can be defined.</span>
+tri.genlattice(<span class="string">'lat_const'</span>,[3 3 4],<span class="string">'angled'</span>,[90 90 120])
+
+<span class="comment">% To plot the lattice use the command spinw.plot.</span>
+plot(tri)
+
+<span class="comment">% In the plot window, you can zoom with the mouse wheel, pan by pressing</span>
+<span class="comment">% the Ctrl button while dragging. Change the plot range and view direction</span>
+<span class="comment">% by pressing the corresponding buttons on the top.</span>
+</pre><pre class="codeoutput">Warning: There are no atoms in the plotting range! 
+</pre><img vspace="5" hspace="5" src="tutorial30_01.png" style="width:560px;height:420px;" alt=""> <h2 id="3">Adding atoms</h2><p>We add 1 atom at the origin of the unit cell, spin-3/2 Cr3+ ion using the spinw.addatom.</p><pre class="codeinput">tri.addatom(<span class="string">'r'</span>,[0 0 0],<span class="string">'S'</span>,3/2,<span class="string">'label'</span>,<span class="string">'MCr3'</span>)
+
+plot(tri)
+</pre><img vspace="5" hspace="5" src="tutorial30_02.png" style="width:560px;height:420px;" alt=""> <h2 id="4">Definition of the spin-Hamiltonian</h2><p>We create an antiferromagnetic first neighbor Hamiltonian plus easy plane single ion anisotropy red ellipsoids represent the single ion anistropy on the plot (equienergetic surface) examine the plot and test different values of A0 with different signs. The plot command can plot  rectangular cut of the lattice setting the unit option to xyz and giving the plot range in Agnstrom.</p><pre class="codeinput">A0 = 0.1;
+
+tri.addmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>,<span class="string">'value'</span>,1)
+tri.addmatrix(<span class="string">'label'</span>,<span class="string">'A'</span>,<span class="string">'value'</span>,[0 0 0;0 0 0;0 0 A0])
+
+tri.gencoupling
+
+tri.addcoupling(<span class="string">'mat'</span>,<span class="string">'J1'</span>,<span class="string">'bond'</span>,1)
+tri.addaniso(<span class="string">'A'</span>)
+
+plot(tri,<span class="string">'range'</span>,[22 20 1/2],<span class="string">'unit'</span>,<span class="string">'xyz'</span>,<span class="string">'cellMode'</span>,<span class="string">'single'</span>)
+</pre><img vspace="5" hspace="5" src="tutorial30_03.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Magnetic structure</h2><p>The ground state magnetic structure of the above Hamltonian is a spiral, with propagation vector of (1/3,1/3,0). We define the plane of the spiral as the ab plane. Careful: the given spin vector is column vector! What are the angles between neares neighbor moments?</p><pre class="codeinput">tri.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'S'</span>,[1;0;0],<span class="string">'k'</span>,[1/3 1/3 0],<span class="string">'n'</span>,[0 0 1],<span class="string">'nExt'</span>,[1 1 1])
+
+plot(tri,<span class="string">'range'</span>,[3 3 1/2],<span class="string">'cellMode'</span>,<span class="string">'inside'</span>,<span class="string">'magColor'</span>,<span class="string">'red'</span>)
+</pre><img vspace="5" hspace="5" src="tutorial30_04.png" style="width:560px;height:420px;" alt=""> <h2 id="6">Spin wave dispersion</h2><p>We calculate the spin wave dispersion along the (H,H,0) high symmetry direction. How many spin wave modes are there and why? What does the red line mean? Did you got any warning?</p><pre class="codeinput">spec = tri.spinwave({[0 0 0] [1 1 0] 500},<span class="string">'hermit'</span>,false);
+
+figure
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'imag'</span>,true,<span class="string">'colormap'</span>,[0 0 0],<span class="string">'colorbar'</span>,false)
+axis([0 1 0 5])
+</pre><pre class="codeoutput">Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised at some
+q-point! 
+</pre><img vspace="5" hspace="5" src="tutorial30_05.png" style="width:560px;height:420px;" alt=""> <h2 id="7">Spin-spin correlation functions</h2><p>The spin-spin correlations is already calculated, however the result contains 9 numbers per Q-point per mode. It is not possible to show this on a single plot.</p><p>BUT!</p><p>1. we  can calculate the neutron scattering cross section 2. we can select one of the components S_alpha_beta(Q,w) 3. we can sum up the diagonal S_alpha_alpha(Q,w)</p><p>What do you see? Where is the largest intensity? How is it related to the magnetic propagation vector?</p><p>Why are some modes gapped? What type of spin-spin correlations are gapped?</p><p>Why do we have Szz?</p><p>Shouldn't the spins precess around M? Shouldn't each spin wave mode corresponds to a precession in a specific plane not a motion along a specific axis?</p><pre class="codeinput"><span class="comment">%spec = sw_egrid(spec,'component','Sperp','Evect',0:0.01:5.5);</span>
+spec = sw_egrid(spec,<span class="string">'component'</span>,{<span class="string">'Sxx+Syy'</span> <span class="string">'Szz'</span>},<span class="string">'Evect'</span>,0:0.01:5);
+<span class="comment">%spec = sw_egrid(spec,'component','Syz','Evect',0:0.01:5);</span>
+
+figure
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.2,<span class="string">'imag'</span>,false)
+hold <span class="string">on</span>
+axis([0 1 0 5.5])
+caxis([0 3])
+</pre><img vspace="5" hspace="5" src="tutorial30_06.png" style="width:560px;height:420px;" alt=""> <h2 id="8">k=0 magnetic structure</h2><p>We can generate the same magnetic structure with zero propagation vector on a magnetic supercell.</p><p>Why would we do that? Not for a triangular lattice, but in more complex cases, we will have to!</p><p>You can keep the previous structure plot by pressing the red circle on the figure to compare the new magnetic structure. Is there any difference?</p><p>What are we doing here? Can you tell from the script?</p><p>Check out the tri.magstr command? What data is stored there? What are the dimensions of the different matrices?</p><p>You can also compare the energy per spin of the old magnetic structure and the new magnetic structure using the spinw.energy() function. Is there any difference?</p><p>You can also store the new magnetic structure in a separate SpinW object by first duplicating the original object using the copy() command!</p><p>What happens when we use tri2 = triNew, without the copy command?</p><pre class="codeinput">triNew = copy(tri);
+tri2   = triNew;
+
+triNew.genmagstr(<span class="string">'mode'</span>,<span class="string">'random'</span>,<span class="string">'next'</span>,[3 3 1])
+triNew.optmagsteep(<span class="string">'nRun'</span>,1e4)
+<span class="comment">% Converged?</span>
+
+triNew.genmagstr(<span class="string">'mode'</span>,<span class="string">'rotate'</span>,<span class="string">'n'</span>,[0 0 1])
+
+phi1 = atan2(triNew.magstr.S(2,1),triNew.magstr.S(1,1));
+
+triNew.genmagstr(<span class="string">'mode'</span>,<span class="string">'rotate'</span>,<span class="string">'n'</span>,[0 0 1],<span class="string">'phi'</span>,-phi1)
+
+plot(triNew,<span class="string">'range'</span>,[3 3 1],<span class="string">'atomLegend'</span>,false)
+
+<span class="comment">% How does the magnetic structures compare? Are they the same? Why?</span>
+<span class="comment">%</span>
+
+tri.magstr
+tri2.magstr
+</pre><pre class="codeoutput">ans = 
+  struct with fields:
+
+        S: [3&times;1 double]
+        k: [0.3333 0.3333 0]
+        n: [0 0 1]
+    N_ext: [1 1 1]
+    exact: 1
+ans = 
+  struct with fields:
+
+        S: [3&times;9 double]
+        k: [0 0 0]
+        n: [0 0 1]
+    N_ext: [3 3 1]
+    exact: 1
+</pre><img vspace="5" hspace="5" src="tutorial30_07.png" style="width:560px;height:420px;" alt=""> <h2 id="9">Spin wave dispersion on the k=0 magnetic structure</h2><p>We calculate the spin wave dispersion along the (H,H,0) high symmetry direction. How many modes do we have? Is there more than before? Which is the right one then?</p><p>Why are there vertical lines in the dispersion? Is it a bug?</p><pre class="codeinput">spec = tri.spinwave({[0 0 0] [1 1 0] 500},<span class="string">'hermit'</span>,false);
+
+figure
+subplot(2,1,1)
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'imag'</span>,true,<span class="string">'colormap'</span>,[0 0 0])
+colorbar <span class="string">off</span>
+axis([0 1 0 5])
+
+<span class="comment">% spin-spin correlation functions</span>
+spec = sw_egrid(spec,<span class="string">'component'</span>,<span class="string">'Sperp'</span>,<span class="string">'Evect'</span>,0:0.01:5.5);
+
+subplot(2,1,2)
+sw_plotspec(spec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.2,<span class="string">'imag'</span>,false)
+axis([0 1 0 5.5])
+caxis([0 3])
+legend <span class="string">off</span>
+colorbar <span class="string">off</span>
+swplot.subfigure(1,3,1)
+</pre><pre class="codeoutput">Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised at some
+q-point! 
+</pre><img vspace="5" hspace="5" src="tutorial30_08.png" style="width:427px;height:700px;" alt=""> <pre>Written by
+Sandor Toth
+06-Feb-2016</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Help on SpinW
+% Use the help command to get help on any SpinW function. For any function
+% that starts with 'sw_' use help swfiles, for spinw class methods use help
+% spinw.function_name. For help on plotting commands, use help swplot.
+
+help swfiles
+
+% To find the location of the spinw library use
+sw_rootdir
+
+% To open any of the functions in the Matlab editor, use
+edit spinw.plot
+
+% To look at any of the spinw object properties, double click on the
+% "Workspace" view on the name of the object. Also the data files
+% (symmetry.dat, atom.dat, color.dat, magion.dat) can be easily edited, for
+% example
+
+edit symmetry.dat
+
+% Some settings are ekpt during the active Matlab session, these can be
+% set/get using the swpref.setpref and swpref.getpref commands. To change
+% the default values, it can be defined in the startup.m file. To get all
+% current value use
+
+swpref.getpref
+
+%% Generate lattice
+% We create a triangular lattice of magnetic atoms.
+
+tri = spinw;
+
+% The lattice parameters in Angstrom and angles in degree can be defined.
+tri.genlattice('lat_const',[3 3 4],'angled',[90 90 120])
+
+% To plot the lattice use the command spinw.plot.
+plot(tri)
+
+% In the plot window, you can zoom with the mouse wheel, pan by pressing
+% the Ctrl button while dragging. Change the plot range and view direction
+% by pressing the corresponding buttons on the top.
+
+
+%% Adding atoms
+% We add 1 atom at the origin of the unit cell, spin-3/2 Cr3+ ion using the
+% spinw.addatom.
+
+tri.addatom('r',[0 0 0],'S',3/2,'label','MCr3')
+
+plot(tri)
+
+
+%% Definition of the spin-Hamiltonian
+% We create an antiferromagnetic first neighbor Hamiltonian plus easy plane
+% single ion anisotropy red ellipsoids represent the single ion anistropy
+% on the plot (equienergetic surface) examine the plot and test different
+% values of A0 with different signs. The plot command can plot  rectangular
+% cut of the lattice setting the unit option to xyz and giving the plot
+% range in Agnstrom.
+
+A0 = 0.1;
+
+tri.addmatrix('label','J1','value',1)
+tri.addmatrix('label','A','value',[0 0 0;0 0 0;0 0 A0])
+
+tri.gencoupling
+
+tri.addcoupling('mat','J1','bond',1)
+tri.addaniso('A')
+
+plot(tri,'range',[22 20 1/2],'unit','xyz','cellMode','single')
+
+
+%% Magnetic structure
+% The ground state magnetic structure of the above Hamltonian is a spiral,
+% with propagation vector of (1/3,1/3,0). We define the plane of the spiral
+% as the ab plane. Careful: the given spin vector is column vector! What
+% are the angles between neares neighbor moments?
+
+tri.genmagstr('mode','helical','S',[1;0;0],'k',[1/3 1/3 0],'n',[0 0 1],'nExt',[1 1 1])
+
+plot(tri,'range',[3 3 1/2],'cellMode','inside','magColor','red')
+
+
+%% Spin wave dispersion
+% We calculate the spin wave dispersion along the (H,H,0) high symmetry
+% direction. 
+% How many spin wave modes are there and why? 
+% What does the red line mean?
+% Did you got any warning?
+%
+
+spec = tri.spinwave({[0 0 0] [1 1 0] 500},'hermit',false);
+
+figure
+sw_plotspec(spec,'mode','disp','imag',true,'colormap',[0 0 0],'colorbar',false)
+axis([0 1 0 5])
+
+%% Spin-spin correlation functions
+% The spin-spin correlations is already calculated, however the result
+% contains 9 numbers per Q-point per mode. It is not possible to show this
+% on a single plot.
+%
+% BUT!
+%
+% 1. we  can calculate the neutron scattering cross section
+% 2. we can select one of the components S_alpha_beta(Q,w)
+% 3. we can sum up the diagonal S_alpha_alpha(Q,w)
+%
+% What do you see? Where is the largest intensity? How is it related to the
+% magnetic propagation vector?
+%
+% Why are some modes gapped? What type of spin-spin correlations are gapped? 
+%
+% Why do we have Szz?
+%
+% Shouldn't the spins precess around M? Shouldn't each spin wave mode
+% corresponds to a precession in a specific plane not a motion along a
+% specific axis?
+%
+
+%spec = sw_egrid(spec,'component','Sperp','Evect',0:0.01:5.5);
+spec = sw_egrid(spec,'component',{'Sxx+Syy' 'Szz'},'Evect',0:0.01:5);
+%spec = sw_egrid(spec,'component','Syz','Evect',0:0.01:5);
+
+figure
+sw_plotspec(spec,'mode','color','dE',0.2,'imag',false)
+hold on
+axis([0 1 0 5.5])
+caxis([0 3])
+
+
+%% k=0 magnetic structure
+% We can generate the same magnetic structure with zero propagation vector
+% on a magnetic supercell.
+%
+% Why would we do that? Not for a triangular lattice, but in more complex
+% cases, we will have to!
+%
+% You can keep the previous structure plot by pressing the red circle on
+% the figure to compare the new magnetic structure. Is there any
+% difference?
+%
+% What are we doing here? Can you tell from the script?
+%
+% Check out the tri.magstr command? What data is stored there? What are the
+% dimensions of the different matrices?
+%
+% You can also compare the energy per spin of the old magnetic structure
+% and the new magnetic structure using the spinw.energy() function. Is
+% there any difference?
+%
+% You can also store the new magnetic structure in a separate SpinW object
+% by first duplicating the original object using the copy() command! 
+% 
+% What happens when we use tri2 = triNew, without the copy command?
+
+triNew = copy(tri);
+tri2   = triNew; 
+
+triNew.genmagstr('mode','random','next',[3 3 1])
+triNew.optmagsteep('nRun',1e4)
+% Converged?
+
+triNew.genmagstr('mode','rotate','n',[0 0 1])
+
+phi1 = atan2(triNew.magstr.S(2,1),triNew.magstr.S(1,1));
+
+triNew.genmagstr('mode','rotate','n',[0 0 1],'phi',-phi1)
+
+plot(triNew,'range',[3 3 1],'atomLegend',false)
+
+% How does the magnetic structures compare? Are they the same? Why?
+% 
+
+tri.magstr
+tri2.magstr
+
+%% Spin wave dispersion on the k=0 magnetic structure
+% We calculate the spin wave dispersion along the (H,H,0) high symmetry
+% direction.
+% How many modes do we have? Is there more than before?
+% Which is the right one then?
+%
+% Why are there vertical lines in the dispersion? Is it a bug?
+
+spec = tri.spinwave({[0 0 0] [1 1 0] 500},'hermit',false);
+
+figure
+subplot(2,1,1)
+sw_plotspec(spec,'mode','disp','imag',true,'colormap',[0 0 0])
+colorbar off
+axis([0 1 0 5])
+
+% spin-spin correlation functions
+spec = sw_egrid(spec,'component','Sperp','Evect',0:0.01:5.5);
+
+subplot(2,1,2)
+sw_plotspec(spec,'mode','color','dE',0.2,'imag',false)
+axis([0 1 0 5.5])
+caxis([0 3])
+legend off
+colorbar off
+swplot.subfigure(1,3,1)
+
+%%
+%  Written by
+%  Sandor Toth
+%  06-Feb-2016
+
+##### SOURCE END #####
+--></body></html>

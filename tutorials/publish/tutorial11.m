@@ -36,7 +36,7 @@ colorbar off
 subplot(2,1,2)
 lacuoSpec = sw_omegasum(lacuoSpec,'zeroint',1e-5,'tol',1e-3);
 sw_plotspec(lacuoSpec,'mode',2,'axLim',[0 20],'dashed',true,'colormap',[0 0 0],'qlabel',Qlab)
-swplot.subfigure(2,4,1)
+swplot.subfigure(1,3,1)
 
 %%
 %  Written by

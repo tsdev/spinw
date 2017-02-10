@@ -1,5 +1,7 @@
 function terms = strsplit(s, delimiter)
-%STRSPLIT Splits a string into multiple terms
+% splits a string into multiple terms
+%
+% terms = STRSPLIT(str, delimiter)
 %
 %   terms = strsplit(s)
 %       splits the string s into multiple terms that are separated by
@@ -10,8 +12,8 @@ function terms = strsplit(s, delimiter)
 %
 %   terms = strsplit(s, delimiter)
 %       splits the string s into multiple terms that are separated by
-%       the specified delimiter. 
-%   
+%       the specified delimiter.
+%
 %   Remarks
 %   -------
 %       - Note that the spaces surrounding the delimiter are considered
@@ -19,7 +21,7 @@ function terms = strsplit(s, delimiter)
 %         terms.
 %
 %       - If there are two consecutive non-whitespace delimiters, it is
-%         regarded that there is an empty-string term between them.         
+%         regarded that there is an empty-string term between them.
 %
 %   Examples
 %   --------
@@ -50,9 +52,8 @@ function terms = strsplit(s, delimiter)
 %       - Created by Dahua Lin, on Oct 9, 2008
 %
 
-%% parse and verify input arguments
-
-assert(ischar(s) && ndims(s) == 2 && size(s,1) <= 1, ...
+% parse and verify input arguments
+assert(ischar(s) && ismatrix(s) && size(s,1) <= 1, ...
     'strsplit:invalidarg', ...
     'The first input argument should be a char string.');
 
@@ -60,51 +61,57 @@ if nargin < 2
     by_space = true;
 else
     d = delimiter;
-    assert(ischar(d) && ndims(d) == 2 && size(d,1) == 1 && ~isempty(d), ...
+    assert(ischar(d) && ismatrix(d) && size(d,1) == 1 && ~isempty(d), ...
         'strsplit:invalidarg', ...
         'The delimiter should be a non-empty char string.');
     
-    d = strtrim(d);
+    if numel(d) == 2 && ismember(d,{'\n' '\f' '\r' '\t'})
+        % convert special characters into char
+        d = sprintf(d);
+    end
+    
+    %d = strtrim(d);
     by_space = isempty(d);
 end
-    
-%% main
+
+% main
 
 s = strtrim(s);
 
 if by_space
-    w = isspace(s);            
+    w = isspace(s);
     if any(w)
-        % decide the positions of terms        
+        % decide the positions of terms
         dw = diff(w);
         sp = [1, find(dw == -1) + 1];     % start positions of terms
         ep = [find(dw == 1), length(s)];  % end positions of terms
         
-        % extract the terms        
+        % extract the terms
         nt = numel(sp);
         terms = cell(1, nt);
         for i = 1 : nt
             terms{i} = s(sp(i):ep(i));
-        end                
+        end
     else
         terms = {s};
     end
     
-else    
-    p = strfind(s, d);
-    if ~isempty(p)        
-        % extract the terms        
+else
+    p = strfind(s,d);
+    if ~isempty(p)
+        % extract the terms
         nt = numel(p) + 1;
         terms = cell(1, nt);
         sp = 1;
-        dl = length(delimiter);
+        dl = numel(d);
         for i = 1 : nt-1
             terms{i} = strtrim(s(sp:p(i)-1));
             sp = p(i) + dl;
-        end         
+        end
         terms{nt} = strtrim(s(sp:end));
     else
         terms = {s};
-    end        
+    end
 end
 
+end

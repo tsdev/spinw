@@ -69,7 +69,7 @@ subplot(2,1,1)
 sw_plotspec(fmkPow,'colorbar',true,'axLim',[0 0.05])
 subplot(2,1,2)
 sw_plotspec(fmkPow,'colorbar',true,'axLim',[0 0.05],'dE',0.25,'norm',true)
-swplot.subfigure(2,4,1)
+swplot.subfigure(1,3,1)
 
 %%
 %  Written by

@@ -13,6 +13,11 @@ function spectra = spinwave(obj, hkl, varargin)
 % calculated using a coordinate system rotating from cell to cell. In this
 % case the spin Hamiltonian has to fulfill this extra rotational symmetry.
 %
+% Some of the code of the function can run faster is mex files are used. To
+% switch on mex files, use the swpref.setpref('usemex',true) command. For
+% details see the <a href="matlab:help('sw_mex.m')">sw_mex</a> function.
+%
+%
 % Input:
 %
 % obj           Input structure, spinw class object.
@@ -99,9 +104,6 @@ function spectra = spinwave(obj, hkl, varargin)
 %               compopent perpedincular to q. Default is false.
 % title         Gives a title string to the simulation that is saved in the
 %               output.
-% useMex        If true, the code will use compiled mex files (if they
-%               exist) to speed up the calculation, for details see
-%               sw_mex() function. Default is false.
 %
 % Output:
 %
@@ -158,7 +160,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % triangular lattice antiferromagnet (S=1, J=1) along the [H H 0] direction
 % in reciprocal space.
 %
-% See also SPINW, SPINW.SPINWAVESYM, SW_NEUTRON, SPINW.POWSPEC, SPINW.OPTMAGSTR, SPINW.FILEID, SW_INSTRUMENT.
+% See also SPINW, SPINW.SPINWAVESYM, SW_MEX, SPINW.POWSPEC.
 %
 
 % for linear scans create the Q line(s)
@@ -170,6 +172,12 @@ end
 
 % save warning of eigorth
 orthWarn0 = false;
+
+% save warning for singular matrix
+singWarn0 = warning('off','MATLAB:nearlySingularMatrix');
+
+% use mex file by default?
+useMex = swpref.getpref('usemex',[]);
 
 % calculate symbolic spectrum if obj is in symbolic mode
 if obj.symbolic
@@ -214,9 +222,9 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
-inpForm.fname  = [inpForm.fname  {'useMex' 'cmplxBase' 'tid' 'fid' 'outSperp'}];
-inpForm.defval = [inpForm.defval {false    false       -1    nan   false}];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]       [1 1] [1 1] [1 1]}];
+inpForm.fname  = [inpForm.fname  {'cmplxBase' 'tid' 'fid' 'outSperp'}];
+inpForm.defval = [inpForm.defval {false       -1    nan   false}];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1] [1 1] [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -239,17 +247,6 @@ end
 
 if param.tid == -1
     param.tid = swpref.getpref('tid',[]);
-end
-
-if param.useMex == -1
-    % don't check files (takes too much time)
-    param.useMex = true;
-    % elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
-    %         exist('eig_omp','file')==3 && exist('sw_mtimesx','file')==3)
-elseif ~(param.useMex && exist('chol_omp','file')==3 && ...
-        exist('eig_omp','file')==3)
-    % check if mex files exist
-    param.useMex = false;
 end
 
 % generate magnetic structure in the rotating noation
@@ -727,7 +724,7 @@ for jj = 1:nSlice
         % basis functions of the magnon modes
         V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
         
-        if param.useMex && nHklMEM>1
+        if useMex && nHklMEM>1
             % use mex files to speed up the calculation
             % mex file will return an error if the matrix is not positive definite.
             [K2, invK] = chol_omp(ham,'Colpa','tol',param.omega_tol);
@@ -787,13 +784,13 @@ for jj = 1:nSlice
         %    gham(:,:,ii) = gComm*ham(:,:,ii);
         %end
         
-        if param.useMex
+        if useMex
             gham = sw_mtimesx(gComm,ham);
         else
             gham = mmat(gComm,ham);
         end
         
-        [V, DD, orthWarn] = eigorth(gham, param.omega_tol, param.sortMode, param.useMex);
+        [V, DD, orthWarn] = eigorth(gham, param.omega_tol, param.sortMode, useMex);
         
         orthWarn0 = orthWarn || orthWarn0;
         
@@ -813,7 +810,7 @@ for jj = 1:nSlice
     end
 
     % Calculates correlation functions.
-    if param.useMex
+    if useMex
         ExpF = exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
         ExpF = reshape(ExpF,[numel(S0) nHklMEM]).*repmat(sqrt(S0.'/2),[1 nHklMEM]);
         ExpF = repmat(ExpF,[2 1]); 
@@ -992,6 +989,10 @@ for jj = 1:nSlice
     sw_status(jj/nSlice*100,0,param.tid);
 end
 
+[~,singWarn] = lastwarn;
+% restore warning for singular matrix
+warning(singWarn0.state,'MATLAB:nearlySingularMatrix');
+
 % If number of formula units are given per cell normalize to formula
 % unit
 if ~param.outSperp && obj.unit.nformula > 0
@@ -1071,6 +1072,14 @@ end
 % issue eigorth warning
 if orthWarn0
     warning('spinw:spinwave:NoOrth','Eigenvectors of defective eigenvalues cannot be orthogonalised at some q-point!');
+end
+
+lineLink = ['<a href="matlab:opentoline([''' sw_rootdir 'swfiles' filesep '@spinw' filesep 'spinwave.m''' '],758,0)">line 758</a>'];
+
+if strcmp(singWarn,'MATLAB:nearlySingularMatrix')
+    warning('spinw:spinwave:nearlySingularMatrix',['Matrix is close '...
+        'to singular or badly scaled. Results may be inaccurate.\n> In spinw/spinwave (' lineLink ')']);
+    fprintf(repmat('\b',[1 30]));
 end
 
 end

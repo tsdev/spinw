@@ -53,14 +53,20 @@ if ~verLessThan('matlab', '8.1')
 else
     % rename the functions to be used in Matlab versions prior to R2014a
     % strjoin()
-    movefile([folName filesep 'external' filesep 'strjoin0.m'],...
-        [folName filesep 'external' filesep 'strjoin.m']);
+    try %#ok<*TRYNC>
+        movefile([folName filesep 'external' filesep 'strjoin0.m'],...
+            [folName filesep 'external' filesep 'strjoin.m']);
+    end
     % strsplit()
-    movefile([folName filesep 'external' filesep 'strsplit0.m'],...
-        [folName filesep 'external' filesep 'strsplit.m']);
+    try
+        movefile([folName filesep 'external' filesep 'strsplit0.m'],...
+            [folName filesep 'external' filesep 'strsplit.m']);
+    end
     % gobjects()
-    movefile([folName filesep 'external' filesep 'gobjects0.m'],...
-        [folName filesep 'external' filesep 'gobjects.m']);
+    try
+        movefile([folName filesep 'external' filesep 'gobjects0.m'],...
+            [folName filesep 'external' filesep 'gobjects.m']);
+    end
 
 end
 
@@ -86,7 +92,7 @@ uPath = [uPath(~ismember(uPath,';')) filesep 'startup.m'];
 % create new startup.m file
 if isempty(sfLoc)
     answer = getinput(sprintf(['You don''t have a Matlab startup.m file,\n'...
-        'do you want it to be created at %s? (y/n)'],uPath),'yn');
+        'do you want it to be created at %s? (y/n)'],esc(uPath)),'yn');
     if answer == 'y'
         fclose(fopen(uPath,'w'));
         sfLoc = uPath;
@@ -116,7 +122,7 @@ answer = getinput(...
     'Do you want to issue the command "clear classes" now? (y/n)'],'yn');
 
 if answer == 'y'
-    clear('classes'); %#ok<CLFUN>
+    clear('classes'); %#ok<CLCLS>
     disp('Matlab class memory is refreshed!')
 end
 

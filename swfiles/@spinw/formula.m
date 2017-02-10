@@ -1,4 +1,4 @@
-function varargout = formula(obj,fid)
+function varargout = formula(obj)
 % returns chemical formula, mass, volume, etc.
 %
 % formula = FORMULA(obj)
@@ -10,25 +10,22 @@ function varargout = formula(obj,fid)
 % Output:
 %
 % formula struct variable with the following fields:
-% m         Mass of the unit cell in g/mol unit.
-% V         Volume of the unit cell in Angstrom^3 unit.
-% rho       Density in g/cm^3 unit.
-% chemlabel List of the different elements.
-% chemnum   Number of the listed element names
-% chemform  Chemical formula string: series of 'ChemLabel_ChemNum '.
+%
+% m             Mass of the unit cell in g/mol unit.
+% V             Volume of the unit cell in Angstrom^3 unit.
+% rho           Density in g/cm^3 unit.
+% chemlabel     List of the different elements.
+% chemnum       Number of the listed element names
+% chemform      Chemical formula string: series of 'ChemLabel_ChemNum '.
 %
 % Example:
 %
-% cryst = sw('test.cif')
-% cryst.formula;
+% cryst = spinw('https://goo.gl/do6oTh')
+% cryst.formula
 %
 % The formula of the crystal stored in the test.cif file will be printed
 % onto the Command Window.
 %
-
-if nargin < 2
-    fid = obj.fid;
-end
 
 atom = obj.atom;
 
@@ -103,11 +100,11 @@ if nargout > 0
 end
 
 if nargout == 0
-    fprintf0(fid,'     <strong>Chemical formula:</strong>  %s\n',formula.chemform);
-    fprintf0(fid,'     <strong>Formula mass:</strong>      %8.3f g/mol\n',formula.m);
-    fprintf0(fid,'     <strong>Formula in cell:</strong>   %8d units\n',formula.N);
-    fprintf0(fid,'     <strong>Cell volume:</strong>       %8.3f Angstrom^3\n',formula.V);
-    fprintf0(fid,'     <strong>Density:</strong>           %8.3f g/cm^3\n',formula.rho);
+    fprintf('     <strong>Chemical formula:</strong>  %s\n',formula.chemform);
+    fprintf('     <strong>Formula mass:</strong>      %8.3f g/mol\n',formula.m);
+    fprintf('     <strong>Formula in cell:</strong>   %8d units\n',formula.N);
+    fprintf('     <strong>Cell volume:</strong>       %8.3f Angstrom^3\n',formula.V);
+    fprintf('     <strong>Density:</strong>           %8.3f g/cm^3\n',formula.rho);
 end
 
 end

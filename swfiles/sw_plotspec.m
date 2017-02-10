@@ -263,7 +263,7 @@ if isa(param.aHandle,'matlab.graphics.axis.Axes') || ishandle(param.aHandle)
 
     if any(strfind(get(get(param.aHandle,'Parent'),'Tag'),'sw_crystal'))
         % don't plot into the crystal structure window
-        fHandle = figure;
+        fHandle = figure('color','w');
         param.aHandle = gca;
     else
         fHandle = get(gca,'Parent');
@@ -272,7 +272,7 @@ if isa(param.aHandle,'matlab.graphics.axis.Axes') || ishandle(param.aHandle)
 else
     fHandle = sw_getfighandle('sw_spectra');
     if isempty(fHandle)
-        fHandle = figure;
+        fHandle = figure('color','w');
     end
 end
 % set Tag to find window later easily

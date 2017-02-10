@@ -18,8 +18,17 @@ function logo(varargin)
 % See also: SPINW.
 %
 
+% determine the version of SpinW
+ver = sw_version;
+
+if ~isempty(ver.Version)
+    verStr = [' ' ver.Version ' ' 'R' ver.Revision];
+else
+    verStr = [' ' 'R' ver.Revision];
+end
+
 hFigure = figure('menubar','none','toolbar','none','name',...
-    'About SpinW','NumberTitle','off','resize','off','Visible','off');
+    ['About SpinW' verStr],'NumberTitle','off','resize','off','Visible','off');
 hold on
 
 % plot wave
@@ -56,10 +65,13 @@ set(gcf,'color','w')
 
 % add name
 text(-2.3,-1.3,2.35,'Spin','fontsize',110,'fontname','Krungthep')
+
+set(hFigure,'Visible','on');
+
 % save logo
 if nargin > 0 && ~isempty(varargin{end})
     print(varargin{end},'-dpng','-r300')
-    close(gcf)
+    close(hFigure)
 else
     % add text
     ver0 = evalc('sw_version');
@@ -82,10 +94,8 @@ else
     tt = text(0.65,0.5,txt0,'units','normal');
     set(tt,'FontSize',9.2);
     
+    WinOnTop(hFigure, true);
 end
-
-set(hFigure,'Visible','on');
-WinOnTop(hFigure, true);
 
 end
 

@@ -4,11 +4,10 @@
 % We define only the magnetic atoms of LiNiPO4
 
 linipo = spinw;
-linipo.fileid(0)
 linipo.genlattice('lat_const', [10.02 5.86 4.68],'sym','P n m a');
 linipo.addatom('r',[1/4 1/4 0],'S',1,'label','MNi2','color','b')
 linipo.gencoupling
-plot(linipo,'zoom',2)
+plot(linipo)
 
 %% Magnetic Hamiltonian
 % Fitted parameters of the Hamiltonian taken from the paper at T = 1.5 K
@@ -38,8 +37,8 @@ linipo.addcoupling('mat','Jab','bond',[5 6])
 linipo.addcoupling('mat','Jac','bond',[3 4])
 
 linipo.addaniso('D')
-plot(linipo,'range',[2 2 1])
-
+plot(linipo,'range',[2 2 1],'atomLegend',false)
+swplot.zoom(1.4)
 %% Magnetic structure
 % We define the antiferromagnetic structure along the c-axis by direct
 % input of the moment components.
@@ -55,25 +54,31 @@ linipoSpec = linipo.spinwave({[0 1 0] [2 1 0]});
 linipoSpec = sw_egrid(linipoSpec);
 linipoSpec = sw_omegasum(linipoSpec,'zeroint',1e-3);
 figure
+subplot(2,1,1)
 sw_plotspec(linipoSpec,'mode','disp','axLim',[0 8],'colormap',[0 0 0],'colorbar',false)
-figure
+subplot(2,1,2)
 sw_plotspec(linipoSpec,'mode','int','axLim',[0 15],'colormap',[0 0 0],'colorbar',false)
+swplot.subfigure(1,3,1)
 
 linipoSpec = linipo.spinwave({[0 0 0] [0 2 0]});
 linipoSpec = sw_egrid(linipoSpec);
 linipoSpec = sw_omegasum(linipoSpec,'zeroint',1e-5);
 figure
+subplot(2,1,1)
 sw_plotspec(linipoSpec,'mode','disp','axLim',[0 8],'colormap',[0 0 0],'colorbar',false)
-figure
+subplot(2,1,2)
 sw_plotspec(linipoSpec,'mode','int','axLim',[0 15],'colormap',[0 0 0],'colorbar',false)
+swplot.subfigure(1,3,1)
 
 linipoSpec = linipo.spinwave({[0 1 0] [0 1 2]});
 linipoSpec = sw_egrid(linipoSpec);
 linipoSpec = sw_omegasum(linipoSpec,'zeroint',1e-5);
 figure
+subplot(2,1,1)
 sw_plotspec(linipoSpec,'mode','disp','axLim',[0 8],'colormap',[0 0 0],'colorbar',false)
-figure
+subplot(2,1,2)
 sw_plotspec(linipoSpec,'mode','int','axLim',[0 15],'colormap',[0 0 0],'colorbar',false)
+swplot.subfigure(1,3,1)
 
 %% Mode crossing
 % On the last figure, the two spin wave mode cross each other, where the
@@ -85,4 +90,4 @@ sw_plotspec(linipoSpec,'mode','int','axLim',[0 15],'colormap',[0 0 0],'colorbar'
 %%
 %  Written by
 %  Sandor Toth
-%  16-June-2014
+%  16-Jun-2014, 06-Feb-2017

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Spin wave spectrum of Ba3NbFe3Si2O14</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-02-24"><meta name="DC.source" content="tutorial15.m"><style type="text/css">
+      --><title>Spin wave spectrum of Ba3NbFe3Si2O14</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-08"><meta name="DC.source" content="tutorial15.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,16 +66,15 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Spin wave spectrum of Ba3NbFe3Si2O14</h1><!--introduction--><p>Here we model the spin wave spectrum of Ba3NbFe3Si2O14 chiral compound. The crystal structure is taken from PRL <b>101</b>, 247201 (2008), [[http://dx.doi.org/10.1103/PhysRevLett.101.247201]]. The spin wave model parameters are taken from PRL <b>106</b>, 207201 (2011), [[http://dx.doi.org/10.1103/PhysRevLett.106.207201]].</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Crystal structure</a></li><li><a href="#2">Chrality</a></li><li><a href="#3">Magnetic Hamiltonian</a></li><li><a href="#4">Magnetic structure</a></li><li><a href="#5">Spin wave spectrum</a></li><li><a href="#6">Chiral correlations</a></li></ul></div><h2>Crystal structure<a name="1"></a></h2><p>We define only the magnetic atoms in of the crystal that are Fe3+ ions with spin quantum number of 5/2.</p><pre class="codeinput">banb = spinw;
-banb.fileid(0)
+  </style></head><body><div class="content"><h1>Spin wave spectrum of Ba3NbFe3Si2O14</h1><!--introduction--><p>Here we model the spin wave spectrum of Ba3NbFe3Si2O14 chiral compound. The crystal structure is taken from PRL <b>101</b>, 247201 (2008), [[http://dx.doi.org/10.1103/PhysRevLett.101.247201]]. The spin wave model parameters are taken from PRL <b>106</b>, 207201 (2011), [[http://dx.doi.org/10.1103/PhysRevLett.106.207201]].</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Crystal structure</a></li><li><a href="#2">Chrality</a></li><li><a href="#3">Magnetic Hamiltonian</a></li><li><a href="#4">Magnetic structure</a></li><li><a href="#5">Alternatively we optimize the magnetic structure</a></li><li><a href="#6">Spin wave spectrum</a></li><li><a href="#7">Chiral correlations</a></li></ul></div><h2 id="1">Crystal structure</h2><p>We define only the magnetic atoms in of the crystal that are Fe3+ ions with spin quantum number of 5/2.</p><pre class="codeinput">banb = spinw;
 banb.genlattice(<span class="string">'lat_const'</span>,[8.539 8.539 5.2414],<span class="string">'angled'</span>,[90 90 120],<span class="string">'sym'</span>,<span class="string">'P 3 2 1'</span>);
 banb.addatom(<span class="string">'label'</span>,<span class="string">'MFe3'</span>,<span class="string">'r'</span>,[0.24964 0 1/2],<span class="string">'S'</span>,5/2,<span class="string">'color'</span>,<span class="string">'gray'</span>);
 banb.gencoupling;
-plot(banb,<span class="string">'range'</span>,[-0.5 1.5;-0.5 1.5;0 0.5],<span class="string">'zoom'</span>,-0.5)
-</pre><img vspace="5" hspace="5" src="tutorial15_01.png" alt=""> <h2>Chrality<a name="2"></a></h2><p>We define three chiral properties of the crystal and magnetic order: * epsilon_T:  crystal chirality, in our case we select J3-J5 interactions according to the chirality (J5&gt;J3). * epsilon_Delta: Chirality of the triangular units. * epsilon_H: Sense of rotation of the spin helices along the c-axis (right handed rotation is positive). The three property are related: eT = eD*eH.</p><pre class="codeinput">eD = -1;
+plot(banb,<span class="string">'range'</span>,[-0.5 1.5;-0.5 1.5;0 0.5])
+</pre><img vspace="5" hspace="5" src="tutorial15_01.png" style="width:560px;height:420px;" alt=""> <h2 id="2">Chrality</h2><p>We define three chiral properties of the crystal and magnetic order: * epsilon_T:  crystal chirality, in our case we select J3-J5 interactions according to the chirality (J5&gt;J3). * epsilon_Delta: Chirality of the triangular units. * epsilon_H: Sense of rotation of the spin helices along the c-axis (right handed rotation is positive). The three property are related: eT = eD*eH.</p><pre class="codeinput">eD = -1;
 eH = +1;
 eT = eD*eH;
-</pre><h2>Magnetic Hamiltonian<a name="3"></a></h2><p>We define the magnetic Hamiltonian depending on the epsilon_T crystal chirality. We neglect the Dzyaloshinskii-Moriya interaction, that can be introduced in a straightforward manner.</p><pre class="codeinput">J1 = 0.85;
+</pre><h2 id="3">Magnetic Hamiltonian</h2><p>We define the magnetic Hamiltonian depending on the epsilon_T crystal chirality. We neglect the Dzyaloshinskii-Moriya interaction, that can be introduced in a straightforward manner.</p><pre class="codeinput">J1 = 0.85;
 J2 = 0.24;
 J3 = 0.053;
 J4 = 0.017;
@@ -99,11 +98,40 @@ banb.addcoupling(<span class="string">'mat'</span>,<span class="string">'J4'</sp
         banb.addcoupling(<span class="string">'mat'</span>,<span class="string">'J3'</span>,<span class="string">'bond'</span>,5)
         banb.addcoupling(<span class="string">'mat'</span>,<span class="string">'J5'</span>,<span class="string">'bond'</span>,4)
 <span class="keyword">end</span>
-plot(banb,<span class="string">'range'</span>,[-0.5 1.5;-0.5 1.5;0 0.5],<span class="string">'zoom'</span>,2)
-</pre><img vspace="5" hspace="5" src="tutorial15_02.png" alt=""> <h2>Magnetic structure<a name="4"></a></h2><p>We fix the magnetic structure with the predefined chirality. The magnetic ordering wave vector is <b>k</b>=(0,0,e_H*1/7), the spins are lying in the <b>ab</b>-plane and we use a single cell to describe the structure (default value of nExt = [1 1 1]). We plot the triangular plane magnetic structure.</p><pre class="codeinput">S0 = [1 -1/2 -1/2;0 eD*sqrt(3)/2 -eD*sqrt(3)/2;0 0 0];
+
+plot(banb,<span class="string">'range'</span>,[-0.5 1.5;-0.5 1.5;0 0.5],<span class="string">'atomLegend'</span>,false)
+swplot.zoom(1.3)
+</pre><img vspace="5" hspace="5" src="tutorial15_02.png" style="width:560px;height:420px;" alt=""> <h2 id="4">Magnetic structure</h2><p>We fix the magnetic structure with the predefined chirality. The magnetic ordering wave vector is <b>k</b>=(0,0,e_H*1/7), the spins are lying in the <b>ab</b>-plane and we use a single cell to describe the structure (default value of nExt = [1 1 1]). We plot the triangular plane magnetic structure.</p><pre class="codeinput">S0 = [1 -1/2 -1/2;0 eD*sqrt(3)/2 -eD*sqrt(3)/2;0 0 0];
 banb.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'S'</span>,S0,<span class="string">'k'</span>,[0 0 eH*1/7],<span class="string">'n'</span>,[0 0 1])
-plot(banb,<span class="string">'range'</span>,[-0.5 1.5;-0.5 1.5;0 0.5],<span class="string">'sSpin'</span>,0.5)
-</pre><img vspace="5" hspace="5" src="tutorial15_03.png" alt=""> <h2>Spin wave spectrum<a name="5"></a></h2><p>We calculate the spin wave spectrum and compare it to published results. Since the momentum transfer vector <b>Q</b> has opposite sign in SpinW and in the published PRL paper, we change the sign manually here. Also for direct comparison, we calculate the spin-spin correlation function in the coordinate system commonly used for polarised neutron scattering (x||Q, z perpendicular to the scattering plane). To define the scattering plane, we give two reciprocal space vectors in that plane: <b>u</b>=(0,1,0) and <b>v</b>=(0,0,1).</p><pre class="codeinput">banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 500});
+plot(banb,<span class="string">'range'</span>,[-0.5 1.5;-0.5 1.5;0 0.5],<span class="string">'magCentered'</span>,true)
+swplot.zoom(1.3)
+E1 = banb.energy;
+
+<span class="comment">% Keep the manual magnetic structure.</span>
+Mag0 = banb.mag_str;
+</pre><img vspace="5" hspace="5" src="tutorial15_03.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Alternatively we optimize the magnetic structure</h2><p>First we find the propagation vector, then determine the moment directions. We find a slightly lower energy by allowing a tiny deviation from the propagation vector of [0 0 1/7].</p><pre class="codeinput">banb.optmagk
+banb.optmagsteep(<span class="string">'nRun'</span>,1e4)
+banb.genmagstr(<span class="string">'mode'</span>,<span class="string">'rotate'</span>,<span class="string">'n'</span>,[0 0 1])
+E2 = banb.energy;
+E2-E1
+
+<span class="comment">% The vetor normal to the rotation is opposite compared to the manual</span>
+<span class="comment">% magnetic structure, while the propagation vector is the same. Thus the</span>
+<span class="comment">% optimized magnetic structure has opposite chirality than the manual</span>
+<span class="comment">% structure. So we should change the chirality. Instead we restore the</span>
+<span class="comment">% manual magnetic structure.</span>
+banb.mag_str = Mag0;
+</pre><pre class="codeoutput">ans = 
+  struct with fields:
+
+       k: [3&times;1 double]
+       E: -5.4522
+       F: [3&times;3 double]
+    stat: [1&times;1 struct]
+Warning: Some spins are coupled to themselves in the present magnetic cell! 
+ans =
+  -1.1400e-06
+</pre><h2 id="6">Spin wave spectrum</h2><p>We calculate the spin wave spectrum and compare it to published results. Since the momentum transfer vector <b>Q</b> has opposite sign in SpinW and in the published PRL paper, we change the sign manually here. Also for direct comparison, we calculate the spin-spin correlation function in the coordinate system commonly used for polarised neutron scattering (x||Q, z perpendicular to the scattering plane). To define the scattering plane, we give two reciprocal space vectors in that plane: <b>u</b>=(0,1,0) and <b>v</b>=(0,0,1).</p><pre class="codeinput">banbSpec = banb.spinwave({[0 -1 1] [0 -1 -2] 500});
 banbSpec.hkl  = -banbSpec.hkl;
 banbSpec.hklA = -banbSpec.hklA;
 banbSpec = sw_neutron(banbSpec,<span class="string">'pol'</span>,true,<span class="string">'uv'</span>,{[0 1 0] [0 0 1]});
@@ -114,15 +142,15 @@ sw_plotspec(banbSpec,<span class="string">'mode'</span>,<span class="string">'co
 tString = sprintf(<span class="string">'\\epsilon_T = %+d, \\epsilon_\\Delta = %+d, \\epsilon_H = %+d'</span>,eD,eT,eH);
 title(tString,<span class="string">'fontSize'</span>,16)
 colormap(jet)
-</pre><img vspace="5" hspace="5" src="tutorial15_04.png" alt=""> <h2>Chiral correlations<a name="6"></a></h2><p>We plot the imaginary part of the spin-spin correlation function: Myz-Mzy that are components in the Q coordinate system, this agrees well with Fig. 5 of PRL <b>106</b>, 207201 (2011).</p><pre class="codeinput">figure
+</pre><img vspace="5" hspace="5" src="tutorial15_04.png" style="width:560px;height:420px;" alt=""> <h2 id="7">Chiral correlations</h2><p>We plot the imaginary part of the spin-spin correlation function: Myz-Mzy that are components in the Q coordinate system, this agrees well with Fig. 5 of PRL <b>106</b>, 207201 (2011).</p><pre class="codeinput">figure
 banbSpec = sw_egrid(banbSpec,<span class="string">'component'</span>,<span class="string">'Myz-Mzy'</span>,<span class="string">'Evect'</span>,linspace(0,6,500));
 sw_plotspec(banbSpec,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.25,<span class="string">'axLim'</span>,[-10 10],<span class="string">'imag'</span>,true);
 tString = sprintf(<span class="string">'\\epsilon_T = %+d, \\epsilon_\\Delta = %+d, \\epsilon_H = %+d'</span>,eD,eT,eH);
 title(tString,<span class="string">'fontSize'</span>,16)
 colormap(makecolormap([0 1 0],[1 1 1],[0 0 1],81));
-</pre><img vspace="5" hspace="5" src="tutorial15_05.png" alt=""> <pre>Written by
+</pre><img vspace="5" hspace="5" src="tutorial15_05.png" style="width:560px;height:420px;" alt=""> <pre>Written by
 Sandor Toth
-16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+16-Jun-2014, 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Spin wave spectrum of Ba3NbFe3Si2O14
 % Here we model the spin wave spectrum of Ba3NbFe3Si2O14 chiral compound.
@@ -136,11 +164,10 @@ Sandor Toth
 % with spin quantum number of 5/2.
 
 banb = spinw;
-banb.fileid(0)
 banb.genlattice('lat_const',[8.539 8.539 5.2414],'angled',[90 90 120],'sym','P 3 2 1');
 banb.addatom('label','MFe3','r',[0.24964 0 1/2],'S',5/2,'color','gray');
 banb.gencoupling;
-plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'zoom',-0.5)
+plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5])
 
 %% Chrality
 % We define three chiral properties of the crystal and magnetic order:
@@ -185,7 +212,9 @@ switch eT
         banb.addcoupling('mat','J3','bond',5)
         banb.addcoupling('mat','J5','bond',4)
 end
-plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'zoom',2)
+
+plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'atomLegend',false)
+swplot.zoom(1.3)
 
 %% Magnetic structure
 % We fix the magnetic structure with the predefined chirality. The magnetic
@@ -196,8 +225,30 @@ plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'zoom',2)
 
 S0 = [1 -1/2 -1/2;0 eD*sqrt(3)/2 -eD*sqrt(3)/2;0 0 0];
 banb.genmagstr('mode','helical','S',S0,'k',[0 0 eH*1/7],'n',[0 0 1])
-plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'sSpin',0.5)
+plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'magCentered',true)
+swplot.zoom(1.3)
+E1 = banb.energy;
 
+% Keep the manual magnetic structure.
+Mag0 = banb.mag_str;
+
+%% Alternatively we optimize the magnetic structure
+% First we find the propagation vector, then determine the moment
+% directions. We find a slightly lower energy by allowing a tiny deviation
+% from the propagation vector of [0 0 1/7].
+
+banb.optmagk
+banb.optmagsteep('nRun',1e4)
+banb.genmagstr('mode','rotate','n',[0 0 1])
+E2 = banb.energy;
+E2-E1
+
+% The vetor normal to the rotation is opposite compared to the manual
+% magnetic structure, while the propagation vector is the same. Thus the
+% optimized magnetic structure has opposite chirality than the manual
+% structure. So we should change the chirality. Instead we restore the
+% manual magnetic structure.
+banb.mag_str = Mag0;
 
 %% Spin wave spectrum
 % We calculate the spin wave spectrum and compare it to published results.
@@ -236,6 +287,6 @@ colormap(makecolormap([0 1 0],[1 1 1],[0 0 1],81));
 %%
 %  Written by
 %  Sandor Toth
-%  16-June-2014
+%  16-Jun-2014, 06-Feb-2017
 ##### SOURCE END #####
 --></body></html>

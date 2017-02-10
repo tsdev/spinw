@@ -1,0 +1,54 @@
+<div class="content"><h2>Contents</h2><div><ul><li><a href="#1">antiferromagnetic chain</a></li><li><a href="#2">magnetic field</a></li><li><a href="#3">spin wave</a></li></ul></div><h2 id="1">antiferromagnetic chain</h2><pre class="codeinput">afc = sw;
+afc.genlattice(<span class="string">'lat_const'</span>,[4 4 6])
+afc.addatom(<span class="string">'r'</span>,[  0 0 0],<span class="string">'S'</span>,1)
+afc.addatom(<span class="string">'r'</span>,[1/2 0 0],<span class="string">'S'</span>,1)
+afc.addmatrix(<span class="string">'label'</span>,<span class="string">'A'</span>,<span class="string">'value'</span>,diag([0 0 -0.1]))
+afc.addmatrix(<span class="string">'label'</span>,<span class="string">'J'</span>,<span class="string">'value'</span>,1)
+afc.gencoupling
+afc.addcoupling(<span class="string">'J'</span>,1)
+afc.addaniso(<span class="string">'A'</span>)
+afc.optmagsteep;
+plot(afc)
+</pre><pre class="codeoutput error">Undefined function or variable 'sw'.
+Error in tutorial29 (line 3)
+afc = sw;</pre><h2 id="2">magnetic field</h2><pre class="codeinput">afc.field([0 0 7])
+afc.optmagsteep(<span class="string">'random'</span>,true,<span class="string">'nRun'</span>,400);
+plot(afc)
+</pre><h2 id="3">spin wave</h2><pre class="codeinput">spec = afc.spinwave({[0 0 0] [2 0 0] 500},<span class="string">'hermit'</span>,true);
+spec = sw_egrid(spec,<span class="string">'Evect'</span>,linspace(0,3,300));
+figure
+sw_plotspec(spec);<span class="comment">%,'mode','disp','imag',true);</span>
+axis([0 2 0 3])
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+<literal>##### SOURCE BEGIN #####
+%% antiferromagnetic chain
+
+afc = sw;
+afc.genlattice('lat_const',[4 4 6])
+afc.addatom('r',[  0 0 0],'S',1)
+afc.addatom('r',[1/2 0 0],'S',1)
+afc.addmatrix('label','A','value',diag([0 0 -0.1]))
+afc.addmatrix('label','J','value',1)
+afc.gencoupling
+afc.addcoupling('J',1)
+afc.addaniso('A')
+afc.optmagsteep;
+plot(afc)
+
+%% magnetic field
+
+afc.field([0 0 7])
+afc.optmagsteep('random',true,'nRun',400);
+plot(afc)
+
+%% spin wave
+spec = afc.spinwave({[0 0 0] [2 0 0] 500},'hermit',true);
+spec = sw_egrid(spec,'Evect',linspace(0,3,300));
+figure
+sw_plotspec(spec);%,'mode','disp','imag',true);
+axis([0 2 0 3])
+
+
+
+##### SOURCE END #####</literal>
+-->

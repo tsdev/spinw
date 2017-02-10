@@ -33,7 +33,7 @@
 %   sw_intsf         - integrates the structure factor along given Q directions
 %   sw_model         - creates different predefined spin models
 %
-% Contraint functions for spinw.optmagstr():
+% Constraint functions for spinw.optmagstr():
 %
 %   gm_planar        - planar magnetic structure constraint function 
 %   gm_planard       - planar magnetic structure constraint function 
@@ -83,7 +83,6 @@
 %   sw_converter     - converts energy and momentum units for a given particle
 %   sw_fibo          - returns the last two Fibonacci number smaller or equal to the
 %
-%
 % Import functions:
 %
 %   sw_import        - create SpinW object from .cif and FullProf Studio .fst files
@@ -103,3 +102,4 @@
 %   sw_uniquetol     - returns the unique column vectors within tolerance
 %   sw_update        - updates the SpinW installation from the internet
 %   sw_version       - returns the installed version of SpinW
+%   sw_mex           - compiles the mex files and test them

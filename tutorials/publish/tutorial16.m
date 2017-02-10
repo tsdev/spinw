@@ -76,7 +76,6 @@ nairo.addmatrix('label','J3','value', 0);
 
 plot(nairo,'range',[1 1 1/2],'atomMode','mag','bondRadius1',0.15,'bondMode','line',...
     'bondLineWidth','lin','bondLinewidth0',4,'atomLegend',false)
-set(gcf,'color',swplot.color('gold')/255)
 
 %% Q scans
 % We define a list of Q points, linear scans will be claculated between
@@ -206,4 +205,4 @@ title('j) zig-zag, KH-J_2-J_3, S^{y''y''}=S^{xx}','fontsize',15)
 %%
 %  Written by
 %  Sandor Toth
-%  16-June-2014
+%  16-Jun-2014, 06-Feb-2017

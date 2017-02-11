@@ -27,7 +27,7 @@ try %#ok<TRYNC>
             mem = mem(3);
         else
             [~, mem_free] = strtok(memStr(20:end));
-            mem = num2str(mem_free);
+            mem = str2num(mem_free);
         end
     end
 end

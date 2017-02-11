@@ -51,12 +51,12 @@ function spectra = sw_neutron(spectra, varargin)
 %           yBM     perpendicular to Px in the scattering plane,
 %           zBM     perpendicular to the scattering plane.
 %
-% See also SW, SW.SPINWAVE.
+% See also SPINW, SPINW.SPINWAVE.
 %
 
 if nargin == 0
-    help sw_neutron;
-    return;
+    help sw_neutron
+    return
 end
 
 inpForm.fname  = {'n'     'pol' 'uv'  };

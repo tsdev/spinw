@@ -39,10 +39,10 @@ inpForm.defval = {range0  'inside' []       'auto'  '--'         1         };
 inpForm.size   = {[-1 -2] [1 -3]   [1 1]    [1 -4]  [1 -5]       [1 1]     };
 inpForm.soft   = {false   false    true     false   false        false     };
 
-inpForm.fname  = [inpForm.fname  {'translate' 'zoom' 'tooltip' 'replace'}];
-inpForm.defval = [inpForm.defval { false       false true      true     }];
-inpForm.size   = [inpForm.size   {[1 1]        [1 1] [1 1]     [1 1]    }];
-inpForm.soft   = [inpForm.soft   {false        false false     false    }];
+inpForm.fname  = [inpForm.fname  {'translate' 'zoom' 'tooltip' 'replace' 'legend'}];
+inpForm.defval = [inpForm.defval { false       false true      true      true    }];
+inpForm.size   = [inpForm.size   {[1 1]        [1 1] [1 1]     [1 1]     [1 1]   }];
+inpForm.soft   = [inpForm.soft   {false        false false     false     false   }];
 
 inpForm.fname  = [inpForm.fname  {'npatch' 'nmesh' 'unit' 'shift' 'copy'}];
 inpForm.defval = [inpForm.defval {nPatch0  nMesh0  'lu'   [0;0;0] false }];

@@ -10,7 +10,7 @@ function [RGB, nameOut] = color(cName, index)
 %           (see http://www.w3schools.com/html/html_colornames.asp).
 %           For multiple colors, use a cell containing the strings. The
 %           name of the colors are stored in the <a href="matlab: edit color.dat">color.dat</a> file.
-% index     If true, the index of the color in the color.dat file is red.
+% index     If true, the index of the color in the color.dat file is read.
 %           Index 1 corresponds to the 9th entry (the first 8 entry has
 %           already names in Matlab). Default is false.
 %
@@ -103,6 +103,7 @@ if iscell(cName)
     
     if any(idx==0)
         RGB = [];
+        eIdx = find(idx==0,1);
     else
         RGB = RGBList(idx,:);
     end
@@ -111,7 +112,7 @@ else
 end
 
 if isempty(RGB)
-    error('color:WrongInput','The given color name (''%s'') does not exists!',cName{1})
+    error('color:WrongInput','The given color name (''%s'') does not exists!',cName{eIdx})
 end
 
 RGB = double(RGB');

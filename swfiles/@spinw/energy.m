@@ -66,6 +66,9 @@ param = sw_readparam(inpForm,varargin{:});
 
 [SS, SI] = obj.intmatrix;
 
+% add dipolar terms
+SS.all = [SS.all SS.dip];
+
 magStr = obj.magstr;
 nExt   = magStr.N_ext;
 kExt   = magStr.k.*nExt;

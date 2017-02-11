@@ -50,6 +50,9 @@ end
 % generate exchange couplings
 [SS, ~, RR] = obj.intmatrix('fitmode',2,'extend',false,'conjugate',true,'zeroC',false);
 
+% add dipolar interactions
+SS.all = [SS.all SS.dip];
+
 % list of magnetic atoms in the unit cell
 matom = obj.matom;
 % number of magnetic atoms in the unit cell

@@ -170,6 +170,9 @@ end
 % get magnetic couplings
 [SS, SI] = obj.intmatrix;
 
+% add dipolar interactions
+SS.all = [SS.all SS.dip];
+
 % Initial parameters are random if param.x0 is undefined/wrong size
 xRand = (numel(param.x0)~= nPar);
 

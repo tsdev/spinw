@@ -545,22 +545,22 @@ hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 
 % Empty omega dispersion of all spin wave modes, size: 2*nMagExt x nHkl.
 if incomm
-    omega = zeros(6*nMagExt,0);
+    omega = zeros(3*nMagExt,0);
 else
-    omega = zeros(2*nMagExt,0);
+    omega = zeros(nMagExt,0);
 end
 
 % empty Sab
-Sab = zeros(3,3,2*nMagExt,0);
+Sab = zeros(3,3,nMagExt,0);
 
 % Empty matrices to save different intermediate results for further
 % analysis: Hamiltonian, eigenvectors, dynamical structure factor in the
 % rotating frame
 if param.saveV
-    Vsave = zeros(2*nMagExt,2*nMagExt,nHkl);
+    Vsave = zeros(2*nMagExt,nMagExt,nHkl);
 end
 if param.saveH
-    Hsave = zeros(2*nMagExt,2*nMagExt,nHkl);
+    Hsave = zeros(2*nMagExt,nMagExt,nHkl);
 end
 
 sw_status(0,1,param.tid,'Spin wave spectrum calculation');
@@ -715,14 +715,12 @@ for jj = 1:nSlice
     gComm  = diag(gCommd);
     %gd = diag(g);
 
-    tSab = zeros(3,3,2*nMagExt,nHklMEM);
-    
     if param.hermit
         % All the matrix calculations are according to Colpa's paper
         % J.H.P. Colpa, Physica 93A (1978) 327-353
         
         % basis functions of the magnon modes
-        V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
+        V = zeros(2*nMagExt,nMagExt,nHklMEM);
         
         if useMex && nHklMEM>1
             % use mex files to speed up the calculation
@@ -732,10 +730,13 @@ for jj = 1:nSlice
             % the inverse of the para-unitary transformation V
             for ii=1:nMagExt; 
                 V(:,ii,:) = bsxfun(@times, squeeze(V(:,ii,:)), sqrt(DD(ii,:))); 
-                V(:,ii+nMagExt,:) = bsxfun(@times, squeeze(V(:,ii+nMagExt,:)), sqrt(-DD(ii+nMagExt,:))); 
+                %V(:,ii+nMagExt,:) = bsxfun(@times, squeeze(V(:,ii+nMagExt,:)), sqrt(-DD(ii+nMagExt,:))); 
             end
-            V = sw_mtimesx(invK,V);
+            % Keep only positive eigenvalues and corresponding eigenvectors.
+            DD = DD(1:nMagExt,:);
+            V = sw_mtimesx(invK,V(:,1:nMagExt,:));
         else
+            DD = zeros(nMagExt, nHklMEM);
             for ii = 1:nHklMEM
                 [K, posDef]  = chol(ham(:,:,ii));
                 if posDef > 0
@@ -769,10 +770,12 @@ for jj = 1:nSlice
                 
                 % omega dispersion
                 %omega(:,end+1) = D; %#ok<AGROW>
-                DD(:,end+1) = D; %#ok<AGROW>
+                % Keep only positive eigenvalues and corresponding eigenvectors.
+                DD(:,ii) = D(1:nMagExt);
                 
                 % the inverse of the para-unitary transformation V
-                V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*D)); %#ok<MINV>
+                %V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*D)); %#ok<MINV>
+                V(:,:,ii) = inv(K)*U*[diag(sqrt(D(1:nMagExt))); zeros(nMagExt)]; %#ok<MINV>
             end
         end
     else
@@ -790,15 +793,22 @@ for jj = 1:nSlice
             gham = mmat(gComm,ham);
         end
         
-        [V, DD, orthWarn] = eigorth(gham, param.omega_tol, param.sortMode, useMex);
+        [VV, DD, orthWarn] = eigorth(gham, param.omega_tol, param.sortMode, useMex);
         
         orthWarn0 = orthWarn || orthWarn0;
         
-        for ii = 1:nHklMEM
-            % multiplication with g removed to get negative and positive
-            % energies as well
-            M              = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
-            V(:,:,ii)      = V(:,:,ii)*diag(sqrt(1./M));
+        %for ii = 1:nHklMEM
+        %    % multiplication with g removed to get negative and positive
+        %    % energies as well
+        %    M              = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
+        %    V(:,:,ii)      = V(:,:,ii)*diag(sqrt(1./M));
+        %end
+        % Keep only positive eigenvalues and corresponding eigenvectors.
+        DD = DD(1:nMagExt,:);
+        %V = V(:,1:nMagExt,:);
+        V = zeros(2*nMagExt,nMagExt,nHklMEM);
+        for ii = 1:nMagExt
+            V(:,ii,:) = bsxfun(@times, VV(:,ii,:), sqrt(1 ./ sum(bsxfun(@times,gCommd,conj(VV(:,ii,:)).*VV(:,ii,:))))); 
         end
     end
     
@@ -829,11 +839,17 @@ for jj = 1:nSlice
             zExp(:,:,:,i1) = bsxfun(@times,z1(:,i1),ExpF);
         end
         
+        %for i1=1:3; 
+        %    for i2=1:3; 
+        %        tSab(i1,i2,:,:) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
+        %    end
+        %end
+        % Changed to use fewer loops
+        VExp = zeros(3,nMagExt,1,nHklMEM);
         for i1=1:3; 
-            for i2=1:3; 
-                tSab(i1,i2,:,:) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
-            end
+            VExp(i1,:,:,:) = sw_mtimesx(V,'C',zExp(:,:,:,i1));
         end
+        tSab = sw_mtimesx(permute(VExp,[1 3 2 4]), conj(permute(VExp,[3 1 2 4]))) / prod(nExt);
     else
         % V right
         VExtR = repmat(permute(V  ,[4 5 1 2 3]),[3 3 1 1 1]);
@@ -845,11 +861,11 @@ for jj = 1:nSlice
         % Includes the sqrt(Si/2) prefactor.
         ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHklMEM]);
     
-        ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt 2]);
+        ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 nMagExt 2]);
         % conj transpose of ExpFL
         ExpFR = conj(permute(ExpFL,[1 2 4 3 5]));
     
-        zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1 nHklMEM]);
+        zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 nMagExt 1 nHklMEM]);
         % conj transpose of zeda
         zedb = conj(permute(zeda,[2 1 4 3 5]));
     
@@ -859,8 +875,8 @@ for jj = 1:nSlice
     
         if iscell(param.formfact) || param.formfact
             % include the form factor in the z^alpha, z^beta matrices
-            zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 2*nMagExt 2 1]);
-            zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 2*nMagExt 1]);
+            zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 nMagExt 2 1]);
+            zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 nMagExt 1]);
         end
     
         if param.gtensor
@@ -871,7 +887,10 @@ for jj = 1:nSlice
         % Dynamical for factor from S^alpha^beta(k) correlation function.
         % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
         % Normalizes the intensity to single unit cell.
-        tSab = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
+        %tSab = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
+        % Changed from squeeze to reshape, as now can have single-mode cases (only positive eigenvalues)
+        tSab = reshape(sum(zeda.*ExpFL.*VExtL,4),[3 3 nMagExt nHklMEM]) .* ...
+               reshape(sum(zedb.*ExpFR.*VExtR,3),[3 3 nMagExt nHklMEM]) / prod(nExt);
     end
 
     if incomm
@@ -890,7 +909,7 @@ for jj = 1:nSlice
     
         % if the 2*km vector is integer, the magnetic structure is not a true
         % helix
-        %tol = param.tol*2;
+        tol = param.tol*2;
         %helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
     
         if helical

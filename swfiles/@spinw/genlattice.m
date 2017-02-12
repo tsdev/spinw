@@ -30,8 +30,8 @@ function R = genlattice(obj, varargin)
 %           compatible form:
 %                   BVspinw = R*BV
 %
-% Alternatively the lattice parameters can be given directly when the sw
-% object is created using: sw(inpStr), where struct contains the fields
+% Alternatively the lattice parameters can be given directly when the spinw
+% object is created using: spinw(inpStr), where struct contains the fields
 % with initial parameters, e.g.:
 %   inpStr.lattice.lat_const = [3 3 4];
 %
@@ -43,7 +43,7 @@ function R = genlattice(obj, varargin)
 % Every line in the symmetry.dat file can be referenced by either its line
 % index or by its label (string).
 %
-% If the sym option is 0, no symmetry will be used. The sw.gencoupling()
+% If the sym option is 0, no symmetry will be used. The spinw.gencoupling()
 % function will determine the equivalent bonds based on bond length.
 %
 % Output:

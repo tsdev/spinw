@@ -190,8 +190,10 @@ SS.gen = [SS.gen [SS.ani(1:5,:);SS.ani(6,:);zAni;SS.ani(7,:);zAni;SS.ani(8,:)]];
 % Add SS.dm
 zDM    = zeros(1,size(SS.dm,2));
 SS.gen = [SS.gen [SS.dm(1:5,:);zDM;-SS.dm(8,:);SS.dm(7,:);SS.dm(8,:);zDM;-SS.dm(6,:);-SS.dm(7,:);SS.dm(6,:);zDM]];
+% Add dipolar interaction
+SS.gen = [SS.gen SS.dip(1:14,:)];
 
-SS     = rmfield(SS,{'ani' 'dm'});
+SS     = rmfield(SS,{'ani' 'dm' 'dip'});
 
 
 % Boltzmann constant.

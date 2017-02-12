@@ -108,6 +108,10 @@ M = magStr.S;
 % Produce the interaction matrices
 [SS, SI] = obj.intmatrix;
 
+% add the dipolar interactions to SS.all
+SS.all = [SS.all SS.dip];
+
+
 % express translations in the original unit cell
 SS.all(1:3,:) = bsxfun(@times,SS.all(1:3,:),nExt');
 

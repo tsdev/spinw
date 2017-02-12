@@ -46,10 +46,10 @@ inpForm.defval = [inpForm.defval {d0    0.5     true    true      false       fa
 inpForm.size   = [inpForm.size   {[1 3] [1 1]   [1 1]   [1 1]     [1 1]       [1 1] }];
 inpForm.soft   = [inpForm.soft   {false false   false   false     false       false }];
 
-inpForm.fname  = [inpForm.fname  {'zoom' 'replace' 'nmesh' 'npatch' 'unit' 'length'}];
-inpForm.defval = [inpForm.defval {false  true      nMesh0  nPatch0  'lu'   2       }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]     [1 1]   [1 1]    [1 -6] [1 1]   }];
-inpForm.soft   = [inpForm.soft   {false  false     false   false    false  false   }];
+inpForm.fname  = [inpForm.fname  {'zoom' 'replace' 'nmesh' 'npatch' 'unit' 'length' 'legend'}];
+inpForm.defval = [inpForm.defval {false  true      nMesh0  nPatch0  'lu'   2        true    }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]     [1 1]   [1 1]    [1 -6] [1 1]    [1 1]   }];
+inpForm.soft   = [inpForm.soft   {false  false     false   false    false  false    false   }];
 
 param = sw_readparam(inpForm, varargin{:});
 

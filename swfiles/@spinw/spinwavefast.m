@@ -1,7 +1,7 @@
-function spectra = spinwave(obj, hkl, varargin)
-% calculates dynamical spin-spin correlation function using linear spin wave theory
+function spectra = spinwavefast(obj, hkl, varargin)
+% calculates q-perpendicular dynamical spin-spin correlation function
 %
-% spectra = SPINWAVE(obj, hkl, 'option1', value1 ...)
+% spectra = SPINWAVEFAST(obj, hkl, 'option1', value1 ...)
 %
 % Spin wave dispersion and spin-spin correlation function is calculated at
 % the reciprocal space points k. The function can deal with arbitrary
@@ -92,14 +92,6 @@ function spectra = spinwave(obj, hkl, varargin)
 %               examining the eigenvalues it can give a hint where the
 %               problem is.
 %               Default is true.
-% saveH         If true, the quadratic form of the Hamiltonian is saved. Be
-%               carefull, it can take up lots of memory. Default is false.
-% saveV         If true, the matrices that transform the normal magnon
-%               modes into the magnon modes localized on the spins are
-%               saved. Be carefull, it can take up lots of memory.
-%               Default is false.
-% saveSabp      If true, the dynamical structure factorin the rotating
-%               frame is saved S'(k,omega). Default is false.
 % title         Gives a title string to the simulation that is saved in the
 %               output.
 %
@@ -109,20 +101,9 @@ function spectra = spinwave(obj, hkl, varargin)
 % omega         Calculated spin wave dispersion, dimensins are
 %               [nMode nHkl], where nMagExt is the number of magnetic
 %               atoms in the extended unit cell.
-% Sab           Dynamical structure factor, dimensins are
-%               [3 3 nMode nHkl]. Each (:,:,i,j) submatrix contains the
-%               9 correlation functions: Sxx, Sxy, Sxz, etc. If given,
-%               magnetic form factor is included. Intensity is in hBar
-%               units, normalized to the crystallographic unit cell.
-% H             Quadratic form of the Hamiltonian.
-%               Only saved if saveH is true.
-% V             Transformation matrix from the normal magnon modes to the
-%               magnons localized on spins:
-%                   x_i = sum_j V_ij * x_j'
-%               Only saved if saveV is true.
-% Sabp          Dynamical structure factor in the rotating frame,
-%               dimensions are [3 3 nMode nHkl], but the number of modes
-%               are equal to twice the number of magnetic atoms.
+% Sperp         The dynamical structure factor component perpedicular to Q
+%               (e.g. the unpolarised neutron scattering cross-section).
+%               Dimension: [nMode nHkl].
 % formfact      Cell containing the labels of the magnetic ions if form
 %               factor in included in the spin-spin correlation function.
 % cmplxBase     The local coordinate system on each magnetic moment is
@@ -209,17 +190,13 @@ inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' 'hermit'};
 inpForm.defval = {false     false    true       0        1e-4  true    };
 inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]   };
 
-inpForm.fname  = [inpForm.fname  {'omega_tol' 'saveSabp' 'saveV' 'saveH'}];
-inpForm.defval = [inpForm.defval {1e-5        true       false   false  }];
-inpForm.size   = [inpForm.size   {[1 1]       [1 1]      [1 1]   [1 1]  }];
-
 inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
-inpForm.fname  = [inpForm.fname  {'cmplxBase' 'tid' 'fid' }];
-inpForm.defval = [inpForm.defval {false       -1    nan   }];
-inpForm.size   = [inpForm.size   {[1 1]       [1 1] [1 1] }];
+inpForm.fname  = [inpForm.fname  {'omega_tol' 'cmplxBase' 'tid' 'fid'}];
+inpForm.defval = [inpForm.defval {1e-5        false       -1    nan  }];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1]       [1 1] [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -277,52 +254,7 @@ if (nTwin == 1) && norm(rotc1(:))==0
     param.notwin = true;
 end
 
-if ~param.notwin
-    % In the abc coordinate system of the selected twin the scan is
-    % rotated opposite direction to rotC.
-    hkl  = obj.twinq(hkl);
-    nHkl = nHkl0*nTwin;
-else
-    nHkl = nHkl0;
-    hkl  = {hkl};
-end
-
-if incomm
-    % TODO
-    if ~helical
-        warning('sw:spinwave:Twokm',['The two times the magnetic ordering '...
-            'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
-    end
-    
-    hkl0 = cell(1,nTwin);
-    hklExt = cell(1,nTwin);
-    
-    for tt = 1:nTwin
-        % without the k_m: (k, k, k)
-        hkl0{tt} = repmat(hkl{tt},[1 3]);
-        
-        % for wavevectors in the extended unit cell km won't be multiplied by
-        % nExt (we devide here to cancel the multiplication later)
-        kme = km./nExt;
-        hklExt{tt}  = [bsxfun(@minus,hkl{tt},kme') hkl{tt} bsxfun(@plus,hkl{tt},kme')];
-        
-        % calculate dispersion for (k-km, k, k+km)
-        hkl{tt}  = [bsxfun(@minus,hkl{tt},km') hkl{tt} bsxfun(@plus,hkl{tt},km')];
-    end
-    nHkl  = nHkl*3;
-    nHkl0 = nHkl0*3;
-else
-    hkl0   = hkl;
-    hklExt = hkl;
-end
-
-hkl    = cell2mat(hkl);
-hkl0   = cell2mat(hkl0);
-hklExt = cell2mat(hklExt);
-
-% determines a twin index for every q point
-twinIdx = repmat(1:nTwin,[nHkl 1]);
-twinIdx = twinIdx(:);
+nHkl = nHkl0;
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
@@ -348,11 +280,6 @@ if any(bq)
     % Keep only the quadratic exchange couplings
     SS.all = SS.all(1:14,SS.all(15,:)==0);
 end
-
-% Converts wavevctor list into the extended unit cell
-hklExt  = bsxfun(@times,hklExt,nExt')*2*pi;
-% q values without the +/-k_m value
-hklExt0 = bsxfun(@times,hkl0,nExt')*2*pi;
 
 % Calculates parameters eta and zed.
 if isempty(magStr.S)
@@ -535,6 +462,12 @@ if param.optmem == 0
     freeMem = sw_freemem;
     if freeMem > 0
         nSlice = ceil(nMagExt^2*nHkl*6912/freeMem*2);
+        if ~param.notwin
+            nSlice = nSlice*nTwin;
+        end
+        if incomm
+            nSlice = nSlice*3;
+        end
     else
         nSlice = 1;
         if ~param.fitmode
@@ -583,19 +516,10 @@ end
 hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 
 % Empty omega dispersion of all spin wave modes, size: 2*nMagExt x nHkl.
-omega = zeros(2*nMagExt,0);
-
-% empty Sab
-Sab = zeros(3,3,2*nMagExt,0);
-
-% Empty matrices to save different intermediate results for further
-% analysis: Hamiltonian, eigenvectors, dynamical structure factor in the
-% rotating frame
-if param.saveV
-    Vsave = zeros(2*nMagExt,2*nMagExt,nHkl);
-end
-if param.saveH
-    Hsave = zeros(2*nMagExt,2*nMagExt,nHkl);
+if incomm
+    omega = zeros(3*nMagExt,0);
+else
+    omega = zeros(nMagExt,0);
 end
 
 sw_status(0,1,param.tid,'Spin wave spectrum calculation');
@@ -606,7 +530,7 @@ warn1 = false;
 if param.formfact
     spectra.formfact = true;
     % Angstrom^-1 units for Q
-    hklA0 = 2*pi*(hkl0'/obj.basisvector)';
+    hklA0 = 2*pi*(hkl'/obj.basisvector)';
     % store form factor per Q point for each atom in the magnetic supercell
     % TODO check prod(nExt)? instead of nExt
     %FF = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[1 nExt]);
@@ -618,13 +542,54 @@ end
 for jj = 1:nSlice
     % q indices selected for every chunk
     hklIdxMEM  = hklIdx(jj):(hklIdx(jj+1)-1);
+
+    if ~param.notwin
+        % In the abc coordinate system of the selected twin the scan is
+        % rotated opposite direction to rotC.
+        hklMEM  = obj.twinq(hkl(:,hklIdxMEM));
+    else
+        hklMEM = {hkl(:,hklIdxMEM)};
+    end
+
+    if incomm
+        % TODO
+        if ~helical
+            warning('sw:spinwave:Twokm',['The two times the magnetic ordering '...
+                'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
+        end
+    
+        hklExt0MEM = cell(1,nTwin);
+        hklExtMEM = cell(1,nTwin);
+    
+        for tt = 1:nTwin
+            % without the k_m: (k, k, k)
+            hklExt0MEM{tt} = repmat(hklMEM{tt},[1 3]);
+        
+            % for wavevectors in the extended unit cell km won't be multiplied by
+            % nExt (we devide here to cancel the multiplication later)
+            kme = km./nExt;
+            hklExtMEM{tt}  = [bsxfun(@minus,hklMEM{tt},kme') hklMEM{tt} bsxfun(@plus,hklMEM{tt},kme')];
+        
+            % calculate dispersion for (k-km, k, k+km)
+            hklMEM{tt}  = [bsxfun(@minus,hklMEM{tt},km') hklMEM{tt} bsxfun(@plus,hklMEM{tt},km')];
+        end
+    else
+        hklExt0MEM = hklMEM;
+        hklExtMEM  = hklMEM;
+    end
+
+    hklExt0MEM = cell2mat(hklExt0MEM);
+    hklExtMEM = cell2mat(hklExtMEM);
+
+    % Converts wavevctor list into the extended unit cell
     % q values contatining the k_m vector
-    hklExtMEM  = hklExt(:,hklIdxMEM);
-    % q values without the +/-k_m vector
-    hklExt0MEM = hklExt0(:,hklIdxMEM);
-    % twin indices for every q point
-    twinIdxMEM = twinIdx(hklIdxMEM);
+    hklExtMEM = bsxfun(@times,hklExtMEM,nExt')*2*pi;
+    % q values without the +/-k_m value
+    hklExt0MEM = bsxfun(@times,hklExt0MEM,nExt')*2*pi;
     nHklMEM = size(hklExtMEM,2);
+    % determines a twin index for every q point
+    twinIdxMEM = repmat(1:nTwin,[nHklMEM 1]);
+    twinIdxMEM = twinIdxMEM(:);
     
     % Creates the matrix of exponential factors nCoupling x nHkl size.
     % Extends dR into 3 x 3 x nCoupling x nHkl
@@ -636,8 +601,6 @@ for jj = 1:nSlice
     A1 = bsxfun(@times,     AD0 ,ExpF);
     B  = bsxfun(@times,     BC0 ,ExpF);
     D1 = bsxfun(@times,conj(AD0),ExpF);
-    
-    
     
     % Store all indices
     % SP1: speedup for creating the matrix elements
@@ -654,7 +617,6 @@ for jj = 1:nSlice
     idxAll = idxAll(:,[2 1 3]);
     
     ABCD   = ABCD';
-    
     
     % quadratic form of the boson Hamiltonian stored as a square matrix
     ham = accumarray(idxAll,ABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
@@ -700,25 +662,29 @@ for jj = 1:nSlice
     % boson commutator matrix
     gComm  = diag(gCommd);
     %gd = diag(g);
-    
+
     if param.hermit
         % All the matrix calculations are according to Colpa's paper
         % J.H.P. Colpa, Physica 93A (1978) 327-353
         
         % basis functions of the magnon modes
-        V = zeros(2*nMagExt,2*nMagExt,nHklMEM);
+        V = zeros(2*nMagExt,nMagExt,nHklMEM);
         
         if useMex && nHklMEM>1
             % use mex files to speed up the calculation
             % mex file will return an error if the matrix is not positive definite.
             [K2, invK] = chol_omp(ham,'Colpa','tol',param.omega_tol);
-            [V, omega(:,hklIdxMEM)] = eig_omp(K2,'sort','descend');
+            [V, DD] = eig_omp(K2,'sort','descend');
             % the inverse of the para-unitary transformation V
-            for ii = 1:nHklMEM
-                V(:,:,ii) = V(:,:,ii)*diag(sqrt(gCommd.*omega(:,hklIdxMEM(ii))));
+            for ii=1:nMagExt; 
+                V(:,ii,:) = bsxfun(@times, squeeze(V(:,ii,:)), sqrt(DD(ii,:))); 
+                %V(:,ii+nMagExt,:) = bsxfun(@times, squeeze(V(:,ii+nMagExt,:)), sqrt(-DD(ii+nMagExt,:))); 
             end
-            V = sw_mtimesx(invK,V);
+            % Keep only positive eigenvalues and corresponding eigenvectors.
+            DD = DD(1:nMagExt,:);
+            V = sw_mtimesx(invK,V(:,1:nMagExt,:));
         else
+            DD = zeros(nMagExt, nHklMEM);
             for ii = 1:nHklMEM
                 [K, posDef]  = chol(ham(:,:,ii));
                 if posDef > 0
@@ -751,10 +717,13 @@ for jj = 1:nSlice
                 U = U(:,idx);
                 
                 % omega dispersion
-                omega(:,end+1) = D; %#ok<AGROW>
+                %omega(:,end+1) = D; %#ok<AGROW>
+                % Keep only positive eigenvalues and corresponding eigenvectors.
+                DD(:,ii) = D(1:nMagExt);
                 
                 % the inverse of the para-unitary transformation V
-                V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*omega(:,end))); %#ok<MINV>
+                %V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*D)); %#ok<MINV>
+                V(:,:,ii) = inv(K)*U*[diag(sqrt(D(1:nMagExt))); zeros(nMagExt)]; %#ok<MINV>
             end
         end
     else
@@ -766,67 +735,207 @@ for jj = 1:nSlice
         %    gham(:,:,ii) = gComm*ham(:,:,ii);
         %end
         
-        gham = mmat(gComm,ham);
-        %gham = mtimesx(gComm,ham);
+        if useMex
+            gham = sw_mtimesx(gComm,ham);
+        else
+            gham = mmat(gComm,ham);
+        end
         
-        [V, D, orthWarn] = eigorth(gham,param.omega_tol, param.sortMode,useMex);
+        [VV, DD, orthWarn] = eigorth(gham, param.omega_tol, param.sortMode, useMex);
         
         orthWarn0 = orthWarn || orthWarn0;
         
-        for ii = 1:nHklMEM
-            % multiplication with g removed to get negative and positive
-            % energies as well
-            omega(:,end+1) = D(:,ii); %#ok<AGROW>
-            M              = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
-            V(:,:,ii)      = V(:,:,ii)*diag(sqrt(1./M));
+        %for ii = 1:nHklMEM
+        %    % multiplication with g removed to get negative and positive
+        %    % energies as well
+        %    M              = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
+        %    V(:,:,ii)      = V(:,:,ii)*diag(sqrt(1./M));
+        %end
+        % Keep only positive eigenvalues and corresponding eigenvectors.
+        DD = DD(1:nMagExt,:);
+        %V = V(:,1:nMagExt,:);
+        V = zeros(2*nMagExt,nMagExt,nHklMEM);
+        for ii = 1:nMagExt
+            V(:,ii,:) = bsxfun(@times, VV(:,ii,:), sqrt(1 ./ sum(bsxfun(@times,gCommd,conj(VV(:,ii,:)).*VV(:,ii,:))))); 
         end
     end
     
-    if param.saveV
-        Vsave(:,:,hklIdxMEM) = V;
-    end
-    if param.saveH
-        Hsave(:,:,hklIdxMEM) = ham;
-    end
-    
     % Calculates correlation functions.
-    % V right
-    VExtR = repmat(permute(V  ,[4 5 1 2 3]),[3 3 1 1 1]);
-    % V left: conjugate transpose of V
-    VExtL = conj(permute(VExtR,[1 2 4 3 5]));
+    if useMex
+        ExpF = exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
+        ExpF = reshape(ExpF,[numel(S0) nHklMEM]).*repmat(sqrt(S0.'/2),[1 nHklMEM]);
+        ExpF = repmat(ExpF,[2 1]); 
+        if iscell(param.formfact) || param.formfact; 
+            ExpF = ExpF .* repmat(FF(:,hklIdxMEM),[2 1]); 
+        end
+        z1=zed;
+        if param.gtensor; 
+            for i1=1:size(gtensor,3); 
+                z1(:,i1)=gtensor(:,:,i1)*zed(:,i1); 
+            end
+        end
+        z1=[z1 conj(z1)].'; 
+        zExp = zeros(numel(S0)*2,1,nHklMEM,3);
+        for i1=1:3; 
+            zExp(:,:,:,i1) = bsxfun(@times,z1(:,i1),ExpF);
+        end
+        
+        %for i1=1:3; 
+        %    for i2=1:3; 
+        %        Sab(i1,i2,:,:) = sw_mtimesx(V,'C',zExp(:,:,:,i1)).*conj(sw_mtimesx(V,'C',zExp(:,:,:,i2))) / prod(nExt);
+        %    end
+        %end
+        % Changed to use fewer loops
+        VExp = zeros(3,nMagExt,1,nHklMEM);
+        for i1=1:3; 
+            VExp(i1,:,:,:) = sw_mtimesx(V,'C',zExp(:,:,:,i1));
+        end
+        Sab = sw_mtimesx(permute(VExp,[1 3 2 4]), conj(permute(VExp,[3 1 2 4]))) / prod(nExt);
+    else
+        % V right
+        VExtR = repmat(permute(V  ,[4 5 1 2 3]),[3 3 1 1 1]);
+        % V left: conjugate transpose of V
+        VExtL = conj(permute(VExtR,[1 2 4 3 5]));
     
-    % Introduces the exp(-ikR) exponential factor.
-    ExpF =  exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
-    % Includes the sqrt(Si/2) prefactor.
-    ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHklMEM]);
+        % Introduces the exp(-ikR) exponential factor.
+        ExpF =  exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
+        % Includes the sqrt(Si/2) prefactor.
+        ExpF = ExpF.*repmat(sqrt(S0/2),[1 1 nHklMEM]);
     
-    ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 2*nMagExt 2]);
-    % conj transpose of ExpFL
-    ExpFR = conj(permute(ExpFL,[1 2 4 3 5]));
+        ExpFL =      repmat(permute(ExpF,[1 4 5 2 3]),[3 3 nMagExt 2]);
+        % conj transpose of ExpFL
+        ExpFR = conj(permute(ExpFL,[1 2 4 3 5]));
     
-    zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 2*nMagExt 1 nHklMEM]);
-    % conj transpose of zeda
-    zedb = conj(permute(zeda,[2 1 4 3 5]));
+        zeda = repmat(permute([zed conj(zed)],[1 3 4 2]),[1 3 nMagExt 1 nHklMEM]);
+        % conj transpose of zeda
+        zedb = conj(permute(zeda,[2 1 4 3 5]));
     
-    % calculate magnetic structure factor using the hklExt0 Q-values
-    % since the S(Q+/-k,omega) correlation functions also belong to the
-    % F(Q)^2 form factor
+        % calculate magnetic structure factor using the hklExt0 Q-values
+        % since the S(Q+/-k,omega) correlation functions also belong to the
+        % F(Q)^2 form factor
     
-    if param.formfact
-        % include the form factor in the z^alpha, z^beta matrices
-        zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 2*nMagExt 2 1]);
-        zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 2*nMagExt 1]);
+        if iscell(param.formfact) || param.formfact
+            % include the form factor in the z^alpha, z^beta matrices
+            zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 nMagExt 2 1]);
+            zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 nMagExt 1]);
+        end
+    
+        if param.gtensor
+            % include the g-tensor
+            zeda = mmat(repmat(permute(gtensor,[1 2 4 3]),[1 1 1 2]),zeda);
+            zedb = mmat(zedb,repmat(gtensor,[1 1 2]));
+        end
+        % Dynamical for factor from S^alpha^beta(k) correlation function.
+        % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
+        % Normalizes the intensity to single unit cell.
+        %Sab = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
+        % Changed from squeeze to reshape, as now can have single-mode cases (only positive eigenvalues)
+        Sab = reshape(sum(zeda.*ExpFL.*VExtL,4),[3 3 nMagExt nHklMEM]) .* ...
+               reshape(sum(zedb.*ExpFR.*VExtR,3),[3 3 nMagExt nHklMEM]) / prod(nExt);
+    end
+
+    if incomm
+        % resize matrices due to the incommensurability (k-km,k,k+km) multiplicity
+        kmIdx = repmat(sort(repmat([1 2 3],1,nHklMEM/3)),1,nTwin);
+        % Rodrigues' rotation formula.
+        nx  = [0 -n(3) n(2); n(3) 0 -n(1); -n(2) n(1) 0];
+        nxn = n'*n;
+        K1 = 1/2*(eye(3) - nxn - 1i*nx);
+        K2 = nxn;
+    
+        % keep the rotation invariant part of Sab
+        %nx  = [0 -n(3) n(2);n(3) 0 -n(1);-n(2) n(1) 0];
+        %nxn = n'*n;
+        m1  = eye(3);
+    
+        % if the 2*km vector is integer, the magnetic structure is not a true
+        % helix
+        tol = param.tol*2;
+        %helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
+    
+        if helical
+            % integrating out the arbitrary initial phase of the helix
+            if useMex
+                Sab = 1/2*Sab - 1/2*sw_mtimesx(sw_mtimesx(nx,Sab),nx) + 1/2*sw_mtimesx(sw_mtimesx(nxn-m1,Sab),nxn) + 1/2*sw_mtimesx(sw_mtimesx(nxn,Sab),2*nxn-m1);
+            else
+                Sab = 1/2*Sab - 1/2*mmat(mmat(nx,Sab),nx) + 1/2*mmat(mmat(nxn-m1,Sab),nxn) + 1/2*mmat(mmat(nxn,Sab),2*nxn-m1);
+            end
+        end
+    
+        % dispersion
+        omega(:,hklIdxMEM) = [DD(:,kmIdx==1); DD(:,kmIdx==2); DD(:,kmIdx==3)];
+        % exchange matrices
+        if useMex
+            Sab   = cat(3,sw_mtimesx(Sab(:,:,:,kmIdx==1),K1), sw_mtimesx(Sab(:,:,:,kmIdx==2),K2), sw_mtimesx(Sab(:,:,:,kmIdx==3),conj(K1)));
+        else
+            Sab   = cat(3,mmat(Sab(:,:,:,kmIdx==1),K1), mmat(Sab(:,:,:,kmIdx==2),K2), mmat(Sab(:,:,:,kmIdx==3),conj(K1)));
+        end
+    else
+        omega(:,hklIdxMEM) = DD;
+        helical = false;
+    end
+    clear DD;
+
+    if ~param.notwin
+        % Rotate the calculated correlation function into the twin coordinate
+        % system using rotC
+        SabAll = cell(1,nTwin);
+        for ii = 1:nTwin
+            % select the ii-th twin from the Q points
+            idx    = (1:nHklMEM) + (ii-1)*nHklMEM;
+            % select correlation function of twin ii
+            SabT   = Sab(:,:,:,idx);
+            % size of the correlation function matrix
+            sSabT  = size(SabT);
+            % convert the matrix into cell of 3x3 matrices
+            SabT   = reshape(SabT,3,3,[]);
+            % select the rotation matrix of twin ii
+            rotC   = obj.twin.rotc(:,:,ii);
+            % rotate correlation function using arrayfun
+            SabRot = arrayfun(@(idx)(rotC*SabT(:,:,idx)*(rotC')),1:size(SabT,3),'UniformOutput',false);
+            SabRot = cat(3,SabRot{:});
+            % resize back the correlation matrix
+            SabAll{ii} = reshape(SabRot,sSabT);
+        end
+        Sab = SabAll;
+    
+        if nTwin == 1
+            Sab = Sab{1};
+        end
+    else
+        Sab = {Sab};
     end
     
-    if param.gtensor
-        % include the g-tensor
-        zeda = mmat(repmat(permute(gtensor,[1 2 4 3]),[1 1 1 2]),zeda);
-        zedb = mmat(zedb,repmat(gtensor,[1 1 2]));
+    for ii = 1:nTwin
+        nMode   = size(Sab{ii},3);
+
+        % get symmetric component of Sab only
+        Sab{ii} = (Sab{ii} + permute(Sab{ii},[2 1 3 4]))/2;
+
+        % Normalized scattering wavevector in xyz coordinate system.
+        hklAN = bsxfun(@rdivide,hklA(:,hklIdxMEM),sqrt(sum(hklA(:,hklIdxMEM).^2,1)));
+
+        % avoid NaN for Q=0
+        NaNidx = find(any(isnan(hklAN)));
+        for jj = 1:numel(NaNidx)
+            if NaNidx(jj) < size(hklAN,2)
+                hklAN(:,NaNidx(jj)) = hklAN(:,NaNidx(jj)+1);
+            else
+                hklAN(:,NaNidx(jj)) = [1;0;0];
+            end
+        end
+
+        hkla = repmat(permute(hklAN,[1 3 2]),[1 3 1]);
+        hklb = repmat(permute(hklAN,[3 1 2]),[3 1 1]);
+
+        % Perpendicular part of the scattering wavevector.
+        qPerp = repmat(eye(3),[1 1 numel(hklIdxMEM)])- hkla.*hklb;
+        qPerp = repmat(permute(qPerp,[1 2 4 3]),[1 1 nMode 1]);
+
+        % Dynamical structure factor for neutron scattering
+        % Sperp: nMode x nHkl.
+        Sperp{ii}(:,hklIdxMEM) = permute(sumn(qPerp.*Sab{ii},[1 2]),[3 4 1 2]);
     end
-    % Dynamical structure factor from S^alpha^beta(k) correlation function.
-    % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
-    % Normalizes the intensity to single unit cell.
-    Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     
     sw_status(jj/nSlice*100,0,param.tid);
 end
@@ -838,7 +947,19 @@ warning(singWarn0.state,'MATLAB:nearlySingularMatrix');
 % If number of formula units are given per cell normalize to formula
 % unit
 if obj.unit.nformula > 0
-    Sab = Sab/double(obj.unit.nformula);
+    if ~param.notwin
+        for ii = 1:nTwin
+            Sperp{ii} = Sperp{ii}/double(obj.unit.nformula);
+        end
+    else
+        Sperp = Sperp/double(obj.unit.nformula);
+    end
+end
+
+if ~param.notwin && nTwin ~= 1
+    omega = mat2cell(omega,size(omega,1),repmat(nHkl0,[1 nTwin]));
+else
+    Sperp = Sperp{1};
 end
 
 sw_status(100,2,param.tid);
@@ -854,100 +975,15 @@ end
 % END MEMORY MANAGEMENT LOOP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if incomm
-    % resize matrices due to the incommensurability (k-km,k,k+km) multiplicity
-    kmIdx = repmat(sort(repmat([1 2 3],1,nHkl0/3)),1,nTwin);
-    % Rodrigues' rotation formula.
-    nx  = [0 -n(3) n(2); n(3) 0 -n(1); -n(2) n(1) 0];
-    nxn = n'*n;
-    K1 = 1/2*(eye(3) - nxn - 1i*nx);
-    K2 = nxn;
-    
-    % keep the rotation invariant part of Sab
-    %nx  = [0 -n(3) n(2);n(3) 0 -n(1);-n(2) n(1) 0];
-    %nxn = n'*n;
-    m1  = eye(3);
-    
-    % if the 2*km vector is integer, the magnetic structure is not a true
-    % helix
-    %tol = param.tol*2;
-    %helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
-    
-    if helical
-        % integrating out the arbitrary initial phase of the helix
-        Sab = 1/2*Sab - 1/2*mmat(mmat(nx,Sab),nx) + 1/2*mmat(mmat(nxn-m1,Sab),nxn) + 1/2*mmat(mmat(nxn,Sab),2*nxn-m1);
-    end
-    
-    % Save the structure factor in the rotating frame
-    if param.saveSabp
-        Sabp = Sab(:,:,:,kmIdx==2);
-        omegap = omega(:,kmIdx==2);
-    end
-    
-    % dispersion
-    omega = [omega(:,kmIdx==1); omega(:,kmIdx==2); omega(:,kmIdx==3)];
-    % exchange matrices
-    Sab   = cat(3,mmat(Sab(:,:,:,kmIdx==1),K1), mmat(Sab(:,:,:,kmIdx==2),K2), ...
-        mmat(Sab(:,:,:,kmIdx==3),conj(K1)));
-    
-    hkl   = hkl(:,kmIdx==2);
-    nHkl0 = nHkl0/3;
-else
-    helical = false;
-end
-
-if ~param.notwin
-    % Rotate the calculated correlation function into the twin coordinate
-    % system using rotC
-    SabAll = cell(1,nTwin);
-    for ii = 1:nTwin
-        % select the ii-th twin from the Q points
-        idx    = (1:nHkl0) + (ii-1)*nHkl0;
-        % select correlation function of twin ii
-        SabT   = Sab(:,:,:,idx);
-        % size of the correlation function matrix
-        sSabT  = size(SabT);
-        % convert the matrix into cell of 3x3 matrices
-        SabT   = reshape(SabT,3,3,[]);
-        % select the rotation matrix of twin ii
-        rotC   = obj.twin.rotc(:,:,ii);
-        % rotate correlation function using arrayfun
-        SabRot = arrayfun(@(idx)(rotC*SabT(:,:,idx)*(rotC')),1:size(SabT,3),'UniformOutput',false);
-        SabRot = cat(3,SabRot{:});
-        % resize back the correlation matrix
-        SabAll{ii} = reshape(SabRot,sSabT);
-    end
-    Sab = SabAll;
-    
-    if nTwin == 1
-        Sab = Sab{1};
-    else
-        omega = mat2cell(omega,size(omega,1),repmat(nHkl0,[1 nTwin]));
-    end
-    
-end
-
 % Creates output structure with the calculated values.
 spectra.omega    = omega;
-spectra.Sab      = Sab;
 spectra.hkl      = hkl(:,1:nHkl0);
 spectra.hklA     = hklA;
 spectra.incomm   = incomm;
 spectra.helical  = helical;
 spectra.norm     = false;
 spectra.nformula = double(obj.unit.nformula);
-
-% Save different intermediate results.
-if param.saveV
-    spectra.V = Vsave;
-end
-if param.saveH
-    spectra.H = Hsave;
-end
-if param.saveSabp && incomm
-    spectra.Sabp = Sabp;
-    spectra.omegap = omegap;
-end
+spectra.Sperp    = Sperp;
 
 % save the important parameters
 spectra.param.notwin    = param.notwin;

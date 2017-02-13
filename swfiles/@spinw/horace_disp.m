@@ -57,6 +57,13 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %           function handle of a function with a header:
 %               fun(obj)
 %
+% useFast   whether to use the SPINW.SPINWAVEFAST method or not. This method
+%           is similar to SPINW.SPINWAVE but calculates only the unpolarised
+%           neutron cross-section and ignores all negative energy branches
+%           as well as using other shortcuts. In general it should produce
+%           the same spectra as SPINW.SPINWAVE, with some rounding errors,
+%           but can be 2-3 times faster and uses less memory. 
+%
 % Output:
 %
 % w         Cell that contains the spin wave energies. Every cell elements
@@ -83,14 +90,14 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %
 
 if nargin <= 1
-    help spinw.horace
+    help spinw.horace_disp
     return
 end
 
-inpForm.fname  = {'component' 'norm' 'dE'  'parfunc'      'param' 'func'};
-inpForm.defval = {'Sperp'     false  0     @obj.matparser []      []    };
-inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1] };
-inpForm.soft   = {false       false  false false          true    true  };
+inpForm.fname  = {'component' 'norm' 'dE'  'parfunc'      'param' 'func' 'useFast'};
+inpForm.defval = {'Sperp'     false  0     @obj.matparser []      []     true};
+inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1]  [1 1]};
+inpForm.soft   = {false       false  false false          true    true   false};
 
 warnState = warning('off','sw_readparam:UnreadInput');
 % To handle matlab fitting syntax, which may set the first argument to the
@@ -128,24 +135,6 @@ if ~isempty(param.func)
     param.func(obj);
 end
 
-% calculate spin wave spectrum
-if nargin > 5
-    % include the fitmode option to speed up calculation
-    if numel(varargin) == 1
-        varargin{1}.fitmode = 2;
-        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{1},'outSperp',true);
-    else
-        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true,'outSperp',true);
-    end
-else
-    spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',true,'outSperp',true);
-end
-warning(warnState);
-
-% calculate Sperp
-%spectra = sw_neutron(spectra,varargin{:},'pol',false);
-
-
 % parse the component string
 if iscell(param.component)
     nConv = numel(param.component);
@@ -163,17 +152,64 @@ else
     param.component = {param.component};
 end
 
+needSab = false;
+for ii = 1:numel(parsed)
+    par0 = parsed{ii};
+    for jj = 1:length(par0.type)
+        if par0.type{jj}(1) ~= 1
+            needSab = true;
+            break;
+        end
+    end
+end
+
+% calculate spin wave spectrum
+if nargin > 5
+    % include the fitmode option to speed up calculation
+    if numel(varargin) == 1
+        varargin{1}.fitmode = 2;
+        if needSab || ~param.useFast
+            spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{1});
+        else
+            spectra = obj.spinwavefast([qh(:) qk(:) ql(:)]',varargin{1});
+        end
+    else
+        if needSab || ~param.useFast
+            spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true);
+        else
+            spectra = obj.spinwavefast([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true);
+        end
+    end
+else
+    if needSab || ~param.useFast
+        spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',true);
+    else
+        spectra = obj.spinwavefast([qh(:) qk(:) ql(:)]','fitmode',true);
+    end
+end
+warning(warnState);
+
+% calculate Sperp
+if needSab || ~param.useFast
+    spectra = sw_neutron(spectra,varargin{:},'pol',false);
+end
+
+
 % pack all cross section into a cell for easier looping
 if iscell(spectra.omega)
     nTwin = numel(spectra.omega);
     omega = spectra.omega;
-%   Sab   = spectra.Sab;
+    if needSab
+        Sab   = spectra.Sab;
+    end
     Sperp = spectra.Sperp;
     
 else
     nTwin = 1;
     omega = {spectra.omega};
-%   Sab   = {spectra.Sab};
+    if needSab
+        Sab   = {spectra.Sab};
+    end
     Sperp = {spectra.Sperp};
 end
 
@@ -192,8 +228,8 @@ for tt = 1:nTwin
             switch par0.type{jj}(1)
                 case 1
                     DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*Sperp{tt};
-                %case 2
-                %    DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*permute(Sab{tt}(par0.type{jj}(2),par0.type{jj}(3),:,:),[3 4 1 2]);
+                case 2
+                    DSF{ii,tt} = DSF{ii,tt} + par0.preFact(jj)*permute(Sab{tt}(par0.type{jj}(2),par0.type{jj}(3),:,:),[3 4 1 2]);
                 otherwise
                     error('spinw:horace:WrongPar','Wrong ''component'' parameter!');
             end

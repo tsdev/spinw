@@ -7,6 +7,11 @@ function varargout = plotbase(varargin)
 %
 % Options:
 %
+% mode      String that determines the type base to plot. Possible values
+%           are:
+%               abc     Plots the lattice vectors, default.
+%               xyz     Plots the lattice Descartes coordinate system.
+%               hkl     Plots the reciprocal lattice vectors.
 % length    Determines the length of the a, b and c arrows. If 0, the
 %           length will be equal to the corresponding lattice parameters,
 %           while if non-zero, the number determines the length in
@@ -37,7 +42,7 @@ nMesh0  = swpref.getpref('nmesh',[]);
 nPatch0 = swpref.getpref('npatch',[]);
 
 inpForm.fname  = {'range' 'mode'    'figure' 'color' 'R'   'alpha' 'lhead' 'shift'};
-inpForm.defval = {range0  'default' []       col0    0.06  30      0.5     [0;0;0]};
+inpForm.defval = {range0  'abc'     []       col0    0.06  30      0.5     [0;0;0]};
 inpForm.size   = {[-1 -2] [1 -3]    [1 1]    [-4 -5] [1 1] [1 1]   [1 1]   [3 1]  };
 inpForm.soft   = {false   false     true     false   false false   false   false  };
 
@@ -61,8 +66,13 @@ end
 
 % range of previous plot
 rDat   = getappdata(hFigure,'range');
-range0 = rDat.range;
-unit   = rDat.unit;
+if isempty(rDat)
+    range0 = [0 1;0 1;0 1];
+    unit   = 'lu';
+else
+    range0 = rDat.range;
+    unit   = rDat.unit;
+end
 
 if isempty(range0)
     range0 = [0;0;0];
@@ -72,6 +82,18 @@ end
 
 % basis vectors
 BV = swplot.base(hFigure);
+
+switch param.mode
+    case 'abc'
+        pBase = eye(3);
+        axText = {'a' 'b' 'c'};
+    case 'xyz'
+        pBase = inv(BV);
+        axText = {'x' 'y' 'z'};
+    case 'hkl'
+        pBase = 2*pi*inv(BV)^2;
+        axText = {'h' 'k' 'l'};
+end
 
 switch unit
     case 'lu'
@@ -86,17 +108,18 @@ end
 % convert d from xyz to base
 d = (param.d/(BV'))'-range0;
 
-% lattice parameters
-length0 = sqrt(sum(BV.^2,1));
+% vector length
+length0 = sqrt(sum((BV*pBase).^2,1));
 
 if param.length == 0
-    Rend = ones(1,3);
+    % do nothing
 else
     % normalize the length of the vectors
-    Rend  = param.length./length0;
+    pBase  = bsxfun(@times,pBase,param.length./length0);
+    length0 = param.length;
 end
 
-pos = bsxfun(@minus,cat(3,zeros(3),diag(Rend)),d);
+pos = bsxfun(@minus,cat(3,zeros(3),pBase),d);
 
 % shift
 pos = bsxfun(@plus,pos,BV\param.shift);
@@ -106,10 +129,10 @@ data = repmat({BV},[1 3]);
 
 if param.label
     % convert d from xyz to base
-    pos_text = bsxfun(@minus,bsxfun(@times,diag(Rend),1+param.dtext./(length0.*Rend)),d);
+    pos_text = bsxfun(@minus,bsxfun(@times,pBase,1+param.dtext./length0),d);
     pos_text = bsxfun(@plus,pos_text,BV\param.shift);
     
-    swplot.plot('type','text','position',pos_text,'text',{'a' 'b' 'c'},'data',data,...
+    swplot.plot('type','text','position',pos_text,'text',axText,'data',data,...
         'figure',hFigure,'legend',false,'tooltip',false,'translate',false,...
         'zoom',false,'name','base_label','replace',param.replace);
 end

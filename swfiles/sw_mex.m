@@ -15,6 +15,15 @@ function sw_mex(varargin)
 % swtest    If true, 3 spin wave calculation will run with and without .mex
 %           files and the results will be compared. Default is false.
 %
+% How to setup OSX to compile mex files using Clang:
+%
+% install OpenMP support for Clang
+% >> brew install llvm
+% make a symlink
+% >> ln -s /usr/local/opt/llvm/bin/clang /usr/local/bin/clang-omp
+% test compile
+%
+%
 % See also SWPREF.
 %
 
@@ -37,6 +46,7 @@ if param.compile
             '-lmwblas','COMPFLAGS=$COMPFLAGS /openmp',...
             'LINKFLAGS=$LINKFLAGS /nodefaultlib:vcomp "$MATLABROOT\bin\win64\libiomp5md.lib"')
     elseif ismac
+        % add =libiomp5 after -fopenmp?
         cd([sw_rootdir filesep 'external' filesep 'eig_omp']);
         mex('-v','-largeArrayDims','eig_omp.cpp','-lmwlapack','COMPFLAGS="/openmp $COMPFLAGS"','CXXFLAGS=$CXXFLAGS -fopenmp -pthread');
         cd([sw_rootdir filesep 'external' filesep 'chol_omp']);

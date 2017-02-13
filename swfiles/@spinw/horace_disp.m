@@ -1,15 +1,25 @@
-function [w, s] = horace(obj, qh, qk, ql, varargin)
+function [w, s] = horace_disp(obj, qh, qk, ql, varargin)
 % calculates spin wave dispersion/correlation functions to be called from Horace
 %
-% [w, s] = HORACE(obj, qh, qk, ql, 'Option1', Value1, ...)
+% [w, s] = HORACE_DISP(obj, qh, qk, ql, 'Option1', Value1, ...)
 %
 % The function produces spin wave dispersion and intensity for Horace
-% (<a href=http://horace.isis.rl.ac.uk>http://horace.isis.rl.ac.uk</a>).
+% (<a href=http://horace.isis.rl.ac.uk>http://horace.isis.rl.ac.uk</a>). It
+% also takes arguments that can change the stored exchange parameters by
+% providing input to the spinw.matparser function (options 'mat' and
+% 'param').
+%
+% [w, s] = HORACE_DISP(obj, qh, qk, ql, p, 'Option1', Value1, ...)
+%
+% Here the new exchange parameters are provided in the p argument as a
+% vector (equivalent to the 'param' option). This makes Tobyfit compatible
+% argument list, where p are the fitting parameters .
 %
 % Input:
 %
 % obj           Input spinw object.
 % qh, qk, ql    Reciprocal lattice components in reciprocal lattice units.
+% {p}           Parameter values in a vector, optional.
 %
 % Options:
 %
@@ -56,7 +66,6 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %           structure for the new parameters, etc. The input should be a
 %           function handle of a function with a header:
 %               fun(obj)
-%
 % useFast   whether to use the SPINW.SPINWAVEFAST method or not. This method
 %           is similar to SPINW.SPINWAVE but calculates only the unpolarised
 %           neutron cross-section and ignores all negative energy branches
@@ -95,9 +104,9 @@ if nargin <= 1
 end
 
 inpForm.fname  = {'component' 'norm' 'dE'  'parfunc'      'param' 'func' 'useFast'};
-inpForm.defval = {'Sperp'     false  0     @obj.matparser []      []     true};
-inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1]  [1 1]};
-inpForm.soft   = {false       false  false false          true    true   false};
+inpForm.defval = {'Sperp'     false  0     @obj.matparser []      []     true     };
+inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1]  [1 1]    };
+inpForm.soft   = {false       false  false false          true    true   false    };
 
 warnState = warning('off','sw_readparam:UnreadInput');
 % To handle matlab fitting syntax, which may set the first argument to the
@@ -105,9 +114,10 @@ warnState = warning('off','sw_readparam:UnreadInput');
 if ~ischar(varargin{1})
     param = sw_readparam(inpForm, varargin{2:end});
     if isempty(param.param)
-        varargin = {varargin{:} 'param' varargin{1}};
+        varargin = [varargin {'param'} varargin(1)];
     end
-    param.param = varargin{1};  % Always override keyword specified parameters
+    % always override keyword specified parameters
+    param.param = varargin{1};
     varargin(1) = [];
 else
     param = sw_readparam(inpForm, varargin{:});
@@ -120,13 +130,12 @@ if ~isempty(param.param)
     elseif nargin(param.parfunc) == 2
         param.parfunc(param.param);
     else
-        error('spinw:horace:WrongInput','User defined function with incompatible header!');
+        error('spinw:horace_disp:WrongInput','User defined function with incompatible header!');
     end
 end
-%}
 
 if param.norm && param.dE == 0
-    error('spinw:horace:WrongInput',['To convert spin wave intensity to mbarn/meV/cell/sr'...
+    error('spinw:horace_disp:WrongInput',['To convert spin wave intensity to mbarn/meV/cell/sr'...
         ' units, give the energy bin step.'])
 end
 

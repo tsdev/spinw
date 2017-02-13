@@ -157,31 +157,7 @@ useMex = swpref.getpref('usemex',[]);
 
 % calculate symbolic spectrum if obj is in symbolic mode
 if obj.symbolic
-    if numel(hkl) == 3
-        hkl = sym(hkl);
-    end
-    
-    if ~isa(hkl,'sym')
-        inpForm.fname  = {'fitmode'};
-        inpForm.defval = {false    };
-        inpForm.size   = {[1 1]    };
-        param0 = sw_readparam(inpForm, varargin{:});
-        
-        if ~param0.fitmode
-            warning('spinw:spinwave:MissingInput','No hkl value was given, spin wave spectrum for general Q (h,k,l) will be calculated!');
-        end
-        spectra = obj.spinwavesym(varargin{:});
-    else
-        spectra = obj.spinwavesym(varargin{:},'hkl',hkl);
-    end
-    return
-end
-
-% help when executed without argument
-if nargin==1
-    help sw.spinwave
-    spectra = [];
-    return
+    error('spinw:spinwavefast:Symbolic','This function does not support symbolic mode!')
 end
 
 title0 = 'Numerical LSWT spectrum';
@@ -676,7 +652,7 @@ for jj = 1:nSlice
             [K2, invK] = chol_omp(ham,'Colpa','tol',param.omega_tol);
             [V, DD] = eig_omp(K2,'sort','descend');
             % the inverse of the para-unitary transformation V
-            for ii=1:nMagExt; 
+            for ii=1:nMagExt 
                 V(:,ii,:) = bsxfun(@times, squeeze(V(:,ii,:)), sqrt(DD(ii,:))); 
                 %V(:,ii+nMagExt,:) = bsxfun(@times, squeeze(V(:,ii+nMagExt,:)), sqrt(-DD(ii+nMagExt,:))); 
             end
@@ -745,18 +721,19 @@ for jj = 1:nSlice
         
         orthWarn0 = orthWarn || orthWarn0;
         
-        %for ii = 1:nHklMEM
-        %    % multiplication with g removed to get negative and positive
-        %    % energies as well
-        %    M              = diag(gComm*V(:,:,ii)'*gComm*V(:,:,ii));
-        %    V(:,:,ii)      = V(:,:,ii)*diag(sqrt(1./M));
-        %end
+        % Sort real part of the energies
+        [DD,sIdx] = sort(real(DD),1,'descend');
+        % reindex VV in the summation below
+        %VV = VV(:,sIdx,:);
+        
         % Keep only positive eigenvalues and corresponding eigenvectors.
         DD = DD(1:nMagExt,:);
-        %V = V(:,1:nMagExt,:);
+        
         V = zeros(2*nMagExt,nMagExt,nHklMEM);
         for ii = 1:nMagExt
-            V(:,ii,:) = bsxfun(@times, VV(:,ii,:), sqrt(1 ./ sum(bsxfun(@times,gCommd,conj(VV(:,ii,:)).*VV(:,ii,:))))); 
+            %V(:,ii,:) = bsxfun(@times, VV(:,ii,:), sqrt(1 ./ sum(bsxfun(@times,gCommd,conj(VV(:,ii,:)).*VV(:,ii,:)))));
+            idx = sIdx(ii);
+            V(:,ii,:) = bsxfun(@times, VV(:,idx,:), sqrt(1 ./ sum(bsxfun(@times,gCommd,conj(VV(:,idx,:)).*VV(:,idx,:))))); 
         end
     end
     
@@ -765,18 +742,18 @@ for jj = 1:nSlice
         ExpF = exp(-1i*sum(repmat(permute(hklExt0MEM,[1 3 2]),[1 nMagExt 1]).*repmat(RR,[1 1 nHklMEM]),1));
         ExpF = reshape(ExpF,[numel(S0) nHklMEM]).*repmat(sqrt(S0.'/2),[1 nHklMEM]);
         ExpF = repmat(ExpF,[2 1]); 
-        if iscell(param.formfact) || param.formfact; 
+        if iscell(param.formfact) || param.formfact
             ExpF = ExpF .* repmat(FF(:,hklIdxMEM),[2 1]); 
         end
         z1=zed;
-        if param.gtensor; 
-            for i1=1:size(gtensor,3); 
+        if param.gtensor
+            for i1=1:size(gtensor,3)
                 z1(:,i1)=gtensor(:,:,i1)*zed(:,i1); 
             end
         end
         z1=[z1 conj(z1)].'; 
         zExp = zeros(numel(S0)*2,1,nHklMEM,3);
-        for i1=1:3; 
+        for i1=1:3
             zExp(:,:,:,i1) = bsxfun(@times,z1(:,i1),ExpF);
         end
         
@@ -787,7 +764,7 @@ for jj = 1:nSlice
         %end
         % Changed to use fewer loops
         VExp = zeros(3,nMagExt,1,nHklMEM);
-        for i1=1:3; 
+        for i1=1:3
             VExp(i1,:,:,:) = sw_mtimesx(V,'C',zExp(:,:,:,i1));
         end
         Sab = sw_mtimesx(permute(VExp,[1 3 2 4]), conj(permute(VExp,[3 1 2 4]))) / prod(nExt);
@@ -850,7 +827,7 @@ for jj = 1:nSlice
     
         % if the 2*km vector is integer, the magnetic structure is not a true
         % helix
-        tol = param.tol*2;
+        %tol = param.tol*2;
         %helical =  sum(abs(mod(abs(2*km)+tol,1)-tol).^2) > tol;
     
         if helical
@@ -917,11 +894,11 @@ for jj = 1:nSlice
 
         % avoid NaN for Q=0
         NaNidx = find(any(isnan(hklAN)));
-        for jj = 1:numel(NaNidx)
-            if NaNidx(jj) < size(hklAN,2)
-                hklAN(:,NaNidx(jj)) = hklAN(:,NaNidx(jj)+1);
+        for kk = 1:numel(NaNidx)
+            if NaNidx(kk) < size(hklAN,2)
+                hklAN(:,NaNidx(kk)) = hklAN(:,NaNidx(kk)+1);
             else
-                hklAN(:,NaNidx(jj)) = [1;0;0];
+                hklAN(:,NaNidx(kk)) = [1;0;0];
             end
         end
 

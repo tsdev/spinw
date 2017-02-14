@@ -91,7 +91,7 @@ switch param.mode
         pBase = inv(BV);
         axText = {'x' 'y' 'z'};
     case 'hkl'
-        pBase = 2*pi*inv(BV)^2;
+        pBase = 2*pi*inv(BV)*inv(BV)';
         axText = {'h' 'k' 'l'};
 end
 

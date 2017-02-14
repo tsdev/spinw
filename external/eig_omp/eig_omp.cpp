@@ -359,7 +359,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // Tolerance on whether matrix is symmetric/hermitian
     double tolsymm = sqrt(DBL_EPSILON);
     int nthread = omp_get_max_threads();
-    int err_code;
+    int err_code = 0;
 //  mexPrintf("Number of threads = %d\n",nthread);
 
     // Checks inputs

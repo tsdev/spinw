@@ -43,7 +43,12 @@ switch swObject.name
         label2 = labelTemp{2};
         string = [label2 ' atom (''' swObject.label ''')' newline];
         if obj.atom.mag(a2Idx)
-            string = [string sprintf('Magnetic, S = %g',obj.unit_cell.S(aIdx)) newline];
+            S0 = obj.unit_cell.S(aIdx);
+            if mod(S0,1)==0.5
+                string = [string sprintf('Magnetic, S = %g/2',2*S0) newline];
+            else
+                string = [string sprintf('Magnetic, S = %g',S0) newline];
+            end
         else
            string = [string 'Non-magnetic' newline];
         end

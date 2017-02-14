@@ -167,14 +167,17 @@ atom  = obj.atom;
 switch param.mode
     case 'all'
         % do nothing
+        lSelect = true(size(obj.unit_cell.S));
     case 'mag'
         atom.r   = atom.r(:,atom.mag);
         atom.idx = atom.idx(1,atom.mag);
         atom.mag = atom.mag(1,atom.mag);
+        lSelect = obj.unit_cell.S>0;
     case 'nonmag'
         atom.r   = atom.r(:,~atom.mag);
         atom.idx = atom.idx(1,~atom.mag);
         atom.mag = atom.mag(1,~atom.mag);
+        lSelect = obj.unit_cell.S==0;
     otherwise
         error('plotatom:WrongInput','The given mode string is invalid!');
 end
@@ -285,18 +288,20 @@ if param.replace
 end
 
 if param.legend
+    % number of atoms on the legend
+    nLegend = sum(lSelect);
     % append color
     if strcmp(param.color,'auto')
-        lDat.color = [lDat.color double(obj.unit_cell.color)/255];
+        lDat.color = [lDat.color double(obj.unit_cell.color(:,lSelect))/255];
     else
-        lDat.color = [lDat.color repmat(color/255,1,size(obj.unit_cell.color,2))];
+        lDat.color = [lDat.color repmat(color/255,1,nLegend)];
     end
     % append type
-    lDat.type = [lDat.type 3*ones(1,obj.natom)];
+    lDat.type = [lDat.type 3*ones(1,nLegend)];
     % append name
-    lDat.name = [lDat.name repmat({'atom'},1,obj.natom)];
+    lDat.name = [lDat.name repmat({'atom'},1,nLegend)];
     % append text
-    lDat.text = [lDat.text obj.unit_cell.label];
+    lDat.text = [lDat.text obj.unit_cell.label(lSelect)];
     
     setappdata(hFigure,'legend',lDat);
     swplot.legend('on',hFigure);

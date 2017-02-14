@@ -235,7 +235,7 @@ end
 
 % Store spin indices of each sublattice for speedup.
 Sindex = zeros(nSub,nMagExt);
-Sindex(nSub*(0:nMagExt-1)+SSc) = 1;
+Sindex(nSub*(0:(nMagExt-1))+SSc) = 1;
 Sindex      = logical(Sindex);
 
 % Remove uncoupled moments, they should keep their original orientation

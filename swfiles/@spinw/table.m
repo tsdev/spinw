@@ -140,7 +140,7 @@ switch type
         if ~isempty(bond)
             % generate subidx
             subidx = ones(size(bond));
-            for ii = 2:numel(bond)   
+            for ii = 2:numel(bond)
                 if bond(ii)==bond(ii-1)
                     subidx(ii) = subidx(ii-1)+1;
                 end
@@ -149,6 +149,8 @@ switch type
             dl     = double(obj.coupling.dl(:,sel))';
             idx1   = obj.coupling.atom1(sel)';
             idx2   = obj.coupling.atom2(sel)';
+            dr     = obj.matom.r(:,idx2)+dl'-obj.matom.r(:,idx1);
+            dr     = round(dr*1e3)/1e3;
             length = obj.basisvector*(obj.matom.r(:,idx2)+dl'-obj.matom.r(:,idx1));
             length = round(sqrt(sum(length.^2,1))'*1e3)/1e3; % Angstrom
             matom1  = obj.unit_cell.label(obj.matom.idx(idx1))';
@@ -172,6 +174,9 @@ switch type
             matom1 = matom1(:);
             matom2 = matom2(:);
             
+            varName = {'idx','subidx','dl','dr','length','matom1','idx1','matom2','idx2','matrix'};
+            var     = { bond, subidx,   dl, dr',   length,  matom1,  idx1,  matom2,  idx2,  matrix};
+            
             if showVal
                 % show the values of the matrices
                 value  = zeros(3,3,numel(obj.coupling.idx));
@@ -192,11 +197,8 @@ switch type
                 Jx     = value(:,:,1);
                 Jy     = value(:,:,2);
                 Jz     = value(:,:,3);
-                varName = {'idx', 'subidx','dl','length','matom1','idx1','matom2','idx2','matrix','Jx','Jy','Jz'};
-                var     = {  bond, subidx,   dl,  length,  matom1,  idx1,  matom2,  idx2,  matrix,  Jx,  Jy,  Jz};
-            else
-                varName = {'idx','subidx','dl','length','matom1','idx1','matom2','idx2','matrix'};
-                var     = { bond, subidx,   dl,  length,  matom1,  idx1,  matom2,  idx2,  matrix};
+                varName = [varName {'Jx','Jy','Jz'}];
+                var     = [var     { Jx,  Jy,  Jz }];
             end
         end
     case {'ion' 'aniso'}

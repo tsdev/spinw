@@ -722,18 +722,17 @@ for jj = 1:nSlice
         orthWarn0 = orthWarn || orthWarn0;
         
         % Sort real part of the energies
-        [DD,sIdx] = sort(real(DD),1,'descend');
-        % reindex VV in the summation below
-        %VV = VV(:,sIdx,:);
+        [~, sIdx] = sort(real(DD),1,'descend');
         
         % Keep only positive eigenvalues and corresponding eigenvectors.
-        DD = DD(1:nMagExt,:);
+        DD = cell2mat(arrayfun(@(x) DD(sIdx(1:nMagExt,x),x), 1:nHklMEM, 'UniformOutput', false));
+        % reindex VV in the summation below
+        VV = arrayfun(@(x) VV(:,sIdx(1:nMagExt,x),x), 1:nHklMEM, 'UniformOutput', false);
+        VV = cat(3, VV{:});
         
         V = zeros(2*nMagExt,nMagExt,nHklMEM);
         for ii = 1:nMagExt
-            %V(:,ii,:) = bsxfun(@times, VV(:,ii,:), sqrt(1 ./ sum(bsxfun(@times,gCommd,conj(VV(:,ii,:)).*VV(:,ii,:)))));
-            idx = sIdx(ii);
-            V(:,ii,:) = bsxfun(@times, VV(:,idx,:), sqrt(1 ./ sum(bsxfun(@times,gCommd,conj(VV(:,idx,:)).*VV(:,idx,:))))); 
+            V(:,ii,:) = bsxfun(@times, VV(:,ii,:), sqrt(1 ./ sum(bsxfun(@times,gCommd,conj(VV(:,ii,:)).*VV(:,ii,:)))));
         end
     end
     

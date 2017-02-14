@@ -220,6 +220,7 @@ coupling.atom1  = SS.all(4,:);
 coupling.atom2  = SS.all(5,:);
 coupling.matidx = SS.all(15,:);
 coupling.idx    = SS.all(16,:);
+coupling.cidx   = SS.all(18,:);
 
 % matrix values
 mat   = reshape(SS.all(6:14,:),3,3,[]);
@@ -277,6 +278,7 @@ matidx = repmat(coupling.matidx,[nCell 1]);
 matSym = reshape(repmat(permute(matSym,[1 2 4 3]),[1 1 nCell 1]),3,3,[]);
 mat    = reshape(repmat(permute(mat,[1 2 4 3]),[1 1 nCell 1]),3,3,[]);
 matDM  = reshape(repmat(permute(matDM,[1 3 2]),[1 nCell 1]),3,[]);
+cIdx   = reshape(repmat(coupling.cidx,[nCell 1]),1,[]);
 
 pos1  = reshape(pos1,3,[]);
 pos2  = reshape(pos2,3,[]);
@@ -308,6 +310,7 @@ matidx = matidx(pIdx);
 matSym = matSym(:,:,pIdx);
 mat    = mat(:,:,pIdx);
 matDM  = matDM(:,pIdx);
+cIdx   = cIdx(1,pIdx);
 
 % number of bonds to plot
 nBond = size(pos1,2);
@@ -337,10 +340,11 @@ end
 
 % save original matrix values into data
 %mat0   = obj.matrix.mat(:,:,matidx);
+matDat = [mat;[permute(cIdx,[1 3 2]) zeros(1,2,size(cIdx,2))]];
 if numel(matidx)==1
-    matDat = mat2cell(mat,3,3);
+    matDat = mat2cell(matDat,4,3);
 else
-    matDat = mat2cell(mat,3,3,ones(1,numel(matidx)));
+    matDat = mat2cell(matDat,4,3,ones(1,numel(matidx)));
 end
 
 % legend label

@@ -123,9 +123,11 @@ if ~isnumeric(param.atom)
     if numel(param.atom)>2
         error('spinw:addcoupling:WrongInput','Only two different atom label can be given at once!');
     end
-    aIdx1 = find(ismember(obj.unit_cell.label,param.atom{1}));
+    %aIdx1 = find(ismember(obj.unit_cell.label,param.atom{1}));
+    aIdx1 = find(cellfun(@(C)~isempty(C),strfind(obj.unit_cell.label,param.atom{1})));
     if numel(param.atom)>1
-        aIdx2 = find(ismember(obj.unit_cell.label,param.atom{2}));
+        %aIdx2 = find(ismember(obj.unit_cell.label,param.atom{2}));
+        aIdx2 = find(cellfun(@(C)~isempty(C),strfind(obj.unit_cell.label,param.atom{2})));
     else
         aIdx2 = aIdx1;
     end
@@ -177,7 +179,7 @@ if ~isempty(param.subIdx)
 end
 
 if isempty(idx)
-    warning('spinw:addcoupling:NoBond','No matrix assigned, since no bond fulfilled the given options!')
+    warning('spinw:addcoupling:NoBond','No matrix assigned, since no bond fulfilled the given conditions!')
     return
 end
 

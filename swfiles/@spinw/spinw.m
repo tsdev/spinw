@@ -90,7 +90,8 @@ classdef spinw < handle
     %   field           - stores the magnetic field
     %   nbond           - number of bonds
     %   temperature     - temperature for thermal population calculation
-    %   intmatrix       - returns the spin Hamiltonian after symmetry applied
+    %   intmatrix       - returns the spin Hamiltonian after symmetry applied (INTERNAL)
+    %   symop           - generates the symmetry operators on bonds and magnetic atoms (INTERNAL)
     %   
     % Calculators:
     %   spinwave        - linear spin wave solver
@@ -116,6 +117,7 @@ classdef spinw < handle
     %   validate        - validates SpinW object
     %   version         - version of SpinW used to create the object
     %   struct          - convert SpinW ojbect to struct
+    %   clearcache      - clear all data from cache, forcing recalculation (INTERNAL)
     %   spinw           - constructor
     %
     %

@@ -3,7 +3,13 @@ function mouse(hFigure, perspective)
 %
 % SWPLOT.MOUSE({hFigure},{perspective})
 %
-% Adds rotation and zoom functionality to any swplot figure.
+% Adds rotation and zoom functionality to any swplot figure. The following
+% mouse actions are supported:
+%   - mouse-drag        Rotation of objects.
+%   - ctrl+mouse-drag   Shift of objects (pan).
+%   - mouse-wheel       Zoom of objects.
+%   - ctrl+mouse-wheel  Change perspective and switch to perspective
+%                       projection.
 %
 % Input:
 %
@@ -83,9 +89,17 @@ set(hFigure,'WindowScrollWheelFcn', @wheel_callback);
             if AP && strcmp(camproj,'orthographic')
                 camproj('perspective');
             end
-            % perspective change
+            % perspective change, but don't get too close
+            newCva = sind(cva/2)/scale;
+            %cPos   = get(hAxis,'CameraPosition');
+            %fprintf('%g %g\n',[newCva cPos(3)]);
+            
+            %if cPos(3)*scale>1e4
+            %    set(hAxis,'CameraPosition',[0 0 1e4]);
+            %elseif newCva < 0.5
             set(hAxis,'CameraPosition',get(hAxis,'CameraPosition')*scale);
-            set(hAxis,'CameraViewAngle',2*asind(sind(cva/2)/scale));
+            set(hAxis,'CameraViewAngle',2*asind(newCva));
+            %end
         else
             % change to orthographic view
             if AP && strcmp(camproj,'perspective')

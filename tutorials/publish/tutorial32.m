@@ -74,6 +74,40 @@ swplot.clear
 plot(cryst,'range',[1 1 1/2])
 swplot.view('c')
 
+%% How to assign matrix to a different symmetry inequivalent bond
+% Each bond in SpinW are identified by two indices. The bond index (idx)
+% determines a group of bonds (idx=1 for first neighbor, idx=2 for second
+% neighbor, etc). So we use another index (subidx) to find a given bond
+% within a set of bonds identified by idx. When we assign an interaction to
+% a given list of bonds (given by idx), the exchange matrix will be
+% assigned to the first bond on that list (subidx=1). The other equivalent
+% bonds (subidx>1) will get a generated interaction matrix using the space
+% group operators of the system. At present, there is no freedom to choose
+% the order of the bonds for a given idx. However we can assign a given
+% interaction matrix to any bond, we just have to apply the inverse
+% symmetry operator of the selected bond. Here we will assign the
+% previously defined D-vector to the third bond of the second neighbors
+% (idx=2, subidx=3). For this we use the spinw.symop method to generate the
+% bond symmetry operators, find the right symmetry operator and apply the
+% inverse of it on the interaction matrix. Then store the modified
+% interaction matrix in the spinw object. To find the (idx,subidx) values
+% of a certain bond, you can use the tooltip on the 3D plot by clicking on
+% a bond or use the spin.table('bond') method to get a list of bonds with
+% idx and subidx numbers.
+
+op = cryst.symop;
+
+idx    = 2;
+subidx = 3;
+
+bIdx = find(cryst.coupling.idx==idx);
+bIdx = bIdx(subidx);
+
+R   = op.bond(:,:,bIdx);
+DM  = cryst.matrix.mat;
+DMp = inv(R)*DM*inv(R)';
+cryst.matrix.mat = DMp;
+plot(cryst,'range',[1 1 1/2])
 
 %% DM interaction using no space group
 % By removing the space group (setting symmetry to P0), the model

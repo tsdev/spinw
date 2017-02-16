@@ -35,6 +35,12 @@ function optm = optmagsteep(obj, varargin)
 %           Default is false.
 % TolX      Minimum change of the magnetic moment when the algorithm stops.
 % saveAll   Save moment directions for every loop, default is false.
+% Hmin      Minimum field value on the spin that moves the spin. If the
+%           molecular field absolute value is below this, the spin won't be
+%           turned. Default is zero.
+% plot      If true, plot magnetic structure in real time. Default is false. 
+% pause     Time in second to pause after every optimization loop to make
+%           slower movie. Default is 0.
 %
 % Output:
 %
@@ -67,15 +73,15 @@ end
 nExt   = double(obj.mag_str.nExt);
 title0 = 'Optimised magnetic structure using the method of steepest descent';
 
-inpForm.fname  = {'nRun' 'epsilon' 'random' 'boundary'          'subLat'};
-inpForm.defval = {100     1e-5      false   {'per' 'per' 'per'}  []     };
-inpForm.size   = {[1 1]   [1 1]     [1 1]   [1 3]                [1 -1] };
-inpForm.soft   = {0       0         0       0                    1      };
+inpForm.fname  = {'nRun' 'epsilon' 'random' 'boundary'          'subLat' 'Hmin' 'pause'};
+inpForm.defval = {100     1e-5      false   {'per' 'per' 'per'}  []      0      0      };
+inpForm.size   = {[1 1]   [1 1]     [1 1]   [1 3]                [1 -1]  [1 1]  [1 1]  };
+inpForm.soft   = {0       0         0       0                    1       false  false  };
 
-inpForm.fname  = [inpForm.fname  {'nExt' 'fSub'   'TolX' 'title' 'saveAll'}];
-inpForm.defval = [inpForm.defval {nExt   @sw_fsub 1e-10  title0  false    }];
-inpForm.size   = [inpForm.size   {[1 3]  [1 1]    [1 1]  [1 -2]  [1 1]    }];
-inpForm.soft   = [inpForm.soft   {0      0        0      0        0        }];
+inpForm.fname  = [inpForm.fname  {'nExt' 'fSub'   'TolX' 'title' 'saveAll' 'plot'}];
+inpForm.defval = [inpForm.defval {nExt   @sw_fsub 1e-10  title0  false     false }];
+inpForm.size   = [inpForm.size   {[1 3]  [1 1]    [1 1]  [1 -2]  [1 1]     [1 1] }];
+inpForm.soft   = [inpForm.soft   {0      0        0      0        0        false }];
 
 
 param = sw_readparam(inpForm,varargin{:});
@@ -255,6 +261,9 @@ cAz    = cell(nSub,1);
 cS     = cell(nSub,1);
 cB     = cell(nSub,1);
 
+% store sublattice indices in cell
+sSindexF = cell(1,nSub);
+
 for ii = 1:nSub
     sSindex    = Sindex(ii,:);
     cS{ii}    = S(sSindex);
@@ -267,6 +276,7 @@ for ii = 1:nSub
     csSSJG{ii} = reshape(SSJG(:,:,sSindex),3,3,[]);
     
     cB{ii}    = Bloc(:,sSindex);
+    sSindexF{ii} = find(Sindex(ii,:));
 end
 
 if fid == 1
@@ -288,12 +298,17 @@ rIdx = 0;
 % add extra zero moment as a placeholder
 M = [M zeros(3,1)];
 
+% create swplot figure if it doesn't exist
+if param.plot
+    hFigure = swplot.activefigure;
+end
+
 while (rIdx < nRun) && (dM>param.TolX)
     Mold = M;
     for jsub = 1:nSub
         % Logical vector, selecting the moments on a given
         % sublattice [1,nMagExt]
-        sSindex = Sindex(jsub,:);
+        %sSindex = Sindex(jsub,:);
         % F stores the molecular field acting on the moments of
         % the jsub sublattice (exchange+external field).
         % F [3, nElementSub(jsub)]
@@ -308,35 +323,68 @@ while (rIdx < nRun) && (dM>param.TolX)
         % Adds anisotropy field.
         if param.aniso
             % Select the moment vectors on the sublattice.
-            Ms = M(:,[sSindex false]);
+            %Ms = M(:,[sSindex false]);
+            Ms = M(:,sSindexF{jsub});
             Fa = 2*[sum(Ms.*cAx{jsub},1); sum(Ms.*cAy{jsub},1); sum(Ms.*cAz{jsub},1)];
             F = F + Fa;
         end
         
-        M(:,[sSindex false]) = -bsxfun(@times,F,cS{jsub}./sqrt(sum(F.^2)));
+        % molecular field absolute value
+        normF = sqrt(sum(F.^2));
+        
+        if param.Hmin > 0
+            % don't move moments where the |F| is smaller than a minimum
+            % value
+            nzF     = normF >= param.Hmin;
+            SindexS = sSindexF{jsub}(nzF);
+            F       = F(:,nzF);
+            cSS     = cS{jsub}(nzF);
+        else
+            SindexS = sSindexF{jsub};
+            cSS     = cS{jsub};
+        end
+        %M(:,[sSindex false]) = -bsxfun(@times,F,cS{jsub}./sqrt(sum(F.^2)));
+        if ~isempty(F)
+            % turn the moments toward the local field
+            M(:,SindexS) = -bsxfun(@times,F,cSS./normF);
+        end
         
     end
     
     % Calculates the system energy at the end of the temperature step.
-    if nargout > 0
-        obj.mag_str.F    = M(:,1:end-1);
+    if nargout > 0 || param.plot
+        Mexport = M(:,1:(end-1));
+        obj.mag_str.F    = Mexport + 1i*cross(repmat(permute(magStr.n,[2 3 1]),[1 nMagExt 1]),Mexport);
         obj.mag_str.nExt = int32(nExt);
         obj.mag_str.k    = km';
-        %genmagstr('mode','helical','S',M(:,1:end-1),'k',magStr.k,'nExt',nExt);
+    end
+    
+    if nargout > 0
         E(rIdx+1) = obj.energy;
         if param.saveAll
             Msave(:,:,rIdx+1) = M(:,1:end-1);
         end
     end
     
-    if fid == 1
-        sw_status(rIdx/param.nRun*100);
+    % plot magnetic structure
+    if param.plot
+        swplot.plotmag('figure',hFigure);
+        drawnow;
     end
-    
+
     % Check stopping condition, give the dM limit.
     dM = sum(sqrt(sum((Mold - M).^2,1)))/nMagExt;
     rIdx = rIdx + 1;
+
+    if param.pause > 0
+        % wait a bit
+        pause(param.pause);
+    end
     
+    if fid == 1
+        sw_status(rIdx/param.nRun*100);
+    end
+
 end
 
 if fid == 1
@@ -351,10 +399,10 @@ if rIdx == nRun
     warning('Convergence was not reached!')
 end
 
-% Save optimised magnetic structure into the sw object.
+% Save optimised magnetic structure into the spinw object.
 %obj.genmagstr('mode','helical','S',M(:,1:end-1),'k',km,'n',magStr.n,'nExt',nExt);
 M = M(:,1:(end-1));
-obj.mag_str.F    = M + 1i*cross(repmat(permute(magStr.n,[2 3 1]),[1 size(M,2) 1]),M);
+obj.mag_str.F    = M + 1i*cross(repmat(permute(magStr.n,[2 3 1]),[1 nMagExt 1]),M);
 obj.mag_str.k    = km';
 obj.mag_str.nExt = int32(nExt);
 

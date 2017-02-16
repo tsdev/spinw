@@ -281,7 +281,7 @@ if obj.symb
     n       = sym(n);
 end
 
-if ~cmplxS && ~strcmpi(param.mode,'fourier') && ~strcmpi(param.mode,'direct') && any(mod(2*k,1))
+if ~cmplxS && ~strcmpi(param.mode,'fourier') && ~strcmpi(param.mode,'direct') && any(k)
     param.S = param.S + 1i*cross(repmat(permute(n,[2 3 1]),[1 size(param.S,2) 1]),param.S);
 end
 
@@ -370,7 +370,7 @@ switch param.mode
         end
         
         if size(S,2) ~= nMagExt
-            error('sw:genmagstr:WrongSpinSize','Wrong size of param.S!');
+            error('sw:genmagstr:WrongSpinSize','Wrong dimensions of param.S matrix!');
         end
                 
     case 'rotate'

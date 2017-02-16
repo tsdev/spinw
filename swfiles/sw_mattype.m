@@ -48,15 +48,15 @@ if ~isa(mat,'sym')
     for ii = 1:mSize(3)
         matI = mat(:,:,ii);
         dM = diag(matI);
-        if sum(sum(abs(diag(dM)-matI))) < epsilon*6
-            if sum(abs(dM-dM(1))) < epsilon*3
+        if sum(sum(abs(diag(dM)-matI))) <= epsilon*6
+            if sum(abs(dM-dM(1))) <= epsilon*3
                 % unity matrix * scalar
                 typeT = 1;
             else
                 % anisotropic diagonal
                 typeT = 2;
             end
-        elseif sum(sum(abs((matI+matI')))) < epsilon*6
+        elseif sum(sum(abs((matI+matI')))) <= epsilon*6
             % pure antisymmetric
             typeT = 3;
         else

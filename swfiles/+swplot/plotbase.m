@@ -35,16 +35,15 @@ function varargout = plotbase(varargin)
 %
 
 % default values
-range0  = [0 1;0 1;0 1];
 col0    = swplot.color({'red' 'green' 'blue'});
 d0      = ones(1,3);
 nMesh0  = swpref.getpref('nmesh',[]);
 nPatch0 = swpref.getpref('npatch',[]);
 
 inpForm.fname  = {'range' 'mode'    'figure' 'color' 'R'   'alpha' 'lhead' 'shift'};
-inpForm.defval = {range0  'abc'     []       col0    0.06  30      0.5     [0;0;0]};
+inpForm.defval = {[]      'abc'     []       col0    0.06  30      0.5     [0;0;0]};
 inpForm.size   = {[-1 -2] [1 -3]    [1 1]    [-4 -5] [1 1] [1 1]   [1 1]   [3 1]  };
-inpForm.soft   = {false   false     true     false   false false   false   false  };
+inpForm.soft   = {true    false     true     false   false false   false   false  };
 
 inpForm.fname  = [inpForm.fname  {'d'   'dtext' 'label' 'tooltip' 'translate' 'copy'}];
 inpForm.defval = [inpForm.defval {d0    0.5     true    true      false       false }];
@@ -64,21 +63,29 @@ else
     hFigure = param.figure;
 end
 
-% range of previous plot
-rDat   = getappdata(hFigure,'range');
-if isempty(rDat)
-    range0 = [0 1;0 1;0 1];
-    unit   = 'lu';
+% select range
+if numel(param.range) == 6
+    range = param.range;
+elseif isempty(param.range)
+    % get range from figure
+    fRange = getappdata(hFigure,'range');
+    if isempty(fRange)
+        % fallback to default range
+        range = [0 1;0 1;0 1];
+    else
+        % get plotting range and unit
+        range       = fRange.range;
+        param.unit  = fRange.unit;
+    end
+elseif numel(param.range) == 3
+    % change range, if the number of unit cells are given
+    range = [zeros(3,1) param.range(:)];
 else
-    range0 = rDat.range;
-    unit   = rDat.unit;
+    error('plotbase:WrongInput','The given plotting range is invalid!');
 end
 
-if isempty(range0)
-    range0 = [0;0;0];
-else
-    range0 = range0(:,1);
-end
+% lower range limit, where basis vectors come
+range0 = range(:,1);
 
 % basis vectors
 BV = swplot.base(hFigure);
@@ -95,7 +102,7 @@ switch param.mode
         axText = {'h' 'k' 'l'};
 end
 
-switch unit
+switch param.unit
     case 'lu'
         % do nothing
     case 'xyz'
@@ -141,6 +148,9 @@ end
 swplot.plot('type','arrow','position',pos,'figure',hFigure,'color',param.color,...
     'name','base','legend',false,'tooltip',false,'translate',param.translate,...
     'zoom',param.zoom,'data',data,'replace',param.replace,'npatch',param.npatch);
+
+% save range
+setappdata(hFigure,'range',struct('range',range,'unit',param.unit));
 
 if param.tooltip
     swplot.tooltip('on',hFigure);

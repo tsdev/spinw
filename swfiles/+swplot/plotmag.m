@@ -85,12 +85,11 @@ function varargout = plotmag(varargin)
 fontSize0 = swpref.getpref('fontsize',[]);
 nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
-range0    = [0 1;0 1;0 1];
 
 inpForm.fname  = {'range' 'legend' 'label' 'dtext' 'fontsize' 'radius0' };
-inpForm.defval = {range0  true     true    0.1     fontSize0  0.06      };
+inpForm.defval = {[]      true     true    0.1     fontSize0  0.06      };
 inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 1]      [1 1]     };
-inpForm.soft   = {false   false    false   false   false      false     };
+inpForm.soft   = {true    false    false   false   false      false     };
 
 inpForm.fname  = [inpForm.fname  {'mode' 'color' 'nmesh' 'npatch' 'ang' }];
 inpForm.defval = [inpForm.defval {'all'  'auto'  nMesh0  nPatch0  30    }];
@@ -139,14 +138,26 @@ BV = obj.basisvector;
 % set figure title
 set(hFigure,'Name', 'SpinW: Magnetic structure');
 
-% change range, if the number of unit cells are given
-if numel(param.range) == 3
-    param.range = [ zeros(3,1) param.range(:)];
-elseif numel(param.range) ~=6
+% select range
+if numel(param.range) == 6
+    range = param.range;
+elseif isempty(param.range)
+    % get range from figure
+    fRange = getappdata(hFigure,'range');
+    if isempty(fRange)
+        % fallback to default range
+        range = [0 1;0 1;0 1];
+    else
+        % get plotting range and unit
+        range       = fRange.range;
+        param.unit  = fRange.unit;
+    end
+elseif numel(param.range) == 3
+    % change range, if the number of unit cells are given
+    range = [zeros(3,1) param.range(:)];
+else
     error('plotmag:WrongInput','The given plotting range is invalid!');
 end
-
-range = param.range;
 
 switch param.unit
     case 'lu'
@@ -198,11 +209,11 @@ pos  = reshape(pos,3,[]);
 switch param.unit
     case 'lu'
         % L>= lower range, L<= upper range
-        pIdx = all(bsxfun(@ge,pos,range(:,1)) & bsxfun(@le,pos,range(:,2)),1);
+        pIdx = all(bsxfun(@ge,pos,range(:,1)-10*eps) & bsxfun(@le,pos,range(:,2)+10*eps),1);
     case 'xyz'
         % convert to xyz
         posxyz = BV*pos;
-        pIdx = all(bsxfun(@ge,posxyz,range(:,1)) & bsxfun(@le,posxyz,range(:,2)),1);
+        pIdx = all(bsxfun(@ge,posxyz,range(:,1)-10*eps) & bsxfun(@le,posxyz,range(:,2)+10*eps),1);
 end
 
 if ~any(pIdx)
@@ -276,7 +287,7 @@ swplot.plot('type','arrow','name','mag','position',vpos,'text','',...
     'lHead',param.lHead,'translate',param.translate,'zoom',param.zoom);
 
 % save range
-setappdata(hFigure,'range',struct('range',param.range,'unit',param.unit));
+setappdata(hFigure,'range',struct('range',range,'unit',param.unit));
 
 if nargout > 0
     varargout{1} = hFigure;

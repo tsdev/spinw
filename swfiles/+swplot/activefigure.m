@@ -64,8 +64,8 @@ if isempty(hFigure)
         end
         
         if isempty(hFigure)
-            %error('activefigure:NoFig','There is no swplot figure, use swplot.figure() to create a new window!')
-            hFigure = swplot.figure;
+            error('activefigure:NoFig','There is no swplot figure, use swplot.figure() to create a new window!')
+            %hFigure = swplot.figure;
         end
         
         swplot.activefigure(hFigure(1));

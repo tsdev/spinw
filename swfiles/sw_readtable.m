@@ -1,7 +1,7 @@
-function dat = sw_readtable(fName,delimiter,nHeader)
+function dat = sw_readtable(dataSource,delimiter,nHeader)
 % reads tabular data
 %
-% dat = SW_READTABLE(fName, {delimiter},{nHeader})
+% dat = SW_READTABLE(dataSource, {delimiter},{nHeader})
 %
 % Function reads tabular data that has arbitrary header lines denoted with
 % # and the last header line is followed by a column name line. The data
@@ -11,8 +11,8 @@ function dat = sw_readtable(fName,delimiter,nHeader)
 %
 % Input:
 %
-% fName     File name string.
-% delimiter Delimiter of the data, default is whitespace.
+% dataSource    Data source, can be file, url or string.
+% delimiter     Delimiter of the data, default is whitespace.
 %
 % Output:
 %
@@ -57,24 +57,24 @@ if nargin < 3
     nHeader = 0;
 end
 
-fid = fopen(fName);
+dataStr = ndbase.source(dataSource);
 
-if fid == -1
-    error('spinw:sw_readtable:FileNotFound',['Data file not found: '...
-        regexprep(fName,'\' , '\\\') '!']);
-end
+% if dataStr == -1
+%     error('sw_readtable:FileNotFound',['Data file not found: '...
+%         regexprep(dataSource,'\' , '\\\') '!']);
+% end
+
+% split string into lines
+dataStr = regexp(dataStr, ['(?:' sprintf('\n') ')+'], 'split');
 
 % read header lines given by user
-if nHeader > 0
-    for ii = 1:nHeader
-        fgets(fid);
-    end
-end
+dataStr = dataStr((nHeader+1):end);
 
+%TODO
 % read header
-str = fgets(fid);
+str = fgets(dataStr);
 while isempty(str) || str(1) == '#'
-    str = fgets(fid);
+    str = fgets(dataStr);
 end
 
 % read column names
@@ -119,7 +119,7 @@ dat = struct(sTemp{:});
 modeStr = ''; 
 idx = 1;
 
-str = fgets(fid);
+str = fgets(dataStr);
 
 % load data
 while str ~= -1
@@ -131,7 +131,7 @@ while str ~= -1
     
     if ~isempty(str) && str(1) == '#'
         modeStr = str;
-        str = fgets(fid);
+        str = fgets(dataStr);
         continue
     end
     
@@ -147,9 +147,9 @@ while str ~= -1
     end
     dat(idx).MODE = modeStr;
     idx = idx + 1;
-    str = fgets(fid);
+    str = fgets(dataStr);
 end
 
-fclose(fid);
+fclose(dataStr);
 
 end

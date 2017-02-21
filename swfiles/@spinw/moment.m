@@ -107,7 +107,7 @@ hklExt  = bsxfun(@times,hkl,nExt')*2*pi;
 
 % Calculates parameters eta and zed.
 if isempty(magstr.S)
-    error('sw:moment:NoMagneticStr','No magnetic structure defined in obj!');
+    error('spinw:moment:NoMagneticStr','No magnetic structure defined in obj!');
 end
 
 M0 = magstr.S;
@@ -260,7 +260,7 @@ for jj = 1:nSlice
                 try
                     K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
                 catch PD
-                    error('sw:spinwave:PositiveDefiniteHamiltonian',...
+                    error('spinw:spinwave:PositiveDefiniteHamiltonian',...
                         ['Hamiltonian matrix is not positive definite, probably'...
                         ' the magnetic structure is wrong! For approximate'...
                         ' diagonalization try the param.hermit=false option']);

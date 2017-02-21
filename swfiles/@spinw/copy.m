@@ -4,7 +4,7 @@ function objC = copy(obj)
 % newObj = COPY(obj)
 %
 % Use this command instead of the '=' sign if you want to
-% create an independent duplicate of an sw class object.
+% create an independent duplicate of an spinw class object.
 %
 % Input:
 %

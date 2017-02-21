@@ -50,7 +50,7 @@ elseif nargin == 2
 elseif nargin == 1
     raw = struct;
 else
-    error('sw:sw_readparam:WrongNumberOfInput','Wrong number of input options!');
+    error('sw_readparam:WrongNumberOfInput','Wrong number of input options!');
 end
 
 fName     = format.fname;

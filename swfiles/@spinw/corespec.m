@@ -14,7 +14,7 @@ function [omega, Vsave] = corespec(obj, hkl, varargin)
 %
 % Input:
 %
-% obj           Input structure, sw class object.
+% obj           Input structure, spinw class object.
 % hkl           Defines the Q points where the spectra is calculated, in
 %               reciprocal lattice units, size is [3 nHkl]. Q can be also
 %               defined by several linear scan in reciprocal space. In this
@@ -97,7 +97,7 @@ function [omega, Vsave] = corespec(obj, hkl, varargin)
 % incomm        Whether the spectra calculated is incommensurate or not.
 % obj           The copy of the input obj.
 %
-% See also SPINW, SPINW.SPINWAVESYM, SW_NEUTRON, SW_POL, SW.POWSPEC, SPINW.OPTMAGSTR.
+% See also SPINW, SPINW.SPINWAVESYM, SW_NEUTRON, SW_POL, SPINW.POWSPEC, SPINW.OPTMAGSTR.
 %
 
 % help when executed without argument
@@ -220,7 +220,7 @@ if param.optmem == 0
         nSlice = ceil(nMagExt^2*nHkl*6912/sw_freemem*2);
     else
         nSlice = 1;
-        warning('sw:spinwave:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
+        warning('spinw:corespec:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
     end
 else
     nSlice = param.optmem;
@@ -307,7 +307,7 @@ for jj = 1:nSlice
                     K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
                     warn1 = true;
                 catch PD
-                    error('sw:spinwave:NonPosDefHamiltonian',...
+                    error('spinw:corespec:NonPosDefHamiltonian',...
                         ['Hamiltonian matrix is not positive definite, probably'...
                         ' the magnetic structure is wrong! For approximate'...
                         ' diagonalization try the param.hermit=false option']);
@@ -370,7 +370,7 @@ else
 end
 
 if warn1
-    warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...
+    warning('spinw:corespec:NonPosDefHamiltonian',['To make the Hamiltonian '...
         'positive definite, a small omega_tol value was added to its diagonal!'])
 end
 

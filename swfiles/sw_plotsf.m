@@ -12,7 +12,7 @@ function varargout = sw_plotsf(sFact, varargin)
 % colorbar  To show colorbar, default is true.
 % plotStyle Options to the plot command, default is '-'.
 %
-% See also SW, SW.STRUCTFACT, SW_INTSF.
+% See also SPINW, SPINW.STRUCTFACT, SW_INTSF.
 %
 
 if nargin == 0

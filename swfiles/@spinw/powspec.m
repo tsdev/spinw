@@ -19,7 +19,7 @@ function spectra = powspec(obj, hklA, varargin)
 % nRand     Number of random orientations per Q value, default is 100.
 % Evect     Vector, defines the center/edge of the energy bins of the
 %           calculated output, dimensions are is [1 nE]. The energy units
-%           are defined by the unit.kB property of the sw object. Default
+%           are defined by the unit.kB property of the spinw object. Default
 %           value is an edge bin: linspace(0,1.1,101).
 % binType   String, determines the type of bin give, possible options:
 %               'cbin'    Center bin, the center of each energy bin is given.
@@ -41,6 +41,44 @@ function spectra = powspec(obj, hklA, varargin)
 %           Fibonacci number below nRand. Default is false.
 % imagChk   Checks that the imaginary part of the spin wave dispersion is
 %           smaller than the energy bin size. Default is true.
+%
+% The function accepts all options of spinw.spinwave() as well. The most
+% important options are:
+%
+% formfact      If true, the magnetic form factor is included in the
+%               spin-spin correlation function calculation. Default value
+%               is false.
+% formfactfun   Function that calculates the magnetic form factor for given
+%               Q value. Default value is @sw_mff(), that uses a tabulated
+%               coefficients for the form factor calculation. For
+%               anisotropic form factors a user defined function can be
+%               written that has the following header:
+%                   F = @formfactfun(atomLabel,Q)
+%               where the parameters are:
+%                   F   row vector containing the form factor for every
+%                       input Q value
+%                   atomLabel string, label of the selected magnetic atom
+%                   Q   matrix with dimensions of [3 nQ], where each column
+%                       contains a Q vector in Angstrom^-1 units.
+% gtensor       If true, the g-tensor will be included in the spin-spin
+%               correlation function. Including anisotropic g-tensor or
+%               different g-tensor for different ions is only possible
+%               here.
+% hermit        Method for matrix diagonalization:
+%                   true      J.H.P. Colpa, Physica 93A (1978) 327,
+%                   false     R.M. White, PR 139 (1965) A450.
+%               Colpa: the grand dynamical matrix is converted into another
+%                      Hermitian matrix, that will give the real
+%                      eigenvalues.
+%               White: the non-Hermitian g*H matrix will be diagonalised,
+%                      that is not the elegant method.
+%               Advise:
+%               Always use Colpa's method, except when small imaginary
+%               eigenvalues are expected. In this case only White's method
+%               work. The solution in this case is wrong, however by
+%               examining the eigenvalues it can give a hint where the
+%               problem is.
+%               Default is true.
 %
 % Output:
 %
@@ -67,7 +105,7 @@ function spectra = powspec(obj, hklA, varargin)
 % antiferromagnet (S=1, J=1) between Q = 0 and 3 A^-1 (the lattice
 % parameter is 3 Angstrom).
 %
-% See also SW, SW.SPINWAVE, SW.OPTMAGSTR.
+% See also SPINW, SPINW.SPINWAVE, SPINW.OPTMAGSTR.
 %
 
 % help when executed without argument
@@ -115,6 +153,14 @@ nQ      = numel(hklA);
 powSpec = zeros(nE,nQ);
 
 fprintf0(fid,'Calculating powder spectra:\n');
+
+% message for magnetic form factor calculation
+yesNo = {'No' 'The'};
+fprintf0(fid,[yesNo{param.formfact+1} ' magnetic form factor is'...
+    ' included in the calculated structure factor.\n']);
+% message for g-tensor calculation
+fprintf0(fid,[yesNo{param.gtensor+1} ' g-tensor is included in the '...
+    'calculated structure factor.\n']);
 
 sw_status(0,1,param.tid,'Powder spectrum calculation');
 

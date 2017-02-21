@@ -4,7 +4,7 @@ function parOut = sw_fstat(state, parIn, T, E, M, ~)
 % parOut = SW_FSTAT(state, parIn, T, E, M, nExt)
 %
 % It calculates statistical properties of different physical variables over
-% several sample state. Called by sw.anneal.
+% several sample state. Called by spinw.anneal.
 %
 % Input:
 %
@@ -46,7 +46,7 @@ function parOut = sw_fstat(state, parIn, T, E, M, ~)
 % parOut.Cp     Heat capacity of the sample: (<E^2>-<E>^2)/kB/T^2.
 % parOut.Chi    Magnetic susceptibility of the sample: (<M^2>-<M>^2)/kB/T.
 %
-% See also SW, SW.ANNEAL.
+% See also SPINW, SPINW.ANNEAL.
 %
 
 if nargin == 0

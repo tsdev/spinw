@@ -258,7 +258,7 @@ nMagAtom = size(mAtom.r,2);
 nMagExt  = nMagAtom*prod(nExt);
 
 if nMagAtom==0
-    error('sw:genmagstr:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+    error('spinw:genmagstr:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 
 % Create mAtom.Sext matrix.
@@ -329,7 +329,7 @@ switch param.mode
         % we substitute random values for symbolic km
         skExt = sw_sub1(kExt,'rand');
         if any(abs(skExt(:)-round(skExt(:)))>param.epsilon) && prod(nExt) > 1
-            warning('sw:genmagstr:UCExtNonSuff','In the extended unit cell k is still larger than epsilon!');
+            warning('spinw:genmagstr:UCExtNonSuff','In the extended unit cell k is still larger than epsilon!');
         end
         % number of spins in the input
         nSpin = size(param.S,2);
@@ -354,7 +354,7 @@ switch param.mode
             % no phase, magnetic structure is already in superstructure
             addPhase = false;
         else
-            error('sw:genmagstr:WrongNumberSpin','Wrong number of input spins!');
+            error('spinw:genmagstr:WrongNumberSpin','Wrong number of input spins!');
         end
                
         if addPhase
@@ -377,7 +377,7 @@ switch param.mode
         end
         
         if size(S,2) ~= nMagExt
-            error('sw:genmagstr:WrongSpinSize','Wrong dimensions of param.S matrix!');
+            error('spinw:genmagstr:WrongSpinSize','Wrong dimensions of param.S matrix!');
         end
                 
     case 'rotate'

@@ -74,7 +74,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % fHandle   Handle of the plot figure.
 % pHandle   Handle of the graphics objects on the figure.
 %
-% See also SW.PLOT, SW.SPINWAVE, SW_SURF.
+% See also SPINW.PLOT, SPINW.SPINWAVE, SW_SURF.
 %
 
 if nargin==0
@@ -139,7 +139,7 @@ if isfield(spectra,'omega') && iscell(spectra.omega)
     end
     param.twin = param.twin((param.twin<=nTwin) & (param.twin>0));
     if isempty(param.twin)
-        warning('sw:sw_plotspec:WrongInput','Number of twins is wrong, plotting all twins!');
+        warning('sw_plotspec:WrongInput','Number of twins is wrong, plotting all twins!');
         param.twin = 1:nTwin;
     end
     nTwin      = numel(param.twin);
@@ -163,7 +163,7 @@ if param.mode>1 && param.mode<4 && iscell(spectra.swConv)
     nTwinS      = size(spectra.swConv,2);
     param.twinS = param.twin((param.twin<=nTwinS) & (param.twin>0));
     if isempty(param.twinS) && (nTwinS>1)
-        warning('sw:sw_plotspec:WrongInput','Number of twins is wrong, plotting all twins!');
+        warning('sw_plotspec:WrongInput','Number of twins is wrong, plotting all twins!');
         param.twinS = 1:nTwinS;
     end
     nTwinS      = numel(param.twinS);
@@ -342,7 +342,7 @@ if ~powmode
                 elseif (size(param.colormap,2) == nMode) && (size(param.colormap,1)==3)
                     colors = [0 0 0; param.colormap'; 0 0 0]/255;
                 else
-                    error('sw:sw_plotspec:ColormapError','The dimensions of the colormap should be [3 nMode=%d]',nMode);
+                    error('sw_plotspec:ColormapError','The dimensions of the colormap should be [3 nMode=%d]',nMode);
                 end
             end
         end
@@ -363,7 +363,7 @@ if ~powmode
             lLabel = {'Q+k_m' 'Q' 'Q-k_m'};
         end
     else
-        error('sw:sw_plotspec:NumberOfModes','Wrong number of spin wave modes!');
+        error('sw_plotspec:NumberOfModes','Wrong number of spin wave modes!');
     end
 else
     nPlot     = 1;
@@ -374,7 +374,7 @@ else
 end
 
 if powmode && (param.mode~=3)
-    warning('sw:sw_plotspec:PowMode','Powder spectra, only convoluted spectra can be plotted!');
+    warning('sw_plotspec:PowMode','Powder spectra, only convoluted spectra can be plotted!');
     param.mode = 3;
 end
 
@@ -511,7 +511,7 @@ if param.mode == 3
         end
         if ~iscell(param.colormap)
             if (size(param.colormap,1) ~= 3) || (size(param.colormap,2)<nPlot)
-                error('sw:sw_plotspec:ColormapError','The dimensions of the colormap should be [3 nPlot]');
+                error('sw_plotspec:ColormapError','The dimensions of the colormap should be [3 nPlot]');
             end
             tHandle = cell(1,nPlot);
             for ii = 1:nPlot

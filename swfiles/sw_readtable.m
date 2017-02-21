@@ -67,19 +67,16 @@ dataStr = ndbase.source(dataSource);
 % split string into lines
 dataStr = regexp(dataStr, ['(?:' sprintf('\n') ')+'], 'split');
 
-% read header lines given by user
-dataStr = dataStr((nHeader+1):end);
+% index into the line number, skip header lines
+idxStr = nHeader+1;
 
-%TODO
 % read header
-str = fgets(dataStr);
-while isempty(str) || str(1) == '#'
-    str = fgets(dataStr);
+while isempty(dataStr{idxStr}) || dataStr{idxStr}(1) == '#'
+    idxStr = idxStr+1;
 end
 
 % read column names
-%cTemp = strsplit(strtrim(str),delimiter);
-cTemp = regexp(strtrim(str), ['(?:', delimiter, ')+'], 'split');
+cTemp = regexp(strtrim(dataStr{idxStr}), ['(?:', delimiter, ')+'], 'split');
 
 cName = {};
 mIdx  = cell(1,numel(cTemp));
@@ -116,22 +113,23 @@ nCol  = numel(cSel);
 sTemp = [cName;repmat({{}},1,numel(cName))];
 dat = struct(sTemp{:});
 
-modeStr = ''; 
+modeStr = '';
 idx = 1;
 
-str = fgets(dataStr);
+% next line
+idxStr = idxStr+1;
 
 % load data
-while str ~= -1
+while idxStr <= numel(dataStr)
     
-    str = strtrim(str);
+    str = strtrim(dataStr{idxStr});
     
     %lTemp = strsplit(str,delimiter);
     lTemp = regexp(str,['(?:', delimiter, ')+'],'split');
     
     if ~isempty(str) && str(1) == '#'
         modeStr = str;
-        str = fgets(dataStr);
+        idxStr = idxStr+1;
         continue
     end
     
@@ -147,9 +145,7 @@ while str ~= -1
     end
     dat(idx).MODE = modeStr;
     idx = idx + 1;
-    str = fgets(dataStr);
+    idxStr = idxStr+1;
 end
-
-fclose(dataStr);
 
 end

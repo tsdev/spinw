@@ -89,7 +89,7 @@ switch param.mode
     case 'outside'
         range = [floor(range(:,1)) ceil(range(:,2))];
     otherwise
-        error('sw:cell:WrongInput','The given mode is invalid!');
+        error('plotcell:WrongInput','The given mode is invalid!');
 end
 
 % generate the unit cells

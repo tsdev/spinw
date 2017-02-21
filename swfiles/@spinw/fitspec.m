@@ -93,7 +93,7 @@ function fitsp = fitspec(obj, varargin)
 % Output:
 %
 % Output fitsp is struct type with the following fields:
-% obj       Copy of the input sw class object, with the best fitted
+% obj       Copy of the input spinw class object, with the best fitted
 %           Hamiltonian.
 % x         Final values of the fitted parameters, dimensions are
 %           [nRun nPar]. The rows of x are sorted according to increasing R
@@ -219,11 +219,11 @@ while idx <= nRun
     %     catch
     %         warning('Hamiltonian is not compatible with the magnetic ground state!');
     %         if ~isempty(param.x0)
-    %             error('sw:fitspec:WrongInput','x0 input incompatible with ground state!');
+    %             error('spinw:fitspec:WrongInput','x0 input incompatible with ground state!');
     %         end
     %
     %         if idxAll >= param.nMax
-    %             warning('sw:fitspec:WrongInput','Maximum number of wrong runs (param.nMax) reached, calculation is terminated!');
+    %             warning('spinw:fitspec:WrongInput','Maximum number of wrong runs (param.nMax) reached, calculation is terminated!');
     %             break;
     %         end
     %     end
@@ -245,7 +245,7 @@ if param.plot
     spec_fitfun(obj, data, param.func, x(1,:), param0);
 end
 
-% set the best fit to the sw object
+% set the best fit to the spinw object
 param.func(obj,x(1,:));
 
 obj.fileid(fidSave);
@@ -264,7 +264,7 @@ function [yCalc, pHandleOut] = spec_fitfun(obj, dataCell, parfunc, x, param)
 %
 % [yCalc, pHandle] = SW_FITFUN(obj, data, param, swfunc, x)
 %
-% swobj         sw type object contains the magnetic structure and the
+% swobj         spinw type object contains the magnetic structure and the
 %               Hamiltonian for the spin wave calculation.
 % data          Structure contains the experimental data, read by
 %               sw_readspec.

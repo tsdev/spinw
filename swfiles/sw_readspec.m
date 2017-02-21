@@ -52,7 +52,7 @@ function data = sw_readspec(path)
 % 0     1.1000   2.0000   15      30      1   22.7032   1.0   0   0.0       0.0
 % 0     1.2000   2.0000   20      35      1   25.1516   1.0   0   0.0       0.0
 %
-% See also SW.FITSPEC.
+% See also SPINW.FITSPEC.
 %
 
 if nargin == 0
@@ -76,7 +76,7 @@ elseif strcmp(temp(1),'[')
     strPosR = strfind(temp,']')-1;
     modeStr{1} = temp(2:strPosR(1)); %#ok<*AGROW>
 else
-    error('sw:sw_readspec:DataFormatError','Wrong input dat format!');
+    error('sw_readspec:DataFormatError','Wrong input dat format!');
 end
 
 polIdx = 1;
@@ -97,7 +97,7 @@ while ~feof(fid)
         if numel(strPosR>1)
             strPosL = strfind(temp,'[');
             if numel(strPosL)<2
-                error('sw:sw_readspec:DataFormatError','Wrong input dat format!');
+                error('sw_readspec:DataFormatError','Wrong input dat format!');
             end
             nStr = temp(strPosL(2)+1:strPosR(2)-1);
             n    = sscanf(nStr,'%f',[1 3]);

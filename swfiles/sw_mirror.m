@@ -23,7 +23,7 @@ function [V, mirM] = sw_mirror(n, V)
 % following command:
 %   Ap = mirM * A * mirM';
 %
-% See also SW.GENMAGSTR, SW_ROT.
+% See also SPINW.GENMAGSTR, SW_ROT.
 %
 
 if nargin==0

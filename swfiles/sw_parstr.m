@@ -14,7 +14,7 @@ function parsed = sw_parstr(strIn, spectra)
 %           function. Letter a and b can be 'x', 'y' or 'z'. For example:
 %           'Sxx' will convolute the xx component of the correlation
 %           function with the dispersion. xyz is the standard coordinate
-%           system, see online documentation of sw.
+%           system, see online documentation of spinw.
 % 'Mab'     convolutes the selected components of the spin-spin
 %           correlation function. Letter a and b can be 'x', 'y' or 'z'.
 %           For example: 'Sxx' will convolute the xx component of the
@@ -64,7 +64,7 @@ function parsed = sw_parstr(strIn, spectra)
 % Test it with:
 % <a href="matlab:parsed = sw_parstr('Sxx + Syy')">parsed = sw_parstr('Sxx + Syy')</a>
 %
-% See also SW_EGRID, SW.FITSPEC.
+% See also SW_EGRID, SPINW.FITSPEC.
 %
 
 if nargin == 0
@@ -136,29 +136,29 @@ for ii = 1:nTerm
                     if strS{ii} == 4
                         strS{ii} = 5; % Pa
                     else
-                        error('sw:sw_parse:WrongString','Wrong input string!');
+                        error('sw_parstr:WrongString','Wrong input string!');
                     end
                 end
                 idxA = strcmpi(strTemp(2),{'x' 'y' 'z'});
                 if any(idxA)
                     strS{ii} = [strS{ii} find(idxA)];
                 else
-                    error('sw:sw_parse:WrongString','Wrong input string!');
+                    error('sw_parstr:WrongString','Wrong input string!');
                 end
                 if numel(strTemp)==3
                     idxB = strcmpi(strTemp(3),{'x' 'y' 'z'});
                     if any(idxB)
                         strS{ii} = [strS{ii} find(idxB)];
                     else
-                        error('sw:sw_parse:WrongString','Wrong input string!');
+                        error('sw_parstr:WrongString','Wrong input string!');
                     end
                     
                 end
             else
-                error('sw:sw_parse:WrongString','Wrong input string!');
+                error('sw_parstr:WrongString','Wrong input string!');
             end
         else
-            error('sw:sw_parse:WrongString','Wrong input string!');
+            error('sw_parstr:WrongString','Wrong input string!');
         end
     end
 end

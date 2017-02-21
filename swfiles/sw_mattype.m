@@ -36,11 +36,11 @@ end
 type = zeros(1,mSize(3));
 
 if any(mSize(1:2)-[3 3])
-    error('sw:sw_mattype:InputError','Dimensions of the Input matrix is not 3x3xN!');
+    error('sw_mattype:InputError','Dimensions of the Input matrix is not 3x3xN!');
 end
 
 if ~isreal(mat) && ~isa(mat,'sym')
-    error('sw:sw_mattype:InputError','Input matrix is not real or symbolic!');
+    error('sw_mattype:InputError','Input matrix is not real or symbolic!');
 end
 
 if ~isa(mat,'sym')

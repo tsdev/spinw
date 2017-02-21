@@ -44,7 +44,7 @@ mAtom    = obj.matom;
 nMagAtom = size(mAtom.idx,2);
 
 if nMagAtom==0
-    error('sw:addaniso:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+    error('spinw:addaniso:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 
 cTemp = -1;
@@ -59,13 +59,13 @@ if ischar(matrixIdx)
 end
 
 if matrixIdx == -1
-    error('sw:addaniso:WrongCouplingTypeIdx','Input matrix does not exists!');
+    error('spinw:addaniso:WrongCouplingTypeIdx','Input matrix does not exists!');
 end
 
 if nargin > 3
     atomIdx = varargin{2};
     if obj.lattice.sym > 1
-        error('sw:addaniso:SymmetryProblem','atomIdx is not allowed when crystal symmetry is not P1!');
+        error('spinw:addaniso:SymmetryProblem','atomIdx is not allowed when crystal symmetry is not P1!');
     end
 
 end
@@ -94,9 +94,9 @@ if nargin > 2
             sAIdx = find(~cellfun(@(C)isempty(C),findRes));
             
             if numel(sAIdx) == 0
-                error('sw:addaniso:WrongString','Atom label doesn''t exist!')
+                error('spinw:addaniso:WrongString','Atom label doesn''t exist!')
             %elseif numel(sAIdx) > 1
-            %    error('sw:addaniso:WrongString','Multiple atoms have the same label!')
+            %    error('spinw:addaniso:WrongString','Multiple atoms have the same label!')
             end
             isSelectedAtom(sAIdx) = true;
         end

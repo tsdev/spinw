@@ -5,7 +5,7 @@ function varargout = temperature(obj,varargin)
 %
 % If T is defined, it sets the temperature stored in obj object
 % to T, where T is scalar. The units of temerature is
-% determined by the sw.unit.kB value, default is Kelvin.
+% determined by the spinw.unit.kB value, default is Kelvin.
 %
 % T = TEMPERATURE(obj)
 %
@@ -20,7 +20,7 @@ elseif nargin == 2
     if numel(T) == 1
         obj.single_ion.T = T;
     else
-        error('sw:temperature:ArraySize','Input temperature has to be scalar!');
+        error('spinw:temperature:ArraySize','Input temperature has to be scalar!');
     end
     if nargout > 0
         varargout{1} = obj;

@@ -16,7 +16,7 @@ function cGraph = sw_fsub(conn, ~)
 %
 % cGraph        Vector, that assigns every magnetic moment to a sublattice.
 %
-% See also SW.ANNEAL.
+% See also SPINW.ANNEAL.
 %
 
 if nargin == 0

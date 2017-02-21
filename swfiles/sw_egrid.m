@@ -22,7 +22,7 @@ function spectra = sw_egrid(spectra, varargin)
 %                       'y' or 'z'. For example: 'Sxx' will convolute the
 %                       xx component of the correlation function with the
 %                       dispersion. xyz is the standard coordinate system,
-%                       see online documentation of sw.
+%                       see online documentation of spinw.
 %               'Mab'   bins the selected components of the spin-spin
 %                       correlation function. Letter a and b can be 'x',
 %                       'y' or 'z'. For example: 'Mxx' will convolute the
@@ -55,14 +55,14 @@ function spectra = sw_egrid(spectra, varargin)
 %
 % Evect     Vector, defines the center/edge of the energy bins of the
 %           calculated output, dimensions are is [1 nE]. The energy units
-%           are defined by the unit.kB property of the sw object. Default
+%           are defined by the unit.kB property of the spinw object. Default
 %           value is an edge bin: linspace(0,1.1*maxOmega,501).
 % binType   String, determines the type of bin give, possible options:
 %               'cbin'    Center bin, the center of each energy bin is given.
 %               'ebin'    Edge bin, the edges of each bin is given.
 %           Default is 'ebin'.
 % T         Temperature, used to calculate the Bose factor in units
-%           depending on the Boltzmann constant (sw.unit.kB). Default
+%           depending on the Boltzmann constant (spinw.unit.kB). Default
 %           temperature is taken from obj.single_ion.T. The Bose factor is
 %           included in swConv field of the output.
 % sumtwin   If true, the spectra of the different twins will be summed
@@ -118,7 +118,7 @@ function spectra = sw_egrid(spectra, varargin)
 % calculated, first using the sum of the Sxx and Syy components, second
 % will contain the Szz component of the correlation function.
 %
-% See also SW.SPINWAVE, SW_NEUTRON.
+% See also SPINW.SPINWAVE, SW_NEUTRON.
 %
 
 if nargin == 0
@@ -342,7 +342,7 @@ if isfield(spectra,'omega')
         ioMax = max(abs(imag(omega{1}(:))));
         
         if ioMax > max(abs(dE(:)))
-            error('sw:egrid:BadSolution',['The imaginary part of the spin '...
+            error('egrid:BadSolution',['The imaginary part of the spin '...
                 'wave energes is larger than the bin size! Improve '...
                 'your calculation or disable imagChk option!']);
         end

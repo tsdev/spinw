@@ -3,7 +3,7 @@ function rootdir = sw_rootdir()
 %
 % rootdir = SW_ROOTDIR()
 %
-% See also SW.
+% See also SPINW.
 %
 
 rootdir = mfilename('fullpath');

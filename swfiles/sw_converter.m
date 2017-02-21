@@ -90,7 +90,7 @@ switch particleName
     case 'photon'
         m = 0;
     otherwise
-        error('sw:sw_converter:WrongParticle','Particle name is wrong!');
+        error('sw_converter:WrongParticle','Particle name is wrong!');
 end
 
 % Conversions
@@ -114,7 +114,7 @@ switch unitIn
         if m~=0
             k = value*m/hBar/1e10;
         else
-            error('sw:sw_converter:WrongUnit','Speed cannot be an input for photon!');
+            error('sw_converter:WrongUnit','Speed cannot be an input for photon!');
         end
     case 'meV'
         if m~=0

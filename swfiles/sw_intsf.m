@@ -28,7 +28,7 @@ function sFact = sw_intsf(sFact, varargin)
 %   The above code will integrate the structure factor along a* between 0
 %   and 1, along b* between 0 and 2.
 %
-% See also SW, SW.STRUCTFACT, SW_PLOTSF.
+% See also SPINW, SPINW.STRUCTFACT, SW_PLOTSF.
 %
 
 if nargin == 0
@@ -49,7 +49,7 @@ switch param.type
     case 'perp'
         F2 = sFact.perp;
     otherwise
-        warning('sw:sw_plotsf:WrongParam','param.type is wrong, using ''sf''!');
+        warning('sw_plotsf:WrongParam','param.type is wrong, using ''sf''!');
         F2 = sFact.F2;
 end
 

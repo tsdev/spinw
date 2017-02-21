@@ -3,7 +3,7 @@ function objS = struct(obj)
 %
 % objS = STRUCT(obj)
 %
-% See also SPINW, SPINWSW.COPY.
+% See also SPINW, SPINW.COPY.
 %
 
 objS   = struct;

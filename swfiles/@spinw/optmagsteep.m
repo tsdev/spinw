@@ -61,8 +61,8 @@ function optm = optmagsteep(obj, varargin)
 % See also SPINW, SPINW.ANNEAL, SW_FSUB, SW_FSTAT.
 %
 
-% disable warning in sw.energy
-warnStruct = warning('off','sw:energy:AnisoFieldIncomm');
+% disable warning in spinw.energy
+warnStruct = warning('off','spinw:energy:AnisoFieldIncomm');
 
 % save the time of the beginning of the calculation
 if nargout > 0
@@ -139,7 +139,7 @@ end
 % and give a warning.
 idxSelf = SS.all(4,:)==SS.all(5,:);
 if any(idxSelf)
-    warning('sw:optmagsteep:SelfCoupling','Some spins are coupled to themselves in the present magnetic cell!');
+    warning('spinw:optmagsteep:SelfCoupling','Some spins are coupled to themselves in the present magnetic cell!');
     SS.all(:,idxSelf) = [];
 end
 
@@ -249,7 +249,7 @@ fSpin = squeeze(sumn(abs(AA),[1 2]))==0 & nNeighG==0 & sum(abs(Bloc'),2)==0;
 Sindex(:,fSpin) = false;
 
 if ~any(Sindex)
-    error('sw:optmagsteep:NoField','There nothing to optimise!');
+    error('spinw:optmagsteep:NoField','There nothing to optimise!');
 end
 
 % Speeds up the code by storing every sublattice data in different cells

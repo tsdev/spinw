@@ -87,7 +87,7 @@ function spectra = spinwavesym(obj, varargin)
 % symbolic expression into a numerical vector and the third section plots
 % the real and imaginary part of the solution.
 %
-% See also SW, SW.SPINWAVE, SW_NEUTRON, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
+% See also SPINW, SPINW.SPINWAVE, SW_NEUTRON, SW_POL, SPINW.POWSPEC, SPINW.OPTMAGSTR.
 %
 
 % save the begining time of the calculation
@@ -120,7 +120,7 @@ fid = obj.fid;
 % magnetic unit cell.
 %[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
 %if obj.symmetry && any(sw_mattype(obj.matrix.mat)~=1)
-%    warning('sw:spinwavesym:symmetry','The non-isotropic symbolic matrices will not be rotated unsing the point group operators, define them manually!')
+%    warning('spinw:spinwavesym:symmetry','The non-isotropic symbolic matrices will not be rotated unsing the point group operators, define them manually!')
 %end
 %[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true,'rotMat',false);
 [SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true);
@@ -130,7 +130,7 @@ bq = SS.all(15,:)==1;
 
 % Biquadratic exchange only supported for commensurate structures
 if incomm && any(bq)
-    error('sw:spinwavesym:Biquadratic','Biquadratic exchange can be only calculated for k=0 structures!');
+    error('spinw:spinwavesym:Biquadratic','Biquadratic exchange can be only calculated for k=0 structures!');
 end
 
 if any(bq)
@@ -148,7 +148,7 @@ hklExt  = hkl.*nExt'*2*pi;
 
 % Calculates parameters eta and zed.
 if isempty(obj.mag_str.S)
-    error('sw:spinwave:NoMagneticStr','No magnetic structure defined in obj!');
+    error('spinw:spinwave:NoMagneticStr','No magnetic structure defined in obj!');
 end
 
 M0 = obj.mag_str.S;

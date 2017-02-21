@@ -132,7 +132,7 @@ else
     % V: 3 x nMagExt x nMode x nHkl
     Sab = reshape(V,3,nMagExt,3*nMagExt,nHkl);
     
-    % spin values are already included in the sw.fourier() function
+    % spin values are already included in the spinw.fourier() function
     % % multiply the eigenmodes with the spin value
     % S   = obj.matom.S;
     % Sab = bsxfun(@times,V,S);
@@ -173,7 +173,7 @@ else
             chi.formfact = obj.unit_cell.label(obj.unit_cell.S>0);
         else
             if numel(param.formfact) ~= unique(obj.matom.idx)
-                error('sw:meanfield:WrongInput',['Number of form factor '...
+                error('spinw:meanfield:WrongInput',['Number of form factor '...
                     'parameters has to equal to the number of symmetry inequivalent '...
                     'magnetic atoms in the unit cell!'])
             end

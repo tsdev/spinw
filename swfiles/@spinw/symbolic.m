@@ -27,7 +27,7 @@ switch symb
     case true
         v = ver;
         if ~any(strcmp('Symbolic Math Toolbox', {v.Name}))
-            error('sw:symbolic:NoToolBox','You need Symbolic Math Toolbox installed to run symbolic calculations!');
+            error('spinw:symbolic:NoToolBox','You need Symbolic Math Toolbox installed to run symbolic calculations!');
         end
         
         % Spin values
@@ -116,7 +116,7 @@ switch symb
         obj.unit.muB = 0.057883818066;
         
     otherwise
-        error('sw:symbolic:WrongInput','The type of symb input variable has to be logical.')
+        error('spinw:symbolic:WrongInput','The type of symb input variable has to be logical.')
 end
 
 obj.symb = logical(symb);

@@ -77,11 +77,11 @@ if isempty(newMat(1).mat)
     end
     nJ = nLabel;
     if nJ == 0
-        error('sw:addmatrix:WrongInput','Define some matrix property!');
+        error('spinw:addmatrix:WrongInput','Define some matrix property!');
     else
         newMat.mat = repmat(eye(3),[1 1 nJ]);
         if ~obj.symbolic
-            warning('sw:addmatrix:NoValue','No valid value was given for the new matrix, default value used!');
+            warning('spinw:addmatrix:NoValue','No valid value was given for the new matrix, default value used!');
         end
     end
 end

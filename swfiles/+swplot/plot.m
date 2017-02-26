@@ -81,6 +81,8 @@ function varargout = plot(varargin)
 %           columns for different width per line segment.
 % scale     Scale for the orbitals, the default scale=1 corresponds to the
 %           true size of the Hydrogen orbital in Angstrom.
+% qLabel    Label of the orbital in a string, for details check the same
+%           option in swplot.orbital.
 % nMesh     Resolution of the ellipse surface mesh. Integer number that is
 %           used to generate an icosahedron mesh with #mesh number of
 %           additional triangulation, default value is stored in
@@ -121,10 +123,10 @@ inpForm.defval = [inpForm.defval {{}        false     0.5         fontSize0  tru
 inpForm.size   = [inpForm.size   {[-14 -15] [1 1]     [1 -16]     [1 1]      [1 1]       [1 1]  [1 -17]}];
 inpForm.soft   = [inpForm.soft   {true      false     false       false      false       false  false  }];
 
-inpForm.fname  = [inpForm.fname  {'scale'}];
-inpForm.defval = [inpForm.defval {1      }];
-inpForm.size   = [inpForm.size   {[1 1]  }];
-inpForm.soft   = [inpForm.soft   {false  }];
+inpForm.fname  = [inpForm.fname  {'scale' 'qLabel'}];
+inpForm.defval = [inpForm.defval {1       ''      }];
+inpForm.size   = [inpForm.size   {[1 1]   [1 -18] }];
+inpForm.soft   = [inpForm.soft   {false   true    }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -152,20 +154,15 @@ col0    = {'red'   'blue'      'orange'   'gray'   'black' 'black' 'turquoise' c
 K       = containers.Map(type0,1:numel(col0));
 typeNum = K(type);
 
+if strcmp(type,'orbital') && isempty(param.qLabel)
+    error('plot:OrbitalMissing','Missing qLabel option!')
+end
+
 if isempty(param.legend)
     legend = legend0(typeNum);
 else
     legend = param.legend;
 end
-
-if isempty(param.figure)
-    hFigure = swplot.activefigure('plot');
-else
-    hFigure = param.figure;
-end
-
-% axis handle
-hAxis = getappdata(hFigure,'axis');
 
 if isempty(param.name)
     param.name = type;
@@ -183,14 +180,6 @@ else
 end
 nLabel = numel(label);
 
-% remove objects with the same name if necessary
-if param.replace
-    % find objects to be deleted
-    sObj = swplot.findobj(hFigure,'name',param.name);
-    % delete them!
-    swplot.delete([sObj(:).number]);
-end
-
 % check size of position matrix
 pos0 = [2 1 2 2 0 1 0 1];
 pos  = param.position;
@@ -200,23 +189,6 @@ end
 
 % number of objects to plot
 nObject = size(pos,2);
-
-% basis vectors
-BV = getappdata(hFigure,'base');
-
-% check unit selector string
-% pos will store coordinates in lu units
-switch lower(param.unit)
-    case 'lu'
-        % multiply the coordinates with the basis vectors
-        xyz = permute(sum(bsxfun(@times,permute(pos,[4 1 2 3]),BV),2),[1 3 4 2]);
-    case 'xyz'
-        
-        xyz = pos;
-        pos = permute(sum(bsxfun(@times,permute(pos,[4 1 2 3]),inv(BV)),2),[1 3 4 2]);
-    otherwise
-        error('plot:WrongInput','The selected coordinate system unit option does not exists!');
-end
 
 % check colors
 if iscellstr(param.color) && size(param.color,1)~=1
@@ -247,6 +219,39 @@ if strcmp(type,'orbital') && nCol ~= 1 && nCol ~= 2 && nCol ~= nObject && nCol ~
     error('plot:WrongInput','Number of given colors does not agree with the number of object positions!')
 end
 
+if isempty(param.figure)
+    hFigure = swplot.activefigure('plot');
+else
+    hFigure = param.figure;
+end
+
+% axis handle
+hAxis = getappdata(hFigure,'axis');
+
+% basis vectors
+BV = getappdata(hFigure,'base');
+
+% check unit selector string
+% pos will store coordinates in lu units
+switch lower(param.unit)
+    case 'lu'
+        % multiply the coordinates with the basis vectors
+        xyz = permute(sum(bsxfun(@times,permute(pos,[4 1 2 3]),BV),2),[1 3 4 2]);
+    case 'xyz'
+        
+        xyz = pos;
+        pos = permute(sum(bsxfun(@times,permute(pos,[4 1 2 3]),inv(BV)),2),[1 3 4 2]);
+    otherwise
+        error('plot:WrongInput','The selected coordinate system unit option does not exists!');
+end
+
+% remove objects with the same name if necessary
+if param.replace
+    % find objects to be deleted
+    sObj = swplot.findobj(hFigure,'name',param.name);
+    % delete them!
+    swplot.delete([sObj(:).number]);
+end
 
 sObject = struct('handle',cell(1,nObject));
 
@@ -264,6 +269,17 @@ switch type
         end
         
         handle = swplot.ellipsoid(hAxis,xyz,param.T,param.nMesh);
+        pos(:,:,2) = nan;
+    case 'orbital'
+        if isempty(param.T)
+            param.T = eye(3);
+        end
+        
+        if numel(param.T) == 9
+            param.T = repmat(param.T,[1 1 nObject]);
+        end
+        
+        handle = swplot.orbital(hAxis,param.qLabel,xyz,param.T,param.scale,param.nPatch);
         pos(:,:,2) = nan;
     case 'polyhedron'
         handle = swplot.polyhedron(hAxis,xyz);
@@ -301,12 +317,20 @@ if numel(handle)>1 && handle{1}==handle{2}
     
     if strcmp(get(hPatch,'FaceColor'),'flat')
         % it is a faces object
-        
-        if nCol == 1
-            patchCData = repmat(color,[1 nObject]);
+
+        if strcmp(type,'orbital')
+            % allow 2 colors per orbital: 
+            %   color1: (:,1:nObject)
+            %   color2: (:,(nObject+1):end)
+            if nCol == 2
+                patchCData = [repmat(color(:,1),[1 nObject]) repmat(color(:,2),[1 nObject])];
+            else
+                patchCData = repmat(color,[1 2*nObject/nCol]);
+            end
         else
-            patchCData = color;
+            patchCData = repmat(color,[1 nObject/nCol]);
         end
+        
         if nAlp == 1
             patchAlphaData = repmat(param.alpha,[1 nObject]);
         else
@@ -326,9 +350,20 @@ if numel(handle)>1 && handle{1}==handle{2}
             error('plot:WrongInput','All patch objects have to be the same type!');
         end
         
-        patchCData = reshape(permute(repmat(patchCData,[1 1 nFacePerObject]),[3 2 1]),[],3);
+        if strcmp(type,'orbital')
+            % assign the two colors
+            patchCData1 = reshape(permute(repmat(patchCData(:,1:(end/2)),[1 1 nFacePerObject]),[3 2 1]),[],3);
+            patchCData2 = reshape(permute(repmat(patchCData(:,(end/2+1):end),[1 1 nFacePerObject]),[3 2 1]),[],3);
+            % mix in CData2 where C is blue C(:,3)
+            blueIdx = logical(C(end+(((-nNewFace+1):0)),3));
+            patchCData1(blueIdx,:) = patchCData2(blueIdx,:);
+            C(end+(((-nNewFace+1):0)),:) = patchCData1;
+        else
+            patchCData = reshape(permute(repmat(patchCData,[1 1 nFacePerObject]),[3 2 1]),[],3);
+            C(end+(((-nNewFace+1):0)),:) = patchCData;
+        end
+        
         patchAlphaData = reshape(repmat(patchAlphaData,[nFacePerObject 1]),[],1);
-        C(end+(((-nNewFace+1):0)),:) = patchCData;
         A(end+(((-nNewFace+1):0)),:) = patchAlphaData;
         set(hPatch,'FaceVertexCData',C,'FaceVertexAlphaData',A);
         

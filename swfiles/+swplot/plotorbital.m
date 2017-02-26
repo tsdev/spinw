@@ -1,12 +1,12 @@
-function varargout = plotion(varargin)
-% plots magnetic ion properties
+function varargout = plotorbital(varargin)
+% plots electron orbitals of Hydrogen
 %
-% SWPLOT.PLOTION('option1', value1, ...)
+% SWPLOT.PLOTORBITAL('option1', value1, ...)
 %
-% hFigure = SWPLOT.PLOTION(...)
+% hFigure = SWPLOT.PLOTORBITAL(...)
 %
-% The function plots selected properties of magnetic ions stored in a SpinW
-% object onto an swplot figure.
+% The function plots selected electron orbitals of Hydrogen onto an swplot
+% figure.
 %
 % Input:
 %
@@ -22,40 +22,47 @@ function varargout = plotion(varargin)
 %           string:
 %               'lu'        Lattice units (default).
 %               'xyz'       Cartesian coordinate system in Angstrom units.
-% mode      String, defines how the bond is plotted
-%               'aniso'     Ellipsoid is plotted for single ion anisotropy.
-%               'g'     	Ellipsoid is drawn for g-tensor.
-% scale     Scaling factor for the size of the ellipsoid relative to the 
-%           shortest bond length. Default value is 1/3.
-% alpha     Transparency (alpha value) of the ellipsoid, default value is 
-%           0.3.
-% radius1   Minimum radius of the ellipsoid, default value is 0.08.
-% lineWidth Line width in pt of the main circles surrounding the ellipsoid, 
-%           if zero no circles are drawn. Default is 0.5.
+% mode      String, defines which orbital is plotted. Allowed strings and
+%           the corresponding quantum numbers:
+%
+%               mode                n l m pm
+%               's'         qNum = [1 0 0  0]
+%               'p_x'       qNum = [2 1 1  1]
+%               'p_y'       qNum = [2 1 0 -1]
+%               'p_z'       qNum = [2 1 0  0]
+%               'd_xy'      qNum = [3 2 2 -1]
+%               'd_xz'      qNum = [3 2 1  1]
+%               'd_yz'      qNum = [3 2 1 -1]
+%               'd_z2'      qNum = [3 2 0  0]
+%               'd_x2-y2'   qNum = [3 2 2  1]
+%
+%           where the quantum numbers are in a vector (n, l, m, {pm}),
+%           where pm defines the optional linear combination of the +m and
+%           -m orbitals (PSI is the wave function):
+%               PSI = PSI(n,l,m) + pm*PSI(n,l,-m)
+%           If pm is +1,-1 or m=0 the wave fuction is real, otherwise
+%           complex.
+% scale     Scaling factor for the size of the orbital relative to the
+%           Hydrogen orbitals. Default value is 1.
+% alpha     Transparency (alpha value) of the orbital, default value is 1.
 % figure    Handle of the swplot figure. Default is the selected figure.
-% legend    Whether to add the plot to the legend, default is true.
-% color     Color of the ellipsoid:
-%               'auto'      All ellipsoid gets the color of the ion.
-%               'colorname' All ellipsoid will have the same given color.
+% color     Color of the orbital:
+%               'auto'      All orbital gets the color of the ion.
+%               'colorname' All orbital will have the same given color.
 %               [R G B]     RGB code of the color that fix the color of all
-%                           ellipsoid.
-% color2    Color of the main circles, default is 'auto' when the ellipses
-%           will have the same color as the ellipsoids. Can be either a row
-%           vector of RGB code or string of a color name.
-% nMesh     Resolution of the ellipse surface mesh. Integer number that is
-%           used to generate an icosahedron mesh with #mesh number of
-%           additional triangulation, default value is stored in
-%           swpref.getpref('nmesh')
-% nPatch    Number of points on the curve for the arrows, default
-%           value is stored in swpref.getpref('npatch').
-% tooltip   If true, the tooltips will be shown when clicking on
-%           ellipsoids.
+%                           orbitals.
+% color2    Second color for the orbital to differentiate between the lobes
+%           of +/- PSI (wave function). Default is identical to the color
+%           option.
+% nPatch    Number of points in the surface mesh along the three
+%           dimensions, default value is stored in
+%           swpref.getpref('npatch').
+% tooltip   If true, the tooltips will be shown when clicking on orbitals.
 %           Default is true.
-% shift     Column vector with 3 elements, all ellipsoids will be
+% shift     Column vector with 3 elements, all orbital positions will be
 %           shifted by the given value. Default value is [0;0;0].
-% replace   Replace previously plotted ion objects if true. Default is
-%           true. 
-% translate If true, all plot objects will be translated to the figure 
+% replace   Replace previous orbital plot if true. Default is true.
+% translate If true, all plot objects will be translated to the figure
 %           center. Default is false.
 % zoom      If true, figure will be automatically zoomed to the ideal size.
 %           Default is false.
@@ -68,10 +75,10 @@ function varargout = plotion(varargin)
 %
 % hFigure           Handle of the swplot figure.
 %
-% The name of the objects that are created called 'ion'. To find the
+% The name of the objects that are created called 'orbital'. To find the
 % handles and the stored data on these objects, use e.g.
 %
-%   sObject = swplot.findobj(hFigure,'name','ion')
+%   sObject = swplot.findobj(hFigure,'name','orbital')
 %
 
 % default values
@@ -79,10 +86,10 @@ function varargout = plotion(varargin)
 nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
 
-inpForm.fname  = {'range' 'legend' 'label' 'scale' 'linewidth' 'alpha'};
-inpForm.defval = {[]      true     true    1/3     0.5         0.3    };
-inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 3]       [1 1]  };
-inpForm.soft   = {true    false    false   false   false       false  };
+inpForm.fname  = {'range' 'legend' 'label' 'scale' 'alpha'};
+inpForm.defval = {[]      true     true    1       0.3    };
+inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 1]  };
+inpForm.soft   = {true    false    false   false   false  };
 
 inpForm.fname  = [inpForm.fname  {'mode'  'color' 'nmesh' 'npatch' 'color2'}];
 inpForm.defval = [inpForm.defval {'aniso' 'auto'  nMesh0  nPatch0  'auto'  }];
@@ -94,10 +101,10 @@ inpForm.defval = [inpForm.defval {[]       []    'lu'   true      false }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1] [1 -6] [1 1]     [1 1] }];
 inpForm.soft   = [inpForm.soft   {true     true  false  false     false }];
 
-inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'radius1' 'translate' 'zoom'}];
-inpForm.defval = [inpForm.defval {[0;0;0] true      0.08      false       false }];
-inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]     [1 1]       [1 1] }];
-inpForm.soft   = [inpForm.soft   {false   false     false     false       false }];
+inpForm.fname  = [inpForm.fname  {'shift' 'replace' 'translate' 'zoom'}];
+inpForm.defval = [inpForm.defval {[0;0;0] true      false       false }];
+inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]       [1 1] }];
+inpForm.soft   = [inpForm.soft   {false   false     false       false }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -129,7 +136,7 @@ end
 BV = obj.basisvector;
 
 % set figure title
-set(hFigure,'Name', 'SpinW: Single ion properties');
+set(hFigure,'Name', 'SpinW: Electron orbitals');
 
 % select range
 if numel(param.range) == 6
@@ -149,7 +156,7 @@ elseif numel(param.range) == 3
     % change range, if the number of unit cells are given
     range = [zeros(3,1) param.range(:)];
 else
-    error('plotion:WrongInput','The given plotting range is invalid!');
+    error('plotorbital:WrongInput','The given plotting range is invalid!');
 end
 
 switch param.unit
@@ -163,7 +170,7 @@ switch param.unit
         rangelu = [min(corners,[],2) max(corners,[],2)];
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
     otherwise
-        error('plotion:WrongInput','The given unit string is invalid!');
+        error('plotorbital:WrongInput','The given unit string is invalid!');
 end
 
 % atom data
@@ -184,7 +191,7 @@ switch param.mode
     case 'g'
         mat = SI.g;
     otherwise
-        error('plotion:WrongInput','The given mode string is invalid!');
+        error('plotorbital:WrongInput','The given mode string is invalid!');
 end
 
 % generate the  positions of the magnetic atoms

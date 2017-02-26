@@ -121,6 +121,9 @@ V0 = V0*scale;
 
 NV = size(V0,1);
 
+% convert edge colors to face colors
+S0 = S(F0(:,1));
+
 % fast vertices
 V = reshape(permute(bsxfun(@plus,sum(bsxfun(@times,T,permute(V0,[3 2 4 1])),2)...
     ,permute(R0,[1 3 2])),[4 3 1 2]),[],3);
@@ -129,7 +132,7 @@ F = reshape(bsxfun(@plus,permute(F0,[1 3 2]),((1:nObject)-1)*NV),[],3);
 
 % default red-blue color
 C = [1 0 0;0 0 1];
-C = repmat(C(S,:),nObject,1);
+C = repmat(C(S0,:),nObject,1);
 % default transparency
 A = ones(size(F,1),1);
 

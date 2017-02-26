@@ -14,7 +14,7 @@ function TR = icomesh(nSub)
 %
 % Output:
 %
-% TR        Class triangulation object for plotting with trimesh().
+% TR        TriRep class triangulation object for plotting with trimesh().
 %
 
 % Using code from:
@@ -41,7 +41,7 @@ cHullx = reshape(cHullx,3,[])';
 % triangulate the points
 % only compatible with new Matlab versions
 %TR = triangulation(fliplr(convhulln(x)),x);
-TR = TriRep(fliplr(cHullx),x);
+TR = TriRep(fliplr(cHullx),x); %#ok<DTRIREP>
 
 % get the data structure
 %F = TR.ConnectivityList;
@@ -89,7 +89,7 @@ for ii = 1:nSub
     %TR = triangulation(F,X);
     %F  = TR.ConnectivityList;
     %X  = TR.Points;
-    TR = TriRep(F,X);
+    TR = TriRep(F,X); %#ok<DTRIREP>
     F  = TR.Triangulation;
     X  = TR.X;
     
@@ -100,7 +100,7 @@ if nSub > 0
     XL2 = sqrt(sum(X.^2,2));
     X   = bsxfun(@rdivide,X,XL2);
     %TR  = triangulation(F,X);
-    TR  = TriRep(F,X); 
+    TR  = TriRep(F,X);  %#ok<DTRIREP>
 end
 
 end

@@ -12,11 +12,11 @@ classdef spinw < handle
     % checks its data integrity. If obj is struct type, it creates new
     % spinw object and checks data integrity.
     %
-    % obj = SPINW(file_path)
+    % obj = SPINW(source)
     %
-    % construct new spinw class object, where file_path contains a string
+    % construct new spinw class object, where source contains a string
     % of a .cif/.fst file defining an input crystal and/or magnetic
-    % structure.
+    % structure (can be a file or URL).
     %
     % obj = SPINW(figure_handle)
     %
@@ -31,7 +31,7 @@ classdef spinw < handle
     % spinw is a handle class, that means that only the handle of the
     % object is copied in a swobj1 = swobj2 command. To create a copy
     % (clone) of an spinw object use:
-    %    swobj1 = swobj2.COPY;
+    %    swobj1 = swobj2.copy;
     %
     % See also: SPINW.COPY, SPINW.STRUCT,
     % <a href='/Applications/MATLAB_R2012b.app/help/matlab/matlab_oop/comparing-handle-and-value-classes.html'>Comparing handle and value classes</a>.
@@ -41,7 +41,6 @@ classdef spinw < handle
     %   genlattice      - defines lattice parameters, angles and symmetry
     %   basisvector     - returns the basis vectors in a matrix
     %   rl              - returns the reciprocal lattice vectors in a matrix
-    %   nosym           - reduces the lattice symmetry to P0
     %   newcell         - generates an arbitrary new cell and reduces symmetry to P0
     %   addatom         - adds a new atoms to the lattice
     %   unitcell        - selects a subset of the symmetry inequivalent atoms 
@@ -51,7 +50,13 @@ classdef spinw < handle
     %   natom           - returns the number of symmetry inequivalent atoms
     %   formula         - returns basic unit cell information
     %   disp            - return basic lattice information
+    %
+    % Symmetry operations:
     %   symmetry        - returns whether symmetry is on (>P0)
+    %   nosym           - reduces the lattice symmetry to P0
+    %   symop           - generates the symmetry operators on bonds and magnetic atoms (INTERNAL)
+    %   getmatrix       - determines the symmetry allowed elements of a matrix
+    %   setmatrix       - generates matrix values based on symmetry allowed elements
     %   
     % Plotting:
     %   plot            - plots crystal, magnetic structure and spin Hamiltonian
@@ -76,8 +81,6 @@ classdef spinw < handle
     %   
     % Matrix operations:
     %   addmatrix        - add a new matrix to the internal data
-    %   getmatrix       - determines the symmetry allowed elements of a matrix
-    %   setmatrix       - generates matrix values based on symmetry allowed elements
     %   nmat            - number of matrices
     %   
     % Spin Hamiltonian generations:
@@ -91,7 +94,6 @@ classdef spinw < handle
     %   nbond           - number of bonds
     %   temperature     - temperature for thermal population calculation
     %   intmatrix       - returns the spin Hamiltonian after symmetry applied (INTERNAL)
-    %   symop           - generates the symmetry operators on bonds and magnetic atoms (INTERNAL)
     %   
     % Calculators:
     %   spinwave        - linear spin wave solver
@@ -117,7 +119,6 @@ classdef spinw < handle
     %   validate        - validates SpinW object
     %   version         - version of SpinW used to create the object
     %   struct          - convert SpinW ojbect to struct
-    %   clearcache      - clear all data from cache, forcing recalculation (INTERNAL)
     %   spinw           - constructor
     %
     %
@@ -130,7 +131,7 @@ classdef spinw < handle
     %
     
     properties (SetObservable)
-        % Stores the unit cell parameters.
+        % Stores the unit cell parameters and symmetry.
         % Sub fields are:
         %   lat_const   lattice constants in a 1x3 vector in Angstrom units
         %   angle       (alpha,beta,gamma) angles in 1x3 vector in radian
@@ -205,7 +206,7 @@ classdef spinw < handle
         %
         % See also SPINW.ADDANISO, SPINW.ADDG, SPINW.GETMATRIX, SPINW.SETMATRIX, SPINW.INTMATRIX.
         single_ion
-        % Stores the list of spin-spin couplings.
+        % Stores the list of bonds between magnetic atoms.
         % Sub fields are:
         %   dl      distance between the unit cells of two interacting
         %           spins, stored in a 3 x nCoupling matrix
@@ -257,7 +258,7 @@ classdef spinw < handle
         %   muB     Bohr magneton, default is 0.0579 [meV/T]
         %   mu0     vacuum permeability, 201.335431 [T^2*Angstrom^3/meV]
         unit
-        % Stores the cache, it should be only used to check consistency of the code.
+        % Cache, acces is public for checking code consistency.
         % The stored values should not be changed by the user in any case!
         % Sub fields are:
         %   matom   data on the magnetic unit cell
@@ -302,12 +303,13 @@ classdef spinw < handle
             if ishandle(firstArg)
                 % get spinw object from graphics handle
                 switch get(firstArg,'Tag')
-                    case 'sw_crystal'
-                        figDat = getappdata(firstArg);
-                        obj = copy(figDat.obj);
+                    case swpref.getpref('tag',[])
+                        obj = copy(getappdata(firstArg,'obj'));
                     case 'sw_spectra'
                         figDat = getappdata(firstArg);
                         obj    = copy(figDat.spectra.obj);
+                    otherwise
+                        error('spinw:spinw:WrongHandle','The given handle does not contain a spinw object!');
                 end
                 return
 

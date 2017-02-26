@@ -18,6 +18,8 @@ function varargout = plot(varargin)
 %               'line'          position specifies start and end points (or
 %                               any number of points per curve)
 %               'text'          position specifies the center of the text
+%               'orbital'       position specifies the center of the
+%                               orbital
 % position  Position of the object/objects in a matrix with dimensions of
 %           [3 nObject 2]/[3 nObject]/[3 nObject nPoint] depending on the
 %           type of object.
@@ -40,7 +42,12 @@ function varargout = plot(varargin)
 %           many objects are given in a matrix with dimensions of [3 1]/[3
 %           nObject]. Values are RGB triples with values between [0 255].
 %           Can be also string or cell of strings with the name of the
-%           colors, for details see swplot.color. Default is red.
+%           colors, for details see swplot.color. Default is red. For
+%           orbitals two colors per orbital can be defined, for the lobes
+%           corresponding to the +/- values of the wave function. The
+%           second set of colors can be added along the third dimension,
+%           e.g. [3 1 2]/[3 nObject 2] for RGB values and string-cell with
+%           dimensions of [1 1 2]/[1 nObject 2]. Default value is red/blue.
 % alpha     Transparency of objects (1 non-transparent, 0 transparent)
 %           defined as a single number for unitform transparency or as a
 %           row vector with nObject element to set transparency per object.
@@ -54,8 +61,12 @@ function varargout = plot(varargin)
 %           arrow, default is 0.06.
 % ang       Angle for arrow head in degree units, default is 15 degree.
 % lHead     Length of the arrow head, default value is 0.5.
-% T         Transformation matrix that transforms a unit sphere to the
-%           ellipse via: R' = T(:,:,i)*R
+% T         Transformation matrix that transforms objects:
+%               'ellipsoid'     a unit sphere is transformed to an ellipsoid:
+%                                   R' = T(:,:,i)*R
+%               'orbital'       a Hydrogen orbital is rotated to arbitrary
+%                               orientation:
+%                                   O' = T(:,:,i)*O*T(:,:,i)'
 %           Dimensions are [3 3 nObject].
 % lineStyle Line style, default value is '-' for continuous lines. It can
 %           be also a vector with as many elements as many line segments.
@@ -68,6 +79,8 @@ function varargout = plot(varargin)
 %               5   'none'
 % lineWidth Line width, default value is 0.5, can be a vector with nObject
 %           columns for different width per line segment.
+% scale     Scale for the orbitals, the default scale=1 corresponds to the
+%           true size of the Hydrogen orbital in Angstrom.
 % nMesh     Resolution of the ellipse surface mesh. Integer number that is
 %           used to generate an icosahedron mesh with #mesh number of
 %           additional triangulation, default value is stored in
@@ -108,6 +121,11 @@ inpForm.defval = [inpForm.defval {{}        false     0.5         fontSize0  tru
 inpForm.size   = [inpForm.size   {[-14 -15] [1 1]     [1 -16]     [1 1]      [1 1]       [1 1]  [1 -17]}];
 inpForm.soft   = [inpForm.soft   {true      false     false       false      false       false  false  }];
 
+inpForm.fname  = [inpForm.fname  {'scale'}];
+inpForm.defval = [inpForm.defval {1      }];
+inpForm.size   = [inpForm.size   {[1 1]  }];
+inpForm.soft   = [inpForm.soft   {false  }];
+
 param = sw_readparam(inpForm, varargin{:});
 
 type = lower(param.type);
@@ -125,10 +143,11 @@ type = lower(param.type);
 % 4 'circle'
 % 5 'line'
 % 6 'text'
-legend0 = [1 3 1 1 0 0 1];
-type0   = {'arrow' 'ellipsoid' 'cylinder' 'circle' 'line'  'text' 'polyhedron'};
+% 7 'orbital'
+legend0 = [1 3 1 1 0 0 1 0];
+type0   = {'arrow' 'ellipsoid' 'cylinder' 'circle' 'line'  'text' 'polyhedron' 'orbital'};
 % default color per object type :D
-col0    = {'red'   'blue'      'orange'   'gray'   'black' 'black' 'turquoise'};
+col0    = {'red'   'blue'      'orange'   'gray'   'black' 'black' 'turquoise' cat(3,{'red'},{'blue'})};
 % create dictionary to convert string to number
 K       = containers.Map(type0,1:numel(col0));
 typeNum = K(type);
@@ -156,10 +175,6 @@ if isempty(param.label)
     param.label = param.name;
 end
 
-% if isempty(param.text)
-%     param.text = param.label;
-% end
-
 % label for legend
 if ~iscell(param.label)
     label = {param.label};
@@ -177,7 +192,7 @@ if param.replace
 end
 
 % check size of position matrix
-pos0 = [2 1 2 2 0 1 0];
+pos0 = [2 1 2 2 0 1 0 1];
 pos  = param.position;
 if pos0(typeNum)~=0 && size(pos,3) ~= pos0(typeNum)
     error('plot:WrongInput','The given position matrix has wrong dimensions!');
@@ -207,6 +222,9 @@ end
 if iscellstr(param.color) && size(param.color,1)~=1
     error('color:WrongInput','Color option has wrong dimensions!');
 end
+if size(param.color,3)>1 && ~strcmp(type,'orbital')
+    error('color:WrongInput','Color option has wrong dimensions!')
+end
 
 if isempty(param.color)
     param.color = col0{typeNum};
@@ -222,7 +240,10 @@ nAlp  = numel(param.alpha);
 if nLabel ~= 1 && nLabel ~= nObject
     error('plot:WrongInput','Number of given labels does not agree with the number of object positions!')
 end
-if nCol ~= 1 && nCol ~= nObject
+if ~strcmp(type,'orbital') && nCol ~= 1 && nCol ~= nObject
+    error('plot:WrongInput','Number of given colors does not agree with the number of object positions!')
+end
+if strcmp(type,'orbital') && nCol ~= 1 && nCol ~= 2 && nCol ~= nObject && nCol ~= 2*nObject
     error('plot:WrongInput','Number of given colors does not agree with the number of object positions!')
 end
 

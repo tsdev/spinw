@@ -113,15 +113,29 @@ inpForm.soft   = [inpForm.soft   {false   false   false      false        false}
 
 param = sw_readparam(inpForm, varargin{:});
 
+% find swplot figure
 if isempty(param.figure)
-    hFigure  = swplot.activefigure('plot');
+    if isempty(param.obj)
+        try
+            hFigure  = swplot.activefigure;
+        catch msg
+            warning(msg.message)
+            error('plotmag:NoObj','The figure does not contain a SpinW object, use spinw.plot first!')
+        end
+    else
+        hFigure  = swplot.activefigure('plot');
+    end
 else
     hFigure = param.figure;
 end
 
 % takes care of spinw object saved/loaded in/from figure
 if isempty(param.obj)
-    obj = getappdata(hFigure,'obj');
+    if isappdata(hFigure,'obj')
+        obj = getappdata(hFigure,'obj');
+    else
+        error('plotmag:NoObj','The figure does not contain a SpinW object, use spinw.plot first!')
+    end
 else
     if param.copy
         setappdata(hFigure,'obj',copy(param.obj));

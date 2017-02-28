@@ -598,7 +598,7 @@ if param.saveH
     Hsave = zeros(2*nMagExt,2*nMagExt,nHkl);
 end
 
-%sw_status(0,1,param.tid,'Spin wave spectrum calculation');
+sw_status(0,1,param.tid,'Spin wave spectrum calculation');
 
 warn1 = false;
 
@@ -828,7 +828,7 @@ for jj = 1:nSlice
     % Normalizes the intensity to single unit cell.
     Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     
-%   sw_status(jj/nSlice*100,0,param.tid);
+    sw_status(jj/nSlice*100,0,param.tid);
 end
 
 [~,singWarn] = lastwarn;
@@ -841,9 +841,9 @@ if obj.unit.nformula > 0
     Sab = Sab/double(obj.unit.nformula);
 end
 
-%sw_status(100,2,param.tid);
+sw_status(100,2,param.tid);
 
-%fprintf0(fid,'Calculation finished.\n');
+fprintf0(fid,'Calculation finished.\n');
 
 if warn1 && ~param.fitmode
     warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...

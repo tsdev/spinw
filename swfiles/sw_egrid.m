@@ -259,11 +259,11 @@ if isfield(spectra,'omega')
     if iscell(spectra.omega)
         nTwin = numel(spectra.omega);
         omega = spectra.omega;
-        %Sab   = spectra.Sab;
+        Sab   = spectra.Sab;
     else
         nTwin = 1;
         omega = {spectra.omega};
-        %Sab   = {spectra.Sab};
+        Sab   = {spectra.Sab};
         intP  = {intP};
         Pab   = {Pab};
         Mab   = {Mab};
@@ -272,7 +272,7 @@ if isfield(spectra,'omega')
 else
     nTwin = 1;
     omega = {};
-    %Sab   = {spectra.Sab2};
+    Sab   = {spectra.Sab2};
 end
 
 % extract the requested cross section
@@ -280,8 +280,8 @@ if isfield(spectra,'omega')
     nMode = size(omega{1},1);
     nHkl  = size(omega{1},2);
 else
-    %nMode = size(spectra.Sab2,3);
-    %nHkl = size(spectra.Sab2,4);
+    nMode = size(spectra.Sab2,3);
+    nHkl = size(spectra.Sab2,4);
 end
 
 % Default value of the modeIdx vector selects all modes for output

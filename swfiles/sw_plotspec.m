@@ -1,4 +1,4 @@
-function [fHandle0, pHandle0, swConv] = sw_plotspec(spectra, varargin)
+function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % plots spin wave spectrum
 %
 % [fHandle, pHandle] = SW_PLOTSPEC(spectra, 'option1', value1 ...)
@@ -744,7 +744,7 @@ end
 
 if nargout == 1
     fHandle0 = fHandle;
-else%if nargout == 2
+elseif nargout == 2
     fHandle0 = fHandle;
     pHandle0 = hPlot;
 end

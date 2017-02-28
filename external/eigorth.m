@@ -56,7 +56,7 @@ if nStack>1 && useMex
     if sortMode
         [V, D] = eigenshuffle(M,useMex,'orth');
     else
-        [V, D] = eig_omp(M,'orth');
+        [V, D] = eig_omp(M,'orth','sort','descend');
     end
     return
 end

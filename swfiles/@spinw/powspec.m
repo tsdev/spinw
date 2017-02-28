@@ -94,7 +94,7 @@ inpForm.defval = {100     linspace(0,1.1,101) T0    false      @sw_mff       tid
 inpForm.size   = {[1 1]   [1 -1]              [1 1] [1 -2]     [1 1]         [1 1]};
 
 inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' 'imagChk'}];
-inpForm.defval = [inpForm.defval {true     false     title0  @spinwave  true   }];
+inpForm.defval = [inpForm.defval {true     false     title0  @spinwavefast  true   }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]      [1 1]  }];
 
 inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType'}];
@@ -161,7 +161,7 @@ for ii = 1:nQ
             'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
             'optmem',param.optmem,'tid',0,'fid',0);
     end
-    specQ = sw_neutron(specQ,'pol',false);
+    %specQ = sw_neutron(specQ,'pol',false);
     specQ.obj = obj;
     % use edge grid by default
     specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T,'binType',param.binType,'imagChk',param.imagChk);

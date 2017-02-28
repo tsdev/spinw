@@ -729,15 +729,6 @@ for jj = 1:nSlice
         
         orthWarn0 = orthWarn || orthWarn0;
         
-        % Sort real part of the energies
-        [~, sIdx] = sort(real(DD),1,'descend');
-        
-        % Keep only positive eigenvalues and corresponding eigenvectors.
-        DD = cell2mat(arrayfun(@(x) DD(sIdx(1:nMagExt,x),x), 1:nHklMEM, 'UniformOutput', false));
-        % reindex VV in the summation below
-        VV = arrayfun(@(x) VV(:,sIdx(1:nMagExt,x),x), 1:nHklMEM, 'UniformOutput', false);
-        VV = cat(3, VV{:});
-        
         V = zeros(2*nMagExt,nMagExt,nHklMEM);
         for ii = 1:nMagExt
             V(:,ii,:) = bsxfun(@times, VV(:,ii,:), sqrt(1 ./ sum(bsxfun(@times,gCommd,conj(VV(:,ii,:)).*VV(:,ii,:)))));
@@ -855,7 +846,7 @@ for jj = 1:nSlice
             Sab   = cat(3,mmat(Sab(:,:,:,kmIdx==1),K1), mmat(Sab(:,:,:,kmIdx==2),K2), mmat(Sab(:,:,:,kmIdx==3),conj(K1)));
         end
     else
-        omega(:,hklIdxMEM) = DD;
+        omega(:,hklIdxMEM) = DD(1:nMagExt,:);
         helical = false;
     end
     clear DD;

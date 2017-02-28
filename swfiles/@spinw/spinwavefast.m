@@ -585,17 +585,25 @@ for jj = 1:nSlice
     % Store all matrix elements
     %ABCD   = [A1     B     conj(B)  D1]; % SP1
     ABCD   = [A1     2*B      D1];
-    
-    % Stores the matrix elements in ham.
-    %idx3   = repmat(1:nHklMEM,[4*nCoupling 1]); % SP1
-    idx3   = repmat(1:nHklMEM,[3*nCoupling 1]);
-    idxAll = [repmat(idxAll,[nHklMEM 1]) idx3(:)];
-    idxAll = idxAll(:,[2 1 3]);
-    
-    ABCD   = ABCD';
-    
-    % quadratic form of the boson Hamiltonian stored as a square matrix
-    ham = accumarray(idxAll,ABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
+
+%   % Stores the matrix elements in ham.
+%   %idx3   = repmat(1:nHklMEM,[4*nCoupling 1]); % SP1
+%   idx3   = repmat(1:nHklMEM,[3*nCoupling 1]);
+%   idxAll = [repmat(idxAll,[nHklMEM 1]) idx3(:)];
+%   idxAll = idxAll(:,[2 1 3]);
+%  
+%   ABCD   = ABCD';
+%  
+%   % quadratic form of the boson Hamiltonian stored as a square matrix
+%   ham = accumarray(idxAll,ABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
+
+    idxAll = sub2ind([2*nMagExt 2*nMagExt],idxAll(:,1),idxAll(:,2));
+    [C,ia,ic] = unique(idxAll);
+    ham = zeros(4*nMagExt^2, nHklMEM);
+    for ii=1:numel(C)
+        ham(C(ii),:) = sum(ABCD(:,ic==ii),2);
+    end
+    ham = reshape(ham, [2*nMagExt 2*nMagExt nHklMEM]);
     
     ham = ham + repmat(accumarray([idxA2; idxD2],2*[A20 D20],[1 1]*2*nMagExt),[1 1 nHklMEM]);
     

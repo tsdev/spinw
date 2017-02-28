@@ -122,7 +122,9 @@ try
         icon.(fNames{ii}) = matSel/255;
     end
 catch %#ok<CTCH>
-    warning('figure:JavaSupport','Some functionality won''t work, due to Java incompatibility');
+    if ~isdeployed
+        warning('figure:JavaSupport','Some functionality won''t work, due to Java incompatibility');
+    end
 end
 
 if strcmp(mode,'hg')

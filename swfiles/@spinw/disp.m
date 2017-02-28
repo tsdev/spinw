@@ -1,14 +1,11 @@
-function varargout = disp(obj, fid)
+function varargout = disp(obj)
 % prints the spinw data structure in readable format onto the Command Window
 %
-% {swDescr} = DISPLAY(obj, {fid})
+% {swDescr} = DISPLAY(obj)
 %
 % Input:
 %
 % obj       spinw class object.
-% fid       File identifier (created by fopen function) where the output
-%           will be written. Default is stored in obj, the output will be
-%           written onto the Command Line. Optional.
 %
 % Output:
 %
@@ -105,7 +102,7 @@ else
         ];
     
     % print the text
-    fprintf(swDescr);
+    fprintf0(swpref.getpref('fid',[]),swDescr);
 end
 
 end

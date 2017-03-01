@@ -19,20 +19,10 @@ response.content = '';
 response.result = '';
 response.stack = {};
 
-close all hidden;
-
 try
     % tempname is less likely to get bonked by another process.
     diary_file = [tempname() '_diary.txt'];
     diary(diary_file);
-    
-    % Add function path to current path
-    if req.dname
-        addpath(req.dname);
-    end
-    
-    % force a rehash of user functions
-    rehash
     
     if iscell(req.func_args)
         [resp{1:req.nargout}] = feval(req.func_name, req.func_args{:});
@@ -62,7 +52,7 @@ try
     % cf. http://rosettacode.org/wiki/Read_entire_file#MATLAB_.2F_Octave
     FID = fopen(diary_file,'r');
     if (FID > 0)
-        [stdout,count] = fread(FID, [1,inf], 'uint8=>char');
+        [stdout,~] = fread(FID, [1,inf], 'uint8=>char');
         fclose(FID);
         response.content.stdout = stdout;
     else
@@ -70,6 +60,7 @@ try
         response.content.stdout = sprintf('could not open %s for read',diary_file);
     end
     delete(diary_file)
+    
 catch ME
     diary('off');
     response.success = false;

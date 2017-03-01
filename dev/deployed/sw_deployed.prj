@@ -1,8 +1,13 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="2324853462" file="/Users/sandortoth/spinw_git/dev/deployed/sw_deployed.prj" location="/Users/sandortoth/spinw_git/dev/deployed" name="sw_deployed" preferred-package-location="/Users/sandortoth/spinw_git/dev/deployed/sw_deployed/for_redistribution" preferred-package-type="package.type.app" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="2767917229" file="/Users/sandortoth/spinw_git/dev/deployed/sw_deployed.prj" location="/Users/sandortoth/spinw_git/dev/deployed" name="sw_deployed" preferred-package-location="/Users/sandortoth/spinw_git/dev/deployed/sw_deployed/for_redistribution" preferred-package-type="package.type.app" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>sw_deployed</param.appname>
-    <param.icon />
-    <param.icons />
+    <param.icon>${PROJECT_ROOT}/sw_deployed_resources/icon.icns</param.icon>
+    <param.icons>
+      <file>${PROJECT_ROOT}/sw_deployed_resources/icon_48.png</file>
+      <file>${PROJECT_ROOT}/sw_deployed_resources/icon_32.png</file>
+      <file>${PROJECT_ROOT}/sw_deployed_resources/icon_24.png</file>
+      <file>${PROJECT_ROOT}/sw_deployed_resources/icon_16.png</file>
+    </param.icons>
     <param.version>1.0</param.version>
     <param.authnamewatermark>Sandor Toth</param.authnamewatermark>
     <param.email>sandor.toth@psi.ch</param.email>
@@ -48,8 +53,6 @@ If it is defined, set it to the concatenation of these strings:
     <param.create.log>false</param.create.log>
     <param.log.file />
     <unset>
-      <param.icon />
-      <param.icons />
       <param.version />
       <param.authnamewatermark />
       <param.email />
@@ -86,13 +89,12 @@ If it is defined, set it to the concatenation of these strings:
     </fileset.main>
     <fileset.resources>
       <file>/Users/sandortoth/spinw_git/dat_files</file>
-      <file>/Users/sandortoth/spinw_git/dev</file>
       <file>/Users/sandortoth/spinw_git/external</file>
       <file>/Users/sandortoth/spinw_git/swfiles</file>
     </fileset.resources>
     <fileset.package />
     <fileset.depfun>
-      <file>/Users/sandortoth/Documents/MATLAB/YAML/YAML.m</file>
+      <file>/Users/sandortoth/Documents/MATLAB/clipboardimage.m</file>
       <file>/Users/sandortoth/Documents/MATLAB/rgb2lab.m</file>
     </fileset.depfun>
     <build-deliverables>

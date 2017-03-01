@@ -11,16 +11,20 @@ while(1)
     req = json_load(msg_in);
     
     switch(req.cmd)
-        case {'connect'}
+        case 'connect'
             messenger('respond', 'connected');
             
-        case {'exit'}
+        case 'exit'
             messenger('exit');
-            break;
+            break
             
-        case {'eval'}
+        case 'eval'
             resp = pymat_eval(req);
+            drawnow;
             messenger('respond', resp);
+            while ~isempty(get(0,'Children'))
+                pause(0.5);
+            end
             
         otherwise
             messenger('respond', 'i dont know what you want');

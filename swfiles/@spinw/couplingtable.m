@@ -61,7 +61,7 @@ end
 
 % create the table
 table0 = [obj.coupling.dl;obj.coupling.atom1;obj.coupling.atom2;obj.coupling.idx;obj.coupling.mat_idx];
-table0 = table0(:,ismember(obj.coupling.idx,bondIdx));
+table0 = table0(:,ismember(obj.coupling.idx,int32(bondIdx)));
 
 % create the bond vectors
 mAtom = obj.matom.r;

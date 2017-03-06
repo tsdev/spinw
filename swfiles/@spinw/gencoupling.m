@@ -182,7 +182,7 @@ cMat = cMat([1:5 7],:);
 
 % symmetry equivalent couplings
 if isSym
-    % store the final sorted couoplings in nMat
+    % store the final sorted couplings in nMat
     nMat = zeros(6,0);
     ii  = 1;
     idx = 1;

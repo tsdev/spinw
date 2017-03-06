@@ -199,6 +199,14 @@ switch type
                 Jz     = value(:,:,3);
                 varName = [varName {'Jx','Jy','Jz'}];
                 var     = [var     { Jx,  Jy,  Jz }];
+                
+                if sumn(abs(value-permute(value,[1 3 2])),[1 2 3])/numel(value) > 10*eps
+                    % also show the DM vector
+                    DM = [value(:,2,3) value(:,3,1) value(:,1,2)];
+                    varName = [varName {'DM'}];
+                    var     = [var     { DM }];
+
+                end
             end
         end
     case {'ion' 'aniso'}

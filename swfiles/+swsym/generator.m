@@ -1,5 +1,5 @@
 function [symOp, symInfo] = generator(sym, fid0)
-% returns symmetry operators of a given space group
+% returns symmetry operators of a given space group label or operator string
 %
 % [symOp, symInfo] = SWSYM.GENERATOR(sym, {fid})
 %
@@ -9,10 +9,13 @@ function [symOp, symInfo] = generator(sym, fid0)
 %
 % Input:
 %
-% sym           Either the label of the space group or the index from
-%               the International Tables of Crystallography or string
-%               containing the space group operators in the same format as
-%               used in the symmetry.dat file.
+% sym           Possible inputs:
+%               - label of the space group (e.g. 'P n m a')
+%               - index from the International Tables of Crystallography 
+%                  (e.g. 133 for space group 'P 42/n b c')
+%               - string containing the space group operators in the same 
+%                 format as used in the symmetry.dat file 
+%                 (e.g. '-x+1/2,-y+1/2,z; -y+1/2,x,z+1/2')
 % fid           For printing the symmetry operators:
 %                   0   no printed output (Default)
 %                   1   standard output (Command Line)

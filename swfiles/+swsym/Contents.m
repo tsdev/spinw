@@ -9,7 +9,7 @@
 % Files
 %   add       - saves user defined symmetry operators
 %   bond      - generates all symmetry equivalent bonds
-%   generator - returns symmetry operators of a given space group
+%   generator - returns symmetry operators of a given space group label or operator string
 %   genreduce - reduces the list of symmetry operators to the generators
 %   isop      - function determines whether the matrix is a symmetry operator
 %   operator  - calculates all symmetry operators or general positions for a space group

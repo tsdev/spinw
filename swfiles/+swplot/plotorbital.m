@@ -6,7 +6,11 @@ function varargout = plotorbital(varargin)
 % hFigure = SWPLOT.PLOTORBITAL(...)
 %
 % The function plots selected electron orbitals of Hydrogen onto an swplot
-% figure.
+% figure. The orbitals will be plotted on a selected central atom and a
+% coordinate systems is defined by two positive ligand atoms (x-axis points
+% towards the first ligand, y-axis points towards the second ligand).
+% Orbitals will be drawn also on symmetry equivalent atoms by applying the
+% the point group operations according to the crystal symmetry.
 %
 % Input:
 %
@@ -42,6 +46,14 @@ function varargout = plotorbital(varargin)
 %               PSI = PSI(n,l,m) + pm*PSI(n,l,-m)
 %           If pm is +1,-1 or m=0 the wave fuction is real, otherwise
 %           complex.
+% center    Center atom, defined by either a position vector (row vector
+%           with coordinates in lattice units) or the label of the atom.
+% ligand1   First positive ligand atom, defined by either a position vector
+%           (row vector with coordinates in lattice units) or the label of
+%           the atom.
+% ligand2   Second positive ligand atom, defined by either a position
+%           vector (row vector with coordinates in lattice units) or the
+%           label of the atom.
 % scale     Scaling factor for the size of the orbital relative to the
 %           Hydrogen orbitals. Default value is 1.
 % alpha     Transparency (alpha value) of the orbital, default value is 1.
@@ -86,10 +98,10 @@ function varargout = plotorbital(varargin)
 nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
 
-inpForm.fname  = {'range' 'legend' 'label' 'scale' 'alpha'};
-inpForm.defval = {[]      true     true    1       0.3    };
-inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 1]  };
-inpForm.soft   = {true    false    false   false   false  };
+inpForm.fname  = {'range' 'legend' 'label' 'scale' 'alpha' 'center'};
+inpForm.defval = {[]      true     true    1       0.3     [0 0 0] };
+inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 1]   [1 -8]  };
+inpForm.soft   = {true    false    false   false   false   false   };
 
 inpForm.fname  = [inpForm.fname  {'mode'  'color' 'nmesh' 'npatch' 'color2'}];
 inpForm.defval = [inpForm.defval {'aniso' 'auto'  nMesh0  nPatch0  'auto'  }];
@@ -106,22 +118,36 @@ inpForm.defval = [inpForm.defval {[0;0;0] true      false       false }];
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]       [1 1] }];
 inpForm.soft   = [inpForm.soft   {false   false     false       false }];
 
+inpForm.fname  = [inpForm.fname  {'ligand1' 'ligand2'}];
+inpForm.defval = [inpForm.defval {[0 0 0]   [0 0 0]  }];
+inpForm.size   = [inpForm.size   {[1 -8]    [1 -9]   }];
+inpForm.soft   = [inpForm.soft   {false     false    }];
+
 param = sw_readparam(inpForm, varargin{:});
 
+% find swplot figure
 if isempty(param.figure)
-    hFigure  = swplot.activefigure('plot');
+    if isempty(param.obj)
+        try
+            hFigure  = swplot.activefigure;
+        catch msg
+            warning(msg.message)
+            error('plotorbital:NoObj','The figure does not contain a SpinW object, use spinw.plot first!')
+        end
+    else
+        hFigure  = swplot.activefigure('plot');
+    end
 else
     hFigure = param.figure;
 end
 
-% take care of return values
-if nargout > 0
-    varargout{1} = hFigure;
-end
-
 % takes care of spinw object saved/loaded in/from figure
 if isempty(param.obj)
-    obj = getappdata(hFigure,'obj');
+    if isappdata(hFigure,'obj')
+        obj = getappdata(hFigure,'obj');
+    else
+        error('plotorbital:NoObj','The figure does not contain a SpinW object, use spinw.plot first!')
+    end
 else
     if param.copy
         setappdata(hFigure,'obj',copy(param.obj));
@@ -165,7 +191,6 @@ switch param.unit
     case 'xyz'
         % corners of the box
         cIdx    = cell2mat(arrayfun(@(M)bitget(M,1:3)+1,0:7,'UniformOutput',0)')';
-        %corners = BV\[range(1,[1 2 2 1 1 2 2 1]);range(2,[1 1 2 2 1 1 2 2]);range(3,[1 1 1 1 2 2 2 2])];
         corners = BV\[range(1,cIdx(1,:));range(2,cIdx(2,:));range(3,cIdx(3,:))];
         rangelu = [min(corners,[],2) max(corners,[],2)];
         rangelu = [floor(rangelu(:,1)) ceil(rangelu(:,2))];
@@ -173,11 +198,19 @@ switch param.unit
         error('plotorbital:WrongInput','The given unit string is invalid!');
 end
 
+% center
+
+
 % atom data
 mAtom  = obj.matom;
 
 % generate bonds, but don't sort the bonds on DM interactions
 [~, SI] = intmatrix(obj,'plotmode',true,'extend',false,'sortDM',false,'zeroC',false,'nExt',[1 1 1]);
+
+% take care of return values
+if nargout > 0
+    varargout{1} = hFigure;
+end
 
 switch param.mode
     case 'aniso'

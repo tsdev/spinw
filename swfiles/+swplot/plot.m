@@ -20,7 +20,8 @@ function varargout = plot(varargin)
 %               'text'          position specifies the center of the text
 % position  Position of the object/objects in a matrix with dimensions of
 %           [3 nObject 2]/[3 nObject]/[3 nObject nPoint] depending on the
-%           type of object.
+%           type of object. The unit of the positions is determined by the
+%           'unit' option.
 % name      String, the name of the object. It can be used for finding the
 %           object handles after plotting.
 % text      Text to appear in the tooltip of the swplot figure after

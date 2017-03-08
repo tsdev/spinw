@@ -56,9 +56,9 @@ switch swObject.name
         
         if obj.atom.mag(a2Idx)
             string = [string sprintf('Index in the spinw.matom() list: #%d',maIdx) newline];
-        else
-            %string = [string sprintf('Index in the spinw.atom() list: #%d',a2Idx) newline];
         end
+        string = [string sprintf('Index in the spinw.atom() list: #%d',a2Idx) newline];
+        
         
         string = [string 'Unit cell:' newline];
         % add cell index and position

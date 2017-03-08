@@ -26,6 +26,15 @@ end
 
 N  = 1;
 RN = symOp(:,1:3);
+switch size(symOp,2)
+    case 3
+        symOp(:,4) = zeros(3,1);
+    case 4
+        % do nothing
+    otherwise
+        error('oporder:WrongInput','The given matrix is not a symmetry operator!')
+end
+
 TN = round(symOp(:,4)*12);
 
 while (norm(RN-eye(3))>10*eps || norm(TN)) && (N<10)

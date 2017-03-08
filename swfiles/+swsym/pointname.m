@@ -19,8 +19,37 @@ if nargin<2
     r = [0;0;0];
 end
 
+% generate the point group operators corresponding to the given position
+symOp = swsym.point(O,r);
+
+% remove unit operator
+[~,symSel] = unique(reshape(cat(3,eye(3),symOp),9,[])','rows');
+symOp = symOp(:,:,symSel(symSel>1)-1);
+
+% remove higher order operators
+idx = 1;
+while idx < size(symOp,3)
+    oGen = swsym.oporder(symOp(:,:,idx));
+    if oGen > 2
+        sPow = 2:(oGen-1);
+        % generate all powers
+        nGen = oGen-2;
+        symGen = zeros(3,3,nGen);
+        for ii = sPow
+            symGen(:,:,ii-1) = symOp(:,:,idx)^ii;
+        end
+        % calculate unique matrices
+        [~,symSel] = unique(reshape(cat(3,symGen,symOp),9,[])','rows');
+        symOp = symOp(:,:,symSel(symSel>nGen)-nGen);
+    end
+    idx = idx + 1;
+end
+
+% determine the symmetry operator names
+
+
 % get the symmetry operator names
-[~, info] = swsym.pointopname(O,r);
+info = swsym.pointopname(symOp);
 
 multi = zeros(1,10);
 multi(info.type) = info.multi;

@@ -36,7 +36,7 @@ classdef spinw < handle
     % See also: SPINW.COPY, SPINW.STRUCT,
     % <a href='/Applications/MATLAB_R2012b.app/help/matlab/matlab_oop/comparing-handle-and-value-classes.html'>Comparing handle and value classes</a>.
     %
-    % spinw Methods:
+    % SpinW Methods:
     % Lattice operations:
     %   genlattice      - defines lattice parameters, angles and symmetry
     %   basisvector     - returns the basis vectors in a matrix

@@ -5,8 +5,8 @@
 % specified color, transparency, label and legend on the swplot figure that
 % has rotation and translations built in that are better than the default
 % 3D rotation with mouse in Matlab. Moreover it has high level commands to
-% plot crystals from SpinW objects (plotatom, plotmag, plotion, plotbond,
-% plotbase, plotcell, plotchem).
+% plot crystals from <a href="matlab:help spinw">SpinW</a> objects (plotatom, plotmag, plotion, plotbond,
+% plotbase, plotcell, plotchem, plotorbital).
 %
 % Files
 %
@@ -14,12 +14,13 @@
 % command and triangular patches:
 %
 %   arrow           - draws a 3D arrow using patch
-%   circle          - creates a circle surface in 3 dimensions
+%   circle          - draws a circle surface in 3 dimensions
 %   cylinder        - draws a closed/open 3D cylinder
-%   ellipsoid       - draw ellipsoid
+%   ellipsoid       - draws ellipsoid
 %   line            - draws a 3D line using patch
-%   polyhedron      - draw convex polyhedra or polynom from vertex list
+%   polyhedron      - draws convex polyhedra or polynom from vertex list
 %   text            - draws a text at a point in 3D
+%   orbital         - draws electron orbitals
 %
 % Creating and modifying swplot figure:
 %
@@ -52,11 +53,13 @@
 %   plotchem        - plots polyhedra or chemical bonds
 %   plotion         - plots magnetic ion properties
 %   plotmag         - plots magnetic structure
+%   plotorbital     - plots electron orbitals of hydrogen
 %
 % Other related functions:
 %
 %   color           - generates RGB code from color name string
-%   icomesh         - creates mesh by subdividing icosahedron faces
+%   icomesh         - creates triangular mesh by subdividing icosahedron faces
+%   orbmesh         - creates triangular mesh of selected hydrogen orbital isosurfaces
 %   logo            - creates the logo of SpinW and saves to a .png file
 %   patchfacefcn    - callback function for patch face selection
 %   raytriangle     - finds if a ray crosses a triangle

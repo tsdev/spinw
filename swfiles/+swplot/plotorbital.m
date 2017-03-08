@@ -1,5 +1,5 @@
 function varargout = plotorbital(varargin)
-% plots electron orbitals of Hydrogen
+% plots electron orbitals of hydrogen
 %
 % SWPLOT.PLOTORBITAL('option1', value1, ...)
 %
@@ -58,7 +58,7 @@ function varargout = plotorbital(varargin)
 %           vector (row vector with coordinates in lattice units) or the
 %           label of the atom.
 % scale     Scaling factor for the size of the orbital relative to the
-%           Hydrogen orbitals. Default value is 0.15.
+%           hydrogen orbitals. Default value is 0.15.
 % alpha     Transparency (alpha value) of the orbital, default value is 1.
 % figure    Handle of the swplot figure. Default is the selected figure.
 % color     Color of the orbital:

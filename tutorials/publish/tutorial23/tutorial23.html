@@ -1,0 +1,257 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>tutorial23</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-07"><meta name="DC.source" content="tutorial23.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Define crystal structure of Sr3Fe2O7</a></li><li><a href="#2">define magnetic Hamiltonian</a></li><li><a href="#3">Plot figure</a></li></ul></div><h2 id="1">Define crystal structure of Sr3Fe2O7</h2><pre class="codeinput">SrF = sw;
+SrF.genlattice(<span class="string">'lat_const'</span>, [3.8 3.8 20.4],<span class="string">'sym'</span>,<span class="string">'I 4/m m m'</span>)
+SrF.addatom(<span class="string">'r'</span>,[0 0 0.0972],<span class="string">'S'</span>,2,<span class="string">'label'</span>,<span class="string">'MFe4'</span>,<span class="string">'color'</span>,<span class="string">'blue'</span>)
+SrF.gencoupling
+</pre><pre class="codeoutput error">Undefined function or variable 'sw'.
+Error in tutorial23 (line 3)
+SrF = sw;</pre><h2 id="2">define magnetic Hamiltonian</h2><p>Value of the exchange constants</p><pre class="codeinput">J1  = -7.20;
+Jc1 = -5.10;
+J2  =  1.05;
+J3  =  2.10;
+Jc3 =  0.01;
+D   = diag([0 0 -0.06]);
+
+SrF.addmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>, <span class="string">'value'</span>,J1, <span class="string">'color'</span>,<span class="string">'red'</span>)
+SrF.addmatrix(<span class="string">'label'</span>,<span class="string">'Jc1'</span>,<span class="string">'value'</span>,Jc1,<span class="string">'color'</span>,<span class="string">'orange'</span>)
+SrF.addmatrix(<span class="string">'label'</span>,<span class="string">'J2'</span>, <span class="string">'value'</span>,J2, <span class="string">'color'</span>,<span class="string">'white'</span>)
+SrF.addmatrix(<span class="string">'label'</span>,<span class="string">'J3'</span>, <span class="string">'value'</span>,J3, <span class="string">'color'</span>,<span class="string">'gray'</span>)
+SrF.addmatrix(<span class="string">'label'</span>,<span class="string">'Jc3'</span>,<span class="string">'value'</span>,Jc3,<span class="string">'color'</span>,<span class="string">'yellow'</span>)
+SrF.addmatrix(<span class="string">'label'</span>,<span class="string">'D'</span>,  <span class="string">'value'</span>,D,  <span class="string">'color'</span>,<span class="string">'purple'</span>)
+
+<span class="comment">% to add the two ion coupling</span>
+SrF.addcoupling(<span class="string">'J1'</span>,1)
+SrF.addcoupling(<span class="string">'Jc1'</span>, 2)
+SrF.addcoupling(<span class="string">'J2'</span>,3)
+SrF.addcoupling(<span class="string">'J3'</span>,7)
+SrF.addcoupling(<span class="string">'Jc3'</span>,6)
+SrF.addaniso(<span class="string">'D'</span>)
+
+<span class="comment">% Define magnetic structure</span>
+S0 = [0 -1.162 0 -1.162; 0  1.162 0  1.162;2 -1.140 2 -1.140];
+SrF.genmagstr(<span class="string">'mode'</span>,<span class="string">'helical'</span>,<span class="string">'S'</span>,S0,<span class="string">'k'</span>,[1/7 1/7 1],<span class="string">'n'</span>,[1 1 0])
+<span class="comment">%SrF.optmagsteep</span>
+SrF.plot(<span class="string">'coplanar'</span>,0.1)
+</pre><h2 id="3">Plot figure</h2><pre class="codeinput">figure
+nHkl = 501;
+Evect = 0:0.5:35;
+
+<span class="comment">% Fig. 3(f)</span>
+subplot(1,5,1)
+specFerr = SrF.spinwave({[0.6 0.14 0] [1.4 0.14 0] nHkl},<span class="string">'hermit'</span>,false);
+specFerr = sw_magdomain(specFerr,<span class="string">'axis'</span>,[0 0 1],<span class="string">'angled'</span>,[0 90 180 270]);
+specFerr = sw_neutron(specFerr);
+specFerr = sw_egrid(specFerr,<span class="string">'Evect'</span>,Evect);
+specFerr = sw_instrument(specFerr,<span class="string">'Ei'</span>, 40,<span class="string">'dE'</span>,1.72,<span class="string">'dQ'</span>,0.05,<span class="string">'norm'</span>,false);
+sw_plotspec(specFerr,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'legend'</span>,false,<span class="string">'axLim'</span>,[0 0.6]);
+colormap(jet)
+
+<span class="comment">% Fig. 3(g)</span>
+subplot(1,5,2)
+specFerr = SrF.spinwave({[0.6 -0.4 0] [1.4 0.4 0] nHkl},<span class="string">'hermit'</span>,false);
+specFerr = sw_magdomain(specFerr,<span class="string">'axis'</span>,[0 0 1],<span class="string">'angled'</span>,[0 90 180 270]);
+specFerr = sw_neutron(specFerr);
+specFerr = sw_egrid(specFerr,<span class="string">'Evect'</span>,Evect);
+specFerr = sw_instrument(specFerr,<span class="string">'Ei'</span>, 40,<span class="string">'dE'</span>,1.72,<span class="string">'dQ'</span>,0.05,<span class="string">'norm'</span>,false);
+sw_plotspec(specFerr,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'axLim'</span>,[0 0.2],<span class="string">'legend'</span>,false)
+colormap(jet)
+
+<span class="comment">% Fig. 3 (h)</span>
+subplot(1,5,3)
+specFerr = SrF.spinwave({[-0.4 -0.4 5] [0.4 0.4 5] nHkl},<span class="string">'hermit'</span>,false);
+specFerr = sw_magdomain(specFerr,<span class="string">'axis'</span>,[0 0 1],<span class="string">'angled'</span>,[0 90 180 270]);
+specFerr = sw_neutron(specFerr);
+specFerr = sw_egrid(specFerr,<span class="string">'Evect'</span>,Evect);
+specFerr = sw_instrument(specFerr,<span class="string">'Ei'</span>,20,<span class="string">'dE'</span>,0.012,<span class="string">'dQ'</span>,0.0167,<span class="string">'norm'</span>,false);
+sw_plotspec(specFerr,<span class="string">'mode'</span>,3,<span class="string">'axLim'</span>,[0 0.5],<span class="string">'legend'</span>,false)
+colormap(jet)
+
+<span class="comment">% Fig. 3 (i)</span>
+subplot(1,5,4)
+specFerr = SrF.spinwave({[-0.4 -0.4 5] [0.4 0.4 5] nHkl},<span class="string">'hermit'</span>,false);
+specFerr = sw_magdomain(specFerr,<span class="string">'axis'</span>,[0 0 1],<span class="string">'angled'</span>,[0 90 180 270]);
+specFerr = sw_neutron(specFerr);
+specFerr = sw_egrid(specFerr,<span class="string">'Evect'</span>,Evect);
+resMat = [0 10 20 30 40 50 60;6 4.5 3.25 2.12 1.15 0.4 0]';
+specFerr = sw_instrument(specFerr,<span class="string">'Ei'</span>, 60,<span class="string">'dE'</span>,resMat,<span class="string">'dQ'</span>,0.05, <span class="string">'norm'</span>,false);
+sw_plotspec(specFerr,<span class="string">'mode'</span>,3,<span class="string">'axLim'</span>,[0 0.2],<span class="string">'legend'</span>,false)
+colormap(jet)
+axis([0.0 0.8 7 28]);
+
+<span class="comment">% Fig. 3 (j)</span>
+subplot(1,5,5)
+specFerr = SrF.spinwave({[-0.4 -0.4 7] [0.4 0.4 7] nHkl},<span class="string">'hermit'</span>,false);
+specFerr = sw_magdomain(specFerr,<span class="string">'axis'</span>,[0 0 1],<span class="string">'angled'</span>,[0 90 180 270]);
+specFerr = sw_neutron(specFerr);
+specFerr = sw_egrid(specFerr,<span class="string">'Evect'</span>,Evect);
+specFerr = sw_instrument(specFerr,<span class="string">'Ei'</span>, 60,<span class="string">'dE'</span>,resMat,<span class="string">'dQ'</span>,0.05, <span class="string">'norm'</span>,false);
+sw_plotspec(specFerr,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'axLim'</span>,[0 0.2],<span class="string">'legend'</span>,false)
+colormap(jet)
+axis([0.0 0.8 8 35]);
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Define crystal structure of Sr3Fe2O7
+
+SrF = sw;
+SrF.genlattice('lat_const', [3.8 3.8 20.4],'sym','I 4/m m m')
+SrF.addatom('r',[0 0 0.0972],'S',2,'label','MFe4','color','blue')
+SrF.gencoupling
+
+%% define magnetic Hamiltonian
+% Value of the exchange constants
+
+J1  = -7.20;
+Jc1 = -5.10;
+J2  =  1.05;
+J3  =  2.10;
+Jc3 =  0.01;
+D   = diag([0 0 -0.06]);
+
+SrF.addmatrix('label','J1', 'value',J1, 'color','red')
+SrF.addmatrix('label','Jc1','value',Jc1,'color','orange')
+SrF.addmatrix('label','J2', 'value',J2, 'color','white')
+SrF.addmatrix('label','J3', 'value',J3, 'color','gray')
+SrF.addmatrix('label','Jc3','value',Jc3,'color','yellow')
+SrF.addmatrix('label','D',  'value',D,  'color','purple')
+
+% to add the two ion coupling
+SrF.addcoupling('J1',1)
+SrF.addcoupling('Jc1', 2)
+SrF.addcoupling('J2',3)
+SrF.addcoupling('J3',7)
+SrF.addcoupling('Jc3',6)
+SrF.addaniso('D')
+
+% Define magnetic structure
+S0 = [0 -1.162 0 -1.162; 0  1.162 0  1.162;2 -1.140 2 -1.140];
+SrF.genmagstr('mode','helical','S',S0,'k',[1/7 1/7 1],'n',[1 1 0])
+%SrF.optmagsteep
+SrF.plot('coplanar',0.1)
+
+%% Plot figure
+
+figure
+nHkl = 501;
+Evect = 0:0.5:35;
+
+% Fig. 3(f)
+subplot(1,5,1)
+specFerr = SrF.spinwave({[0.6 0.14 0] [1.4 0.14 0] nHkl},'hermit',false);
+specFerr = sw_magdomain(specFerr,'axis',[0 0 1],'angled',[0 90 180 270]);
+specFerr = sw_neutron(specFerr);
+specFerr = sw_egrid(specFerr,'Evect',Evect);
+specFerr = sw_instrument(specFerr,'Ei', 40,'dE',1.72,'dQ',0.05,'norm',false);
+sw_plotspec(specFerr,'mode','color','legend',false,'axLim',[0 0.6]);
+colormap(jet)
+
+% Fig. 3(g)
+subplot(1,5,2)
+specFerr = SrF.spinwave({[0.6 -0.4 0] [1.4 0.4 0] nHkl},'hermit',false);
+specFerr = sw_magdomain(specFerr,'axis',[0 0 1],'angled',[0 90 180 270]);
+specFerr = sw_neutron(specFerr);
+specFerr = sw_egrid(specFerr,'Evect',Evect);
+specFerr = sw_instrument(specFerr,'Ei', 40,'dE',1.72,'dQ',0.05,'norm',false);
+sw_plotspec(specFerr,'mode','color','axLim',[0 0.2],'legend',false)
+colormap(jet)
+
+% Fig. 3 (h)
+subplot(1,5,3)
+specFerr = SrF.spinwave({[-0.4 -0.4 5] [0.4 0.4 5] nHkl},'hermit',false);
+specFerr = sw_magdomain(specFerr,'axis',[0 0 1],'angled',[0 90 180 270]);
+specFerr = sw_neutron(specFerr);
+specFerr = sw_egrid(specFerr,'Evect',Evect);
+specFerr = sw_instrument(specFerr,'Ei',20,'dE',0.012,'dQ',0.0167,'norm',false);
+sw_plotspec(specFerr,'mode',3,'axLim',[0 0.5],'legend',false)
+colormap(jet)
+
+% Fig. 3 (i)
+subplot(1,5,4)
+specFerr = SrF.spinwave({[-0.4 -0.4 5] [0.4 0.4 5] nHkl},'hermit',false);
+specFerr = sw_magdomain(specFerr,'axis',[0 0 1],'angled',[0 90 180 270]);
+specFerr = sw_neutron(specFerr);
+specFerr = sw_egrid(specFerr,'Evect',Evect);
+resMat = [0 10 20 30 40 50 60;6 4.5 3.25 2.12 1.15 0.4 0]';
+specFerr = sw_instrument(specFerr,'Ei', 60,'dE',resMat,'dQ',0.05, 'norm',false);
+sw_plotspec(specFerr,'mode',3,'axLim',[0 0.2],'legend',false)
+colormap(jet)
+axis([0.0 0.8 7 28]);
+
+% Fig. 3 (j)
+subplot(1,5,5)
+specFerr = SrF.spinwave({[-0.4 -0.4 7] [0.4 0.4 7] nHkl},'hermit',false);
+specFerr = sw_magdomain(specFerr,'axis',[0 0 1],'angled',[0 90 180 270]);
+specFerr = sw_neutron(specFerr);
+specFerr = sw_egrid(specFerr,'Evect',Evect);
+specFerr = sw_instrument(specFerr,'Ei', 60,'dE',resMat,'dQ',0.05, 'norm',false);
+sw_plotspec(specFerr,'mode','color','axLim',[0 0.2],'legend',false)
+colormap(jet)
+axis([0.0 0.8 8 35]);
+##### SOURCE END #####
+--></body></html>

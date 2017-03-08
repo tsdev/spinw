@@ -24,7 +24,7 @@ end
 
 swVer = sw_version;
 
-if isfield(swVer,'Version')
+if ~isempty(swVer.Version)
     disp('The current version of SpinW is already released!');
     return
 end
@@ -107,13 +107,13 @@ sw_initialize;
 copyfile([sw_rootdir '*'],tempDirName);
 
 % include extra comment to all m files
-mFiles = rdir([tempDirName filesep 'mfiles' filesep '**' filesep '*.m']);
+swFiles = rdir([tempDirName filesep 'swfiles' filesep '**' filesep '*.m']);
 
 % go through all files and add comments
-for ii = 1:numel(mFiles)
+for ii = 1:numel(swFiles)
     mLines = {};
     
-    fid = fopen(mFiles(ii).name);
+    fid = fopen(swFiles(ii).name);
     mLines{end+1} = fgets(fid); %#ok<*AGROW>
     mLines{end+1} = fgets(fid);
     tLines = strtrim(mLines{end});
@@ -138,13 +138,18 @@ for ii = 1:numel(mFiles)
     fclose(fid);
     
     % open file for rewriting it
-    fid = fopen(mFiles(ii).name,'wt');
+    fid = fopen(swFiles(ii).name,'wt');
     
     for jj = 1:numel(mLines)
         fprintf(fid,'%s',mLines{jj});
     end
     fclose(fid);
 end
+
+% change the Contents file
+cId = fopen([tempDirName filesep 'Contents.m'],'w');
+fprintf(cId,['%% SpinW\n%% Version ' verNum ' (R' num2str(revNum) ') ' swVer.Date '\n%%']);
+fclose(cId);
 
 cd(tempDirName0);
 
@@ -158,8 +163,9 @@ fListZip = {};
 for ii = 1:numel(fList)
     if (~any(strfind(fList(ii).name,[filesep '.']))) && (~any(strfind(fList(ii).name,'~'))) ...
             && (~any(strfind(fList(ii).name,[filesep 'dev' filesep]))) ...
-            && (~any(strfind(fList(ii).name,[filesep 'doc' filesep]))) ...
-            && (~any(strfind(fList(ii).name,[filesep 'test' filesep])))
+            && (~any(strfind(fList(ii).name,[filesep 'docs' filesep]))) ...
+            && (~any(strfind(fList(ii).name,[filesep 'test' filesep]))) ...
+            && (~any(strfind(fList(ii).name,[filesep 'tutorials' filesep])))
         fListZip{end+1} = fList(ii).name;
     end
 end

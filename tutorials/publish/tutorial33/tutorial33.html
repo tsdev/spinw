@@ -1,0 +1,196 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>tutorial33</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-08"><meta name="DC.source" content="tutorial33.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">We use a complex model to customize</a></li><li><a href="#2">Customizing the plot 1.</a></li><li><a href="#3">Customizing the plot 2.</a></li><li><a href="#4">Overplotting a polyhedron</a></li></ul></div><h2 id="1">We use a complex model to customize</h2><p>We don't care what is this model, we just test the plotting capabilities of SpinW.</p><pre class="codeinput">symStr = <span class="string">'-z, y+3/4, x+3/4; z+3/4, -y, x+3/4; z+3/4, y+3/4, -x; y+3/4, x+3/4, -z; x+3/4, -z, y+3/4; -z, x+3/4, y+3/4'</span>;
+model = spinw;
+a = 10.0307;
+model.genlattice(<span class="string">'lat_const'</span>,[a a a],<span class="string">'angled'</span>,[90 90 90],<span class="string">'spgr'</span>,symStr,<span class="string">'label'</span>,<span class="string">'F d -3 m Z'</span>)
+model.addatom(<span class="string">'label'</span>,<span class="string">'Yb3+'</span>,<span class="string">'r'</span>,[1/2 1/2 1/2],<span class="string">'S'</span>,1/2)
+model.addatom(<span class="string">'label'</span>,<span class="string">'Ti4+'</span>,<span class="string">'r'</span>,[0 0 0])
+model.addatom(<span class="string">'label'</span>,<span class="string">'O2-'</span>,<span class="string">'r'</span>,[0.3318 1/8 1/8])
+model.addatom(<span class="string">'label'</span>,<span class="string">'O2-'</span>,<span class="string">'r'</span>,[3/8 3/8 3/8])
+model.gencoupling
+model.addmatrix(<span class="string">'label'</span>,<span class="string">'J1'</span>,<span class="string">'value'</span>,1)
+model.addmatrix(<span class="string">'label'</span>,<span class="string">'g0'</span>,<span class="string">'value'</span>,1);
+model.addcoupling(<span class="string">'mat'</span>,<span class="string">'J1'</span>,<span class="string">'bond'</span>,1)
+model.addg(<span class="string">'g0'</span>)
+model.matrix.mat(:,:,2) =  -0.84*ones(3)+4.32*eye(3);
+model.getmatrix(<span class="string">'mat'</span>,<span class="string">'J1'</span>);
+J1 = -0.09; J2 = -0.22; J3 = -0.29; J4 = 0.01;
+model.setmatrix(<span class="string">'mat'</span>,<span class="string">'J1'</span>,<span class="string">'pref'</span>,[J1 J3 J2 -J4]);
+</pre><pre class="codeoutput">
+The symmetry analysis of the coupling between atom 1 and atom 2:
+ lattice translation vector: [0,0,0]
+ distance: 3.546 Angstrom
+ center of bond (in lattice units): [0.500,0.375,0.375]
+ label of the assigned matrix: 'J1'
+ allowed elements in the symmetric matrix:
+  S = | C| 0| 0|
+      | 0| A| B|
+      | 0| B| A|
+
+ allowed components of the Dzyaloshinskii-Moriya vector:
+  D = [ 0 , D1,-D1]
+
+</pre><h2 id="2">Customizing the plot 1.</h2><p>We setup the number of triangular faces to be produced by the plot command using swpref. Each atom is an icosahedron, where each face is subdivided into triangles nmesh-times (see swplot.icomesh function). Thus nmnesh=3 will make all sphere to have 1280 faces. npatch determines the number of subdivision of the circle that is used to generate cylinders an arrows (swplot.arrow and swplot.cylinder).</p><pre class="codeinput">swpref.setpref(<span class="string">'nmesh'</span>,3,<span class="string">'npatch'</span>,50)
+
+<span class="comment">% The high level spinw.plot command calls lower level commands</span>
+<span class="comment">% (swplot.plotatom, swplot.plotion, swplot.plotbond, etc). For details</span>
+<span class="comment">% check the documentation of spinw.plot or any of the lower level</span>
+<span class="comment">% functions. Any option of the lower level functions can be controlled by</span>
+<span class="comment">% making new options as: lowlevelfunname + lowlevelfunoption, for example</span>
+<span class="comment">% to set the color option of the swplot.plotatom function set 'atomColor'</span>
+<span class="comment">% option in the spinw.plot method as in the example below. The low level</span>
+<span class="comment">% functions can be also called separately.</span>
+
+plot(model,<span class="string">'tooltip'</span>,false,<span class="string">'atomMode'</span>,<span class="string">'mag'</span>,<span class="string">'atomColor'</span>,<span class="string">'gold'</span>)
+
+<span class="comment">% Move the atoms by shifting positions by 10 Angstrom to the right.</span>
+swplot.plotatom(<span class="string">'shift'</span>,[10 0 0]',<span class="string">'mode'</span>,<span class="string">'mag'</span>,<span class="string">'replace'</span>,true)
+</pre><img vspace="5" hspace="5" src="tutorial33_01.png" style="width:560px;height:420px;" alt=""> <h2 id="3">Customizing the plot 2.</h2><p>We show only the bonds and the atoms and changing colors.</p><pre class="codeinput">model.plot(<span class="string">'atomMode'</span>,<span class="string">'mag'</span>,<span class="string">'bondMode'</span>,<span class="string">'cylinder'</span>,<span class="keyword">...</span>
+    <span class="string">'bondLinewidth0'</span>,3,<span class="string">'bondColor'</span>,<span class="string">'orange'</span>,<span class="string">'bondMode2'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+    <span class="string">'atomColor'</span>,<span class="string">'pink'</span>,<span class="string">'legend'</span>,false,<span class="string">'baseLabel'</span>,false,<span class="keyword">...</span>
+    <span class="string">'cellMode'</span>,<span class="string">'none'</span>,<span class="string">'tooltip'</span>,true)
+</pre><pre class="codeoutput">Warning: Invalid input option names: legend! 
+</pre><img vspace="5" hspace="5" src="tutorial33_02.png" style="width:560px;height:420px;" alt=""> <h2 id="4">Overplotting a polyhedron</h2><p>We overplot a tetrahedron between 4 magnetic atoms. The positions are in lattice units. Also Angstrom can be used by setting the 'unit' option of swplot.plot function to 'xyz'.</p><pre class="codeinput">R =[1/2 3/4 3/4;<span class="keyword">...</span>
+    1/2 1/2 1/2;<span class="keyword">...</span>
+    3/4 3/4 1/2;<span class="keyword">...</span>
+    3/4 1/2 3/4];
+
+swplot.plot(<span class="string">'type'</span>,<span class="string">'polyhedron'</span>,<span class="string">'position'</span>,permute(R,[2 3 1]))
+</pre><img vspace="5" hspace="5" src="tutorial33_03.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% We use a complex model to customize
+% We don't care what is this model, we just test the plotting capabilities
+% of SpinW.
+
+symStr = '-z, y+3/4, x+3/4; z+3/4, -y, x+3/4; z+3/4, y+3/4, -x; y+3/4, x+3/4, -z; x+3/4, -z, y+3/4; -z, x+3/4, y+3/4';
+model = spinw;
+a = 10.0307;
+model.genlattice('lat_const',[a a a],'angled',[90 90 90],'spgr',symStr,'label','F d -3 m Z')
+model.addatom('label','Yb3+','r',[1/2 1/2 1/2],'S',1/2)
+model.addatom('label','Ti4+','r',[0 0 0])
+model.addatom('label','O2-','r',[0.3318 1/8 1/8])
+model.addatom('label','O2-','r',[3/8 3/8 3/8])
+model.gencoupling
+model.addmatrix('label','J1','value',1)
+model.addmatrix('label','g0','value',1);
+model.addcoupling('mat','J1','bond',1)
+model.addg('g0')
+model.matrix.mat(:,:,2) =  -0.84*ones(3)+4.32*eye(3);
+model.getmatrix('mat','J1');
+J1 = -0.09; J2 = -0.22; J3 = -0.29; J4 = 0.01;
+model.setmatrix('mat','J1','pref',[J1 J3 J2 -J4]);
+
+%% Customizing the plot 1.
+% We setup the number of triangular faces to be produced by the plot
+% command using swpref. Each atom is an icosahedron, where each face is
+% subdivided into triangles nmesh-times (see swplot.icomesh function). Thus
+% nmnesh=3 will make all sphere to have 1280 faces. npatch determines the
+% number of subdivision of the circle that is used to generate cylinders an
+% arrows (swplot.arrow and swplot.cylinder).
+
+swpref.setpref('nmesh',3,'npatch',50)
+
+% The high level spinw.plot command calls lower level commands
+% (swplot.plotatom, swplot.plotion, swplot.plotbond, etc). For details
+% check the documentation of spinw.plot or any of the lower level
+% functions. Any option of the lower level functions can be controlled by
+% making new options as: lowlevelfunname + lowlevelfunoption, for example
+% to set the color option of the swplot.plotatom function set 'atomColor'
+% option in the spinw.plot method as in the example below. The low level
+% functions can be also called separately.
+
+plot(model,'tooltip',false,'atomMode','mag','atomColor','gold')
+
+% Move the atoms by shifting positions by 10 Angstrom to the right.
+swplot.plotatom('shift',[10 0 0]','mode','mag','replace',true)
+
+%% Customizing the plot 2.
+% We show only the bonds and the atoms and changing colors.
+
+model.plot('atomMode','mag','bondMode','cylinder',...
+    'bondLinewidth0',3,'bondColor','orange','bondMode2','none',...
+    'atomColor','pink','legend',false,'baseLabel',false,...
+    'cellMode','none','tooltip',true)
+
+%% Overplotting a polyhedron
+% We overplot a tetrahedron between 4 magnetic atoms. The positions are in
+% lattice units. Also Angstrom can be used by setting the 'unit' option of
+% swplot.plot function to 'xyz'.
+
+R =[1/2 3/4 3/4;...
+    1/2 1/2 1/2;...
+    3/4 3/4 1/2;...
+    3/4 1/2 3/4];
+
+swplot.plot('type','polyhedron','position',permute(R,[2 3 1]))
+
+
+##### SOURCE END #####
+--></body></html>

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Spin wave spectrum of the honeycomb lattice Na2IrO3</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-02-24"><meta name="DC.source" content="tutorial16.m"><style type="text/css">
+      --><title>Spin wave spectrum of the honeycomb lattice Na2IrO3</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-08"><meta name="DC.source" content="tutorial16.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,16 +66,17 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Spin wave spectrum of the honeycomb lattice Na2IrO3</h1><!--introduction--><p>we reproduce the spin wave calculation of the paper S. K. Choi, et al. PRL, 108(12), 127204 (2012), [[http://link.aps.org/doi/10.1103/PhysRevLett.108.127204]].</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Crystal structure</a></li><li><a href="#2">P0 space group</a></li><li><a href="#3">Magnetic Hamiltonian</a></li><li><a href="#4">Q scans</a></li><li><a href="#5">Spin wave spectrum</a></li><li><a href="#6">Fig. S3(d) stripy order</a></li><li><a href="#7">Fig. S3(e-f) stripy order</a></li><li><a href="#8">Fig. S3(g) stripy order</a></li><li><a href="#9">Fig. S3(h) zig-zag order</a></li><li><a href="#10">Fig. S3(i-j) zig-zag order</a></li></ul></div><h2>Crystal structure<a name="1"></a></h2><p>We define the crystal structure using the space group C2/m, and taking the crystallographic parameters at 300 K (parameters are only slightly different at 5 K) and we add not only the magnetic Ir4+ ions with effective spin quantum number of 1/2 but also the non-magnetic atoms for plotting the structure.</p><pre class="codeinput">nairo = spinw;
-nairo.fileid(0)
-nairo.genlattice(<span class="string">'lat_const'</span>,[5.427 9.395 5.614],<span class="string">'angled'</span>,[90 109.037 90],<span class="string">'sym'</span>,<span class="string">'C 2/m'</span>)
+  </style></head><body><div class="content"><h1>Spin wave spectrum of the honeycomb lattice Na2IrO3</h1><!--introduction--><p>we reproduce the spin wave calculation of the paper S. K. Choi, et al. PRL, 108(12), 127204 (2012), [[http://link.aps.org/doi/10.1103/PhysRevLett.108.127204]].</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Crystal structure</a></li><li><a href="#2">Magnetic Hamiltonian</a></li><li><a href="#4">Plot Kitaev term</a></li><li><a href="#5">Q scans</a></li><li><a href="#6">Spin wave spectrum</a></li><li><a href="#7">Fig. S3(d) stripy order</a></li><li><a href="#8">Fig. S3(e-f) stripy order</a></li><li><a href="#9">Fig. S3(g) stripy order</a></li><li><a href="#10">Fig. S3(h) zig-zag order</a></li><li><a href="#11">Fig. S3(i-j) zig-zag order</a></li></ul></div><h2 id="1">Crystal structure</h2><p>We define the crystal structure using the space group C2/m, and taking the crystallographic parameters at 300 K (parameters are only slightly different at 5 K) and we add not only the magnetic Ir4+ ions with effective spin quantum number of 1/2 but also the non-magnetic atoms for plotting the structure.</p><pre class="codeinput">nairo = spinw;
+nairo.genlattice(<span class="string">'lat_const'</span>,[5.427 9.395 5.614],<span class="string">'angled'</span>,[90 109.037 90],<span class="string">'spgr'</span>,<span class="string">'C 2/m'</span>)
 nairo.addatom(<span class="string">'label'</span>,<span class="string">'MIr4'</span>,<span class="string">'r'</span>,[1/2; 0.167; 0],<span class="string">'S'</span>,1/2,<span class="string">'color'</span>,<span class="string">'DarkCyan'</span>);
-nairo.addatom(<span class="string">'r'</span>,[0 1/2 1/2;0 0 0.340; 0 1/2 1/2],<span class="string">'S'</span>,[0 0 0],<span class="string">'label'</span>,{<span class="string">'Na1'</span> <span class="string">'Na2'</span> <span class="string">'Na3'</span>},<span class="string">'color'</span>,{<span class="string">'lightGray'</span> <span class="string">'lightGray'</span> <span class="string">'lightGray'</span>});
-nairo.addatom(<span class="string">'r'</span>,[0.748 0.711; 0.178 0; 0.789 0.204],<span class="string">'S'</span>,[0 0],<span class="string">'label'</span>,{<span class="string">'O1'</span>, <span class="string">'O2'</span>},<span class="string">'color'</span>,{<span class="string">'r'</span> <span class="string">'r'</span>});
-plot(nairo,<span class="string">'zoom'</span>,1)
-</pre><img vspace="5" hspace="5" src="tutorial16_01.png" alt=""> <h2>P0 space group<a name="2"></a></h2><p>We define the magnetic Hamiltonian in P0 (no-symmetry) space group, since the anisotropic exchange interactions are incompatible with the C2/m space group. We determine all exchange pathways up to 8 Angstrom distance.</p><pre class="codeinput">nairo.nosym
-nairo.gencoupling(<span class="string">'maxDistance'</span>,8)
-</pre><h2>Magnetic Hamiltonian<a name="3"></a></h2><p>We define the three anisotropic exchange interactions and Heisenberg exchange J1, J2 and J3 and assign them according to the paper. We assign a constant 1 meV for all exchange matrix, that we will change later for every model. J1 is plotted with dashed line to see both J1 and the kitaev coupling on the plot ('-' at the end of the matrix label will be plotted with dashed line). The Jxx and Jyy Kitaev terms couple atoms with exactly the same distance, thus a second parameter is used in sw.addcoupling() function to differentiate between identical bonds. This only works with P0 symmetry.</p><pre class="codeinput"><span class="comment">% Kitaev term</span>
+nairo.addatom(<span class="string">'r'</span>,[0 1/2 1/2;0 0 0.340; 0 1/2 1/2],<span class="string">'S'</span>,[0 0 0],<span class="string">'label'</span>,{<span class="string">'Na1 Na1+'</span> <span class="string">'Na2 Na1+'</span> <span class="string">'Na3 Na1+'</span>},<span class="string">'color'</span>,{<span class="string">'lightGray'</span> <span class="string">'lightGray'</span> <span class="string">'lightGray'</span>});
+nairo.addatom(<span class="string">'r'</span>,[0.748 0.711; 0.178 0; 0.789 0.204],<span class="string">'S'</span>,[0 0],<span class="string">'label'</span>,{<span class="string">'O1 O2-'</span>, <span class="string">'O2 O2-'</span>},<span class="string">'color'</span>,{<span class="string">'r'</span> <span class="string">'r'</span>});
+plot(nairo,<span class="string">'baseShift'</span>,[-2;0;0])
+swplot.zoom(1.3)
+
+<span class="comment">% We generate all bonds up to 8 Angstrom length.</span>
+nairo.gencoupling(<span class="string">'maxDistance'</span>,8);
+</pre><img vspace="5" hspace="5" src="tutorial16_01.png" style="width:560px;height:420px;" alt=""> <h2 id="2">Magnetic Hamiltonian</h2><p>We define the three anisotropic exchange interactions and Heisenberg exchange J1, J2 and J3 and assign them according to the paper. We assign a constant 1 meV for all exchange matrix, that we will change later for every model. J1 is plotted with dashed line to see both J1 and the kitaev coupling on the plot ('-' at the end of the matrix label will be plotted with dashed line). The Jxx and Jyy Kitaev terms are assigned to symmetry equivalent bonds, but they don't transform according to the space group symmetry. Thus we use a second option 'subIdx' to subselect from the symmetry equivalent bonds. In this case SpinW won't apply the symmetry transformation on exchange matrices on these bonds, it can be also forced setting the 'sym' option false in the spinw.addcoupling() function.</p><pre class="codeinput"><span class="comment">% Kitaev term</span>
 nairo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jxx'</span>,<span class="string">'value'</span>,1,<span class="string">'color'</span>,<span class="string">'r'</span>);
 nairo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jyy'</span>,<span class="string">'value'</span>,1,<span class="string">'color'</span>,<span class="string">'g'</span>);
 nairo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jzz'</span>,<span class="string">'value'</span>,1,<span class="string">'color'</span>,<span class="string">'b'</span>);
@@ -85,42 +86,60 @@ nairo.addmatrix(<span class="string">'label'</span>,<span class="string">'J2'</s
 nairo.addmatrix(<span class="string">'label'</span>,<span class="string">'J3'</span>,<span class="string">'value'</span>,1,<span class="string">'color'</span>,<span class="string">'cyan'</span>);
 
 <span class="comment">% add J1, J2 and J3 and JK couplings</span>
-
-nairo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jxx'</span>,<span class="string">'bond'</span>,1,<span class="string">'subidx'</span>,[2 4]);
-nairo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jyy'</span>,<span class="string">'bond'</span>,1,<span class="string">'subidx'</span>,[1 3]);
-nairo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jzz'</span>,<span class="string">'bond'</span>,2);
-<span class="comment">% Plot Kitaev couplings only.</span>
-plot(nairo,<span class="string">'range'</span>,[2 2 0.5],<span class="string">'pNonMagAtom'</span>,false,<span class="string">'zoom'</span>,1)
-snapnow
-
 nairo.addcoupling(<span class="string">'mat'</span>,<span class="string">'J1-'</span>,<span class="string">'bond'</span>,[1 2]);
 nairo.addcoupling(<span class="string">'mat'</span>,<span class="string">'J2'</span>,<span class="string">'bond'</span>,[3 4]);
 nairo.addcoupling(<span class="string">'mat'</span>,<span class="string">'J3'</span>,<span class="string">'bond'</span>,[7 8]);
 <span class="comment">% Plot all couplings.</span>
-plot(nairo,<span class="string">'range'</span>,[2 2 0.5],<span class="string">'pNonMagAtom'</span>,false)
-</pre><img vspace="5" hspace="5" src="tutorial16_02.png" alt=""> <img vspace="5" hspace="5" src="tutorial16_03.png" alt=""> <h2>Q scans<a name="4"></a></h2><p>We define a list of Q points, linear scans will be claculated between them with 200 points per line.</p><pre class="codeinput">Qp{1} = [ -1;   0; 0];
+plot(nairo,<span class="string">'range'</span>,[2 2 0.5],<span class="string">'atomMode'</span>,<span class="string">'mag'</span>,<span class="string">'cellMode'</span>,<span class="string">'inside'</span>,<span class="keyword">...</span>
+    <span class="string">'atomLegend'</span>,false,<span class="string">'cellcolor'</span>,<span class="string">'gray'</span>,<span class="string">'bondMode'</span>,<span class="string">'line'</span>,<span class="string">'bondLinewidth0'</span>,2)
+swplot.zoom(1.4)
+</pre><img vspace="5" hspace="5" src="tutorial16_02.png" style="width:560px;height:420px;" alt=""> <pre class="codeinput">snapnow
+
+<span class="comment">% add JJxx, Jyy and Jzz couplings</span>
+nairo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jxx'</span>,<span class="string">'bond'</span>,1,<span class="string">'subidx'</span>,[3 4]);
+nairo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jyy'</span>,<span class="string">'bond'</span>,1,<span class="string">'subidx'</span>,[1 2]);
+nairo.addcoupling(<span class="string">'mat'</span>,<span class="string">'Jzz'</span>,<span class="string">'bond'</span>,2);
+<span class="comment">% Plot Kitaev couplings only.</span>
+plot(nairo,<span class="string">'range'</span>,[2 2 0.5],<span class="string">'atomMode'</span>,<span class="string">'mag'</span>,<span class="string">'cellMode'</span>,<span class="string">'inside'</span>,<span class="keyword">...</span>
+    <span class="string">'atomLegend'</span>,false,<span class="string">'cellcolor'</span>,<span class="string">'gray'</span>,<span class="string">'bondMode'</span>,<span class="string">'line'</span>,<span class="string">'bondLinewidth0'</span>,2)
+swplot.zoom(1.4)
+</pre><pre class="codeoutput">Warning: By subselecting equivalent bonds, the symmetry of the corresponding
+bond(s) are reduced to P1! 
+Warning: By subselecting equivalent bonds, the symmetry of the corresponding
+bond(s) are reduced to P1! 
+</pre><img vspace="5" hspace="5" src="tutorial16_03.png" style="width:560px;height:420px;" alt=""> <h2 id="4">Plot Kitaev term</h2><pre class="codeinput">nairo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jxx'</span>,<span class="string">'value'</span>,diag([1 0 0]),<span class="string">'color'</span>,<span class="string">'r'</span>)
+nairo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jyy'</span>,<span class="string">'value'</span>,diag([0 1 0]),<span class="string">'color'</span>,<span class="string">'g'</span>)
+nairo.addmatrix(<span class="string">'label'</span>,<span class="string">'Jzz'</span>,<span class="string">'value'</span>,diag([0 0 1]),<span class="string">'color'</span>,<span class="string">'b'</span>)
+
+nairo.addmatrix(<span class="string">'label'</span>,<span class="string">'J1-'</span>,<span class="string">'value'</span>,0);
+nairo.addmatrix(<span class="string">'label'</span>,<span class="string">'J2'</span>,<span class="string">'value'</span>, 0);
+nairo.addmatrix(<span class="string">'label'</span>,<span class="string">'J3'</span>,<span class="string">'value'</span>, 0);
+
+plot(nairo,<span class="string">'range'</span>,[1 1 1/2],<span class="string">'atomMode'</span>,<span class="string">'mag'</span>,<span class="string">'bondRadius1'</span>,0.15,<span class="string">'bondMode'</span>,<span class="string">'line'</span>,<span class="keyword">...</span>
+    <span class="string">'bondLineWidth'</span>,<span class="string">'lin'</span>,<span class="string">'bondLinewidth0'</span>,4,<span class="string">'atomLegend'</span>,false)
+</pre><img vspace="5" hspace="5" src="tutorial16_04.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Q scans</h2><p>We define a list of Q points, linear scans will be claculated between them with 200 points per line.</p><pre class="codeinput">Qp{1} = [ -1;   0; 0];
 Qp{2} = [  0;   0; 0];
 Qp{3} = [  0;   1; 0];
 Qp{4} = [  1;   1; 0];
 Qp{5} = [1/2; 1/2; 0];
 Qp{6} = [  0;   0; 0];
-Qp{7} = 200;
-</pre><h2>Spin wave spectrum<a name="5"></a></h2><p>We simulate every setting in the supplementary paper and denote each case with the figure plot index on Fig. S3. We create a Jfun() inline function that creates all exchange matrices from the scalar values. This can then directly be stored in sw.matrix.mat field.</p><pre class="codeinput">Jfun = @(x)cat(3,diag([-x(4) 0 0]),diag([0 -x(4) 0]),diag([0 0 -x(4)]),<span class="keyword">...</span>
+Qp{7} = 500;
+</pre><h2 id="6">Spin wave spectrum</h2><p>We simulate every setting in the supplementary paper and denote each case with the figure plot index on Fig. S3. We create a Jfun() inline function that creates all exchange matrices from the scalar values. This can then directly be stored in sw.matrix.mat field.</p><pre class="codeinput">Jfun = @(x)cat(3,diag([-x(4) 0 0]),diag([0 -x(4) 0]),diag([0 0 -x(4)]),<span class="keyword">...</span>
     eye(3)*x(1),eye(3)*x(2),eye(3)*x(3));
-</pre><h2>Fig. S3(d) stripy order<a name="6"></a></h2><p>We create stripy order, where energy per spin is -0.2913 meV. The spins are pointing along the c-axis.</p><pre class="codeinput">J1 =  1; J2 =  0; J3 =  0; JK =  1.33;
+</pre><h2 id="7">Fig. S3(d) stripy order</h2><p>We create stripy order, where energy per spin is -0.2913 meV. The spins are pointing along the c-axis.</p><pre class="codeinput">J1 =  1; J2 =  0; J3 =  0; JK =  1.33;
 nairo.matrix.mat = Jfun([J1 J2 J3 JK]);
 nairo.genmagstr(<span class="string">'mode'</span>,<span class="string">'func'</span>,<span class="string">'func'</span>,@gm_planar,<span class="string">'x0'</span>,[[1/2 3/2 1/2 3/2]*pi 0 0 0 pi/2 0]);
 
-specD = nairo.spinwave(Qp,<span class="string">'hermit'</span>,false);
+specD = nairo.spinwave(Qp);
 specD = sw_neutron(specD);
-specD = sw_egrid(specD,<span class="string">'component'</span>,<span class="string">'Sxx'</span>,<span class="string">'evect'</span>,linspace(0,4,501));
+specD = sw_egrid(specD,<span class="string">'component'</span>,<span class="string">'Sxx'</span>,<span class="string">'Evect'</span>,linspace(0,4,1001));
 
 figure
 sw_plotspec(specD,<span class="string">'mode'</span>,<span class="string">'color'</span>,<span class="string">'dE'</span>,0.1,<span class="string">'axLim'</span>,[0 1]);
 sw_plotspec(specD,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'dashed'</span>,true,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,<span class="keyword">...</span>
     false,<span class="string">'title'</span>,false,<span class="string">'sortMode'</span>,true,<span class="string">'colormap'</span>,[255  20 147]);
 title(<span class="string">'e) stripy, KH, S^{xx}'</span>,<span class="string">'fontsize'</span>,15)
-</pre><img vspace="5" hspace="5" src="tutorial16_04.png" alt=""> <h2>Fig. S3(e-f) stripy order<a name="7"></a></h2><p>Here we have only J1 and Kitaev exchange. The magnetic ground state is stripy and parallel to the c-axis. The energy per spin is -0.375 meV.</p><pre class="codeinput">J1 = 1; J2 = 0; J3 = 0; JK = 2;
+</pre><img vspace="5" hspace="5" src="tutorial16_05.png" style="width:560px;height:420px;" alt=""> <h2 id="8">Fig. S3(e-f) stripy order</h2><p>Here we have only J1 and Kitaev exchange. The magnetic ground state is stripy and parallel to the c-axis. The energy per spin is -0.375 meV.</p><pre class="codeinput">J1 = 1; J2 = 0; J3 = 0; JK = 2;
 nairo.matrix.mat = Jfun([J1 J2 J3 JK]);
 nairo.genmagstr(<span class="string">'mode'</span>,<span class="string">'func'</span>,<span class="string">'func'</span>,@gm_planar,<span class="string">'x0'</span>,[[1/2 3/2 1/2 3/2]*pi 0 0 0 pi/2 0]);
 specEF = nairo.spinwave(Qp,<span class="string">'hermit'</span>,false);
@@ -139,7 +158,7 @@ sw_plotspec(specEF,<span class="string">'mode'</span>,<span class="string">'colo
 sw_plotspec(specEF,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'dashed'</span>,true,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,<span class="keyword">...</span>
     false,<span class="string">'title'</span>,false,<span class="string">'sortMode'</span>,true,<span class="string">'colormap'</span>,[255  20 147]);
 title(<span class="string">'f) stripy, KH, S^{yy}'</span>,<span class="string">'fontsize'</span>,15)
-</pre><img vspace="5" hspace="5" src="tutorial16_05.png" alt=""> <img vspace="5" hspace="5" src="tutorial16_06.png" alt=""> <h2>Fig. S3(g) stripy order<a name="8"></a></h2><p>Stripy order again along c-axis.</p><pre class="codeinput">J1 =  1; J2 =  0.26; J3 = -0.2; JK = 0;
+</pre><img vspace="5" hspace="5" src="tutorial16_06.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="tutorial16_07.png" style="width:560px;height:420px;" alt=""> <h2 id="9">Fig. S3(g) stripy order</h2><p>Stripy order again along c-axis.</p><pre class="codeinput">J1 =  1; J2 =  0.26; J3 = -0.2; JK = 0;
 nairo.matrix.mat = Jfun([J1 J2 J3 JK]);
 nairo.genmagstr(<span class="string">'mode'</span>,<span class="string">'func'</span>,<span class="string">'func'</span>,@gm_planar,<span class="string">'x0'</span>,[[1/2 3/2 1/2 3/2]*pi 0 0 0 pi/2 0]);
 
@@ -152,7 +171,7 @@ sw_plotspec(specG,<span class="string">'mode'</span>,<span class="string">'color
 sw_plotspec(specG,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'dashed'</span>,true,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,<span class="keyword">...</span>
     false,<span class="string">'title'</span>,false,<span class="string">'sortMode'</span>,true,<span class="string">'colormap'</span>,[255  20 147]);
 title(<span class="string">'g) stripy, J_{1,2,3}, S^{xx}(=S^{yy})'</span>,<span class="string">'fontsize'</span>,15)
-</pre><img vspace="5" hspace="5" src="tutorial16_07.png" alt=""> <h2>Fig. S3(h) zig-zag order<a name="9"></a></h2><p>Zig-zag order along the b-axis.</p><pre class="codeinput">J1 =  1; J2 =  0.78; J3 =  0.9; JK =  0;
+</pre><img vspace="5" hspace="5" src="tutorial16_08.png" style="width:560px;height:420px;" alt=""> <h2 id="10">Fig. S3(h) zig-zag order</h2><p>Zig-zag order along the b-axis.</p><pre class="codeinput">J1 =  1; J2 =  0.78; J3 =  0.9; JK =  0;
 nairo.matrix.mat = Jfun([J1 J2 J3 JK]);
 nairo.genmagstr(<span class="string">'mode'</span>,<span class="string">'func'</span>,<span class="string">'func'</span>,@gm_planar,<span class="string">'x0'</span>,[[0 1 1 0]*pi 0 0 0 pi/2 0]);
 
@@ -165,7 +184,9 @@ sw_plotspec(specH,<span class="string">'mode'</span>,<span class="string">'color
 sw_plotspec(specH,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'dashed'</span>,true,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,<span class="keyword">...</span>
     false,<span class="string">'title'</span>,false,<span class="string">'sortMode'</span>,true,<span class="string">'colormap'</span>,[255  20 147]);
 title(<span class="string">'h) zig-zag, J_{1,2,3}, S^{xx}(=S^{yy})'</span>,<span class="string">'fontsize'</span>,15)
-</pre><img vspace="5" hspace="5" src="tutorial16_08.png" alt=""> <h2>Fig. S3(i-j) zig-zag order<a name="10"></a></h2><p>Magnetic structure, where spins are pointing along the b-axis. In the paper the Sy'y' direction is the correlation function component perpendicular to the magnetic moment direction, that is Sxx for S||b moments.</p><pre class="codeinput">J1 =  1; J2 =  0.23; J3 =  0.51; JK =  1.33;
+</pre><pre class="codeoutput">Warning: Eigenvectors of defective eigenvalues cannot be orthogonalised at some
+q-point! 
+</pre><img vspace="5" hspace="5" src="tutorial16_09.png" style="width:560px;height:420px;" alt=""> <h2 id="11">Fig. S3(i-j) zig-zag order</h2><p>Magnetic structure, where spins are pointing along the b-axis. In the paper the Sy'y' direction is the correlation function component perpendicular to the magnetic moment direction, that is Sxx for S||b moments.</p><pre class="codeinput">J1 =  1; J2 =  0.23; J3 =  0.51; JK =  1.33;
 nairo.matrix.mat = Jfun([J1 J2 J3 JK]);
 nairo.genmagstr(<span class="string">'mode'</span>,<span class="string">'func'</span>,<span class="string">'func'</span>,@gm_planar,<span class="string">'x0'</span>,[[0 1 1 0]*pi 0 0 0 pi/2 0]);
 
@@ -185,9 +206,9 @@ sw_plotspec(specIJ,<span class="string">'mode'</span>,<span class="string">'colo
 sw_plotspec(specIJ,<span class="string">'mode'</span>,<span class="string">'disp'</span>,<span class="string">'dashed'</span>,true,<span class="string">'colorbar'</span>,false,<span class="string">'legend'</span>,<span class="keyword">...</span>
     false,<span class="string">'title'</span>,false,<span class="string">'sortMode'</span>,true,<span class="string">'colormap'</span>,[255  20 147]);
 title(<span class="string">'j) zig-zag, KH-J_2-J_3, S^{y''y''}=S^{xx}'</span>,<span class="string">'fontsize'</span>,15)
-</pre><img vspace="5" hspace="5" src="tutorial16_09.png" alt=""> <img vspace="5" hspace="5" src="tutorial16_10.png" alt=""> <pre>Written by
+</pre><img vspace="5" hspace="5" src="tutorial16_10.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="tutorial16_11.png" style="width:560px;height:420px;" alt=""> <pre>Written by
 Sandor Toth
-16-June-2014</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+16-Jun-2014, 06-Feb-2017</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Spin wave spectrum of the honeycomb lattice Na2IrO3
 % we reproduce the spin wave calculation of the paper
@@ -203,21 +224,15 @@ Sandor Toth
 % the structure.
 
 nairo = spinw;
-nairo.fileid(0)
-nairo.genlattice('lat_const',[5.427 9.395 5.614],'angled',[90 109.037 90],'sym','C 2/m')
+nairo.genlattice('lat_const',[5.427 9.395 5.614],'angled',[90 109.037 90],'spgr','C 2/m')
 nairo.addatom('label','MIr4','r',[1/2; 0.167; 0],'S',1/2,'color','DarkCyan');
-nairo.addatom('r',[0 1/2 1/2;0 0 0.340; 0 1/2 1/2],'S',[0 0 0],'label',{'Na1' 'Na2' 'Na3'},'color',{'lightGray' 'lightGray' 'lightGray'});
-nairo.addatom('r',[0.748 0.711; 0.178 0; 0.789 0.204],'S',[0 0],'label',{'O1', 'O2'},'color',{'r' 'r'});
-plot(nairo,'zoom',1)
+nairo.addatom('r',[0 1/2 1/2;0 0 0.340; 0 1/2 1/2],'S',[0 0 0],'label',{'Na1 Na1+' 'Na2 Na1+' 'Na3 Na1+'},'color',{'lightGray' 'lightGray' 'lightGray'});
+nairo.addatom('r',[0.748 0.711; 0.178 0; 0.789 0.204],'S',[0 0],'label',{'O1 O2-', 'O2 O2-'},'color',{'r' 'r'});
+plot(nairo,'baseShift',[-2;0;0])
+swplot.zoom(1.3)
 
-%% P0 space group
-% We define the magnetic Hamiltonian in P0 (no-symmetry) space group, since
-% the anisotropic exchange interactions are incompatible with the C2/m
-% space group. We determine all exchange pathways up to 8 Angstrom
-% distance.
-
-nairo.nosym
-nairo.gencoupling('maxDistance',8)
+% We generate all bonds up to 8 Angstrom length.
+nairo.gencoupling('maxDistance',8);
 
 %% Magnetic Hamiltonian
 % We define the three anisotropic exchange interactions and Heisenberg
@@ -225,10 +240,12 @@ nairo.gencoupling('maxDistance',8)
 % a constant 1 meV for all exchange matrix, that we will change later for
 % every model. J1 is plotted with dashed line to see both J1 and the kitaev
 % coupling on the plot ('-' at the end of the matrix label will be plotted
-% with dashed line). The Jxx and Jyy Kitaev terms couple atoms with exactly
-% the same distance, thus a second parameter is used in sw.addcoupling()
-% function to differentiate between identical bonds. This only works with
-% P0 symmetry.
+% with dashed line). The Jxx and Jyy Kitaev terms are assigned to symmetry
+% equivalent bonds, but they don't transform according to the space group
+% symmetry. Thus we use a second option 'subIdx' to subselect from the
+% symmetry equivalent bonds. In this case SpinW won't apply the symmetry
+% transformation on exchange matrices on these bonds, it can be also forced
+% setting the 'sym' option false in the spinw.addcoupling() function.
 
 % Kitaev term
 nairo.addmatrix('label','Jxx','value',1,'color','r');
@@ -240,19 +257,37 @@ nairo.addmatrix('label','J2','value',1,'color','orange');
 nairo.addmatrix('label','J3','value',1,'color','cyan');
 
 % add J1, J2 and J3 and JK couplings
-
-nairo.addcoupling('mat','Jxx','bond',1,'subidx',[2 4]);
-nairo.addcoupling('mat','Jyy','bond',1,'subidx',[1 3]);
-nairo.addcoupling('mat','Jzz','bond',2);
-% Plot Kitaev couplings only.
-plot(nairo,'range',[2 2 0.5],'pNonMagAtom',false,'zoom',1)
-snapnow
-
 nairo.addcoupling('mat','J1-','bond',[1 2]);
 nairo.addcoupling('mat','J2','bond',[3 4]);
 nairo.addcoupling('mat','J3','bond',[7 8]);
 % Plot all couplings.
-plot(nairo,'range',[2 2 0.5],'pNonMagAtom',false)
+plot(nairo,'range',[2 2 0.5],'atomMode','mag','cellMode','inside',...
+    'atomLegend',false,'cellcolor','gray','bondMode','line','bondLinewidth0',2)
+swplot.zoom(1.4)
+%%
+snapnow
+
+% add JJxx, Jyy and Jzz couplings
+nairo.addcoupling('mat','Jxx','bond',1,'subidx',[3 4]);
+nairo.addcoupling('mat','Jyy','bond',1,'subidx',[1 2]);
+nairo.addcoupling('mat','Jzz','bond',2);
+% Plot Kitaev couplings only.
+plot(nairo,'range',[2 2 0.5],'atomMode','mag','cellMode','inside',...
+    'atomLegend',false,'cellcolor','gray','bondMode','line','bondLinewidth0',2)
+swplot.zoom(1.4)
+
+%% Plot Kitaev term
+
+nairo.addmatrix('label','Jxx','value',diag([1 0 0]),'color','r')
+nairo.addmatrix('label','Jyy','value',diag([0 1 0]),'color','g')
+nairo.addmatrix('label','Jzz','value',diag([0 0 1]),'color','b')
+
+nairo.addmatrix('label','J1-','value',0);
+nairo.addmatrix('label','J2','value', 0);
+nairo.addmatrix('label','J3','value', 0);
+
+plot(nairo,'range',[1 1 1/2],'atomMode','mag','bondRadius1',0.15,'bondMode','line',...
+    'bondLineWidth','lin','bondLinewidth0',4,'atomLegend',false)
 
 %% Q scans
 % We define a list of Q points, linear scans will be claculated between
@@ -264,7 +299,7 @@ Qp{3} = [  0;   1; 0];
 Qp{4} = [  1;   1; 0];
 Qp{5} = [1/2; 1/2; 0];
 Qp{6} = [  0;   0; 0];
-Qp{7} = 200;
+Qp{7} = 500;
 
 %% Spin wave spectrum
 % We simulate every setting in the supplementary paper and denote each case
@@ -283,16 +318,15 @@ J1 =  1; J2 =  0; J3 =  0; JK =  1.33;
 nairo.matrix.mat = Jfun([J1 J2 J3 JK]);
 nairo.genmagstr('mode','func','func',@gm_planar,'x0',[[1/2 3/2 1/2 3/2]*pi 0 0 0 pi/2 0]);
 
-specD = nairo.spinwave(Qp,'hermit',false);
+specD = nairo.spinwave(Qp);
 specD = sw_neutron(specD);
-specD = sw_egrid(specD,'component','Sxx','evect',linspace(0,4,501));
+specD = sw_egrid(specD,'component','Sxx','Evect',linspace(0,4,1001));
 
 figure
 sw_plotspec(specD,'mode','color','dE',0.1,'axLim',[0 1]);
 sw_plotspec(specD,'mode','disp','dashed',true,'colorbar',false,'legend',...
     false,'title',false,'sortMode',true,'colormap',[255  20 147]);
 title('e) stripy, KH, S^{xx}','fontsize',15)
-
 
 
 %% Fig. S3(e-f) stripy order
@@ -383,6 +417,6 @@ title('j) zig-zag, KH-J_2-J_3, S^{y''y''}=S^{xx}','fontsize',15)
 %%
 %  Written by
 %  Sandor Toth
-%  16-June-2014
+%  16-Jun-2014, 06-Feb-2017
 ##### SOURCE END #####
 --></body></html>

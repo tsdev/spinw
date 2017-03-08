@@ -1,5 +1,7 @@
-function publish_PSI(fName, DirName)
+function publish_PSI(fName, dirName)
 % publishing all examples in the publish folder and convert it to PSI web format
+%
+% PUBLISH_PSI(fName, dirName)
 %
 % The online source can be imported to Matlab using the web address of the
 % tutorial file:
@@ -7,17 +9,36 @@ function publish_PSI(fName, DirName)
 % Example:
 % grabcode('http://www.psi.ch/spinw/tutorial-2')
 %
-% creates .txt files for publishing on the PSI website
+% The function also creates .txt files for publishing on the PSI website.
 %
+% Input:
+%
+% fName         List of files to publish. If empty all *.m files from the
+%               dirName folder will be published.
+% dirName       Name of the directory where the .m files are located.
+%               Default is the SpinW publish folder.
+%
+
+% switch off text outputs from code and change to high resolution rendering
+% and start horace
+fid0    = swpref.getpref('fid',[]);
+tid0    = swpref.getpref('tid',[]);
+nmesh0  = swpref.getpref('nmesh',[]);
+npatch0 = swpref.getpref('npatch',[]);
+hor0    = horace;
+swpref.setpref('fid',0,'tid',0,'nmesh',3,'npatch',50);
+% start horace
+horace('on')
 
 if nargin < 2
     % list of files in the publish folder:
-    pubfolder = [sw_rootdir 'tutorials' filesep 'publish'];
+    %pubfolder = [sw_rootdir 'tutorials' filesep 'publish'];
+    pubfolder = fileparts(mfilename('fullpath'));
 else
-    pubfolder = DirName;
+    pubfolder = dirName;
 end
 
-if nargin == 0
+if nargin == 0 || isempty(fName)
     pubfiles  = dir([pubfolder filesep '*.m']);
 else
     pubfiles  = dir([pubfolder filesep fName]);
@@ -87,7 +108,7 @@ for ii = 1:numel(pubfiles)
         % latex formatting
         htmlOut{end,1} = regexprep(htmlOut{end,1},'LATEX','<latex>');
         htmlOut{end,1} = regexprep(htmlOut{end,1},'PATEX','</latex>');
-
+        
         htmlOut{end+1,1} = htmlFile{jj}; %#ok<*AGROW>
         
         jj = jj+1;
@@ -114,5 +135,9 @@ for ii = 1:numel(pubfiles)
     fclose(fid);
     
 end
+
+% restore SpinW and Horace state
+swpref.setpref('fid',fid0,'tid',tid0,'nmesh',nmesh0,'npatch',npatch0);
+horace(hor0);
 
 end

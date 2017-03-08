@@ -73,6 +73,28 @@ S0 = [1 -1/2 -1/2;0 eD*sqrt(3)/2 -eD*sqrt(3)/2;0 0 0];
 banb.genmagstr('mode','helical','S',S0,'k',[0 0 eH*1/7],'n',[0 0 1])
 plot(banb,'range',[-0.5 1.5;-0.5 1.5;0 0.5],'magCentered',true)
 swplot.zoom(1.3)
+E1 = banb.energy;
+
+% Keep the manual magnetic structure.
+Mag0 = banb.mag_str;
+
+%% Alternatively we optimize the magnetic structure
+% First we find the propagation vector, then determine the moment
+% directions. We find a slightly lower energy by allowing a tiny deviation
+% from the propagation vector of [0 0 1/7].
+
+banb.optmagk
+banb.optmagsteep('nRun',1e4)
+banb.genmagstr('mode','rotate','n',[0 0 1])
+E2 = banb.energy;
+E2-E1
+
+% The vetor normal to the rotation is opposite compared to the manual
+% magnetic structure, while the propagation vector is the same. Thus the
+% optimized magnetic structure has opposite chirality than the manual
+% structure. So we should change the chirality. Instead we restore the
+% manual magnetic structure.
+banb.mag_str = Mag0;
 
 %% Spin wave spectrum
 % We calculate the spin wave spectrum and compare it to published results.
@@ -111,4 +133,4 @@ colormap(makecolormap([0 1 0],[1 1 1],[0 0 1],81));
 %%
 %  Written by
 %  Sandor Toth
-%  16-June-2014
+%  16-Jun-2014, 06-Feb-2017

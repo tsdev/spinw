@@ -11,8 +11,7 @@ Ja  = -J/.66 - Jab;
 Jip = 0.01;
 
 hK = spinw;
-hK.fileid(0)
-hK.genlattice('lat_const',[10.2 5.94 7.81],'angled',[90 117.7 90],'sym','C 2/m')
+hK.genlattice('lat_const',[10.2 5.94 7.81],'angled',[90 117.7 90],'spgr','C 2/m')
 
 hK.addatom('r',[0   0   0],'S',1/2,'label','MCu2','color','b')
 hK.addatom('r',[1/4 1/4 0],'S',1/2,'label','MCu2','color','k')
@@ -58,6 +57,7 @@ optpar.nRun = 5;
 optpar.xmin = [    zeros(1,6), 0.5 0 0.0, 0 0];
 optpar.xmax = [2*pi*ones(1,6), 1.0 0 0.5, 0 0];
 
+hK.genmagstr('mode','random','nExt',[1 1 1])
 magoptOut = hK.optmagstr(optpar);
 
 kOpt = hK.mag_str.k;
@@ -74,7 +74,6 @@ hK.energy
 % S(Q,omega) and plot S^perp that gives the neutron scattering cross
 % section.
 
-
 hkSpec = hK.spinwave({[0 0 0] [1 0 0] 500},'hermit',false);
 hkSpec = sw_neutron(hkSpec);
 hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500),'imagChk',false);
@@ -89,19 +88,20 @@ caxis([0 20])
 % approximates the propagation vector within 0.05 rlu by giving this number
 % to the 'nExt' option in spinw.genmagstr() instead of the vector with
 % three integers. We create the magnetic superlattice and then define the
-% k-vector as zero. In this case the sw.spinwave() function will be run in
-% commensurate mode.
-
-hK.genmagstr('mode','helical','next',0.05)
-hK.mag_str.k = [0 0 0]';
-
-hkSpec = hK.spinwave({[0 0 0] [1 0 0] 50},'Hermit',false);
-hK.fileid(0)
-hkSpec = sw_neutron(hkSpec,'pol',false);
-hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500),'imagChk',false);
-
-figure
-sw_plotspec(hkSpec,'mode','color','axlim',[0 20],'dE',0.3);
+% k-vector as zero. In this case the spinw.spinwave function will be run in
+% commensurate mode. Carefull, this code will create a magnetic supercell
+% with 270 atoms.
+% 
+% hK.genmagstr('mode','helical','next',0.05)
+% hK.mag_str.k = [0 0 0]';
+% 
+% hkSpec = hK.spinwave({[0 0 0] [1 0 0] 50},'Hermit',false);
+% hK.fileid(0)
+% hkSpec = sw_neutron(hkSpec,'pol',false);
+% hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500),'imagChk',false);
+% 
+% figure
+% sw_plotspec(hkSpec,'mode','color','axlim',[0 20],'dE',0.3);
 
 %% Powder averaged spectrum
 % We calculate the powder spectrum on the smaller unit cell between Q = 0 -
@@ -115,5 +115,5 @@ sw_plotspec(powSpec,'dE',0.01,'axlim',[0 0.05])
 
 %%
 %  Written by
-%  G?ran Nilsen and Sandor Toth
-%  27-June-2014
+%  Goran Nilsen and Sandor Toth
+%  27-Jun-2014, 06-Feb-2017

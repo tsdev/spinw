@@ -1,19 +1,15 @@
-%% model YIG spin wave spectrum
-% to compare to PRL 117, 217201 (2016)
+%% Model YIG spin wave spectrum
+% We will reproduce the calculation of the YIG spin wave spectrum to
+% compare to this paper:
+% PRL 117, 217201 (2016)    http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.117.217201
+% arXiv:1607.03263          https://arxiv.org/abs/1607.03263
 
 % get the .cif file from Google Drive, the file is also available on ICSD
-yig = spinw('https://drive.google.com/uc?export=download&id=0BzFs7CQXhehScVFfbkhrZHo1Z1k');
+yig = spinw('https://goo.gl/2ez9Ys');
 
 % color differently the two Fe sublattice
 yig.unit_cell.color(:,3) = swplot.color('r');
 yig.unit_cell.color(:,2) = swplot.color('b');
-%yig.unit_cell.color(:,3) = c0(1,:)*255;
-%yig.unit_cell.color(:,2) = c0(end,:)*255;
-
-% problem with the generators, the calculated generators from the .cif file
-% give only 64 positions, while there should be 96 positions:
-% http://it.iucr.org/Ab/ch7o1v0001/sgtable7o1o230/
-%yig.lattice.sym = sw_gensym('I a -3 d');
 
 % spin quantum number of Fe3+ ions, determined automatically by SpinW
 S0 = max(yig.unit_cell.S);
@@ -21,29 +17,30 @@ S0 = max(yig.unit_cell.S);
 % normalize spins to S=1 as it is in the paper
 yig.unit_cell.S = yig.unit_cell.S/S0;
 
-hFig = plot(yig,'pNonMagAtom',0,'labelAtom',0);
+hFig = plot(yig,'atomMode','mag');
+swplot.plotchem('atom1','Fe1','atom2','O','limit',6)
+swplot.plotchem('atom1','Fe2','atom2','O','limit',4,'replace',false)
+ 
+
+%% show primitive cell
+
+plot(yig,'atomMode','mag')
 
 % new basis vectors in rows
 pBV = [1/2 1/2 -1/2;-1/2 1/2 1/2;1/2 -1/2 1/2];
 % lattice constant of YIG
 lat = yig.abc(1);
 
-% show the primitive cell basis vectors, plotting unit is Angstrom
-hArrow       = sw_arrow([0 0 0],pBV(1,:)*lat,0.06,15,0.5,50);
-hArrow(5:8)  = sw_arrow([0 0 0],pBV(2,:)*lat,0.06,15,0.5,50);
-hArrow(9:12) = sw_arrow([0 0 0],pBV(3,:)*lat,0.06,15,0.5,50);
-set(hArrow,'FaceColor','r')
+swplot.plot('type','arrow','position',cat(3,zeros(3),pBV'))
 
-% add the arrow to the crystal model
-sw_addobject(hFig,hArrow);
-
+%% generate the bonds
 % An interesting symmetry property of YIG in the "I a -3 d" space group is
 % that the bonds type 3 and type 4 have the exact same length, however they
 % are not related by symmetry. This can be easily seen by checking the
 % center psition of the bonds:
 yig.gencoupling('maxDistance',6);
-yig.getmatrix('coupling_idx',3);
-yig.getmatrix('coupling_idx',4);
+yig.getmatrix('bond',3);
+yig.getmatrix('bond',4);
 
 % The (7/8,1/8,1/8) position belongs to the 48g Wyckoff position, while the
 % (7/8,7/8,7/8) position is 16b. Thus the exchange interactions on the two
@@ -74,19 +71,18 @@ if sum(yig.mag_str.F(3,:),2)<0
     yig.mag_str.F = -yig.mag_str.F;
 end
 
-%plot(yig,'pnonmagatom',0)
-
+plot(yig,'atomMode','mag','atomLegend',false)
 
 %% Spin wave dispersion to compare with the paper
 
-Q0  = T*[1 2 3]';
-Q_N = T*[ 1/2  1/2    0]'+Q0;
-Q_G = T*[   0    0    0]'+Q0;
-Q_H = T*[   0    0    1]'+Q0;
+Q0  = [1 2 3]';
+Q_N = T*([ 1/2  1/2    0]'+Q0);
+Q_G = T*([   0    0    0]'+Q0);
+Q_H = T*([   0    0    1]'+Q0);
 
 spec = yig.spinwave({Q_N Q_G Q_H 501});
 
-%%
+%% plot the spin wave dispersion
 
 spec = sw_egrid(spec,'component','Sxy-Syx','Evect',linspace(0,28,501));
 spec = sw_instrument(spec,'dE',0.75);

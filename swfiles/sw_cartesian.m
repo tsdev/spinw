@@ -12,7 +12,8 @@ function [vyOut, vzOut, vxOut] = sw_cartesian(n)
 % Input:
 %
 % n         Either a 3 element row/column vector or a 3x3 matrix with
-%           columns defining 3 vectors.
+%           columns defining 3 vectors or 3x2 matrix with columns define
+%           two vectors.
 % Output:
 %
 % vy,vz,vx  Vectors defining the right handed coordinate system. They are
@@ -24,6 +25,11 @@ function [vyOut, vzOut, vxOut] = sw_cartesian(n)
 if nargin == 0
     help sw_cartesian
     return
+end
+
+% only two vectors are given --> produce the third vector
+if all(size(n) == [3 2])
+    n(:,3) = cross(n(:,1),n(:,2));
 end
 
 % Shape of original vector.
@@ -41,7 +47,7 @@ if numel(n) == 3
     end
     vz = cross(n,vy);
     
-elseif all(size(n) == [3 3])
+elseif all(size(n) == [3 3]) || all(size(n) == [3 2])
     if det(n) == 0
         error('sw_cartesian:WrongInput','The input vectors are not linearly independent!')
     end
@@ -56,7 +62,7 @@ else
 end
 
 
-if nargout == 1
+if nargout < 2
     % return a matrix
     vyOut = [n/norm(n) vy/norm(vy) vz/norm(vz)];
 else

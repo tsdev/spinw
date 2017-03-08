@@ -203,9 +203,31 @@ if isempty(param.color)
 end
 
 % convert colors to Matlab color values
-color = swplot.color(param.color)/255;
+if ischar(param.color)
+    sColor = [1 1];
+else
+    sColor = size(param.color);
+end
+
+if isnumeric(param.color)
+    color  = swplot.color(reshape(param.color,3,[]))/255;
+else
+    color  = swplot.color(param.color)/255;
+end
+sColor(1) = 3;
+color  = reshape(color,sColor);
+
 % number of colors
 nCol  = size(color,2);
+
+% correct color dimensions for orbital type plot
+if strcmp(type,'orbital')
+    if nCol==2 && nCol~=nObject && size(color,3)==1
+        color = permute(color,[1 3 2]);
+        nCol  = 1;
+    end
+end
+
 % number of transparency values
 nAlp  = numel(param.alpha);
 
@@ -322,9 +344,11 @@ if numel(handle)>1 && handle{1}==handle{2}
             % allow 2 colors per orbital: 
             %   color1: (:,1:nObject)
             %   color2: (:,(nObject+1):end)
-            if nCol == 2
-                patchCData = [repmat(color(:,1),[1 nObject]) repmat(color(:,2),[1 nObject])];
+            if size(color,3) == 2
+                % different colors for the +/- lobes
+                patchCData = [repmat(color(:,:,1),[1 nObject/nCol]) repmat(color(:,:,2),[1 nObject/nCol])];
             else
+                % same color for the +/- lobes
                 patchCData = repmat(color,[1 2*nObject/nCol]);
             end
         else
@@ -419,8 +443,18 @@ else
     end
     
     if nCol == 1
-        % same color for every object
-        set([sObject(:).handle],propC,color);
+        % same color for every object except orbitals
+        if strcmp(type,'orbital')
+            nFace = size(get(sObject(1).handle,'Faces'),1);
+            C1 = repmat(color(:,1,1),[1 nFace 1])';
+            C2 = repmat(color(:,1,2),[1 nFace 1])';
+            C0 = get(sObject(1).handle,'FaceVertexCData');
+            blueIdx = logical(C0(:,3));
+            C1(blueIdx,:) = C2(blueIdx,:);
+            set([sObject(:).handle],'FaceVertexCData',C1);
+        else
+            set([sObject(:).handle],propC,color);
+        end
     else
         % different color for each object
         for ii = 1:nObject

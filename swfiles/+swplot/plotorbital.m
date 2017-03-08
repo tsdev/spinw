@@ -26,7 +26,10 @@ function varargout = plotorbital(varargin)
 %           string:
 %               'lu'        Lattice units (default).
 %               'xyz'       Cartesian coordinate system in Angstrom units.
-% mode      String, defines which orbital is plotted. Allowed strings and
+% mode      String, determines the kind of orbital to plot. The only
+%           allowed value is 'hydrogen' for plotting hydrogen atomic
+%           orbitals.
+% type      String, defines which orbital is plotted. Allowed strings and
 %           the corresponding quantum numbers:
 %
 %               mode                n l m pm
@@ -55,7 +58,7 @@ function varargout = plotorbital(varargin)
 %           vector (row vector with coordinates in lattice units) or the
 %           label of the atom.
 % scale     Scaling factor for the size of the orbital relative to the
-%           Hydrogen orbitals. Default value is 1.
+%           Hydrogen orbitals. Default value is 0.15.
 % alpha     Transparency (alpha value) of the orbital, default value is 1.
 % figure    Handle of the swplot figure. Default is the selected figure.
 % color     Color of the orbital:
@@ -79,9 +82,9 @@ function varargout = plotorbital(varargin)
 % zoom      If true, figure will be automatically zoomed to the ideal size.
 %           Default is false.
 % copy      If true, a hardcopy of the spinw object will be sved in the
-%           figure data, otherwise just the handle of the spinw object, 
+%           figure data, otherwise just the handle of the spinw object,
 %           thus the figure can be updated when the spin object changed.
-%           Default value is false. 
+%           Default value is false.
 %
 % Output:
 %
@@ -99,14 +102,14 @@ nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
 
 inpForm.fname  = {'range' 'legend' 'label' 'scale' 'alpha' 'center'};
-inpForm.defval = {[]      true     true    1       0.3     [0 0 0] };
+inpForm.defval = {[]      true     true    0.15    1       [0 0 0] };
 inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 1]   [1 -8]  };
 inpForm.soft   = {true    false    false   false   false   false   };
 
-inpForm.fname  = [inpForm.fname  {'mode'  'color' 'nmesh' 'npatch' 'color2'}];
-inpForm.defval = [inpForm.defval {'aniso' 'auto'  nMesh0  nPatch0  'auto'  }];
-inpForm.size   = [inpForm.size   {[1 -4]  [1 -5]  [1 1]   [1 1]    [1 -7]  }];
-inpForm.soft   = [inpForm.soft   {true    false   false   false    false   }];
+inpForm.fname  = [inpForm.fname  {'mode'     'color' 'nmesh' 'npatch' 'color2'}];
+inpForm.defval = [inpForm.defval {'hydrogen' 'auto'  nMesh0  nPatch0  'auto'  }];
+inpForm.size   = [inpForm.size   {[1 -4]     [1 -5]  [1 1]   [1 1]    [1 -7]  }];
+inpForm.soft   = [inpForm.soft   {true       false   false   false    false   }];
 
 inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'unit' 'tooltip' 'copy'}];
 inpForm.defval = [inpForm.defval {[]       []    'lu'   true      false }];
@@ -118,10 +121,10 @@ inpForm.defval = [inpForm.defval {[0;0;0] true      false       false }];
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]       [1 1] }];
 inpForm.soft   = [inpForm.soft   {false   false     false       false }];
 
-inpForm.fname  = [inpForm.fname  {'ligand1' 'ligand2'}];
-inpForm.defval = [inpForm.defval {[0 0 0]   [0 0 0]  }];
-inpForm.size   = [inpForm.size   {[1 -8]    [1 -9]   }];
-inpForm.soft   = [inpForm.soft   {false     false    }];
+inpForm.fname  = [inpForm.fname  {'ligand1' 'ligand2' 'type' }];
+inpForm.defval = [inpForm.defval {[1 0 0]   [0 1 0]   'd_yz' }];
+inpForm.size   = [inpForm.size   {[1 -9]    [1 -10]   [1 -11]}];
+inpForm.soft   = [inpForm.soft   {false     false     false  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -198,14 +201,130 @@ switch param.unit
         error('plotorbital:WrongInput','The given unit string is invalid!');
 end
 
-% center
+% is the position vector for the xy-axis are given directly
+posvec = false;
 
+% positions from string
+pPos0 = {param.center param.ligand1 param.ligand2};
+pStr0 = {'center' 'ligand1' 'ligand2'};
+dat   = struct('pos',zeros(3),'idx',0);
+for ii = 1:3
+    pPos = pPos0{ii};
+    pStr = pStr0{ii};
+    if ischar(pPos)
+        % a symmetry position is defined with an atom label string
+        atomIdx = cellfun(@(C)~isempty(C),strfind(obj.unit_cell.label,pPos));
+        if sum(atomIdx)>1
+            error('plotorbital:WrongLabel','The label of the %s atom is not unique!',pStr)
+        elseif sum(atomIdx)==0
+            error('plotorbital:WrongLabel','The given label for the %s atom does not exists!',pStr)
+        end
+        
+        if ii==1
+            % just save the first symmetry positon for center atom
+            dat.idx = find(atomIdx);
+            dat.pos(:,ii) = obj.unit_cell.r(:,atomIdx);
+        else
+            % find the closest ligand position from symmetry equivalent
+            % positions
+            rLigand = obj.atom.r(:,obj.atom.idx==find(atomIdx));
+            if ii == 3
+                % remove the 1st ligand position from the list
+                rLigand(:,all(bsxfun(@eq,dat.pos(:,2),rLigand),1)) = [];
+            end
+            % find the first shortest distance
+            dat.pos(:,ii) = rLigand(:,findmin(sum((BV*bsxfun(@minus,dat.pos(:,1),rLigand)).^2,1),1));
+        end
+        
+    elseif numel(pPos) == 1
+        % atom position for index in spinw.atom list
+        dat.pos(:,ii) = obj.atom.r(:,pPos);
+        if ii == 1
+            dat.idx       = obj.atom.idx(pPos);
+        end
+    elseif numel(pPos) == 3
+        if ii == 1
+            % shift center position into the first cell
+            dat.pos(:,ii) = mod(pPos',1);
+        else
+            % directly give the x-axis for the ligands
+            dat.pos(:,ii) = dat.pos(:,1) + pPos';
+            posvec = true;
+        end
+    else
+        error('plotorbital:WrongInput','The given input for %s atom is wrong!',pStr)
+    end
+    
+end
 
-% atom data
-mAtom  = obj.matom;
+% find shortest distance by shifting the unit cells
+% generate -1,0,+1 3D grid stored in R
+% only when the position vectors are not given directly
+if ~posvec
+    R = cell(1,3);
+    [R{:}] = ndgrid(-1:1,-1:1,-1:1);
+    R = reshape(cat(4,R{:}),[],3)';
+    % check: swplot.plot('type','ellipsoid','R',0.1,'position',permute(R,[2 1 3]))
+    
+    for ii = 2:3
+        % only shift position if it is significantly shorter than the original
+        % the given limit is 0.1 Angstrom
+        R0 = sqrt(sum((BV*(dat.pos(:,1)-dat.pos(:,ii))).^2));
+        posNew = dat.pos(:,ii)+R(:,findmin(sum((BV*bsxfun(@minus,dat.pos(:,1)-dat.pos(:,ii),R)).^2,1),1));
+        R1 = sqrt(sum((BV*(dat.pos(:,1)-posNew)).^2));
+        if R1 < R0 - 0.1
+            dat.pos(:,ii) = posNew;
+        end
+    end
+end
 
-% generate bonds, but don't sort the bonds on DM interactions
-[~, SI] = intmatrix(obj,'plotmode',true,'extend',false,'sortDM',false,'zeroC',false,'nExt',[1 1 1]);
+% determine the color of the orbitals
+% first color
+if strcmp(param.color,'auto')
+    if dat.idx > 0
+        % color the orbital according to the center atom, use single color
+        color = double(obj.unit_cell.color(:,dat.idx));
+    else
+        % use default color: red
+        color = [255;0;0];
+    end
+elseif ischar(param.color)
+    color = swplot.color(param.color);
+elseif numel(param.color)==3
+    color = param.color(:);
+else
+    error('plotorbital:WrongInput','The format of the given color option is invalid!')
+end
+
+% second color
+if strcmp(param.color2,'auto')
+    % find complementer color
+    color(:,2) = complementer(color(:,1));
+elseif ischar(param.color2)
+    color(:,2) = swplot.color(param.color2);
+elseif numel(param.color2)==3
+    color = param.color2(:);
+else
+    error('plotorbital:WrongInput','The format of the given color2 option is invalid!')
+end
+
+% determine the T0 Cartesian coordinate system for the first atom
+posXYZ = BV*dat.pos;
+dat.T0 = sw_cartesian([diff(posXYZ(:,1:2),1,2),diff(posXYZ(:,[1 3]),1,2)]);
+
+% find the symmetry equivalent positions
+[dat.allpos,~,symInfo] = swsym.position(obj.lattice.sym,dat.pos(:,1));
+dat.R = mmat(symInfo.opmove,inv(symInfo.opmove(:,:,1)));
+dat.R = mmat(BV,mmat(dat.R,inv(BV)));
+
+% rotate the basis vectors on each symmetry equivalent position
+dat.T = mmat(dat.R,dat.T0);
+
+% test: draw vectors towards the ligands
+% r1 = dat.pos(:,[1 1]);
+% r2 = dat.pos(:,[2 3]);
+% swplot.plot('type','arrow','position',cat(3,r1,r2),'color',{'red','blue'})
+
 
 % take care of return values
 if nargout > 0
@@ -213,36 +332,24 @@ if nargout > 0
 end
 
 switch param.mode
-    case 'aniso'
-        if ~any(SI.aniso(:))
-            % do nothing, just remove old plot
-            % TODO
-            return
-        else
-            mat = SI.aniso;
-        end
-    case 'g'
-        mat = SI.g;
+    case 'hydrogen'
+        % do nothing yet
     otherwise
         error('plotorbital:WrongInput','The given mode string is invalid!');
 end
 
-% generate the  positions of the magnetic atoms
-nMAtom = size(mAtom.r,2);
-
 % generate positions from rangelu the inclusive range
 pos = cell(1,3);
 [pos{:}] = ndgrid(rangelu(1,1):rangelu(1,2),rangelu(2,1):rangelu(2,2),rangelu(3,1):rangelu(3,2));
-pos = bsxfun(@plus,reshape(cat(4,pos{:}),[],3)',permute(mAtom.r,[1 3 2]));
+pos = bsxfun(@plus,reshape(cat(4,pos{:}),[],3)',permute(dat.allpos,[1 3 2]));
 
 % number of unit cells
 nCell = size(pos,2);
 
-% keep track of types of atoms
-%aIdx = repmat(mAtom.idx,[nCell 1]);
-% keep track of aniso matrix index
-mIdx = repmat(1:nMAtom,[nCell 1]);
+% keep track of index of orbital in the original cell
+oIdx = repmat(1:size(dat.allpos,2),[nCell 1]);
 pos  = reshape(pos,3,[]);
+oIdx = oIdx(:);
 
 % cut out the atoms that are out of range
 switch param.unit
@@ -256,115 +363,40 @@ switch param.unit
 end
 
 if ~any(pIdx)
-    warning('plotatom:EmptyPlot','There are no atoms in the plotting range!')
+    warning('plotorbital:EmptyPlot','There are no orbitals in the plotting range!')
     return
 end
 
 pos  = pos(:,pIdx);
-%aIdx = aIdx(pIdx);
-mIdx = mIdx(pIdx);
-%aIdx = aIdx(:)';
-mIdx = mIdx(:)';
-mat  = mat(:,:,mIdx);
+oIdx = oIdx(pIdx);
 
-% number of ellipse to plot
-nEllipse = size(mat,3);
-
-% color
-if strcmp(param.color,'auto')
-    color = double(obj.unit_cell.color(:,mAtom.idx(mIdx)));
-else
-    color = swplot.color(param.color);
-end
-
-if size(color,2) == 1
-    color = repmat(color,1,numel(mIdx));
-end
-
-% save atom coordinates into data
-%posDat = mat2cell(pos,3,ones(1,size(pos,2)));
+% generate all transformation matrix
+T = dat.T(:,:,oIdx);
 
 % shift positions
 pos = bsxfun(@plus,pos,BV\param.shift);
 
-% length of shortest bond for scaling
-if ~isempty(obj.coupling.atom1)
-    bondlu = mAtom.r(:,obj.coupling.atom2(1))+double(obj.coupling.dl(:,1))-mAtom.r(:,obj.coupling.atom1(1));
-    % minimum length of bond in Angstrom
-    lxyz = min(sqrt(sum((BV*bondlu).^2,1)));
-else
-    lxyz = 3;
-end
-
-
-% plot ellipsoid
-% remove zero ellipsoids
-rmMat = permute(sumn(abs(mat),[1 2])==0,[1 3 2]);
-
-mat   = mat(:,:,~rmMat);
-pos   = pos(:,~rmMat);
-color = color(:,~rmMat);
-% calculating the main radiuses of the ellipsoid.
-[V, Rell] = eigorth(mat,1e-5);
-% creating positive definite matrix by adding constant to all
-% eigenvalues.
-maxR  = sqrt(max(sum(Rell.^2,1)));
-switch param.mode
-    case 'aniso'
-        % large value --> short radius
-        Rell = bsxfun(@minus,max(Rell,[],1),Rell);
-    case 'g'
-        
-end
-%Rell = ((Rell+param.radius1)/(maxR+param.radius1))*param.scale*min(lxyz);
-Rell = (Rell/maxR)*param.scale*min(lxyz)+param.radius1;
-% V*diag(R) vectorized
-%V = bsxfun(@times,V,permute(Rell,[3 1 2]));
-V = mmat(bsxfun(@times,V,permute(Rell,[3 1 2])),permute(V,[2 1 3]));
-
-swplot.plot('type','ellipsoid','name','ion','position',pos,'text','',...
-    'figure',hFigure,'legend','','color',color,'T',V,...
-    'tooltip',false,'replace',param.replace,'nmesh',param.nmesh,...
-    'data',{},'label',{},'translate',param.translate,...
-    'zoom',param.zoom,'alpha',param.alpha);
-
-if param.linewidth > 0
-    % draw circles
-    phi = linspace(0,2*pi,param.npatch+1);
-    circle = [sin(phi);cos(phi);phi*0];
-    % xy, xz and yz plane circles
-    circle = [circle circle([1 3 2],:) circle([3 1 2],:)];
-    
-    %posc = permute(sum(bsxfun(@times,V,permute(circle,[3 1 4 2])),2),[1 3 4 2]);
-    posc = permute(sum(bsxfun(@times,V,permute(circle,[3 1 4 2])),2),[1 3 4 2]);
-    
-    % convert to lu
-    posc = reshape(BV\reshape(posc,3,[]),3,nEllipse,[],3);
-    posc = reshape(permute(posc,[1 2 4 3]),3,3*nEllipse,[]);
-    % shift to the atomic positions
-    % color
-    if strcmp(param.color2,'auto')
-        color2 = color;
-    else
-        color2 = param.color2;
-    end
-    
-    if size(color2,2)>1 && ~ischar(color2)
-        color2 = repmat(color2,1,3);
-    end
-    
-    posc = bsxfun(@plus,posc,repmat(pos,[1 3]));
-    swplot.plot('type','line','name','ion_edge','position',posc,'text','',...
-        'figure',hFigure,'legend','','color',color2,...
-        'tooltip',false,'replace',param.replace,...
-        'data',{},'label',{},'translate',param.translate,...
-        'zoom',param.zoom,'alpha',param.alpha);
-end
+% draw the orbitals
+swplot.plot('type','orbital','qLabel',param.type,'position',pos,'T',T,...
+    'scale',param.scale,'nPatch',param.npatch,'color',permute(color,[1 3 2]),...
+    'alpha',param.alpha);
 
 if param.tooltip
     swplot.tooltip('on',hFigure);
 end
 
 setappdata(hFigure,'range',struct('range',param.range,'unit',param.unit));
+
+end
+
+function RGB = complementer(RGB)
+% find complementer RGB color
+%
+% RGB = swplot.complementer(RGB)
+%
+
+HSV    = rgb2hsv(RGB(:)'/255);
+HSV(1) = mod(HSV(1)+1/2,1);
+RGB    = hsv2rgb(HSV)*255;
 
 end

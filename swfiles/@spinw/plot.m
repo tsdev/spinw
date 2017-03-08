@@ -17,24 +17,27 @@ function varargout = plot(obj, varargin)
 %
 % The function calls several plot routine to draw different group of
 % objects to the figure: atom (atoms), mag (magnetic moments), ion (single
-% ion properties), bond (bonds), base (basis vectors) and cell (unit
-% cells).
+% ion properties), bond (bonds), base (basis vectors), cell (unit
+% cells), chem (chemical bonds and polyhedra) and orbital (atomic
+% orbitals).
 %
 % Each group has a corresponding plot function with its own input options,
 % for the allowed options, please check the help of the functions below.
 %
-% atom  swplot.plotatom
-% mag   swplot.plotmag
-% ion   swplot.plotion
-% bond  swpplot.plotbond
-% base  swplot.plotbase
-% cell  swplot.plotcell
+% atom      swplot.plotatom
+% mag       swplot.plotmag
+% ion       swplot.plotion
+% bond      swpplot.plotbond
+% base      swplot.plotbase
+% cell      swplot.plotcell
+% chem      swplot.plotchem
+% orbital   swplot.plotorbital
 %
 % To provide an option to any of these sub functions add the name of the
 % group to the option. For example to set the 'color' option of the cell
 % (change the color of the unit cell) use the option 'cellColor'.
 %
-% It is possible to switch of any of the subfunctions by using the option
+% It is possible to switch off any of the subfunctions by using the option
 % [groupName 'mode'] set to 'none'. For example to skip plotting the atoms
 % use the 'atomMode' option set to 'none'.
 %
@@ -147,7 +150,7 @@ warning('off','plotbond:EmptyPlot')
 paramG = sw_readparam(inpForm, varargG{:});
 
 % sort options according to plot name
-plotName = {'atom' 'mag' 'bond' 'ion' 'cell' 'base' 'chem'};
+plotName = {'atom' 'mag' 'bond' 'ion' 'cell' 'base' 'chem' 'orbital'};
 nFun     = numel(plotName);
 plotIdx  = false(nFun,numel(optName));
 optShort = optName;
@@ -166,12 +169,13 @@ if ~all(any(plotIdx,1))
 end
 
 % list of plot functions
-plotFun = {@swplot.plotatom @swplot.plotmag @swplot.plotbond @swplot.plotion @swplot.plotcell @swplot.plotbase @swplot.plotchem};
+plotFun = {@swplot.plotatom @swplot.plotmag @swplot.plotbond @swplot.plotion...
+    @swplot.plotcell @swplot.plotbase @swplot.plotchem @swplot.plotorbital};
 
 % check switches (mode == 'none'), default is to show plot
 switchFun = true(1,nFun);
-% default is not to call swplot.plotchem()
-switchFun(end) = false;
+% default is not to call swplot.plotchem() and swplot.plotorbital
+switchFun(end+[-1 0]) = false;
 
 for ii = 1:nFun
     if isempty(optShort) || isempty(plotIdx)
@@ -226,7 +230,7 @@ warning('on','sw_readparam:UnreadInput')
 if param.replace
     % delete all object that is created by spinw.plot
     % find objects to be deleted
-    name0 = {'base' 'base_label' 'atom' 'atom_label' 'bond' 'bond_mat' 'cell' 'mag' 'ion' 'ion_edge' 'chem'};
+    name0 = {'base' 'base_label' 'atom' 'atom_label' 'bond' 'bond_mat' 'cell' 'mag' 'ion' 'ion_edge' 'chem' 'orbital'};
     sObj = swplot.findobj(hFigure,'name',name0);
     % delete them!
     swplot.delete([sObj(:).number]);

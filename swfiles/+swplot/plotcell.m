@@ -51,7 +51,7 @@ inpForm.soft   = [inpForm.soft   {false    false   false  false   false }];
 param = sw_readparam(inpForm, varargin{:});
 
 if strcmp(param.color,'auto')
-    param.color = [0 0 0];
+    param.color = [0 0 0]';
 end
 
 if isempty(param.figure)

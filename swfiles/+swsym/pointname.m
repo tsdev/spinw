@@ -1,4 +1,4 @@
-function pStr = pointname(O,r)
+function [intStr, info] = pointname(O,r)
 % determine the name of the point group
 %
 % symStr = SWSYM.POINTNAME(symOp,{r})
@@ -49,7 +49,57 @@ end
 
 
 % get the symmetry operator names
-info = swsym.pointopname(symOp);
+if isempty(symOp)
+    info = struct('name','1','name2','E','axis',zeros(3,1),'order',1,'isrotation',false);
+else
+    info = swsym.pointopname(symOp);
+end
+
+% load the point group name database
+pDat = sw_readtable([sw_rootdir 'dat_files' filesep 'pointgroup.dat']);
+
+% The Hermann?Mauguin or international notation:
+% n                 The principal axis (z axis) is a rotation axis of order n
+% -n                The principal axis (z axis) is a rotoinversion axis of order n.
+% n2 or -n2         A binary axis perpendicular to the principal axis.
+% nm or -nm         A mirror (reflection plane) parallel to the principal axis.
+% n/m or -n/m       A mirror perpendicular to the principal axis.
+% Further entries   They refer to secondary axes.
+
+
+% string storing the space group name
+intStr = '';
+idx = 1;
+% number of point group operators
+nPoint = numel(info);
+% check first the principal axis, then 2 other secondary axes
+while idx<=nPoint && info(idx).isrotation && idx<4
+    intStr = [intStr info(idx).name];
+    if info(idx).isrotation && idx<nPoint && info(idx).order>2
+        % is there a binary axis perpendicular to the principal axis?
+        % use 1/2 for empty entries
+        axProd = [ones(1,idx)/2 abs(sum(info(idx).axis.*[info((idx+1):end).axis],1))];
+        if any(ismember({info(axProd<10*eps).name},'2'))
+            intStr = [intStr '2'];
+
+        % is there any mirror plane parallel to the principal axis?
+        elseif any(ismember({info(axProd<10*eps).name},'m'))
+            intStr = [intStr 'm'];
+        
+        % is there any mirror plane perpendicular to the principal axis?
+        elseif any(ismember({info(axProd>(1-10*eps)).name},'m'))
+            intStr = [intStr '/m'];
+        end
+    end
+    idx = idx+1;
+    intStr = [intStr ' '];
+end
+
+if isempty(intStr)
+    intStr = info(1).name;
+end
+
+return
 
 multi = zeros(1,10);
 multi(info.type) = info.multi;
@@ -116,7 +166,7 @@ else
                     case 3
                         pStr{2} = '-3m';
                 end
-                    
+                
             else
                 pStr = ['D' ns];
                 switch n

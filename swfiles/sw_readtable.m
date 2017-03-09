@@ -133,7 +133,7 @@ modeStr    = modeStr(modeStrIdx);
 firstLine = regexp(strtrim(dataStr{1}),['(?:', delimiter, ')+'],'split');
 datFormat = '';
 for ii = 1:nCol
-    if isempty(sscanf(firstLine{ii},'%f'))
+    if isnan(str2double(firstLine{ii}))
         % string type
         datFormat = [datFormat '%s ']; %#ok<AGROW>
     else

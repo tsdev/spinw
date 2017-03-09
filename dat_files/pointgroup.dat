@@ -1,0 +1,42 @@
+Schonflies int_full int_short
+# Proper cyclic groups
+C1      1_              1_
+C2      2               2
+C3      3               3
+C4      4               4
+C6      6               6
+# Improper cyclic groups Ci, Cs
+Ci(S2)  -1              -1
+Cs(C1h) m               m
+# Improper cyclic groups Sn
+S4      -4              -4
+S6(C3i) -3              -3
+# Dihedral groups Dn
+D2(V)   2_2_2           2_2_2
+D3      3_2             3_2
+D4      4_2_2           4_2_2
+D6      6_2_2           6_2_2
+# The groups Dnh
+D2h(Vh) 2/m_2/m_2/m     m_m_m
+D3h     -6_m_2          -6_m_2
+D4h     4/m_2/m_2/m     4/m_m_m
+D6h     6/m_2/m_2/m     6/m_m_m
+# The groups Dnd
+D2d(Vd) -4_2_m          -4_2_m
+D3d     -3_2/m          -3_m
+# The groups Cnv
+C2v     m_m_2           m_m_2
+C3v     3_m             3_m
+C4v     4_m_m           4_m_m
+C6v     6_m_m           6_m_m
+# The groups Cnh
+C2h     2/m             2/m
+C3h     -6              -6
+C4h     4/m             4/m
+C6h     6/m             6/m
+# The octahedral and tetrahedral groups
+O       4_3_2           4_3_2
+T       2_3             2_3
+Oh      4/m_-3_2/m      m_3_m
+Th      2/m_-3          m_3
+Td      -4_3_m          -4_3_m

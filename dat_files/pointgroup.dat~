@@ -1,0 +1,43 @@
+# Proper cyclic groups
+C1      1               1
+C2      2               2
+C3      3               3
+C4      4               4
+C6      6               6
+# Improper cyclic groups Ci, Cs
+Ci(S2)  -1              -1
+Cs(C1h) m               m
+# Improper cyclic groups Sn
+S4      -4              -4
+S6(C3i) -3              -3
+# Dihedral groups Dn
+D2(V)   2 2 2           2 2 2
+D3      3 2             3 2
+D4      4 2 2           4 2 2
+D6      6 2 2           6 2 2
+# The groups Dnh
+D2h(Vh) 2/m 2/m 2/m     m m m
+D3h     -6 m 2          -6 m 2
+D4h     4/m 2/m 2/m     4/m m m
+D6h     6/m 2/m 2/m     6/m m m
+# The groups Dnd
+D2d(Vd) -4 2 m          -4 2 m
+D3d     -3 2/m          -3 m
+# The groups Cnv
+C2v     m m 2           m m 2
+C3v     3 m             3 m
+C4v     4 m m           4 m m
+C6v     6 m m           6 m m
+# The groups Cnh
+C2h     2/m             2/m
+C3h     -6              -6
+C4h     4/m             4/m
+C6h     6/m             6/m
+# The octahedral and tetrahedral groups
+O       4 3 2           4 3 2
+T       2 3             2 3
+Oh      4/m -3 2/m      m 3 m
+Th
+2
+m3 m3
+Td 43m 43m

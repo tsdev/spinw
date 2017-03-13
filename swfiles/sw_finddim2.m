@@ -33,20 +33,23 @@ iSub = 1;
 while ~isempty(C)
     % start with lowest index atom as origin
     atom0 = min(C(1,:));
+    
+    % add self loops
+    
     idx   = find(C(1,:) == atom0);
     % store the first neighbors
     L = C(2:5,idx);
     % add zero for self loop
-    if any(C(2,:)==atom0)
-        L = [L [atom0;0;0;0]]; %#ok<AGROW>
-    end
+%     if any(C(2,:)==atom0)
+%         L = [L [atom0;0;0;0]]; %#ok<AGROW>
+%     end
     C(:,idx) = [];
     
     % find 2nd neighbors
     idx1 = find(ismember(C(1,:),L(1,:)));
     idx2 = find(ismember(C(2,:),L(1,:)));
     C(:,idx2) = flip(C(:,idx2));
-    idx = [idx1 idx2];
+    idx = unique([idx1 idx2]);
     
     while ~isempty(idx)
         atom1 = C(1,idx);
@@ -55,9 +58,9 @@ while ~isempty(C)
         for ii = 1:numel(idx)
             dL = bsxfun(@plus,L(2:4,L(1,:)==atom1(ii)),C(3:5,idx(ii)));
             % for self loop add [0 0 0]
-            if atom1(ii) == atom2(ii)
-                dL = [dL [0;0;0]]; %#ok<AGROW>
-            end
+%             if atom1(ii) == atom2(ii)
+%                 dL = [dL [0;0;0]]; %#ok<AGROW>
+%             end
             L  = [L [repmat(atom2(ii),1,size(dL,2));dL]]; %#ok<AGROW>
         end
         % remove neighbors
@@ -84,6 +87,7 @@ while ~isempty(C)
     Lsub(iSub).dim  = size(V,2);
     Lsub(iSub).site = unique([atom0 idx]);
     iSub = iSub + 1;
+    L
 end
 
 % add any remaining self loops

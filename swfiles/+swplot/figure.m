@@ -122,9 +122,9 @@ try
         icon.(fNames{ii}) = matSel/255;
     end
 catch %#ok<CTCH>
-    if ~isdeployed
-        warning('figure:JavaSupport','Some functionality won''t work, due to Java incompatibility');
-    end
+    %if ~isdeployed
+    %    warning('figure:JavaSupport','Some functionality won''t work, due to Java incompatibility');
+    %end
 end
 
 if strcmp(mode,'hg')
@@ -193,8 +193,8 @@ set(0,'Showhidden',showHidden);
 % add mouse control
 swplot.mouse(hFigure);
 
-% show figure
-set(hFigure,'Visible','on');
+% show figure if visiblility is on by default
+set(hFigure,'Visible',get(0,'DefaultFigureVisible'));
 
 
     function activatefigure(~,~,mode)

@@ -268,7 +268,8 @@ if isa(param.aHandle,'matlab.graphics.axis.Axes') || ishandle(param.aHandle)
     else
         fHandle = get(gca,'Parent');
     end
-    axes(param.aHandle);
+    %axes(param.aHandle);
+    set(fHandle,'CurrentAxes',param.aHandle);
 else
     fHandle = sw_getfighandle('sw_spectra');
     if isempty(fHandle)

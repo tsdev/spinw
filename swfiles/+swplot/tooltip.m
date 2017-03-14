@@ -93,8 +93,9 @@ if isempty(tDat.handle) || win
     set(tDat.handle(1:2),'hittest','off','tag','tooltip');
     
     % switch to plot axis where all 3D objects are
-    axes(getappdata(hFigure,'axis'));
-    
+    %axes(getappdata(hFigure,'axis'));
+    set(hFigure,'CurrentAxes',getappdata(hFigure,'axis'));
+
     % save new handles
     setappdata(hFigure,'tooltip',tDat);
 end

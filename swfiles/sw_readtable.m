@@ -66,6 +66,8 @@ dataStr = ndbase.source(dataSource);
 
 % split string into lines
 dataStr = regexp(dataStr, ['(?:' sprintf('\n') ')+'], 'split');
+% add '\n' back to the end of lines
+dataStr = cellfun(@(C)[C char(10)],dataStr,'UniformOutput',false);
 
 % index into the line number, skip header lines
 idxStr = nHeader+1;
@@ -109,43 +111,59 @@ end
 cName = [{'MODE'} cName];
 nCol  = numel(cSel);
 
-% create an empty structure
-sTemp = [cName;repmat({{}},1,numel(cName))];
-dat = struct(sTemp{:});
-
-modeStr = '';
-idx = 1;
-
 % next line
 idxStr = idxStr+1;
 
 % load data
-while idxStr <= numel(dataStr)
-    
-    str = strtrim(dataStr{idxStr});
-    
-    %lTemp = strsplit(str,delimiter);
-    lTemp = regexp(str,['(?:', delimiter, ')+'],'split');
-    
-    if ~isempty(str) && str(1) == '#'
-        modeStr = str;
-        idxStr = idxStr+1;
-        continue
+% remove header lines
+dataStr = dataStr(idxStr:end);
+% remove empty lines
+dataStr = dataStr(cellfun(@(C)~isempty(C),dataStr));
+% find mode string positions
+isModeStr = cellfun(@(C)C(1)=='#',dataStr);
+modeStr = strtrim([{''} dataStr(isModeStr)]);
+% fill out the mode string
+modeStrIdx = cumsum(isModeStr)+1;
+% remove mode strings from data
+dataStr    = dataStr(~isModeStr);
+modeStrIdx = modeStrIdx(~isModeStr);
+modeStr    = modeStr(modeStrIdx);
+
+% read the first line of data to identify column types string/float
+firstLine = regexp(strtrim(dataStr{1}),['(?:', delimiter, ')+'],'split');
+datFormat = '';
+for ii = 1:nCol
+    if isempty(sscanf(firstLine{ii},'%f'))
+        % string type
+        datFormat = [datFormat '%s ']; %#ok<AGROW>
+    else
+        datFormat = [datFormat '%f ']; %#ok<AGROW>
     end
-    
-    for ii = 1:nCol
-        val = sscanf(lTemp{ii},'%f');
-        if isempty(val)
-            % cannot index strings
-            dat(idx).(cSel{ii}) = lTemp{ii};
-        else
-            dat(idx).(cSel{ii})(mIdx{ii}{:}) = val;
-        end
-        
+end
+datFormat = datFormat(1:(end-1));
+
+% read all data
+nDat = numel(dataStr);
+if delimiter(1) == ' '
+    datTemp = textscan([dataStr{:}],datFormat,nDat);
+else
+    datTemp = textscan([dataStr{:}],datFormat,nDat,'Delimiter',delimiter);
+end
+
+% convert the data into struct format
+% create an empty structure
+sTemp = [cName;repmat({cell(nDat,1)},1,numel(cName))];
+dat = struct(sTemp{:});
+
+% fill in all fields
+[dat(:).MODE] = modeStr{:};
+for ii = 2:numel(cName)
+    colSel = ismember(cSel,cName{ii});
+    datMat = [datTemp{colSel}];
+    if ~iscell(datMat)
+        datMat = mat2cell(datMat,ones(1,nDat),sum(colSel));
     end
-    dat(idx).MODE = modeStr;
-    idx = idx + 1;
-    idxStr = idxStr+1;
+    [dat(:).(cName{ii})] = datMat{:};
 end
 
 end

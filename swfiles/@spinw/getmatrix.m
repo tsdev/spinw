@@ -168,7 +168,7 @@ if matIdx ~= 0
     end
 end
 
-if bondIdx
+if bondIdx ~= 0
     % Coupling is defined
     iSel = find(obj.coupling.idx == bondIdx);
     
@@ -197,7 +197,7 @@ if bondIdx
     if sum(matIdx0>0) == 1
         matIdx = sum(matIdx0);
     end
-elseif anisoIdx
+elseif anisoIdx ~= 0
     % Anisotropy is defined
     center = obj.unit_cell.r(:,anisoIdx);
     dr     = 0;

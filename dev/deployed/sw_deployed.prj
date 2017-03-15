@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="2767917229" file="/Users/sandortoth/spinw_git/dev/deployed/sw_deployed.prj" location="/Users/sandortoth/spinw_git/dev/deployed" name="sw_deployed" preferred-package-location="/Users/sandortoth/spinw_git/dev/deployed/sw_deployed/for_redistribution" preferred-package-type="package.type.app" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="3715833685" file="/Users/tothsa/spinw_git/dev/deployed/sw_deployed.prj" location="/Users/tothsa/spinw_git/dev/deployed" name="sw_deployed" preferred-package-location="/Users/tothsa/spinw_git/dev/deployed/sw_deployed/for_redistribution" preferred-package-type="package.type.app" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>sw_deployed</param.appname>
     <param.icon>${PROJECT_ROOT}/sw_deployed_resources/icon.icns</param.icon>
     <param.icons>
@@ -8,11 +8,11 @@
       <file>${PROJECT_ROOT}/sw_deployed_resources/icon_24.png</file>
       <file>${PROJECT_ROOT}/sw_deployed_resources/icon_16.png</file>
     </param.icons>
-    <param.version>1.0</param.version>
-    <param.authnamewatermark>Sandor Toth</param.authnamewatermark>
+    <param.version>3.0</param.version>
+    <param.authnamewatermark>Sándor Tóth</param.authnamewatermark>
     <param.email>sandor.toth@psi.ch</param.email>
     <param.company>Paul Scherrer Institut</param.company>
-    <param.summary />
+    <param.summary>SpinW quantum magnetism toolbox</param.summary>
     <param.description />
     <param.screenshot />
     <param.guid />
@@ -53,11 +53,9 @@ If it is defined, set it to the concatenation of these strings:
     <param.create.log>false</param.create.log>
     <param.log.file />
     <unset>
-      <param.version />
       <param.authnamewatermark />
       <param.email />
       <param.company />
-      <param.summary />
       <param.description />
       <param.screenshot />
       <param.guid />
@@ -85,35 +83,47 @@ If it is defined, set it to the concatenation of these strings:
       <param.log.file />
     </unset>
     <fileset.main>
-      <file>/Users/sandortoth/spinw_git/dev/sw_deployed.m</file>
+      <file>/Users/tothsa/spinw_git/dev/sw_deployed.m</file>
     </fileset.main>
     <fileset.resources>
-      <file>/Users/sandortoth/spinw_git/dat_files</file>
-      <file>/Users/sandortoth/spinw_git/external</file>
-      <file>/Users/sandortoth/spinw_git/swfiles</file>
+      <file>/Users/tothsa/spinw_git/dat_files</file>
+      <file>/Users/tothsa/spinw_git/external</file>
+      <file>/Users/tothsa/spinw_git/swfiles</file>
+      <file>/usr/local/lib/libzmq.4.2.3.dylib</file>
+      <file>/usr/local/lib/libzmq.a</file>
     </fileset.resources>
     <fileset.package />
     <fileset.depfun>
-      <file>/Users/sandortoth/Documents/MATLAB/clipboardimage.m</file>
-      <file>/Users/sandortoth/Documents/MATLAB/rgb2lab.m</file>
+      <file>/Users/tothsa/Documents/MATLAB/ISIS/Herbert/applications/mfit_funcs/gauss2d.m</file>
+      <file>/Users/tothsa/Documents/MATLAB/rgb2lab.m</file>
+      <file>/Users/tothsa/phys/transplant/ZMQ.m</file>
+      <file>/Users/tothsa/phys/transplant/base64decode.m</file>
+      <file>/Users/tothsa/phys/transplant/base64encode.m</file>
+      <file>/Users/tothsa/phys/transplant/dumpjson.m</file>
+      <file>/Users/tothsa/phys/transplant/dumpmsgpack.m</file>
+      <file>/Users/tothsa/phys/transplant/parsejson.m</file>
+      <file>/Users/tothsa/phys/transplant/parsemsgpack.m</file>
+      <file>/Users/tothsa/phys/transplant/transplant_remote.m</file>
+      <file>/Users/tothsa/spinw_git/dev/@spinw/fitpow.m</file>
+      <file>/Users/tothsa/spinw_git/dev/@spinw/fourier2.m</file>
+      <file>/Users/tothsa/spinw_git/dev/@spinw/gencouplingold.m</file>
+      <file>/Users/tothsa/spinw_git/dev/@spinw/intmatrix1.m</file>
+      <file>/Users/tothsa/spinw_git/dev/@spinw/phonon.m</file>
+      <file>/Users/tothsa/spinw_git/dev/@spinw/phononsym.m</file>
+      <file>/Users/tothsa/spinw_git/dev/@spinw/structfact2.m</file>
+      <file>/Users/tothsa/spinw_git/dev/@spinw/structfact3.m</file>
+      <file>/Users/tothsa/spinw_git/dev/@spinw/tisza.m</file>
     </fileset.depfun>
     <build-deliverables>
-      <file location="${PROJECT_ROOT}/sw_deployed/for_testing" name="run_sw_deployed.sh" optional="false">/Users/sandortoth/spinw_git/dev/deployed/sw_deployed/for_testing/run_sw_deployed.sh</file>
-      <file location="${PROJECT_ROOT}/sw_deployed/for_testing" name="sw_deployed.app" optional="false">/Users/sandortoth/spinw_git/dev/deployed/sw_deployed/for_testing/sw_deployed.app</file>
-      <file location="${PROJECT_ROOT}/sw_deployed/for_testing" name="splash.png" optional="false">/Users/sandortoth/spinw_git/dev/deployed/sw_deployed/for_testing/splash.png</file>
-      <file location="${PROJECT_ROOT}/sw_deployed/for_testing" name="readme.txt" optional="true">/Users/sandortoth/spinw_git/dev/deployed/sw_deployed/for_testing/readme.txt</file>
+      <file location="${PROJECT_ROOT}/sw_deployed/for_testing" name="readme.txt" optional="true">/Users/tothsa/spinw_git/dev/deployed/sw_deployed/for_testing/readme.txt</file>
+      <file location="${PROJECT_ROOT}/sw_deployed/for_testing" name="run_sw_deployed.sh" optional="false">/Users/tothsa/spinw_git/dev/deployed/sw_deployed/for_testing/run_sw_deployed.sh</file>
+      <file location="${PROJECT_ROOT}/sw_deployed/for_testing" name="sw_deployed.app" optional="false">/Users/tothsa/spinw_git/dev/deployed/sw_deployed/for_testing/sw_deployed.app</file>
+      <file location="${PROJECT_ROOT}/sw_deployed/for_testing" name="splash.png" optional="false">/Users/tothsa/spinw_git/dev/deployed/sw_deployed/for_testing/splash.png</file>
     </build-deliverables>
     <workflow />
     <matlab>
       <root>/Applications/MATLAB_R2016b.app</root>
-      <toolboxes>
-        <toolbox name="matlabcoder" />
-      </toolboxes>
-      <toolbox>
-        <matlabcoder>
-          <enabled>true</enabled>
-        </matlabcoder>
-      </toolbox>
+      <toolboxes />
     </matlab>
     <platform>
       <unix>true</unix>

@@ -1,35 +1,12 @@
-function sw_deployed(socket_address)
-% code to compile that runs with pymatbridge
+function sw_deployed(varargin)
+% the main application of the deployed SpinW app
 
-json_startup
-messenger('init', socket_address);
+fprintf('Creating new SpinW process...\n')
+sw_version;
+input = regexp(varargin{2},'(msgpack|json)'',''([\w:/]+)','tokens');
+msgformat = input{1}{1};
+url       = input{1}{2};
 
-c = onCleanup(@()exit);
-
-while(1)
-    msg_in = messenger('listen');
-    req = json_load(msg_in);
-    
-    switch(req.cmd)
-        case 'connect'
-            messenger('respond', 'connected');
-            
-        case 'exit'
-            messenger('exit');
-            break
-            
-        case 'eval'
-            resp = pymat_eval(req);
-            drawnow;
-            messenger('respond', resp);
-            while ~isempty(get(0,'Children'))
-                pause(0.5);
-            end
-            
-        otherwise
-            messenger('respond', 'i dont know what you want');
-    end
-    
-end
+transplant_remote(msgformat,url);
 
 end

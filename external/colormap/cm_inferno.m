@@ -10,7 +10,7 @@ function cm_data = cm_inferno(nCol)
 %
 % Input:
 %
-% nPoint    Number of colors, default value is 256.
+% nCol      Number of colors, default value is 256.
 %
 
 cm = [[1.46159096e-03    4.66127766e-04    1.38655200e-02]

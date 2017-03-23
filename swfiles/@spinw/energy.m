@@ -98,14 +98,16 @@ if nMagExt>0
     
     M1 = M0(:,atom1);
     M2 = M0(:,atom2);
+    M2cmplx = obj.mag_str.F(:,atom2);
     
     % For incommensurate structures in the extended unit cell rotates M2
     % moments.
     if incomm && any(any(dR))
-        n = magStr.n;
+        %n = magStr.n;
         dRIdx = find(any(dR));
-        for ii = 1:length(dRIdx)
-            M2(:,dRIdx(ii)) = sw_rot(n, kExt*dR(:,dRIdx(ii))*2*pi, M2(:,dRIdx(ii)));
+        for ii = 1:numel(dRIdx)
+            %M2(:,dRIdx(ii)) = sw_rot(n, kExt*dR(:,dRIdx(ii))*2*pi, M2(:,dRIdx(ii)));
+            M2(:,dRIdx(ii)) = real(bsxfun(@times,M2cmplx(:,dRIdx(ii)),exp(1i*kExt*dR(:,dRIdx(ii))*2*pi)));
         end
     end
     

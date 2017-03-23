@@ -1,4 +1,4 @@
-classdef spinw < handle
+classdef spinw < handle & matlab.mixin.SetGet
     % SPINW class defines data structure and methods to calculate spin wave
     % dispersion in magnetic crystals.
     %

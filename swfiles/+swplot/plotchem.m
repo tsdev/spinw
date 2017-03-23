@@ -178,7 +178,7 @@ end
 % atom data
 atom  = obj.atom;
 
-% convert atom label to index
+% convert atom labels to indices
 if ischar(param.atom1)
     atom1 = find(cellfun(@isempty,strfind(obj.unit_cell.label,param.atom1))==false);
 else

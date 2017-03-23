@@ -225,9 +225,6 @@ mIdx = mIdx(pIdx);
 mIdx = mIdx(:)';
 mat  = mat(:,:,mIdx);
 
-% number of ellipse to plot
-nEllipse = size(mat,3);
-
 % color
 if strcmp(param.color,'auto')
     color = double(obj.unit_cell.color(:,mAtom.idx(mIdx)));
@@ -262,6 +259,10 @@ rmMat = permute(sumn(abs(mat),[1 2])==0,[1 3 2]);
 mat   = mat(:,:,~rmMat);
 pos   = pos(:,~rmMat);
 color = color(:,~rmMat);
+
+% number of ellipse to plot
+nEllipse = size(mat,3);
+
 % calculating the main radiuses of the ellipsoid.
 [V, Rell] = eigorth(mat,1e-5);
 % creating positive definite matrix by adding constant to all

@@ -23,10 +23,10 @@ function stat = annealloop(obj, varargin)
 %           the direction of the spins are along x-axis, for XY model the
 %           the xy-plane. Magnetic fields perpendicular to these directions
 %           are omitted.
-% func      Function that changes the parameters in the sw object in every
+% func      Function that changes the parameters in the spinw object in every
 %           loop. Default function is to change the temperature:
 %               @(obj,T)obj.temperature(T)
-%           The function takes two input: sw objec and a parameter vector.
+%           The function takes two input: spinw objec and a parameter vector.
 % x         Matrix of values of the loop parameter, with dimensions of
 %           [nPar nStep]. Default is 1. In the i-th loop the loop function
 %           is called as:
@@ -78,7 +78,7 @@ function stat = annealloop(obj, varargin)
 %           magnetic moment, size is (1,nMagExt). If undefined, the
 %           function defined in 'fSub' will be used to partition the
 %           lattice.
-% saveObj   If true, the sw object is saved after every annealing step for
+% saveObj   If true, the spinw object is saved after every annealing step for
 %           debugging purposes. Default is false.
 % title     Gives a title string to the simulation that is saved in the
 %           output.
@@ -90,7 +90,7 @@ function stat = annealloop(obj, varargin)
 %           X with the following fields:
 %
 % param     All input parameter values of the annealloop function.
-% obj       The copy of the input sw class obj with the final magnetic
+% obj       The copy of the input spinw class obj with the final magnetic
 %           structure.
 % M         Components of the magnetisation after the last annealing
 %           run, dimensions are [3 nMagExt].
@@ -176,7 +176,7 @@ for ii = 1:nLoop
     warning(warnState);
     % remove the duplicate object
     if ~param.saveObj
-        % remove sw object from the output to free up memory
+        % remove spinw object from the output to free up memory
         delete(aRes{ii}.obj);
         aRes{ii} = rmfield(aRes{ii},'obj');
     end

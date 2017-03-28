@@ -35,7 +35,7 @@ function atomList = atom(obj)
 % The cryst.atom lists all 4 symmetry equivalent positions generated using
 % the 'FCC' symmetry operators.
 %
-% See also SPINW, SPINW.MATOM, SW_ADDSYM, SPINW.GENLATTICE, SPINW.ADDATOM.
+% See also SPINW, SPINW.MATOM, SWSYM.ADD, SPINW.GENLATTICE, SPINW.ADDATOM.
 %
 
 % Generate all symmetry equivalent atoms

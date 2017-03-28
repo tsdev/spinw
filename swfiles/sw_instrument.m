@@ -76,9 +76,9 @@ end
 
 func0 = @swfunc.gaussfwhm;
 
-inpForm.fname  = {'dE'  'ki'  'Ei'  'kf'  'Ef'  'plot' 'polDeg' 'ThetaMin'};
-inpForm.defval = {0      0     0     0     0     false   5        0       };
-inpForm.size   = {[1 -1] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]    };
+inpForm.fname  = {'dE'    'ki'  'Ei'  'kf'  'Ef'  'plot' 'polDeg' 'ThetaMin'};
+inpForm.defval = {0       0     0     0     0     false   5        0        };
+inpForm.size   = {[-1 -2] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]     };
 
 inpForm.fname  = [inpForm.fname  {'formFact' 'dQ'  'norm' 'useRaw' 'func'}];
 inpForm.defval = [inpForm.defval { 'auto'    0     false   true    func0 }];

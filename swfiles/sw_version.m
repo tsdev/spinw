@@ -4,7 +4,7 @@ function varargout = sw_version()
 % SW_VERSION()
 %
 
-% read file header from sw.m file
+% read file header from sw_version.m file
 fid = fopen('sw_version.m');
 
 % first line

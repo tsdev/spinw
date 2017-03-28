@@ -52,7 +52,7 @@ function spectra = sw_magdomain(spectra, varargin)
 % related by a 90 degree rotation around the z-axis (perpendicular to the
 % ab plane). All domains have equal volume.
 %
-% See also SW.SPINWAVE, SW.ADDTWIN, SW.TWINQ.
+% See also SPINW.SPINWAVE, SPINW.ADDTWIN, SPINW.TWINQ.
 %
 
 if nargin == 0

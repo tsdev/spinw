@@ -10,8 +10,8 @@ function sym = symmetry(obj)
 % on bond length, equivalent matrices won't be transformed
 % (all identical).
 %
-% To change it use sw.gencoupling with the forceNoSym option.
-% To remove all symmetry operators use sw.nosym.
+% To change it use spinw.gencoupling with the forceNoSym option.
+% To remove all symmetry operators use spinw.nosym.
 %
 % See also SPINW, SPINW.NOSYM, SPINW.GENCOUPLING.
 %

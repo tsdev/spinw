@@ -1,7 +1,7 @@
-function dat = sw_readtable(fName,delimiter,nHeader)
+function dat = sw_readtable(dataSource,delimiter,nHeader)
 % reads tabular data
 %
-% dat = SW_READTABLE(fName, {delimiter},{nHeader})
+% dat = SW_READTABLE(dataSource, {delimiter},{nHeader})
 %
 % Function reads tabular data that has arbitrary header lines denoted with
 % # and the last header line is followed by a column name line. The data
@@ -11,8 +11,8 @@ function dat = sw_readtable(fName,delimiter,nHeader)
 %
 % Input:
 %
-% fName     File name string.
-% delimiter Delimiter of the data, default is whitespace.
+% dataSource    Data source, can be file, url or string.
+% delimiter     Delimiter of the data, default is whitespace.
 %
 % Output:
 %
@@ -57,29 +57,28 @@ if nargin < 3
     nHeader = 0;
 end
 
-fid = fopen(fName);
+dataStr = ndbase.source(dataSource);
 
-if fid == -1
-    error('spinw:sw_readtable:FileNotFound',['Data file not found: '...
-        regexprep(fName,'\' , '\\\') '!']);
-end
+% if dataStr == -1
+%     error('sw_readtable:FileNotFound',['Data file not found: '...
+%         regexprep(dataSource,'\' , '\\\') '!']);
+% end
 
-% read header lines given by user
-if nHeader > 0
-    for ii = 1:nHeader
-        fgets(fid);
-    end
-end
+% split string into lines
+dataStr = regexp(dataStr, ['(?:' sprintf('\n') ')+'], 'split');
+% add '\n' back to the end of lines
+dataStr = cellfun(@(C)[C char(10)],dataStr,'UniformOutput',false);
+
+% index into the line number, skip header lines
+idxStr = nHeader+1;
 
 % read header
-str = fgets(fid);
-while isempty(str) || str(1) == '#'
-    str = fgets(fid);
+while isempty(dataStr{idxStr}) || dataStr{idxStr}(1) == '#'
+    idxStr = idxStr+1;
 end
 
 % read column names
-%cTemp = strsplit(strtrim(str),delimiter);
-cTemp = regexp(strtrim(str), ['(?:', delimiter, ')+'], 'split');
+cTemp = regexp(strtrim(dataStr{idxStr}), ['(?:', delimiter, ')+'], 'split');
 
 cName = {};
 mIdx  = cell(1,numel(cTemp));
@@ -112,44 +111,59 @@ end
 cName = [{'MODE'} cName];
 nCol  = numel(cSel);
 
-% create an empty structure
-sTemp = [cName;repmat({{}},1,numel(cName))];
-dat = struct(sTemp{:});
-
-modeStr = ''; 
-idx = 1;
-
-str = fgets(fid);
+% next line
+idxStr = idxStr+1;
 
 % load data
-while str ~= -1
-    
-    str = strtrim(str);
-    
-    %lTemp = strsplit(str,delimiter);
-    lTemp = regexp(str,['(?:', delimiter, ')+'],'split');
-    
-    if ~isempty(str) && str(1) == '#'
-        modeStr = str;
-        str = fgets(fid);
-        continue
+% remove header lines
+dataStr = dataStr(idxStr:end);
+% remove empty lines
+dataStr = dataStr(cellfun(@(C)~isempty(C),dataStr));
+% find mode string positions
+isModeStr = cellfun(@(C)C(1)=='#',dataStr);
+modeStr = strtrim([{''} dataStr(isModeStr)]);
+% fill out the mode string
+modeStrIdx = cumsum(isModeStr)+1;
+% remove mode strings from data
+dataStr    = dataStr(~isModeStr);
+modeStrIdx = modeStrIdx(~isModeStr);
+modeStr    = modeStr(modeStrIdx);
+
+% read the first line of data to identify column types string/float
+firstLine = regexp(strtrim(dataStr{1}),['(?:', delimiter, ')+'],'split');
+datFormat = '';
+for ii = 1:nCol
+    if isempty(sscanf(firstLine{ii},'%f'))
+        % string type
+        datFormat = [datFormat '%s ']; %#ok<AGROW>
+    else
+        datFormat = [datFormat '%f ']; %#ok<AGROW>
     end
-    
-    for ii = 1:nCol
-        val = sscanf(lTemp{ii},'%f');
-        if isempty(val)
-            % cannot index strings
-            dat(idx).(cSel{ii}) = lTemp{ii};
-        else
-            dat(idx).(cSel{ii})(mIdx{ii}{:}) = val;
-        end
-        
-    end
-    dat(idx).MODE = modeStr;
-    idx = idx + 1;
-    str = fgets(fid);
+end
+datFormat = datFormat(1:(end-1));
+
+% read all data
+nDat = numel(dataStr);
+if delimiter(1) == ' '
+    datTemp = textscan([dataStr{:}],datFormat,nDat);
+else
+    datTemp = textscan([dataStr{:}],datFormat,nDat,'Delimiter',delimiter);
 end
 
-fclose(fid);
+% convert the data into struct format
+% create an empty structure
+sTemp = [cName;repmat({cell(nDat,1)},1,numel(cName))];
+dat = struct(sTemp{:});
+
+% fill in all fields
+[dat(:).MODE] = modeStr{:};
+for ii = 2:numel(cName)
+    colSel = ismember(cSel,cName{ii});
+    datMat = [datTemp{colSel}];
+    if ~iscell(datMat)
+        datMat = mat2cell(datMat,ones(1,nDat),sum(colSel));
+    end
+    [dat(:).(cName{ii})] = datMat{:};
+end
 
 end

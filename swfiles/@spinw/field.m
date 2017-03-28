@@ -3,7 +3,7 @@ function varargout = field(obj,varargin)
 %
 % FIELD(obj, B)
 %
-% If B is defined, it sets the magnetic field stored in sw object to B,
+% If B is defined, it sets the magnetic field stored in spinw object to B,
 % where B is a 1x3 vector.
 %
 % B = FIELD(obj)
@@ -28,7 +28,7 @@ elseif nargin == 2
             obj.single_ion.field = B(:)';
         end
     else
-        error('sw:magfield:ArraySize','Input magnetic field has to be a 3 element vector!');
+        error('spinw:magfield:ArraySize','Input magnetic field has to be a 3 element vector!');
     end
     if nargout > 0
         varargout{1} = obj;

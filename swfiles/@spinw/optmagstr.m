@@ -60,7 +60,7 @@ function optm = optmagstr(obj, varargin)
 % Output:
 %
 % 'optm' is a struct type variable with the following fields:
-% obj       sw object that contains the optimised magnetic structure.
+% obj       spinw object that contains the optimised magnetic structure.
 % x         Optimised paramters, dimensions are [1 nPar].
 % fname     Name of the contraint function.
 % xname     Cell containing the name of the x parameters, dimensions are
@@ -87,7 +87,7 @@ function optm = optmagstr(obj, varargin)
 %
 
 if ~any(obj.atom.mag)
-    error('sw:optmagstr:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+    error('spinw:optmagstr:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 
 % save the time of the beginning of the calculation
@@ -115,7 +115,7 @@ obj.genmagstr(param);
 
 magStr  = obj.magstr; 
 
-% starting magnetic structure from sw object
+% starting magnetic structure from spinw object
 if isempty(magStr.S)
     obj.genmagstr('mode','random');
 end
@@ -160,7 +160,7 @@ if nargout(param.func) == 6
     
 else
     if isempty(param.xmin) || isempty(param.xmax) || (numel(param.xmin) ~= numel(param.xmax))
-        error('sw:optmagtr:WrongInput','Missing limits on the x fitting parameters (use xmin and xmax options)!');
+        error('spinw:optmagtr:WrongInput','Missing limits on the x fitting parameters (use xmin and xmax options)!');
     end
     nPar  = numel(param.xmin);
     fname = '';

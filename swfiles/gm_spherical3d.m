@@ -52,7 +52,7 @@ if nargout <= 3
     else
         % Check that the number of magnetic atoms is right
         if length(MTheta)~=length(M0)
-            error('sw:gm_spherical3d:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
+            error('gm_spherical3d:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
         end
         % Magnetic moments in orthogonal coordinate sysyem.
         M = bsxfun(@times,[sin(MTheta).*cos(MPhi); sin(MTheta).*sin(MPhi); cos(MTheta)],M0);

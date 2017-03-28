@@ -42,7 +42,7 @@ else
 end
 
 if ki == 0
-    error('sw:sw_flatcone:kierror','Missing ki or lambda!');
+    error('sw_flatcone:kierror','Missing ki or lambda!');
 end
 
 % Q absolute values

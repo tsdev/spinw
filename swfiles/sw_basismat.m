@@ -23,7 +23,7 @@ function [M, asym] = sw_basismat(symOp, r, tol)
 % asym      Logical vector, for each 3x3 matrix in M, tells whether it is
 %           antisymmetric, dimensions are [1 nM].
 %
-% See also SW.GETMATRIX, SW.SETMATRIX.
+% See also SPINW.GETMATRIX, SPINW.SETMATRIX.
 %
 
 if nargin == 0

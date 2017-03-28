@@ -1,5 +1,5 @@
 function setmatrix(obj, varargin)
-% changes the selected matrix inside the sw object
+% changes the selected matrix inside the spinw object
 %
 % SETMATRIX(obj, 'Option1', Value1, ...)
 %

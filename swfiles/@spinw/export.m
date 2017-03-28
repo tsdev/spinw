@@ -3,14 +3,14 @@ function out = export(obj, varargin)
 %
 % out = EXPORT(obj, 'Option1', Value1, ...)
 %
-% Different part of the sw object data can be exported selected by the
+% Different part of the spinw object data can be exported selected by the
 % 'format' option. Right now the following formats are supported:
 %
 % 'pcr'     Creates part of a .pcr file used by FullProf. It exports the
 %           atomic positions.
 % 'spt'     Creates a Jmol script, that reproduce the same plot as used the
-%           built in sw.plot() function. Any additional parameter of the
-%           sw.plot() function can be used.
+%           built in spinw.plot() function. Any additional parameter of the
+%           spinw.plot() function can be used.
 % 'MC'      Exports a proprietary file format for Monte Carlo simulations.
 %
 %
@@ -95,11 +95,11 @@ switch param.format
         warning(warnState);
         
     case ''
-        warning('sw:export:NoInput','No ''format'' option was given, no output is produced!');
+        warning('spinw:export:NoInput','No ''format'' option was given, no output is produced!');
         out = [];
         return
     otherwise
-        error('sw:export:WrongInput','''format'' has to be one of the strings given in the help!');
+        error('spinw:export:WrongInput','''format'' has to be one of the strings given in the help!');
 end
 
 % write into fid file
@@ -132,7 +132,7 @@ function out = createpcr(obj, perm)
 % CREATEPCR(obj, perm) creates the structural part of a pcr file
 % from a .cif file.
 %
-% This function will create the atomic positions from an sw object in the
+% This function will create the atomic positions from an spinw object in the
 % input format for FullProf Rietveld refinement software.
 %
 % perm  Permutation of the (x,y,z) coordinates.

@@ -21,7 +21,7 @@ function varargout = sw_filelist(varargin)
 % list      Cell of strings, lists each simulation data in the Matlab
 %           memory, even data stored in cells.
 %
-% See also SW.ANNEAL, SW.SPINWAVE.
+% See also SPINW.ANNEAL, SPINW.SPINWAVE.
 %
 
 inpForm.fname  = {'fName' 'sort' };

@@ -44,7 +44,7 @@ mAtom    = obj.matom;
 nMagAtom = size(mAtom.idx,2);
 
 if nMagAtom==0
-    error('sw:addg:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
+    error('spinw:addg:NoMagAtom','There is no magnetic atom in the unit cell with S>0!');
 end
 
 cTemp = -1;
@@ -59,13 +59,13 @@ if ischar(matrixIdx)
 end
 
 if matrixIdx == -1
-    error('sw:addg:WrongCouplingTypeIdx','Input matrix does not exists!');
+    error('spinw:addg:WrongCouplingTypeIdx','Input matrix does not exists!');
 end
 
 if nargin > 3
     atomIdx = varargin{2};
     if obj.lattice.sym > 1
-        error('sw:addg:SymmetryProblem','atomIdx is not allowed when crystal symmetry is not P1!');
+        error('spinw:addg:SymmetryProblem','atomIdx is not allowed when crystal symmetry is not P1!');
     end
 
 end

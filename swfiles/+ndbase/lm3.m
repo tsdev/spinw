@@ -189,12 +189,12 @@ end
 
 % define fit weights
 if ~isfield(dat,'e') || isempty(dat.e) || ~any(dat.e(:))
-    weight = 1./abs(dat.y);
+    weight = 1./sqrt(abs(dat.y));
 else
     if any(dat.e(:)<0)
         error('lm:WrongInput','Standard deviations have to be positive!')
     end
-    weight = 1./dat.e(:).^2;
+    weight = 1./dat.e(:);
 end
 
 if numel(param.dp) == 1
@@ -249,7 +249,6 @@ resid = weight.*(dat.y-yCalc(:));
 
 % un-normalised chi-squared
 chi2Best = resid'*resid;
-chisqr = chi2Best/nnorm;
 
 % best values for parameters at start
 pBest = p0;
@@ -372,7 +371,7 @@ stat.nIter      = iter;
 stat.nFunEvals  = nFunEval;
 stat.algorithm  = 'Levenberg-Marquardt';
 stat.func       = func;
-
+stat.redX2      = chisqr;
 % save the input parameters
 stat.param = param;
 

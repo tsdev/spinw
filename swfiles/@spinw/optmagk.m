@@ -13,6 +13,12 @@ function result = optmagk(obj,varargin)
 % Input:
 %
 % obj       Input structure, spinw class object.
+% kbase     Provide a set of vectors that define the possible k-vector:
+%               k = sum_i C(i)*kbase(:,i);
+%           where the optimiser determines the C(i) values that correspond
+%           to the lowest ground state energy. kbase is a
+%           matrix with dimensions [3 nBase], where nBase <=3. The basis
+%           vectors have to be linearly independent.
 %
 % Options:
 %
@@ -32,11 +38,12 @@ function result = optmagk(obj,varargin)
 % See also NDBASE.PSO.
 %
 
-%inpForm.fname  = {'fitmode' };
-%inpForm.defval = {false     };
-%inpForm.size   = {[1 1]     };
-%
-%param = sw_readparam(inpForm, varargin{:});
+inpForm.fname  = {'kbase'};
+inpForm.defval = {[]     };
+inpForm.size   = {[3 -1] };
+inpForm.soft   = {true   };
+
+param = sw_readparam(inpForm, varargin{:});
 
 
 
@@ -87,13 +94,18 @@ idx4 = repmat(permute(1:nHkl,[1 3 2]),[9 nBond 1]);
 % indices all
 idxAll = [idx1(:) idx2(:) idx3(:) idx4(:)];
 
-% find the dimensionality of the bonds
-% bond vectors of non-zero couplings
-dl = SS.all(1:3,:);
-% system dimensionality
-D = rank(dl);
-% k-vector directions
-kbase = orth(dl);
+if isempty(param.kbase)
+    % find the dimensionality of the bonds
+    % bond vectors of non-zero couplings
+    dl = SS.all(1:3,:);
+    % system dimensionality
+    D = rank(dl);
+    % k-vector directions
+    kbase = orth(dl);
+else
+    kbase = param.kbase;
+    D = size(kbase,2);
+end
 
 kones = ones(1,D);
 

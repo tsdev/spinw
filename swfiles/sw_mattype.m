@@ -36,11 +36,11 @@ end
 type = zeros(1,mSize(3));
 
 if any(mSize(1:2)-[3 3])
-    error('sw:sw_mattype:InputError','Dimensions of the Input matrix is not 3x3xN!');
+    error('sw_mattype:InputError','Dimensions of the Input matrix is not 3x3xN!');
 end
 
 if ~isreal(mat) && ~isa(mat,'sym')
-    error('sw:sw_mattype:InputError','Input matrix is not real or symbolic!');
+    error('sw_mattype:InputError','Input matrix is not real or symbolic!');
 end
 
 if ~isa(mat,'sym')
@@ -48,15 +48,15 @@ if ~isa(mat,'sym')
     for ii = 1:mSize(3)
         matI = mat(:,:,ii);
         dM = diag(matI);
-        if sum(sum(abs(diag(dM)-matI))) < epsilon*6
-            if sum(abs(dM-dM(1))) < epsilon*3
+        if sum(sum(abs(diag(dM)-matI))) <= epsilon*6
+            if sum(abs(dM-dM(1))) <= epsilon*3
                 % unity matrix * scalar
                 typeT = 1;
             else
                 % anisotropic diagonal
                 typeT = 2;
             end
-        elseif sum(sum(abs((matI+matI')))) < epsilon*6
+        elseif sum(sum(abs((matI+matI')))) <= epsilon*6
             % pure antisymmetric
             typeT = 3;
         else

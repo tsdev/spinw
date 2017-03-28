@@ -81,12 +81,18 @@ else
 end
 incomm = any(abs(kTest-round(kTest))>param.epsilon);
 
+khalf = ~any(mod(kTest*2,1));
+
 M0      = magStr.S;
 nMagExt = size(M0,2);
 
-% Anisotropy energy can be wrong.
-if  incomm && (any(any(any((SI.aniso)))) || (any(SI.field)) || (any(any(any(abs(SI.g-SI.g(1)*repmat(eye(3),[1 1 nMagExt]))>param.epsilon)))))
-    warning('sw:energy:AnisoFieldIncomm','The calculated energy might be wrong due to incommensurate structure!');
+% Anisotropy energy can be wrong
+isAniso = any(sw_sub1(SI.aniso(:)));
+gMat    = sw_sub1(SI.g);
+isGoff  = any(any(any(abs(gMat-gMat(1)*repmat(eye(3),[1 1 nMagExt]))>param.epsilon)));
+
+if  incomm && (isAniso || any(SI.field) || isGoff) && ~isreal(obj.mag_str.F) && ~khalf
+    warning('spinw:energy:AnisoFieldIncomm','The calculated energy might be wrong due to incommensurate structure!');
 end
 
 if nMagExt>0
@@ -98,14 +104,16 @@ if nMagExt>0
     
     M1 = M0(:,atom1);
     M2 = M0(:,atom2);
+    M2cmplx = obj.mag_str.F(:,atom2);
     
     % For incommensurate structures in the extended unit cell rotates M2
     % moments.
     if incomm && any(any(dR))
-        n = magStr.n;
+        %n = magStr.n;
         dRIdx = find(any(dR));
-        for ii = 1:length(dRIdx)
-            M2(:,dRIdx(ii)) = sw_rot(n, kExt*dR(:,dRIdx(ii))*2*pi, M2(:,dRIdx(ii)));
+        for ii = 1:numel(dRIdx)
+            %M2(:,dRIdx(ii)) = sw_rot(n, kExt*dR(:,dRIdx(ii))*2*pi, M2(:,dRIdx(ii)));
+            M2(:,dRIdx(ii)) = real(bsxfunsym(@times,M2cmplx(:,dRIdx(ii)),exp(1i*kExt*dR(:,dRIdx(ii))*2*pi)));
         end
     end
     
@@ -128,7 +136,12 @@ end
 if nargout > 0
     Eout = E;
 else
-    fprintf(['Ground state energy: %5.3f ' obj.unit.label{2} '/spin.\n'],E);
+    if obj.symbolic
+        fprintf('Ground state energy (1/spin):\n')
+        pretty(E);
+    else
+        fprintf(['Ground state energy: %5.3f ' obj.unit.label{2} '/spin.\n'],E);
+    end
 end
 
 end

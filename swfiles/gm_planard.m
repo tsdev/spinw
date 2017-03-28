@@ -62,7 +62,7 @@ if nargout <= 3
     else
         % Check that the number of magnetic atoms is right
         if length(phi)~=length(M0)
-            error('sw:gm_planar:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
+            error('gm_planar:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
         end
         % Magnetic moments in orthogonal coordinate sysyem.
         M = bsxfunsym(@times,u*cos(phi) + v*sin(phi),M0);

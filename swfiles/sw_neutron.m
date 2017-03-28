@@ -145,7 +145,7 @@ for ii = 1:nTwin
         zBM = repmat(n',[1 nHkl]);
         
         if norm(zBM(:,1)'*xBM)/nHkl > 1e-5
-            warning('sw:sw_polar:ScatteringPlaneProblem','The normal to the scattering plane is not perpendiculat to Q!');
+            warning('sw_neutron:ScatteringPlaneProblem','The normal to the scattering plane is not perpendiculat to Q!');
         end
         
         yBM = cross(zBM,xBM);

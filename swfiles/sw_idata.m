@@ -39,7 +39,7 @@ param = sw_readparam(inpForm, varargin{:});
 iDataInstalled = exist('iData') && isa(iData,'iData'); %#ok<EXIST>
 
 if ~iDataInstalled
-    error('sw:sw_idata:NoIdataClass','iFit is not installed, install it from: http://ifit.mccode.org')
+    error('sw_idata:NoIdataClass','iFit is not installed, install it from: http://ifit.mccode.org')
 end
 
 % Labels for the x-axis

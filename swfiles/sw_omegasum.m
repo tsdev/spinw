@@ -20,7 +20,7 @@ function spectra = sw_omegasum(spectra, varargin)
 %           summation. Default value is NaN (good for plotting). Zero can
 %           be used for further numerical treatmen.
 %
-% See also SW.SPINWAVE, SW_EGRID.
+% See also SPINW.SPINWAVE, SW_EGRID.
 %
 
 if iscell(spectra.omega)

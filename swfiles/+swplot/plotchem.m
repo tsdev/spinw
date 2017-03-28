@@ -82,12 +82,11 @@ function varargout = plotchem(varargin)
 % default values
 nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
-range0    = [0 1;0 1;0 1];
 
 inpForm.fname  = {'range' 'legend' 'label' 'unit' 'mode' 'atom1' 'atom2' 'copy'};
-inpForm.defval = {range0  true     true    'lu'   'poly' 1       2       false };
+inpForm.defval = {[]      true     true    'lu'   'poly' 1       2       false };
 inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 -3] [1 -4] [1 -5]  [1 -6]  [1 1] };
-inpForm.soft   = {false   false    false   false  false  false   false   false };
+inpForm.soft   = {true    false    false   false  false  false   false   false };
 
 inpForm.fname  = [inpForm.fname  {'limit' 'alpha' 'color' 'nmesh' 'npatch'}];
 inpForm.defval = [inpForm.defval {6       []      'auto'  nMesh0  nPatch0 }];
@@ -142,14 +141,26 @@ BV = obj.basisvector;
 % set figure title
 set(hFigure,'Name', 'SpinW: Chemical bonds');
 
-% change range, if the number of unit cells are given
-if numel(param.range) == 3
-    param.range = [ zeros(3,1) param.range(:)];
-elseif numel(param.range) ~=6
+% select range
+if numel(param.range) == 6
+    range = param.range;
+elseif isempty(param.range)
+    % get range from figure
+    fRange = getappdata(hFigure,'range');
+    if isempty(fRange)
+        % fallback to default range
+        range = [0 1;0 1;0 1];
+    else
+        % get plotting range and unit
+        range       = fRange.range;
+        param.unit  = fRange.unit;
+    end
+elseif numel(param.range) == 3
+    % change range, if the number of unit cells are given
+    range = [zeros(3,1) param.range(:)];
+else
     error('plotchem:WrongInput','The given plotting range is invalid!');
 end
-
-range = param.range;
 
 switch param.unit
     case 'lu'
@@ -167,7 +178,7 @@ end
 % atom data
 atom  = obj.atom;
 
-% convert atom label to index
+% convert atom labels to indices
 if ischar(param.atom1)
     atom1 = find(cellfun(@isempty,strfind(obj.unit_cell.label,param.atom1))==false);
 else
@@ -224,11 +235,11 @@ pos2      = reshape(pos2,3,[]);
 switch param.unit
     case 'lu'
         % L>= lower range, L<= upper range
-        pIdx = all(bsxfun(@ge,pos1,range(:,1)) & bsxfun(@le,pos1,range(:,2)),1);
+        pIdx = all(bsxfun(@ge,pos1,range(:,1)-10*eps) & bsxfun(@le,pos1,range(:,2)+10*eps),1);
     case 'xyz'
         % convert to xyz
         posxyz = BV*pos1;
-        pIdx = all(bsxfun(@ge,posxyz,range(:,1)) & bsxfun(@le,posxyz,range(:,2)),1);
+        pIdx = all(bsxfun(@ge,posxyz,range(:,1)-10*eps) & bsxfun(@le,posxyz,range(:,2)+10*eps),1);
 end
 
 if ~any(pIdx)
@@ -403,7 +414,7 @@ end
 % end
 
 % save range
-setappdata(hFigure,'range',struct('range',param.range,'unit',param.unit));
+setappdata(hFigure,'range',struct('range',range,'unit',param.unit));
 
 if param.tooltip
     swplot.tooltip('on',hFigure);

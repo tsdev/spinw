@@ -44,19 +44,19 @@ function [w, s] = horace_disp(obj, qh, qk, ql, varargin)
 %           division by dE in the intensity.
 % param     Input parameters (can be used also within Tobyfit). Additional
 %           options ('mat','selector') might be necessary, for details see
-%           sw.matparser function. All extra parameters of sw.horace
-%           function will be forwarded to the sw.matparser function before
+%           spinw.matparser function. All extra parameters of spinw.horace
+%           function will be forwarded to the spinw.matparser function before
 %           calculating the spin wave spectrum (or any user written parser
 %           function). For user written functions defined with the
 %           following header:
 %               func(obj,param)
 %           the value of the param option will be forwarded. For user
 %           functions with variable number of arguments, all input options
-%           of sw.horace will be forwarded. In this case it is recommended
+%           of spinw.horace will be forwarded. In this case it is recommended
 %           to use sw_readparam() function to handle the variable number
 %           arguments within func().
 % parfunc   Parser function of the 'param' input. Default is
-%           @sw.matparser which can be used directly by Tobyfit. For user
+%           @spinw.matparser which can be used directly by Tobyfit. For user
 %           defined functions the minimum header has to be:
 %               func(obj,param)
 %           where obj is an spinw type object, param is the parameter

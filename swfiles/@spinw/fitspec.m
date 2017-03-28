@@ -69,6 +69,8 @@ function fitsp = fitspec(obj, varargin)
 %           Default is true.
 % epsilon   Small number that controls wether the magnetic structure is
 %           incommensurate or commensurate, default value is 1e-5.
+% imagChk   Checks that the imaginary part of the spin wave dispersion is
+%           smaller than the energy bin size. Default is true.
 %
 % Parameters for visualizing the fit results:
 %
@@ -93,7 +95,7 @@ function fitsp = fitspec(obj, varargin)
 % Output:
 %
 % Output fitsp is struct type with the following fields:
-% obj       Copy of the input sw class object, with the best fitted
+% obj       Copy of the input spinw class object, with the best fitted
 %           Hamiltonian.
 % x         Final values of the fitted parameters, dimensions are
 %           [nRun nPar]. The rows of x are sorted according to increasing R
@@ -125,10 +127,10 @@ inpForm.defval = [inpForm.defval {1e3    true     1/30     0       'pso'      }]
 inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]    [1 1]   [1 -7]     }];
 inpForm.soft   = [inpForm.soft   {false  false    false    false   false      }];
 
-inpForm.fname  = [inpForm.fname  {'maxiter' 'sw'  'optmem' 'tid' }];
-inpForm.defval = [inpForm.defval {20        1     0        tid0  }];
-inpForm.size   = [inpForm.size   {[1 1]  	[1 1] [1 1]    [1 1] }];
-inpForm.soft   = [inpForm.soft   {false  	false false    false }];
+inpForm.fname  = [inpForm.fname  {'maxiter' 'sw'  'optmem' 'tid' 'imagChk'}];
+inpForm.defval = [inpForm.defval {20        1     0        tid0   true    }];
+inpForm.size   = [inpForm.size   {[1 1]  	[1 1] [1 1]    [1 1]  [1 1]   }];
+inpForm.soft   = [inpForm.soft   {false  	false false    false  false   }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -171,7 +173,8 @@ for ii = 1:numel(data)
     dat.e = [dat.e;data{ii}.sigma(sel)];
 end
 dat.x = (1:numel(dat.y))';
-
+dat.y = dat.y(:);
+dat.e = dat.e(:);
 
 sw_status(0,1,param.tid,'Fitting spin wave spectra');
 
@@ -219,11 +222,11 @@ while idx <= nRun
     %     catch
     %         warning('Hamiltonian is not compatible with the magnetic ground state!');
     %         if ~isempty(param.x0)
-    %             error('sw:fitspec:WrongInput','x0 input incompatible with ground state!');
+    %             error('spinw:fitspec:WrongInput','x0 input incompatible with ground state!');
     %         end
     %
     %         if idxAll >= param.nMax
-    %             warning('sw:fitspec:WrongInput','Maximum number of wrong runs (param.nMax) reached, calculation is terminated!');
+    %             warning('spinw:fitspec:WrongInput','Maximum number of wrong runs (param.nMax) reached, calculation is terminated!');
     %             break;
     %         end
     %     end
@@ -245,7 +248,7 @@ if param.plot
     spec_fitfun(obj, data, param.func, x(1,:), param0);
 end
 
-% set the best fit to the sw object
+% set the best fit to the spinw object
 param.func(obj,x(1,:));
 
 obj.fileid(fidSave);
@@ -264,7 +267,7 @@ function [yCalc, pHandleOut] = spec_fitfun(obj, dataCell, parfunc, x, param)
 %
 % [yCalc, pHandle] = SW_FITFUN(obj, data, param, swfunc, x)
 %
-% swobj         sw type object contains the magnetic structure and the
+% swobj         spinw type object contains the magnetic structure and the
 %               Hamiltonian for the spin wave calculation.
 % data          Structure contains the experimental data, read by
 %               sw_readspec.
@@ -298,7 +301,7 @@ for ii = 1:nConv
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy
-    spec = sw_egrid(spec,'component',data.corr,'Evect',param.Evect);
+    spec = sw_egrid(spec,'component',data.corr,'Evect',param.Evect,'imagChk',param.imagChk);
     % generate center bin
     spec.Evect = (spec.Evect(1:(end-1))+spec.Evect(2:end))/2;
     

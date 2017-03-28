@@ -30,14 +30,13 @@ function varargout = plotcell(varargin)
 %
 
 % default values
-range0    = [0 1;0 1;0 1];
 nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
 
 inpForm.fname  = {'range' 'mode'   'figure' 'color' 'linestyle' 'linewidth'};
-inpForm.defval = {range0  'inside' []       'auto'  '--'         1         };
+inpForm.defval = {[]      'single' []       'auto'  '--'         1         };
 inpForm.size   = {[-1 -2] [1 -3]   [1 1]    [1 -4]  [1 -5]       [1 1]     };
-inpForm.soft   = {false   false    true     false   false        false     };
+inpForm.soft   = {true    false    true     false   false        false     };
 
 inpForm.fname  = [inpForm.fname  {'translate' 'zoom' 'tooltip' 'replace' 'legend'}];
 inpForm.defval = [inpForm.defval { false       false true      true      true    }];
@@ -61,22 +60,36 @@ else
     hFigure = param.figure;
 end
 
-% change range, if the number of unit cells are given
-if numel(param.range) == 3
-    param.range = [ zeros(3,1) param.range(:)];
-elseif numel(param.range) ~=6
-    error('sw:cell:WrongInput','The given plotting range is invalid!');
+% select range
+if numel(param.range) == 6
+    range = param.range;
+elseif isempty(param.range)
+    % get range from figure
+    fRange = getappdata(hFigure,'range');
+    if isempty(fRange)
+        % fallback to default range
+        range = [0 1;0 1;0 1];
+    else
+        % get plotting range and unit
+        range       = fRange.range;
+        param.unit  = fRange.unit;
+    end
+elseif numel(param.range) == 3
+    % change range, if the number of unit cells are given
+    range = [zeros(3,1) param.range(:)];
+else
+    error('plotcell:WrongInput','The given plotting range is invalid!');
 end
 
 switch param.mode
     case 'single'
-        range = range0;
+        range = [0 1;0 1;0 1];
     case 'inside'
-        range = [ceil(param.range(:,1)) floor(param.range(:,2))];
+        range = [ceil(range(:,1)) floor(range(:,2))];
     case 'outside'
-        range = [floor(param.range(:,1)) ceil(param.range(:,2))];
+        range = [floor(range(:,1)) ceil(range(:,2))];
     otherwise
-        error('sw:cell:WrongInput','The given mode is invalid!');
+        error('plotcell:WrongInput','The given mode is invalid!');
 end
 
 % generate the unit cells
@@ -106,7 +119,7 @@ swplot.plot('type','line','position',pos,'figure',hFigure,...
     'zoom',param.zoom,'replace',param.replace);
 
 % save range
-setappdata(hFigure,'range',struct('range',param.range,'unit',param.unit));
+setappdata(hFigure,'range',struct('range',range,'unit',param.unit));
 
 if nargout>0
     varargout{1} = hFigure;

@@ -198,7 +198,7 @@ end
 
 % help when executed without argument
 if nargin==1
-    help sw.spinwave
+    help spinw.spinwave
     spectra = [];
     return
 end
@@ -290,7 +290,7 @@ end
 if incomm
     % TODO
     if ~helical
-        warning('sw:spinwave:Twokm',['The two times the magnetic ordering '...
+        warning('spinw:spinwave:Twokm',['The two times the magnetic ordering '...
             'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
     end
     
@@ -336,7 +336,7 @@ bq = SS.all(15,:)==1;
 
 % Biquadratic exchange only supported for commensurate structures
 if incomm && any(bq)
-    error('sw:spinwave:Biquadratic','Biquadratic exchange can be only calculated for k=0 structures!');
+    error('spinw:spinwave:Biquadratic','Biquadratic exchange can be only calculated for k=0 structures!');
 end
 
 if any(bq)
@@ -356,7 +356,7 @@ hklExt0 = bsxfun(@times,hkl0,nExt')*2*pi;
 
 % Calculates parameters eta and zed.
 if isempty(magStr.S)
-    error('sw:spinwave:NoMagneticStr','No magnetic structure defined in obj!');
+    error('spinw:spinwave:NoMagneticStr','No magnetic structure defined in obj!');
 end
 
 M0 = magStr.S;
@@ -538,7 +538,7 @@ if param.optmem == 0
     else
         nSlice = 1;
         if ~param.fitmode
-            warning('sw:spinwave:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
+            warning('spinw:spinwave:FreeMemSize','The size of the free memory is unkown, no memory optimisation!');
         end
     end
 else
@@ -555,17 +555,12 @@ elseif nSlice > 1
 end
 
 % message for magnetic form factor calculation
-ffstrOut = {'No' 'The'};
-fprintf0(fid,[ffstrOut{param.formfact+1} ' magnetic form factor is'...
+yesNo = {'No' 'The'};
+fprintf0(fid,[yesNo{param.formfact+1} ' magnetic form factor is'...
     ' included in the calculated structure factor.\n']);
-
 % message for g-tensor calculation
-if param.gtensor
-    gstrOut = 'The';
-else
-    gstrOut = 'No';
-end
-fprintf0(fid,[gstrOut ' g-tensor is included in the spin-spin correlation function.\n']);
+fprintf0(fid,[yesNo{param.gtensor+1} ' g-tensor is included in the '...
+    'calculated structure factor.\n']);
 
 if param.gtensor
     
@@ -726,7 +721,7 @@ for jj = 1:nSlice
                         K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
                         warn1 = true;
                     catch PD
-                        error('sw:spinwave:NonPosDefHamiltonian',...
+                        error('spinw:spinwave:NonPosDefHamiltonian',...
                             ['Hamiltonian matrix is not positive definite, probably'...
                             ' the magnetic structure is wrong! For approximate'...
                             ' diagonalization try the param.hermit=false option']);
@@ -846,7 +841,7 @@ sw_status(100,2,param.tid);
 fprintf0(fid,'Calculation finished.\n');
 
 if warn1 && ~param.fitmode
-    warning('sw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...
+    warning('spinw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...
         'positive definite, a small omega_tol value was added to its diagonal!'])
 end
 

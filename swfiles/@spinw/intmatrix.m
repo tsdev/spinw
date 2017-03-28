@@ -66,7 +66,7 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 % RR            Positions of the atoms in lattice units, dimensions are
 %               [3 nMAgExt].
 %
-% See also SPINW.COUPLINGTABLE.
+% See also SPINW.COUPLINGTABLE, SPINW.SYMOP.
 %
 
 %if obj.symbolic && obj.symmetry
@@ -133,59 +133,6 @@ SS.all   = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx]);
 % find the last symmetry generated matrix
 lastSym = find(coupling.idx <= coupling.nsym,1,'last');
 
-% generate the symmetry operators if necessary
-if isempty(obj.cache.symop)
-    if coupling.nsym > 0
-        % transformation matrix between l.u. and xyz coordinate systems
-        A = obj.basisvector(false,obj.symbolic);
-        
-        
-        % generate symmetry operators for anisotropy matrice using the space group symmetry
-        % generate the rotation matrices
-        if obj.symbolic
-            [~, ~, opInfo] = swsym.position(obj.lattice.sym,obj.unit_cell.r(:,~sw_always(obj.unit_cell.S==0)));
-        else
-            [~, ~, opInfo] = swsym.position(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
-        end
-        
-        % convert rotation operators to xyz Cartesian coordinate system
-        rotOpA = mmat(A,mmat(opInfo.opmove,inv(A)));
-        
-        % generate symmetry operators for exchange matrices
-        % first positions of the couplings with identical idx values used to
-        % generate the coupling matrices for the rest
-        % only calculate for the symmetry generated bonds
-        bondSel = [true logical(diff(SS.all(6,:)))] & SS.all(6,:)<= coupling.nsym;
-        % keep the bonds the will generate the space group operators
-        firstBond = SS.all(1:5,bondSel);
-        rotOpB = zeros(3,3,lastSym);
-        % select rotation matrices for each generated coupling
-        bIdx = 0;
-        for ii = 1:size(firstBond,2)
-            [~, rotIdx] = swsym.bond(obj.matom.r,obj.basisvector, firstBond(:,ii), obj.lattice.sym, 1e-5);
-            rotOpB(:,:,bIdx+(1:sum(rotIdx))) = obj.lattice.sym(:,1:3,rotIdx);
-            bIdx = bIdx + sum(rotIdx);
-        end
-        
-        % convert rotation operators to xyz Cartesian coordinate system
-        rotOpB = mmat(A,mmat(rotOpB,inv(A)));
-        
-        % save to the cache
-        obj.cache.symop.sion = rotOpA;
-        obj.cache.symop.bond = rotOpB;
-    else
-        % save to the cache
-        obj.cache.symop.sion = zeros(3,3,0);
-        obj.cache.symop.bond = zeros(3,3,0);
-    end
-    % add listener to lattice and unit_cell fields
-    obj.addlistenermulti(2);
-else
-    % get the stored operators from cache
-    rotOpA = obj.cache.symop.sion;
-    rotOpB = obj.cache.symop.bond;
-end
-
 % extract the assigned bonds
 mat_idx  = coupling.mat_idx';
 mat_type = double(coupling.type)';
@@ -208,7 +155,11 @@ JJ.mat  = mat(:,:,JJ.idx);
 
 % rotate the anisotropy & g matrices according to the symmetry operators
 if obj.sym
-    % rotate the matrices: R*M*R'
+    % gather the symmetry operators
+    symop  = obj.symop;
+    rotOpA = symop.sion;
+    rotOpB = symop.bond;
+
     SI.aniso = mmat(rotOpA,mmat(SI.aniso,permute(rotOpA,[2 1 3])));
     % generate g-tensor using the space group symmetry
     % rotate the matrices: R*M*R'
@@ -216,6 +167,12 @@ if obj.sym
     
     % rotate the coupling matrices only when symmetry operator requested
     colSym = colSel <= lastSym & JJ.sym';
+    % only rotate non-Heisenberg matrices
+    isHeis = sw_mattype(obj.matrix.mat,0) == 1;
+    isHeis = isHeis(JJ.idx);
+    % remove Heisenberg
+    colSym = colSym & ~isHeis;
+    % rotate the matrices: R*M*R'
     JJ.mat(:,:,colSym) = mmat(rotOpB(:,:,colSel(colSym)),mmat(JJ.mat(:,:,colSym),permute(rotOpB(:,:,colSel(colSym)),[2 1 3])));
 end
 
@@ -330,15 +287,16 @@ if ~param.zeroC
     JJ.idx  = JJ.idx(nzeroJ);
     JJ.mat  = JJ.mat(:,:,nzeroJ);
     idxTemp = idxTemp(nzeroJ);
+    colSel  = colSel(nzeroJ);
 end
 
 if param.plotmode
     % Saves all coupling matrix indices in SS.all in case of non-fitting mode
     % in the bottom row
     if ~isempty(SS.all)
-        SS.all   = [SS.all(1:14,:); double(JJ.idx'); idxTemp; SS.all(15,:)];
+        SS.all   = [SS.all(1:14,:); double(JJ.idx'); idxTemp; SS.all(15,:); colSel];
     else
-        SS.all   = zeros(17,0);
+        SS.all   = zeros(18,0);
     end
 end
 

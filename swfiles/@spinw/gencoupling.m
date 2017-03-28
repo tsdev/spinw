@@ -1,5 +1,5 @@
 function gencoupling(obj, varargin)
-% generates the COUPLING property of sw object
+% generates the COUPLING property of spinw object
 %
 % GENCOUPLING(obj, 'option1', value, ...)
 %
@@ -13,7 +13,7 @@ function gencoupling(obj, varargin)
 %
 % IMPORTANT!
 %   This function has to be used after the crystal structure is defined.
-%   The SW.ADDCOUPLING, SW.COUPLINGTABLE functions will only work
+%   The SPINW.ADDCOUPLING, SPINW.COUPLINGTABLE functions will only work
 %   afterwards.
 %
 % Input:
@@ -114,7 +114,7 @@ mAtom = obj.matom;
 nMagAtom = size(mAtom.r,2);
 
 if nMagAtom == 0
-    error('sw:gencoupling:NoMagAtom','There is no magnetic atom (S>0) in the unit cell!');
+    error('spinw:gencoupling:NoMagAtom','There is no magnetic atom (S>0) in the unit cell!');
 end
 
 % Use half 'cube' around the center unit cell and remove the identical
@@ -171,7 +171,7 @@ cMat(7,:) = cumsum([1 diff(cMat(6,:))>tolD]);
 
 % check whether some atoms are too close
 if cMat(6,1) < param.dMin
-    error('sw:gencoupling:AtomPos',['Some atoms are too close (Dmin=' ...
+    error('spinw:gencoupling:AtomPos',['Some atoms are too close (Dmin=' ...
         num2str(cMat(6,1)) '<' num2str(param.dMin) '), check your crystal structure!']);
 end
 
@@ -182,7 +182,7 @@ cMat = cMat([1:5 7],:);
 
 % symmetry equivalent couplings
 if isSym
-    % store the final sorted couoplings in nMat
+    % store the final sorted couplings in nMat
     nMat = zeros(6,0);
     ii  = 1;
     idx = 1;
@@ -202,7 +202,7 @@ if isSym
             % list
             genC(:,~unC) = [];
             if sum(~iNew) ~= sum(unC)
-                error('sw:gencoupling:SymProblem','Symmetry error! ii=%d, idx=%d. Try to change ''tol'' parameter.',ii,idx);
+                error('spinw:gencoupling:SymProblem','Symmetry error! ii=%d, idx=%d. Try to change ''tol'' parameter.',ii,idx);
             end
             % move the non-unique (not new) couplings (symmetry equivalent ones)
             nMat = [nMat [genC;ones(1,size(genC,2))*idx]]; %#ok<AGROW>

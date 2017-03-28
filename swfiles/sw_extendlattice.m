@@ -9,7 +9,7 @@ function [aList, SSext] = sw_extendlattice(nExt, aList, SS)
 % Input:
 %
 % nExt          Number of unit cell extensions, dimensions are [1 3].
-% aList         List of the atoms, produced by sw.matom.
+% aList         List of the atoms, produced by spinw.matom.
 % SS            Interactions matrices in the unit cell, optional.
 %
 % Output:
@@ -28,7 +28,7 @@ function [aList, SSext] = sw_extendlattice(nExt, aList, SS)
 % SSext.dm      Dzyaloshinsky-Moriya interaction terms.
 % SSext.gen     General 3x3 matrix contains the exchange interaction.
 %
-% See also SW.INTMATRIX.
+% See also SPINW.INTMATRIX.
 %
 
 if nargin == 0

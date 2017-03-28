@@ -1,34 +1,42 @@
 function [cifdat, source, isfile] = importcif(~, dataStr)
 % imports .cif data from file, web or string
 
-if exist(dataStr,'file') == 2
-    % get the name of the file
-    fid = fopen(dataStr);
-    source = fopen(fid);
-    fclose(fid);
-    
-    cifStr = regexp(fileread(dataStr), ['(?:' sprintf('\n') ')+'], 'split');
-    isfile = true;
-    
-elseif numel(dataStr) < 200
-    % try to load it from the web
-    try
-        %cifStr = char(webread(dataStr)');
-        cifStr = urlread(dataStr);
-    catch
-        error('cif:importcif:WrongInput','The requested data cannot be found!')
-    end
-    cifStr = strsplit(cifStr,'\n');
-    
-    source = dataStr;
-    isfile = false;
-else
-    % take it as a string storing the .cif file content
-    cifStr = strsplit(char(dataStr(:))','\n');
-    %cifStr = mat2cell(cifStr,ones(size(cifStr,1),1));
-    source = '';
-    isfile = false;
-end
+% if exist(dataStr,'file') == 2
+%     % get the name of the file
+%     fid = fopen(dataStr);
+%     source = fopen(fid);
+%     fclose(fid);
+%     
+%     cifStr = regexp(fileread(dataStr), ['(?:' sprintf('\n') ')+'], 'split');
+%     isfile = true;
+%     
+% elseif numel(dataStr) < 200
+%     % try to load it from the web
+%     try
+%         %cifStr = char(webread(dataStr)');
+%         cifStr = urlread(dataStr);
+%     catch
+%         error('cif:importcif:WrongInput','The requested data cannot be found!')
+%     end
+%     cifStr = strsplit(cifStr,'\n');
+%     
+%     source = dataStr;
+%     isfile = false;
+% else
+%     % take it as a string storing the .cif file content
+%     cifStr = strsplit(char(dataStr(:))','\n');
+%     %cifStr = mat2cell(cifStr,ones(size(cifStr,1),1));
+%     source = '';
+%     isfile = false;
+% end
+
+% load source into a string
+[cifStr,info] = ndbase.source(dataStr);
+isfile = info.isfile;
+source = info.source;
+
+% split the string
+cifStr = strsplit(cifStr,'\n');
 
 % unite broken lines
 bLine = double(cellfun(@(x)numel(x)>0 && x(1)==';',cifStr));

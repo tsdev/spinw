@@ -1,22 +1,22 @@
-function string = tooltipstring(swObject,swobj)
+function string = tooltipstring(swObject,obj)
 % generate tooltip string from the data of a graphical object
 %
-% SWPLOT.TOOLTIPSTRING(swObject,{swobj})
+% SWPLOT.TOOLTIPSTRING(swObject,{obj})
 %
 % Input:
 %
 % swObject  Struct, that contains the object data that is clicked on.
-% swobj     SpinW object that provides data to the tooltip text, can be
+% obj       SpinW object that provides data to the tooltip text, can be
 %           empty.
 %
 
 newline = char(10);
 
-if isempty(swobj)
+if isempty(obj)
     %       distance energy magnetic-field temperature
     unit = {'' '' '' ''};
 else
-    unit = swobj.unit.label;
+    unit = obj.unit.label;
 end
 
 % units of energy
@@ -35,32 +35,38 @@ string = '';
 switch swObject.name
     case 'atom'
         a2Idx = swObject.data(end);
-        aIdx  = swobj.atom.idx(a2Idx);
-        maIdx = sum(swobj.atom.mag(1:a2Idx));
+        aIdx  = obj.atom.idx(a2Idx);
+        maIdx = sum(obj.atom.mag(1:a2Idx));
         
         labelTemp = strword(swObject.label,[1 2],true);
         %label1 = labelTemp{1};
         label2 = labelTemp{2};
         string = [label2 ' atom (''' swObject.label ''')' newline];
-        if swobj.atom.mag(a2Idx)
-            string = [string sprintf('Magnetic, S = %g',swobj.unit_cell.S(aIdx)) newline];
+        if obj.atom.mag(a2Idx)
+            S0 = obj.unit_cell.S(aIdx);
+            if mod(S0,1)==0.5
+                string = [string sprintf('Magnetic, S = %g/2',2*S0) newline];
+            else
+                string = [string sprintf('Magnetic, S = %g',S0) newline];
+            end
         else
            string = [string 'Non-magnetic' newline];
         end
         string = [string sprintf('Index in the spinw.unit\\_cell list: #%d',aIdx) newline];
         
-        if swobj.atom.mag(a2Idx)
+        if obj.atom.mag(a2Idx)
             string = [string sprintf('Index in the spinw.matom() list: #%d',maIdx) newline];
-        else
-            %string = [string sprintf('Index in the spinw.atom() list: #%d',a2Idx) newline];
         end
+        string = [string sprintf('Index in the spinw.atom() list: #%d',a2Idx) newline];
+        
         
         string = [string 'Unit cell:' newline];
         % add cell index and position
         cellindex = swObject.data(1:3)';
-        pos = swobj.atom.r(:,a2Idx);
+        pos = obj.atom.r(:,a2Idx);
         
-        string = [string sprintf('[%d, %d, %d]',cellindex) newline 'Atomic position:' newline sprintf('[%5.3f, %5.3f, %5.3f]',pos)];
+        string = [string sprintf('[%d, %d, %d]',cellindex) newline ...
+            'Atomic position:' newline sprintf('[%5.3f, %5.3f, %5.3f]',pos)];
     case 'mag'
         Mplot = swObject.data(1:3)';
         pos   = swObject.data(4:6)';
@@ -68,8 +74,8 @@ switch swObject.name
         maIdx = swObject.data(7);
         
         % position in the magnetic list
-        nExt = double(swobj.mag_str.nExt);
-        nMagAtom = numel(swobj.matom.idx);
+        nExt = double(obj.mag_str.nExt);
+        nMagAtom = numel(obj.matom.idx);
         
         cellindex = mod(cellindex,nExt);
         mIdx = nMagAtom*(cellindex(1) + cellindex(2)*nExt(1) + cellindex(3)*prod(nExt(1:2)))+maIdx;
@@ -77,33 +83,43 @@ switch swObject.name
         
         string = ['Magnetic moment vector' newline];
        
-        string = [string sprintf('Size of magnetic supercell: [%d,%d,%d]',swobj.mag_str.nExt) newline];
-        if swobj.magstr.exact
+        string = [string sprintf('Size of magnetic supercell: [%d,%d,%d]',obj.mag_str.nExt) newline];
+        if obj.magstr.exact
             string = [string 'The supercell is ideal: S=F!' newline];
         else
             string = [string 'The supercell forces an approximation: S~F' newline];
         end
         
-        nK = size(swobj.mag_str.k,2);
+        nK = size(obj.mag_str.k,2);
         if nK == 1
-            string = [string sprintf('Magnetic propagation vector:\n[%5.3f, %5.3f, %5.3f]',swobj.mag_str.k) newline];
+            string = [string sprintf('Magnetic propagation vector:\n[%5.3f, %5.3f, %5.3f]',obj.mag_str.k) newline];
         else
             string = [string 'Magnetic propagation vectors:' newline];
             for ii = 1:nK
-                string = [string sprintf('[%5.3f, %5.3f, %5.3f]\n',swobj.mag_str.k(:,ii))];
+                string = [string sprintf('[%5.3f, %5.3f, %5.3f]\n',obj.mag_str.k(:,ii))];
             end
         end
         string = [string sprintf('Moment index in spinw.mag\\_str: #%d',mIdx) newline];
         string = [string sprintf('Spin expectation value:\nM = [%5.3f, %5.3f, %5.3f] ',Mplot+1e-6) symbol('hbar') newline];
         string = [string sprintf('Normalized value:\nM = [%5.3f, %5.3f, %5.3f] ',(Mplot+1e-6)/norm(Mplot))];
     case 'bond'
-        M = swObject.data;
+        M    = swObject.data(1:3,:);
+        cIdx = swObject.data(4,1);
         string = [swObject.label ' bond' newline];
+        % bond data
+        idx    = double(obj.coupling.idx(cIdx));
+        subIdx = cIdx-find(obj.coupling.idx==idx,1)+1;
+        dl     = double(obj.coupling.dl(:,cIdx));
+        atom1  = obj.coupling.atom1(cIdx);
+        atom2  = obj.coupling.atom2(cIdx);
+        
+        r  = obj.matom.r(:,atom2)+dl-obj.matom.r(:,atom1);
+        rA = obj.basisvector*r; 
         % type      1   Heisenberg exchange
         %           2   Anisotropic exchange
         %           3   DM interaction
         %           4   General matrix
-        switch sw_mattype(swObject.data)
+        switch sw_mattype(M)
             case 1
                 % Heisenberg
                 string = [string 'Heisenberg exchange' newline 'Value:' newline sprintf('%7.3f ',M(1,1)) ' ' unitE];
@@ -112,11 +128,18 @@ switch swObject.name
                 string = [string 'Anisotropic exchange' newline 'Value:' newline mat2str(diag(M)', [7 3]) ' ' unitE];
             case 3
                 % DM interactions
-                string = [string 'Antisymmetric exchange (DM vector)' newline 'Value:' newline mat2str([M(2,3) M(3,1) M(1,2)], [7 3]) ' ' unitE];
+                string = [string 'Antisymmetric exchange (DM vector)' newline 'Value:' newline ...
+                    mat2str([M(2,3) M(3,1) M(1,2)], [7 3]) ' ' unitE];
             case 4
                 % General matrix
                 string = [string 'General exchange matrix' newline 'Value:' newline mat2str(M, [7 3]) ' ' unitE];
         end
+        string = [string newline 'Index in the spinw.coupling list: #' num2str(cIdx) newline ...
+            'Bond idx: #' num2str(idx) newline 'Bond subidx: #' num2str(subIdx) newline 'Cell translation:' newline...
+            mat2str(dl',[1 0]) newline 'Bond vector:' newline mat2str(r',[5 3]) ' l.u.' newline ...
+            'Bond vector (xyz):' newline mat2str(rA',[5 3]) ' ' symbol('a')];
+            
+        
     case {'base' 'base_label'}
         BV = swObject.data;
         RL = 2*pi*inv(BV); %#ok<MINV>

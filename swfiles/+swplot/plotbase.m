@@ -7,6 +7,11 @@ function varargout = plotbase(varargin)
 %
 % Options:
 %
+% mode      String that determines the type base to plot. Possible values
+%           are:
+%               abc     Plots the lattice vectors, default.
+%               xyz     Plots the lattice Descartes coordinate system.
+%               hkl     Plots the reciprocal lattice vectors.
 % length    Determines the length of the a, b and c arrows. If 0, the
 %           length will be equal to the corresponding lattice parameters,
 %           while if non-zero, the number determines the length in
@@ -30,16 +35,15 @@ function varargout = plotbase(varargin)
 %
 
 % default values
-range0  = [0 1;0 1;0 1];
 col0    = swplot.color({'red' 'green' 'blue'});
 d0      = ones(1,3);
 nMesh0  = swpref.getpref('nmesh',[]);
 nPatch0 = swpref.getpref('npatch',[]);
 
 inpForm.fname  = {'range' 'mode'    'figure' 'color' 'R'   'alpha' 'lhead' 'shift'};
-inpForm.defval = {range0  'default' []       col0    0.06  30      0.5     [0;0;0]};
+inpForm.defval = {[]      'abc'     []       col0    0.06  30      0.5     [0;0;0]};
 inpForm.size   = {[-1 -2] [1 -3]    [1 1]    [-4 -5] [1 1] [1 1]   [1 1]   [3 1]  };
-inpForm.soft   = {false   false     true     false   false false   false   false  };
+inpForm.soft   = {true    false     true     false   false false   false   false  };
 
 inpForm.fname  = [inpForm.fname  {'d'   'dtext' 'label' 'tooltip' 'translate' 'copy'}];
 inpForm.defval = [inpForm.defval {d0    0.5     true    true      false       false }];
@@ -59,21 +63,46 @@ else
     hFigure = param.figure;
 end
 
-% range of previous plot
-rDat   = getappdata(hFigure,'range');
-range0 = rDat.range;
-unit   = rDat.unit;
-
-if isempty(range0)
-    range0 = [0;0;0];
+% select range
+if numel(param.range) == 6
+    range = param.range;
+elseif isempty(param.range)
+    % get range from figure
+    fRange = getappdata(hFigure,'range');
+    if isempty(fRange)
+        % fallback to default range
+        range = [0 1;0 1;0 1];
+    else
+        % get plotting range and unit
+        range       = fRange.range;
+        param.unit  = fRange.unit;
+    end
+elseif numel(param.range) == 3
+    % change range, if the number of unit cells are given
+    range = [zeros(3,1) param.range(:)];
 else
-    range0 = range0(:,1);
+    error('plotbase:WrongInput','The given plotting range is invalid!');
 end
+
+% lower range limit, where basis vectors come
+range0 = range(:,1);
 
 % basis vectors
 BV = swplot.base(hFigure);
 
-switch unit
+switch param.mode
+    case 'abc'
+        pBase = eye(3);
+        axText = {'a' 'b' 'c'};
+    case 'xyz'
+        pBase = inv(BV);
+        axText = {'x' 'y' 'z'};
+    case 'hkl'
+        pBase = 2*pi*inv(BV)*inv(BV)';
+        axText = {'h' 'k' 'l'};
+end
+
+switch param.unit
     case 'lu'
         % do nothing
     case 'xyz'
@@ -86,17 +115,18 @@ end
 % convert d from xyz to base
 d = (param.d/(BV'))'-range0;
 
-% lattice parameters
-length0 = sqrt(sum(BV.^2,1));
+% vector length
+length0 = sqrt(sum((BV*pBase).^2,1));
 
 if param.length == 0
-    Rend = ones(1,3);
+    % do nothing
 else
     % normalize the length of the vectors
-    Rend  = param.length./length0;
+    pBase  = bsxfun(@times,pBase,param.length./length0);
+    length0 = param.length;
 end
 
-pos = bsxfun(@minus,cat(3,zeros(3),diag(Rend)),d);
+pos = bsxfun(@minus,cat(3,zeros(3),pBase),d);
 
 % shift
 pos = bsxfun(@plus,pos,BV\param.shift);
@@ -106,10 +136,10 @@ data = repmat({BV},[1 3]);
 
 if param.label
     % convert d from xyz to base
-    pos_text = bsxfun(@minus,bsxfun(@times,diag(Rend),1+param.dtext./(length0.*Rend)),d);
+    pos_text = bsxfun(@minus,bsxfun(@times,pBase,1+param.dtext./length0),d);
     pos_text = bsxfun(@plus,pos_text,BV\param.shift);
     
-    swplot.plot('type','text','position',pos_text,'text',{'a' 'b' 'c'},'data',data,...
+    swplot.plot('type','text','position',pos_text,'text',axText,'data',data,...
         'figure',hFigure,'legend',false,'tooltip',false,'translate',false,...
         'zoom',false,'name','base_label','replace',param.replace);
 end
@@ -118,6 +148,9 @@ end
 swplot.plot('type','arrow','position',pos,'figure',hFigure,'color',param.color,...
     'name','base','legend',false,'tooltip',false,'translate',param.translate,...
     'zoom',param.zoom,'data',data,'replace',param.replace,'npatch',param.npatch);
+
+% save range
+setappdata(hFigure,'range',struct('range',range,'unit',param.unit));
 
 if param.tooltip
     swplot.tooltip('on',hFigure);

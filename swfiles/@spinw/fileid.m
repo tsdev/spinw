@@ -3,7 +3,7 @@ function fidOut = fileid(obj,fid)
 %
 % FILEID(obj,fid)
 %
-% Determines the text output of all sw class methods. Default
+% Determines the text output of all spinw class methods. Default
 % is 1, where all output is printed onto the MATLAB Command
 % Window.
 %

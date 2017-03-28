@@ -33,6 +33,7 @@ function spectra = spinwavesym(obj, varargin)
 %               matrices (many magnetic atom per unit cell) this might be
 %               impossible. Set 'eig' to false to output only the quadratic
 %               Hamiltonian. Default is true.
+% vect          If true the eigenvectors are calculated. Default is false.
 % tol           Tolerance of the incommensurability of the magnetic
 %               ordering wavevector. Deviations from integer values of the
 %               ordering wavevector smaller than the tolerance are
@@ -87,7 +88,7 @@ function spectra = spinwavesym(obj, varargin)
 % symbolic expression into a numerical vector and the third section plots
 % the real and imaginary part of the solution.
 %
-% See also SW, SW.SPINWAVE, SW_NEUTRON, SW_POL, SW.POWSPEC, SW.OPTMAGSTR.
+% See also SPINW, SPINW.SPINWAVE, SW_NEUTRON, SW_POL, SPINW.POWSPEC, SPINW.OPTMAGSTR.
 %
 
 % save the begining time of the calculation
@@ -97,16 +98,23 @@ hkl0 = [sym('h','real'); sym('k','real'); sym('l','real')];
 
 title0 = 'Symbolic LSWT spectrum';
 
-inpForm.fname  = {'tol' 'hkl'  'eig' 'norm' 'title'};
-inpForm.defval = {1e-4   hkl0   true true   title0 };
-inpForm.size   = {[1 1] [3 1]  [1 1] [1 1]  [1 -1] };
+inpForm.fname  = {'tol' 'hkl'  'eig' 'vect' 'norm' 'title'};
+inpForm.defval = {1e-4   hkl0   true false  false   title0 };
+inpForm.size   = {[1 1] [3 1]  [1 1] [1 1]  [1 1]  [1 -1] };
 
 param = sw_readparam(inpForm, varargin{:});
 
-% seize of the extended magnetic unit cell
-nExt    = double(obj.mag_str.N_ext);
+if param.norm
+    param.vect = true;
+end
+
+% generate the magnetic structure
+magstr = obj.magstr;
+
+% size of the extended magnetic unit cell
+nExt    = magstr.N_ext;
 % magnetic ordering wavevector in the extended magnetic unit cell
-km = obj.mag_str.k.*nExt;
+km = magstr.k.*nExt;
 % whether the structure is incommensurate
 incomm = any(~sw_always(abs(km-round(km)) <= param.tol));
 
@@ -115,22 +123,22 @@ hkl = param.hkl;
 
 fid = obj.fid;
 
-
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
 %[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
 %if obj.symmetry && any(sw_mattype(obj.matrix.mat)~=1)
-%    warning('sw:spinwavesym:symmetry','The non-isotropic symbolic matrices will not be rotated unsing the point group operators, define them manually!')
+%    warning('spinw:spinwavesym:symmetry','The non-isotropic symbolic matrices will not be rotated unsing the point group operators, define them manually!')
 %end
 %[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true,'rotMat',false);
-[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true);
+%[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true);
+[SS, SI] = obj.intmatrix('fitmode',true,'conjugate',true);
 
 % is there any biquadratic exchange
 bq = SS.all(15,:)==1;
 
 % Biquadratic exchange only supported for commensurate structures
 if incomm && any(bq)
-    error('sw:spinwavesym:Biquadratic','Biquadratic exchange can be only calculated for k=0 structures!');
+    error('spinw:spinwavesym:Biquadratic','Biquadratic exchange can be only calculated for k=0 structures!');
 end
 
 if any(bq)
@@ -147,14 +155,14 @@ end
 hklExt  = hkl.*nExt'*2*pi;
 
 % Calculates parameters eta and zed.
-if isempty(obj.mag_str.S)
-    error('sw:spinwave:NoMagneticStr','No magnetic structure defined in obj!');
+if isempty(magstr.S)
+    error('spinw:spinwave:NoMagneticStr','No magnetic structure defined in obj!');
 end
 
-M0 = obj.mag_str.S;
+M0 = magstr.S;
 S0 = sqrt(sum(M0.^2,1));
 % normal to rotation of the magnetic moments
-n  = obj.mag_str.n;
+n  = magstr.n;
 nMagExt = size(M0,2);
 
 if fid ~= 0
@@ -326,26 +334,34 @@ if param.eig
     % R.M. White, et al., Physical Review 139, A450?A454 (1965)
     
     fprintf0(fid,'Calculating SYMBOLIC eigenvalues... ');
-    [V, D] = eig(g*ham); % 3rd output P
+    
+    if param.vect
+        [V, D] = eig(g*ham); % 3rd output P
+        D = diag(D);
+    else
+        D = eig(g*ham);
+    end
+    
     fprintf0(fid,'ready!\n');
     
-    
-    spectra.V0 = V;
-    
-    if size(V,2) == size(ham,2)
-        if param.norm
-            % normalized iegenvectors
-            M = diag(g*V'*g*V);
-            V = V*diag(sqrt(1./M));
-            spectra.V = V;
+    if param.vect
+        spectra.V0 = V;
+        
+        if size(V,2) == size(ham,2)
+            if param.norm
+                % normalized iegenvectors
+                M = diag(g*V'*g*V);
+                V = V*diag(sqrt(1./M));
+                spectra.V = V;
+            end
+        else
+            warning('There are degenerate eigenvalues!')
         end
-    else
-        warning('There are degenerate eigenvalues!')
     end
     
     % multiplication with g removed to get negative and positive
     % energies as well
-    spectra.omega = simplify(diag(D));
+    spectra.omega = simplify(D);
 end
 
 spectra.obj      = copy(obj);

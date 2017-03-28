@@ -11,11 +11,11 @@ function stat = anneal(obj, varargin)
 % WARNING!
 % The calculated energies doesn't contain the self energy (moment coupled
 % to itself), thus the energies calculated here can differ from the
-% result of the sw.energy() function.
+% result of the spinw.energy() function.
 %
 % Input:
 %
-% obj             Input object contains structural data, sw type.
+% obj             Input object contains structural data, spinw class.
 %
 % Options:
 %
@@ -99,7 +99,7 @@ function stat = anneal(obj, varargin)
 %           following fields:
 %
 % param     All input parameter values of the anneal function.
-% obj       The copy of the input sw class obj with the final magnetic
+% obj       The copy of the input spinw class obj with the final magnetic
 %           structure.
 % M         Components of the magnetisation after the last annealing
 %           run, dimensions are [3 nMagExt].
@@ -162,7 +162,7 @@ inpForm.soft   = [inpForm.soft   {0       }];
 param = sw_readparam(inpForm,varargin{:});
 
 if param.nStat > param.nMC
-    warning('sw:anneal:wrongParam','nStat is larger than nMC, instead of the given value, nMC will be used!');
+    warning('spinw:anneal:wrongParam','nStat is larger than nMC, instead of the given value, nMC will be used!');
     param.nStat = param.nMC;
 end
 
@@ -244,7 +244,7 @@ switch spinDim
         Ay = Ax*0;
         Az = Ay*0;
         if any(any(Ax))
-            warning('sw:anneal:IsingAnisotropy','Anisotropy for Ising model is omitted.');
+            warning('spinw:anneal:IsingAnisotropy','Anisotropy for Ising model is omitted.');
         end
     case 2
         B  = SI.field(1:2)'*obj.unit.muB*2;
@@ -260,7 +260,7 @@ switch spinDim
         Ay = squeeze(AA(:,2,:));
         Az = squeeze(AA(:,3,:));
     otherwise
-        error('sw:anneal:WrongData',['The dimension of the spin variable'...
+        error('spinw:anneal:WrongData',['The dimension of the spin variable'...
             ' is wrong (spinDim = {1,2,3})!']);
 end
 
@@ -275,7 +275,7 @@ else
 end
 
 if param.aniso && param.nORel>0
-    warning('sw:anneal:OverRelaxationWarning',['Performing over-relaxation'...
+    warning('spinw:anneal:OverRelaxationWarning',['Performing over-relaxation'...
         'and having non-zero single ion anisotropy would destroy detailed '...
         'balance, over-relaxation is disabled.']);
     param.nORel = 0;
@@ -337,7 +337,7 @@ param.genexc = ~isempty(SS.gen);
 if param.genexc
     
     if param.spinDim < 3
-        warning('sw:anneal:DimProblem','Anisotropic exchange only works for spinDim==3!')
+        warning('spinw:anneal:DimProblem','Anisotropic exchange only works for spinDim==3!')
     end
     
     nNeighG = zeros(nMagExt,1);

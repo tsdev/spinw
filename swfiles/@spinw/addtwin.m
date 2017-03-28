@@ -1,5 +1,5 @@
 function addtwin(obj,varargin)
-% adds new twins to an sw object
+% adds new twins to an spinw object
 %
 % ADDTWIN(obj,'Option', Value,...)
 %
@@ -24,7 +24,7 @@ function addtwin(obj,varargin)
 %
 % Output:
 %
-% The function adds extra entries in the 'twin' field of the obj sw object.
+% The function adds extra entries in the 'twin' field of the obj spinw object.
 %
 % Example:
 %
@@ -68,7 +68,7 @@ if size(param.vol,2)<nTwin
 end
 
 if (size(param.rotC,1)~=3) || (size(param.rotC,2)~=3)
-    error('sw:addtwin:WrongInput','rotC matrix dimensions have to be [3 3 nTwin]!');
+    error('spinw:addtwin:WrongInput','rotC matrix dimensions have to be [3 3 nTwin]!');
 end
 
 obj.twin.vol  = [obj.twin.vol param.vol];

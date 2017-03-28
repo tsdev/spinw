@@ -48,7 +48,7 @@ function spectra = sw_xray(spectra, varargin)
 % If several domains exist in the sample, Sperp is packaged into a cell,
 % that contains nTwin number of matrices.
 %
-% See also SW, SW.SPINWAVE, SW_NEUTRON.
+% See also SPINW, SPINW.SPINWAVE, SW_NEUTRON.
 %
 
 if nargin == 0
@@ -110,7 +110,7 @@ end
 %         spectra.formfact = obj.unit_cell.label;
 %     else
 %         if numel(param.formfact) ~= numel(obj.unit_cell.label)
-%             error('sw:spinwave:WrongInput',['Number of form factor '...
+%             error('x_ray:WrongInput',['Number of form factor '...
 %                 'parameters has to equal to the number of symmetry inequivalent '...
 %                 'magnetic atoms in the unit cell!'])
 %         end

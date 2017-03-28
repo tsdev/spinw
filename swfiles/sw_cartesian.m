@@ -1,9 +1,13 @@
-function [vy, vz, vx] = sw_cartesian(n)
+function [vyOut, vzOut, vxOut] = sw_cartesian(n)
 % creates a right handed Cartesian coordinate system
 %
 % [vy, vz, vx] = SW_CARTESIAN(n)
 %
-% It creates an (x,y,z) right handed Cartesian coordinate system.
+% V = SW_CARTESIAN(n)
+%
+% It creates an (x,y,z) right handed Cartesian coordinate system with vx,
+% vy and vz defines the basis vectors. If only a single output is required,
+% V will contain the basis vectors in a matrix: V = [vx vy vz].
 %
 % Input:
 %
@@ -51,9 +55,16 @@ else
     error('sw_cartesian:WrongInput','Wrong size of n!')
 end
 
-% Conserves the shape of the input vector.
-vy = reshape(vy/norm(vy),nShape);
-vz = reshape(vz/norm(vz),nShape);
-vx = reshape(n/norm(n),nShape);
+
+if nargout == 1
+    % return a matrix
+    vyOut = [n/norm(n) vy/norm(vy) vz/norm(vz)];
+else
+    % conserve the shape of the input vector.
+    vyOut = reshape(vy/norm(vy),nShape);
+    vzOut = reshape(vz/norm(vz),nShape);
+    vxOut = reshape(n/norm(n),nShape);
+
+end
 
 end

@@ -30,7 +30,6 @@ function [cifdat, source, isfile] = importcif(~, dataStr)
 %     isfile = false;
 % end
 
-% load source into a string
 [cifStr,info] = ndbase.source(dataStr);
 isfile = info.isfile;
 source = info.source;

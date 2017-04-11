@@ -118,8 +118,8 @@ km = magstr.k.*nExt;
 % whether the structure is incommensurate
 incomm = any(~sw_always(abs(km-round(km)) <= param.tol));
 
-% symbolic wavevectors
-hkl = param.hkl;
+% symbolic wavevectors, convert to the model rlu
+hkl = obj.unit.qmat*param.hkl;
 
 fid = obj.fid;
 

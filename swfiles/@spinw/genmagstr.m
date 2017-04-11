@@ -451,6 +451,6 @@ mag_str.k    = k';
 mag_str.F    = S;
 
 obj.mag_str   = mag_str;
-validate(obj);
+spinw.validate(obj);
 
 end

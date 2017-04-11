@@ -315,7 +315,7 @@ end
 
 newAtom.color     = int32(newAtom.color);
 newObj.unit_cell  = newAtom;
-validate(newObj,'unit_cell');
+spinw.validate(newObj,'unit_cell');
 
 cField = {'r' 'label' 'S' 'color' 'ox' 'occ' 'b' 'A' 'Z' 'biso'};
 
@@ -351,7 +351,7 @@ if ~isempty(newObj.unit_cell.S)
     
     obj.unit_cell.ff    = cat(3,obj.unit_cell.ff,newObj.unit_cell.ff);
 end
-%validate(obj);
+%spinw.validate(obj);
 
 [~,~,rIdx] = unique(obj.unit_cell.r','rows');
 

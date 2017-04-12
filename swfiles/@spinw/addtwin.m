@@ -21,6 +21,8 @@ function addtwin(obj,varargin)
 %           given directly, dimensions are [3 3 nTwin].
 % vol       Volume fractions of the twins, dimensions are [1 nTwin].
 %           Default value is ones(1,nTwin).
+% overwrite If true, the last twin will be overwritten, instead of adding a
+%           new one. Default is false.
 %
 % Output:
 %
@@ -42,9 +44,9 @@ if nargin == 1
     return;
 end
 
-inpForm.fname  = {'axis'  'phi'  'rotC'   'vol'  'phid'};
-inpForm.defval = {[0 0 0] 0      zeros(3) 1      0     };
-inpForm.size   = {[1 3]   [1 -1] [3 3 -2] [1 -3] [1 -4]};
+inpForm.fname  = {'axis'  'phi'  'rotC'   'vol'  'phid' 'overwrite'};
+inpForm.defval = {[0 0 0] 0      zeros(3) 1      0      false      };
+inpForm.size   = {[1 3]   [1 -1] [3 3 -2] [1 -3] [1 -4] [1 1]      };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -71,7 +73,13 @@ if (size(param.rotC,1)~=3) || (size(param.rotC,2)~=3)
     error('spinw:addtwin:WrongInput','rotC matrix dimensions have to be [3 3 nTwin]!');
 end
 
-obj.twin.vol  = [obj.twin.vol param.vol];
-obj.twin.rotc = cat(3,obj.twin.rotc, param.rotC);
+if param.overwrite
+    % overwrite the last twin
+    obj.twin.vol(end)      = param.vol;
+    obj.twin.rotc(:,:,end) = param.rotC;
+else
+    obj.twin.vol  = [obj.twin.vol param.vol];
+    obj.twin.rotc = cat(3,obj.twin.rotc, param.rotC);
+end
 
 end

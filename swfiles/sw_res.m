@@ -25,11 +25,21 @@ function [polyRes, yout] = sw_res(fid,polDeg,toplot,varargin)
 %               the length of p is n+1.
 %               p(x)=p_1*x^n+p_2*x^(n-1)+...+p_n*x+p_(n+1).
 %
+% Example:
+%
+% To calculate the resolution at an arbitrary energy use:
+%
+% pRes = sw_res(file,5,false);
+% Evec = linspace(0,100,501);
+% Eres = polyval(polyRes,Evec);
+% plot(Evec,Eres);
+%
+%
 % See also POLYFIT, SW_INSTRUMENT.
 %
 
 if nargin == 0
-    help sw_res;
+    help sw_res
     return
 end
 

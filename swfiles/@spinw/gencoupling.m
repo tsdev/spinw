@@ -248,7 +248,7 @@ obj.coupling         = coupling;
 obj.single_ion.aniso = aniso;
 obj.single_ion.g     = g;
 
-validate(obj);
+spinw.validate(obj);
 
 end
 

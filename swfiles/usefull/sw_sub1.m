@@ -14,6 +14,8 @@ function out = sw_sub1(inp, varargin)
 %
 % out   Double type output with the same dimensions as the input.
 %
+% See also SW_ALWAYS.
+%
 
 if nargin == 0
     help sw_sub1

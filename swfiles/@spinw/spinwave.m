@@ -255,6 +255,9 @@ km = magStr.k.*nExt;
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
 
+% Transform the momentum values to the new lattice coordinate system
+hkl = obj.unit.qmat*hkl;
+
 % Calculates momentum transfer in A^-1 units.
 hklA = 2*pi*(hkl'/obj.basisvector)';
 

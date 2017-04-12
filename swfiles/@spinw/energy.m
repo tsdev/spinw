@@ -113,7 +113,8 @@ if nMagExt>0
         dRIdx = find(any(dR));
         for ii = 1:numel(dRIdx)
             %M2(:,dRIdx(ii)) = sw_rot(n, kExt*dR(:,dRIdx(ii))*2*pi, M2(:,dRIdx(ii)));
-            M2(:,dRIdx(ii)) = real(bsxfunsym(@times,M2cmplx(:,dRIdx(ii)),exp(1i*kExt*dR(:,dRIdx(ii))*2*pi)));
+            % TODO check - sign in front of phase
+            M2(:,dRIdx(ii)) = real(bsxfunsym(@times,M2cmplx(:,dRIdx(ii)),exp(-1i*kExt*dR(:,dRIdx(ii))*2*pi)));
         end
     end
     

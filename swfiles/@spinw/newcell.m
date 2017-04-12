@@ -1,22 +1,35 @@
-function varargout = newcell(obj,bvect, bshift)
+function varargout = newcell(obj,varargin)
 % changes lattice vectors while keeping atoms
 %
-% {T} = NEWCELL(obj, bvect, {bshift})
+% {T} = NEWCELL(obj, 'option1', value1, ...)
 %
 % The function defines new unit cell using the 3 vectors contained in
 % bvect. The three vectors in lattice units define a parallelepiped. This
 % will be the new unit cell. The atoms from the original unit cell will
 % fill the new unit cell. Also the magnetic structure and bond and single
-% ion property definitions will be erased from the structure.
+% ion property definitions will be erased from the structure. The new cell
+% will naturally have different reciprocal lattice, however the original
+% reciprocal lattice units can be retained using the 'keepq' option. In
+% this case the spinw.spinwave() function will calculate spin wave
+% dispersion at reciprocal lattice points of the original lattice. The
+% transformation between the two lattices is stored in spinw.unit.qmat.
 %
 % Input:
 %
 % obj       spinw class object.
+%
+% Options:
+%
 % bvect     Defines the new lattice vectors in the original lattice
 %           coordinate system. Cell with the following elements
-%           {v1 v2 v3}.
-% bshift    Vector defines a shift of the position of the unit cell.
+%           {v1 v2 v3} or a 3x3 matrix with v1, v2 and v3 as column
+%           vectors: [v1 v2 v3].
+% bshift    Row vector defines a shift of the position of the unit cell.
 %           Optional.
+% keepq     If true, the reciprocal lattice units of the new model will be
+%           the same as in the old model. This is achieved by storing the
+%           transformation matrix between the new and the old coordinate
+%           system in spinw.unit.qmat.
 %
 % Output:
 %
@@ -28,14 +41,31 @@ function varargout = newcell(obj,bvect, bshift)
 %
 % Example:
 %
-% tri = spinw;
-% tri.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
-% tri.addatom('r',[0 0 0])
-% tri.newcell({[1 0 0] [1 2 0] [0 0 1]})
-% plot(tri)
+% In this example we generate the triangular lattice antiferromagnet and
+% convert the hexagonal cell to orthorhombic. This doubles the number of
+% magnetic atoms in the cell and changes the reciprocal lattice. However we
+% use 'keepq' to able to index the reciprocal lattice of the orthorhombic
+% cell with the reciprocal lattice of the original hexagonal cell. To show
+% that the two models are equivalent, we calculate the spin wave spectrum
+% on both model using the same rlu. On the orthorhombic cell, the q value
+% will be converted automatically and the calculated spectrum will be the
+% same for both cases.
 %
-% The example show how to convert a triangular lattice into orthorhombic
-% lattice vectors and plots the new unit cell.
+% tri = sw_model('triAF',1);
+% tri_orth = copy(tri);
+% tri_orth.newcell('bvect',{[1 0 0] [1 2 0] [0 0 1]},'keepq',true);
+% tri_orth.gencoupling
+% tri_orth.addcoupling('bond',1,'mat','J1')
+% newk = ((tri_orth.unit.qmat)*tri.magstr.k')';
+% tri_orth.genmagstr('mode','helical','k',newk,'S',[1 0 0]')
+% plot(tri_orth)
+% 
+% figure
+% subplot(2,1,1)
+% sw_plotspec(sw_egrid(tri.spinwave({[0 0 0] [1 1 0] 501})),'mode','color','dE',0.2)
+% subplot(2,1,2)
+% sw_plotspec(sw_egrid(tri_orth.spinwave({[0 0 0] [1 1 0] 501})),'mode','color','dE',0.2)
+%
 %
 % See also SPINW.GENLATTICE, SPINW.GENCOUPLING, SPINW.NOSYM.
 %
@@ -45,18 +75,18 @@ if nargin <= 1
     return
 end
 
-%warning('spinw:newcell:PossibleBug','There might be an error, if there are atoms at the faces of the original cell!')
+inpForm.fname  = {'bvect' 'bshift' 'keepq'};
+inpForm.defval = {eye(3)  [0 0 0]  true   };
+inpForm.size   = {[-1 3]  [1 3]    [1 1]  };
 
-if ~iscell(bvect) || numel(bvect)~=3
-    error('spinw:newcell:WrongInput','Input has to be cell type with 3 vectors inside!');
+param = sw_readparam(inpForm, varargin{:});
+
+if ~iscell(param.bvect) && size(param.bvect,1)~=3
+    error('spinw:newcell:WrongInput','Input has to be 1x3 cell or 3x3 matrix!');
 end
 
 % shift
-if nargin == 2
-    bshift = [0;0;0];
-else
-    bshift = bshift(:);
-end
+bshift = param.bshift(:);
 
 % here 3 coordinate systems are used:
 % - xyz real space, Cartesian
@@ -66,8 +96,11 @@ end
 
 % transformation matrix from the new lattice units into the original
 % lattice
-% v_orig = Tn_o*v_new
-Tn_o = [bvect{1}(:) bvect{2}(:) bvect{3}(:)];
+if iscell(param.bvect)
+    Tn_o = [param.bvect{1}(:) param.bvect{2}(:) param.bvect{3}(:)];
+else
+    Tn_o = param.bvect;
+end
 
 % transformation from the original lattice into xyz real space
 % xyz = To_xyz * v_orig
@@ -87,8 +120,6 @@ pp = [zeros(3,1) Tn_o Tn_o(:,1)+Tn_o(:,3) Tn_o(:,2)+Tn_o(:,3) Tn_o(:,1)+Tn_o(:,2
 
 % number of cells needed for the extension
 nExt  = ceil(max(pp,[],2) - min(pp,[],2))'+2;
-%obj.mag_str.N_ext = int32(nExt);
-
 
 % generated atoms
 atomList   = obj.atom;
@@ -98,7 +129,6 @@ atomList.S = obj.unit_cell.S(atomList.idx);
 atomList = sw_extendlattice(nExt,atomList);
 rExt   = bsxfun(@plus,bsxfun(@times,atomList.RRext,nExt'),(min(pp,[],2)-1));
 idxExt = atomList.idxext;
-
 
 
 rExt = bsxfun(@plus,rExt,bshift);
@@ -111,7 +141,7 @@ epsilon = 10*eps;
 idxCut = any((rNew<-epsilon) | (rNew>(1-epsilon)),1);
 rNew(:,idxCut) = [];
 idxExt(idxCut) = [];
-atomList.Sext(idxCut)   = [];
+atomList.Sext(idxCut) = [];
 
 % atoms are close to the face or origin --> put them exactly
 rNew(rNew<epsilon) = 0;
@@ -135,11 +165,6 @@ for ii = 1:numel(fNames)
     obj.unit_cell.(fNames{ii}) = obj.unit_cell.(fNames{ii})(:,idxExt);
 end
 
-% reset the magnetic structure
-% obj.mag_str.F     = zeros(3,0,0);
-% obj.mag_str.k     = zeros(3,0);
-% obj.mag_str.N_ext = int32([1 1 1]);
-
 % reset the magnetic structure and the bonds
 obj.initfield({'coupling' 'mag_str'});
 
@@ -149,7 +174,12 @@ obj.unit.nformula = obj.unit.nformula*numel(obj.unit_cell.S)/nAtom0;
 % transformation from the original reciprocal lattice into the new
 % reciprocal lattice
 if nargout>0
-    varargout{1} = Tn_o;
+    varargout{1} = Tn_o';
+end
+
+if param.keepq
+    % keep the new coordinate system
+    obj.unit.qmat = Tn_o';
 end
 
 end

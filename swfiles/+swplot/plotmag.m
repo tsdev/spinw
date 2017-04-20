@@ -28,6 +28,7 @@ function varargout = plotmag(varargin)
 %               'circle'    Plot only the rotation plane of incommensurate
 %                           magnetic structures.
 %               'arrow'     Plots only the moment directions.
+%               'none'      Don't plot anything.
 % figure    Handle of the swplot figure. Default is the selected figure.
 % legend    Whether to add the plot to the legend, default is true.
 % label     Whether to plot labels for atoms, default is true.
@@ -207,98 +208,105 @@ switch param.mode
         % do nothing
     case 'circle'
     case 'arrow'
+    case 'none'
     otherwise
         error('plotmag:WrongInput','The given mode string is invalid!');
 end
 
-% number of unit cells
-nCell = prod(nExtPlot);
-
-% keep track of types of atoms
-aIdx  = repmat(mAtom.idx,[nCell 1])';
-a2Idx = repmat(1:numel(mAtom.idx),[nCell 1])';
-pos  = reshape(pos,3,[]);
-
-% cut out the atoms that are out of range
-switch param.unit
-    case 'lu'
-        % L>= lower range, L<= upper range
-        pIdx = all(bsxfun(@ge,pos,range(:,1)-10*eps) & bsxfun(@le,pos,range(:,2)+10*eps),1);
-    case 'xyz'
-        % convert to xyz
-        posxyz = BV*pos;
-        pIdx = all(bsxfun(@ge,posxyz,range(:,1)-10*eps) & bsxfun(@le,posxyz,range(:,2)+10*eps),1);
-end
-
-if ~any(pIdx)
-    warning('plotatom:EmptyPlot','There are no magnetic moments in the plotting range!')
-    return
-end
-
-M     = M(:,pIdx);
-pos   = pos(:,pIdx);
-aIdx  = aIdx(pIdx);
-a2Idx = a2Idx(pIdx);
-
-% normalization
-if param.normalize
-    % normalize moments
-    M = bsxfun(@rdivide,M,sqrt(sum(M.^2,1)));
-end
-
-% save magnetic moment vector values into data before rescaling
-MDat = mat2cell([M;pos;a2Idx],7,ones(1,size(M,2)));
-
-% scale moments
-% get the length of the shortest bond
-if ~isempty(obj.coupling.atom2)
-    apos1 = obj.matom.r(:,obj.coupling.atom1(1));
-    apos2 = obj.matom.r(:,obj.coupling.atom2(1))+double(obj.coupling.dl(:,1));
-    lBond = norm(BV*(apos2-apos1));
+if ~strcmp(param.mode,'none')
+    
+    % number of unit cells
+    nCell = prod(nExtPlot);
+    
+    % keep track of types of atoms
+    aIdx  = repmat(mAtom.idx,[nCell 1])';
+    a2Idx = repmat(1:numel(mAtom.idx),[nCell 1])';
+    pos  = reshape(pos,3,[]);
+    
+    % cut out the atoms that are out of range
+    switch param.unit
+        case 'lu'
+            % L>= lower range, L<= upper range
+            pIdx = all(bsxfun(@ge,pos,range(:,1)-10*eps) & bsxfun(@le,pos,range(:,2)+10*eps),1);
+        case 'xyz'
+            % convert to xyz
+            posxyz = BV*pos;
+            pIdx = all(bsxfun(@ge,posxyz,range(:,1)-10*eps) & bsxfun(@le,posxyz,range(:,2)+10*eps),1);
+    end
+    
+    if ~any(pIdx)
+        warning('plotatom:EmptyPlot','There are no magnetic moments in the plotting range!')
+        return
+    end
+    
+    M     = M(:,pIdx);
+    pos   = pos(:,pIdx);
+    aIdx  = aIdx(pIdx);
+    a2Idx = a2Idx(pIdx);
+    
+    % normalization
+    if param.normalize
+        % normalize moments
+        M = bsxfun(@rdivide,M,sqrt(sum(M.^2,1)));
+    end
+    
+    % save magnetic moment vector values into data before rescaling
+    MDat = mat2cell([M;pos;a2Idx],7,ones(1,size(M,2)));
+    
+    % scale moments
+    % get the length of the shortest bond
+    if ~isempty(obj.coupling.atom2)
+        apos1 = obj.matom.r(:,obj.coupling.atom1(1));
+        apos2 = obj.matom.r(:,obj.coupling.atom2(1))+double(obj.coupling.dl(:,1));
+        lBond = norm(BV*(apos2-apos1));
+    else
+        lBond = 3;
+    end
+    
+    % normalize the longest moment vector to scale*(shortest bond length)
+    M = M/sqrt(max(sum(M.^2,1)))*param.scale*lBond;
+    
+    if param.centered
+        % double the length for centered moments
+        M = 2*M;
+    end
+    
+    % convert to lu units
+    Mlu = BV\M;
+    
+    if param.centered
+        % center on atoms
+        vpos = cat(3,pos-Mlu/2,pos+Mlu/2);
+    else
+        vpos = cat(3,pos,pos+Mlu);
+    end
+    
+    % color
+    if strcmp(param.color,'auto')
+        color = double(obj.unit_cell.color(:,aIdx));
+    else
+        color = swplot.color(param.color);
+    end
+    
+    % shift positions
+    vpos = bsxfun(@plus,vpos,BV\param.shift);
+    
+    % prepare legend labels
+    mAtom.name = obj.unit_cell.label(mAtom.idx);
+    lLabel = repmat(mAtom.name,[nCell 1]);
+    lLabel = lLabel(pIdx);
+    
+    % plot moment vectors
+    swplot.plot('type','arrow','name','mag','position',vpos,'text','',...
+        'figure',hFigure,'legend',false,'color',color,'R',param.radius0,...
+        'fontsize',param.fontsize,'tooltip',false,'replace',param.replace,...
+        'data',MDat,'label',lLabel,'nmesh',param.nmesh,'ang',param.ang,...
+        'lHead',param.lHead,'translate',param.translate,'zoom',param.zoom);
+    
 else
-    lBond = 3;
+    % don't plot anything just remove previous plot
 end
 
-% normalize the longest moment vector to scale*(shortest bond length)
-M = M/sqrt(max(sum(M.^2,1)))*param.scale*lBond;
-
-if param.centered
-    % double the length for centered moments
-    M = 2*M;
-end
-
-% convert to lu units
-Mlu = BV\M;
-
-if param.centered
-    % center on atoms
-    vpos = cat(3,pos-Mlu/2,pos+Mlu/2);
-else
-    vpos = cat(3,pos,pos+Mlu);
-end
-
-% color
-if strcmp(param.color,'auto')
-    color = double(obj.unit_cell.color(:,aIdx));
-else
-    color = swplot.color(param.color);
-end
-
-% shift positions
-vpos = bsxfun(@plus,vpos,BV\param.shift);
-
-% prepare legend labels
-mAtom.name = obj.unit_cell.label(mAtom.idx);
-lLabel = repmat(mAtom.name,[nCell 1]);
-lLabel = lLabel(pIdx);
-
-
-% plot moment vectors
-swplot.plot('type','arrow','name','mag','position',vpos,'text','',...
-    'figure',hFigure,'legend',false,'color',color,'R',param.radius0,...
-    'fontsize',param.fontsize,'tooltip',false,'replace',param.replace,...
-    'data',MDat,'label',lLabel,'nmesh',param.nmesh,'ang',param.ang,...
-    'lHead',param.lHead,'translate',param.translate,'zoom',param.zoom);
 
 % save range
 setappdata(hFigure,'range',struct('range',range,'unit',param.unit));

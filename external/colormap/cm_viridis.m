@@ -280,7 +280,7 @@ else
     cm_data = interp1(linspace(0,1,size(cm,1)),cm,linspace(0,1,nCol));
 end
 
-if nargin == 1
+if nargin < 2
     white = 'off';
 end
 

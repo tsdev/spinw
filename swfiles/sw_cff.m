@@ -86,7 +86,7 @@ if iscell(atomName)
         fIdx = find(idx == numel(formFact));
         warning('sw_cff:WrongInput',['The x-ray scattering form factor for %s is undefined,'...
             ' constant 1 will be used instead! If you don''t want to see this message add a'...
-            ' line to xrayion.dat for the corresponding ion!'],atomName{fIdx(1)})
+            ' line to xrayion.dat (use the ''edit xrayion.dat'' command) for the corresponding ion!'],atomName{fIdx(1)})
     end
 elseif size(atomName,2) == 11
     coeff = atomName;

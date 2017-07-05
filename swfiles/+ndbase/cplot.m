@@ -18,16 +18,21 @@ function hPlot = cplot(dat, varargin)
 % plot      Logical, if true a plot will be produced.
 % scatter   If true, dots are plotted at the position of the given data
 %           points. Default is true.
+% convhull  If true, the color map is shown only between the given data
+%           points (within the convex hull of the points), this is achieved
+%           by giving nan value for all interpolated points outside of the
+%           convex hull. Default is true.
+% log       Plot natural logarithm of the values.
 %
 % Output
 %
 % hPlot     Handle of the plot object.
 %
 
-inpForm.fname  = {'x'    'scale' 'npix' 'plot' 'scatter'};
-inpForm.defval = {[]     'auto'  200    true   true     };
-inpForm.size   = {[1 -2] [1 -3]  [1 -4] [1 1]  [1 1]    };
-inpForm.soft   = {true   false   false  false  false    };
+inpForm.fname  = {'x'    'scale' 'npix' 'plot' 'scatter' 'convhull' 'log'};
+inpForm.defval = {[]     'auto'  200    true   true      true       false};
+inpForm.size   = {[1 -2] [1 -3]  [1 -4] [1 1]  [1 1]     [1 1]      [1 1]};
+inpForm.soft   = {true   false   false  false  false     false      false};
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -76,9 +81,20 @@ F = scatteredInterpolant(x(:)*scale,y(:),z(:),'natural');
 [xi, yi] = meshgrid(xi,yi);
 zi = F(xi*scale,yi);
 
+% check if points are within the convex hull
+if param.convhull
+    hullIdx = convhull(x(:),y(:));
+    zi(~inpolygon(xi(:),yi(:),x(hullIdx),y(hullIdx))) = nan;
+end
+
+if param.log
+    zi = real(log(zi));
+    zi(isnan(zi)) = 0;
+end
+
 % plot
 if param.plot
-    hPlot = pcolor(xi,yi,zi);
+    hPlot = pcolor(gca,xi,yi,zi);
     set(hPlot,'LineStyle','None')
     shading flat
     axis([min(x) max(x) min(y) max(y)]);

@@ -35,7 +35,7 @@ function [M, k, n, name, pname, limit] = gm_spherical3d(M0, x)
 %
 
 if nargin == 0
-    help gm_spherical3d;
+    help gm_spherical3d
     return
 end
 

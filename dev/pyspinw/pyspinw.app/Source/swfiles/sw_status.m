@@ -23,7 +23,7 @@ if nargin == 0
     return
 end
 
-if nargin > 2 && ~isempty(varargin{2})
+if nargin > 2 && ~isempty(varargin{2}) && ~ischar(varargin{2})
     fid = varargin{2};
 else
     fid = swpref.getpref('tid',[]);

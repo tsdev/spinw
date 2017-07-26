@@ -177,8 +177,10 @@ switch fExt
         end
         
         nAtom = size(r0,2);
-        bIso  = cif0.atom_site_B_iso_or_equiv;
+        bIso  = cif0.atom_site_B_iso_or_equiv';
         occ   = cif0.atom_site_occupancy';
+        
+        bIso(isnan(bIso)) = 0;
         
         if size(name0,2) == nAtom
             % add atoms to the crystal structure

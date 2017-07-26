@@ -1,4 +1,4 @@
-function varargout = sw_version()
+function outStr = sw_version()
 % returns the installed version of SpinW
 %
 % SW_VERSION()
@@ -106,18 +106,16 @@ if ~isdeployed
             if any(revNum)
                 ver0.Revision = num2str(revNum);
             end
-            varargout{1} = ver0;
+            outStr = ver0;
         else
             if isempty(fieldnames(verStruct))
-                varargout{1} = ver0;
+                outStr = ver0;
             else
-                varargout{1} = verStruct;
+                outStr = verStruct;
             end
         end
     end
 else
-    if nargout>0
-        varargout{1} = struct;
-    end
+    outStr = struct;
 end
 end

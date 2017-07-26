@@ -4,7 +4,7 @@ function [M, k, n, name, pname, limit] = gm_spherical3dd(M0, x)
 % [M, k, n, name, pname, limit] = GM_SPHERICAL3D(M0, x) 
 %
 % It generates the parameters of magnetic moments and normal vector from
-% spherical (theta,phi) coordinates. All angles are in radian.
+% spherical (theta,phi) coordinates. All angles are in degree.
 %
 % Input:
 %
@@ -35,7 +35,7 @@ function [M, k, n, name, pname, limit] = gm_spherical3dd(M0, x)
 %
 
 if nargin == 0
-    help gm_spherical3dd;
+    help gm_spherical3dd
     return
 end
 

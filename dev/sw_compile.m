@@ -19,12 +19,15 @@ switch computer
     case 'MACI64'
         zmqlib0 = '/usr/local/lib/libzmq/libzmq.dylib';
         libname = 'libzmq.dylib';
+        % kill all running apps
+        [~,~] = system('killall -9 pyspinw');
     case 'PCWIN64'
         zmqlib0 = '';
         libname = 'libzmq.dll';
     case 'GLNXA64'
         zmqlib0 = '';
         libname = 'libzmq.so';
+        [~,~] = system('killall -9 pyspinw');
     otherwise
         error('sw_compile:UnsupportedPlatform','Unsupported platform!')
 end
@@ -54,6 +57,8 @@ mkdir(tPath)
 % copy the zeroMQ library to the temp folder
 copyfile(param.zmqlib,[tPath fs libname]);
 copyfile([swr fs 'dev' fs 'transplant' fs 'transplantzmq.h'],tPath);
+% add a help() function that replaces the Matlab built-in
+copyfile([swr fs 'dev' fs 'sw_help.m'],[tPath fs 'help.m']);
 
 % generate the zmqlib header m-file
 pwd0 = pwd;
@@ -80,6 +85,7 @@ mccCommand = ['mcc -m '...
     '-a ' swr fs 'external '...
     '-a ' swr fs 'swfiles '...
     '-a ' swr fs 'dev' fs 'waitforgui.m '...
+    '-a ' swr fs 'dev' fs 'sw_apppath.m '...
     '-a ' swr fs 'dev' fs 'transplant '...
     '-a ' tPath ' '...
     swr fs 'dev' fs 'pyspinw.m'];

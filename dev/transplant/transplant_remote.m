@@ -160,36 +160,16 @@ while 1 % main messaging loop
     catch err
         if isdeployed
             % find location of binary file
-            if ismac
-                % name of deployed app withouth the '.app' extension
-                appName = 'pyspinw';
-                [~, result] = system(['top -n100 -l1 | grep ' appName ' | awk ''{print $1}''']);
-                pid         = strtrim(result);
-                [status, result] = system(['ps -o comm= -p ' pid]);
-                exePath          = strtrim(result);
-                
-                % get the app path
-                appPath = '';
-                
-                if status==0
-                    idx1 = strfind(exePath,[appName '.app']);
-                    
-                    if ~isempty(idx1)
-                        appPath = exePath(1:idx1-2);
-                    end
-                end
-            else
-                appPath = pwd;
+            save('/Users/sandortoth/spinw_git/dev/pyspinw/test1.mat')
+            
+            try
+                [appPath, appName] = sw_apppath;
+            catch err
             end
             
-            if isempty(appPath)
-                try
-                    error('transplant_remote:MissingAppPath','The app path could not be determined, file an issue on GitHub!')
-                catch err
-                end
-            end
-            save('/Users/sandortoth/spinw_git/dev/pyspinw/test1.mat')
-            appStr = 'pyspinw.app/Source';
+            appStr = [appName filesep 'Source'];
+            
+            save('/Users/sandortoth/spinw_git/dev/pyspinw/test2.mat')
             % reroute all error locations into the source code
             
             warning('off','MATLAB:structOnObject')
@@ -223,7 +203,7 @@ while 1 % main messaging loop
         else
             errStr = err;
         end
-        
+        save('/Users/sandortoth/spinw_git/dev/pyspinw/test3.mat')
         send_error(errStr)
     end
 end

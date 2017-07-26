@@ -109,10 +109,13 @@ else
 end
 
 % remove unnecessary files
-toDel = {'mccExcludedFiles.log' 'readme.txt' 'requiredMCRProducts.txt'};
+toDel = {'mccExcludedFiles.log' 'readme.txt' 'requiredMCRProducts.txt' 'run_pyspinw.sh'};
 for ii = 1:numel(toDel)
     delete([swr fs 'dev' fs 'pyspinw' fs toDel{ii}])
 end
+
+% add the script file to the app
+copyfile([swr fs 'dev' fs 'pyspinw.sh'],[swr fs 'dev' fs 'pyspinw' fs 'pyspinw.app'])
 
 disp('Done!')
 toc

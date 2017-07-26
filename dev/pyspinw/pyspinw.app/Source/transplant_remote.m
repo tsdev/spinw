@@ -160,8 +160,6 @@ while 1 % main messaging loop
     catch err
         if isdeployed
             % find location of binary file
-            save('/Users/sandortoth/spinw_git/dev/pyspinw/test1.mat')
-            
             try
                 [appPath, appName] = sw_apppath;
             catch err
@@ -169,7 +167,6 @@ while 1 % main messaging loop
             
             appStr = [appName filesep 'Source'];
             
-            save('/Users/sandortoth/spinw_git/dev/pyspinw/test2.mat')
             % reroute all error locations into the source code
             
             warning('off','MATLAB:structOnObject')
@@ -203,7 +200,6 @@ while 1 % main messaging loop
         else
             errStr = err;
         end
-        save('/Users/sandortoth/spinw_git/dev/pyspinw/test3.mat')
         send_error(errStr)
     end
 end

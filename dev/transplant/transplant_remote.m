@@ -28,138 +28,167 @@
 % (c) 2014 Bastian Bechtold
 
 function transplant_remote(msgformat, url, zmqname, is_zombie)
-    % this must be persistent to survive a SIGINT:
-    persistent proxied_objects is_receiving should_die messenger
+% this must be persistent to survive a SIGINT:
+persistent proxied_objects is_receiving should_die messenger
 
-    % since the onCleanup prevents direct exit, quit here after revival before
-    % a new onCleanup is created:
-    if should_die
-        quit('force')
-    end
+% since the onCleanup prevents direct exit, quit here after revival before
+% a new onCleanup is created:
+if should_die
+    quit('force')
+end
 
-    try
-        if nargin == 3
-            % normal startup
-            messenger = ZMQ(zmqname, url);
-            proxied_objects = {};
-            is_receiving = false;
-            should_die = false;
-        elseif nargin > 3 && is_zombie && ~is_receiving
-            % SIGINT has killed transplant_remote, but onCleanup has revived it
-            % At this point, neither lasterror nor MException.last is available,
-            % so we don't actually know where we were killed.
-            send_ack();
-        elseif nargin > 3 && is_zombie && is_receiving
-            % Sometimes, functions return normally, then trow a delayed error after
-            % they return. In that case, we crash within receive_msg. To recover,
-            % just continue receiving as if nothing had happened.
-        else
-            % no idea what happened. I don't want to live any more.
-            return
-        end
-    catch
+try
+    if nargin == 3
+        % normal startup
+        messenger = ZMQ(zmqname, url);
+        proxied_objects = {};
+        is_receiving = false;
+        should_die = false;
+    elseif nargin > 3 && is_zombie && ~is_receiving
+        % SIGINT has killed transplant_remote, but onCleanup has revived it
+        % At this point, neither lasterror nor MException.last is available,
+        % so we don't actually know where we were killed.
+        send_ack();
+    elseif nargin > 3 && is_zombie && is_receiving
+        % Sometimes, functions return normally, then trow a delayed error after
+        % they return. In that case, we crash within receive_msg. To recover,
+        % just continue receiving as if nothing had happened.
+    else
+        % no idea what happened. I don't want to live any more.
         return
     end
+catch
+    return
+end
 
-    % make sure that transplant doesn't crash on SIGINT
-    zombie = onCleanup(@()transplant_remote(msgformat, url, zmqname, true));
+% make sure that transplant doesn't crash on SIGINT
+zombie = onCleanup(@()transplant_remote(msgformat, url, zmqname, true));
 
-    while 1 % main messaging loop
-
-        try
-            is_receiving = true;
-            msg = receive_msg();
-            is_receiving = false;
-            msg = decode_values(msg);
-            switch msg('type')
-                case 'die' % exit matlab
-                    send_ack();
-                    should_die = true;
-                    % At this point, we can't just quit, since onCleanup *will*
-                    % revive us as a zombie. Instead, we mark ourselves as
-                    % suicidial, and return. This will quit Matlab directly
-                    % after revival, before the next onCleanup is created.
-                    return
-                case 'set_global' % save msg.value as a global variable
-                    assignin('base', msg('name'), msg('value'));
-                    send_ack();
-                case 'get_global' % retrieve the value of a global variable
-                    % simply evalin('base', msg.name) would call functions,
-                    % so that can't be used.
-                    existance = evalin('base', ['exist(''' msg('name') ''')']);
-                    % exist doesn't find methods, though.
-                    existance = existance | any(which(msg('name')));
-                    
-                    % value does not exist:
-                    if ~existance
-                        error('TRANSPLANT:novariable' , ...
-                              ['Undefined variable ''' msg('name') '''.']);
+while 1 % main messaging loop
+    
+    try
+        is_receiving = true;
+        msg = receive_msg();
+        is_receiving = false;
+        msg = decode_values(msg);
+        switch msg('type')
+            case 'die' % exit matlab
+                send_ack();
+                should_die = true;
+                % At this point, we can't just quit, since onCleanup *will*
+                % revive us as a zombie. Instead, we mark ourselves as
+                % suicidial, and return. This will quit Matlab directly
+                % after revival, before the next onCleanup is created.
+                return
+            case 'set_global' % save msg.value as a global variable
+                assignin('base', msg('name'), msg('value'));
+                send_ack();
+            case 'get_global' % retrieve the value of a global variable
+                % simply evalin('base', msg.name) would call functions,
+                % so that can't be used.
+                existance = evalin('base', ['exist(''' msg('name') ''')']);
+                % exist doesn't find methods, though.
+                existance = existance | any(which(msg('name')));
+                
+                % value does not exist:
+                if ~existance
+                    error('TRANSPLANT:novariable' , ...
+                        ['Undefined variable ''' msg('name') '''.']);
                     % value is a function or method:
-                    elseif any(existance == [2, 3, 5, 6]) || any(which(msg('name')))
-                        value = str2func(msg('name'));
-                    else
-                        value = evalin('base', msg('name'));
+                elseif any(existance == [2, 3, 5, 6]) || any(which(msg('name')))
+                    value = str2func(msg('name'));
+                else
+                    value = evalin('base', msg('name'));
+                end
+                send_value(value);
+            case 'del_proxy' % invalidate cached object
+                proxied_objects{msg('handle')} = [];
+                send_ack();
+            case 'call' % call a function
+                fun = str2func(msg('name'));
+                
+                % get the number of output arguments
+                if isKey(msg, 'nargout') && msg('nargout') >= 0
+                    resultsize = msg('nargout');
+                else
+                    % nargout fails if fun is a method:
+                    try
+                        resultsize = nargout(fun);
+                    catch
+                        resultsize = -1;
                     end
-                    send_value(value);
-                case 'del_proxy' % invalidate cached object
-                    proxied_objects{msg('handle')} = [];
-                    send_ack();
-                case 'call' % call a function
-                    fun = str2func(msg('name'));
-
-                    % get the number of output arguments
-                    if isKey(msg, 'nargout') && msg('nargout') >= 0
-                        resultsize = msg('nargout');
+                end
+                
+                if resultsize > 0
+                    % call the function with the given number of
+                    % output arguments:
+                    results = cell(resultsize, 1);
+                    args = msg('args');
+                    
+                    % convert cell of scalars to matrix
+                    for ii = 1:numel(args)
+                        if iscell(args{ii}) && all(cellfun(@(C)isnumeric(C) && isscalar(C),args{ii}))
+                            args{ii} = cell2mat(args{ii});
+                        end
+                    end
+                    [results{:}] = fun(args{:});
+                    if length(results) == 1
+                        send_value(results{1});
                     else
-                        % nargout fails if fun is a method:
-                        try
-                            resultsize = nargout(fun);
-                        catch
-                            resultsize = -1;
+                        send_value(results);
+                    end
+                else
+                    % try to get output from ans
+                    clear('ans');
+                    args = msg('args');
+                    
+                    % convert cell of scalars to matrix
+                    for ii = 1:numel(args)
+                        if iscell(args{ii}) && all(cellfun(@(C)isnumeric(C) && isscalar(C),args{ii}))
+                            args{ii} = cell2mat(args{ii});
                         end
                     end
                     
-                    if resultsize > 0
-                        % call the function with the given number of
-                        % output arguments:
-                        results = cell(resultsize, 1);
-                        args = msg('args');
-                        
-                        % convert cell of scalars to matrix
-                        for ii = 1:numel(args)
-                            if iscell(args{ii}) && all(cellfun(@(C)isnumeric(C) && isscalar(C),args{ii}))
-                                args{ii} = cell2mat(args{ii});
-                            end
-                        end
-                        [results{:}] = fun(args{:});
-                        if length(results) == 1
-                            send_value(results{1});
-                        else
-                            send_value(results);
-                        end
-                    else
-                        % try to get output from ans
-                        clear('ans');
-                        args = msg('args');
-                        
-                        % convert cell of scalars to matrix
-                        for ii = 1:numel(args)
-                            if iscell(args{ii}) && all(cellfun(@(C)isnumeric(C) && isscalar(C),args{ii}))
-                                args{ii} = cell2mat(args{ii});
-                            end
-                        end
-                        
-                        fun(args{:})
-                        try
-                            send_value(ans); %#ok<NOANS>
-                        catch err %#ok<NASGU>
-                            send_ack();
-                        end
+                    fun(args{:})
+                    try
+                        send_value(ans); %#ok<NOANS>
+                    catch err %#ok<NASGU>
+                        send_ack();
                     end
-            end
-        catch err
+                end
+        end
+    catch err
+        if isdeployed
             % find location of binary file
-            binLoc = '/Users/tothsa/spinw_git/dev/pyspinw';
+            if ismac
+                % name of deployed app withouth the '.app' extension
+                appName = 'pyspinw';
+                [~, result] = system(['top -n100 -l1 | grep ' appName ' | awk ''{print $1}''']);
+                pid         = strtrim(result);
+                [status, result] = system(['ps -o comm= -p ' pid]);
+                exePath          = strtrim(result);
+                
+                % get the app path
+                appPath = '';
+                
+                if status==0
+                    idx1 = strfind(exePath,[appName '.app']);
+                    
+                    if ~isempty(idx1)
+                        appPath = exePath(1:idx1-2);
+                    end
+                end
+            else
+                appPath = pwd;
+            end
+            
+            if isempty(appPath)
+                try
+                    error('transplant_remote:MissingAppPath','The app path could not be determined, file an issue on GitHub!')
+                catch err
+                end
+            end
+            save('/Users/sandortoth/spinw_git/dev/pyspinw/test1.mat')
             appStr = 'pyspinw.app/Source';
             % reroute all error locations into the source code
             
@@ -168,8 +197,8 @@ function transplant_remote(msgformat, url, zmqname, is_zombie)
             warning('on','MATLAB:structOnObject')
             
             % end of stack is always this
-            errStr.stack(end-1).file = [binLoc filesep appStr filesep 'transplant_remote.m'];
-            errStr.stack(end).file = [binLoc filesep appStr filesep 'pyspinw.m'];
+            errStr.stack(end-1).file = [appPath filesep appStr filesep 'transplant_remote.m'];
+            errStr.stack(end).file = [appPath filesep appStr filesep 'pyspinw.m'];
             
             allm = true;
             
@@ -178,7 +207,7 @@ function transplant_remote(msgformat, url, zmqname, is_zombie)
                 fName = errStr.stack(ii).file;
                 idx0 = strfind(fName,'swfiles');
                 if ~isempty(idx0)
-                    errStr.stack(ii).file = [binLoc filesep appStr filesep fName(idx0:end)];
+                    errStr.stack(ii).file = [appPath filesep appStr filesep fName(idx0:end)];
                 else
                     allm = false;
                 end
@@ -191,13 +220,17 @@ function transplant_remote(msgformat, url, zmqname, is_zombie)
                 end
             end
             
-            send_error(errStr)
+        else
+            errStr = err;
         end
+        
+        send_error(errStr)
     end
+end
 
-    % Send a message
-    %
-    % This is the base function for the specialized senders below
+% Send a message
+%
+% This is the base function for the specialized senders below
     function send_message(message_type, message)
         message('type') = message_type;
         if strcmp(msgformat, 'msgpack')
@@ -208,12 +241,12 @@ function transplant_remote(msgformat, url, zmqname, is_zombie)
         end
     end
 
-    % Send an acknowledgement message
+% Send an acknowledgement message
     function send_ack()
         send_message('ack', containers.Map());
     end
 
-    % Send an error message
+% Send an error message
     function send_error(err)
         message = containers.Map();
         message('identifier') = err.identifier;
@@ -229,14 +262,14 @@ function transplant_remote(msgformat, url, zmqname, is_zombie)
         send_message('error', message);
     end
 
-    % Send a message that contains a value
+% Send a message that contains a value
     function send_value(value)
         message = containers.Map();
         message('value') = encode_values(value);
         send_message('value', message);
     end
 
-    % Wait for and receive a message
+% Wait for and receive a message
     function message = receive_msg()
         blob = messenger.receive();
         if strcmp(msgformat, 'msgpack')
@@ -247,13 +280,13 @@ function transplant_remote(msgformat, url, zmqname, is_zombie)
         end
     end
 
-    % recursively step through value and encode all occurrences of
-    % matrices, objects and functions as special cell arrays.
+% recursively step through value and encode all occurrences of
+% matrices, objects and functions as special cell arrays.
     function [value] = encode_values(value)
         if issparse(value)
             value = encode_sparse_matrix(value);
         elseif (isnumeric(value) && numel(value) ~= 0 && ...
-            (numel(value) > 1 || ~isreal(value)))
+                (numel(value) > 1 || ~isreal(value)))
             value = encode_matrix(value);
         elseif isa(value, 'containers.Map')
             % containers.Map is a handle object, so we need to create a
@@ -282,8 +315,8 @@ function transplant_remote(msgformat, url, zmqname, is_zombie)
         end
     end
 
-    % recursively step through value and decode all special cell arrays
-    % that contain matrices, objects, or functions.
+% recursively step through value and decode all special cell arrays
+% that contain matrices, objects, or functions.
     function [value] = decode_values(value)
         if iscell(value)
             len = numel(value);
@@ -328,8 +361,8 @@ function transplant_remote(msgformat, url, zmqname, is_zombie)
         end
     end
 
-    % Objects are cached, and they are encoded as special cell arrays
-    % `{"__object__", cache_index}`
+% Objects are cached, and they are encoded as special cell arrays
+% `{"__object__", cache_index}`
     function [out] = encode_object(object)
         if length(object) > 1
             out = cell(1,length(object));
@@ -346,11 +379,11 @@ function transplant_remote(msgformat, url, zmqname, is_zombie)
         end
     end
 
-    % The matrix `int32([1 2; 3 4])` would be encoded as
-    % `{'__matrix__', 'int32', [2, 2], 'AQAAAAIAAAADAAAABAAAA==\n'}`
-    %
-    % where `'int32'` is the data type, `[2, 2]` is the matrix shape and
-    % `'AQAAAAIAAAADAAAABAAAA==\n"'` is the base64-encoded matrix content.
+% The matrix `int32([1 2; 3 4])` would be encoded as
+% `{'__matrix__', 'int32', [2, 2], 'AQAAAAIAAAADAAAABAAAA==\n'}`
+%
+% where `'int32'` is the data type, `[2, 2]` is the matrix shape and
+% `'AQAAAAIAAAADAAAABAAAA==\n"'` is the base64-encoded matrix content.
     function [value] = encode_matrix(value)
         if ~isreal(value) && isinteger(value)
             value = double(value); % Numpy does not know complex int
@@ -400,11 +433,11 @@ function transplant_remote(msgformat, url, zmqname, is_zombie)
         value = {'__matrix__', dtype, fliplr(size(value)), binary};
     end
 
-    % The matrix `int32([1 2; 3 4])` would be encoded as
-    % `{'__matrix__', 'int32', [2, 2], 'AQAAAAIAAAADAAAABAAAA==\n'}`
-    %
-    % where `'int32'` is the data type, `[2, 2]` is the matrix shape and
-    % `'AQAAAAIAAAADAAAABAAAA==\n'` is the base64-encoded matrix content.
+% The matrix `int32([1 2; 3 4])` would be encoded as
+% `{'__matrix__', 'int32', [2, 2], 'AQAAAAIAAAADAAAABAAAA==\n'}`
+%
+% where `'int32'` is the data type, `[2, 2]` is the matrix shape and
+% `'AQAAAAIAAAADAAAABAAAA==\n'` is the base64-encoded matrix content.
     function [value] = decode_matrix(value)
         dtype = value{2};
         % make sure shape is a double array even if its elements are
@@ -441,34 +474,34 @@ function transplant_remote(msgformat, url, zmqname, is_zombie)
         value = permute(value, length(shape):-1:1);
     end
 
-    % Encode a sparse matrix as a special list.
-    % A sparse matrix `[[2, 0], [0, 3]]` would be encoded as
-    % `["__sparse__", [2, 2],
-    %   <matrix for row indices [0, 1]>,
-    %   <matrix for row indices [1, 0]>,
-    %   <matrix for values [2, 3]>]`,
-    % where each `<matrix>` is encoded according `encode_matrix` and `[2,
-    % 2]` is the data shape.
+% Encode a sparse matrix as a special list.
+% A sparse matrix `[[2, 0], [0, 3]]` would be encoded as
+% `["__sparse__", [2, 2],
+%   <matrix for row indices [0, 1]>,
+%   <matrix for row indices [1, 0]>,
+%   <matrix for values [2, 3]>]`,
+% where each `<matrix>` is encoded according `encode_matrix` and `[2,
+% 2]` is the data shape.
     function [value] = encode_sparse_matrix(value)
         [row, col, data] = find(value);
         if numel(data) > 0
             value = {'__sparse__', fliplr(size(value)), ...
-                     encode_matrix(row-1), encode_matrix(col-1), ...
-                     encode_matrix(data)};
+                encode_matrix(row-1), encode_matrix(col-1), ...
+                encode_matrix(data)};
         else
             % don't try to encode empty matrices as matrices
             value = {'__sparse__', fliplr(size(value)), [], [], []};
         end
     end
 
-    % Decode a special list to a sparse matrix.
-    % A sparse matrix
-    % `["__sparse__", [2, 2],
-    %   <matrix for row indices [0, 1]>,
-    %   <matrix for row indices [1, 0]>,
-    %   <matrix for values [2, 3]>]`,
-    % where each `<matrix>` is encoded according `encode_matrix` would be
-    % decoded as `[[2, 0], [0, 3]]`.
+% Decode a special list to a sparse matrix.
+% A sparse matrix
+% `["__sparse__", [2, 2],
+%   <matrix for row indices [0, 1]>,
+%   <matrix for row indices [1, 0]>,
+%   <matrix for values [2, 3]>]`,
+% where each `<matrix>` is encoded according `encode_matrix` would be
+% decoded as `[[2, 0], [0, 3]]`.
     function [value] = decode_sparse_matrix(value)
         % make sure shape is a double array even if its elements are
         % less than double:

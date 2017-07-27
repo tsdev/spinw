@@ -168,7 +168,7 @@ R = zeros(nRun,1);
 % convert data into standard xye format
 dat = struct('x',[],'y',[],'e',[]);
 for ii = 1:numel(data)
-    sel   = data{ii}.I~=0;
+    sel   = data{ii}.I~=0 & data{ii}.E~=0;
     dat.y = [dat.y;data{ii}.E(sel)];
     dat.e = [dat.e;data{ii}.sigma(sel)];
 end
@@ -297,7 +297,7 @@ for ii = 1:nConv
     
     % calculate spin-spin correlation function
     spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit,...
-        'tid',0,'optMem',param.optmem,'tid',param.tid);
+        'tid',0,'optMem',param.optmem,'tid',param.tid,'gtensor',any(obj.single_ion.g));
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy

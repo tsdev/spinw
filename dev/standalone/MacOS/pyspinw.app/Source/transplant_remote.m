@@ -105,15 +105,34 @@ while 1 % main messaging loop
                 proxied_objects{msg('handle')} = [];
                 send_ack();
             case 'call' % call a function
-                fun = str2func(msg('name'));
+                if strcmp(msg('name'),'help')
+                    fun = @sw_help;
+                else
+                    fun = str2func(msg('name'));
+                end
                 
+                resultsize = [];
                 % get the number of output arguments
                 if isKey(msg, 'nargout') && msg('nargout') >= 0
                     resultsize = msg('nargout');
                 else
                     % nargout fails if fun is a method:
                     try
-                        resultsize = nargout(fun);
+                        [~, funType] = which(msg('name'));
+                        funType = strsplit(funType,' ');
+                        if numel(funType)==2 && strcmp(funType{2},'method')
+                            argTemp = msg('args');
+                            className = funType{1};
+                            if ~isempty(argTemp) && isa(argTemp{1},className)
+                                % the function name corresponds to the
+                                % class of the first argument
+                                resultsize = nargout(msg('name'));
+                            end
+                        end
+                        %save('/Users/tothsa/spinw_git/dev/standalone/test1.mat')
+                        if isempty(resultsize)
+                            resultsize = nargout(fun);
+                        end
                     catch
                         resultsize = -1;
                     end

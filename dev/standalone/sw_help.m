@@ -26,7 +26,7 @@ end
 if nargin < 2
     % get the location of the m-files
     [appPath, appName] = sw_apppath;
-    appStr = [ appName fs 'Source'];
+    appStr = [ appName filesep 'Source'];
     hRoot  = [appPath filesep appStr];
 end
 

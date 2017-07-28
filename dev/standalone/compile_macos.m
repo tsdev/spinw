@@ -40,6 +40,15 @@ end
 % create a temp folder under dev
 cRoot = [swr '/dev/standalone'];
 tPath = [cRoot '/MacOS/temp'];
+% delete previous temp directory if exists
+try %#ok<TRYNC>
+    rmdir(tPath,'s');
+end
+% delete previously compiled files
+try %#ok<TRYNC>
+    rmdir([cRoot '/MacOS/pyspinw.app'],'s')
+    delete([cRoot '/MacOS/*'])
+end
 mkdir(tPath)
 
 % copy the zeroMQ library to the temp folder
@@ -54,18 +63,6 @@ cd(tPath);
 % loadlibrary(libname,@libzmq_m,'alias','libzmq')
 loadlibrary(libname,'transplantzmq.h','alias','libzmq','mfilename','libzmq_m')
 cd(pwd0);
-
-% delete previous temp directory if exists
-try
-    rmdir(tPath,'s');
-end
-
-
-% delete previously compiled files
-try %#ok<TRYNC>
-    rmdir([cRoot '/MacOS/pyspinw.app'],'s')
-    delete([cRoot '/MacOS/*'])
-end
 
 % add the necessary extra path
 addpath([swr '/dev'])

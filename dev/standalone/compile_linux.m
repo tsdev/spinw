@@ -1,7 +1,7 @@
-function compile_macos(varargin)
-% compile SpinW code with zeroMQ on MacOS
+function compile_linux(varargin)
+% compile SpinW code with zeroMQ on Linux
 %
-% COMPILE_MACOS('option1',value1,...)
+% COMPILE_LINUX('option1',value1,...)
 %
 % Options:
 %
@@ -10,13 +10,13 @@ function compile_macos(varargin)
 % zmqlib            Name of the zeroMQ library file with full path.
 %
 
-if ~ismac
-    error('This function works only on MacOS!')
+if ~isunix
+    error('This function works only on Linux!')
 end
 
-% location on OSX
-zmqlib0 = '/usr/local/lib/libzmq/libzmq.dylib';
-libname = 'libzmq.dylib';
+% library location on Linux
+zmqlib0 = '/usr/local/lib64/libzmq.so';
+libname = 'libzmq.so';
 % kill all running apps
 [~,~] = system('killall -9 pyspinw');
 
@@ -30,7 +30,7 @@ param = sw_readparam(inpForm, varargin{:});
 
 swr    = param.sourcepath;
 
-disp('Compiling SpinW on MacOS...')
+disp('Compiling SpinW on Linux...')
 tic
 
 if libisloaded('libzmq')
@@ -39,11 +39,19 @@ end
 
 % create a temp folder under dev
 cRoot = [swr '/dev/standalone'];
-tPath = [cRoot '/MacOS/temp'];
+tPath = [cRoot '/Linux/temp'];
+try %#ok<TRYNC>
+    rmdir(tPath,'s');
+end
+% delete previously compiled files
+try %#ok<TRYNC>
+    rmdir([cRoot '/MacOS/pyspinw.app'],'s')
+    delete([cRoot '/MacOS/*'])
+end
 mkdir(tPath)
 
 % copy the zeroMQ library to the temp folder
-copyfile(param.zmqlib,[tPath filesep libname]);
+system(['cp --preserve=links --remove-destination ' param.zmqlib ' ' tPath filesep libname]);
 copyfile([cRoot '/transplant/transplantzmq.h'],tPath);
 % add a help() function that replaces the Matlab built-in
 copyfile([cRoot '/sw_help.m'],[tPath '/help.m']);
@@ -55,25 +63,13 @@ cd(tPath);
 loadlibrary(libname,'transplantzmq.h','alias','libzmq','mfilename','libzmq_m')
 cd(pwd0);
 
-% delete previous temp directory if exists
-try
-    rmdir(tPath,'s');
-end
-
-
-% delete previously compiled files
-try %#ok<TRYNC>
-    rmdir([cRoot '/MacOS/pyspinw.app'],'s')
-    delete([cRoot '/MacOS/*'])
-end
-
 % add the necessary extra path
 addpath([swr '/dev'])
 addpath([cRoot '/transplant'])
 
 % compile the code
 mccCommand = ['mcc -m '...
-    '-d ' cRoot '/MacOS '...
+    '-d ' cRoot '/Linux '...
     '-o pyspinw '...
     '-a ' swr '/dat_files/* '...
     '-a ' swr '/external '...
@@ -90,26 +86,20 @@ eval(mccCommand);
 rmdir(tPath,'s');
 
 % copy the swfiles into the app
-if ismac
-    mkdir([cRoot '/MacOS/pyspinw.app/Source/swfiles'])
-    copyfile([swr '/swfiles'],[cRoot '/MacOS/pyspinw.app/Source/swfiles'])
-    copyfile([cRoot '/transplant/transplant_remote.m'],[cRoot '/MacOS/pyspinw.app/Source'])
-    copyfile([cRoot '/pyspinw.m'],[cRoot '/MacOS/pyspinw.app/Source'])
-    % add new icon
-    copyfile([cRoot '/icon/spinw3.icns'],[cRoot '/MacOS/pyspinw.app/Contents/Resources/membrane.icns'],'f');
-    system(['touch ' cRoot '/MacOS/pyspinw.app']);
-else
-    warning('compile_macos:MissingFiles','The source files won''t be stored in the copiled app!')
-end
+
+mkdir([cRoot '/Linux/Source/swfiles'])
+copyfile([swr '/swfiles'],[cRoot '/Linux/Source/swfiles'])
+copyfile([cRoot '/transplant/transplant_remote.m'],[cRoot '/Linux/Source'])
+copyfile([cRoot '/pyspinw.m'],[cRoot '/Linux/Source'])
 
 % remove unnecessary files
-toDel = {'mccExcludedFiles.log' 'readme.txt' 'requiredMCRProducts.txt' 'run_pyspinw.sh'};
+toDel = {'mccExcludedFiles.log' 'readme.txt' 'requiredMCRProducts.txt'};
 for ii = 1:numel(toDel)
     delete([cRoot '/MacOS/' toDel{ii}])
 end
 
 % add the script file to the app
-copyfile([cRoot '/pyspinw.sh'],[cRoot '/MacOS/pyspinw.app'])
+copyfile([cRoot '/pyspinw_linux.sh'],[cRoot '/Linux/pyspinw.sh'])
 
 disp('Done!')
 toc

@@ -65,7 +65,7 @@ loadlibrary(libname,'transplantzmq.h','alias','libzmq','mfilename','libzmq_m')
 cd(pwd0);
 
 % add the necessary extra path
-addpath([swr '/dev'])
+addpath([swr '/dev/standalone'])
 addpath([cRoot '/transplant'])
 
 % compile the code

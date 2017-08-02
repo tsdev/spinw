@@ -45,8 +45,8 @@ try %#ok<TRYNC>
 end
 % delete previously compiled files
 try %#ok<TRYNC>
-    rmdir([cRoot '/MacOS/pyspinw.app'],'s')
-    delete([cRoot '/MacOS/*'])
+    rmdir([cRoot '/Linux/Source'],'s')
+    delete([cRoot '/Linux/*'])
 end
 mkdir(tPath)
 

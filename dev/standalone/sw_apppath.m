@@ -1,7 +1,6 @@
 function [appPath, appName] = sw_apppath()
 % returns the path to the app when run in deployed mode
 
-appPath = '';
 appName = 'pyspinw';
 
 switch computer

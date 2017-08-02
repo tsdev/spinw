@@ -12,7 +12,6 @@ if [ "x$1" = "x" ]; then
   echo    $0 \<deployedMCRroot\> args
 else
   MCRROOT=/MATLAB/MATLAB_Runtime/v92
-
   LD_LIBRARY_PATH=.:${MCRROOT}/runtime/glnxa64 ;
   LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/bin/glnxa64 ;
   LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/os/glnxa64;

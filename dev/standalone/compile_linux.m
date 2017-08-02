@@ -10,7 +10,7 @@ function compile_linux(varargin)
 % zmqlib            Name of the zeroMQ library file with full path.
 %
 
-if ~isunix
+if ~isunix || ismac
     error('This function works only on Linux!')
 end
 
@@ -95,7 +95,7 @@ copyfile([cRoot '/pyspinw.m'],[cRoot '/Linux/Source'])
 % remove unnecessary files
 toDel = {'mccExcludedFiles.log' 'readme.txt' 'requiredMCRProducts.txt'};
 for ii = 1:numel(toDel)
-    delete([cRoot '/MacOS/' toDel{ii}])
+    delete([cRoot '/Linux/' toDel{ii}])
 end
 
 % add the script file to the app

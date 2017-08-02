@@ -93,7 +93,7 @@ copyfile([cRoot '/transplant/transplant_remote.m'],[cRoot '/Linux/Source'])
 copyfile([cRoot '/pyspinw.m'],[cRoot '/Linux/Source'])
 
 % remove unnecessary files
-toDel = {'mccExcludedFiles.log' 'readme.txt' 'requiredMCRProducts.txt'};
+toDel = {'mccExcludedFiles.log' 'readme.txt' 'requiredMCRProducts.txt' 'run_pyspinw.sh'};
 for ii = 1:numel(toDel)
     delete([cRoot '/Linux/' toDel{ii}])
 end

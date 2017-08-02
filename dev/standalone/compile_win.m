@@ -14,7 +14,7 @@ if ~ismac
     error('This function works only on MacOS!')
 end
 
-% location on OSX
+% zero-MQ location on OSX
 zmqlib0 = '/usr/local/lib/libzmq/libzmq.dylib';
 libname = 'libzmq.dylib';
 % kill all running apps
@@ -40,6 +40,15 @@ end
 % create a temp folder under dev
 cRoot = [swr '/dev/standalone'];
 tPath = [cRoot '/MacOS/temp'];
+% delete previous temp directory if exists
+try %#ok<TRYNC>
+    rmdir(tPath,'s');
+end
+% delete previously compiled files
+try %#ok<TRYNC>
+    rmdir([cRoot '/MacOS/pyspinw.app'],'s')
+    delete([cRoot '/MacOS/*'])
+end
 mkdir(tPath)
 
 % copy the zeroMQ library to the temp folder
@@ -55,20 +64,8 @@ cd(tPath);
 loadlibrary(libname,'transplantzmq.h','alias','libzmq','mfilename','libzmq_m')
 cd(pwd0);
 
-% delete previous temp directory if exists
-try
-    rmdir(tPath,'s');
-end
-
-
-% delete previously compiled files
-try %#ok<TRYNC>
-    rmdir([cRoot '/MacOS/pyspinw.app'],'s')
-    delete([cRoot '/MacOS/*'])
-end
-
 % add the necessary extra path
-addpath([swr '/dev'])
+addpath([swr '/dev/standalone'])
 addpath([cRoot '/transplant'])
 
 % compile the code
@@ -90,17 +87,13 @@ eval(mccCommand);
 rmdir(tPath,'s');
 
 % copy the swfiles into the app
-if ismac
-    mkdir([cRoot '/MacOS/pyspinw.app/Source/swfiles'])
-    copyfile([swr '/swfiles'],[cRoot '/MacOS/pyspinw.app/Source/swfiles'])
-    copyfile([cRoot '/transplant/transplant_remote.m'],[cRoot '/MacOS/pyspinw.app/Source'])
-    copyfile([cRoot '/pyspinw.m'],[cRoot '/MacOS/pyspinw.app/Source'])
-    % add new icon
-    copyfile([cRoot '/icon/spinw3.icns'],[cRoot '/MacOS/pyspinw.app/Contents/Resources/membrane.icns'],'f');
-    system(['touch ' cRoot '/MacOS/pyspinw.app']);
-else
-    warning('compile_macos:MissingFiles','The source files won''t be stored in the copiled app!')
-end
+mkdir([cRoot '/MacOS/pyspinw.app/Source/swfiles'])
+copyfile([swr '/swfiles'],[cRoot '/MacOS/pyspinw.app/Source/swfiles'])
+copyfile([cRoot '/transplant/transplant_remote.m'],[cRoot '/MacOS/pyspinw.app/Source'])
+copyfile([cRoot '/pyspinw.m'],[cRoot '/MacOS/pyspinw.app/Source'])
+% add new icon
+copyfile([cRoot '/icon/spinw3.icns'],[cRoot '/MacOS/pyspinw.app/Contents/Resources/membrane.icns'],'f');
+system(['touch ' cRoot '/MacOS/pyspinw.app']);
 
 % remove unnecessary files
 toDel = {'mccExcludedFiles.log' 'readme.txt' 'requiredMCRProducts.txt' 'run_pyspinw.sh'};
@@ -109,7 +102,7 @@ for ii = 1:numel(toDel)
 end
 
 % add the script file to the app
-copyfile([cRoot '/pyspinw.sh'],[cRoot '/MacOS/pyspinw.app'])
+copyfile([cRoot '/pyspinw_macos.sh'],[cRoot '/MacOS/pyspinw.app/pyspinw.sh'])
 
 disp('Done!')
 toc

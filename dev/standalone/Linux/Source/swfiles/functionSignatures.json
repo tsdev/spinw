@@ -1,0 +1,38 @@
+{
+"spinw":
+{
+	"inputs":
+	[
+		{"name":"filename", "kind":"optional", "type":[["filepath"], ["char"]]}
+	]
+},
+"spinwave":
+{
+	"inputs":
+	[
+        {"name": "obj","kind": "required","type": "spinw"},
+		{"name": "formFact","kind": "namevalue","type": "char"}
+	]
+},
+"genmagstr":
+{
+	"inputs":
+	[
+        {"name": "obj","kind": "required","type": "spinw"},
+        {"name": "mode","kind": "namevalue","type": "choices={'random','direct','tile','helical','rotate','func','fourier'}"},
+        {"name": "phi","kind": "namevalue","type": ["numeric" "scalar"]},
+        {"name": "phid","kind": "namevalue","type": ["numeric" "scalar"]},
+        {"name": "nExt","kind": "namevalue","type": "numeric"},
+        {"name": "k","kind": "namevalue","type": "double"},
+        {"name": "phi","kind": "namevalue","type": "double"},
+        {"name": "n","kind": "namevalue","type": "double"},
+        {"name": "S","kind": "namevalue","type": "double"},
+        {"name": "unitS","kind": "namevalue","type": "choices={'xyz','lu'}"},
+        {"name": "epsilon","kind": "namevalue","type": "double"},
+        {"name": "func","kind": "namevalue","type": "function_handle"},
+        {"name": "x0","kind": "namevalue","type": "double"},
+        {"name": "norm","kind": "namevalue","type": [["logical"],["double"],["int32"]]},
+        {"name": "x0","kind": "namevalue","type": "double"}
+	]
+}
+}

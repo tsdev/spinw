@@ -6,4 +6,4 @@
 
 ## Twitter account
 
-Keep up to date on announcements and more by following SpinW on Twitter, [@spinw4](https://twitter.com/spinw4).
+Keep up to date on announcements and more by following [@spinw4](https://twitter.com/intent/user?screen_name=spinw4) on Twitter.

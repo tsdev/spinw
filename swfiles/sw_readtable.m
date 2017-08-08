@@ -64,10 +64,14 @@ dataStr = ndbase.source(dataSource);
 %         regexprep(dataSource,'\' , '\\\') '!']);
 % end
 
+newLine = sprintf('\n'); %#ok<SPRINTFN>
+
 % split string into lines
-dataStr = regexp(dataStr, ['(?:' sprintf('\n') ')+'], 'split');
+dataStr = strtrim(regexp(dataStr, ['(?:' newLine ')+'], 'split'));
+% remove empty lines
+dataStr(cellfun(@(C)isempty(C),dataStr)) = [];
 % add '\n' back to the end of lines
-dataStr = cellfun(@(C)[C char(10)],dataStr,'UniformOutput',false);
+dataStr = cellfun(@(C)[C newLine],dataStr,'UniformOutput',false);
 
 % index into the line number, skip header lines
 idxStr = nHeader+1;

@@ -74,7 +74,7 @@ if obj.symbolic
 end
 
 % generate exchange couplings
-[SS, SI, RR] = obj.intmatrix('fitmode',2,'extend',true,'conjugate',true);
+[SS, ~, RR] = obj.intmatrix('fitmode',2,'extend',true,'conjugate',true);
 
 % list of magnetic atoms in the unit cell
 matom = obj.matom;
@@ -122,7 +122,9 @@ idxAll = [idx1(:) idx2(:) idx3(:) idx4(:)];
 % Summed up on all bonds
 % Dimensions: 9 x nMagExt x nMagExt x nHkl
 %                 atom1     atom2
-ft = accumarray(idxAll,Jexp(:)',[9 nMagExt nMagExt nHkl]);
+% the result is always real, because we use the conjugate of the bonds as
+% well
+ft = real(accumarray(idxAll,Jexp(:)',[9 nMagExt nMagExt nHkl]));
 
 % reshape into 3 x 3 x nMagExt x nMagExt x nHkl
 ft = reshape(ft,[3 3 nMagExt nMagExt nHkl]);

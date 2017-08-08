@@ -59,11 +59,6 @@ end
 
 dataStr = ndbase.source(dataSource);
 
-% if dataStr == -1
-%     error('sw_readtable:FileNotFound',['Data file not found: '...
-%         regexprep(dataSource,'\' , '\\\') '!']);
-% end
-
 newLine = sprintf('\n'); %#ok<SPRINTFN>
 
 % split string into lines
@@ -169,5 +164,7 @@ for ii = 2:numel(cName)
     end
     [dat(:).(cName{ii})] = datMat{:};
 end
+
+% TODO reindex and reshape matrices based on mIdx cell
 
 end

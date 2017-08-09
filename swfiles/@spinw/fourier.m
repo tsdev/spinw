@@ -25,19 +25,30 @@ function res = fourier(obj,hkl,varargin)
 %
 % Options:
 %
-% fitmode       Speedup (for fitting mode only), default is false.
+% extend        If true, the Fourier transform will be calculated on the
+%               magnetic supercell, if false the crystallographic cell will
+%               be considered. Default is true.
 %
+% Output:
+%
+% res           Structure with the following fields:
+%   ft          contains the Fourier transfor in a matrix with dimensions 
+%               [3,3,nMagExt,nMagExt,nHKL], where nMagExt is the number of
+%               magnetic atoms in the magnetic cell and nHKL is the number
+%               of reciprocal space points.
+%   hkl         Matrix with the given reciprocal space points stored in a
+%               matrix with dimensions [3,nHKL].
 %
 % See also SPINW.OPTMAGK.
 %
 
 % TODO: test for magnetic supercell
 
-%inpForm.fname  = {'fitmode' };
-%inpForm.defval = {false     };
-%inpForm.size   = {[1 1]     };
-%
-%param = sw_readparam(inpForm, varargin{:});
+inpForm.fname  = {'extend' };
+inpForm.defval = {true     };
+inpForm.size   = {[1 1]    };
+
+param = sw_readparam(inpForm, varargin{:});
 
 % for linear scans create the Q line(s)
 if nargin > 1
@@ -74,14 +85,19 @@ if obj.symbolic
 end
 
 % generate exchange couplings
-[SS, ~, RR] = obj.intmatrix('fitmode',2,'extend',true,'conjugate',true);
+[SS, ~, RR] = obj.intmatrix('fitmode',true,'extend',param.extend,'conjugate',true);
 
 % list of magnetic atoms in the unit cell
 matom = obj.matom;
 % number of Q points
 nHkl    = size(hkl,2);
+if param.extend
+    nExt = double(obj.mag_str.nExt);
+else
+    nExt = 1;
+end
 % number of magnetic atoms in the magnetic supercell
-nMagExt = prod(double(obj.mag_str.nExt))*numel(matom.idx);
+nMagExt = prod(nExt)*numel(matom.idx);
 % number of bonds
 nBond   = size(SS.all,2);
 

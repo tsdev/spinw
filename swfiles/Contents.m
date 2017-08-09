@@ -32,6 +32,7 @@
 %   sw_fstat         - calculates termodynamical averages during an annealing simulation
 %   sw_intsf         - integrates the structure factor along given Q directions
 %   sw_model         - creates different predefined spin models
+%   sw_bonddim       - find dimensionality of a periodic bond network
 %
 % Constraint functions for spinw.optmagstr():
 %
@@ -103,3 +104,4 @@
 %   sw_update        - updates the SpinW installation from the internet
 %   sw_version       - returns the installed version of SpinW
 %   sw_mex           - compiles the mex files and test them
+%   sw_notify        - sends system notification in OSX

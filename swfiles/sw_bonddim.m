@@ -10,10 +10,10 @@ function L = sw_bonddim(C, nAtom)
 %
 % C         Bond list in a matrix with dimensions [5 nBond]. The meaning of
 %           the rows:
-%               #1      Index of the bond starting atom.
-%               #2      Index of the bond end atom.
-%               #3:#5   Lattice translations between the coupled atoms in
+%               #1:#3   Lattice translations between the coupled atoms in
 %                       lattice units (always integer).
+%               #4      Index of the bond starting atom.
+%               #5      Index of the bond end atom.
 %           For example for a chain along b-axis on a Bravais lattice:
 %               C = [1;1;0;1;0]
 % nAtom     Number of atoms in the unit cell. If not given, the maximum
@@ -25,11 +25,17 @@ function L = sw_bonddim(C, nAtom)
 %           subsystems, it has the following fields:
 %               D       Dimensionality of the subsystem (0<=D<=3).
 %               base    Basis vectors spanning the subsystem stored in a
-%                       [3 D] matrix where each clumn denotes a basis
+%                       [3 D] matrix where each column denotes a basis
 %                       vector.
 %               site    List of sites that belong to the subsystem.
 %
 
+% reshuffle C to match the input with the output of spinw.intmatrix
+% in the code
+%       C(1,:)      is atom1
+%       C(2,:)      is atom2
+%       C(3:5,:)    is the transplation vector
+C = C([4:5 1:3],:);
 
 % input check
 if size(C,1)~=5

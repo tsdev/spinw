@@ -63,7 +63,7 @@ nExt = double(param.nExt);
 if isempty(param.bin)
     bin  = {param.ubin param.vbin param.wbin};
     ebin = cellfun(@(C)~isempty(C),bin);
-    if ~ismember(char(double(ebin)),{char([1 0 0]) char([1 1 0]) char([1 1 1])})
+    if ~ismember(double(ebin),[1 0 0;1 1 0;1 1 1],'rows')
         error('sw_qgrid:WrongInput','Wrong input!')
     end
     % number of dimensions

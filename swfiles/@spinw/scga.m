@@ -30,95 +30,154 @@ function spec = scga(obj, hkl, varargin)
 %   Dopt    Optimum value of D.
 %
 
-inpForm.fname  = {'T'   'plot' 'Dlim'  'kbase' 'nQ'  'Dopt'};
-inpForm.defval = {0     true   [0 0.5] []      1e3   []    };
-inpForm.size   = {[1 1] [1 1]  [1 2]   [3 -4]  [1 1] [1 1] };
-inpForm.soft   = {false false  false   true    false true  };
+inpForm.fname  = {'T'   'plot' 'nInt' 'lambda' 'subLat'};
+inpForm.defval = {0     true   1e3    []       []      };
+inpForm.size   = {[1 1] [1 1]  [1 1]  [1 1]    [1 -1]  };
+inpForm.soft   = {false false  false  true     true    };
 
 param = sw_readparam(inpForm, varargin{:});
 
-kBT  = sw_converter(param.T,obj.unit.label{4},obj.unit.label{2});
+kBT  = param.T*obj.unit.kB;
 beta = 1/kBT;
-S    = obj.unit_cell.S(obj.unit_cell.S>0);
+S    = obj.matom.S;
 
 if std(S)~=0 || mean(S)==0
     error('spinw:scga:UnsupportedModel','All magnetic atom has to have the same non-zero spin quantum number!')
-else
-    S = S(1);
 end
 
-if isempty(param.Dopt)
-    if isempty(param.kbase)
-        % find the dimensionality of the bonds
-        % bond vectors of non-zero couplings
-        % generate exchange couplings
-        SS = obj.intmatrix('fitmode',2,'extend',false,'conjugate',true,'zeroC',false);
-        dl = SS.all(1:3,:);
-        % system dimensionality
-        D = rank(dl);
-        % k-vector directions
-        kbase = orth(dl);
-    else
-        kbase = param.kbase;
-        D = size(kbase,2);
-    end
+
+% number of magnetic atoms in the crystallographic unit cell
+nMag = numel(obj.matom.idx);
+
+% sublattices
+subLat = param.subLat;
+
+% reduce the lattice into sublattices if necessary
+if ~isempty(subLat)
+    % number of sublattices
+    nSub = max(subLat);
+    idx1 = repmat(subLat(:),1,nMag);
+    idx2 = repmat(subLat(:)',nMag,1);
+    subs = [idx1(:) idx2(:)];
+else
+    nSub = nMag;
+end
+
+if isempty(param.lambda)
+    % find the dimensionality of the bonds
+    % bond vectors of non-zero couplings
+    % generate exchange couplings
+    SS = obj.intmatrix('fitmode',true,'extend',false,'conjugate',true,'zeroC',false);
+    % calculate the basis vectors
+    L = sw_bonddim(SS.all(1:5,:));
+    % unite all basis vectors to get the dimensionality of the full system
+    dl    = [L(:).base];
+    kbase = orth(dl);
+    % system dimensionality
+    D     = size(kbase,2);
     
     % q-points
-    N    = round(param.nQ^(1/D));
+    N    = round(param.nInt^(1/D));
+    nQBZ = N^D;
     BZ  = sw_qgrid('mat',kbase,'bin',repmat({linspace(0,1,N)},1,D));
     
     chi0 = obj.fourier(reshape(BZ,3,[]));
-    FT   = chi0.ft;
+    % include the spin value into the Fourier transform of the Js
+    % thus convert the model into interacting S=1 spins
+    FT = bsxfun(@times,chi0.ft,permute(bsxfun(@times,S',S),[3 4 1 2]));
+
+    % reduce the lattice into sublattices
+    if ~isempty(subLat)
+        FT  = reshape(FT,3,3,[],nQBZ);
+        FT2 = zeros(3,3,nSub,nSub,nQBZ);
+        
+        for ii = 1:nSub
+            for jj = 1:nSub
+                FT2(:,:,ii,jj,:) = permute(sum(FT(:,:,ismember(subs,[ii jj],'rows'),:),3),[1 2 3 5 4])*nSub/nMag;
+                if ii == jj
+                    FT2(:,:,ii,ii,:) = FT2(:,:,ii,ii,:) + 1;
+                end
+            end
+        end
+        FT = FT2;
+    else
+        for ii = 1:nSub
+            FT(:,:,ii,ii,:) = FT(:,:,ii,ii,:) + 1;
+        end
+    end
+    % find the eigenvalues over the BZ
+    [~,omega] = eigorth(squeeze(FT(1,1,:,:,:)));
+
+    % find the optimum value of lambda
+    lambda = fminsearch(@(lambda)abs(sumn(1./(lambda+beta*omega),[1 2])/nQBZ/4-1/3),3)
     
-    % optimised solution
-    Dopt = sw_fminsearchbnd(@(D)saddle_eq(D,FT,beta,S),mean(param.Dlim),param.Dlim(1),param.Dlim(2));
     
     if param.plot
-        nD = 200;
-        Dv = linspace(param.Dlim(1),param.Dlim(2),nD);
+        % plot the lambda value scan
+        nL = 200;
+        vL = linspace(0,3,nL);
         
-        sumA = zeros(1,nD);
+        sumA = zeros(1,nL);
         
-        nMat = size(FT,5);
-        
-        for jj = 1:nD
-            sumA(jj) = sumn(ndbase.inv3(bsxfun(@plus,FT,Dv(jj)*eye(3)),'diag'),1:4)/nMat/beta;
+        for jj = 1:nL
+            sumA(jj) = sumn(1./(vL(jj)+beta*omega),[1 2])/nQBZ*nSub/nMag;
         end
         
         figure
-        plot(Dv,sumA','o-')
-        line(xlim,S^2*[1 1],'color','k')
+        plot(vL,sumA','-')
+        line(xlim,[1/3 1/3],'color','k')
         hold on
-        line(Dopt*[1 1],ylim,'color','r')
-        xlabel('\Delta(\beta)')
+        line(lambda*[1 1],ylim,'color','r')
+        xlabel('\lambda(\beta)')
         ylabel('B.Z. sum')
     end
 else
-    Dopt = param.Dopt;
+    lambda = param.lambda;
 end
 
 % calculate spin-spin correlations
 qDim = num2cell(size(hkl));
 
 chi = obj.fourier(reshape(hkl,3,[]));
+nQ  = numel(hkl)/3;
 
-A0   = beta*bsxfun(@plus,chi.ft,Dopt*eye(3));
+FT = chi.ft;
+% include the spin value into the Fourier transform of the Js
+% thus convert the model into interacting S=1 spins
+FT = bsxfun(@times,FT,permute(bsxfun(@times,S',S),[3 4 1 2]));
 
-spec.Sab  = reshape(permute(sumn(real(ndbase.inv3(A0)),[3 4]),[1 2 5 3 4]),3,3,qDim{2:end});
-spec.Dopt = Dopt;
-spec.hkl  = hkl;
-spec.hklA = reshape((reshape(hkl,3,[])'*obj.rl)',3,qDim{2:end});
-
+% reduce the lattice into sublattices
+if ~isempty(subLat)
+    FT  = reshape(FT,3,3,[],nQ);
+    FT2 = zeros(3,3,nSub,nSub,nQ);
+    
+    for ii = 1:nSub
+        for jj = 1:nSub
+            FT2(:,:,ii,jj,:) = permute(sum(FT(:,:,ismember(subs,[ii jj],'rows'),:),3),[1 2 3 5 4])*nSub/nMag;
+            if ii == jj
+                FT2(:,:,ii,ii,:) = FT2(:,:,ii,ii,:) + 1;
+            end
+        end
+    end
+    FT = FT2;
+else
+    for ii = 1:nSub
+        FT(:,:,ii,ii,:) = FT(:,:,ii,ii,:) + 1;
+    end
 end
 
-function R = saddle_eq(D,FT,beta,S)
-% saddle_eq(D,FT,beta)
-% to solve saddle point equation
+% spin-spin correlation function between any pair of sublattices
+Sabij = bsxfun(@plus,permute(lambda*eye(nSub),[3 4 1 2]),beta*FT);
 
-nMat = size(FT,5);
+Sab = zeros(1,nQ);
+for ii = 1:nQ
+    Sab(ii) = sumn(inv(squeeze(Sabij(1,1,:,:,ii))),[1 2]);
+end
 
-sumA = sumn(ndbase.inv3(bsxfun(@plus,FT,D*eye(3)),'diag'),1:5)/nMat/beta;
-
-R = abs(real(sumA-S^2));
+% spin-spin sorrelations per magnetic atom
+spec.Sab    = reshape(Sab,qDim{2:end})/nSub;
+spec.lambda = lambda;
+spec.hkl    = hkl;
+spec.hklA   = reshape((reshape(hkl,3,[])'*obj.rl)',3,qDim{2:end});
 
 end

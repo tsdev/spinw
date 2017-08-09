@@ -235,7 +235,7 @@ fprintf0(fid,'Calculation finished.\n');
 %obj.mag_str.n = n;
 obj.genmagstr('mode','helical','S',M,'k',k,'n',n);
 
-validate(obj);
+spinw.validate(obj);
 
 % Create output struct
 if nargout > 0

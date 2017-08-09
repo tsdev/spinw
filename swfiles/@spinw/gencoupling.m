@@ -85,7 +85,7 @@ fid = obj.fileid;
 hMax1 = 1./sqrt(sum(inv(obj.basisvector').^2,2));
 
 % calculate the distance of the [1 1 1] point from the origin
-hMax2 = sum(obj.basisvector,2);
+hMax2 = abs(sum(obj.basisvector,2));
         
 % calculate the closest point to the origin
 hMax = min([hMax1 hMax2],[],2);
@@ -145,7 +145,7 @@ aPos = bsxfun(@plus,permute(mAtom.r,[3:6 2 1]),cTr);
 % r(atom2) - r(atom1)
 % Na x Nb x Nc x nMagAtom x nMagAtom x 3
 dR  = bsxfun(@minus,aPos,permute(mAtom.r,[3:5 2 6 1]));
-% mark duplicate bonds bonds within the (0,0,0) cell with nan
+% mark duplicate bonds within the (0,0,0) cell with nan
 R0 = permute(dR(1,nC(2)+1,nC(3)+1,:,:,:),[4:6 1:3]);
 dR(1,nC(2)+1,nC(3)+1,:,:,:) = bsxfun(@times,tril(nan(nMagAtom))+1,R0);
 % calculate the absolute value of the distances in Angstrom
@@ -248,7 +248,7 @@ obj.coupling         = coupling;
 obj.single_ion.aniso = aniso;
 obj.single_ion.g     = g;
 
-validate(obj);
+spinw.validate(obj);
 
 end
 

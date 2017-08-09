@@ -63,8 +63,13 @@ bin   = [bin(1) (bin(1:(end-1))+bin(2:end))/2 bin(end)];
 
 if isnumeric(dx) && numel(dx)==1 && ~any(abs(bin-bin(1))>20*eps)
     % simple convolution
-    % works only for equal bins
-    fG = func0(((-3*dx):bin(1):(3*dx))',[1 0 dx])*bin(1);
+    % works only for equal bins and Gaussian
+    if nargin < 4
+        fG = func0(((-3*dx):bin(1):(3*dx))',[1 0 dx])*bin(1);
+    else
+        xrange = abs(x(end)-x(1));
+        fG = func0(((-xrange):bin(1):xrange)',[1 0 dx])*bin(1);
+    end
     Mtemp = conv2(M,fG,'same');
 else
     for ii = 1:numel(x)

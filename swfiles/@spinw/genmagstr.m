@@ -424,11 +424,15 @@ switch param.mode
         S = repmat(S,[prod(nExt) 1]);
         
         if obj.symbolic
-            [S, k, ~] = param.func(sym(S), sym(param.x0));
+            [S, k, n] = param.func(sym(S), sym(param.x0));
         else
-            [S, k, ~] = param.func(S,param.x0);
+            [S, k, n] = param.func(S,param.x0);
         end
-
+        
+        if any(k)
+            S = S + 1i*cross(repmat(permute(n,[2 3 1]),[1 size(S,2) 1]),S);
+        end
+        
     otherwise
         error('spinw:genmagstr:WrongMode','Wrong param.mode value!');
 end
@@ -451,6 +455,6 @@ mag_str.k    = k';
 mag_str.F    = S;
 
 obj.mag_str   = mag_str;
-validate(obj);
+spinw.validate(obj);
 
 end

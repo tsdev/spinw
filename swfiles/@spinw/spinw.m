@@ -1,4 +1,4 @@
-classdef spinw < handle
+classdef spinw < handle & matlab.mixin.SetGet
     % SPINW class defines data structure and methods to calculate spin wave
     % dispersion in magnetic crystals.
     %
@@ -256,6 +256,7 @@ classdef spinw < handle
         %   kB      Boltzmann constant, default is 0.0862 [meV/K]
         %   muB     Bohr magneton, default is 0.0579 [meV/T]
         %   mu0     vacuum permeability, 201.335431 [T^2*Angstrom^3/meV]
+        %   qmat    transformation matrix that converts the given q-values
         unit
         % Stores the cache, it should be only used to check consistency of the code.
         % The stored values should not be changed by the user in any case!
@@ -280,6 +281,11 @@ classdef spinw < handle
         ver   = sw_version;
     end
     
+    methods (Static)
+        % static methods
+        validate(varargin)
+    end
+        
     methods
         function obj = spinw(varargin)
             % SPINW constructor
@@ -330,7 +336,7 @@ classdef spinw < handle
                     objS.lattice.angle = objS.lattice.angle';
                 end
                 
-                validate(objS);
+                spinw.validate(objS);
                 fNames = fieldnames(objS);
                 for ii = 1:length(fNames)
                     obj.(fNames{ii}) = objS.(fNames{ii});

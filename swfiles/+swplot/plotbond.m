@@ -35,6 +35,22 @@ function varargout = plotbond(varargin)
 %                           (default if DM vectors are non-zero).
 %               'sym'       Plot the symmetric exchange at the middle
 %                           of the bond as an ellipsoid.
+% sign      String, defines how the ellipsoids are generated for exchange
+%           matrices that contain both negative and positive eigenvalues.
+%           Possible values are:
+%               'abs'       The absolute value of the eigenvalues is used.
+%                           This works nicely except that AFM and FM values
+%                           will have the same radius. Default value.
+%               'min'       If there is a negative eigenvalue, it is
+%                           shifted to zero with all other egeinvalues
+%                           equally. This works nicely to emphasize AFM
+%                           type values in the exchange matrix. Problem is
+%                           that 0 exchange values can be assigned non-zero
+%                           radius.
+%               'max'       Same as min, just positive eigenvalues are
+%                           shifted to zero. This works nicely to emphasize
+%                           FM type exchange values, has the same problem
+%                           as the 'min' option.
 % linewidth Defines the bond radius if it is drawn by a line:
 %               'fix'       All line will have a width given by linewidth0.
 %                           Default value.
@@ -143,10 +159,10 @@ inpForm.defval = [inpForm.defval {[0;0;0] true      []      30    0.3     0.3   
 inpForm.size   = [inpForm.size   {[3 1]   [1 1]     [1 1]   [1 1] [1 1]   [1 1]     [1 1]     }];
 inpForm.soft   = [inpForm.soft   {false   false     true    false false   false     false     }];
 
-inpForm.fname  = [inpForm.fname  {'radius1' 'translate' 'zoom' 'color2' 'copy'}];
-inpForm.defval = [inpForm.defval {0.08      false        false 'auto'   false }];
-inpForm.size   = [inpForm.size   {[1 1]     [1 1]        [1 1] [1 -11]  [1 1] }];
-inpForm.soft   = [inpForm.soft   {false     false        false false    false }];
+inpForm.fname  = [inpForm.fname  {'radius1' 'translate' 'zoom' 'color2' 'copy' 'sign'}];
+inpForm.defval = [inpForm.defval {0.08      false        false 'auto'   false  'abs' }];
+inpForm.size   = [inpForm.size   {[1 1]     [1 1]        [1 1] [1 -11]  [1 1]  [1 3] }];
+inpForm.soft   = [inpForm.soft   {false     false        false false    false  false }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -387,11 +403,11 @@ switch param.mode2
         colDM = color2(:,~zeroDM);
         
         swplot.plot('type','arrow','name','bond_mat','position',cat(3,posDM,posDM+vecDM),'text','',...
-            'figure',hFigure,'legend',lLabel,'color',colDM,'R',param.radius1,...
+            'figure',hFigure,'legend',[],'color',colDM,'R',param.radius1,...
             'tooltip',false,'replace',param.replace,'npatch',param.npatch,...
             'data',{},'label',{},'ang',param.ang,...
             'lhead',param.lhead,'translate',param.translate,'zoom',param.zoom);
-        
+
     case 'sym'
         % plot ellipsoid
         % remove zero ellipsoids
@@ -410,17 +426,36 @@ switch param.mode2
         [V, Rell] = eigorth(matSym,1e-5);
         % creating positive definite matrix by adding constant to all
         % eigenvalues.
+        switch param.sign
+            case 'abs'
+                % take the absolute value of the exchange
+                % problem: this makes AFM and FM couplings equivalent
+                Rell = abs(Rell);
+            case 'min'
+                % shift negative values to zero
+                % this makes non-zero from zero values
+                Rell = bsxfun(@minus,Rell,min(Rell,[],1).*(min(Rell,[],1)<0));
+            case 'max'
+                % shift the zero the largest value
+                % this makes non-zero from zero values
+                Rell = -bsxfun(@minus,Rell,max(Rell,[],1).*(max(Rell,[],1)>0));
+            otherwise
+                error('plotbond:WrongOption','The given string for the ''sign'' option is invalid!');
+        end
+
         maxR  = sqrt(max(sum(Rell.^2,1)));
-        Rell = ((Rell+param.radius1)/(maxR+param.radius1))*param.scale*min(lxyz);
+        %Rell = ((Rell+param.radius1)/(maxR+param.radius1))*param.scale*min(lxyz);
+        Rell = (Rell/maxR)*param.scale*min(lxyz)+param.radius1;
         % V*diag(R) vectorized
         %V = bsxfun(@times,V,permute(Rell,[3 1 2]));
         V = mmat(bsxfun(@times,V,permute(Rell,[3 1 2])),permute(V,[2 1 3]));
         
         swplot.plot('type','ellipsoid','name','bond_mat','position',posSym,'text','',...
-            'figure',hFigure,'legend',lLabel,'color',colSym,'T',V,...
+            'figure',hFigure,'legend',[],'color',colSym,'T',V,...
             'tooltip',false,'replace',param.replace,'nmesh',param.nmesh,...
             'data',{},'label',{},'nmesh',param.nmesh,'translate',param.translate,...
             'zoom',param.zoom);
+
 
     otherwise
         error('plotbond:WrongInput','The given mode2 string is invalid!');

@@ -171,7 +171,7 @@ if obj.sym
     isHeis = sw_mattype(obj.matrix.mat,0) == 1;
     isHeis = isHeis(JJ.idx);
     % remove Heisenberg
-    colSym = colSym & ~isHeis;
+    colSym = colSym & ~isHeis(:)';
     % rotate the matrices: R*M*R'
     JJ.mat(:,:,colSym) = mmat(rotOpB(:,:,colSel(colSym)),mmat(JJ.mat(:,:,colSym),permute(rotOpB(:,:,colSel(colSym)),[2 1 3])));
 end

@@ -12,8 +12,8 @@ function qOut = sw_qscan(qLim)
 %
 
 if nargin == 0
-    help sw_qscan;
-    return;
+    help sw_qscan
+    return
 end
 
 if ~iscell(qLim)

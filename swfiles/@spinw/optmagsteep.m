@@ -280,7 +280,7 @@ for ii = 1:nSub
 end
 
 if fid == 1
-    sw_status(0,1);
+    sw_status(0,1,'Magnetic structure optimization');
 end
 
 if nargout == 1

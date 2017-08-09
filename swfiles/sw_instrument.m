@@ -77,12 +77,14 @@ end
 func0 = @swfunc.gaussfwhm;
 
 inpForm.fname  = {'dE'    'ki'  'Ei'  'kf'  'Ef'  'plot' 'polDeg' 'ThetaMin'};
-inpForm.defval = {0       0     0     0     0     false   5        0        };
+inpForm.defval = {[]      0     0     0     0     false   5        0        };
 inpForm.size   = {[-1 -2] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]     };
+inpForm.soft   = {true    false false false false false  false    false     };
 
 inpForm.fname  = [inpForm.fname  {'formFact' 'dQ'  'norm' 'useRaw' 'func'}];
 inpForm.defval = [inpForm.defval { 'auto'    0     false   true    func0 }];
 inpForm.size   = [inpForm.size   { [1 -2]    [1 1] [1 1]   [1 1]   [1 1] }];
+inpForm.soft   = [inpForm.soft   {false      false false   false   false }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -119,7 +121,7 @@ end
 % determine whether to include resolution
 calcres = true;
 try %#ok<TRYNC>
-    if ~any(param.dE)
+    if isempty(param.dE)
         calcres = false;
     end
 end

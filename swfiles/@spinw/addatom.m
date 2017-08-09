@@ -105,8 +105,9 @@ if isempty(newAtom.label)
     warning('off','sw_mff:WrongInput');
     warning('off','sw_cff:WrongInput');
     warning('off','sw_nb:WrongInput');
-elseif ~any(newAtom.S)
-    % the atom is not intentionally mgnetic
+%elseif ~any(newAtom.S)
+elseif ~any(sw_sub1(newAtom.S))
+    % the atom is not intentionally magnetic
     warning('off','sw_mff:WrongInput');
 end
 
@@ -314,11 +315,12 @@ end
 
 newAtom.color     = int32(newAtom.color);
 newObj.unit_cell  = newAtom;
-validate(newObj,'unit_cell');
+spinw.validate(newObj,'unit_cell');
 
 cField = {'r' 'label' 'S' 'color' 'ox' 'occ' 'b' 'A' 'Z' 'biso'};
 
 if newAtom.update
+    % TODO check for structures with atoms having identical labels
     % find identical labels and positions between the new atoms and
     % existing atoms
     [iLabel, lIdx] = ismember(newObj.unit_cell.label,obj.unit_cell.label);
@@ -349,7 +351,7 @@ if ~isempty(newObj.unit_cell.S)
     
     obj.unit_cell.ff    = cat(3,obj.unit_cell.ff,newObj.unit_cell.ff);
 end
-%validate(obj);
+%spinw.validate(obj);
 
 [~,~,rIdx] = unique(obj.unit_cell.r','rows');
 

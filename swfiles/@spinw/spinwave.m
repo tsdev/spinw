@@ -255,6 +255,9 @@ km = magStr.k.*nExt;
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
 
+% Transform the momentum values to the new lattice coordinate system
+hkl = obj.unit.qmat*hkl;
+
 % Calculates momentum transfer in A^-1 units.
 hklA = 2*pi*(hkl'/obj.basisvector)';
 
@@ -722,6 +725,10 @@ for jj = 1:nSlice
                         K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
                         warn1 = true;
                     catch PD
+                        if param.tid == 2
+                            % close timer window
+                            sw_status(100,2,param.tid);
+                        end
                         error('spinw:spinwave:NonPosDefHamiltonian',...
                             ['Hamiltonian matrix is not positive definite, probably'...
                             ' the magnetic structure is wrong! For approximate'...
@@ -926,7 +933,7 @@ end
 % Creates output structure with the calculated values.
 spectra.omega    = omega;
 spectra.Sab      = Sab;
-spectra.hkl      = hkl(:,1:nHkl0);
+spectra.hkl      = obj.unit.qmat\hkl(:,1:nHkl0);
 spectra.hklA     = hklA;
 spectra.incomm   = incomm;
 spectra.helical  = helical;

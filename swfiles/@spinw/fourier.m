@@ -96,17 +96,19 @@ if param.extend
 else
     nExt = 1;
 end
+% number of magnetic atoms in the crystallographic unit cell
+nMag    = numel(matom.idx);
 % number of magnetic atoms in the magnetic supercell
-nMagExt = prod(nExt)*numel(matom.idx);
+nMagExt = prod(nExt)*nMag;
 % number of bonds
 nBond   = size(SS.all,2);
 
 % interacting atom1
 %atom1 = SS.all(4,:);
-atom1 = mod(SS.all(4,:)-1,numel(matom.S))+1;
-% interacting atom1
+atom1 = mod(SS.all(4,:)-1,nMag)+1;
+% interacting atom2
 %atom2 = SS.all(5,:);
-atom2 = mod(SS.all(5,:)-1,numel(matom.S))+1;
+atom2 = mod(SS.all(5,:)-1,nMag)+1;
 
 % magnetic couplings, 3x3xnJ
 %JJ = cat(3,reshape(SS.all(6:14,:),3,3,[]),SI.aniso);

@@ -30,15 +30,19 @@ function spec = scga(obj, hkl, varargin)
 %   Dopt    Optimum value of D.
 %
 
-inpForm.fname  = {'T'   'plot' 'nInt' 'lambda' 'subLat'};
-inpForm.defval = {0     true   1e3    []       []      };
-inpForm.size   = {[1 1] [1 1]  [1 1]  [1 1]    [1 -1]  };
-inpForm.soft   = {false false  false  true     true    };
+inpForm.fname  = {'T'    'plot' 'nInt' 'lambda' 'subLat'};
+inpForm.defval = {0      true   1e3    []       []      };
+inpForm.size   = {[1 -1] [1 1]  [1 1]  [1 1]    [1 -2]  };
+inpForm.soft   = {false  false  false  true     true    };
 
 param = sw_readparam(inpForm, varargin{:});
 
+if numel(param.T)>1
+    param.plot = false;
+end
+
 kBT  = param.T*obj.unit.kB;
-beta = 1/kBT;
+beta = 1./kBT;
 S    = obj.matom.S;
 
 if std(S)~=0 || mean(S)==0
@@ -84,8 +88,10 @@ if isempty(param.lambda)
     chi0 = obj.fourier(reshape(BZ,3,[]));
     % include the spin value into the Fourier transform of the Js
     % thus convert the model into interacting S=1 spins
-    FT = bsxfun(@times,chi0.ft,permute(bsxfun(@times,S',S),[3 4 1 2]));
-
+    % this is already included in the fourie() function
+    %FT = bsxfun(@times,chi0.ft,permute(bsxfun(@times,S',S),[3 4 1 2]));
+    FT = chi0.ft;
+    
     % reduce the lattice into sublattices
     if ~isempty(subLat)
         FT  = reshape(FT,3,3,[],nQBZ);
@@ -95,36 +101,45 @@ if isempty(param.lambda)
             for jj = 1:nSub
                 FT2(:,:,ii,jj,:) = permute(sum(FT(:,:,ismember(subs,[ii jj],'rows'),:),3),[1 2 3 5 4])*nSub/nMag;
                 if ii == jj
-                    FT2(:,:,ii,ii,:) = FT2(:,:,ii,ii,:) + 1;
+                    FT2(:,:,ii,ii,:) = FT2(:,:,ii,ii,:);
                 end
             end
         end
         FT = FT2;
     else
         for ii = 1:nSub
-            FT(:,:,ii,ii,:) = FT(:,:,ii,ii,:) + 1;
+            FT(:,:,ii,ii,:) = FT(:,:,ii,ii,:);
         end
     end
     % find the eigenvalues over the BZ
-    [~,omega] = eigorth(squeeze(FT(1,1,:,:,:)));
-
+    FT = squeeze(FT(1,1,:,:,:));
+    omega = zeros(nSub,nQBZ);
+    for ii = 1:nQBZ
+        omega(:,ii) = eig(FT(:,:,ii));
+    end
+    %[~,omega] = eigorth(squeeze(FT(1,1,:,:,:)));
+    
     % find the optimum value of lambda
-    lambda = fminsearch(@(lambda)abs(sumn(1./(lambda+beta*omega),[1 2])/nQBZ/4-1/3),3)
+    lambda = zeros(1,numel(beta));
+    for ii = 1:numel(beta)
+        %lambda(ii) = fminsearch(@(lambda)abs(sumn(1./(lambda+beta(ii)*omega),[1 2])/nQBZ/4-1/3),3);
+        lambda(ii) = fminsearch(@(lambda)abs(sumn(1./(lambda+beta(ii)*omega),[1 2])/nQBZ/nSub-1/3),1-min(beta(ii)*omega(:)));
+    end
     
     
     if param.plot
         % plot the lambda value scan
         nL = 200;
-        vL = linspace(0,3,nL);
+        vL = linspace(0,1e2,nL)-min(beta*omega(:));
         
         sumA = zeros(1,nL);
         
         for jj = 1:nL
-            sumA(jj) = sumn(1./(vL(jj)+beta*omega),[1 2])/nQBZ*nSub/nMag;
+            sumA(jj) = sumn(1./(vL(jj)+beta*omega),[1 2])/nQBZ/nSub;
         end
         
         figure
-        plot(vL,sumA','-')
+        loglog(vL,sumA','-')
         line(xlim,[1/3 1/3],'color','k')
         hold on
         line(lambda*[1 1],ylim,'color','r')
@@ -135,49 +150,56 @@ else
     lambda = param.lambda;
 end
 
-% calculate spin-spin correlations
-qDim = num2cell(size(hkl));
-
-chi = obj.fourier(reshape(hkl,3,[]));
-nQ  = numel(hkl)/3;
-
-FT = chi.ft;
-% include the spin value into the Fourier transform of the Js
-% thus convert the model into interacting S=1 spins
-FT = bsxfun(@times,FT,permute(bsxfun(@times,S',S),[3 4 1 2]));
-
-% reduce the lattice into sublattices
-if ~isempty(subLat)
-    FT  = reshape(FT,3,3,[],nQ);
-    FT2 = zeros(3,3,nSub,nSub,nQ);
+if numel(beta) == 1
+    % calculate spin-spin correlations only if a single temperature is
+    % given
+    qDim = num2cell(size(hkl));
     
-    for ii = 1:nSub
-        for jj = 1:nSub
-            FT2(:,:,ii,jj,:) = permute(sum(FT(:,:,ismember(subs,[ii jj],'rows'),:),3),[1 2 3 5 4])*nSub/nMag;
-            if ii == jj
-                FT2(:,:,ii,ii,:) = FT2(:,:,ii,ii,:) + 1;
+    chi = obj.fourier(reshape(hkl,3,[]));
+    nQ  = numel(hkl)/3;
+    
+    FT = chi.ft;
+    % include the spin value into the Fourier transform of the Js
+    % thus convert the model into interacting S=1 spins
+    % already included in fourier() function
+    %FT = bsxfun(@times,FT,permute(bsxfun(@times,S',S),[3 4 1 2]));
+    
+    % reduce the lattice into sublattices
+    if ~isempty(subLat)
+        FT  = reshape(FT,3,3,[],nQ);
+        FT2 = zeros(3,3,nSub,nSub,nQ);
+        
+        for ii = 1:nSub
+            for jj = 1:nSub
+                FT2(:,:,ii,jj,:) = permute(sum(FT(:,:,ismember(subs,[ii jj],'rows'),:),3),[1 2 3 5 4])*nSub/nMag;
+                if ii == jj
+                    FT2(:,:,ii,ii,:) = FT2(:,:,ii,ii,:);
+                end
             end
         end
+        FT = FT2;
+    else
+        for ii = 1:nSub
+            FT(:,:,ii,ii,:) = FT(:,:,ii,ii,:);
+        end
     end
-    FT = FT2;
-else
-    for ii = 1:nSub
-        FT(:,:,ii,ii,:) = FT(:,:,ii,ii,:) + 1;
+    
+    % spin-spin correlation function between any pair of sublattices
+    Sabij = bsxfun(@plus,permute(lambda*eye(nSub),[3 4 1 2]),beta*FT);
+    
+    Sab = zeros(1,nQ);
+    for ii = 1:nQ
+        Sab(ii) = sumn(inv(squeeze(Sabij(1,1,:,:,ii))),[1 2]);
     end
+    
+    % spin-spin sorrelations per magnetic atom
+    spec.Sab    = reshape(Sab,qDim{2:end},1)/nSub;
+    spec.hkl    = hkl;
+    spec.hklA   = reshape((reshape(hkl,3,[])'*obj.rl)',3,qDim{2:end});
 end
 
-% spin-spin correlation function between any pair of sublattices
-Sabij = bsxfun(@plus,permute(lambda*eye(nSub),[3 4 1 2]),beta*FT);
-
-Sab = zeros(1,nQ);
-for ii = 1:nQ
-    Sab(ii) = sumn(inv(squeeze(Sabij(1,1,:,:,ii))),[1 2]);
-end
-
-% spin-spin sorrelations per magnetic atom
-spec.Sab    = reshape(Sab,qDim{2:end})/nSub;
+% save lambda only, if multiple temperatures are given
 spec.lambda = lambda;
-spec.hkl    = hkl;
-spec.hklA   = reshape((reshape(hkl,3,[])'*obj.rl)',3,qDim{2:end});
+spec.T      = param.T;
 
 end

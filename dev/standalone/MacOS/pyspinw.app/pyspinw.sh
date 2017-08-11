@@ -5,8 +5,8 @@
 # Runtime (R2017a) installed on your system.
 #
 # To start pySpinW use the following Python commands:
-# import transplant
-# m = transplant.Matlab(executable='full path to pyspinw.sh')
+# from transplant import Matlab
+# m = Matlab(executable='full path to pyspinw.sh')
 # m.disp('Hello World!')
 #
 

@@ -32,7 +32,7 @@ if nargin == 0
 end
 
 if nargin < 3
-    fid = 1;
+    fid = swpref.getpref('fid',true);
 end
 
 fprintf0(fid,'Preparing ''%s'' model ...\n',model);
@@ -47,7 +47,7 @@ switch model
         obj.gencoupling('maxDistance',10)
         if nargin > 1
             for ii = 1:numel(param)
-                obj.addmatrix('value',param(ii),'label',['J' num2str(ii)],'color',swplot.color(randi(140),1))
+                obj.addmatrix('value',param(ii),'label',['J_' num2str(ii)],'color',swplot.color(randi(140),1))
                 obj.addcoupling('mat',ii,'bond',ii)
             end
             
@@ -61,7 +61,7 @@ switch model
         obj.gencoupling('maxDistance',10)
         if nargin>1
             for ii = 1:numel(param)
-                obj.addmatrix('value',param(ii),'label',['J' num2str(ii)],'color',swplot.color(randi(140),1))
+                obj.addmatrix('value',param(ii),'label',['J_' num2str(ii)],'color',swplot.color(randi(140),1))
                 obj.addcoupling('mat',ii,'bond',ii)
             end
             
@@ -80,7 +80,7 @@ switch model
         obj.gencoupling('maxDistance',10)
         if nargin>1
             for ii = 1:numel(param)
-                obj.addmatrix('value',param(ii),'label',['J' num2str(ii)],'color',swplot.color(randi(140),1))
+                obj.addmatrix('value',param(ii),'label',['J_' num2str(ii)],'color',swplot.color(randi(140),1))
                 obj.addcoupling('mat',ii,'bond',ii)
             end
             

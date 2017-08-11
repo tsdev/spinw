@@ -78,7 +78,7 @@ if nargout == 1
                 clear sF sS
                 plotSize = false;
             end
-            swDescr = [swDescr sprintf('\n')];
+            swDescr = [swDescr sprintf('\n')]; %#ok<SPRINTFN>
             index = index + 1;
         end
     end
@@ -90,7 +90,7 @@ else
     chem.chemform(chem.chemform == ' ') = [];
     chem.chemform(chem.chemform == '_') = [];
     abc  = obj.abc;
-    aa   = symbol('angs');
+    aa   = obj.unit.label{1};
     
     swDescr = ['     <strong>SpinW</strong> object, <a href="matlab:doc @spinw">spinw</a> class:\n'...
         sprintf('     <strong>Chemical formula</strong>: %s\n',chem.chemform) ...

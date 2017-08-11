@@ -10,7 +10,7 @@ function string = tooltipstring(swObject,obj)
 %           empty.
 %
 
-newline = char(10);
+newline = char(10); %#ok<CHARTEN>
 
 if isempty(obj)
     %       distance energy magnetic-field temperature
@@ -137,7 +137,7 @@ switch swObject.name
         string = [string newline 'Index in the spinw.coupling list: #' num2str(cIdx) newline ...
             'Bond idx: #' num2str(idx) newline 'Bond subidx: #' num2str(subIdx) newline 'Cell translation:' newline...
             mat2str(dl',[1 0]) newline 'Bond vector:' newline mat2str(r',[5 3]) ' l.u.' newline ...
-            'Bond vector (xyz):' newline mat2str(rA',[5 3]) ' ' symbol('a')];
+            'Bond vector (xyz):' newline mat2str(rA',[5 3]) ' ' obj.unit.label{1}];
             
         
     case {'base' 'base_label'}

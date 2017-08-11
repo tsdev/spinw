@@ -26,7 +26,8 @@ function data = sw_readspec(path)
 %
 % The number of modes in a single line of the data file is unlimited,
 % however in every line the number of modes have to be the same. Scans with
-% less modes should contain in the end zero intensities.
+% less modes should contain zero intensities. The code automatically omits
+% modes that have either zero intensity or zero energy.
 %
 % Before any data line a special line can be inserted that gives the
 % measured correlation in square brackets, for axample: [Mxx+Myy]. For the
@@ -52,7 +53,7 @@ function data = sw_readspec(path)
 % 0     1.1000   2.0000   15      30      1   22.7032   1.0   0   0.0       0.0
 % 0     1.2000   2.0000   20      35      1   25.1516   1.0   0   0.0       0.0
 %
-% See also SPINW.FITSPEC.
+% See also SW_EGRID, SPINW.FITSPEC.
 %
 
 if nargin == 0
@@ -97,7 +98,7 @@ while ~feof(fid)
         if numel(strPosR>1)
             strPosL = strfind(temp,'[');
             if numel(strPosL)<2
-                error('sw_readspec:DataFormatError','Wrong input dat format!');
+                error('sw_readspec:DataFormatError','Wrong input data format!');
             end
             nStr = temp(strPosL(2)+1:strPosR(2)-1);
             n    = sscanf(nStr,'%f',[1 3]);
@@ -112,6 +113,16 @@ while ~feof(fid)
         data{polIdx}.E     = dTemp(:,7:3:end)';
         data{polIdx}.I     = dTemp(:,6:3:end)';
         data{polIdx}.sigma = dTemp(:,8:3:end)';
+        
+        % set intensity zero where energy is zero
+        % we won't fit zero energy modes
+        data{polIdx}.I(data{polIdx}.E==0) = 0;
+        
+        % sort intensity, put zero intensities to the end
+        [data{polIdx}.I,idx] = sort(data{polIdx}.I,1,'descend');
+        data{polIdx}.E       = data{polIdx}.E(sub2ind(size(data{polIdx}.E),idx,repmat(1:size(data{polIdx}.E,2),[2 1])));
+        data{polIdx}.sigma   = data{polIdx}.sigma(sub2ind(size(data{polIdx}.E),idx,repmat(1:size(data{polIdx}.E,2),[2 1])));
+        
         data{polIdx}.nMode = sum(data{polIdx}.I~=0,1);
         data{polIdx}.corr  = sw_parstr(modeStr{polIdx});
         

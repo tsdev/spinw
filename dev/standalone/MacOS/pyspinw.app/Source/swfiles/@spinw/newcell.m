@@ -9,10 +9,11 @@ function varargout = newcell(obj,varargin)
 % fill the new unit cell. Also the magnetic structure and bond and single
 % ion property definitions will be erased from the structure. The new cell
 % will naturally have different reciprocal lattice, however the original
-% reciprocal lattice units can be retained using the 'keepq' option. In
-% this case the spinw.spinwave() function will calculate spin wave
-% dispersion at reciprocal lattice points of the original lattice. The
-% transformation between the two lattices is stored in spinw.unit.qmat.
+% reciprocal lattice units will be retained automatically, to use the new
+% reciprocal lattice, set the 'keepq' option to false. In the default case
+% the spinw.spinwave() function will calculate spin wave dispersion at
+% reciprocal lattice points of the original lattice. The transformation
+% between the two lattices is stored in spinw.unit.qmat.
 %
 % Input:
 %
@@ -29,7 +30,7 @@ function varargout = newcell(obj,varargin)
 % keepq     If true, the reciprocal lattice units of the new model will be
 %           the same as in the old model. This is achieved by storing the
 %           transformation matrix between the new and the old coordinate
-%           system in spinw.unit.qmat.
+%           system in spinw.unit.qmat. Default is true.
 %
 % Output:
 %

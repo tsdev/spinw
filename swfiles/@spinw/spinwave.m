@@ -102,6 +102,12 @@ function spectra = spinwave(obj, hkl, varargin)
 %               frame is saved S'(k,omega). Default is false.
 % title         Gives a title string to the simulation that is saved in the
 %               output.
+% fid           Defines whether to provide text output. Default is defined
+%               in obj.fid. The possible values:
+%                   0       No text output is generated.
+%                   1       Text output in the MATLAB Command Window.
+%                   fid     File ID provided by the fopen() command, the
+%                           output is written into the opened file stream.
 %
 % Output:
 %

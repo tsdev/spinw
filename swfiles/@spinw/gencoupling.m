@@ -100,7 +100,7 @@ if param.forceNoSym
 end
 
 if fid ~= 0
-    fprintf0(fid,['Creating the bond list (maxDistance = %g ' symbol('ang')...
+    fprintf0(fid,['Creating the bond list (maxDistance = %g ' obj.unit.label{1}...
         ', nCell = %dx%dx%d)...\n'],param.maxDistance-tol,nC);
 end
 

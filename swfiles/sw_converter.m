@@ -33,8 +33,15 @@ function out = sw_converter(value, unitIn, unitOut, particleName,invert)
 %
 
 if nargin == 0
-    help sw_converter;
-    return;
+    help sw_converter
+    return
+end
+
+if isempty(unitIn) && isempty(unitOut)
+    out = value;
+    return
+elseif isempty(unitIn) || isempty(unitOut)
+    error('sw_converter:WrongInput','One of the unit is empty string!')
 end
 
 % constants in SI units

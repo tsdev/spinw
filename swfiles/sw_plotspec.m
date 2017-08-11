@@ -68,13 +68,25 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %           change this the lower and upper limits can be given here.
 % qlabel    Provide a list of strings for the Q points between linear
 %           segments.
+% dat       Experimental data points to plot over the calculated spectrum.
+%           Can be either the name of a data file that contain the
+%           experimentally fitted dispersion (needs to have the same format
+%           as the input for spinw.fitspec()), or it is a structure that
+%           contains the already imported data using sw_readtable(), for
+%           example:
+%               T = sw_readtable('myExpData.txt','\t');
+%               sw_plotspec(spectra,'dat',T);
+% ddat      Maximum distance between any Q point in the simulated spectrum
+%           and an experimental data point in A^-1. If an experimental data
+%           point is further from any Q point of the simulated spectrum
+%           thant ddat, it won't be plotted. Default value is 0.01 A^-1.
 %
 % Output:
 %
 % fHandle   Handle of the plot figure.
 % pHandle   Handle of the graphics objects on the figure.
 %
-% See also SPINW.PLOT, SPINW.SPINWAVE, SW_SURF.
+% See also SPINW.PLOT, SPINW.SPINWAVE, SW_SURF, SW_LABEL.
 %
 
 if nargin==0
@@ -88,13 +100,13 @@ else
     norm0 = false;
 end
 
-inpForm.fname  = {'mode' 'imag' 'aHandle' 'colorbar' 'dashed' 'norm' };
-inpForm.defval = {4      false   gca      true       false   norm0   };
-inpForm.size   = {[1 -6] [1 1]  [1 1]     [1 1]      [1 1]   [1 1]   };
+inpForm.fname  = {'mode' 'imag' 'aHandle' 'colorbar' 'dashed' 'norm' 'dat'     };
+inpForm.defval = {4      false   gca      true       false   norm0   zeros(1,0)};
+inpForm.size   = {[1 -6] [1 1]  [1 1]     [1 1]      [1 1]   [1 1]   [-9 -8]   };
 
-inpForm.fname  = [inpForm.fname  {'dE'  'fontSize' 'colormap' 'axLim'}];
-inpForm.defval = [inpForm.defval {0     14         'auto'     'auto' }];
-inpForm.size   = [inpForm.size   {[1 1] [1 1]      [-1 -2]    [1 -3] }];
+inpForm.fname  = [inpForm.fname  {'dE'  'fontSize' 'colormap' 'axLim' 'ddat'}];
+inpForm.defval = [inpForm.defval {0     14         'auto'     'auto'  1e-2  }];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]      [-1 -2]    [1 -3]  [1 1] }];
 
 inpForm.fname  = [inpForm.fname  {'legend' 'title' 'nCol' 'twin'     }];
 inpForm.defval = [inpForm.defval {true     true    500    zeros(1,0) }];
@@ -126,7 +138,8 @@ if numel(param.mode)>1
     end
 end
 
-% energy units
+% length, energy and temperature units
+unitL = spectra.obj.unit.label{1};
 unitE = spectra.obj.unit.label{2};
 unitT = spectra.obj.unit.label{4};
 
@@ -194,7 +207,9 @@ if param.mode == 4
         
         [fHandle, pHandle] = sw_plotspec(spectra,'mode',3,'dE',Eres,...
             'dashed',true,'colorbar',false,'axLim',param.axLim,...
-            'lineStyle',param.lineStyle,'maxPatch',param.maxPatch,'qLabel',param.qlabel);
+            'lineStyle',param.lineStyle,'maxPatch',...
+            param.maxPatch,'qLabel',param.qlabel,'dat',param.dat,...
+            'ddat',param.ddat);
     end
     if ~powmode
         hold on
@@ -230,10 +245,10 @@ end
 % Label of the x-axis
 if powmode
     % powder mode
-    xLabel  = 'Momentum transfer (A^-1)';
+    xLabel  = ['Momentum transfer (' unitL '^-1)'];
     xAxis   = spectra.hklA;
 else
-    [xLabel, xAxis] = sw_label(spectra.hkl,spectra.hklA);
+    [xLabel, xAxis] = sw_label(spectra.hkl,spectra.hklA,spectra.obj.unit.label{1});
     if ~isempty(param.qlabel) && iscell(xLabel)
         if numel(param.qlabel)~=(numel(xLabel)-1)
             error('sw_plotspec:WrongInput','The number of q labels is wrong!')
@@ -678,6 +693,59 @@ if param.mode == 3
     end
     titleStr0 = [titleStr0 'spectra: '];
     box on
+    
+    % overplot data
+    if ~isempty(param.dat)
+        % read table of experimental data
+        if ischar(param.dat) || iscell(param.dat)
+            if ~iscell(param.dat)
+                param.dat = {param.dat};
+            end
+            T = sw_readtable(param.dat{:});
+        else
+            T = param.dat;
+        end
+        
+        % collect experimental data into matrices
+        Qexp = [[T(:).QH];[T(:).QK];[T(:).QL]];
+        nQ = size(Qexp,2);
+        % number of modes
+        nMode = sum(cellfun(@(C)numel(C)>1 && strcmp(C(1),'I') ,fieldnames(T)));
+        
+        iName = strsplit(strtrim(sprintf('I%d ',1:nMode)),' ');
+        eName = strsplit(strtrim(sprintf('EN%d ',1:nMode)),' ');
+        sName = strsplit(strtrim(sprintf('s%d ',1:nMode)),' ');
+        
+        dat.I = zeros(nMode,nQ);
+        dat.E = zeros(nMode,nQ);
+        dat.s = zeros(nMode,nQ);
+        
+        for ii = 1:nMode
+            dat.I(ii,:) = [T.(iName{ii})];
+            dat.E(ii,:) = [T.(eName{ii})];
+            dat.s(ii,:) = [T.(sName{ii})];
+        end
+        
+        dat.s(dat.I==0) = nan;
+        dat.E(dat.I==0) = nan;
+        % reciprocal lattice
+        RL   = spectra.obj.rl;
+        
+        % distance of experimental data points from plotted data points
+        D = sqrt(sum(bsxfun(@minus,permute(Qexp'*RL,[1 3 2]),permute(spectra.hkl'*RL,[3 1 2])).^2,3));
+        % idx stores the index of the point
+        [sel,idxD] = min(D,[],2);
+        % experimental data points that will appear on the plot
+        sel = sel < param.ddat;
+        idxD = idxD(sel);
+        
+        hold on
+        for jj = 1:nMode
+            errorbar(xAxis(idxD),dat.E(jj,sel),dat.s(jj,sel),'or')
+        end
+        
+    end
+    
 end
 
 ylabel(yLabel);

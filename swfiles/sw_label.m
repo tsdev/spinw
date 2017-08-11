@@ -1,10 +1,15 @@
-function [xLabel, xAxis] = sw_label(hkl,hklA)
+function [xLabel, xAxis] = sw_label(hkl,hklA,lUnit)
 % returns axis labels for spectrum plot
 %
 % [xLabel, xAxis] = SW_LABEL(hkl,hklA) 
 %
+% Input:
+%
 % hkl       Momentum transfer values in r.l.u., dimensions are [3 nQ].
 % hklA      Momentum transfer values in Angstrom^-1, dimensions are [3 nQ].
+% lUnit     Length unit, given in a string.
+%
+% Output:
 %
 % It returns the label and axis vector for the x-axis for momentum transfer
 % scans linear in reciprocal space.
@@ -13,8 +18,12 @@ function [xLabel, xAxis] = sw_label(hkl,hklA)
 %
 
 if nargin == 0
-    help sw_label;
-    return;
+    help sw_label
+    return
+end
+
+if nargin<3
+    lUnit = symbol('a');
 end
 
 hkl  = hkl';
@@ -106,7 +115,7 @@ switch linescan
         if size(hkl,1) == 1
             xLabel = ['(' xiLabel{1} ',' xiLabel{2} ',' xiLabel{3} ')'];
         else
-            xLabel = ['(' xiLabel{1} ',' xiLabel{2} ',' xiLabel{3} ') in ' sprintf('%.5g ',inA) symbol('a') '^{-1}'];
+            xLabel = ['(' xiLabel{1} ',' xiLabel{2} ',' xiLabel{3} ') in ' sprintf('%.5g ',inA) lUnit '^{-1}'];
         end
         
     case 1

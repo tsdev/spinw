@@ -10,10 +10,9 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 % Options:
 %
 % fitmode       Can be used to speed up calculation, modes:
-%               0   No speedup, default.
-%               1   Only atomic positions are precalculated and equivalent
-%                   coupling matrices are summed up.
-%               2   Same as mode == 1, moreover only SS.all is calculated.
+%                   true    No speedup (default).
+%                   false   For the interactions stored in SS, only the
+%                           'all' field is calculated.
 % plotmode      If true, additional rows are added to SS.all, to identify
 %               the couplings for plotting. Default is false.
 % sortDM        If true each coupling is sorted for consistent plotting of
@@ -79,8 +78,8 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 nExt0 = double(obj.mag_str.nExt);
 
 inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate' 'sortDM' 'nExt'};
-inpForm.defval = {0          false     false   true     false       false    nExt0 };
-inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]    [1 3] };
+inpForm.defval = {false     false      false   true     false       false    nExt0 };
+inpForm.size   = {[1 1]     [1 1]      [1 1]   [1 1]    [1 1]       [1 1]    [1 3] };
 
 param = sw_readparam(inpForm, varargin{:});
 

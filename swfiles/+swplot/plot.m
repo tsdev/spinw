@@ -69,6 +69,8 @@ function varargout = plot(varargin)
 %               5   'none'
 % lineWidth Line width, default value is 0.5, can be a vector with nObject
 %           columns for different width per line segment.
+% fontSize  Font size of text when type option is set to 'text'. Default
+%           value is stored in swpref.getpref('fontsize').
 % nMesh     Resolution of the ellipse surface mesh. Integer number that is
 %           used to generate an icosahedron mesh with #mesh number of
 %           additional triangulation, default value is stored in

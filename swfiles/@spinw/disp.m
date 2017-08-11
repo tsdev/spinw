@@ -1,14 +1,11 @@
-function varargout = disp(obj, fid)
+function varargout = disp(obj)
 % prints the spinw data structure in readable format onto the Command Window
 %
-% {swDescr} = DISPLAY(obj, {fid})
+% {swDescr} = DISPLAY(obj)
 %
 % Input:
 %
 % obj       spinw class object.
-% fid       File identifier (created by fopen function) where the output
-%           will be written. Default is stored in obj, the output will be
-%           written onto the Command Line. Optional.
 %
 % Output:
 %
@@ -81,7 +78,7 @@ if nargout == 1
                 clear sF sS
                 plotSize = false;
             end
-            swDescr = [swDescr sprintf('\n')];
+            swDescr = [swDescr sprintf('\n')]; %#ok<SPRINTFN>
             index = index + 1;
         end
     end
@@ -93,7 +90,7 @@ else
     chem.chemform(chem.chemform == ' ') = [];
     chem.chemform(chem.chemform == '_') = [];
     abc  = obj.abc;
-    aa   = symbol('angs');
+    aa   = obj.unit.label{1};
     
     swDescr = ['     <strong>SpinW</strong> object, <a href="matlab:doc @spinw">spinw</a> class:\n'...
         sprintf('     <strong>Chemical formula</strong>: %s\n',chem.chemform) ...

@@ -32,7 +32,7 @@ if nargin == 0
 end
 
 if nargin < 3
-    fid = 1;
+    fid = swpref.getpref('fid',true);
 end
 
 fprintf0(fid,'Preparing ''%s'' model ...\n',model);

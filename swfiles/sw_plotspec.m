@@ -138,7 +138,8 @@ if numel(param.mode)>1
     end
 end
 
-% energy units
+% length, energy and temperature units
+unitL = spectra.obj.unit.label{1};
 unitE = spectra.obj.unit.label{2};
 unitT = spectra.obj.unit.label{4};
 
@@ -244,10 +245,10 @@ end
 % Label of the x-axis
 if powmode
     % powder mode
-    xLabel  = 'Momentum transfer (A^-1)';
+    xLabel  = ['Momentum transfer (' unitL '^-1)'];
     xAxis   = spectra.hklA;
 else
-    [xLabel, xAxis] = sw_label(spectra.hkl,spectra.hklA);
+    [xLabel, xAxis] = sw_label(spectra.hkl,spectra.hklA,spectra.obj.unit.label{1});
     if ~isempty(param.qlabel) && iscell(xLabel)
         if numel(param.qlabel)~=(numel(xLabel)-1)
             error('sw_plotspec:WrongInput','The number of q labels is wrong!')

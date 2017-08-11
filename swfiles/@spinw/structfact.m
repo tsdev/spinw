@@ -365,9 +365,9 @@ switch param.output
         end
         sTab.F2 = sFact.Sperp';
         sTab.d  = sFact.d';
-        sTab.Properties.VariableUnits(1:3) = {'r.l.u.' 'r.l.u.' 'r.l.u.'};
+        sTab.Properties.VariableUnits(1:3)  = {'r.l.u.' 'r.l.u.' 'r.l.u.'};
         sTab.Properties.VariableUnits{'F2'} = 'barn';
-        sTab.Properties.VariableUnits{'d'} = [symbol('a') 'ngstrom'];
+        sTab.Properties.VariableUnits{'d'}  = obj.unit.label{1};
 
         sTab.Properties.Description = ['Calculated ' dStr ' scattering cross section'];
         sTab.Properties.UserData.obj   = sFact.obj;

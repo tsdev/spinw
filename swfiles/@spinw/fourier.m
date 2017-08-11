@@ -59,15 +59,19 @@ function res = fourier(obj,hkl,varargin)
 %               of reciprocal space points.
 %   hkl         Matrix with the given reciprocal space points stored in a
 %               matrix with dimensions [3,nHKL].
+%   isiso       True is the output is in Heisenberg mode, when the ft
+%               matrix has dimensions of [1,1,nMagExt,nMagExt,nHKL],
+%               otherwise is false.
 %
 % See also SPINW.OPTMAGK.
 %
 
 % TODO: test for magnetic supercell
 
-inpForm.fname  = {'extend' 'fid' 'isomode'};
-inpForm.defval = {true     nan   'off'    };
-inpForm.size   = {[1 1]    [1 1] [1 -1]   };
+inpForm.fname  = {'extend' 'fid' 'isomode' 'sublat'};
+inpForm.defval = {true     nan   'off'     []      };
+inpForm.size   = {[1 1]    [1 1] [1 -1]    [1 -2]  };
+inpForm.soft   = {false    false false     true    };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -146,8 +150,6 @@ else
 end
 % number of magnetic atoms in the crystallographic unit cell
 nMag    = numel(matom.idx);
-% number of magnetic atoms in the magnetic supercell
-nMagExt = prod(nExt)*nMag;
 % number of bonds
 nBond   = size(SS.all,2);
 
@@ -177,6 +179,17 @@ ExpF = permute(exp(1i*2*pi*sum(bsxfun(@times,hkl',permute(dR,[3 1 2])),2)),[2 1 
 
 % J*exp(ikr), dimensions 9 x nBond x nHkl (1 x nBond x nHkl for Heisenberg)
 Jexp = permute(bsxfun(@times,permute(JJ,[1 3 2]),ExpF),[1 3 2]);
+
+% reduce the number of sublattices
+if ~isempty(param.sublat)
+    atom1 = param.sublat(atom1);
+    atom2 = param.sublat(atom2);
+    nMag  = max(param.sublat);
+    fprintf0(fid,'Remapping magnetic atoms into a new set of sublattices...\n');
+end
+
+% number of magnetic atoms in the magnetic supercell
+nMagExt = prod(nExt)*nMag;
 
 % optimize for large number of hkl, is not faster for more than ~10
 % bonds% if nHkl>nBond
@@ -246,8 +259,10 @@ else
 end
 
 % save results in a struct
-res.ft  = ft;
-res.hkl = hkl;
+res.ft    = ft;
+res.hkl   = hkl;
+% Heisenberg output
+res.isiso = size(ft,1)==1;
 
 fprintf0(fid,'Calculation finished.\n');
 

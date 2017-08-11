@@ -39,15 +39,17 @@ function qGrid = sw_qgrid(varargin)
 % See also SW_QSCAN.
 %
 
+fid = swpref.getpref('fid',true);
+
 inpForm.fname  = {'u'     'v'     'w'     'uoffset' 'lab'                          };
 inpForm.defval = {[1 0 0] [0 1 0] [0 0 1] [0 0 0]   {'(h,0,0)' '(0,k,0)' '(0,0,l)'}};
 inpForm.size   = {[1 3]   [1 3]   [1 3]   [1 -1]    [1 -2]                         };
 inpForm.soft   = {false   false   false   false     false                          };
 
-inpForm.fname  = [inpForm.fname  {'ubin' 'vbin' 'wbin' 'nExt'  'mat'  'bin' }];
-inpForm.defval = [inpForm.defval { []     []     []    [1 1 1] []     {}    }];
-inpForm.size   = [inpForm.size   {[1 -3] [1 -4] [1 -5] [1 -6]  [-7 3] [1 -8]}];
-inpForm.soft   = [inpForm.soft   {true   true   true   false   true   true  }];
+inpForm.fname  = [inpForm.fname  {'ubin' 'vbin' 'wbin' 'nExt'  'mat'  'bin'  'fid'}];
+inpForm.defval = [inpForm.defval { []     []     []    [1 1 1] []     {}     fid  }];
+inpForm.size   = [inpForm.size   {[1 -3] [1 -4] [1 -5] [1 -6]  [-7 3] [1 -8] [1 1]}];
+inpForm.soft   = [inpForm.soft   {true   true   true   false   true   true   false}];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -107,5 +109,10 @@ axMat = axMat(:,1:nDim);
 
 % create Q matrix
 qGrid = sum(bsxfun(@times,permute(axMat,[1 (3:nDim+2) 2]),permute(vv,[nDim+2 (1:nDim+1)])),nDim+2);
+
+sGrid = size(qGrid);
+sStr  = sprintf('%d,',sGrid(2:end));
+
+fprintf0(param.fid,'Generated a %dD grid with [%s] points.\n',nDim,sStr(1:end-1));
 
 end

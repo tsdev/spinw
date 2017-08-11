@@ -221,7 +221,9 @@ betaJ = 100;
 %betaJ = 10.^linspace(-5,5,31);
 subLat = repmat(1:4,1,4);
 %subLat = 1:16;
-spec = pyro.scga(Q,'T',1/2./betaJ,'plot',true,'nInt',1e4,'subLat',subLat,'lambda',[]);
+tic
+spec2 = pyro.scga2(Q,'T',1/2./betaJ,'plot',true,'nInt',1e4,'subLat',subLat,'lambda',[],'isomode','off');
+toc
 ylim([0 5])
 
 %% plot lambda values
@@ -232,13 +234,14 @@ semilogx(spec.T*2,spec.lambda,'o-')
 
 %% plot correlations
 
+spec = spec2;
 Q   = spec.hkl;
-Sab = spec.Sab*4;
+Sab = squeeze(spec.Sab(1,1,:,:)*4);
 
-clf
-hSurf = surf(squeeze(Q(1,:,:)),squeeze(Q(3,:,:)),squeeze(Sab));
+figure
+hSurf = surf(squeeze(Q(1,:,:)),squeeze(Q(3,:,:)),Sab);
 hold on
-contour3(squeeze(Q(1,:,:)),squeeze(Q(3,:,:)),squeeze(Sab),0.5:0.5:2.5,'color','k');
+contour3(squeeze(Q(1,:,:)),squeeze(Q(3,:,:)),Sab,0.5:0.5:2.5,'color','k');
 hSurf.EdgeAlpha = 0;
 view(2)
 %axis([0 3 -1 4])

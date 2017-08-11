@@ -114,12 +114,7 @@ if nargin==1
     return
 end
 
-fid = obj.fid;
-
-% if function is terminated using Ctrl+C, the original fileid value is
-% restored
-c = onCleanup(@()obj.fileid(fid));
-
+fid = swpref.getpref('fid',true);
 
 hklA = hklA(:)';
 T0 = obj.single_ion.T;

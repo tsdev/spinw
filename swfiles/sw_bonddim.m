@@ -55,7 +55,9 @@ end
 
 % add missing indices
 missing = find(~ismember(1:nAtom,atom));
-C = [C [missing;missing;zeros(3,numel(missing))]];
+if ~isempty(missing)
+    C = [C [missing;missing;zeros(3,numel(missing))]];
+end
 
 % sort bonds in increasing order
 idx = C(2,:)<C(1,:);

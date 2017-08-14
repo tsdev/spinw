@@ -122,8 +122,8 @@ function spectra = sw_egrid(spectra, varargin)
 %
 
 if nargin == 0
-    help sw_egrid;
-    return;
+    help sw_egrid
+    return
 end
 
 if isfield(spectra,'obj')
@@ -163,19 +163,24 @@ switch param.binType
 end
 
 if isempty(param.Evect)
-    if iscell(spectra.omega)
-        omegaTemp = cell2mat(spectra.omega);
-        Emax = max(real(omegaTemp(:)));
-        clear('omegaTemp');
+    if isfield(spectra,'omega')
+        if iscell(spectra.omega)
+            omegaTemp = cell2mat(spectra.omega);
+            Emax = max(real(omegaTemp(:)));
+            clear('omegaTemp');
+        else
+            Emax = max(real(spectra.omega(:)));
+        end
+        if Emax == 0
+            Emax = 1;
+        end
+        
+        param.Evect = linspace(0,1.1*Emax,501);
+        eBin = true;
     else
-        Emax = max(real(spectra.omega(:)));
+        param.Evect = [-1 1];
+        eBin = true;
     end
-    if Emax == 0
-        Emax = 1;
-    end
-    
-    param.Evect = linspace(0,1.1*Emax,501);
-    eBin = true;
 end
 
 % parse the component string
@@ -207,11 +212,8 @@ parType = ismember(1:5,parType);
 if parType(1)
     if ~isfield(spectra,'Sperp') || isempty(spectra.Sperp)
         % auto produce neutron scattering cross section
-        
+        %fprintf0(fid,'Neutron scattering cross section is calculated.\n');
         spectra = sw_neutron(spectra);
-        %error('sw_egrid:WrongInput',['Reference to non-existent field ''Sperp'','...
-        %    ' use ''sw_neutron'' to produce the neutron scattering cross sections,'...
-        %    ' before binning in energy!'])
     end
     Sperp = spectra.Sperp;
 else
@@ -255,33 +257,57 @@ else
 end
 
 % pack all cross section into a cell for easier looping
-if isfield(spectra,'omega')
-    if iscell(spectra.omega)
-        nTwin = numel(spectra.omega);
-        omega = spectra.omega;
-        Sab   = spectra.Sab;
+
+if iscell(spectra.Sab)
+    nTwin = numel(spectra.Sab);
+    if ~isfield(spectra,'omega')
+        omega = {};
     else
-        nTwin = 1;
-        omega = {spectra.omega};
-        Sab   = {spectra.Sab};
-        intP  = {intP};
-        Pab   = {Pab};
-        Mab   = {Mab};
-        Sperp = {Sperp};
+        omega = spectra.omega;
     end
+    
+    Sab   = spectra.Sab;
+    intP  = {intP};
+    Pab   = {Pab};
+    Mab   = {Mab};
+    Sperp = {Sperp};
 else
     nTwin = 1;
-    omega = {};
-    Sab   = {spectra.Sab2};
+    if ~isfield(spectra,'omega')
+        omega = {[]};
+    else
+        omega = {spectra.omega};
+    end
+    Sab   = {spectra.Sab};
+    intP  = {intP};
+    Pab   = {Pab};
+    Mab   = {Mab};
+    Sperp = {Sperp};
 end
 
-% extract the requested cross section
-if isfield(spectra,'omega')
-    nMode = size(omega{1},1);
-    nHkl  = size(omega{1},2);
-else
-    nMode = size(spectra.Sab2,3);
-    nHkl = size(spectra.Sab2,4);
+% number of modes and Q points
+nMode = size(spectra.Sab,3);
+nHkl  = numel(spectra.hkl)/3;
+sHkl  = [size(spectra.hkl) 1];
+
+for ii = 1:nTwin
+    Sab{ii}   = reshape(Sab{ii},3,3,nMode,[]);
+    if ~isempty(omega{1})
+        omega{ii} = reshape(omega{ii},nMode,[]); %#ok<AGROW>
+    end
+    
+    if ~isempty(intP{1})
+        intP{ii}   = reshape(intP{ii},3,3,nMode,[]);
+    end
+    if ~isempty(Pab{1})
+        Pab{ii}   = reshape(Pab{ii},3,3,nMode,[]);
+    end
+    if ~isempty(Mab{1})
+        Mab{ii}   = reshape(Mab{ii},3,3,nMode,[]);
+    end
+    if ~isempty(Sperp{1})
+        Sperp{ii}   = reshape(Sperp{ii},nMode,[]);
+    end
 end
 
 % Default value of the modeIdx vector selects all modes for output
@@ -424,6 +450,7 @@ if isfield(spectra,'omega')
     
 else
     swConv = DSF;
+    nE     = 1;
 end
 
 % sum up twin spectra if requested
@@ -457,12 +484,16 @@ if isfield(spectra,'swRaw')
 end
 
 if numel(swConv) == 1
-    spectra.swConv    = swConv{1};
-    spectra.swInt     = DSF{1};
+    spectra.swConv    = reshape(swConv{1},[nE sHkl(2:end)]);
+    spectra.swInt     = reshape(DSF{1},[nMode sHkl(2:end)]);
     spectra.component = param.component{1};
 else
-    spectra.swConv    = swConv;
-    spectra.swInt     = DSF;
+    spectra.swConv = {};
+    spectra.swInt  = {};
+    for ii = 1:nTwin
+        spectra.swConv{ii} = reshape(swConv{ii},[nE sHkl(2:end)]);
+        spectra.swInt{ii}  = reshape(DSF{ii},[nMode sHkl(2:end)]);
+    end
     spectra.component = param.component;
 end
 

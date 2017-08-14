@@ -1,7 +1,7 @@
 function input = sw_readparam(format, varargin)
 % parse input arguments (option, value pairs)
 %
-% input = SW_READPARAM(format, raw) 
+% input = SW_READPARAM(format, raw)
 %
 % It reads in parameters from input structure. Lower and upper case
 % insensitive, the output structure has the names stored in format.fname.
@@ -39,7 +39,13 @@ end
 %    format.soft   = [format.soft   {true      }];
 %end
 
-if (nargin>2) && (mod(nargin,2) == 1)
+check = true;
+if nargin==3 && isstruct(varargin{1}) && strcmp(varargin{2},'noCheck')
+    % just return the structure without checking for speedup, use it only
+    % for internal calls
+    raw   = varargin{1};
+    check = false;
+elseif (nargin>2) && (mod(nargin,2) == 1)
     nPar = nargin-1;
     raw = struct;
     for ii = 1:2:nPar
@@ -72,23 +78,24 @@ for ii = 1:length(fName)
         inputValid = true;
         
         % Go through all dimension of the selected field to check size.
-        for jj = 1:length(format.size{ii})
-            if format.size{ii}(jj)>0
-                if format.size{ii}(jj) ~= size(raw.(rName{rawIdx}),jj)
-                    inputValid = false;
-                end
-            else
-                if storeSize(-format.size{ii}(jj)) == 0
-                    storeSize(-format.size{ii}(jj)) = size(raw.(rName{rawIdx}),jj);
-                else
-                    if storeSize(-format.size{ii}(jj)) ~= size(raw.(rName{rawIdx}),jj)
+        if check
+            for jj = 1:length(format.size{ii})
+                if format.size{ii}(jj)>0
+                    if format.size{ii}(jj) ~= size(raw.(rName{rawIdx}),jj)
                         inputValid = false;
                     end
-                    
+                else
+                    if storeSize(-format.size{ii}(jj)) == 0
+                        storeSize(-format.size{ii}(jj)) = size(raw.(rName{rawIdx}),jj);
+                    else
+                        if storeSize(-format.size{ii}(jj)) ~= size(raw.(rName{rawIdx}),jj)
+                            inputValid = false;
+                        end
+                        
+                    end
                 end
             end
         end
-        
         if inputValid
             input.(fName{ii}) = raw.(rName{rawIdx});
         else

@@ -126,7 +126,8 @@ if obj.symbolic
 end
 
 % generate exchange couplings
-[SS, ~, RR] = obj.intmatrix('fitmode',true,'extend',param.extend,'conjugate',true);
+%[SS, ~, RR] = obj.intmatrix('fitmode',true,'extend',param.extend,'conjugate',true);
+[SS, ~, RR] = obj.intmatrix(struct('fitmode',true,'extend',param.extend,'conjugate',true),'noCheck');
 
 % is there Heisenberg exchange only
 matidx = unique(obj.coupling.mat_idx(:)');

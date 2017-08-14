@@ -1,4 +1,4 @@
-function spec = scga(obj, hkl, varargin)
+function spectra = scga(obj, hkl, varargin)
 % applies the self consistent Gaussian approximation at finite temperature
 %
 % spectra = SCGA(obj, hkl, 'option1', value1 ...)
@@ -18,8 +18,9 @@ function spec = scga(obj, hkl, varargin)
 % kbase     Basis vectors that span the Brillouin zone if the system is low
 %           dimensional. Default value is [] when the dimensionality of the
 %           system is determined automatically.
-% nQ        Number of Q points where the Brillouin zone is sampled for the
+% nInt      Number of Q points where the Brillouin zone is sampled for the
 %           integration.
+% fitmode       Speedup (for fitting mode only), default is false.
 % sublat    List of sublattices.
 % isomode   ...
 %
@@ -27,24 +28,41 @@ function spec = scga(obj, hkl, varargin)
 %
 % spectra   Structure with fields:
 %   Sab     Spin-spin correlation function stored in a matrix with
-%           dimensions of [3,3,D1,D2,...].
+%           dimensions of [3,3,1,D1,D2,...].
 %   Dopt    Optimum value of D.
 %
 
 % TODO documentation
 
-inpForm.fname  = {'T'    'plot' 'nInt' 'lambda' 'sublat' 'isomode'};
-inpForm.defval = {0      true   1e3    []       []       'auto'   };
-inpForm.size   = {[1 -1] [1 1]  [1 1]  [1 1]    [1 -2]   [1 -3]   };
-inpForm.soft   = {false  false  false  true     true     false    };
+fid  = swpref.getpref('fid',true);
+T0   = obj.single_ion.T;
+
+inpForm.fname  = {'T'    'plot' 'nInt' 'lambda' 'sublat' 'isomode' 'fitmode' 'fid'};
+inpForm.defval = {T0     true   1e3    []       []       'auto'    false     fid  };
+inpForm.size   = {[1 -1] [1 1]  [1 1]  [1 1]    [1 -2]   [1 -3]    [1 1]     [1 1]};
+inpForm.soft   = {false  false  false  true     true     false     false     false};
+
+inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'gtensor'}];
+inpForm.defval = [inpForm.defval {false       @sw_mff      false    }];
+inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 1]    }];
+inpForm.soft   = [inpForm.soft   {false       false        false  	}];
 
 param = sw_readparam(inpForm, varargin{:});
+
+if param.T == 0
+    error('spinw:scga:WrongInput','Invalid temperature, the SCGA solver needs non-zero temperature!')
+end
+
+if ~param.fitmode
+    % save the time of the beginning of the calculation
+    spectra.datestart = datestr(now);
+end
+
+fid = param.fid;
 
 if numel(param.T)>1
     param.plot = false;
 end
-
-fid  = swpref.getpref('fid',true);
 
 kBT  = param.T*obj.unit.kB;
 beta = 1./kBT;
@@ -67,7 +85,7 @@ if isempty(param.lambda)
     % find the dimensionality of the bonds
     % bond vectors of non-zero couplings
     % generate exchange couplings
-    SS = obj.intmatrix('fitmode',true,'extend',false,'conjugate',true,'zeroC',false);
+    SS = obj.intmatrix(struct('fitmode',true,'extend',false,'conjugate',true,'zeroC',false),'noCheck');
     % calculate the basis vectors
     L = sw_bonddim(SS.all(1:5,:));
     % unite all basis vectors to get the dimensionality of the full system
@@ -81,10 +99,10 @@ if isempty(param.lambda)
     nQBZ = N^D;
     BZ  = sw_qgrid('mat',kbase,'bin',repmat({linspace(0,1,N)},1,D),'fid',0);
     % calculate the Fourier transform of the hamiltonian
-    chi = obj.fourier(reshape(BZ,3,[]),'fid',0,'sublat',param.sublat,'isomode',param.isomode);
+    chi = obj.fourier(reshape(BZ,3,[]),struct('fid',0,'sublat',param.sublat,'isomode',param.isomode),'noCheck');
     % find the eigenvalues over the BZ
     if chi.isiso
-        chi.ft = squeeze(chi.ft(1,1,:,:,:));
+        chi.ft = permute(chi.ft(1,1,:,:,:),[3 4 5 1 2]);
     else
         chi.ft = reshape(permute(chi.ft,[1 3 2 4 5]),3*nMag,3*nMag,nQBZ);
     end
@@ -130,13 +148,14 @@ end
 if numel(beta) == 1
     % calculate spin-spin correlations only if a single temperature is
     % given
-    qDim = num2cell(size(hkl));
-    
-    chi = obj.fourier(reshape(hkl,3,[]),'fid',0,'sublat',param.sublat,'isomode',param.isomode);
-    nQ  = numel(hkl)/3;
+    qDim        = size(hkl);
+    spectra.hkl = hkl;
+    hkl         = reshape(hkl,3,[]);
+    chi         = obj.fourier(hkl,struct('fid',0,'sublat',param.sublat,'isomode',param.isomode),'noCheck');
+    nQ          = numel(hkl)/3;
     
     if chi.isiso
-        chi.ft = squeeze(chi.ft(1,1,:,:,:));
+        chi.ft = permute(chi.ft(1,1,:,:,:),[3 4 5 1 2]);
     else
         chi.ft = reshape(permute(chi.ft,[1 3 2 4 5]),3*nMag,3*nMag,nQ);
     end
@@ -147,30 +166,45 @@ if numel(beta) == 1
     % spin-spin correlation function between any pair of sublattices
     Sabij = bsxfun(@plus,lambda*eye(nMag*nSpinComp),beta*chi.ft);
     
-    Sab = zeros(3,3,nQ);
-    
     if chi.isiso
-        for ii = 1:nQ
-            Sab(1,1,ii) = sumn(inv(Sabij(:,:,ii)),[1 2]);
-        end
-        Sab(3,3,:) = Sab(1,1,:);
-        Sab(2,2,:) = Sab(1,1,:);
+        Sab = permute(invfast(Sabij),[4 5 1:3]);
+        Sab(3,3,:,:,:) = Sab(1,1,:,:,:);
+        Sab(2,2,:,:,:) = Sab(1,1,:,:,:);
     else
-        for ii = 1:nQ
-            Sab(:,:,ii) = squeeze(sumn(reshape(inv(Sabij(:,:,ii)),3,nMag,3,nMag),[2 4]));
-        end
+        Sab = permute(reshape(invfast(Sabij),3,nMag,3,nMag,[]),[1 3 2 4 5]);
     end
     
+    if param.formfact
+        spectra.formfact = true;
+        % Angstrom^-1 units for Q
+        hklA = (hkl'*obj.rl)';
+        % store form factor per Q point for each atom in the magnetic supercell
+        FF = param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA);
+        % include the form factor in the z^alpha, z^beta matrices
+        Sab = bsxfun(@times,bsxfun(@times,permute(FF,[3 4 5 1 2]),permute(FF,[3 4 1 5 2])),Sab);
+        spectra.hklA   = reshape(hklA,[3,qDim(2:end)]);
+    else
+        spectra.formfact = false;
+        spectra.hklA     = reshape((hkl'*obj.rl)',[3,qDim(2:end)]);
+    end
+
     % spin-spin sorrelations per magnetic atom
-    spec.Sab    = reshape(Sab,3,3,qDim{2:end})/nMag;
-    spec.hkl    = hkl;
-    spec.hklA   = reshape((reshape(hkl,3,[])'*obj.rl)',3,qDim{2:end});
+    spectra.Sab    = reshape(permute(sumn(Sab,[3 4]),[1 2 5 3 4]),[3,3,1,qDim(2:end)])/nMag;
+    % save the new temperature
+    obj.single_ion.T = param.T;
 end
 
 % save lambda only, if multiple temperatures are given
-spec.lambda = lambda;
-spec.T      = param.T;
-spec.isiso  = chi.isiso;
+spectra.lambda   = lambda;
+spectra.T        = param.T;
+spectra.isiso    = chi.isiso;
+spectra.formfact = param.formfact;
+spectra.gtensor  = param.gtensor;
+
+if ~param.fitmode
+    spectra.obj     = copy(obj);
+    spectra.dateend = datestr(now);
+end
 
 fprintf0(fid,'Calculation finished.\n');
 

@@ -964,11 +964,11 @@ spectra.param.sortMode  = param.sortMode;
 spectra.param.tol       = param.tol;
 spectra.param.omega_tol = param.omega_tol;
 spectra.param.hermit    = param.hermit;
-spectra.dateend         = datestr(now);
 spectra.title           = param.title;
 spectra.gtensor         = param.gtensor;
 
 if ~param.fitmode
+    spectra.dateend = datestr(now);
     spectra.obj = copy(obj);
 end
 

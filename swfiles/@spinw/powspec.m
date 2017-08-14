@@ -3,10 +3,15 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % spectra = POWSPEC(obj, hklA, 'Option1', Value1, ...)
 %
-% The function calculates powder averaged spin wave spectrum by doing a 3D
-% average in momentum space. This method is not efficient for low
-% dimensional (2D, 1D) structures. To speed up the calculation with mex
-% files use the swpref.setpref('usemex',true) option.
+% The function calculates powder averaged spectrum by doing a 3D average in
+% momentum space. This method is not efficient for low dimensional (2D, 1D)
+% structures. To speed up the calculation with mex files use the
+% swpref.setpref('usemex',true) option. The function can do powder average
+% on arbitrary spectral function, but it is currently tested with two
+% functions:
+%       spinw.spinwave  Powder average spin wave spectrum.
+%       spinw.scga      Powder averaged diffuse scattering spectrum.
+% The type of spectral function is determined by the specfun option.
 %
 % Input:
 %
@@ -16,6 +21,8 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % Options:
 %
+% specfun   Function handle of the spectrum calculation function. Default
+%           is @spinwave.
 % nRand     Number of random orientations per Q value, default is 100.
 % Evect     Vector, defines the center/edge of the energy bins of the
 %           calculated output, dimensions are is [1 nE]. The energy units
@@ -30,8 +37,6 @@ function spectra = powspec(obj, hklA, varargin)
 %           obj.single_ion.T value.
 % title     Gives a title string to the simulation that is saved in the
 %           output.
-% specfun   Function handle of the spectrum calculation function. Default
-%           is @spinwave.
 % extrap    If true, arbitrary additional parameters are passed over to
 %           the spectrum calculation function.
 % fibo      If true, instead of random sampling of the unit sphere the
@@ -41,8 +46,9 @@ function spectra = powspec(obj, hklA, varargin)
 %           Fibonacci number below nRand. Default is false.
 % imagChk   Checks that the imaginary part of the spin wave dispersion is
 %           smaller than the energy bin size. Default is true.
+% component See the help of sw_egrid() function for description.
 %
-% The function accepts all options of spinw.spinwave() as well. The most
+% The function accepts all options of spinw.spinwave() with the most
 % important options are:
 %
 % formfact      If true, the magnetic form factor is included in the
@@ -80,6 +86,12 @@ function spectra = powspec(obj, hklA, varargin)
 %               problem is.
 %               Default is true.
 %
+% The function accepts some options of spinw.scga() with the most important
+% options are:
+%
+% nInt      Number of Q points where the Brillouin zone is sampled for the
+%           integration.
+%
 % Output:
 %
 % 'spectra' is a struct type variable with the following fields:
@@ -105,7 +117,7 @@ function spectra = powspec(obj, hklA, varargin)
 % antiferromagnet (S=1, J=1) between Q = 0 and 3 A^-1 (the lattice
 % parameter is 3 Angstrom).
 %
-% See also SPINW, SPINW.SPINWAVE, SPINW.OPTMAGSTR.
+% See also SPINW, SPINW.SPINWAVE, SPINW.OPTMAGSTR, SW_EGRID.
 %
 
 % help when executed without argument
@@ -122,21 +134,39 @@ T0 = obj.single_ion.T;
 title0 = 'Powder LSWT spectrum';
 tid0   = swpref.getpref('tid',[]);
 
-inpForm.fname  = {'nRand' 'Evect'             'T'   'formfact' 'formfactfun' 'tid'};
-inpForm.defval = {100     linspace(0,1.1,101) T0    false      @sw_mff       tid0 };
-inpForm.size   = {[1 1]   [1 -1]              [1 1] [1 -2]     [1 1]         [1 1]};
+inpForm.fname  = {'nRand' 'Evect'    'T'   'formfact' 'formfactfun' 'tid' 'nInt'};
+inpForm.defval = {100     zeros(1,0) T0    false      @sw_mff       tid0  1e3   };
+inpForm.size   = {[1 1]   [1 -1]     [1 1] [1 -2]     [1 1]         [1 1] [1 1] };
 
 inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' 'imagChk'}];
-inpForm.defval = [inpForm.defval {true     false     title0  @spinwave  true   }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]      [1 1]  }];
+inpForm.defval = [inpForm.defval {true     false     title0  @spinwave  true    }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]      [1 1]   }];
 
-inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType'}];
-inpForm.defval = [inpForm.defval {false    false  0        'ebin'   }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]   }];
+inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType' 'component'}];
+inpForm.defval = [inpForm.defval {false    false  0        'ebin'    'Sperp'    }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]     [1 -5]    }];
+
+inpForm.fname  = [inpForm.fname  {'fid'}];
+inpForm.defval = [inpForm.defval {fid  }];
+inpForm.size   = [inpForm.size   {[1 1]}];
 
 param  = sw_readparam(inpForm, varargin{:});
 
-% number of bins along energy 
+fid = param.fid;
+
+% list of supported functions:
+%   0:  unknown
+%   1:  @spinwave
+%   2:  @scga
+funList = {@spinwave @scga};
+funIdx  = [find(cellfun(@(C)isequal(C,param.specfun),funList)) 0];
+funIdx  = funIdx(1);
+
+if isempty(param.Evect) && funIdx == 1
+    error('spinw:powspec:WrongOption','Energy bin vector is missing, use ''Evect'' option!');
+end
+
+% number of bins along energy
 switch param.binType
     case 'cbin'
         nE      = numel(param.Evect);
@@ -145,9 +175,9 @@ switch param.binType
 end
 
 nQ      = numel(hklA);
-powSpec = zeros(nE,nQ);
+powSpec = zeros(max(1,nE),nQ);
 
-fprintf0(fid,'Calculating powder spectra:\n');
+fprintf0(fid,'Calculating powder spectra...\n');
 
 % message for magnetic form factor calculation
 yesNo = {'No' 'The'};
@@ -180,6 +210,9 @@ if param.fibo
     
 end
 
+% lambda value for SCGA, empty will make integration in first loop
+specQ.lambda = [];
+
 for ii = 1:nQ
     if param.fibo
         Q = QF*hklA(ii);
@@ -189,23 +222,33 @@ for ii = 1:nQ
     end
     hkl = (Q'*obj.basisvector)'/2/pi;
     
-    if param.extrap
-        % allow arbitrary additional parameters to pass to the spectral
-        % calculation function
-        warnState = warning('off','sw_readparam:UnreadInput');
-        specQ = param.specfun(obj,hkl,varargin{:});
-        warning(warnState);
-        
-    else
-        specQ = param.specfun(obj,hkl,'fitmode',true,'notwin',true,...
-            'Hermit',param.hermit,'formfact',param.formfact,...
-            'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-            'optmem',param.optmem,'tid',0,'fid',0);
+    switch funIdx
+        case 0
+            % general function call allow arbitrary additional parameters to
+            % pass to the spectral calculation function
+            warnState = warning('off','sw_readparam:UnreadInput');
+            specQ = param.specfun(obj,hkl,varargin{:});
+            warning(warnState);
+        case 1
+            % @spinwave
+            specQ = spinwave(obj,hkl,struct('fitmode',true,'notwin',true,...
+                'Hermit',param.hermit,'formfact',param.formfact,...
+                'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
+                'optmem',param.optmem,'tid',0,'fid',0),'noCheck');
+            
+        case 2
+            % @scga
+            specQ = scga(obj,hkl,struct('fitmode',true,'formfact',param.formfact,...
+                'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
+                'fid',0,'lambda',specQ.lambda,'nInt',param.nInt,'T',param.T,...
+                'plot',false),'noCheck');
     end
+    
     specQ = sw_neutron(specQ,'pol',false);
     specQ.obj = obj;
     % use edge grid by default
-    specQ = sw_egrid(specQ,'Evect',param.Evect,'T',param.T,'binType',param.binType,'imagChk',param.imagChk);
+    specQ = sw_egrid(specQ,struct('Evect',param.Evect,'T',param.T,'binType',param.binType,...
+    'imagChk',param.imagChk,'component',param.component),'noCheck');
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
     sw_status(ii/nQ*100,0,param.tid);
 end
@@ -215,22 +258,30 @@ sw_status(100,2,param.tid);
 fprintf0(fid,'Calculation finished.\n');
 
 % save different field into spectra
-spectra.swConv   = powSpec;
-spectra.hklA     = hklA;
-spectra.Evect    = specQ.Evect;
-spectra.component = 'Sperp';
+spectra.swConv    = powSpec;
+spectra.hklA      = hklA;
+spectra.component = param.component;
 spectra.nRand    = param.nRand;
 spectra.T        = param.T;
 spectra.obj      = copy(obj);
 spectra.norm     = false;
 spectra.formfact = specQ.formfact;
 spectra.gtensor  = specQ.gtensor;
-spectra.incomm   = specQ.incomm;
-spectra.helical  = specQ.helical;
 spectra.date     = datestr(now);
 spectra.title    = param.title;
-
 % save all input parameters of spinwave into spectra
 spectra.param    = specQ.param;
+
+% some spectral function dependent parameters
+switch funIdx
+    case 0
+        spectra.Evect    = specQ.Evect;
+    case 1
+        spectra.Evect    = specQ.Evect;
+        spectra.incomm   = specQ.incomm;
+        spectra.helical  = specQ.helical;
+    case 2
+        spectra.lambda   = specQ.lambda;
+end
 
 end

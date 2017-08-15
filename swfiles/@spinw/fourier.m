@@ -186,6 +186,7 @@ if ~isempty(param.sublat)
     atom1 = param.sublat(atom1);
     atom2 = param.sublat(atom2);
     nMag  = max(param.sublat);
+    nMag0 = numel(obj.matom.idx);
     fprintf0(fid,'Remapping magnetic atoms into a new set of sublattices...\n');
 end
 
@@ -260,7 +261,8 @@ else
 end
 
 % save results in a struct
-res.ft    = ft;
+% scale ft with the number of sublattices
+res.ft    = ft*(nMag/nMag0);
 res.hkl   = hkl;
 % Heisenberg output
 res.isiso = size(ft,1)==1;

@@ -21,6 +21,109 @@ pyro.quickham(1)
 
 plot(pyro)
 
+
+%% test fourier transformed Hamiltonian
+
+Q = [1/2 1/3 1/4];
+cxy = cos((Q(1)+Q(2))/4*2*pi);
+cxz = cos((Q(1)+Q(3))/4*2*pi);
+cyz = cos((Q(2)+Q(3))/4*2*pi);
+
+cxym = cos((Q(1)-Q(2))/4*2*pi);
+cxzm = cos((Q(1)-Q(3))/4*2*pi);
+cyzm = cos((Q(2)-Q(3))/4*2*pi);
+
+FT2 = [1 cyz cxz cxy;cyz 1 cxym cxzm;cxz cxym 1 cyzm;cxy cxzm cyzm 1];
+
+F = pyro.fourier(Q','sublat',repmat(1:4,1,4))
+FT = squeeze(F.ft(1,1,:,:));
+
+%% calculate lambda
+
+pyro.setunit('mode','1')
+T = 10.^(linspace(-2,2,51));
+spec4 = pyro.scga([],'T',T,'sublat',repmat(1:4,1,4),'plot',false,'nInt',1e3,'chi',true,'iso',false);
+
+clf
+semilogx(T,spec4.lambda)
+axis([1e-2 1e2 1 3.5])
+
+%% Calculate diffuse scattering
+
+Q1 = sw_qgrid('u',[1 0 0],'v',[0 1 0],'bin',{[0 0.01 4] [-1 0.01 4]});
+Q2 = sw_qgrid('u',[1 1 0],'v',[0 0 1],'bin',{[0 0.01 4] [-1 0.01 4]});
+
+spec1 = pyro.scga(Q1,'T',1/200,'sublat',repmat(1:4,1,4));
+spec2 = pyro.scga(Q2,'T',1/200,'sublat',repmat(1:4,1,4));
+
+%% make figure comparable to the published figure
+
+clf
+subplot(1,2,1)
+hAxis(1) = gca;
+hSurf = surf(squeeze(Q1(1,:,:)),squeeze(Q1(2,:,:)),squeeze(spec1.Sab(1,1,1,:,:))*4);
+hSurf.EdgeAlpha = 0;
+hold on
+contour3(squeeze(Q1(1,:,:)),squeeze(Q1(2,:,:)),squeeze(spec1.Sab(1,1,1,:,:))*4,0.5:0.5:2.5,'color','k');
+view(2)
+%axis([0 3 -1 4])
+box on
+colormap(cm_viridis)
+caxis([0 2.7])
+hCol = colorbar('northoutside');
+xlabel('($h$,0,0)','interpreter','latex')
+ylabel('(0,0,$l$)','interpreter','latex')
+text(0.1,0.94,100,'(a)','fontsize',22,'units','normalized','HorizontalAlignment','center','color','w')
+axis([0 3 -1 4])
+
+subplot(1,2,2)
+hAxis(2) = gca;
+hSurf = surf(squeeze(Q2(1,:,:)),squeeze(Q2(3,:,:)),squeeze(spec2.Sab(1,1,1,:,:))*4);
+hSurf.EdgeAlpha = 0;
+hold on
+contour3(squeeze(Q2(1,:,:)),squeeze(Q2(3,:,:)),squeeze(spec2.Sab(1,1,1,:,:))*4,0.5:0.5:2.5,'color','k');
+view(2)
+%axis([0 3 -1 4])
+box on
+colormap(cm_viridis)
+caxis([0 2.7])
+hAxis(2).YAxis.TickLabels = '';
+xlabel('($h$,$h$,0)','interpreter','latex')
+text(0.1,0.94,100,'(b)','fontsize',22,'units','normalized','HorizontalAlignment','center','color','w')
+axis([0 3 -1 4])
+
+hCol.Position =     [0.10 0.90 0.87 0.04];
+hAxis(1).Position = [0.10 0.12 0.42 0.75];
+hAxis(2).Position = [0.55 0.12 0.42 0.75];
+drawnow;
+fPos = get(gcf,'Position');
+set(gcf,'Position',[fPos(1:2) 584 431])
+
+%% do the different cuts
+
+Q3 = sw_qgrid('u',[1 0 0],'v',[0 0 1],'bin',{[0 0.01 4] [0 0.2 2]});
+spec3 = pyro.scga(Q3,'T',1/20,'sublat',repmat(1:4,1,4),'plot',false);
+spec3.lambda
+
+figure
+for ii = 2:(size(spec3.Sab,5)-1)
+    plot(squeeze(Q3(1,:,1,1)),squeeze(spec3.Sab(1,1,1,:,ii))*4)
+    hold on
+end
+
+%% calculate susceptibility
+
+T = linspace(1e-2,5,51);
+spec4 = pyro.scga([],'T',T,'sublat',repmat(1:4,1,4),'plot',false,'nInt',1e3,'chi',true,'iso',false);
+
+figure;
+subplot(2,1,1)
+plot(T,spec4.lambda)
+subplot(2,1,2)
+plot(T,spec4.chi)
+
+
+
 %% Fourier transform of the interaction matrix
 
 nMag = numel(pyro.matom.idx);
@@ -141,7 +244,7 @@ axis([1e-2 1e2 1 3.5])
 subIdx = repmat(1:4,1,4);
 
 beta = 1;
-J    = 200;
+J    = 20;
 
 lambda = fminsearch(@(lambda)abs(sumn(1./(lambda+beta*J*D),[1 2])/size(D,2)/4-1/3),3);
 
@@ -203,7 +306,7 @@ colorbar
 %% plot cuts
 
 figure
-nCut = 4;
+nCut = 5;
 idxv = round(linspace(1,251,nCut));
 for ii = 1:nCut
     plot(squeeze(Q(1,:,1,1)),Sab(:,1,idxv(ii))*4)

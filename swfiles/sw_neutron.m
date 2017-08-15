@@ -82,12 +82,12 @@ else
 end
 
 
-
-% input paramters extracted from spectra
+% input parameters extracted from spectra
 % swSpec.Sab   3 x 3 x nMode x nHkl
 % swSpec.hklA  3 x nHkl
-hklA    = spectra.hklA;
+hklA    = reshape(spectra.hklA,3,[]);
 nHkl    = size(hklA,2);
+sHkl    = size(spectra.hklA);
 
 % loop over the twins
 if ~iscell(spectra.Sab)
@@ -101,8 +101,9 @@ spectra.Mab   = cell(1,nTwin);
 spectra.Sperp = cell(1,nTwin);
 
 for ii = 1:nTwin
-    Sab     = spectra.Sab{ii};
-    nMode   = size(Sab,3);
+    nMode = size(spectra.Sab{ii},3);
+    Sab   = reshape(spectra.Sab{ii},[3,3,nMode,nHkl]);
+    
     
     % divide Sab into symmetric and anti-symmetric components
     SabA = (Sab - permute(Sab,[2 1 3 4]))/2;
@@ -224,12 +225,12 @@ for ii = 1:nTwin
         
        
         % save all neutron cross sections in spectra
-        spectra.intP{ii}  = intP;
-        spectra.Pab{ii}   = Pab;
-        spectra.Mab{ii}   = Mab;
+        spectra.intP{ii}  = reshape(intP,[3,nMode,sHkl(2:end)]);
+        spectra.Pab{ii}   = reshape(Pab,[3,3,nMode,sHkl(2:end)]);
+        spectra.Mab{ii}   = reshape(Mab,[3,3,nMode,sHkl(2:end)]);
     end
     % save unpolarised neutron cross section
-    spectra.Sperp{ii} = Sperp;
+    spectra.Sperp{ii} = reshape(Sperp,[nMode,sHkl(2:end)]);
 end
 
 % remove cell if there are no twins

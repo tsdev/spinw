@@ -53,7 +53,7 @@ function [pOpt,fVal,stat] = pso(dat,func,p0,varargin)
 %           Default value is 1e5.
 % MaxIter   Maximum number of iterations, default value is 100*M.
 % MaxFunEvals Maximum number of function evaluations, default value is
-%           1000*M.
+%           1000*M. NOT IMPLEMENTED!
 % TolX      Convergence tolerance for parameters, default value is 1e-3.
 % Display   Level of information to print onto the Command Line during
 %           optimisation. Possible values are 'off', 'notify' and 'iter'.
@@ -116,9 +116,10 @@ Np    = numel(p0);
 
 oNp = ones(1,Np);
 
-inpForm.fname  = {'Display' 'TolFun' 'TolX' 'MaxIter' 'MaxFunEvals' 'SwarmC1' 'seed'        'tid'};
-inpForm.defval = {'off'     1e-3     1e-3   100*Np    1000*Np       2.8      sum(100*clock)  0   };
-inpForm.size   = {[1 -1]    [1 1]    [1 1]  [1 1]     [1 1]         [1 1]    [1 1]          [1 1]};
+% not implemented yet: 'MaxFunEvals'
+inpForm.fname  = {'Display' 'TolFun' 'TolX' 'MaxIter' 'SwarmC1' 'seed'        'tid'};
+inpForm.defval = {'off'     1e-3     1e-3   100*Np    2.8      sum(100*clock)  0   };
+inpForm.size   = {[1 -1]    [1 1]    [1 1]  [1 1]     [1 1]    [1 1]          [1 1]};
 
 inpForm.fname  = [inpForm.fname  {'SwarmC2' 'PopulationSize' 'lb'      'ub'     'autoTune' 'k0'}];
 inpForm.defval = [inpForm.defval {1.3       25               -1e5*oNp   1e5*oNp false      1   }];

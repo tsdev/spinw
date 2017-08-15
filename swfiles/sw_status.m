@@ -18,6 +18,8 @@ function sw_status(percent,varargin)
 % See also WAITBAR.
 %
 
+global sw_time
+
 if nargin == 0
     help sw_status
     return
@@ -53,7 +55,7 @@ end
 switch start
     case 1
         % start the time estimation
-        tic
+        sw_time = tic;
         switch fid
             case 1
                     fprintf([repmat(' ',[1 40]) '\n']);
@@ -66,7 +68,7 @@ switch start
         end
     case 0
         % refresh the displayed time
-        etime = double(toc);
+        etime = double(toc(sw_time));
         if percent == 0
             percent = 1e-5;
         end
@@ -89,7 +91,7 @@ switch start
         
     case  2
         % finish extimation
-        etime = double(toc);
+        etime = double(toc(sw_time));
         hou = floor(etime/60^2);
         etime = etime-hou*60^2;
         min = floor(etime/60);

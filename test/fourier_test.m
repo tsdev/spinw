@@ -10,7 +10,7 @@ kag.addatom('r',[0   1/2 0],'S',1)
 kag.quickham(1)
 %plot(kag)
 
-%% calculate fourier transform
+%% calculate fourier transformation
 
 for ii = 1:10:100
     Q = reshape(sw_qgrid('bin',{[0 0.01 2] [0 0.01 2] [1 ii]}),3,[]);
@@ -18,3 +18,4 @@ for ii = 1:10:100
     F2 = kag.fourier(Q,'isomode','auto');
     t1(ii) = toc;
 end
+

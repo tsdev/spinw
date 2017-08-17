@@ -116,7 +116,10 @@ while 1 % main messaging loop
                 if isKey(msg, 'nargout') && msg('nargout') >= 0
                     resultsize = msg('nargout');
                 else
-                    % nargout fails if fun is a method:
+                    % nargout(fun) throws fails if fun is a method
+                    % nargout(msg('name')) can work on class methods, but
+                    % no way to specify class name in MATLAB x-(
+                    % do extra check on class name using which(msg('name'))
                     try
                         [~, funType] = which(msg('name'));
                         funType = strsplit(funType,' ');
@@ -129,7 +132,7 @@ while 1 % main messaging loop
                                 resultsize = nargout(msg('name'));
                             end
                         end
-                        %save('/Users/tothsa/spinw_git/dev/standalone/test1.mat')
+
                         if isempty(resultsize)
                             resultsize = nargout(fun);
                         end

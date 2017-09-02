@@ -309,7 +309,7 @@ if param.sortDM && (~isempty(SS.all))
     multL = ceil(fliplr(cumprod([1 [1 1]*(rmax+1)])));
     
     % find the couplings that have to be flipped
-    flip = find(sum(bsxfunsym(@times,rv,multL'),1) < 0);
+    flip = find(sum(bsxfun(@times,rv,multL'),1) < 0);
     % flip the selected couplings
     SS.all(1:3,flip)   = -SS.all(1:3,flip);
     SS.all([4 5],flip) =  SS.all([5 4],flip);

@@ -314,7 +314,7 @@ switch param.mode
         % Create random spin directions and use a single k-vector
         S  = randn(nMagExt,3);
         S  = bsxfun(@rdivide,S,sqrt(sum(S.^2,2)));
-        S  = bsxfunsym(@times,S,mAtom.Sext')';
+        S  = bsxfun(@times,S,mAtom.Sext')';
         if noK
             k  = [0 0 0];
         end
@@ -441,7 +441,7 @@ end
 if param.norm
     normS = sqrt(sum(real(S).^2,1))./repmat(mAtom.S,[1 prod(nExt)]);
     normS(normS==0) = 1;
-    S = bsxfunsym(@rdivide,S,normS);
+    S = bsxfun(@rdivide,S,normS);
 end
 
 % simplify expressions

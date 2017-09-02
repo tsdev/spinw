@@ -65,7 +65,7 @@ if nargout <= 3
             error('gm_planar:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
         end
         % Magnetic moments in orthogonal coordinate sysyem.
-        M = bsxfunsym(@times,u*cos(phi) + v*sin(phi),M0);
+        M = bsxfun(@times,u*cos(phi) + v*sin(phi),M0);
     end
 else
     nMagExt = size(M0,2);

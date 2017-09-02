@@ -72,13 +72,13 @@ for ii = 1:numel(fNameV)
     SSext.(fName) = repmat(SS.(fName),[1 nCell]);
     if ~isempty(SS.(fName))
         % first atom index within the uspercell
-        SSext.(fName)(4,:) = reshape(bsxfunsym(@plus,addIdx,SS.(fName)(4,:)),1,[]);
+        SSext.(fName)(4,:) = reshape(bsxfun(@plus,addIdx,SS.(fName)(4,:)),1,[]);
         % end of bond vector still in original cell dimensions
-        bVect = reshape(permute(bsxfunsym(@plus,cIdx,permute(SS.(fName)(1:3,:),[3:5 1 2])),[4 5 1:3]),3,[]);
+        bVect = reshape(permute(bsxfun(@plus,cIdx,permute(SS.(fName)(1:3,:),[3:5 1 2])),[4 5 1:3]),3,[]);
         % normalize bond vector to supercell dimensions
-        SSext.(fName)(1:3,:) = floor(bsxfunsym(@rdivide,bVect,nExt));
+        SSext.(fName)(1:3,:) = floor(bsxfun(@rdivide,bVect,nExt));
         % indices are between (0:nCell-1)*nAtom
-        SSext.(fName)(5,:) = sum(bsxfunsym(@times,bVect-bsxfunsym(@times,SSext.(fName)(1:3,:),nExt),[1;nExt(1);prod(nExt(1:2))]),1)*nAtom+SSext.(fName)(5,:);
+        SSext.(fName)(5,:) = sum(bsxfun(@times,bVect-bsxfun(@times,SSext.(fName)(1:3,:),nExt),[1;nExt(1);prod(nExt(1:2))]),1)*nAtom+SSext.(fName)(5,:);
     end
 end
 

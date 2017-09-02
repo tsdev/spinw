@@ -49,16 +49,16 @@ atom1 = SS.all(4,:);
 atom2 = SS.all(5,:);
 
 % exchange energy: J_ij*S_i*S_j
-JJ = bsxfunsym(@times,SS.all(6:14,:),matom.S(atom1).*matom.S(atom2));
+JJ = bsxfun(@times,SS.all(6:14,:),matom.S(atom1).*matom.S(atom2));
 
 % distance vector between interacting atoms in l.u.
 dR = SS.all(1:3,:) + (RR(:,SS.all(5,:))-RR(:,SS.all(4,:)));
 
 % exponents, dimension: 1 x nBond
-ExpF = permute(exp(1i*2*pi*sumsym(bsxfunsym(@times,hkl',permute(dR,[3 1 2])),2)),[1 3 2]);
+ExpF = permute(exp(1i*2*pi*sum(bsxfun(@times,hkl',permute(dR,[3 1 2])),2)),[1 3 2]);
 
 % J*exp(ikr), dimensions 3 x 3 x nBond
-Jexp = reshape(bsxfunsym(@times,JJ,ExpF),3,3,nBond);
+Jexp = reshape(bsxfun(@times,JJ,ExpF),3,3,nBond);
 
 % Exchange energy: A_ij = S_i*S_j*J_ij*exp(ik*2pi*(R_i-R_j))
 % Summed up on all bonds

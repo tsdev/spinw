@@ -59,12 +59,12 @@ for ii = 1:numel(subSumIdx)
     % sum up rows of the Fourier transform that belongs to the same
     % sublattice
     sumIdx = find(sub ==subSumIdx(ii));
-    ft(:,:,subSumIdx(ii),:,:) = sumsym(ft(:,:,sumIdx,:,:),3);
+    ft(:,:,subSumIdx(ii),:,:) = sum(ft(:,:,sumIdx,:,:),3);
     % remove the summed up rows
     ft(:,:,sumIdx(2:end),:,:) = [];
     % sum up columns of the Fourier transform that belongs to the same
     % sublattice
-    ft(:,:,:,subSumIdx(ii),:) = sumsym(ft(:,:,:,sumIdx,:),4);
+    ft(:,:,:,subSumIdx(ii),:) = sum(ft(:,:,:,sumIdx,:),4);
     % remove the summed up columns
     ft(:,:,:,sumIdx(2:end),:) = [];
     % also remove the deleted elements from the sublattice vector

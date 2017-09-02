@@ -3,10 +3,11 @@ function cm_data = cm_magma(nCol)
 %
 % CM_MAGMA(nCol)
 %
-% This is a honest colormap, unlike the Matlab default parula(). This
-% means this colormap is perceptionally uniform, thus it will not emphasize
-% any value on the plot. It is also compatible with black and white output.
-% The colormap is copied from the Python package Matplotlib.
+% This is a honest colormap, unlike the Matlab default parula(). This means
+% this colormap is perceptionally uniform, thus it will not emphasize any
+% value on the plot. It is also compatible with black and white output. The
+% colormap is copied from the Python package Matplotlib
+% (https://bids.github.io/colormap/).
 %
 % Input:
 %

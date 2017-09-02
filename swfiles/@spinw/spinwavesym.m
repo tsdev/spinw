@@ -199,7 +199,7 @@ else
 end
 
 % remove zero anisotropy matrices
-anyIdx = ~sw_always(squeeze(sumsym(sumsym(abs(JJ),1),2)) == 0);
+anyIdx = ~sw_always(squeeze(sum(sum(abs(JJ),1),2)) == 0);
 
 dR    = dR(:,anyIdx);
 atom1 = atom1(1,anyIdx);
@@ -224,9 +224,9 @@ etaR = repmat(permute(eta(:,atom2),[3 1 2]),[3 1 1]);
 SiSj = sqrt(S0(atom1).*S0(atom2));
 
 % Creates temporary values for calculating matrix elements.
-A0 =  SiSj.*shiftdim(sumsym(sumsym(zedL.*JJ.*conj(zedR),2),1),1);
-B0 =  SiSj.*shiftdim(sumsym(sumsym(zedL.*JJ.*     zedR ,2),1),1);
-C0 =  shiftdim(sumsym(sumsym(etaL.*JJ.*etaR,2),1),1);
+A0 =  SiSj.*shiftdim(sum(sum(zedL.*JJ.*conj(zedR),2),1),1);
+B0 =  SiSj.*shiftdim(sum(sum(zedL.*JJ.*     zedR ,2),1),1);
+C0 =  shiftdim(sum(sum(etaL.*JJ.*etaR,2),1),1);
 C1 = -2*S0(atom2).*C0;
 C2 = -2*S0(atom1).*C0;
 

@@ -114,17 +114,17 @@ if nMagExt>0
         for ii = 1:numel(dRIdx)
             %M2(:,dRIdx(ii)) = sw_rot(n, kExt*dR(:,dRIdx(ii))*2*pi, M2(:,dRIdx(ii)));
             % TODO check - sign in front of phase
-            M2(:,dRIdx(ii)) = real(bsxfunsym(@times,M2cmplx(:,dRIdx(ii)),exp(-1i*kExt*dR(:,dRIdx(ii))*2*pi)));
+            M2(:,dRIdx(ii)) = real(bsxfun(@times,M2cmplx(:,dRIdx(ii)),exp(-1i*kExt*dR(:,dRIdx(ii))*2*pi)));
         end
     end
     
     Ml = repmat(permute(M1,[1 3 2]),[1 3 1]);
     Mr = repmat(permute(M2,[3 1 2]),[3 1 1]);
     
-    exchE   =  sumsym(sumsym(sumsym(Ml.*JJ.*Mr,3),2),1);
+    exchE   =  sum(sum(sum(Ml.*JJ.*Mr,3),2),1);
     % TODO
     % correct energy for twins
-    ZeemanE = -sumsym(SI.field*permute(mmat(SI.g,permute(M0,[1 3 2])),[1 3 2]),2)*obj.unit.muB;
+    ZeemanE = -sum(SI.field*permute(mmat(SI.g,permute(M0,[1 3 2])),[1 3 2]),2)*obj.unit.muB;
     
     % energy per spin
     E = (exchE + ZeemanE)/nMagExt;

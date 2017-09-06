@@ -1,0 +1,41 @@
+entries:
+- title: Sidebar
+  product: SpinW
+  version: R1403
+  folders:
+  - title: Documentation
+    output: web, pdf
+    folderitems: []
+  - title: Function reference
+    output: web, pdf
+    folderitems:
+    - title: +swpref
+      url: /+swpref.html
+      output: web, pdf
+      subfolders:
+      - title: Functions in +swpref
+        output: web, pdf
+        subfolderitems:
+        - {title: Package swpref, url: /+swpref_Contents.html, output: 'web, pdf'}
+        - {title: swprefgetpref( ), url: /+swpref_getpref.html, output: 'web, pdf'}
+        - {title: swprefpref( ), url: /+swpref_pref.html, output: 'web, pdf'}
+        - {title: swprefsetpref( ), url: /+swpref_setpref.html, output: 'web, pdf'}
+    - title: +swsym
+      url: /+swsym.html
+      output: web, pdf
+      subfolders:
+      - title: Functions in +swsym
+        output: web, pdf
+        subfolderitems:
+        - {title: Package swsym, url: /+swsym_Contents.html, output: 'web, pdf'}
+        - {title: swsymadd( ), url: /+swsym_add.html, output: 'web, pdf'}
+        - {title: swsymbond( ), url: /+swsym_bond.html, output: 'web, pdf'}
+        - {title: swsymgenerator( ), url: /+swsym_generator.html, output: 'web, pdf'}
+        - {title: swsymgenreduce( ), url: /+swsym_genreduce.html, output: 'web, pdf'}
+        - {title: swsymisop( ), url: /+swsym_isop.html, output: 'web, pdf'}
+        - {title: swsymoperator( ), url: /+swsym_operator.html, output: 'web, pdf'}
+        - {title: swsymoporder( ), url: /+swsym_oporder.html, output: 'web, pdf'}
+        - {title: swsympoint( ), url: /+swsym_point.html, output: 'web, pdf'}
+        - {title: swsymposition( ), url: /+swsym_position.html, output: 'web, pdf'}
+        - {title: swsymstr( ), url: /+swsym_str.html, output: 'web, pdf'}
+

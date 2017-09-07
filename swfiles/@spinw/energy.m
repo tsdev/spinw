@@ -139,7 +139,7 @@ if nargout > 0
 else
     if obj.symbolic
         fprintf('Ground state energy (1/spin):\n')
-        pretty(E);
+        pretty(sym('E')==E);
     else
         fprintf(['Ground state energy: %5.3f ' obj.unit.label{2} '/spin.\n'],E);
     end

@@ -29,7 +29,7 @@ if nargin < 2
     tol = 1e-5;
 end
 
-unique = zeros(size(M));
+unique = M*0;
 tol2 = tol(1)^2;
 
 if nargout < 2

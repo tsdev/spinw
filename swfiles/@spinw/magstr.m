@@ -83,7 +83,7 @@ if ~isempty(kInc)
     magOut.k = obj.mag_str.k(:,kInc(1))';
     n = cross(real(obj.mag_str.F(:,1,kInc(1))),imag(obj.mag_str.F(:,1,kInc(1))))';
     % normalize n-vector
-    if norm(n) < 10*eps
+    if sw_always(norm(n) < 10*eps)
         % find any n perpendicular to the first spin vector (in most cases
         % it works)
         V = sw_cartesian(real(obj.mag_str.F(:,1)));

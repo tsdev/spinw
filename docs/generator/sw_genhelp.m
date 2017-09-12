@@ -1,12 +1,12 @@
-function sw_genhelp(varargin)
+function doctree = sw_genhelp(varargin)
 % generates markdown files from function help
 %
 % SW_GENHELP('option1', value1, ...)
 %
 
-inpForm.fname  = {'path'};
-inpForm.defval = {{}    };
-inpForm.size   = {[1 -1]};
+inpForm.fname  = {'path' 'sidebar'   };
+inpForm.defval = {{}     'sw_sidebar'};
+inpForm.size   = {[1 -1] [1 -2]      };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -28,23 +28,36 @@ for ii = 1:nPath
     doctree(ii).name   = [pp1 pp2];
     doctree(ii).folder = path0{ii};
     
-    % find all *.m files in the folder
-    fList = dir([path0{ii} filesep '*.m']);
-    fList = {fList(:).name};
-    doctree(ii).content = struct('file',cell(1,numel(fList)));
-    [doctree(ii).content(:).file] = fList{:};
-    
     % type of folder
     doctree(ii).isPackage = false;
     doctree(ii).isClass   = false;
     
-    switch doctree(ii).name
+    switch doctree(ii).name(1)
         case '+'
             % package
             doctree(ii).isPackage = true;
+            doctree(ii).fun = doctree(ii).name(2:end);
         case '@'
             % class
             doctree(ii).isClass = true;
+            doctree(ii).fun = doctree(ii).name(2:end);
+        otherwise
+            doctree(ii).fun = doctree(ii).name;
+    end
+
+    if ~doctree(ii).isClass
+        % find all *.m files in the folder
+        fList = dir([path0{ii} filesep '*.m']);
+        fList = {fList(:).name};
+        doctree(ii).content = struct('file',cell(1,numel(fList)));
+        [doctree(ii).content(:).file] = fList{:};
+    else
+        
+        propNames   = properties(doctree(ii).fun);
+        methodNames = methods(doctree(ii).fun);
+        
+        doctree(ii).content = struct('fun',cell(1,numel(allNames)));
+        [doctree(ii).content(:).fun] = allNames{:};
     end
     
 end
@@ -52,23 +65,31 @@ end
 for ii = 1:nPath
     % remove old documents
     try
-        rmdir([docroot 'pages' filesep doctree(ii).folder],'s')
+        rmdir([docroot 'pages' filesep doctree(ii).name],'s')
     catch
     end
     % add new empty folder
-    mkdir([docroot 'pages' filesep doctree(ii).folder]);
+    mkdir([docroot 'pages' filesep doctree(ii).name]);
 end
 
 for ii = 1:nPath
     % load the help text for each file
     for jj = 1:numel(doctree(ii).content)
-        doctree(ii).content(jj).text = strsplit(help([doctree(ii).folder filesep doctree(ii).content(jj).file]),newline);
+        if doctree(ii).isClass
+            doctree(ii).content(jj).text = strsplit(help([doctree(ii).fun '.' doctree(ii).content(jj).fun]),newline);
+        else
+            doctree(ii).content(jj).text = strsplit(help([doctree(ii).folder filesep doctree(ii).content(jj).file]),newline);
+        end
         % remove common leading spaces
         doctree(ii).content(jj).text = rmspace(doctree(ii).content(jj).text);
     end
     
     % find Contents.m file and put it to the first place
-    isContents = ismember({doctree(ii).content(:).file},'Contents.m');
+    if doctree(ii).isClass
+        isContents = ismember({doctree(ii).content(:).fun},doctree(ii).fun);
+    else
+        isContents = ismember({doctree(ii).content(:).file},'Contents.m');
+    end
     
     isContents = num2cell(isContents);
     [doctree(ii).content(:).isContents] = isContents{:};
@@ -82,53 +103,80 @@ end
 for ii = 1:nPath
     cIdx = find([doctree(ii).content(:).isContents]);
     for jj = 1:numel(cIdx)
-        doctree(ii).content(jj) = helpcontentfun(doctree(ii).content(jj),doctree(ii).name,doctree(ii).isPackage);
+        doctree(ii).content(jj) = helpcontentfun(doctree(ii).content(jj),doctree(ii).fun,doctree(ii).isPackage);
     end
 end
 
 for ii = 1:nPath
+    doctree(ii).content(1).fun = '';
+    doctree(ii).content(1).frontmatter = struct;
+    
     for jj = 1:numel(doctree(ii).content)
+        content = doctree(ii).content(jj);
         
-        % summary
-        doctree(ii).content(jj).summary = strtrim(doctree(ii).content(jj).text{1});
-        doctree(ii).content(jj).fun     = doctree(ii).content(jj).file(1:end-2);
+        if ~doctree(ii).isClass
+            content.fun     = content.file(1:end-2);
+        end
         
         % title
-        if doctree(ii).content(jj).isContents
+        if content.isContents
             if doctree(ii).isPackage
-                doctree(ii).content(jj).title = ['Package ' doctree(ii).name(2:end)];
+                content.frontmatter.title = ['Package ' doctree(ii).name(2:end)];
             elseif doctree(ii).isClass
-                doctree(ii).content(jj).title = ['Class ' doctree(ii).name(2:end)];
+                content.frontmatter.title = ['Class ' doctree(ii).name(2:end)];
             else
-                doctree(ii).content(jj).title = ['Functions in ' doctree(ii).name];
+                content.frontmatter.title = ['Functions in ' doctree(ii).name];
             end
         else
             if doctree(ii).isPackage
-                doctree(ii).content(jj).title = [doctree(ii).name(2:end) '.' doctree(ii).content(jj).fun '( )'];
+                content.frontmatter.title = [doctree(ii).name(2:end) '.' content.fun '( )'];
             elseif doctree(ii).isClass
-                doctree(ii).content(jj).title = [doctree(ii).name '.' doctree(ii).content(jj).fun '( )'];
+                content.frontmatter.title = [doctree(ii).name '.' content.fun '( )'];
             else
-                doctree(ii).content(jj).title = [doctree(ii).content(jj).fun '( )'];
+                content.frontmatter.title = [content.fun '( )'];
             end
         end
+        % summary
+        content.frontmatter.summary = strtrim(content.text{1});
+        % keywords
+        content.frontmatter.keywords  = 'sample';
+        % sidebar
+        content.frontmatter.sidebar   = param.sidebar;
         % permalink
+        if content.isContents
+            content.frontmatter.permalink = [doctree(ii).fun '.html'];
+        else
+            content.frontmatter.permalink = [doctree(ii).fun '_' content.fun '.html'];
+        end
+        % folder
+        content.frontmatter.folder    = doctree(ii).name;
+        % mathjax
+        isMath    = ~isempty(regexp(content.text,'\$\$','once'));
+        falsetrue = {'false' 'true'};
+        content.frontmatter.mathjax   = falsetrue{isMath+1};
+        doctree(ii).content(jj)       = content;
+    end
+end
+
+% YAML java
+javaaddpath(YAML.jarfile);
+% Load yaml into java obj
+snakeyaml = org.yaml.snakeyaml.Yaml;
+
+% generate the .md files
+for ii = 1:nPath
+    for jj = 1:numel(doctree(ii).content)
         
+        content     = doctree(ii).content(jj);
+        %frontmatter = YAML.dump(content.frontmatter)
         
-        frontmatter = YAML.dump(struct(...
-            'title',    titleStr0,...
-            'keywords', 'sample',...
-            'summary',  summary,...
-            'sidebar',  'sw_sidebar',...
-            'permalink',[folder{ii} '_' fN '.html'],...
-            'folder',   folder{ii},...
-            'mathjax',  'true'));
-        header = ['---' newline frontmatter newline '---' newline];
-        
+        % Convert to matlab object
+        frontmatter = char(snakeyaml.dump(YAML.dump_data(content.frontmatter)));
         % save the text as .md file
-        fid = fopen([docroot 'pages' filesep folder{ii} filesep folder{ii} '_' fN '.md'],'w');
+        fid = fopen([docroot 'pages' filesep content.frontmatter.folder filesep content.fun '.md'],'w');
         % add newline
-        helpText = cellfun(@(C)[C newline],helpText,'UniformOutput',false);
-        fprintf(fid,[header helpText{:}]);
+        helpText = cellfun(@(C)[C newline],content.text,'UniformOutput',false);
+        fprintf(fid,['---' newline frontmatter newline '---' newline helpText{:}]);
         fclose(fid);
     end
 end
@@ -152,21 +200,30 @@ sidebar.entries.folders(1).output = 'web, pdf';
 sidebar.entries.folders(2).title  = 'Function reference';
 sidebar.entries.folders(2).output = 'web, pdf';
 %sidebar.entries.folders(1).type   = 'frontmatter';
-for ii = 1:numel(folder)
-    sidebar.entries.folders(2).folderitems(ii).title  = folder{ii};
-    sidebar.entries.folders(2).folderitems(ii).url    = ['/' folder{ii} '.html'];
+for ii = 1:nPath
+    sidebar.entries.folders(2).folderitems(ii).title  = doctree(ii).name;
+    sidebar.entries.folders(2).folderitems(ii).url    = ['/' doctree(ii).fun '.html'];
     sidebar.entries.folders(2).folderitems(ii).output = 'web, pdf';
     
-    for jj = 1:numel(funName{ii})
-        sidebar.entries.folders(2).folderitems(ii).subfolders.title  = ['Functions in ' folder{ii}];
+    nContent = find(~[doctree(ii).content.isContents]);
+    for jj = 1:numel(nContent)
+        content = doctree(ii).content(nContent(jj));
+        if doctree(ii).isPackage
+            sidebar.entries.folders(2).folderitems(ii).subfolders.title  = [doctree(ii).fun ' package reference'];
+        elseif doctree(ii).isClass
+            sidebar.entries.folders(2).folderitems(ii).subfolders.title  = [doctree(ii).fun ' class reference'];
+        else
+            sidebar.entries.folders(2).folderitems(ii).subfolders.title  = [doctree(ii).fun ' folder reference'];
+        end
         sidebar.entries.folders(2).folderitems(ii).subfolders.output = 'web, pdf';
-        sidebar.entries.folders(2).folderitems(ii).subfolders.subfolderitems(jj).title  = titleStr{ii}{jj};
-        sidebar.entries.folders(2).folderitems(ii).subfolders.subfolderitems(jj).url    = ['/' folder{ii} '_' funName{ii}{jj} '.html'];
+        sidebar.entries.folders(2).folderitems(ii).subfolders.subfolderitems(jj).title  = content.frontmatter.title(1:end-3);
+        sidebar.entries.folders(2).folderitems(ii).subfolders.subfolderitems(jj).url    = ['/' content.frontmatter.permalink];
         sidebar.entries.folders(2).folderitems(ii).subfolders.subfolderitems(jj).output = 'web, pdf';
     end
 end
 
-yamlStr = YAML.dump(sidebar);
+%yamlStr = YAML.dump(sidebar);
+yamlStr = char(snakeyaml.dump(YAML.dump_data(sidebar)));
 
 % add extra '-' that is required by Jekyll
 yamlStr1 = strsplit(yamlStr,newline);
@@ -227,7 +284,7 @@ if ~isempty(lIdx)
     firstLine = true;
     
     if isPackage
-        ll2 = [folder(2:end) '.'];
+        ll2 = [folder '.'];
     else
         ll2 = [];
     end
@@ -241,7 +298,7 @@ if ~isempty(lIdx)
             else
                 ll1 = [];
             end
-            text{ii} = [ll1 '* [' ll2 line{1} '()](/' folder '_' line{1} ') ' line{2}];
+            text{ii} = [ll1 '* [' ll2 line{1} '](/' folder '_' line{1} ') ' line{2}];
             firstLine = false;
         elseif any(text{ii}==':')
             % sub header line

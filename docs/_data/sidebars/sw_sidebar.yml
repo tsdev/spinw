@@ -1,7 +1,7 @@
 entries:
 - title: Sidebar
   product: SpinW
-  version: R1403
+  version: R1404
   folders:
   - title: Documentation
     output: web, pdf
@@ -9,33 +9,264 @@ entries:
   - title: Function reference
     output: web, pdf
     folderitems:
+    - title: swfiles
+      url: /swfiles.html
+      output: web, pdf
+      subfolders:
+      - title: swfiles folder reference
+        output: web, pdf
+        subfolderitems:
+        - {title: gm_planar, url: /swfiles_gm_planar.html, output: 'web, pdf'}
+        - {title: gm_planard, url: /swfiles_gm_planard.html, output: 'web, pdf'}
+        - {title: gm_spherical3d, url: /swfiles_gm_spherical3d.html, output: 'web,
+          - pdf'}
+        - {title: gm_spherical3dd, url: /swfiles_gm_spherical3dd.html, output: 'web,
+          - pdf'}
+        - {title: sw_angle, url: /swfiles_sw_angle.html, output: 'web, pdf'}
+        - {title: sw_annealfigure, url: /swfiles_sw_annealfigure.html, output: 'web,
+          - pdf'}
+        - {title: sw_annealplot, url: /swfiles_sw_annealplot.html, output: 'web, pdf'}
+        - {title: sw_atomdata, url: /swfiles_sw_atomdata.html, output: 'web, pdf'}
+        - {title: sw_basismat, url: /swfiles_sw_basismat.html, output: 'web, pdf'}
+        - {title: sw_bonddim, url: /swfiles_sw_bonddim.html, output: 'web, pdf'}
+        - {title: sw_bose, url: /swfiles_sw_bose.html, output: 'web, pdf'}
+        - {title: sw_cartesian, url: /swfiles_sw_cartesian.html, output: 'web, pdf'}
+        - {title: sw_cff, url: /swfiles_sw_cff.html, output: 'web, pdf'}
+        - {title: sw_circle, url: /swfiles_sw_circle.html, output: 'web, pdf'}
+        - {title: sw_cmod, url: /swfiles_sw_cmod.html, output: 'web, pdf'}
+        - {title: sw_converter, url: /swfiles_sw_converter.html, output: 'web, pdf'}
+        - {title: sw_counter, url: /swfiles_sw_counter.html, output: 'web, pdf'}
+        - {title: sw_econtract, url: /swfiles_sw_econtract.html, output: 'web, pdf'}
+        - {title: sw_egrid, url: /swfiles_sw_egrid.html, output: 'web, pdf'}
+        - {title: sw_extendlattice, url: /swfiles_sw_extendlattice.html, output: 'web,
+          - pdf'}
+        - {title: sw_fibo, url: /swfiles_sw_fibo.html, output: 'web, pdf'}
+        - {title: sw_filelist, url: /swfiles_sw_filelist.html, output: 'web, pdf'}
+        - {title: sw_freemem, url: /swfiles_sw_freemem.html, output: 'web, pdf'}
+        - {title: sw_fstat, url: /swfiles_sw_fstat.html, output: 'web, pdf'}
+        - {title: sw_fsub, url: /swfiles_sw_fsub.html, output: 'web, pdf'}
+        - {title: sw_idata, url: /swfiles_sw_idata.html, output: 'web, pdf'}
+        - {title: sw_import, url: /swfiles_sw_import.html, output: 'web, pdf'}
+        - {title: sw_initialize, url: /swfiles_sw_initialize.html, output: 'web, pdf'}
+        - {title: sw_instrument, url: /swfiles_sw_instrument.html, output: 'web, pdf'}
+        - {title: sw_intsf, url: /swfiles_sw_intsf.html, output: 'web, pdf'}
+        - {title: sw_label, url: /swfiles_sw_label.html, output: 'web, pdf'}
+        - {title: sw_magdomain, url: /swfiles_sw_magdomain.html, output: 'web, pdf'}
+        - {title: sw_mattype, url: /swfiles_sw_mattype.html, output: 'web, pdf'}
+        - {title: sw_mex, url: /swfiles_sw_mex.html, output: 'web, pdf'}
+        - {title: sw_mff, url: /swfiles_sw_mff.html, output: 'web, pdf'}
+        - {title: sw_mirror, url: /swfiles_sw_mirror.html, output: 'web, pdf'}
+        - {title: sw_model, url: /swfiles_sw_model.html, output: 'web, pdf'}
+        - {title: sw_multicolor, url: /swfiles_sw_multicolor.html, output: 'web, pdf'}
+        - {title: sw_nb, url: /swfiles_sw_nb.html, output: 'web, pdf'}
+        - {title: sw_neutron, url: /swfiles_sw_neutron.html, output: 'web, pdf'}
+        - {title: sw_notify, url: /swfiles_sw_notify.html, output: 'web, pdf'}
+        - {title: sw_nvect, url: /swfiles_sw_nvect.html, output: 'web, pdf'}
+        - {title: sw_omegasum, url: /swfiles_sw_omegasum.html, output: 'web, pdf'}
+        - {title: sw_parstr, url: /swfiles_sw_parstr.html, output: 'web, pdf'}
+        - {title: sw_plotcell, url: /swfiles_sw_plotcell.html, output: 'web, pdf'}
+        - {title: sw_plotsf, url: /swfiles_sw_plotsf.html, output: 'web, pdf'}
+        - {title: sw_plotspec, url: /swfiles_sw_plotspec.html, output: 'web, pdf'}
+        - {title: sw_qgrid, url: /swfiles_sw_qgrid.html, output: 'web, pdf'}
+        - {title: sw_qscan, url: /swfiles_sw_qscan.html, output: 'web, pdf'}
+        - {title: sw_quadell, url: /swfiles_sw_quadell.html, output: 'web, pdf'}
+        - {title: sw_readparam, url: /swfiles_sw_readparam.html, output: 'web, pdf'}
+        - {title: sw_readspec, url: /swfiles_sw_readspec.html, output: 'web, pdf'}
+        - {title: sw_readtable, url: /swfiles_sw_readtable.html, output: 'web, pdf'}
+        - {title: sw_res, url: /swfiles_sw_res.html, output: 'web, pdf'}
+        - {title: sw_resconv, url: /swfiles_sw_resconv.html, output: 'web, pdf'}
+        - {title: sw_rootdir, url: /swfiles_sw_rootdir.html, output: 'web, pdf'}
+        - {title: sw_rot, url: /swfiles_sw_rot.html, output: 'web, pdf'}
+        - {title: sw_rotmat, url: /swfiles_sw_rotmat.html, output: 'web, pdf'}
+        - {title: sw_rotmatd, url: /swfiles_sw_rotmatd.html, output: 'web, pdf'}
+        - {title: sw_status, url: /swfiles_sw_status.html, output: 'web, pdf'}
+        - {title: sw_tofres, url: /swfiles_sw_tofres.html, output: 'web, pdf'}
+        - {title: sw_uniquetol, url: /swfiles_sw_uniquetol.html, output: 'web, pdf'}
+        - {title: sw_update, url: /swfiles_sw_update.html, output: 'web, pdf'}
+        - {title: sw_version, url: /swfiles_sw_version.html, output: 'web, pdf'}
+        - {title: sw_xray, url: /swfiles_sw_xray.html, output: 'web, pdf'}
+    - title: '@spinw'
+      url: /spinw.html
+      output: web, pdf
+      subfolders:
+      - title: spinw class reference
+        output: web, pdf
+        subfolderitems:
+        - {title: '@spinw.lattice', url: /spinw_lattice.html, output: 'web, pdf'}
+        - {title: '@spinw.unit_cell', url: /spinw_unit_cell.html, output: 'web, pdf'}
+        - {title: '@spinw.twin', url: /spinw_twin.html, output: 'web, pdf'}
+        - {title: '@spinw.matrix', url: /spinw_matrix.html, output: 'web, pdf'}
+        - {title: '@spinw.single_ion', url: /spinw_single_ion.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.coupling', url: /spinw_coupling.html, output: 'web, pdf'}
+        - {title: '@spinw.mag_str', url: /spinw_mag_str.html, output: 'web, pdf'}
+        - {title: '@spinw.unit', url: /spinw_unit.html, output: 'web, pdf'}
+        - {title: '@spinw.cache', url: /spinw_cache.html, output: 'web, pdf'}
+        - {title: '@spinw.abc', url: /spinw_abc.html, output: 'web, pdf'}
+        - {title: '@spinw.addaniso', url: /spinw_addaniso.html, output: 'web, pdf'}
+        - {title: '@spinw.addatom', url: /spinw_addatom.html, output: 'web, pdf'}
+        - {title: '@spinw.addcoupling', url: /spinw_addcoupling.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.addg', url: /spinw_addg.html, output: 'web, pdf'}
+        - {title: '@spinw.addmatrix', url: /spinw_addmatrix.html, output: 'web, pdf'}
+        - {title: '@spinw.addtwin', url: /spinw_addtwin.html, output: 'web, pdf'}
+        - {title: '@spinw.anneal', url: /spinw_anneal.html, output: 'web, pdf'}
+        - {title: '@spinw.annealloop', url: /spinw_annealloop.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.atom', url: /spinw_atom.html, output: 'web, pdf'}
+        - {title: '@spinw.basisvector', url: /spinw_basisvector.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.copy', url: /spinw_copy.html, output: 'web, pdf'}
+        - {title: '@spinw.corespec', url: /spinw_corespec.html, output: 'web, pdf'}
+        - {title: '@spinw.couplingtable', url: /spinw_couplingtable.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.delete', url: /spinw_delete.html, output: 'web, pdf'}
+        - {title: '@spinw.disp', url: /spinw_disp.html, output: 'web, pdf'}
+        - {title: '@spinw.energy', url: /spinw_energy.html, output: 'web, pdf'}
+        - {title: '@spinw.export', url: /spinw_export.html, output: 'web, pdf'}
+        - {title: '@spinw.field', url: /spinw_field.html, output: 'web, pdf'}
+        - {title: '@spinw.fileid', url: /spinw_fileid.html, output: 'web, pdf'}
+        - {title: '@spinw.fitspec', url: /spinw_fitspec.html, output: 'web, pdf'}
+        - {title: '@spinw.formula', url: /spinw_formula.html, output: 'web, pdf'}
+        - {title: '@spinw.fourier', url: /spinw_fourier.html, output: 'web, pdf'}
+        - {title: '@spinw.fouriersym', url: /spinw_fouriersym.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.gencoupling', url: /spinw_gencoupling.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.genlattice', url: /spinw_genlattice.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.genmagstr', url: /spinw_genmagstr.html, output: 'web, pdf'}
+        - {title: '@spinw.get', url: /spinw_get.html, output: 'web, pdf'}
+        - {title: '@spinw.getdisp', url: /spinw_getdisp.html, output: 'web, pdf'}
+        - {title: '@spinw.getmatrix', url: /spinw_getmatrix.html, output: 'web, pdf'}
+        - {title: '@spinw.horace', url: /spinw_horace.html, output: 'web, pdf'}
+        - {title: '@spinw.intmatrix', url: /spinw_intmatrix.html, output: 'web, pdf'}
+        - {title: '@spinw.isvalid', url: /spinw_isvalid.html, output: 'web, pdf'}
+        - {title: '@spinw.magstr', url: /spinw_magstr.html, output: 'web, pdf'}
+        - {title: '@spinw.magtable', url: /spinw_magtable.html, output: 'web, pdf'}
+        - {title: '@spinw.matom', url: /spinw_matom.html, output: 'web, pdf'}
+        - {title: '@spinw.matparser', url: /spinw_matparser.html, output: 'web, pdf'}
+        - {title: '@spinw.meanfield', url: /spinw_meanfield.html, output: 'web, pdf'}
+        - {title: '@spinw.moment', url: /spinw_moment.html, output: 'web, pdf'}
+        - {title: '@spinw.natom', url: /spinw_natom.html, output: 'web, pdf'}
+        - {title: '@spinw.nbond', url: /spinw_nbond.html, output: 'web, pdf'}
+        - {title: '@spinw.newcell', url: /spinw_newcell.html, output: 'web, pdf'}
+        - {title: '@spinw.nmagext', url: /spinw_nmagext.html, output: 'web, pdf'}
+        - {title: '@spinw.nmat', url: /spinw_nmat.html, output: 'web, pdf'}
+        - {title: '@spinw.nosym', url: /spinw_nosym.html, output: 'web, pdf'}
+        - {title: '@spinw.notwin', url: /spinw_notwin.html, output: 'web, pdf'}
+        - {title: '@spinw.ntwin', url: /spinw_ntwin.html, output: 'web, pdf'}
+        - {title: '@spinw.optmagk', url: /spinw_optmagk.html, output: 'web, pdf'}
+        - {title: '@spinw.optmagsteep', url: /spinw_optmagsteep.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.optmagstr', url: /spinw_optmagstr.html, output: 'web, pdf'}
+        - {title: '@spinw.plot', url: /spinw_plot.html, output: 'web, pdf'}
+        - {title: '@spinw.powspec', url: /spinw_powspec.html, output: 'web, pdf'}
+        - {title: '@spinw.quickham', url: /spinw_quickham.html, output: 'web, pdf'}
+        - {title: '@spinw.rl', url: /spinw_rl.html, output: 'web, pdf'}
+        - {title: '@spinw.scga', url: /spinw_scga.html, output: 'web, pdf'}
+        - {title: '@spinw.scga3', url: /spinw_scga3.html, output: 'web, pdf'}
+        - {title: '@spinw.set', url: /spinw_set.html, output: 'web, pdf'}
+        - {title: '@spinw.setdisp', url: /spinw_setdisp.html, output: 'web, pdf'}
+        - {title: '@spinw.setmatrix', url: /spinw_setmatrix.html, output: 'web, pdf'}
+        - {title: '@spinw.setunit', url: /spinw_setunit.html, output: 'web, pdf'}
+        - {title: '@spinw.spinwave', url: /spinw_spinwave.html, output: 'web, pdf'}
+        - {title: '@spinw.spinwavesym', url: /spinw_spinwavesym.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.struct', url: /spinw_struct.html, output: 'web, pdf'}
+        - {title: '@spinw.structfact', url: /spinw_structfact.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.symbolic', url: /spinw_symbolic.html, output: 'web, pdf'}
+        - {title: '@spinw.symmetry', url: /spinw_symmetry.html, output: 'web, pdf'}
+        - {title: '@spinw.symop', url: /spinw_symop.html, output: 'web, pdf'}
+        - {title: '@spinw.table', url: /spinw_table.html, output: 'web, pdf'}
+        - {title: '@spinw.temperature', url: /spinw_temperature.html, output: 'web,
+          - pdf'}
+        - {title: '@spinw.twinq', url: /spinw_twinq.html, output: 'web, pdf'}
+        - {title: '@spinw.unitcell', url: /spinw_unitcell.html, output: 'web, pdf'}
+        - {title: '@spinw.validate', url: /spinw_validate.html, output: 'web, pdf'}
+        - {title: '@spinw.version', url: /spinw_version.html, output: 'web, pdf'}
+    - title: +swplot
+      url: /swplot.html
+      output: web, pdf
+      subfolders:
+      - title: swplot package reference
+        output: web, pdf
+        subfolderitems:
+        - {title: swplot.activefigure, url: /swplot_activefigure.html, output: 'web,
+          - pdf'}
+        - {title: swplot.add, url: /swplot_add.html, output: 'web, pdf'}
+        - {title: swplot.arrow, url: /swplot_arrow.html, output: 'web, pdf'}
+        - {title: swplot.base, url: /swplot_base.html, output: 'web, pdf'}
+        - {title: swplot.circle, url: /swplot_circle.html, output: 'web, pdf'}
+        - {title: swplot.clear, url: /swplot_clear.html, output: 'web, pdf'}
+        - {title: swplot.close, url: /swplot_close.html, output: 'web, pdf'}
+        - {title: swplot.color, url: /swplot_color.html, output: 'web, pdf'}
+        - {title: swplot.cylinder, url: /swplot_cylinder.html, output: 'web, pdf'}
+        - {title: swplot.delete, url: /swplot_delete.html, output: 'web, pdf'}
+        - {title: swplot.ellipsoid, url: /swplot_ellipsoid.html, output: 'web, pdf'}
+        - {title: swplot.export, url: /swplot_export.html, output: 'web, pdf'}
+        - {title: swplot.figure, url: /swplot_figure.html, output: 'web, pdf'}
+        - {title: swplot.findobj, url: /swplot_findobj.html, output: 'web, pdf'}
+        - {title: swplot.getdata, url: /swplot_getdata.html, output: 'web, pdf'}
+        - {title: swplot.icomesh, url: /swplot_icomesh.html, output: 'web, pdf'}
+        - {title: swplot.ishg, url: /swplot_ishg.html, output: 'web, pdf'}
+        - {title: swplot.legend, url: /swplot_legend.html, output: 'web, pdf'}
+        - {title: swplot.line, url: /swplot_line.html, output: 'web, pdf'}
+        - {title: swplot.logo, url: /swplot_logo.html, output: 'web, pdf'}
+        - {title: swplot.mouse, url: /swplot_mouse.html, output: 'web, pdf'}
+        - {title: swplot.patchfacefcn, url: /swplot_patchfacefcn.html, output: 'web,
+          - pdf'}
+        - {title: swplot.plot, url: /swplot_plot.html, output: 'web, pdf'}
+        - {title: swplot.plotatom, url: /swplot_plotatom.html, output: 'web, pdf'}
+        - {title: swplot.plotbase, url: /swplot_plotbase.html, output: 'web, pdf'}
+        - {title: swplot.plotbond, url: /swplot_plotbond.html, output: 'web, pdf'}
+        - {title: swplot.plotcell, url: /swplot_plotcell.html, output: 'web, pdf'}
+        - {title: swplot.plotchem, url: /swplot_plotchem.html, output: 'web, pdf'}
+        - {title: swplot.plotion, url: /swplot_plotion.html, output: 'web, pdf'}
+        - {title: swplot.plotmag, url: /swplot_plotmag.html, output: 'web, pdf'}
+        - {title: swplot.polyhedron, url: /swplot_polyhedron.html, output: 'web, pdf'}
+        - {title: swplot.raytriangle, url: /swplot_raytriangle.html, output: 'web,
+          - pdf'}
+        - {title: swplot.setrangegui, url: /swplot_setrangegui.html, output: 'web,
+          - pdf'}
+        - {title: swplot.subfigure, url: /swplot_subfigure.html, output: 'web, pdf'}
+        - {title: swplot.subplot, url: /swplot_subplot.html, output: 'web, pdf'}
+        - {title: swplot.text, url: /swplot_text.html, output: 'web, pdf'}
+        - {title: swplot.tooltip, url: /swplot_tooltip.html, output: 'web, pdf'}
+        - {title: swplot.tooltipcallback, url: /swplot_tooltipcallback.html, output: 'web,
+          - pdf'}
+        - {title: swplot.tooltipstring, url: /swplot_tooltipstring.html, output: 'web,
+          - pdf'}
+        - {title: swplot.transform, url: /swplot_transform.html, output: 'web, pdf'}
+        - {title: swplot.translate, url: /swplot_translate.html, output: 'web, pdf'}
+        - {title: swplot.view, url: /swplot_view.html, output: 'web, pdf'}
+        - {title: swplot.zoom, url: /swplot_zoom.html, output: 'web, pdf'}
     - title: +swpref
-      url: /+swpref.html
+      url: /swpref.html
       output: web, pdf
       subfolders:
-      - title: Functions in +swpref
+      - title: swpref package reference
         output: web, pdf
         subfolderitems:
-        - {title: Package swpref, url: /+swpref_Contents.html, output: 'web, pdf'}
-        - {title: swprefgetpref( ), url: /+swpref_getpref.html, output: 'web, pdf'}
-        - {title: swprefpref( ), url: /+swpref_pref.html, output: 'web, pdf'}
-        - {title: swprefsetpref( ), url: /+swpref_setpref.html, output: 'web, pdf'}
+        - {title: swpref.getpref, url: /swpref_getpref.html, output: 'web, pdf'}
+        - {title: swpref.pref, url: /swpref_pref.html, output: 'web, pdf'}
+        - {title: swpref.setpref, url: /swpref_setpref.html, output: 'web, pdf'}
     - title: +swsym
-      url: /+swsym.html
+      url: /swsym.html
       output: web, pdf
       subfolders:
-      - title: Functions in +swsym
+      - title: swsym package reference
         output: web, pdf
         subfolderitems:
-        - {title: Package swsym, url: /+swsym_Contents.html, output: 'web, pdf'}
-        - {title: swsymadd( ), url: /+swsym_add.html, output: 'web, pdf'}
-        - {title: swsymbond( ), url: /+swsym_bond.html, output: 'web, pdf'}
-        - {title: swsymgenerator( ), url: /+swsym_generator.html, output: 'web, pdf'}
-        - {title: swsymgenreduce( ), url: /+swsym_genreduce.html, output: 'web, pdf'}
-        - {title: swsymisop( ), url: /+swsym_isop.html, output: 'web, pdf'}
-        - {title: swsymoperator( ), url: /+swsym_operator.html, output: 'web, pdf'}
-        - {title: swsymoporder( ), url: /+swsym_oporder.html, output: 'web, pdf'}
-        - {title: swsympoint( ), url: /+swsym_point.html, output: 'web, pdf'}
-        - {title: swsymposition( ), url: /+swsym_position.html, output: 'web, pdf'}
-        - {title: swsymstr( ), url: /+swsym_str.html, output: 'web, pdf'}
+        - {title: swsym.add, url: /swsym_add.html, output: 'web, pdf'}
+        - {title: swsym.bond, url: /swsym_bond.html, output: 'web, pdf'}
+        - {title: swsym.generator, url: /swsym_generator.html, output: 'web, pdf'}
+        - {title: swsym.genreduce, url: /swsym_genreduce.html, output: 'web, pdf'}
+        - {title: swsym.isop, url: /swsym_isop.html, output: 'web, pdf'}
+        - {title: swsym.operator, url: /swsym_operator.html, output: 'web, pdf'}
+        - {title: swsym.oporder, url: /swsym_oporder.html, output: 'web, pdf'}
+        - {title: swsym.point, url: /swsym_point.html, output: 'web, pdf'}
+        - {title: swsym.position, url: /swsym_position.html, output: 'web, pdf'}
+        - {title: swsym.str, url: /swsym_str.html, output: 'web, pdf'}
 

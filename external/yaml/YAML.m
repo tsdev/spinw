@@ -11,10 +11,10 @@ classdef YAML
     % YAML.DUMP takes matlab variable X and converts to YAML string S.
     % YAML.READ and YAML.WRITE are convenient methods to load and dump
     % YAML format directly from a file.
-    % 
+    %
     % Examples:
     % To serialize matlab object
-    % 
+    %
     %   >> X = struct('matrix', rand(3,4), 'char', 'hello');
     %   >> S = YAML.dump(X);
     %   >> disp(S);
@@ -23,9 +23,9 @@ classdef YAML
     %   - [0.4853756487228412, 0.421761282626275]
     %   - [0.8002804688888001, 0.9157355251890671]
     %   char: hello
-    % 
+    %
     % To decode yaml string
-    % 
+    %
     %   >> X = YAML.load(S);
     %   >> disp(X)
     %     matrix: [3x2 double]
@@ -83,9 +83,9 @@ classdef YAML
             fprintf(fid,'%s',S);
             fclose(fid);
         end
-    end
-    
-    methods(Static, Access=private)
+        
+        
+        
         function result = load_data( r )
             %LOAD_DATA recursively convert java objects
             if isa(r, 'char')
@@ -117,6 +117,7 @@ classdef YAML
             end
         end
         
+        
         function result = merge_cell( r )
             %MERGE_CELL convert cell array to native matrix
             
@@ -127,7 +128,7 @@ classdef YAML
             elseif all(cellfun(@isstruct,r))
                 f = cellfun(@fieldnames,r,'UniformOutput',false);
                 if isempty(f) || (numel(unique(cellfun(@numel,f)))==1 && ...
-                   all(cellfun(@(x) all(strcmp(f{1},x)),f)))
+                        all(cellfun(@(x) all(strcmp(f{1},x)),f)))
                     merge = true;
                 end
             end
@@ -145,7 +146,7 @@ classdef YAML
         end
         
         function result = dump_data( r )
-            %DUMP_DATA convert 
+            %DUMP_DATA convert
             if ischar(r)
                 result = java.lang.String(r);
             elseif ~isscalar(r)

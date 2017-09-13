@@ -4,7 +4,7 @@ topnav:
 - title: Topnav
   items:
     - title: Documentation
-      url: /spinw_landing_page.html
+      url: /index.html
     - title: GitHub
       external_url: https://github.com/tsdev/spinw
     - title: Forum

@@ -66,7 +66,7 @@ for ii = 1:nPath
         fList = {fList(:).name};
         % remove .m
         nList = cellfun(@(C)[name '.' C(1:end-2)],fList,'UniformOutput',false);
-        doctree(ii).content = struct('file',cell(1,numel(fList)),'fun',[]);
+        doctree(ii).content = struct('file',cell(1,numel(fList)),'fun',[],'isProp',[]);
         [doctree(ii).content(:).file] = fList{:};
         [doctree(ii).content(:).fun]  = nList{:};
     else
@@ -75,7 +75,7 @@ for ii = 1:nPath
         fList = {fList(:).name};
         % remove .m
         nList = cellfun(@(C)C(1:end-2),fList,'UniformOutput',false);
-        doctree(ii).content = struct('file',cell(1,numel(fList)),'fun',[]);
+        doctree(ii).content = struct('file',cell(1,numel(fList)),'fun',[],'isProp',[]);
         [doctree(ii).content(:).file] = fList{:};
         [doctree(ii).content(:).fun]  = nList{:};
     end

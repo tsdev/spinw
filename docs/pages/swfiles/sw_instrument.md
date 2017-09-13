@@ -1,6 +1,6 @@
 ---
 {title: sw_instrument( ), summary: includes instrumental factors into the calculated
-    spectrum, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_instrument.html,
+    spectrum, keywords: sample, sidebar: sw_sidebar, permalink: sw_instrument.html,
   folder: swfiles, mathjax: 'true'}
 
 ---

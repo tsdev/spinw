@@ -1,7 +1,7 @@
 ---
 {title: sw_multicolor( ), summary: creates RGB color data for multiple 2D overlapping
-    plots, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_multicolor.html,
-  folder: swfiles, mathjax: 'true'}
+    plots, keywords: sample, sidebar: sw_sidebar, permalink: sw_multicolor.html, folder: swfiles,
+  mathjax: 'true'}
 
 ---
 creates RGB color data for multiple 2D overlapping plots

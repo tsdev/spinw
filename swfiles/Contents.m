@@ -1,7 +1,7 @@
 % This folder contains all the files related to SpinW but not yet split out
 % into separate libraries.
 %
-% Files
+% Files:
 %
 % Transforming and plotting calculated spin wave spectrum:
 %
@@ -34,7 +34,7 @@
 %   sw_model         - creates different predefined spin models
 %   sw_bonddim       - find dimensionality of a periodic bond network
 %
-% Constraint functions for spinw.optmagstr():
+% Constraint functions:
 %
 %   gm_planar        - planar magnetic structure constraint function 
 %   gm_planard       - planar magnetic structure constraint function 
@@ -94,7 +94,7 @@
 %
 %   sw_idata         - creates iData object
 %
-% Other files:
+% Miscellaneous:
 %
 %   sw_freemem       - gives the amount of free RAM in bytes
 %   sw_initialize    - initializes spinw by removing user entries from the symmetry.dat file

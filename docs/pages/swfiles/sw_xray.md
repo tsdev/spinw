@@ -1,6 +1,6 @@
 ---
 {title: sw_xray( ), summary: calculates X-ray scattering intensity for phonon spectrum,
-  keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_xray.html, folder: swfiles,
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_xray.html, folder: swfiles,
   mathjax: 'true'}
 
 ---

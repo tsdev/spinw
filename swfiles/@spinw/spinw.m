@@ -36,7 +36,8 @@ classdef spinw < handle & matlab.mixin.SetGet
     % See also: SPINW.COPY, SPINW.STRUCT,
     % <a href='/Applications/MATLAB_R2012b.app/help/matlab/matlab_oop/comparing-handle-and-value-classes.html'>Comparing handle and value classes</a>.
     %
-    % spinw Methods:
+    % spinw methods:
+    %
     % Lattice operations:
     %   genlattice      - defines lattice parameters, angles and symmetry
     %   basisvector     - returns the basis vectors in a matrix
@@ -92,6 +93,7 @@ classdef spinw < handle & matlab.mixin.SetGet
     %   temperature     - temperature for thermal population calculation
     %   intmatrix       - returns the spin Hamiltonian after symmetry applied (INTERNAL)
     %   symop           - generates the symmetry operators on bonds and magnetic atoms (INTERNAL)
+    %   setunit         - sets the physical units
     %   
     % Calculators:
     %   spinwave        - linear spin wave solver

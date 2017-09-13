@@ -1,6 +1,6 @@
 ---
 {title: sw_quadell( ), summary: calculates and plots the parameters of an ellipsoid
-    from a quadratic form, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_quadell.html,
+    from a quadratic form, keywords: sample, sidebar: sw_sidebar, permalink: sw_quadell.html,
   folder: swfiles, mathjax: 'true'}
 
 ---

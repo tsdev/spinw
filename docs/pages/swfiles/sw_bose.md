@@ -1,6 +1,6 @@
 ---
 {title: sw_bose( ), summary: coefficient for boson correlation functions for different
-    temperatures, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_bose.html,
+    temperatures, keywords: sample, sidebar: sw_sidebar, permalink: sw_bose.html,
   folder: swfiles, mathjax: 'true'}
 
 ---

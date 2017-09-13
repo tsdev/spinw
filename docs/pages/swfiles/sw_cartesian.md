@@ -1,6 +1,6 @@
 ---
 {title: sw_cartesian( ), summary: creates a right handed Cartesian coordinate system,
-  keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_cartesian.html, folder: swfiles,
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_cartesian.html, folder: swfiles,
   mathjax: 'true'}
 
 ---

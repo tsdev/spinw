@@ -1,6 +1,6 @@
 ---
 {title: sw_annealplot( ), summary: displays information about the annealing simulation,
-  keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_annealplot.html, folder: swfiles,
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_annealplot.html, folder: swfiles,
   mathjax: 'true'}
 
 ---

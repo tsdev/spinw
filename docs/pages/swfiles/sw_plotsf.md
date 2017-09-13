@@ -1,6 +1,6 @@
 ---
 {title: sw_plotsf( ), summary: plots the structure factor in the selected Q range
-    in 1D or 2D, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_plotsf.html,
+    in 1D or 2D, keywords: sample, sidebar: sw_sidebar, permalink: sw_plotsf.html,
   folder: swfiles, mathjax: 'true'}
 
 ---

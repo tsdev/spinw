@@ -6,7 +6,7 @@
 % of the space groups are stored in the symmetry.dat file that can be
 % loaded using the SWSYM.generator or SWSYM.operator functions.
 %
-% Files
+% Files:
 %   add       - saves user defined symmetry operators
 %   bond      - generates all symmetry equivalent bonds
 %   generator - returns symmetry operators of a given space group

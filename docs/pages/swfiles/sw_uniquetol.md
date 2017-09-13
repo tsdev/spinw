@@ -1,6 +1,6 @@
 ---
 {title: sw_uniquetol( ), summary: returns the unique column vectors within tolerance,
-  keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_uniquetol.html, folder: swfiles,
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_uniquetol.html, folder: swfiles,
   mathjax: 'true'}
 
 ---

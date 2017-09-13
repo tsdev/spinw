@@ -2,7 +2,7 @@
 % analysis library that SpinW will use, but these functions can be also
 % used independently.
 %
-% Files
+% Files:
 %   histn - calculates histogram of arbitrary dimensional data
 %   lm    - least square refinement of parameters using Levenberg Marquardt method
 %   lm2   - optimization of parameters using the Levenberg Marquardt method

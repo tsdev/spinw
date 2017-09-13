@@ -1,6 +1,6 @@
 ---
 {title: sw_filelist( ), summary: lists spinw data in the Matlab workspace or in a
-    .mat file, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_filelist.html,
+    .mat file, keywords: sample, sidebar: sw_sidebar, permalink: sw_filelist.html,
   folder: swfiles, mathjax: 'true'}
 
 ---

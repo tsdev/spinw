@@ -1,6 +1,6 @@
 ---
 {title: sw_res( ), summary: reads a tabulated energy resolution from a file and fits
-    with polynomial, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_res.html,
+    with polynomial, keywords: sample, sidebar: sw_sidebar, permalink: sw_res.html,
   folder: swfiles, mathjax: 'true'}
 
 ---

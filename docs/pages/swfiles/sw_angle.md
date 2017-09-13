@@ -1,6 +1,6 @@
 ---
 {title: sw_angle( ), summary: calculates the angle between 2 vectors, keywords: sample,
-  sidebar: sw_sidebar, permalink: swfiles_sw_angle.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_angle.html, folder: swfiles, mathjax: 'true'}
 
 ---
 calculates the angle between 2 vectors

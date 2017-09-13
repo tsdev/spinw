@@ -1,7 +1,7 @@
 ---
 {title: sw_fibo( ), summary: returns the last two Fibonacci number smaller or equal
-    to the, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_fibo.html,
-  folder: swfiles, mathjax: 'true'}
+    to the, keywords: sample, sidebar: sw_sidebar, permalink: sw_fibo.html, folder: swfiles,
+  mathjax: 'true'}
 
 ---
 returns the last two Fibonacci number smaller or equal to the

@@ -1,7 +1,7 @@
 ---
 {title: sw_neutron( ), summary: calculates neutron scattering intensity for spin wave
-    spectrum, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_neutron.html,
-  folder: swfiles, mathjax: 'true'}
+    spectrum, keywords: sample, sidebar: sw_sidebar, permalink: sw_neutron.html, folder: swfiles,
+  mathjax: 'true'}
 
 ---
 calculates neutron scattering intensity for spin wave spectrum

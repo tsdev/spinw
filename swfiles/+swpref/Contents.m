@@ -3,7 +3,7 @@
 % Matlab built-in preferences, as it resets all settings to factory default
 % after every restart of Matlab.
 %
-% Files
+% Files:
 %   getpref - returns SpinW global preferences
 %   pref    - returns SpinW global preferences
 %   setpref - sets SpinW global preferences

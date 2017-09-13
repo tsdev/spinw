@@ -1,6 +1,6 @@
 ---
 {title: sw_rotmatd( ), summary: rotates vectors around arbitrary axis in 3D, keywords: sample,
-  sidebar: sw_sidebar, permalink: swfiles_sw_rotmatd.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_rotmatd.html, folder: swfiles, mathjax: 'true'}
 
 ---
 rotates vectors around arbitrary axis in 3D

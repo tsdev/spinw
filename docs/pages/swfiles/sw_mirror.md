@@ -1,6 +1,6 @@
 ---
 {title: sw_mirror( ), summary: mirrors a 3D vector, keywords: sample, sidebar: sw_sidebar,
-  permalink: swfiles_sw_mirror.html, folder: swfiles, mathjax: 'true'}
+  permalink: sw_mirror.html, folder: swfiles, mathjax: 'true'}
 
 ---
 mirrors a 3D vector

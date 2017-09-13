@@ -1,6 +1,6 @@
 ---
 {title: sw_fsub( ), summary: simple graph vertex coloring, keywords: sample, sidebar: sw_sidebar,
-  permalink: swfiles_sw_fsub.html, folder: swfiles, mathjax: 'true'}
+  permalink: sw_fsub.html, folder: swfiles, mathjax: 'true'}
 
 ---
 simple graph vertex coloring

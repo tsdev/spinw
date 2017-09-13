@@ -1,6 +1,6 @@
 ---
 {title: sw_model( ), summary: creates different predefined spin models, keywords: sample,
-  sidebar: sw_sidebar, permalink: swfiles_sw_model.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_model.html, folder: swfiles, mathjax: 'true'}
 
 ---
 creates different predefined spin models

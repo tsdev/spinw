@@ -1,7 +1,7 @@
 ---
 {title: sw_atomdata( ), summary: returns information on elements stored in the atom.dat
-    file, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_atomdata.html,
-  folder: swfiles, mathjax: 'true'}
+    file, keywords: sample, sidebar: sw_sidebar, permalink: sw_atomdata.html, folder: swfiles,
+  mathjax: 'true'}
 
 ---
 returns information on elements stored in the atom.dat file

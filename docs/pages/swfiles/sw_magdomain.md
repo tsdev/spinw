@@ -1,6 +1,6 @@
 ---
 {title: sw_magdomain( ), summary: calculates the spin-spin correlation function for
-    magnetic domains, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_magdomain.html,
+    magnetic domains, keywords: sample, sidebar: sw_sidebar, permalink: sw_magdomain.html,
   folder: swfiles, mathjax: 'true'}
 
 ---

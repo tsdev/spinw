@@ -25,39 +25,59 @@ doctree  = struct('name',cell(1,nPath),'folder',[],'content',[]);
 for ii = 1:nPath
     % name of the parent folder
     [~,pp1,pp2] = fileparts(path0{ii});
-    doctree(ii).name   = [pp1 pp2];
-    doctree(ii).folder = path0{ii};
+    doctree(ii).fullname = [pp1 pp2];
+    doctree(ii).folder   = path0{ii};
     
     % type of folder
     doctree(ii).isPackage = false;
     doctree(ii).isClass   = false;
     
-    switch doctree(ii).name(1)
+    switch doctree(ii).fullname(1)
         case '+'
             % package
             doctree(ii).isPackage = true;
-            doctree(ii).fun = doctree(ii).name(2:end);
+            doctree(ii).name      = doctree(ii).fullname(2:end);
         case '@'
             % class
             doctree(ii).isClass = true;
-            doctree(ii).fun = doctree(ii).name(2:end);
+            doctree(ii).name = doctree(ii).fullname(2:end);
         otherwise
-            doctree(ii).fun = doctree(ii).name;
+            doctree(ii).name = doctree(ii).fullname;
     end
 
-    if ~doctree(ii).isClass
+    if doctree(ii).isClass
+        % class
+        name        = doctree(ii).name;
+        
+        propNames   = properties(name);
+        methodNames = methods(name);
+        
+        funList = [name; cellfun(@(C)[name '.' C],[propNames;methodNames],'UniformOutput',false)];
+        doctree(ii).content = struct('fun',cell(1,numel(funList)),'isProp',[],'file',[]);
+        [doctree(ii).content(:).fun] = funList{:};
+        isProp = num2cell([false true(1,numel(propNames)) false(1,numel(methodNames))]);
+        [doctree(ii).content(:).isProp] = isProp{:};
+    elseif doctree(ii).isPackage
+        % package
+        name        = doctree(ii).name;
+        
         % find all *.m files in the folder
         fList = dir([path0{ii} filesep '*.m']);
         fList = {fList(:).name};
-        doctree(ii).content = struct('file',cell(1,numel(fList)));
+        % remove .m
+        nList = cellfun(@(C)[name '.' C(1:end-2)],fList,'UniformOutput',false);
+        doctree(ii).content = struct('file',cell(1,numel(fList)),'fun',[]);
         [doctree(ii).content(:).file] = fList{:};
+        [doctree(ii).content(:).fun]  = nList{:};
     else
-        
-        propNames   = properties(doctree(ii).fun);
-        methodNames = methods(doctree(ii).fun);
-        
-        doctree(ii).content = struct('fun',cell(1,numel(allNames)));
-        [doctree(ii).content(:).fun] = allNames{:};
+        % find all *.m files in the folder
+        fList = dir([path0{ii} filesep '*.m']);
+        fList = {fList(:).name};
+        % remove .m
+        nList = cellfun(@(C)C(1:end-2),fList,'UniformOutput',false);
+        doctree(ii).content = struct('file',cell(1,numel(fList)),'fun',[]);
+        [doctree(ii).content(:).file] = fList{:};
+        [doctree(ii).content(:).fun]  = nList{:};
     end
     
 end
@@ -75,8 +95,8 @@ end
 for ii = 1:nPath
     % load the help text for each file
     for jj = 1:numel(doctree(ii).content)
-        if doctree(ii).isClass
-            doctree(ii).content(jj).text = strsplit(help([doctree(ii).fun '.' doctree(ii).content(jj).fun]),newline);
+        if isempty(doctree(ii).content(ii).file)
+            doctree(ii).content(jj).text = strsplit(help(doctree(ii).content(jj).fun),newline);
         else
             doctree(ii).content(jj).text = strsplit(help([doctree(ii).folder filesep doctree(ii).content(jj).file]),newline);
         end
@@ -86,7 +106,7 @@ for ii = 1:nPath
     
     % find Contents.m file and put it to the first place
     if doctree(ii).isClass
-        isContents = ismember({doctree(ii).content(:).fun},doctree(ii).fun);
+        isContents = ismember({doctree(ii).content(:).fun},doctree(ii).name);
     else
         isContents = ismember({doctree(ii).content(:).file},'Contents.m');
     end
@@ -99,42 +119,68 @@ for ii = 1:nPath
     doctree(ii).content = doctree(ii).content(idx);
 end
 
-% convert Contents.m files
+% convert Contents.m files and mine out titles
 for ii = 1:nPath
     cIdx = find([doctree(ii).content(:).isContents]);
     for jj = 1:numel(cIdx)
-        doctree(ii).content(jj) = helpcontentfun(doctree(ii).content(jj),doctree(ii).fun,doctree(ii).isPackage);
+        [doctree(ii).content(cIdx(jj)), tStruct] = helpcontentfun(doctree(ii).content(cIdx(jj)),doctree(ii).name,doctree(ii).isPackage || doctree(ii).isClass);
     end
+    % assign title from tList
+    fList  = {doctree(ii).content(:).fun};
+        
+    if all(cellfun(@(C)isempty(C),{tStruct.title}))
+        % no titles are defined
+        if doctree(ii).isClass
+            title0 = 'Methods';
+        else
+            title0 = 'Files';
+        end
+        title0 = repmat({title0},1,numel(tStruct));
+        [tStruct(:).title] = title0{:};
+    end
+    
+    doctree(ii).utitle = ['Properties' unique({tStruct.title},'stable')];
+    % add properties
+    if doctree(ii).isClass && any(~[doctree(ii).content.isProp])
+        pList = {doctree(ii).content([doctree(ii).content.isProp]).fun};
+        [tStruct(end+(1:numel(pList))).fun] = pList{:};
+        title0 = repmat({'Properties'},1,numel(pList));
+        [tStruct(end-(numel(pList):-1:1)+1).title] = title0{:};
+    end
+    
+    tfList = {tStruct(:).fun};
+    
+    for jj = 1:numel(fList)
+        idx = find(ismember(tfList,fList{jj}));
+        if numel(idx) == 1
+            doctree(ii).content(jj).title = tStruct(idx).title;
+        else
+            doctree(ii).content(jj).title = 'Miscellaneous';
+            if ~doctree(ii).content(jj).isContents && ~strcmp(doctree(ii).content(jj).fun,doctree(ii).name)
+                warning([doctree(ii).content(jj).fun ' has no corresponding title defined, please append Contents.m or class description!'])
+            end
+        end
+    end
+    
 end
 
 for ii = 1:nPath
-    doctree(ii).content(1).fun = '';
     doctree(ii).content(1).frontmatter = struct;
     
     for jj = 1:numel(doctree(ii).content)
         content = doctree(ii).content(jj);
         
-        if ~doctree(ii).isClass
-            content.fun     = content.file(1:end-2);
-        end
-        
         % title
         if content.isContents
             if doctree(ii).isPackage
-                content.frontmatter.title = ['Package ' doctree(ii).name(2:end)];
+                content.frontmatter.title = ['Package ' doctree(ii).name];
             elseif doctree(ii).isClass
-                content.frontmatter.title = ['Class ' doctree(ii).name(2:end)];
+                content.frontmatter.title = ['Class ' doctree(ii).name];
             else
                 content.frontmatter.title = ['Functions in ' doctree(ii).name];
             end
         else
-            if doctree(ii).isPackage
-                content.frontmatter.title = [doctree(ii).name(2:end) '.' content.fun '( )'];
-            elseif doctree(ii).isClass
-                content.frontmatter.title = [doctree(ii).name '.' content.fun '( )'];
-            else
-                content.frontmatter.title = [content.fun '( )'];
-            end
+            content.frontmatter.title = [content.fun '( )'];
         end
         % summary
         content.frontmatter.summary = strtrim(content.text{1});
@@ -144,9 +190,9 @@ for ii = 1:nPath
         content.frontmatter.sidebar   = param.sidebar;
         % permalink
         if content.isContents
-            content.frontmatter.permalink = [doctree(ii).fun '.html'];
+            content.frontmatter.permalink = [doctree(ii).name '.html'];
         else
-            content.frontmatter.permalink = [doctree(ii).fun '_' content.fun '.html'];
+            content.frontmatter.permalink = [strrep(content.fun,'.','_'),'.html'];
         end
         % folder
         content.frontmatter.folder    = doctree(ii).name;
@@ -197,36 +243,60 @@ sidebar.entries.version = verStr;
 sidebar.entries.folders(1).title  = 'Documentation';
 sidebar.entries.folders(1).output = 'web, pdf';
 
-sidebar.entries.folders(2).title  = 'Function reference';
-sidebar.entries.folders(2).output = 'web, pdf';
-%sidebar.entries.folders(1).type   = 'frontmatter';
 for ii = 1:nPath
-    sidebar.entries.folders(2).folderitems(ii).title  = doctree(ii).name;
-    sidebar.entries.folders(2).folderitems(ii).url    = ['/' doctree(ii).fun '.html'];
-    sidebar.entries.folders(2).folderitems(ii).output = 'web, pdf';
+    sidebar.entries.folders(ii+1).title  = doctree(ii).name;
+    sidebar.entries.folders(ii+1).output = 'web, pdf';
+
+
+    sidebar.entries.folders(ii+1).folderitems(1).title  = 'Description';
+    sidebar.entries.folders(ii+1).folderitems(1).url    = ['/' doctree(ii).name '.html'];
+    sidebar.entries.folders(ii+1).folderitems(1).output = 'web, pdf';
     
-    nContent = find(~[doctree(ii).content.isContents]);
-    for jj = 1:numel(nContent)
-        content = doctree(ii).content(nContent(jj));
-        if doctree(ii).isPackage
-            sidebar.entries.folders(2).folderitems(ii).subfolders.title  = [doctree(ii).fun ' package reference'];
-        elseif doctree(ii).isClass
-            sidebar.entries.folders(2).folderitems(ii).subfolders.title  = [doctree(ii).fun ' class reference'];
-        else
-            sidebar.entries.folders(2).folderitems(ii).subfolders.title  = [doctree(ii).fun ' folder reference'];
-        end
-        sidebar.entries.folders(2).folderitems(ii).subfolders.output = 'web, pdf';
-        sidebar.entries.folders(2).folderitems(ii).subfolders.subfolderitems(jj).title  = content.frontmatter.title(1:end-3);
-        sidebar.entries.folders(2).folderitems(ii).subfolders.subfolderitems(jj).url    = ['/' content.frontmatter.permalink];
-        sidebar.entries.folders(2).folderitems(ii).subfolders.subfolderitems(jj).output = 'web, pdf';
+    % find unique titles
+    tCell   = {doctree(ii).content.title};
+    %tUnique = unique(tCell,'stable');
+    tUnique = doctree(ii).utitle;
+    mIdx = find(ismember(tUnique,'Miscellaneous'));
+    if ~isempty(mIdx)
+        tUnique = tUnique([1:(mIdx-1) (mIdx+1):end mIdx]);
     end
+    
+    for jj = 1:numel(tUnique)
+        idx = find(ismember(tCell,tUnique{jj}) & ~[doctree(ii).content.isContents]);
+        if ~isempty(idx)
+            % title
+            sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).title = tUnique{jj};
+            sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).output = 'web, pdf';
+            
+            for kk = 1:numel(idx)
+                content = doctree(ii).content(idx(kk));
+                sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).subfolderitems(kk).title  = content.frontmatter.title(1:end-3);
+                sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).subfolderitems(kk).url    = ['/' content.frontmatter.permalink];
+                sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).subfolderitems(kk).output = 'web, pdf';
+            end
+        end
+    end
+    
 end
 
 %yamlStr = YAML.dump(sidebar);
-yamlStr = char(snakeyaml.dump(YAML.dump_data(sidebar)));
+yamlStr  = char(snakeyaml.dump(YAML.dump_data(sidebar)));
+yamlStr1 = strsplit(yamlStr,newline);
+
+% add extra newline where {} unit is inline with some previous text
+bLine = regexp(yamlStr1,': {');
+bLine2 = find(cellfun(@(C)~isempty(C),bLine));
+bLine  = bLine(bLine2);
+for ii = 1:numel(bLine2)
+    newLine = yamlStr1{bLine2(ii)}(bLine{ii}+2:end);
+    yamlStr1{bLine2(ii)} = yamlStr1{bLine2(ii)}(1:bLine{ii});
+    yamlStr1 = yamlStr1([1:bLine2(ii) bLine2(ii) (bLine2(ii)+1):end]);
+    nSpace = sum(yamlStr1{bLine2(ii)}==' ');
+    yamlStr1{bLine2(ii)+1} = [repmat(' ',1,nSpace) '- ' newLine];
+    bLine2(ii+1:end) = bLine2(ii+1:end)+1;
+end
 
 % add extra '-' that is required by Jekyll
-yamlStr1 = strsplit(yamlStr,newline);
 nSpace   = zeros(1,numel(yamlStr1));
 for ii = 1:numel(yamlStr1)
     temp = find(diff(yamlStr1{ii}~=' '),1,'first');
@@ -271,43 +341,59 @@ str(sIdx) = cellfun(@(C)C(nSpace+1:end),str(sIdx),'UniformOutput',false);
 
 end
 
-function doccontent = helpcontentfun(doccontent,folder,isPackage)
+function [doccontent, tList] = helpcontentfun(doccontent,name,isDot)
 % convert Contents.m text
 
 text = doccontent.text;
 
-% find line "Files"
-lIdx = find(ismember(doccontent.text,'Files'));
-if ~isempty(lIdx)
-    text{lIdx} = '### Files';
+oldheader = {'Files:' [name ' methods:']};
+newheader = {'### Files' '### Methods'};
+% find line "Files" / "Methods"
+[lIdx, tIdx] = ismember(doccontent.text,oldheader);
+lIdx = find(lIdx);
+if numel(lIdx) == 1
+    
+    tList = struct('fun',{},'title',{});
+    tIdx = tIdx(lIdx);
+    text{lIdx} = newheader{tIdx};
     
     firstLine = true;
     
-    if isPackage
-        ll2 = [folder '.'];
+    if isDot
+        ll2 = [name '.'];
     else
         ll2 = [];
     end
     
+    title = '';
+    
     for ii = lIdx+1:numel(text)
-        line = strtrim(strsplit(text{ii},'-'));
-        if numel(line)==2 && all(text{ii}~=':')
+        mIdx = find(text{ii}=='-',1,'first');
+        if ~isempty(mIdx) && all(text{ii}~=':')
+            line = strtrim({text{ii}(1:mIdx-1) text{ii}(mIdx+1:end)});
             % add link
             if firstLine
                 ll1 = newline;
             else
                 ll1 = [];
             end
-            text{ii} = [ll1 '* [' ll2 line{1} '](/' folder '_' line{1} ') ' line{2}];
+            text{ii} = [ll1 '* [' ll2 line{1} '](/' name '_' line{1} ') ' line{2:end}];
             firstLine = false;
+            tList(end+1).fun = [ll2 line{1}]; %#ok<AGROW>
+            tList(end).title = title;
         elseif any(text{ii}==':')
             % sub header line
+            title = strtrim(text{ii});
+            title = title(1:end-1);
             text{ii} = ['#### ' text{ii}];
             firstLine = true;
         end
+        
     end
     
     doccontent.text = text;
+else
+    error('sw_genhelp:MissingContent','Contents.m file is missing for %s!',name);
 end
 
 end

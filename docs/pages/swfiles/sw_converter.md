@@ -1,6 +1,6 @@
 ---
 {title: sw_converter( ), summary: converts energy and momentum units for a given particle,
-  keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_converter.html, folder: swfiles,
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_converter.html, folder: swfiles,
   mathjax: 'true'}
 
 ---

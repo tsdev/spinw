@@ -1,6 +1,6 @@
 ---
 {title: sw_plotspec( ), summary: plots spin wave spectrum, keywords: sample, sidebar: sw_sidebar,
-  permalink: swfiles_sw_plotspec.html, folder: swfiles, mathjax: 'true'}
+  permalink: sw_plotspec.html, folder: swfiles, mathjax: 'true'}
 
 ---
 plots spin wave spectrum

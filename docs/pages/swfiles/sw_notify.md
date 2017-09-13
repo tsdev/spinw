@@ -1,6 +1,6 @@
 ---
 {title: sw_notify( ), summary: sends notification in OSX, keywords: sample, sidebar: sw_sidebar,
-  permalink: swfiles_sw_notify.html, folder: swfiles, mathjax: 'true'}
+  permalink: sw_notify.html, folder: swfiles, mathjax: 'true'}
 
 ---
 sends notification in OSX

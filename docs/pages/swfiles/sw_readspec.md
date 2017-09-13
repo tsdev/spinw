@@ -1,6 +1,6 @@
 ---
 {title: sw_readspec( ), summary: read spin wave dispersion data from file, keywords: sample,
-  sidebar: sw_sidebar, permalink: swfiles_sw_readspec.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_readspec.html, folder: swfiles, mathjax: 'true'}
 
 ---
 read spin wave dispersion data from file

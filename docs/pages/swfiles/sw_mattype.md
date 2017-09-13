@@ -1,6 +1,6 @@
 ---
 {title: sw_mattype( ), summary: determines the type of square input matrix, keywords: sample,
-  sidebar: sw_sidebar, permalink: swfiles_sw_mattype.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_mattype.html, folder: swfiles, mathjax: 'true'}
 
 ---
 determines the type of square input matrix

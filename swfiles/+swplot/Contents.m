@@ -8,10 +8,9 @@
 % plot crystals from SpinW objects (plotatom, plotmag, plotion, plotbond,
 % plotbase, plotcell, plotchem).
 %
-% Files
+% Files:
 %
-% Vectorized plotting of basic 3D geometrical objects using the patch
-% command and triangular patches:
+% Basic 3D objects:
 %
 %   arrow           - draws a 3D arrow using patch
 %   circle          - creates a circle surface in 3 dimensions
@@ -53,7 +52,7 @@
 %   plotion         - plots magnetic ion properties
 %   plotmag         - plots magnetic structure
 %
-% Other related functions:
+% Related functions:
 %
 %   color           - generates RGB code from color name string
 %   icomesh         - creates mesh by subdividing icosahedron faces

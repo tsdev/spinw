@@ -1,6 +1,6 @@
 ---
 {title: sw_basismat( ), summary: determines allowed tensor components in a given point
-    group symmetry, keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_basismat.html,
+    group symmetry, keywords: sample, sidebar: sw_sidebar, permalink: sw_basismat.html,
   folder: swfiles, mathjax: 'true'}
 
 ---

@@ -3,7 +3,7 @@
     [
         {
             "follow_symlinks": true,
-            "path": "/Users/tothsa/spinw_git/docs/"
+            "path": "~/spinw_git/docs/"
         }
     ],
 

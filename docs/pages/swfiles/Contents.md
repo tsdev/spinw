@@ -16,11 +16,11 @@ into separate libraries.
 * [sw_egrid](/swfiles_sw_egrid) creates energy for spectrum color plot
 * [sw_filelist](/swfiles_sw_filelist) lists spinw data in the Matlab workspace or in a .mat file
 * [sw_instrument](/swfiles_sw_instrument) includes instrumental factors into the calculated spectrum
-  sw_magdomain     - calculates the spin-spin correlation function for magnetic domains
+* [sw_magdomain](/swfiles_sw_magdomain) calculates the spin-spin correlation function for magnetic domains
 * [sw_neutron](/swfiles_sw_neutron) calculates neutron scattering intensity for spin wave spectrum
 * [sw_omegasum](/swfiles_sw_omegasum) removes degenerate and ghost magnon modes from spectrum
 * [sw_plotspec](/swfiles_sw_plotspec) plots spin wave spectrum
-  sw_xray          - calculates X-ray scattering intensity for phonon spectrum
+* [sw_xray](/swfiles_sw_xray) calculates X-ray scattering intensity for phonon spectrum
  
 #### Generate list of vectors in reciprocal space:
  
@@ -44,7 +44,7 @@ into separate libraries.
 * [sw_model](/swfiles_sw_model) creates different predefined spin models
 * [sw_bonddim](/swfiles_sw_bonddim) find dimensionality of a periodic bond network
  
-#### Constraint functions for spinw.optmagstr():
+#### Constraint functions:
  
 
 * [gm_planar](/swfiles_gm_planar) planar magnetic structure constraint function
@@ -83,7 +83,7 @@ into separate libraries.
  
 
 * [sw_atomdata](/swfiles_sw_atomdata) returns information on elements stored in the atom.dat file
-  sw_cff           - returns the atomic charge form factor values for X-ray scattering
+* [sw_cff](/swfiles_sw_cff) returns the atomic charge form factor values for X-ray scattering
 * [sw_mff](/swfiles_sw_mff) returns the magnetic form factor values and the coefficients
 * [sw_nb](/swfiles_sw_nb) returns the bound coherent neutron scattering length (fm)
  
@@ -112,7 +112,7 @@ into separate libraries.
 
 * [sw_idata](/swfiles_sw_idata) creates iData object
  
-#### Other files:
+#### Miscellaneous:
  
 
 * [sw_freemem](/swfiles_sw_freemem) gives the amount of free RAM in bytes

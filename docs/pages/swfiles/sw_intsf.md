@@ -1,6 +1,6 @@
 ---
 {title: sw_intsf( ), summary: integrates the structure factor along given Q directions,
-  keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_intsf.html, folder: swfiles,
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_intsf.html, folder: swfiles,
   mathjax: 'true'}
 
 ---

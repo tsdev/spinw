@@ -1,6 +1,6 @@
 ---
 {title: sw_econtract( ), summary: 'converts (Q,omega) values to Qm values for diffraction
-    instrument', keywords: sample, sidebar: sw_sidebar, permalink: swfiles_sw_econtract.html,
+    instrument', keywords: sample, sidebar: sw_sidebar, permalink: sw_econtract.html,
   folder: swfiles, mathjax: 'true'}
 
 ---

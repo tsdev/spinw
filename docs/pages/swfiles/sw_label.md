@@ -1,6 +1,6 @@
 ---
 {title: sw_label( ), summary: returns axis labels for spectrum plot, keywords: sample,
-  sidebar: sw_sidebar, permalink: swfiles_sw_label.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_label.html, folder: swfiles, mathjax: 'true'}
 
 ---
 returns axis labels for spectrum plot

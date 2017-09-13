@@ -1,6 +1,6 @@
 ---
 {title: sw_qscan( ), summary: creates linear scans between Q points in 3D, keywords: sample,
-  sidebar: sw_sidebar, permalink: swfiles_sw_qscan.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_qscan.html, folder: swfiles, mathjax: 'true'}
 
 ---
 creates linear scans between Q points in 3D

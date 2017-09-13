@@ -1,6 +1,6 @@
 ---
 {title: sw_freemem( ), summary: gives the amount of free RAM in bytes, keywords: sample,
-  sidebar: sw_sidebar, permalink: swfiles_sw_freemem.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_freemem.html, folder: swfiles, mathjax: 'true'}
 
 ---
 gives the amount of free RAM in bytes

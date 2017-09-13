@@ -1,6 +1,6 @@
 ---
 {title: sw_parstr( ), summary: parses input string, keywords: sample, sidebar: sw_sidebar,
-  permalink: swfiles_sw_parstr.html, folder: swfiles, mathjax: 'true'}
+  permalink: sw_parstr.html, folder: swfiles, mathjax: 'true'}
 
 ---
 parses input string

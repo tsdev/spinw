@@ -40,7 +40,7 @@ func  Resolution function shape with header:
       meaning of the first 2 elements of the parameter vector are fixed.
           p(1)    integral of the function.
           p(2)    center of mass position of the function.
-      Optional, default value is @swfunc.gaussfwhm.
+      Optional, default value is [@swfunc.gaussfwhm](swfunc_gaussfwhm.html).
  
 Output:
  
@@ -49,3 +49,4 @@ M     Matrix with same dimensions as the input storing the convoluted
  
 See also SW_RES.
  
+

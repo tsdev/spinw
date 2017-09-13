@@ -30,7 +30,8 @@ T         Transformation matrix that transforms a unit sphere to the
 mesh      Mesh of the ellipse surface, a triangulation class object or an
           integer that used to generate an icosahedron mesh with #mesh
           number of additional triangulation. Default value is stored in
-          swpref.getpref('nmesh')
+          [swpref.getpref](swpref_getpref.html)('nmesh')
  
 See also TRIANGULATION, SWPLOT.ICOMESH.
  
+

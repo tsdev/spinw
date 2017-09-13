@@ -14,3 +14,4 @@ Sub fields are:
           1 x nMatrix cell
  
 See also SPINW.ADDMATRIX, SPINW.NTWIN.
+

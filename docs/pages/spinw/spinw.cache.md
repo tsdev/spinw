@@ -9,3 +9,4 @@ The stored values should not be changed by the user in any case!
 Sub fields are:
   matom   data on the magnetic unit cell
   symop   data on the generated symmetry operators per bond
+

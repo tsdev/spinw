@@ -29,7 +29,8 @@ GET    Get MATLAB object properties.
    override the GETDISP method to control how this information is 
    displayed.  H must be scalar.
  
-   See also GET, spinw, spinw/GETDISP, HANDLE
-Help for spinw/get is inherited from superclass MATLAB.MIXIN.SETGET
+   See also GET, [spinw](spinw.html), spinw/GETDISP, HANDLE
+Help for [spinw](spinw.html)/get is inherited from superclass MATLAB.MIXIN.SETGET
    Reference page in Doc Center
-      doc spinw/get
+      doc [spinw](spinw.html)/get
+

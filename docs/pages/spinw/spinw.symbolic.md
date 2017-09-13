@@ -15,3 +15,4 @@ symb sets whether the calculations are symbolic/numeric (true/false).
  
 See also SPINW, SPINW.SPINWAVESYM.
  
+

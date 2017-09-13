@@ -4,9 +4,10 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-extracts all public properties of spinw object into a struct
+extracts all public properties of [spinw](spinw.html) object into a struct
  
 objS = STRUCT(obj)
  
 See also SPINW, SPINW.COPY.
  
+

@@ -19,3 +19,4 @@ plotStyle Options to the plot command, default is '-'.
  
 See also SPINW, SPINW.STRUCTFACT, SW_INTSF.
  
+

@@ -29,3 +29,4 @@ Example:
  
   the output RGB will be [211; 211; 211].
  
+

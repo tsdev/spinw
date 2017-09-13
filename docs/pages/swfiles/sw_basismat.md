@@ -30,3 +30,4 @@ asym      Logical vector, for each 3x3 matrix in M, tells whether it is
  
 See also SPINW.GETMATRIX, SPINW.SETMATRIX.
  
+

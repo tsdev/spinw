@@ -15,3 +15,4 @@ x     Vector of coordinate values where the function is evaluated.
 p     Parameter vector with values  p = [I Centre FWHM].
  
 See also SWFUNC.GAUSS.
+

@@ -9,7 +9,7 @@ SW_UPDATE()
  
 {onlineRev} = SW_UPDATE(installDir)
  
-sw_update creates a new folder with the latest release beside the current
+[sw_update](sw_update.html) creates a new folder with the latest release beside the current
 SpinW installation and add the new version to the working path (and
 removing the old one).
  
@@ -25,3 +25,4 @@ Output:
 onlineVer     If output is expected, the revision number of the online
               SpinW is given. Optional.
  
+

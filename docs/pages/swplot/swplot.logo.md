@@ -22,3 +22,4 @@ fName     File name to save the logo. Optional, if not given the logo
  
 See also: SPINW.
  
+

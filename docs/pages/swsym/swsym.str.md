@@ -19,3 +19,4 @@ strSym    String, contains the symmetry operations.
  
 See also SWSYM.ADD, SWSYM.GENERATOR.
  
+

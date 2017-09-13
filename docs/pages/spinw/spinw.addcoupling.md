@@ -10,7 +10,7 @@ ADDCOUPLING(obj, 'option1', value1, ...)
  
 Input:
  
-obj           spinw class object.
+obj           [spinw](spinw.html) class object.
  
 Options:
  
@@ -47,7 +47,7 @@ sym           If true, symmetry operators will be applied on the exchange
 Output:
  
 The function adds extra entries in the 'coupling.matrix' field of the obj
-spinw object.
+[spinw](spinw.html) object.
  
 Example:
  
@@ -61,3 +61,4 @@ between magnetic atoms.
  
 See also SPINW, SPINW.GENCOUPLING, SPINW.ADDMATRIX.
  
+

@@ -10,7 +10,7 @@ formula = FORMULA(obj)
  
 Options:
  
-obj       spinw class object.
+obj       [spinw](spinw.html) class object.
  
 Output:
  
@@ -25,9 +25,10 @@ chemform      Chemical formula string: series of 'ChemLabel_ChemNum '.
  
 Example:
  
-cryst = spinw('https://goo.gl/do6oTh')
+cryst = [spinw](spinw.html)('https://goo.gl/do6oTh')
 cryst.formula
  
 The formula of the crystal stored in the test.cif file will be printed
 onto the Command Window.
  
+

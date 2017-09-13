@@ -37,3 +37,4 @@ symInfo       Structure containing additional information about the space
  
 See also SWSYM.ADD, SPINW, SPINW.GENCOUPLING, SWSYM.POSITION.
  
+

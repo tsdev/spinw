@@ -209,6 +209,25 @@ javaaddpath(YAML.jarfile);
 % Load yaml into java obj
 snakeyaml = org.yaml.snakeyaml.Yaml;
 
+% get all the help text
+content = [doctree.content];
+allhelp = {content.text};
+isCont  = [content.isContents];
+for ii = 1:numel(allhelp)
+    allhelp{ii} = cellfun(@(C)[C newline],allhelp{ii},'UniformOutput',false);
+    allhelp{ii} = [allhelp{ii}{:}];
+end
+% generate all links
+pLink = cellfun(@(C)C.permalink,{content.frontmatter},'UniformOutput',false);
+fun   = {content.fun};
+% replace function names with links
+for ii = 1:numel(pLink)
+    allhelp = regexprep(allhelp,['(\W+?)(@?' fun{ii} '(\(\))?)(\W+)'],['$1[$2](' pLink{ii} ')$3']);
+    %allhelp = regexprep(allhelp,['\n([^\<^\<].*?\W+?)(@?' fun{ii} '(\(\))?)(\W+)'],['$1[$2](' pLink{ii} ')$3']);
+    
+end
+
+idx = 1;
 % generate the .md files
 for ii = 1:nPath
     for jj = 1:numel(doctree(ii).content)
@@ -221,9 +240,11 @@ for ii = 1:nPath
         % save the text as .md file
         fid = fopen([docroot 'pages' filesep content.frontmatter.folder filesep content.fun '.md'],'w');
         % add newline
-        helpText = cellfun(@(C)[C newline],content.text,'UniformOutput',false);
+        %helpText = cellfun(@(C)[C newline],content.text,'UniformOutput',false);
+        helpText = cellfun(@(C)[C newline],allhelp(idx),'UniformOutput',false);
         fprintf(fid,['---' newline frontmatter newline '---' newline helpText{:}]);
         fclose(fid);
+        idx = idx + 1;
     end
 end
 
@@ -361,8 +382,10 @@ if numel(lIdx) == 1
     
     if isDot
         ll2 = [name '.'];
+        ll3 = [name '_'];
     else
         ll2 = [];
+        ll3 = [];
     end
     
     title = '';
@@ -377,7 +400,7 @@ if numel(lIdx) == 1
             else
                 ll1 = [];
             end
-            text{ii} = [ll1 '* [' ll2 line{1} '](/' name '_' line{1} ') ' line{2:end}];
+            text{ii} = [ll1 '* [' ll2 line{1} '](/' ll3 line{1} ') ' line{2:end}];
             firstLine = false;
             tList(end+1).fun = [ll2 line{1}]; %#ok<AGROW>
             tList(end).title = title;
@@ -385,7 +408,7 @@ if numel(lIdx) == 1
             % sub header line
             title = strtrim(text{ii});
             title = title(1:end-1);
-            text{ii} = ['#### ' text{ii}];
+            text{ii} = ['#### ' text{ii}(text{ii}~=':')];
             firstLine = true;
         end
         

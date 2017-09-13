@@ -16,7 +16,7 @@ random Q points.
  
 Input:
  
-obj           Input structure, spinw class object.
+obj           Input structure, [spinw](spinw.html) class object.
  
 Options:
  
@@ -40,7 +40,7 @@ obj           The copy of the input obj.
  
 Example 1:
  
-tri = sw_model('triAF',1);
+tri = [sw_model](sw_model.html)('triAF',1);
 M = tri.moment('nRand',1e7);
  
 The example calculates the moment expectation value at zero temperature
@@ -55,7 +55,7 @@ M = S - 0.2613 + 0.0055/S (1/S is a higher order term neglected here)
  
 Example 2:
  
-sq = sw_model('squareAF',1);
+sq = [sw_model](sw_model.html)('squareAF',1);
 M = sq.moment('nRand',1e7);
  
 The reduced moment of the Heisenberg square lattice antiferromagnet at
@@ -66,3 +66,4 @@ M = S - 0.197
  
 See also SPINW, SPINW.SPINWAVE, SPINW.GENMAGSTR, SPINW.TEMPERATURE.
   
+

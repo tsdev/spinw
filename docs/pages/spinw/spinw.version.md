@@ -5,3 +5,4 @@
 
 ---
 returns the version of SpinW used to create the object
+

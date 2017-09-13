@@ -16,7 +16,7 @@ Particle-Swarm optimization.
  
 Input:
  
-obj       Input structure, spinw class object.
+obj       Input structure, [spinw](spinw.html) class object.
 kbase     Provide a set of vectors that define the possible k-vector:
               k = sum_i C(i)*kbase(:,i);
           where the optimiser determines the C(i) values that correspond
@@ -41,3 +41,4 @@ res       Structure with the following fields:
  
 See also NDBASE.PSO.
  
+

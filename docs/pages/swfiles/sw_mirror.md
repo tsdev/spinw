@@ -29,3 +29,4 @@ following command:
  
 See also SPINW.GENMAGSTR, SW_ROT.
  
+

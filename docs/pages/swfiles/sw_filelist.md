@@ -4,7 +4,7 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-lists spinw data in the Matlab workspace or in a .mat file
+lists [spinw](spinw.html) data in the Matlab workspace or in a .mat file
  
 list = SW_FILELIST({'Option1',Value1,...)
  
@@ -28,3 +28,4 @@ list      Cell of strings, lists each simulation data in the Matlab
  
 See also SPINW.ANNEAL, SPINW.SPINWAVE.
  
+

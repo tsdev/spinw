@@ -25,7 +25,8 @@ fid       Where to print the text output. Default is 1 to print to the
  
 Output:
  
-obj       spinw class object with the selected model.
+obj       [spinw](spinw.html) class object with the selected model.
  
 See also SPINW.
  
+

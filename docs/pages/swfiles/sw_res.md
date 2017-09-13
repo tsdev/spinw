@@ -34,7 +34,7 @@ Example:
  
 To calculate the resolution at an arbitrary energy use:
  
-pRes = sw_res(file,5,false);
+pRes = [sw_res](sw_res.html)(file,5,false);
 Evec = linspace(0,100,501);
 Eres = polyval(polyRes,Evec);
 plot(Evec,Eres);
@@ -42,3 +42,4 @@ plot(Evec,Eres);
  
 See also POLYFIT, SW_INSTRUMENT.
  
+

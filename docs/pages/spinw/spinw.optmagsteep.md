@@ -11,7 +11,7 @@ optm = OPTMAGSTEEP(obj, 'option1', value1 ...)
  
 Input:
  
-obj             Input object contains structural data, spinw type.
+obj             Input object contains structural data, [spinw](spinw.html) type.
  
 Options:
  
@@ -28,7 +28,7 @@ nExt      The size of the magnetic cell in number of unit cells, to
 fSub      Function to define sublattices for Monte-Carlo speedup.
           cGraph = fSub(conn,nExt), where cGraph is a (1,nMagExt) sized
           vector, conn is a (2,nConn) size matrix and nExt is equal to
-          'nExt'. Default is <a href="matlab: doc sw_fsub">@sw_fsub</a>
+          'nExt'. Default is <a href="matlab: doc [sw_fsub](sw_fsub.html)">@sw_fsub</a>
 subLat    Vector that assigns all magnetic moments into non-interacting
           sublattices, contains a single index (1,2,3...) for every
           magnetic moment, size is (1,nMagExt). If undefined, the
@@ -50,7 +50,7 @@ pause     Time in second to pause after every optimization loop to make
 Output:
  
 'optm' is a struct type variable with the following fields:
-obj       spinw object that contains the optimised magnetic structure.
+obj       [spinw](spinw.html) object that contains the optimised magnetic structure.
 M         Magnetic moment directions with dimensions [3 nMagExt], if
           'saveAll' parameter is true, it contains the magnetic structure
           after every loop in a matrix with dimensions [3 nMagExt nLoop].
@@ -65,3 +65,4 @@ title     Title of the simulation, given in the input.
  
 See also SPINW, SPINW.ANNEAL, SW_FSUB, SW_FSTAT.
  
+

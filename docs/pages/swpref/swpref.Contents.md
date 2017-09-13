@@ -11,6 +11,7 @@ after every restart of Matlab.
  
 ### Files
 
-* [swpref.getpref](/swpref_getpref) returns SpinW global preferences
-* [swpref.pref](/swpref_pref) returns SpinW global preferences
-* [swpref.setpref](/swpref_setpref) sets SpinW global preferences
+* [[swpref.getpref](swpref_getpref.html)](/swpref_getpref) returns SpinW global preferences
+* [[swpref.pref](swpref_pref.html)](/swpref_pref) returns SpinW global preferences
+* [[swpref.setpref](swpref_setpref.html)](/swpref_setpref) sets SpinW global preferences
+

@@ -17,3 +17,4 @@ Input:
 fName     String, contain the file location and name of the .fst file.
 toPlot    If true the structure will be plotted, default is false.
  
+

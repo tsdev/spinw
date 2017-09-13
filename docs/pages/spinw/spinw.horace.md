@@ -13,7 +13,7 @@ The function produces spin wave dispersion and intensity for Horace
  
 Input:
  
-obj           Input spinw object.
+obj           Input [spinw](spinw.html) object.
 qh, qk, ql    Reciprocal lattice components in reciprocal lattice units.
  
 Options:
@@ -39,23 +39,23 @@ dE        Energy bin size, for intensity normalization. Use 1 for no
           division by dE in the intensity.
 param     Input parameters (can be used also within Tobyfit). Additional
           options ('mat','selector') might be necessary, for details see
-          spinw.matparser function. All extra parameters of spinw.horace
-          function will be forwarded to the spinw.matparser function before
+          [spinw](spinw.html).matparser function. All extra parameters of [spinw](spinw.html).horace
+          function will be forwarded to the [spinw](spinw.html).matparser function before
           calculating the spin wave spectrum (or any user written parser
           function). For user written functions defined with the
           following header:
               func(obj,param)
           the value of the param option will be forwarded. For user
           functions with variable number of arguments, all input options
-          of spinw.horace will be forwarded. In this case it is recommended
-          to use sw_readparam() function to handle the variable number
+          of [spinw](spinw.html).horace will be forwarded. In this case it is recommended
+          to use [sw_readparam()](sw_readparam.html) function to handle the variable number
           arguments within func().
 parfunc   Parser function of the 'param' input. Default is
-          @spinw.matparser which can be used directly by Tobyfit. For user
+          [@spinw](spinw.html).matparser which can be used directly by Tobyfit. For user
           defined functions the minimum header has to be:
               func(obj,param)
-          where obj is an spinw type object, param is the parameter
-          values forwarded from spinw.horace directly.
+          where obj is an [spinw](spinw.html) type object, param is the parameter
+          values forwarded from [spinw](spinw.html).horace directly.
 func      User function that will be called after the parameters set on
           the SpinW object. It can be used to optimize magnetic
           structure for the new parameters, etc. The input should be a
@@ -86,3 +86,4 @@ using sliceomatic.
  
 See also SPINW, SPINW.SPINWAVE, SPINW.MATPARSER, SW_READPARAM.
  
+

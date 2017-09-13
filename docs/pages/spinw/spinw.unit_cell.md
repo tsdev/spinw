@@ -32,3 +32,4 @@ Sub fields are:
           including in the structure factor as exp(-2Wd)
  
 See also SPINW.ADDATOM, SPINW.ATOM, SPINW.MATOM, SPINW.NEWCELL, SPINW.PLOT.
+

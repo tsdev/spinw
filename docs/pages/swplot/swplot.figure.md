@@ -3,7 +3,7 @@
   permalink: swplot_figure.html, folder: swplot, mathjax: 'true'}
 
 ---
-creates swplot figure
+creates [swplot figure](swplot_figure.html)
  
 hFigure = SWPLOT.FIGURE({mode})
  
@@ -11,7 +11,7 @@ The function creates an empty figure with all the controls for modifying
 the plot and the 3D roation engine that rotates the objects on the figure
 instead of the viewport. To plot anything onto the figure, the handle of
 the graphics object (after creating it using surf, patch, etc.) has to be
-added to the list using the function swplot.add.
+added to the list using the function [swplot.add](swplot_add.html).
  
 Input:
  
@@ -22,3 +22,4 @@ mode      Optional string. If 'nohg', then no hgtransform object will be
  
 See also SWPLOT.ADD, HGTRANSFORM.
  
+

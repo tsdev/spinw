@@ -14,3 +14,4 @@ equivalent positions (on atoms or bond centers). The results are cached.
  
 See also SPINW.INTMATRIX.
  
+

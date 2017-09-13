@@ -26,3 +26,4 @@ type      1   Heisenberg exchange
 Also works on symbolic matrices, but keep all symbols real for consistent
 result!
  
+

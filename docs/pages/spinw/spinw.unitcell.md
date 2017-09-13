@@ -12,7 +12,7 @@ The function returns information on symmetry inequivalent atoms.
  
 Input:
  
-obj       spinw class object.
+obj       [spinw](spinw.html) class object.
 idx       Selects certain atoms. If undefined UNIT_CELL(obj) or
           obj.UNIT_CELL returns information on all atoms. The selection
           can be also done according to the atom labels, in this case
@@ -39,3 +39,4 @@ The example keeps only the Oxygen atoms in cryst object.
  
 See also SPINW.ADDTWIN, SPINW.TWINQ, SPINW.UNIT_CELL.
  
+

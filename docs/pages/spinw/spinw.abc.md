@@ -9,7 +9,7 @@ latVect = ABC(obj)
  
 Input:
  
-obj       spinw class object
+obj       [spinw](spinw.html) class object
  
 Output:
  
@@ -19,3 +19,4 @@ latVect   Vetor with elements [a, b, c, alpha, beta, gamma],
  
 See also SPINW.HORACE.
  
+

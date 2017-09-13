@@ -11,17 +11,23 @@ profile off
 
 content = [doctree.content];
 allhelp = {content.text};
+isCont  = [content.isContents];
 
 for ii = 1:numel(allhelp)
     allhelp{ii} = cellfun(@(C)[C newline],allhelp{ii},'UniformOutput',false);
     allhelp{ii} = [allhelp{ii}{:}];
 end
 
-%%
+%% generate all links
 
-tic
-for ii = 1:215
-    
-    regexprep(allhelp,'version[ ]+-','[spinw.version] -');
+pLink = cellfun(@(C)C.permalink,{content.frontmatter},'UniformOutput',false);
+fun   = {content.fun};
+
+%% replace function names with links
+
+for ii = 1:numel(pLink)
+    allhelp = regexprep(allhelp,fun{ii},['[' fun{ii} '](' pLink{ii} ')']);
 end
-toc
+
+
+

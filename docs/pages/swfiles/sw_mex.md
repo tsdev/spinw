@@ -7,10 +7,10 @@ compiles the mex files and test them
  
 SW_MEX('Option1',Value1, ...)
  
-The compiled mex files will speed up the spinw.spinwave function. The
+The compiled mex files will speed up the [spinw](spinw.html).spinwave function. The
 expected speedup is larger for smaller magnetic unit cells. Once the mex
-files are compiled, use the swpref.setpref('usemex',true) command to
-switch to mex in spinw.spinwave.
+files are compiled, use the [swpref.setpref](swpref_setpref.html)('usemex',true) command to
+switch to mex in [spinw](spinw.html).spinwave.
  
 Options:
  
@@ -21,3 +21,4 @@ swtest    If true, 3 spin wave calculation will run with and without .mex
  
 See also SWPREF.
  
+

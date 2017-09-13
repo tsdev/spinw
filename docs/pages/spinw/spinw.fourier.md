@@ -16,7 +16,7 @@ anisotropy is not included in the sum.
  
 Input:
  
-obj           Input structure, spinw class object.
+obj           Input structure, [spinw](spinw.html) class object.
 hkl           Defines the Q points where the Fourier transform is
               calculated, in reciprocal lattice units, size is [3 nHkl].
               Q can be also defined by several linear scan in reciprocal
@@ -47,7 +47,7 @@ isomode       Defines how Heisenberg/non-Heisenberg Hamiltonians are
                           one of the diagonal values from the (3x3)
                           matrices to reduce memory consumption.
 fid           Defines whether to provide text output. Default is defined
-              by the swpref.getpref('fid') command. The possible values:
+              by the [swpref.getpref](swpref_getpref.html)('fid') command. The possible values:
                   0       No text output is generated.
                   1       Text output in the MATLAB Command Window.
                   fid     File ID provided by the fopen() command, the
@@ -70,3 +70,4 @@ res           Structure with the following fields:
  
 See also SPINW.OPTMAGK.
  
+

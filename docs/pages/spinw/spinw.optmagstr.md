@@ -10,7 +10,7 @@ optm = OPTMAGSTR(obj, Option1, Value1, ...)
  
 Input:
  
-obj       spinw class object.
+obj       [spinw](spinw.html) class object.
  
 Options:
  
@@ -21,8 +21,8 @@ func      Function that produce the magnetic moments, ordering wave
           where M is (3,nMagExt) size matrix. k is the ordering
           wave vector, its size is (1,3). n is the normal vector
           of the spin rotation plane, its size is (1,3). The
-          default is @gm_spherical3d. For planar magnetic structure
-          use @gm_planar.
+          default is [@gm_spherical3d](gm_spherical3d.html). For planar magnetic structure
+          use [@gm_planar](gm_planar.html).
 xmin      Minimum limit of the optimisation parameters, optional.
 xmax      Maximum limit of the optimisation parameters, optional.
 x0        Starting value of the optimisation parameters. If empty
@@ -47,9 +47,9 @@ Limits only on selected prameters:
 Limits can be given on any input parameter of the constraint function by
 giving the name of the parameter, see the help of the used constraint
 function in the following format: optmagstr('ParName',[min max],...).
-For example to fix the nTheta value of @gm_planar during the optimisation
+For example to fix the nTheta value of [@gm_planar](gm_planar.html) during the optimisation
 to zero use:
-optmagstr(obj,'func',@gm_planar,'nTheta',[0 0]);
+optmagstr(obj,'func',[@gm_planar](gm_planar.html),'nTheta',[0 0]);
  
 Optimisation parameters:
  
@@ -65,7 +65,7 @@ maxiter       Maximum number of iterations, default value is 1e4.
 Output:
  
 'optm' is a struct type variable with the following fields:
-obj       spinw object that contains the optimised magnetic structure.
+obj       [spinw](spinw.html) object that contains the optimised magnetic structure.
 x         Optimised paramters, dimensions are [1 nPar].
 fname     Name of the contraint function.
 xname     Cell containing the name of the x parameters, dimensions are
@@ -77,10 +77,10 @@ param     Input parameters, stored in a struct.
  
 Example:
  
-tri = sw_model('triAF',1);
+tri = [sw_model](sw_model.html)('triAF',1);
 X1 = [0 0 0 0 pi/2 0];
 X2 = [0 1/2 1/2 0 pi/2 0];
-optRes = tri.optmagstr('func',@gm_planar,'xmin',X1,'xmax',X2);
+optRes = tri.optmagstr('func',[@gm_planar](gm_planar.html),'xmin',X1,'xmax',X2);
 plot(tri)
  
 The example determined the magnetic structure of the triangular lattice
@@ -90,3 +90,4 @@ n = [1 0 0]). Then plots the magnetic structure.
  
 See also SPINW, SPINW.ANNEAL, GM_SPHERICAL3D, GM_PLANAR, FMINSEARCH.
  
+

@@ -9,8 +9,8 @@ SWPLOT.PLOTATOM('option1', value1, ...)
  
 hFigure = SWPLOT.PLOTATOM(...)
  
-The function plots the crystal structure of a SpinW object onto an swplot
-figure.
+The function plots the crystal structure of a SpinW object onto an [swplot
+figure](swplot_figure.html).
  
 Input:
  
@@ -30,13 +30,13 @@ mode      String, defines the types of atoms to plot:
               'all'       Plot all atoms (default).
               'mag'       Plot magnetic atoms only.
               'nonmag'    Plot non-magnetic atoms only.
-figure    Handle of the swplot figure. Default is the selected figure.
+figure    Handle of the [swplot figure](swplot_figure.html). Default is the selected figure.
 legend    Whether to add the plot to the legend, default is true.
 label     Whether to plot labels for atoms, default is false.
 dText     Distance between item and its text label, default is 0.1
           Angstrom.
 fontSize  Font size of the atom labels in pt, default is stored in
-          swpref.getpref('fontsize').
+          [swpref.getpref](swpref_getpref.html)('fontsize').
 radius0   Constant atom radius, default value is 0.3 Angstrom.
 radius    Defines the atom radius:
               'fix'       Sets the radius of all atoms to the value
@@ -51,7 +51,7 @@ color     Color of the atoms:
 nMesh     Resolution of the ellipse surface mesh. Integer number that is
           used to generate an icosahedron mesh with #mesh number of
           additional triangulation, default value is stored in
-          swpref.getpref('nmesh')
+          [swpref.getpref](swpref_getpref.html)('nmesh')
 tooltip   If true, the tooltips will be shown when clicking on atoms.
           Default is true.
 shift     Column vector with 3 elements, all atomic positions will be
@@ -62,17 +62,18 @@ translate If true, all plot objects will be translated to the figure
           center. Default is false.
 zoom      If true, figure will be automatically zoomed to the ideal size.
           Default is false.
-copy      If true, a hardcopy of the spinw object will be sved in the
-          figure data, otherwise just the handle of the spinw object, 
+copy      If true, a hardcopy of the [spinw](spinw.html) object will be sved in the
+          figure data, otherwise just the handle of the [spinw](spinw.html) object, 
           thus the figure can be updated when the spin object changed.
           Default value is false. 
  
 Output:
  
-hFigure           Handle of the swplot figure.
+hFigure           Handle of the [swplot figure](swplot_figure.html).
  
 The name of the objects that are created called 'atom' and 'atom_label'.
 To find the handles and the stored data on these objects, use e.g.
  
-  sObject = swplot.findobj(hFigure,'name','atom')
+  sObject = [swplot.findobj](swplot_findobj.html)(hFigure,'name','atom')
  
+

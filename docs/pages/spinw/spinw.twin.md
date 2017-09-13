@@ -11,3 +11,4 @@ Sub fields are:
           1 x nTwin vector
  
 See also SPINW.ADDTWIN, SPINW.TWINQ, SPINW.UNIT_CELL.
+

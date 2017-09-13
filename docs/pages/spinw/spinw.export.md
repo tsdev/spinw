@@ -4,18 +4,18 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-export data from spinw object into different file formats
+export data from [spinw](spinw.html) object into different file formats
  
 out = EXPORT(obj, 'Option1', Value1, ...)
  
-Different part of the spinw object data can be exported selected by the
+Different part of the [spinw](spinw.html) object data can be exported selected by the
 'format' option. Right now the following formats are supported:
  
 'pcr'     Creates part of a .pcr file used by FullProf. It exports the
           atomic positions.
 'spt'     Creates a Jmol script, that reproduce the same plot as used the
-          built in spinw.plot() function. Any additional parameter of the
-          spinw.plot() function can be used.
+          built in [spinw](spinw.html).plot() function. Any additional parameter of the
+          [spinw](spinw.html).plot() function can be used.
 'MC'      Exports a proprietary file format for Monte Carlo simulations.
  
  
@@ -57,3 +57,4 @@ Links:
 Jmol Wiki: http://wiki.jmol.org/index.php/Main_Page
 FullProf:  https://www.ill.eu/sites/fullprof
  
+

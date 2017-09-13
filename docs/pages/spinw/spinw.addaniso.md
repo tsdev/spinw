@@ -30,7 +30,7 @@ atomTypeIdx   String or cell of strings that select magnetic atoms by
 Output:
  
 The function adds extra entries in the 'single_ion.aniso' field of the
-obj spinw object.
+obj [spinw](spinw.html) object.
  
 Example:
  
@@ -44,3 +44,4 @@ anisotropy (easy XY plane anisotropy).
  
 See also SPINW, SPINW.ADDCOUPLING, SPINW.ADDG, SPINW.ADDMATRIX.
  
+

@@ -19,7 +19,8 @@ r         Coordinate of the center of the text for a single text or
 string    String contains the text or cell of strings to plot multiple
           text.
 fontSize  Font size in pt, default value is stored in
-          swpref.getpref('fontsize')
+          [swpref.getpref](swpref_getpref.html)('fontsize')
  
 See also TEXT.
  
+

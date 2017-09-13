@@ -22,3 +22,4 @@ cGraph        Vector, that assigns every magnetic moment to a sublattice.
  
 See also SPINW.ANNEAL.
  
+

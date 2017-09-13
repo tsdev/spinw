@@ -20,21 +20,21 @@ dE            Defines the FWHM energy resolution of the instrument. It
                           transfer. The file has to contain two columns,
                           first is the energy values, the second is the
                           FWHM resolution at the given energy transfer
-                          value, see sw_res() function for details.
+                          value, see [sw_res()](sw_res.html) function for details.
                 Number    Constant FWHM energy resolution as a function
                           of energy transfer.
                 Matrix    Dimensions of Nx2, first column contains the
                           energy transfer values, second column contains
                           the FWHM resolution values. These values will
                           be fitted using a polynomial with a fixed
-                          degree, see sw_res() function for details.
+                          degree, see [sw_res()](sw_res.html) function for details.
                 Function  Function handle of a resolution function
                           with the following header:
                               E_FWHM = res_fun(E)
                           where E_FWHM is the FWHM energy resolution and
                           E is the energy transfer value.
 func          Shape of the energy resolution function, for details see
-              the help of sw_resconv.
+              the help of [sw_resconv](sw_resconv.html).
 polDeg        Degree of the fitted polynomial to the instrumental
               resolution data. Default is 5.
 dQ            Momentum transfer resolution of the instrument, FWHM is
@@ -73,3 +73,4 @@ swRaw         Original simulated data, withouth the application of the
  
 See also POLYFIT, POLYVAL, SW_RES, SW_RESCONV.
  
+

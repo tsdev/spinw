@@ -10,7 +10,7 @@ bonds = COUPLINGTABLE(obj,{bondIdx})
  
 Input:
  
-obj       spinw class object. 
+obj       [spinw](spinw.html) class object. 
 bondIdx   List of bond indices, by default all bonds will be output.
           Optional. If a bond index is mutiplied by -1, the table output
           is a matlab built in table type, works only for Matlab R2013b
@@ -48,3 +48,4 @@ table.
  
 See also SPINW.MATOM, SPINW.INTMATRIX, SPINW.ADDCOUPLING, SPINW.GENCOUPLING.
  
+

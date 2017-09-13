@@ -19,13 +19,13 @@ calculated using a coordinate system rotating from cell to cell. In this
 case the spin Hamiltonian has to fulfill this extra rotational symmetry.
  
 Some of the code of the function can run faster is mex files are used. To
-switch on mex files, use the swpref.setpref('usemex',true) command. For
-details see the <a href="matlab:help('sw_mex.m')">sw_mex</a> function.
+switch on mex files, use the [swpref.setpref](swpref_setpref.html)('usemex',true) command. For
+details see the [sw_mex](sw_mex.html) and [swpref.setpref](swpref_setpref.html) functions.
  
  
 Input:
  
-obj           Input structure, spinw class object.
+obj           Input structure, [spinw](spinw.html) class object.
 hkl           Defines the Q points where the spectra is calculated, in
               reciprocal lattice units, size is [3 nHkl]. Q can be also
               defined by several linear scan in reciprocal space. In this
@@ -50,7 +50,7 @@ formfact      If true, the magnetic form factor is included in the
               coefficients are stored in obj.unit_cell.ff(1,:,atomIndex).
               Default value is false.
 formfactfun   Function that calculates the magnetic form factor for given
-              Q value. Default value is @sw_mff(), that uses a tabulated
+              Q value. Default value is [@sw_mff()](sw_mff.html), that uses a tabulated
               coefficients for the form factor calculation. For
               anisotropic form factors a user defined function can be
               written that has the following header:
@@ -65,7 +65,7 @@ gtensor       If true, the g-tensor will be included in the spin-spin
               correlation function. Including anisotropic g-tensor or
               different g-tensor for different ions is only possible
               here. Including a simple isotropic g-tensor is possible
-              afterwards using the sw_instrument() function.
+              afterwards using the [sw_instrument()](sw_instrument.html) function.
 fitmode       Speedup (for fitting mode only), default is false.
 notwin        If true, the spectra of the twins won't be calculated.
               Default is false.
@@ -159,8 +159,8 @@ obj           The copy of the input obj.
  
 Example:
  
-tri = sw_model('triAF',1);
-sw_plotspec(tri.spinwave({[0 0 0] [1 1 0]}))
+tri = [sw_model](sw_model.html)('triAF',1);
+[sw_plotspec](sw_plotspec.html)(tri.spinwave({[0 0 0] [1 1 0]}))
  
 The above example will calculate and plot the spin wave dispersion of the
 triangular lattice antiferromagnet (S=1, J=1) along the [H H 0] direction
@@ -168,3 +168,4 @@ in reciprocal space.
  
 See also SPINW, SPINW.SPINWAVESYM, SW_MEX, SPINW.POWSPEC.
  
+

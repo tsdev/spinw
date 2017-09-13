@@ -19,7 +19,7 @@ case the Hamiltonian has to fulfill this extra rotational symmetry.
  
 Input:
  
-obj           Input structure, spinw class object.
+obj           Input structure, [spinw](spinw.html) class object.
 hkl           Defines the Q points where the spectra is calculated, in
               reciprocal lattice units, size is [3 nHkl]. Q can be also
               defined by several linear scan in reciprocal space. In this
@@ -104,3 +104,4 @@ obj           The copy of the input obj.
  
 See also SPINW, SPINW.SPINWAVESYM, SW_NEUTRON, SW_POL, SPINW.POWSPEC, SPINW.OPTMAGSTR.
  
+

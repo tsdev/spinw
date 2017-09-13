@@ -12,7 +12,7 @@ positions, that are now all symmetry inequivalent.
  
 Input:
  
-obj       spinw class object.
+obj       [spinw](spinw.html) class object.
  
 Output:
  
@@ -22,7 +22,7 @@ obj.unit_cell field will contain all the generated atomic positions.
 Example:
  
 sw_addsym('x+1/2,y+1/2,z;x+1/2,y,z+1/2;x,y+1/2,z+1/2','FCC');
-cryst = spinw;
+cryst = [spinw](spinw.html);
 cryst.genlattice('lat_const',[8 8 8],'sym','FCC')
 cryst.addatom('r',[0 0 0],'label','Atom1')
 cryst.nosym
@@ -33,3 +33,4 @@ that are not symmetry equivalent any more.
  
 See also SPINW, SPINW.NEWCELL.
  
+

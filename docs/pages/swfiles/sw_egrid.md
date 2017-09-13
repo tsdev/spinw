@@ -26,7 +26,7 @@ component Selects which correlation function component to be binned in
                       'y' or 'z'. For example: 'Sxx' will convolute the
                       xx component of the correlation function with the
                       dispersion. xyz is the standard coordinate system,
-                      see online documentation of spinw.
+                      see online documentation of [spinw](spinw.html).
               'Mab'   bins the selected components of the spin-spin
                       correlation function. Letter a and b can be 'x',
                       'y' or 'z'. For example: 'Mxx' will convolute the
@@ -59,14 +59,14 @@ component Selects which correlation function component to be binned in
  
 Evect     Vector, defines the center/edge of the energy bins of the
           calculated output, dimensions are is [1 nE]. The energy units
-          are defined by the unit.kB property of the spinw object. Default
+          are defined by the unit.kB property of the [spinw](spinw.html) object. Default
           value is an edge bin: linspace(0,1.1*maxOmega,501).
 binType   String, determines the type of bin give, possible options:
               'cbin'    Center bin, the center of each energy bin is given.
               'ebin'    Edge bin, the edges of each bin is given.
           Default is 'ebin'.
 T         Temperature, used to calculate the Bose factor in units
-          depending on the Boltzmann constant (spinw.unit.kB). Default
+          depending on the Boltzmann constant ([spinw](spinw.html).unit.kB). Default
           temperature is taken from obj.single_ion.T. The Bose factor is
           included in swConv field of the output.
 sumtwin   If true, the spectra of the different twins will be summed
@@ -115,7 +115,7 @@ a cell. The dimensions of the cell are [nConv nTwin].
  
 Example:
  
-spectra = sw_egrid(spectra,'component',{'Sxx+Syy' 'Szz'},'Evect',linspace(0,5,51));
+spectra = [sw_egrid](sw_egrid.html)(spectra,'component',{'Sxx+Syy' 'Szz'},'Evect',linspace(0,5,51));
  
 The line will create an energy bin, with steps of 0.1 and bins the
 spin-spin correlation function. Two different matrices will be
@@ -124,3 +124,4 @@ will contain the Szz component of the correlation function.
  
 See also SPINW.SPINWAVE, SW_NEUTRON.
  
+

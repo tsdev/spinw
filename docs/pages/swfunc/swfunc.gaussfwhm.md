@@ -15,3 +15,4 @@ x         Coordinate vector where the function will be evaluated.
 p         Parameter vector: [I Centre FWHM].
  
 See also SWFUNC.VOIGT, SWFUNC.GAUSS.
+

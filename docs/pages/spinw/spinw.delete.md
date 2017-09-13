@@ -10,6 +10,7 @@ DELETE   Delete a handle object.
    DELETE(H) deletes the handle object H, where H is a scalar handle.
  
    See also SPINW, SPINW/ISVALID, CLEAR 
-Help for spinw/delete is inherited from superclass HANDLE
+Help for [spinw](spinw.html)/delete is inherited from superclass HANDLE
    Reference page in Doc Center
-      doc spinw/delete
+      doc [spinw](spinw.html)/delete
+

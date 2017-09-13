@@ -15,3 +15,4 @@ Op        Symemtry operators with rotation and translation. Dimensions
  
 See also SWSYM.GENERATOR, SWSYM.OPERATOR.
  
+

@@ -4,7 +4,7 @@
   mathjax: 'true'}
 
 ---
-generates the COUPLING property of spinw object
+generates the COUPLING property of [spinw](spinw.html) object
  
 GENCOUPLING(obj, 'option1', value, ...)
  
@@ -23,7 +23,7 @@ IMPORTANT!
  
 Input:
  
-obj           spinw class object.
+obj           [spinw](spinw.html) class object.
  
 Options:
  
@@ -51,7 +51,7 @@ crystal geometry.
  
 Example:
  
-cryst = spinw;
+cryst = [spinw](spinw.html);
 cryst.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
 cryst.addatom('r',[0 0 0])
 cryst.gencoupling
@@ -62,3 +62,4 @@ the couplingtable() function lists the 1st, 2nd and 3rd neighbor bonds.
  
 See also SPINW, SPINW.SYMMETRY, SPINW.NOSYM.
  
+

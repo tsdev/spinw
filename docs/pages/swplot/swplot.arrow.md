@@ -24,7 +24,8 @@ R         Radius of the arrow body.
 alpha     Angle of the head in degrees.
 lHead     Length of the head.
 nPatch    Number of points on the curve, default value is stored in
-          swpref.getpref('npatch').
+          [swpref.getpref](swpref_getpref.html)('npatch').
  
 See also SWPLOT.CYLINDER.
  
+

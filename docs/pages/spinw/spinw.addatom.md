@@ -3,13 +3,13 @@
   sidebar: sw_sidebar, permalink: spinw_addatom.html, folder: spinw, mathjax: 'true'}
 
 ---
-adds new atom to an spinw object
+adds new atom to an [spinw](spinw.html) object
  
 ADDATOM(obj,'Option1', Value1, ...)
  
 Input:
  
-obj       spinw object
+obj       [spinw](spinw.html) object
  
 Options:
  
@@ -31,16 +31,16 @@ color     Colors of the atoms for plotting, dimensions are [3 nAtom],
           atom.
           Alternatively a name of the color can be given as a string, for
           example 'White', for multiple atoms package it into a cell. For
-          the list of colors, see swplot.color().
+          the list of colors, see [swplot.color()](swplot_color.html).
 ox        Oxidation number given as a double or it will be determined
           automatically from label. Default is 0.
 occ       Occupancy, given as double. Default is 1.
 formfact  Neutron scattering form factor, given as 9 numbers, for details
-          see the help of sw_mff(). Also string labels can be used.
+          see the help of [sw_mff()](sw_mff.html). Also string labels can be used.
 formfactn  Neutron scattering form factor, given as 9 numbers, for details
-          see the help of sw_mff(). Also string labels can be used.
+          see the help of [sw_mff()](sw_mff.html). Also string labels can be used.
 formfactx X-ray scattering form factor, given as 9 numbers, for details
-          see the help of sw_cff().
+          see the help of [sw_cff()](sw_cff.html).
 Z         Atomic number, given as integer or determined from label
           automatically. Default is 113 (Unobtanium).
 A         Atomic mass, given as integer. Default is -1 for the natural
@@ -58,7 +58,7 @@ update    If true, existing atom with the same label and position as a
 Output:
  
 The function creates extra elements in the 'unit_cell' field of the obj
-spinw object.
+[spinw](spinw.html) object.
  
 Example:
  
@@ -69,3 +69,4 @@ Adds a magnetic atom (S=1) at position (0,0,0) and a non-magnetic one at
  
 See also SPINW.GENLATTICE, SPINW.ADDMATRIX, SWPLOT.COLOR, SW_MFF, SW_CFF.
  
+

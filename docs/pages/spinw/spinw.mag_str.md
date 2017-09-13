@@ -18,3 +18,4 @@ Sub fields are:
           cell along the a, b and c axis
  
 See also SPINW.GENMAGSTR, SPINW.OPTMAGSTR, SPINW.ANNEAL, SPINW.MOMENT, SPINW.NMAGEXT, SPINW.STRUCTFACT.
+

@@ -22,7 +22,7 @@ the standard definition of the k vector.
  
 Input:
  
-obj       spinw class object.
+obj       [spinw](spinw.html) class object.
  
 Options:
  
@@ -61,3 +61,4 @@ ground state of the magnetic model in cryst.
  
 See also SPINW, SPINW.ANNEAL, SPINW.NEWCELL.
  
+

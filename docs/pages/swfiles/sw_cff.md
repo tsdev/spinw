@@ -30,5 +30,6 @@ coeff         Form factor coefficients according to the following
               where Qs = Q/(4*pi) and [a_1 b_1 a_2 b_2 ... c] are the
               coefficients.
  
-See also sw_mff.
+See also [sw_mff](sw_mff.html).
  
+

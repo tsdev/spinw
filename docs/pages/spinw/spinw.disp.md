@@ -4,13 +4,13 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-prints the spinw data structure in readable format onto the Command Window
+prints the [spinw](spinw.html) data structure in readable format onto the Command Window
  
 {swDescr} = DISPLAY(obj)
  
 Input:
  
-obj       spinw class object.
+obj       [spinw](spinw.html) class object.
  
 Output:
  
@@ -20,8 +20,9 @@ swdescr   If output variable is given, the description of the obj object
  
 Example:
  
-crystal = spinw;
+crystal = [spinw](spinw.html);
 swFields = display(crystal);
  
 See also SPINW.
  
+

@@ -12,3 +12,4 @@ Sub fields are:
   label       Label of the space group.
  
 See also SPINW.GENLATTICE, SPINW.ABC, SPINW.BASISVECTOR, SPINW.NOSYM.
+

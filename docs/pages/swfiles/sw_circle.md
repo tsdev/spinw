@@ -15,3 +15,4 @@ N     Number of points on the curve.
  
 See also SW_CONE, SW_CIRCLESURF, SW_CYLINDER, SW_ARROW.
  
+

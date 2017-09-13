@@ -36,3 +36,4 @@ symInfo       Structure containing additional information about the space
 See also SPINW, SWSYM.POSITION, SPINW.ATOM, SPINW.MATOM, SWSYM.GENERATOR,
 SWSYM.POINT.
  
+

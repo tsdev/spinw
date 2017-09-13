@@ -25,8 +25,9 @@ rStart    Coordinate of the starting point with dimensions [3 nCylinder].
 rEnd      Coordinate of the end point with dimensions [3 nCylinder].
 R         Radius of the arrow body.
 nPatch    Number of points on the curve, default value is stored in
-          swpref.getpref('npatch').
+          [swpref.getpref](swpref_getpref.html)('npatch').
 close     If true the cylinder is closed. Default is true.
  
 See also SWPLOT.ARROW.
  
+

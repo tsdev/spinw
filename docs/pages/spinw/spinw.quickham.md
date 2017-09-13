@@ -20,3 +20,4 @@ obj       Spinw object.
 J         Vector containing the Heisenberg exchange values. J(1) for
           first neighbor bonds, etc.
  
+

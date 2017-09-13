@@ -30,3 +30,4 @@ pOp           Point group operators, dimensions are [3 3 npOp], these
  
 See also SWSYM.GENERATOR, SWSYM.OPERATOR, SWSYM.POSITION.
  
+

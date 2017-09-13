@@ -7,3 +7,4 @@ returns the installed version of SpinW
  
 SW_VERSION()
  
+

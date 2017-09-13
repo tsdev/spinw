@@ -26,7 +26,7 @@ The method for matrix diagonalization is according to R.M. White, PR 139
  
 Input:
  
-obj           Input structure, spinw class object.
+obj           Input structure, [spinw](spinw.html) class object.
  
 Options:
  
@@ -47,3 +47,4 @@ norm          Whether to produce the normalized eigenvectors. It can be
               false. Default is true.
 title         Gives a title string to the simulation that is saved in the
               output.
+

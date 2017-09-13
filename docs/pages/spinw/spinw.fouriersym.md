@@ -10,7 +10,7 @@ res = FOURIER(obj, 'option1', value1 ...)
  
 Input:
  
-obj           Input structure, spinw class object.
+obj           Input structure, [spinw](spinw.html) class object.
  
 Options:
  
@@ -22,3 +22,4 @@ hkl           Symbolic definition of q vector. Default is the general Q
  
 See also SPINW.FOURIER.
  
+

@@ -14,3 +14,4 @@ swObject  Struct, that contains the object data that is clicked on.
 obj       SpinW object that provides data to the tooltip text, can be
           empty.
  
+

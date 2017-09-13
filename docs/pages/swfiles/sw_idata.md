@@ -27,3 +27,4 @@ fwhmQ         Full width half maximum of the Gaussian momentum
 nInterp       Number of axis subdivision before convolution, equal
               for Q and E.
  
+

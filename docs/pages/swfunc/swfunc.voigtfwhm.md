@@ -28,3 +28,4 @@ Standard deviation of the Gaussian:
 sigma = wG/sqrt(8*ln(2))
  
 See also FUNC.GAUSS, FUNC.GAUSSFWHM.
+

@@ -10,7 +10,7 @@ creates the interactions matrices (connectors and values)
  
 Input:
  
-obj           Input spinw class object.
+obj           Input [spinw](spinw.html) class object.
  
 Options:
  
@@ -72,3 +72,4 @@ RR            Positions of the atoms in lattice units, dimensions are
  
 See also SPINW.COUPLINGTABLE, SPINW.SYMOP.
  
+

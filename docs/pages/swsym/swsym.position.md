@@ -40,3 +40,4 @@ opInfo        Structure with the following fields:
  
 See also SPINW, SWSYM.OPERATOR, SPINW.ATOM, SPINW.MATOM.
  
+

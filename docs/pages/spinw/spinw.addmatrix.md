@@ -10,7 +10,7 @@ ADDMATRIX(obj, 'Option1, Value1,...)
  
 Input:
  
-obj       spinw class object
+obj       [spinw](spinw.html) class object
  
 Options:
  
@@ -41,3 +41,4 @@ Adds a diagonal matrix, that can describe Heisenberg interaction.
  
 See also SPINW, SWPLOT.COLOR.
  
+

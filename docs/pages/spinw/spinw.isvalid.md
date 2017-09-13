@@ -13,6 +13,7 @@ ISVALID   Test handle validity.
    of a handle array and has not yet been initialized.
  
    See also SPINW, SPINW/DELETE
-Help for spinw/isvalid is inherited from superclass HANDLE
+Help for [spinw](spinw.html)/isvalid is inherited from superclass HANDLE
    Reference page in Doc Center
-      doc spinw/isvalid
+      doc [spinw](spinw.html)/isvalid
+

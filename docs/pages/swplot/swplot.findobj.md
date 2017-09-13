@@ -3,9 +3,9 @@
   sidebar: sw_sidebar, permalink: swplot_findobj.html, folder: swplot, mathjax: 'true'}
 
 ---
-finds object data on swplot figure
+finds object data on [swplot figure](swplot_figure.html)
  
-sObj = swplot.findobj(hFigure,'PropertyName',value,...)
+sObj = [swplot.findobj](swplot_findobj.html)(hFigure,'PropertyName',value,...)
  
 Finds objects on hFigure that all have the given property values. The
 possible property names are:
@@ -21,7 +21,8 @@ possible property names are:
 sObj is a struct that contains all the stored data corresponding to the
 found objects.
  
-sObj = swplot.findobj('PropertyName',value,...)
+sObj = [swplot.findobj](swplot_findobj.html)('PropertyName',value,...)
  
-Finds object on the active swplot figure.
+Finds object on the active [swplot figure](swplot_figure.html).
  
+

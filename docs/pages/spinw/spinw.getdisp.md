@@ -12,7 +12,8 @@ GETDISP    Specialized MATLAB object property display.
    GET(H).  If not overridden, the default display format for the class
    is used.
  
-   See also spinw, spinw/GET, handle
-Help for spinw/getdisp is inherited from superclass MATLAB.MIXIN.SETGET
+   See also [spinw](spinw.html), spinw/GET, handle
+Help for [spinw](spinw.html)/getdisp is inherited from superclass MATLAB.MIXIN.SETGET
    Reference page in Doc Center
-      doc spinw/getdisp
+      doc [spinw](spinw.html)/getdisp
+

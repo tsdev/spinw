@@ -28,10 +28,11 @@ Output:
  
 Example:
   sFact = cryst.structfact;
-  sFact = sw_intsf(sFact,'axis',[1 2],'range',[0 1; 0 2]);
+  sFact = [sw_intsf](sw_intsf.html)(sFact,'axis',[1 2],'range',[0 1; 0 2]);
  
   The above code will integrate the structure factor along a* between 0
   and 1, along b* between 0 and 2.
  
 See also SPINW, SPINW.STRUCTFACT, SW_PLOTSF.
  
+

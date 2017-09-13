@@ -10,7 +10,7 @@ basisVec = BASISVECTOR(obj, {norm})
  
 Input:
  
-obj       spinw class object.
+obj       [spinw](spinw.html) class object.
 norm      If true, the basis vectors are normalized to 1, otherwise the
           length is equal to the lattice constants. Default is false.
           Optional.
@@ -36,3 +36,4 @@ reciprocal lattice units --> Angstrom^-1 (xyz coordinate system)
  
 See also SPINW, SPINW.ABC, SPINW.RL.
  
+

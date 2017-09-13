@@ -4,7 +4,7 @@
   mathjax: 'true'}
 
 ---
-plots the edges of unit cells on swplot figure
+plots the edges of unit cells on [swplot figure](swplot_figure.html)
  
 SWPLOT.PLOTCELL('Option1',Value1,...)
  
@@ -23,7 +23,7 @@ mode      String, determined how the cells are plotted:
                           range. Default.
               'outside'   Unit cells are plotted inclusive the given
                               range.
-figure    Handle of the swplot figure. Default is the selected figure.
+figure    Handle of the [swplot figure](swplot_figure.html). Default is the selected figure.
 color     Color of the lines as a string or row vector with 3 elements, 
           default value is black ('auto').
 lineStyle Line style of the cell, default is '--'.
@@ -33,3 +33,4 @@ translate If true, all plot objects will be translated to the figure
 zoom      If true, figure will be automatically zoomed to the ideal size.
           Default is false.
  
+

@@ -10,3 +10,4 @@ Sub fields are:
   muB     Bohr magneton, default is 0.0579 [meV/T]
   mu0     vacuum permeability, 201.335431 [T^2*Angstrom^3/meV]
   qmat    transformation matrix that converts the given q-values
+

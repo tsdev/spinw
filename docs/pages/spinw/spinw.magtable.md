@@ -15,7 +15,7 @@ atoms are in lattice units.
  
 Input:
  
-obj           spinw class object.
+obj           [spinw](spinw.html) class object.
  
 Output:
  
@@ -30,7 +30,8 @@ Output:
   R           Matrix, where every column defines the position of the
               magnetic atom in lattice units.
   atom        Pointer to the magnetic atom in the subfields of
-              spinw.unit_cell.
+              [spinw](spinw.html).unit_cell.
  
 See also SPINW.GENMAGSTR.
  
+

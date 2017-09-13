@@ -10,7 +10,7 @@ rlVec = RL(obj, {norm})
  
 Input:
  
-obj       spinw class object.
+obj       [spinw](spinw.html) class object.
 norm      If true, the basis vectors are normalized to 1. Default is false.
           Optional.
  
@@ -31,3 +31,4 @@ To convert from reciprocal lattice unit to Angstrom^-1 (xyz coordinate system):
  
 See also SPINW, SPINW.ABC, SPINW.BASISVECTOR.
  
+

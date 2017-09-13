@@ -3,11 +3,11 @@
   sidebar: sw_sidebar, permalink: swplot_mouse.html, folder: swplot, mathjax: 'true'}
 
 ---
-adds mouse callbacks to swplot figure
+adds mouse callbacks to [swplot figure](swplot_figure.html)
  
 SWPLOT.MOUSE({hFigure},{perspective})
  
-Adds rotation and zoom functionality to any swplot figure. The following
+Adds rotation and zoom functionality to any [swplot figure](swplot_figure.html). The following
 mouse actions are supported:
   - mouse-drag        Rotation of objects.
   - ctrl+mouse-drag   Shift of objects (pan).
@@ -17,7 +17,7 @@ mouse actions are supported:
  
 Input:
  
-hFigure       Handle of the swplot figure. Default is the selected
+hFigure       Handle of the [swplot figure](swplot_figure.html). Default is the selected
               figure.
 perspective   String determines whether camera projection mode is changed
               automatically between orthographic (zooming withouth CTRL 
@@ -28,3 +28,4 @@ perspective   String determines whether camera projection mode is changed
  
 See also CAMPROJ.
  
+

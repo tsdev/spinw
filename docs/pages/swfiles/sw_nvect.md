@@ -25,3 +25,4 @@ n           Vector parallel to the collinear spin direction or
 collinear   If true, the set of vectors are collinear, then n is parallel to the
             input vectors.
  
+

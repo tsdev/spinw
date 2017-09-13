@@ -22,3 +22,4 @@ p 	Function parameter values: p = [A x0 wG wL mu], where:
                   pure Gaussian. It has to be within the range of [0 1].
  
 See also SWFUNC.GAUSS, SWFUNC.LORFWHM.
+

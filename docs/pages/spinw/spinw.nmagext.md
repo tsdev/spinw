@@ -8,3 +8,4 @@ gives the number of magnetic atoms in the magnetic supercell
  
 nMagExt = NMAGEXT(obj)
  
+

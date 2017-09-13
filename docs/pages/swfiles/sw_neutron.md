@@ -58,3 +58,4 @@ system with (xBM, yBM and zBM) basis vectors as follows:
  
 See also SPINW, SPINW.SPINWAVE.
  
+

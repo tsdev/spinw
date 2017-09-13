@@ -24,3 +24,4 @@ isGen     Vector, that gives whether a given input operator is part of
  
 See also SWSYM.ADD, SWSYM.GENERATOR, SWSYM.OPERATOR.
  
+

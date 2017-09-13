@@ -35,10 +35,10 @@ modes that have either zero intensity or zero energy.
  
 Before any data line a special line can be inserted that gives the
 measured correlation in square brackets, for axample: [Mxx+Myy]. For the
-formatting of this string, see <a href="matlab:doc sw_parstr">sw_parstr</a>.
+formatting of this string, see <a href="matlab:doc [sw_parstr](sw_parstr.html)">sw_parstr</a>.
 If the measured type of correlation is undefined, unpolarised neutron
 scattering intensity is assumed ([Sperp]). When cross sections measured
-in the Blume-Maleev coordinate system (see <a href="matlab:doc sw_egrid">sw_egrid</a>), the normal to the
+in the Blume-Maleev coordinate system (see <a href="matlab:doc [sw_egrid](sw_egrid.html)">sw_egrid</a>), the normal to the
 scattering plane has to be also defined. This can be given in a second
 pair of square brackes in the xyz coordinate system, for example: [Myy]
 [1 0 0]. If n is undefined, the default value is [0 0 1].
@@ -59,3 +59,4 @@ QH    QK        QL      ENlim1  ENlim2  I1  EN1       s1    I2  EN2       s2
  
 See also SW_EGRID, SPINW.FITSPEC.
  
+

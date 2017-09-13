@@ -15,7 +15,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % Some of the code of the function can run faster is mex files are used. To
 % switch on mex files, use the swpref.setpref('usemex',true) command. For
-% details see the <a href="matlab:help('sw_mex.m')">sw_mex</a> function.
+% details see the sw_mex and swpref.setpref functions.
 %
 %
 % Input:

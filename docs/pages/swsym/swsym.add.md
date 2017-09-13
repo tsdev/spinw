@@ -18,3 +18,4 @@ symName       Label for the space group.
  
 See also SWSYM.GENERATOR, SWSYM.GENREDUCE.
  
+

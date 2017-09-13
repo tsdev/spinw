@@ -8,3 +8,4 @@ gives the number of symmetry unrelated atoms in the unit cell
  
 nAtom = NATOM(obj)
  
+

@@ -15,8 +15,9 @@ operators. If false, equivalent couplings are generated based
 on bond length, equivalent matrices won't be transformed
 (all identical).
  
-To change it use spinw.gencoupling with the forceNoSym option.
-To remove all symmetry operators use spinw.nosym.
+To change it use [spinw](spinw.html).gencoupling with the forceNoSym option.
+To remove all symmetry operators use [spinw](spinw.html).nosym.
  
 See also SPINW, SPINW.NOSYM, SPINW.GENCOUPLING.
  
+

@@ -9,7 +9,7 @@ calculates termodynamical averages during an annealing simulation
 parOut = SW_FSTAT(state, parIn, T, E, M, nExt)
  
 It calculates statistical properties of different physical variables over
-several sample state. Called by spinw.anneal.
+several sample state. Called by [spinw](spinw.html).anneal.
  
 Input:
  
@@ -53,3 +53,4 @@ parOut.Chi    Magnetic susceptibility of the sample: (<M^2>-<M>^2)/kB/T.
  
 See also SPINW, SPINW.ANNEAL.
  
+

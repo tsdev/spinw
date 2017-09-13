@@ -8,7 +8,7 @@ Sub fields are:
   dl      distance between the unit cells of two interacting
           spins, stored in a 3 x nCoupling matrix
   atom1   first magnetic atom, pointing to the list of
-          magnetic atoms in spinw.matom list, stored in a
+          magnetic atoms in [spinw](spinw.html).matom list, stored in a
           1 x nCoupling vector
   atom2   second magnetic atom, stored in a  1 x nCoupling
           vector
@@ -31,3 +31,4 @@ Sub fields are:
           calculated using space group symmetry.
  
 See also SPINW.GENCOUPLING, SPINW.ADDCOUPLING, SPINW.FIELD.
+

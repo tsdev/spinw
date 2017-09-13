@@ -14,13 +14,14 @@ loaded using the SWSYM.generator or SWSYM.operator functions.
  
 ### Files
 
-* [swsym.add](/swsym_add) saves user defined symmetry operators
-* [swsym.bond](/swsym_bond) generates all symmetry equivalent bonds
-* [swsym.generator](/swsym_generator) returns symmetry operators of a given space group
-* [swsym.genreduce](/swsym_genreduce) reduces the list of symmetry operators to the generators
-* [swsym.isop](/swsym_isop) function determines whether the matrix is a symmetry operator
-* [swsym.operator](/swsym_operator) calculates all symmetry operators or general positions for a space group
-* [swsym.oporder](/swsym_oporder) determine the order of the symmetry operator
-* [swsym.point](/swsym_point) determines point group symmetry at a given position
-* [swsym.position](/swsym_position) generates symmetry equivalent positions
-* [swsym.str](/swsym_str) generates a string equivalent of symmetry operators
+* [[swsym.add](swsym_add.html)](/swsym_add) saves user defined symmetry operators
+* [[swsym.bond](swsym_bond.html)](/swsym_bond) generates all symmetry equivalent bonds
+* [[swsym.generator](swsym_generator.html)](/swsym_generator) returns symmetry operators of a given space group
+* [[swsym.genreduce](swsym_genreduce.html)](/swsym_genreduce) reduces the list of symmetry operators to the generators
+* [[swsym.isop](swsym_isop.html)](/swsym_isop) function determines whether the matrix is a symmetry operator
+* [[swsym.operator](swsym_operator.html)](/swsym_operator) calculates all symmetry operators or general positions for a space group
+* [[swsym.oporder](swsym_oporder.html)](/swsym_oporder) determine the order of the symmetry operator
+* [[swsym.point](swsym_point.html)](/swsym_point) determines point group symmetry at a given position
+* [[swsym.position](swsym_position.html)](/swsym_position) generates symmetry equivalent positions
+* [[swsym.str](swsym_str.html)](/swsym_str) generates a string equivalent of symmetry operators
+

@@ -49,7 +49,8 @@ SET    Set MATLAB object property values.
    properties of scalar object H.  The class can override the SETDISP 
    method to control how this information is displayed. 
  
-   See also SET, spinw, spinw/SETDISP, HANDLE
-Help for spinw/set is inherited from superclass MATLAB.MIXIN.SETGET
+   See also SET, [spinw](spinw.html), spinw/SETDISP, HANDLE
+Help for [spinw](spinw.html)/set is inherited from superclass MATLAB.MIXIN.SETGET
    Reference page in Doc Center
-      doc spinw/set
+      doc [spinw](spinw.html)/set
+

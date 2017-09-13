@@ -31,3 +31,4 @@ ugenCp    Logical variable, true if the coupling is unique in the list of
  
 See also SPINW.GENCOUPLING, SWSYM.OPERATOR, SWSYM.POSITION.
  
+

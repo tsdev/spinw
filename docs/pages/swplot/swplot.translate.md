@@ -3,7 +3,7 @@
   sidebar: sw_sidebar, permalink: swplot_translate.html, folder: swplot, mathjax: 'true'}
 
 ---
-translate objects on swplot figure
+translate objects on [swplot figure](swplot_figure.html)
  
 SWPLOT.TRANSLATE(mode, {hFigure})
  
@@ -16,7 +16,8 @@ Input:
 mode      Either a vector with three elements determining the translation 
           value in the figure plane coordinate system, or 'auto' that
           centers the object on the figure. Default is 'auto'.
-hFigure   Handle of the swplot figure window, optional.
+hFigure   Handle of the [swplot figure](swplot_figure.html) window, optional.
  
 See also SWPLOT.ZOOM.
  
+

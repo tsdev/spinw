@@ -25,7 +25,7 @@ kbase     Basis vectors that span the Brillouin zone if the system is low
           system is determined automatically.
 nInt      Number of Q points where the Brillouin zone is sampled for the
           integration.
-corr      If true, spinw correlations are calculated at the given
+corr      If true, [spinw](spinw.html) correlations are calculated at the given
           momentum vectors. Default is true.
 chi       If true, the magnetic susceptibility is calculated.
 fitmode       Speedup (for fitting mode only), default is false.
@@ -39,3 +39,4 @@ spectra   Structure with fields:
           dimensions of [3,3,1,D1,D2,...].
   Dopt    Optimum value of D.
  
+

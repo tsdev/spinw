@@ -15,7 +15,7 @@ interactions are not supported yet!
  
 Input:
  
-obj             Input object contains structural data, spinw type.
+obj             Input object contains structural data, [spinw](spinw.html) type.
  
 Options:
  
@@ -28,10 +28,10 @@ spinDim   Dimensionality of the magnetic moments.
           the direction of the spins are along x-axis, for XY model the
           the xy-plane. Magnetic fields perpendicular to these directions
           are omitted.
-func      Function that changes the parameters in the spinw object in every
+func      Function that changes the parameters in the [spinw](spinw.html) object in every
           loop. Default function is to change the temperature:
               @(obj,T)obj.temperature(T)
-          The function takes two input: spinw objec and a parameter vector.
+          The function takes two input: [spinw](spinw.html) objec and a parameter vector.
 x         Matrix of values of the loop parameter, with dimensions of
           [nPar nStep]. Default is 1. In the i-th loop the loop function
           is called as:
@@ -73,17 +73,17 @@ fStat     Function handle to evaluate after at the end of the
           fStat is called once again in the end with state=3 to calculate
           final parameters (in the last run, input struct.param contains
           all the annealing parameters).
-          Default is <a href="matlab: doc sw_fstat">@sw_fstat</a>.
+          Default is <a href="matlab: doc [sw_fstat](sw_fstat.html)">@sw_fstat</a>.
 fSub      Function to define sublattices for Monte-Carlo speedup.
           cGraph = fSub(conn,nExt), where cGraph is a (1,nMagExt) sized
           vector, conn is a (2,nConn) size matrix and nExt is equal to
-          'nExt'. Default is <a href="matlab: doc sw_fsub">@sw_fsub</a>
+          'nExt'. Default is <a href="matlab: doc [sw_fsub](sw_fsub.html)">@sw_fsub</a>
 subLat    Vector that assigns all magnetic moments into non-interacting
           sublattices, contains a single index (1,2,3...) for every
           magnetic moment, size is (1,nMagExt). If undefined, the
           function defined in 'fSub' will be used to partition the
           lattice.
-saveObj   If true, the spinw object is saved after every annealing step for
+saveObj   If true, the [spinw](spinw.html) object is saved after every annealing step for
           debugging purposes. Default is false.
 title     Gives a title string to the simulation that is saved in the
           output.
@@ -95,7 +95,7 @@ stat      A struct type data that contains the calculated thermodynamical
           X with the following fields:
  
 param     All input parameter values of the annealloop function.
-obj       The copy of the input spinw class obj with the final magnetic
+obj       The copy of the input [spinw](spinw.html) class obj with the final magnetic
           structure.
 M         Components of the magnetisation after the last annealing
           run, dimensions are [3 nMagExt].
@@ -103,7 +103,7 @@ E         Magnetic energy of the system after the last annealing run.
 T         Final temperature of the sample.
  
 Depending on the 'fStat' parameter, additional fields are included. Using
-the default function (@sw_fstat) the following parameters are calculated:
+the default function ([@sw_fstat](sw_fstat.html)) the following parameters are calculated:
  
 avgM      Average components of the magnetisation over nStat runs,
           dimensions are [3 nMagExt].
@@ -122,3 +122,4 @@ Chi       Magnetic susceptibility of the sample: (<M^2>-<M>^2)/kB/T.
  
 See also SPINW, SPINW.OPTMAGSTR, SW_FSUB, SW_FSTAT.
  
+

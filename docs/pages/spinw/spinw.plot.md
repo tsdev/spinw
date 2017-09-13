@@ -10,14 +10,14 @@ PLOT(obj, 'Option1', Value1, ...)
  
 hFigure = PLOT(obj, 'Option1', Value1, ...)
  
-The function plots the atoms and couplings stored in obj onto an swplot
-figure. The figure can be rotated in 3D using the mouse and panning works
+The function plots the atoms and couplings stored in obj onto an [swplot
+figure](swplot_figure.html). The figure can be rotated in 3D using the mouse and panning works
 by keeping the Ctrl/Control button pressed. There is information about
 every object on the figure (called tooltip) that is shown when clicked on
 the object. The 3D view direction can be changed programatically using
-the swplot.view() command while translations are controlled using the
-swplot.translate() command. Arbitrary transformation (combination of
-rotation and translation) can be introduced using the swplot.transform()
+the [swplot.view()](swplot_view.html) command while translations are controlled using the
+[swplot.translate()](swplot_translate.html) command. Arbitrary transformation (combination of
+rotation and translation) can be introduced using the [swplot.transform()](swplot_transform.html)
 command.
  
 The function calls several plot routine to draw different group of
@@ -28,12 +28,12 @@ cells).
 Each group has a corresponding plot function with its own input options,
 for the allowed options, please check the help of the functions below.
  
-atom  swplot.plotatom
-mag   swplot.plotmag
-ion   swplot.plotion
+atom  [swplot.plotatom](swplot_plotatom.html)
+mag   [swplot.plotmag](swplot_plotmag.html)
+ion   [swplot.plotion](swplot_plotion.html)
 bond  swpplot.plotbond
-base  swplot.plotbase
-cell  swplot.plotcell
+base  [swplot.plotbase](swplot_plotbase.html)
+cell  [swplot.plotcell](swplot_plotcell.html)
  
 To provide an option to any of these sub functions add the name of the
 group to the option. For example to set the 'color' option of the cell
@@ -57,16 +57,16 @@ unit      Unit in which the range is defined. It can be the following
           string:
               'lu'        Lattice units (default).
               'xyz'       Cartesian coordinate system in Angstrom units.
-figure    Handle of the swplot figure. Default is the selected figure.
+figure    Handle of the [swplot figure](swplot_figure.html). Default is the selected figure.
 legend    Whether to add the plot to the legend, default is true.
 fontSize  Font size of the atom labels in pt, default is stored in
-          swpref.getpref('fontsize').
+          [swpref.getpref](swpref_getpref.html)('fontsize').
 nMesh     Resolution of the ellipse surface mesh. Integer number that is
           used to generate an icosahedron mesh with #mesh number of
           additional triangulation, default value is stored in
-          swpref.getpref('nmesh')
+          [swpref.getpref](swpref_getpref.html)('nmesh')
 nPatch    Number of points on the curve for the arrows and cylinders,
-          default value is stored in swpref.getpref('npatch').
+          default value is stored in [swpref.getpref](swpref_getpref.html)('npatch').
 tooltip   If true, the tooltips will be shown when clicking on the plot.
           Default is true.
 shift     Column vector with 3 elements, all objects will be shifted by
@@ -77,3 +77,4 @@ translate If true, all plot objects will be translated to the figure
 zoom      If true, figure will be automatically zoomed to the ideal size.
           Default is true.
  
+

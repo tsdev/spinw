@@ -13,7 +13,7 @@ superlattice.
 Input:
  
 nExt          Number of unit cell extensions, dimensions are [1 3].
-aList         List of the atoms, produced by spinw.matom.
+aList         List of the atoms, produced by [spinw](spinw.html).matom.
 SS            Interactions matrices in the unit cell, optional.
  
 Output:
@@ -34,3 +34,4 @@ SSext.gen     General 3x3 matrix contains the exchange interaction.
  
 See also SPINW.INTMATRIX.
  
+

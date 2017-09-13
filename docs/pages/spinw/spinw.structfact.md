@@ -17,7 +17,7 @@ obj.unit_cell.biso, using the same definition as FullProf.
  
 Input:
  
-obj       Input spinw object, contains crystal and/or magnetic structure.
+obj       Input [spinw](spinw.html) object, contains crystal and/or magnetic structure.
 kGrid     Defines the reciprocal lattice vectors where the structure
           factor is to be calculated. For commensurate structures these
           are the possible positions of the magnetic Bragg peaks. For
@@ -49,7 +49,7 @@ formfact      If true, the magnetic form factor is included in the
               Default value is false.
  
 formfactfun   Function that calculates the magnetic form factor for given
-              Q value. Default value is @sw_mff(), that uses a tabulated
+              Q value. Default value is [@sw_mff()](sw_mff.html), that uses a tabulated
               coefficients for the form factor calculation. For
               anisotropic form factors a user defined function can be
               written that has the following header:
@@ -76,7 +76,7 @@ tol           Tolerance of the incommensurability of the magnetic
               to be commensurate. Default value is 1e-4.
  
 fitmode       Speed up the calculation for fitting mode (omitting
-              copying the spinw object to the output). Default is false.
+              copying the [spinw](spinw.html) object to the output). Default is false.
  
 Output:
  
@@ -102,3 +102,4 @@ saving the output into a text file.
  
 See also SW_QGRID, SW_PLOTSF, SW_INTSF, SPINW.ANNEAL, SPINW.GENMAGSTR.
  
+

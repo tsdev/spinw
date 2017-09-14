@@ -1,7 +1,7 @@
 ---
-{title: sw_omegasum( ), summary: removes degenerate and ghost magnon modes from spectrum,
-  keywords: sample, sidebar: sw_sidebar, permalink: sw_omegasum.html, folder: swfiles,
-  mathjax: 'true'}
+{title: sw_omegasum( ), link: sw_omegasum, summary: removes degenerate and ghost magnon
+    modes from spectrum, keywords: sample, sidebar: sw_sidebar, permalink: sw_omegasum.html,
+  folder: swfiles, mathjax: 'true'}
 
 ---
  

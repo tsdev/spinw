@@ -1,6 +1,7 @@
 ---
-{title: spinw.genlattice( ), summary: generates crystal lattice, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_genlattice.html, folder: spinw, mathjax: 'true'}
+{title: spinw.genlattice method, link: spinw.genlattice, summary: generates crystal
+    lattice, keywords: sample, sidebar: sw_sidebar, permalink: spinw_genlattice.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
   
@@ -93,7 +94,7 @@ crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','-y,x-y,z; -x
 ```
  
 The three lines are equivalent, both will create hexagonal lattice, with
-`P 6` space group.
+$$P6$$ space group.
  
 ### See also
  

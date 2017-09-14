@@ -1,6 +1,7 @@
 ---
-{title: swplot.transform( ), summary: transform objects on swplot figure, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_transform.html, folder: swplot, mathjax: 'true'}
+{title: swplot.transform, link: swplot.transform, summary: transform objects on swplot
+    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_transform.html,
+  folder: swplot, mathjax: 'true'}
 
 ---
  

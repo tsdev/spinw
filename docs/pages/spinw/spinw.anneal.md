@@ -1,7 +1,7 @@
 ---
-{title: spinw.anneal( ), summary: performs simulated annealing on the magnetic structure,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_anneal.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.anneal method, link: spinw.anneal, summary: performs simulated annealing
+    on the magnetic structure, keywords: sample, sidebar: sw_sidebar, permalink: spinw_anneal.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

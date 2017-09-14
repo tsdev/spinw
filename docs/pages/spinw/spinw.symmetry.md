@@ -1,7 +1,7 @@
 ---
-{title: spinw.symmetry( ), summary: true if space group is used to generate couplings,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_symmetry.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.symmetry method, link: spinw.symmetry, summary: true if space group
+    is used to generate couplings, keywords: sample, sidebar: sw_sidebar, permalink: spinw_symmetry.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

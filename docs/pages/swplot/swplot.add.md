@@ -1,7 +1,7 @@
 ---
-{title: swplot.add( ), summary: adds a graphical object to the hgtransform of an swplot
-    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_add.html, folder: swplot,
-  mathjax: 'true'}
+{title: swplot.add, link: swplot.add, summary: adds a graphical object to the hgtransform
+    of an swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_add.html,
+  folder: swplot, mathjax: 'true'}
 
 ---
  

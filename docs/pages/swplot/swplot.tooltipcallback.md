@@ -1,7 +1,7 @@
 ---
-{title: swplot.tooltipcallback( ), summary: call tooltip on clicking an object on
-    an swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_tooltipcallback.html,
-  folder: swplot, mathjax: 'true'}
+{title: swplot.tooltipcallback, link: swplot.tooltipcallback, summary: call tooltip
+    on clicking an object on an swplot figure, keywords: sample, sidebar: sw_sidebar,
+  permalink: swplot_tooltipcallback.html, folder: swplot, mathjax: 'true'}
 
 ---
  

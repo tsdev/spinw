@@ -1,6 +1,7 @@
 ---
-{title: spinw.set( ), summary: SET    Set MATLAB object property values., keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_set.html, folder: spinw, mathjax: 'true'}
+{title: spinw.set method, link: spinw.set, summary: SET    Set MATLAB object property
+    values., keywords: sample, sidebar: sw_sidebar, permalink: spinw_set.html, folder: spinw,
+  mathjax: 'true'}
 
 ---
    SET(H,'PropertyName',PropertyValue) sets the value of the specified 

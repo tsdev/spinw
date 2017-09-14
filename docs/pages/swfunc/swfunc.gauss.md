@@ -1,6 +1,6 @@
 ---
-{title: swfunc.gauss( ), summary: normalized gaussian function defined by the standard
-    deviation, keywords: sample, sidebar: sw_sidebar, permalink: swfunc_gauss.html,
+{title: swfunc.gauss, link: swfunc.gauss, summary: normalized gaussian function defined
+    by the standard deviation, keywords: sample, sidebar: sw_sidebar, permalink: swfunc_gauss.html,
   folder: swfunc, mathjax: 'true'}
 
 ---

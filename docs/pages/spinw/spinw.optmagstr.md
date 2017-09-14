@@ -1,7 +1,7 @@
 ---
-{title: spinw.optmagstr( ), summary: optimises magnetic structure by minimizing the
-    energy using non-linear optimization algorithms, keywords: sample, sidebar: sw_sidebar,
-  permalink: spinw_optmagstr.html, folder: spinw, mathjax: 'true'}
+{title: spinw.optmagstr method, link: spinw.optmagstr, summary: optimises magnetic
+    structure by minimizing the energy using non-linear optimization algorithms, keywords: sample,
+  sidebar: sw_sidebar, permalink: spinw_optmagstr.html, folder: spinw, mathjax: 'true'}
 
 ---
  

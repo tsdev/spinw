@@ -1,7 +1,7 @@
 ---
-{title: spinw.fourier( ), summary: calculates the Fourier transformation of the Hamiltonian,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_fourier.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.fourier method, link: spinw.fourier, summary: calculates the Fourier
+    transformation of the Hamiltonian, keywords: sample, sidebar: sw_sidebar, permalink: spinw_fourier.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

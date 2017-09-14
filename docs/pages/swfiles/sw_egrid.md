@@ -1,6 +1,7 @@
 ---
-{title: sw_egrid( ), summary: creates energy for spectrum color plot, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_egrid.html, folder: swfiles, mathjax: 'true'}
+{title: sw_egrid( ), link: sw_egrid, summary: creates energy for spectrum color plot,
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_egrid.html, folder: swfiles,
+  mathjax: 'true'}
 
 ---
  

@@ -1,7 +1,7 @@
 ---
-{title: spinw.optmagsteep( ), summary: optimise magnetic structure using the method
-    of steepest descent, keywords: sample, sidebar: sw_sidebar, permalink: spinw_optmagsteep.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.optmagsteep method, link: spinw.optmagsteep, summary: optimise magnetic
+    structure using the method of steepest descent, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_optmagsteep.html, folder: spinw, mathjax: 'true'}
 
 ---
  

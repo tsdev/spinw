@@ -1,6 +1,7 @@
 ---
-{title: swplot.plotion( ), summary: plots magnetic ion properties, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_plotion.html, folder: swplot, mathjax: 'true'}
+{title: swplot.plotion, link: swplot.plotion, summary: plots magnetic ion properties,
+  keywords: sample, sidebar: sw_sidebar, permalink: swplot_plotion.html, folder: swplot,
+  mathjax: 'true'}
 
 ---
  

@@ -1,7 +1,7 @@
 ---
-{title: swfunc.voigtfwhm( ), summary: normalized function that calculates the voigt
-    profile using FWMH values, keywords: sample, sidebar: sw_sidebar, permalink: swfunc_voigtfwhm.html,
-  folder: swfunc, mathjax: 'true'}
+{title: swfunc.voigtfwhm, link: swfunc.voigtfwhm, summary: normalized function that
+    calculates the voigt profile using FWMH values, keywords: sample, sidebar: sw_sidebar,
+  permalink: swfunc_voigtfwhm.html, folder: swfunc, mathjax: 'true'}
 
 ---
  

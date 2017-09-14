@@ -1,7 +1,7 @@
 ---
-{title: spinw.corespec( ), summary: calculates dispersion and V transformation matrix
-    using linear spin wave theory, keywords: sample, sidebar: sw_sidebar, permalink: spinw_corespec.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.corespec method, link: spinw.corespec, summary: calculates dispersion
+    and V transformation matrix using linear spin wave theory, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_corespec.html, folder: spinw, mathjax: 'true'}
 
 ---
  

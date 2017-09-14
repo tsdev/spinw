@@ -1,6 +1,7 @@
 ---
-{title: spinw.matparser( ), summary: assigns new values to existing matrices, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_matparser.html, folder: spinw, mathjax: 'true'}
+{title: spinw.matparser method, link: spinw.matparser, summary: assigns new values
+    to existing matrices, keywords: sample, sidebar: sw_sidebar, permalink: spinw_matparser.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

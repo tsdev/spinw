@@ -1,7 +1,7 @@
 ---
-{title: spinw.matrix( ), summary: Stores 3x3 matrices for using them in the Hailtonian.,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_matrix.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.matrix property, link: spinw.matrix, summary: Stores 3x3 matrices for
+    using them in the Hailtonian., keywords: sample, sidebar: sw_sidebar, permalink: spinw_matrix.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
 Sub fields are:

@@ -1,6 +1,6 @@
 ---
-{title: spinw.setmatrix( ), summary: changes the selected matrix inside the spinw
-    object, keywords: sample, sidebar: sw_sidebar, permalink: spinw_setmatrix.html,
+{title: spinw.setmatrix method, link: spinw.setmatrix, summary: changes the selected
+    matrix inside the spinw object, keywords: sample, sidebar: sw_sidebar, permalink: spinw_setmatrix.html,
   folder: spinw, mathjax: 'true'}
 
 ---

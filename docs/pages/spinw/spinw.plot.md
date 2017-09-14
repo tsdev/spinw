@@ -1,6 +1,6 @@
 ---
-{title: spinw.plot( ), summary: 'plots crystal structure, magnetic structure, anisotropy
-    and bonds', keywords: sample, sidebar: sw_sidebar, permalink: spinw_plot.html,
+{title: spinw.plot method, link: spinw.plot, summary: 'plots crystal structure, magnetic
+    structure, anisotropy and bonds', keywords: sample, sidebar: sw_sidebar, permalink: spinw_plot.html,
   folder: spinw, mathjax: 'true'}
 
 ---

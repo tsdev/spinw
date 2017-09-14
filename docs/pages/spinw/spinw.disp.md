@@ -1,7 +1,7 @@
 ---
-{title: spinw.disp( ), summary: prints the spinw data structure in readable format
-    onto the Command Window, keywords: sample, sidebar: sw_sidebar, permalink: spinw_disp.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.disp method, link: spinw.disp, summary: prints the spinw data structure
+    in readable format onto the Command Window, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_disp.html, folder: spinw, mathjax: 'true'}
 
 ---
  

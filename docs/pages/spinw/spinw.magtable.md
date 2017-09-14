@@ -1,7 +1,7 @@
 ---
-{title: spinw.magtable( ), summary: creates tabulated list of all magnetic moments
-    stored in obj, keywords: sample, sidebar: sw_sidebar, permalink: spinw_magtable.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.magtable method, link: spinw.magtable, summary: creates tabulated list
+    of all magnetic moments stored in obj, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_magtable.html, folder: spinw, mathjax: 'true'}
 
 ---
  

@@ -1,7 +1,7 @@
 ---
-{title: spinw.addcoupling( ), summary: assigns a predefined matrix as exchange coupling
-    on selected bonds, keywords: sample, sidebar: sw_sidebar, permalink: spinw_addcoupling.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.addcoupling method, link: spinw.addcoupling, summary: assigns a predefined
+    matrix as exchange coupling on selected bonds, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_addcoupling.html, folder: spinw, mathjax: 'true'}
 
 ---
  

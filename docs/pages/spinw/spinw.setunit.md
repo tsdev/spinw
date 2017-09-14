@@ -1,6 +1,7 @@
 ---
-{title: spinw.setunit( ), summary: sets the physical units, keywords: sample, sidebar: sw_sidebar,
-  permalink: spinw_setunit.html, folder: spinw, mathjax: 'true'}
+{title: spinw.setunit method, link: spinw.setunit, summary: sets the physical units,
+  keywords: sample, sidebar: sw_sidebar, permalink: spinw_setunit.html, folder: spinw,
+  mathjax: 'true'}
 
 ---
  

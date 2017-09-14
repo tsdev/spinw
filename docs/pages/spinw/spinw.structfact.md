@@ -1,7 +1,7 @@
 ---
-{title: spinw.structfact( ), summary: calculates magnetic and nuclear structure factor,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_structfact.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.structfact method, link: spinw.structfact, summary: calculates magnetic
+    and nuclear structure factor, keywords: sample, sidebar: sw_sidebar, permalink: spinw_structfact.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

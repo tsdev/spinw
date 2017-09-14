@@ -1,6 +1,6 @@
 ---
-{title: spinw.intmatrix( ), summary: creates the interactions matrices (connectors
-    and values), keywords: sample, sidebar: sw_sidebar, permalink: spinw_intmatrix.html,
+{title: spinw.intmatrix method, link: spinw.intmatrix, summary: creates the interactions
+    matrices (connectors and values), keywords: sample, sidebar: sw_sidebar, permalink: spinw_intmatrix.html,
   folder: spinw, mathjax: 'true'}
 
 ---

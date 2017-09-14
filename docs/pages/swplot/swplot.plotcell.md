@@ -1,7 +1,7 @@
 ---
-{title: swplot.plotcell( ), summary: plots the edges of unit cells on swplot figure,
-  keywords: sample, sidebar: sw_sidebar, permalink: swplot_plotcell.html, folder: swplot,
-  mathjax: 'true'}
+{title: swplot.plotcell, link: swplot.plotcell, summary: plots the edges of unit cells
+    on swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_plotcell.html,
+  folder: swplot, mathjax: 'true'}
 
 ---
  

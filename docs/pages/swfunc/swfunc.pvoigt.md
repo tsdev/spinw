@@ -1,6 +1,6 @@
 ---
-{title: swfunc.pvoigt( ), summary: pseudovoigt function, keywords: sample, sidebar: sw_sidebar,
-  permalink: swfunc_pvoigt.html, folder: swfunc, mathjax: 'true'}
+{title: swfunc.pvoigt, link: swfunc.pvoigt, summary: pseudovoigt function, keywords: sample,
+  sidebar: sw_sidebar, permalink: swfunc_pvoigt.html, folder: swfunc, mathjax: 'true'}
 
 ---
  

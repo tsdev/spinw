@@ -1,6 +1,7 @@
 ---
-{title: spinw.addg( ), summary: assigns g-tensor to magnetic ions, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_addg.html, folder: spinw, mathjax: 'true'}
+{title: spinw.addg method, link: spinw.addg, summary: assigns g-tensor to magnetic
+    ions, keywords: sample, sidebar: sw_sidebar, permalink: spinw_addg.html, folder: spinw,
+  mathjax: 'true'}
 
 ---
  

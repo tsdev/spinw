@@ -1,6 +1,7 @@
 ---
-{title: spinw.unit( ), summary: Stores the physical units for the Hamiltonian., keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_unit.html, folder: spinw, mathjax: 'true'}
+{title: spinw.unit property, link: spinw.unit, summary: stores the physical units
+    for the Hamiltonian, keywords: sample, sidebar: sw_sidebar, permalink: spinw_unit.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  
@@ -16,9 +17,17 @@ field, length and temperature, respectively.
 : Bohr magneton, default values is 0.0579 meV/T.
  
 `mu0`
-: Vacuum permeability, 201.335431 T$$^2$$Å$$^3$$/meV.
+: Vacuum permeability, default value is 201.335431 T$$^2$$Å$$^3$$/meV.
+ 
+`label`
+: Labels for distance, energy, magnetic field and temperature
+stored in a cell with dimensions $$[1\times 4]$$.
+ 
+`nformula`
+: Number of formula units in the unit cell.
  
 `qmat`
 : Transformation matrix that converts the given $$Q$$ values with
-dimensions of $$[3\times 3]$$
+dimensions of $$[3\times 3]$$.
+ 
 

@@ -1,6 +1,6 @@
 ---
-{title: swsym.genreduce( ), summary: reduces the list of symmetry operators to the
-    generators, keywords: sample, sidebar: sw_sidebar, permalink: swsym_genreduce.html,
+{title: swsym.genreduce, link: swsym.genreduce, summary: reduces the list of symmetry
+    operators to the generators, keywords: sample, sidebar: sw_sidebar, permalink: swsym_genreduce.html,
   folder: swsym, mathjax: 'true'}
 
 ---

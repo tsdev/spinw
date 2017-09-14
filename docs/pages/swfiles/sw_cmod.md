@@ -1,6 +1,6 @@
 ---
-{title: sw_cmod( ), summary: modulo one with tolerance, keywords: sample, sidebar: sw_sidebar,
-  permalink: sw_cmod.html, folder: swfiles, mathjax: 'true'}
+{title: sw_cmod( ), link: sw_cmod, summary: modulo one with tolerance, keywords: sample,
+  sidebar: sw_sidebar, permalink: sw_cmod.html, folder: swfiles, mathjax: 'true'}
 
 ---
  

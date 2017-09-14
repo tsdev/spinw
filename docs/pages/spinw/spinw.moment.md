@@ -1,7 +1,7 @@
 ---
-{title: spinw.moment( ), summary: calculates the size of the reduced moment due to
-    quantum and thermal fluctuations, keywords: sample, sidebar: sw_sidebar, permalink: spinw_moment.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.moment method, link: spinw.moment, summary: calculates the size of the
+    reduced moment due to quantum and thermal fluctuations, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_moment.html, folder: spinw, mathjax: 'true'}
 
 ---
  

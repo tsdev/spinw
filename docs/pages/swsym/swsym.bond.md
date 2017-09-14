@@ -1,6 +1,7 @@
 ---
-{title: swsym.bond( ), summary: generates all symmetry equivalent bonds, keywords: sample,
-  sidebar: sw_sidebar, permalink: swsym_bond.html, folder: swsym, mathjax: 'true'}
+{title: swsym.bond, link: swsym.bond, summary: generates all symmetry equivalent bonds,
+  keywords: sample, sidebar: sw_sidebar, permalink: swsym_bond.html, folder: swsym,
+  mathjax: 'true'}
 
 ---
  

@@ -1,20 +1,28 @@
 ---
-{title: spinw.mag_str( ), summary: Stores the magnetic structure., keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_mag_str.html, folder: spinw, mathjax: 'true'}
+{title: spinw.mag_str property, link: spinw.mag_str, summary: stores the magnetic
+    structure, keywords: sample, sidebar: sw_sidebar, permalink: spinw_mag_str.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
-Sub fields are:
-  S       stores the moment direction for every spin in the
-          crystallographic or magnetic supercell in a
-          3 x nMagExt matrix, where nMagExt = nMagAtom*prod(N_ext)
-  k       magnetic ordering wave vector in a 3x1 vector
-  n       normal vector to the rotation of the moments in
-          case of non-zero ordering wave vector, dimensions are
-          3x1
-  N_ext   Size of the magnetic supercell, default is [1 1 1]
-          if the magnetic cell is identical to the
-          crystallographic cell, the 1x3 vector extends the
-          cell along the a, b and c axis
  
-See also SPINW.GENMAGSTR, SPINW.OPTMAGSTR, SPINW.ANNEAL, SPINW.MOMENT, SPINW.NMAGEXT, SPINW.STRUCTFACT.
+### Sub fields
+ 
+`F`
+: Complex magnetization (strictly speaking complex
+  spin expectation value) for every spin in the magnetic
+  cell, represented by a matrix with dimensions of $$[3\times
+  n_{magext}\times n_k]$$,
+  where `nMagExt = nMagAtom*prod(N_ext)` and $$n_k$$ is the number
+  of the magnetic propagation vectors.
+ 
+`k`
+: Magnetic propagation vectors stored in a matrix with dimensions
+  of $$[3\times n_k]$$.
+ 
+`N_ext`
+: Size of the magnetic supercell in lattice units, default value
+  is `[1 1 1]` emaning that the magnetic cell is identical to the
+  crystallographic cell. The $$[1\times 3]$$ vector extends the cell
+  along the $$a$$, $$b$$ and $$c$$ axes.
+ 
 

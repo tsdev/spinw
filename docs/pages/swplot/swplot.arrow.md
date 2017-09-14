@@ -1,5 +1,5 @@
 ---
-{title: swplot.arrow( ), summary: draws a 3D arrow using patch, keywords: sample,
+{title: swplot.arrow, link: swplot.arrow, summary: draws a 3D arrow using patch, keywords: sample,
   sidebar: sw_sidebar, permalink: swplot_arrow.html, folder: swplot, mathjax: 'true'}
 
 ---

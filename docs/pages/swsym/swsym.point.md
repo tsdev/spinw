@@ -1,7 +1,7 @@
 ---
-{title: swsym.point( ), summary: determines point group symmetry at a given position,
-  keywords: sample, sidebar: sw_sidebar, permalink: swsym_point.html, folder: swsym,
-  mathjax: 'true'}
+{title: swsym.point, link: swsym.point, summary: determines point group symmetry at
+    a given position, keywords: sample, sidebar: sw_sidebar, permalink: swsym_point.html,
+  folder: swsym, mathjax: 'true'}
 
 ---
  

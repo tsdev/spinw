@@ -1,7 +1,7 @@
 ---
-{title: spinw.meanfield( ), summary: mean field calculation of the wave vector dependent
-    susceptibility, keywords: sample, sidebar: sw_sidebar, permalink: spinw_meanfield.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.meanfield method, link: spinw.meanfield, summary: mean field calculation
+    of the wave vector dependent susceptibility, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_meanfield.html, folder: spinw, mathjax: 'true'}
 
 ---
  

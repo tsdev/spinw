@@ -1,6 +1,6 @@
 ---
-{title: swplot.figure( ), summary: creates swplot figure, keywords: sample, sidebar: sw_sidebar,
-  permalink: swplot_figure.html, folder: swplot, mathjax: 'true'}
+{title: swplot.figure, link: swplot.figure, summary: creates swplot figure, keywords: sample,
+  sidebar: sw_sidebar, permalink: swplot_figure.html, folder: swplot, mathjax: 'true'}
 
 ---
  

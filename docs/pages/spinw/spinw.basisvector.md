@@ -1,7 +1,7 @@
 ---
-{title: spinw.basisvector( ), summary: generates basis vectors of the crystal lattice,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_basisvector.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.basisvector method, link: spinw.basisvector, summary: generates basis
+    vectors of the crystal lattice, keywords: sample, sidebar: sw_sidebar, permalink: spinw_basisvector.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

@@ -1,7 +1,7 @@
 ---
-{title: spinw.addmatrix( ), summary: adds new matrix that can be assigned to spins
-    in the Hamiltonian, keywords: sample, sidebar: sw_sidebar, permalink: spinw_addmatrix.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.addmatrix method, link: spinw.addmatrix, summary: adds new matrix that
+    can be assigned to spins in the Hamiltonian, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_addmatrix.html, folder: spinw, mathjax: 'true'}
 
 ---
  

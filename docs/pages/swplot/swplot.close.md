@@ -1,6 +1,6 @@
 ---
-{title: swplot.close( ), summary: close swplot figure, keywords: sample, sidebar: sw_sidebar,
-  permalink: swplot_close.html, folder: swplot, mathjax: 'true'}
+{title: swplot.close, link: swplot.close, summary: close swplot figure, keywords: sample,
+  sidebar: sw_sidebar, permalink: swplot_close.html, folder: swplot, mathjax: 'true'}
 
 ---
  

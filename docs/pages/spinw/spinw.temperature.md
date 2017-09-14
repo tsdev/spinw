@@ -1,6 +1,7 @@
 ---
-{title: spinw.temperature( ), summary: get/set stored temperature value, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_temperature.html, folder: spinw, mathjax: 'true'}
+{title: spinw.temperature method, link: spinw.temperature, summary: get/set stored
+    temperature value, keywords: sample, sidebar: sw_sidebar, permalink: spinw_temperature.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

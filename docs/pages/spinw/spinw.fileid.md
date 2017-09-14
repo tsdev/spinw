@@ -1,6 +1,7 @@
 ---
-{title: spinw.fileid( ), summary: determines where the text out is written, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_fileid.html, folder: spinw, mathjax: 'true'}
+{title: spinw.fileid method, link: spinw.fileid, summary: determines where the text
+    out is written, keywords: sample, sidebar: sw_sidebar, permalink: spinw_fileid.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

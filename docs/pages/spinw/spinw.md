@@ -1,6 +1,7 @@
 ---
-{title: spinw class, summary: class to store and solve magnetic Hamiltonians, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw.html, folder: spinw, mathjax: 'true'}
+{title: spinw class, link: spinw class, summary: class to store and solve magnetic
+    Hamiltonians, keywords: sample, sidebar: sw_sidebar, permalink: spinw.html, folder: spinw,
+  mathjax: 'true'}
 
 ---
  

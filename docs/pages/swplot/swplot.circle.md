@@ -1,6 +1,7 @@
 ---
-{title: swplot.circle( ), summary: creates a circle surface in 3 dimensions, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_circle.html, folder: swplot, mathjax: 'true'}
+{title: swplot.circle, link: swplot.circle, summary: creates a circle surface in 3
+    dimensions, keywords: sample, sidebar: sw_sidebar, permalink: swplot_circle.html,
+  folder: swplot, mathjax: 'true'}
 
 ---
  

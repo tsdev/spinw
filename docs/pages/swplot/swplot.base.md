@@ -1,6 +1,7 @@
 ---
-{title: swplot.base( ), summary: sets the basis vectors of an swplot figure, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_base.html, folder: swplot, mathjax: 'true'}
+{title: swplot.base, link: swplot.base, summary: sets the basis vectors of an swplot
+    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_base.html, folder: swplot,
+  mathjax: 'true'}
 
 ---
  

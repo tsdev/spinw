@@ -1,6 +1,6 @@
 ---
-{title: swplot.line( ), summary: draws a 3D line using patch, keywords: sample, sidebar: sw_sidebar,
-  permalink: swplot_line.html, folder: swplot, mathjax: 'true'}
+{title: swplot.line, link: swplot.line, summary: draws a 3D line using patch, keywords: sample,
+  sidebar: sw_sidebar, permalink: swplot_line.html, folder: swplot, mathjax: 'true'}
 
 ---
  

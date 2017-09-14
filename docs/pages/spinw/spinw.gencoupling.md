@@ -1,7 +1,7 @@
 ---
-{title: spinw.gencoupling( ), summary: generates the COUPLING property of spinw object,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_gencoupling.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.gencoupling method, link: spinw.gencoupling, summary: generates the
+    COUPLING property of spinw object, keywords: sample, sidebar: sw_sidebar, permalink: spinw_gencoupling.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

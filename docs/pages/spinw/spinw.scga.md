@@ -1,7 +1,7 @@
 ---
-{title: spinw.scga( ), summary: applies the self consistent Gaussian approximation
-    at finite temperature, keywords: sample, sidebar: sw_sidebar, permalink: spinw_scga.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.scga method, link: spinw.scga, summary: applies the self consistent
+    Gaussian approximation at finite temperature, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_scga.html, folder: spinw, mathjax: 'true'}
 
 ---
  

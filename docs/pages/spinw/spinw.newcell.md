@@ -1,6 +1,7 @@
 ---
-{title: spinw.newcell( ), summary: changes lattice vectors while keeping atoms, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_newcell.html, folder: spinw, mathjax: 'true'}
+{title: spinw.newcell method, link: spinw.newcell, summary: changes lattice vectors
+    while keeping atoms, keywords: sample, sidebar: sw_sidebar, permalink: spinw_newcell.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

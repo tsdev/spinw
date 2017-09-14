@@ -1,7 +1,7 @@
 ---
-{title: spinw.fitspec( ), summary: fits spin wave spectra to experimental spectral
-    data, keywords: sample, sidebar: sw_sidebar, permalink: spinw_fitspec.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.fitspec method, link: spinw.fitspec, summary: fits spin wave spectra
+    to experimental spectral data, keywords: sample, sidebar: sw_sidebar, permalink: spinw_fitspec.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

@@ -1,6 +1,7 @@
 ---
-{title: swfunc.lorfwhm( ), summary: normalized Lorentzian using FWHM, keywords: sample,
-  sidebar: sw_sidebar, permalink: swfunc_lorfwhm.html, folder: swfunc, mathjax: 'true'}
+{title: swfunc.lorfwhm, link: swfunc.lorfwhm, summary: normalized Lorentzian using
+    FWHM, keywords: sample, sidebar: sw_sidebar, permalink: swfunc_lorfwhm.html, folder: swfunc,
+  mathjax: 'true'}
 
 ---
  

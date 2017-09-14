@@ -1,7 +1,7 @@
 ---
-{title: spinw.getdisp( ), summary: GETDISP    Specialized MATLAB object property display.,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_getdisp.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.getdisp method, link: spinw.getdisp, summary: GETDISP    Specialized
+    MATLAB object property display., keywords: sample, sidebar: sw_sidebar, permalink: spinw_getdisp.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
    GETDISP is called by GET when GET is called with no output argument 

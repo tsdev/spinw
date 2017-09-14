@@ -1,6 +1,7 @@
 ---
-{title: sw_readparam( ), summary: 'parse input arguments (option, value pairs)', keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_readparam.html, folder: swfiles, mathjax: 'true'}
+{title: sw_readparam( ), link: sw_readparam, summary: 'parse input arguments (option,
+    value pairs)', keywords: sample, sidebar: sw_sidebar, permalink: sw_readparam.html,
+  folder: swfiles, mathjax: 'true'}
 
 ---
  

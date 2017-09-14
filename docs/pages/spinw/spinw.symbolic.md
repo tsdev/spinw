@@ -1,6 +1,7 @@
 ---
-{title: spinw.symbolic( ), summary: change between symbolic/numeric calculation, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_symbolic.html, folder: spinw, mathjax: 'true'}
+{title: spinw.symbolic method, link: spinw.symbolic, summary: change between symbolic/numeric
+    calculation, keywords: sample, sidebar: sw_sidebar, permalink: spinw_symbolic.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

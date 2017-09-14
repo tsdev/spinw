@@ -1,7 +1,7 @@
 ---
-{title: spinw.rl( ), summary: generates reciprocal lattice basis vectors of the crystal
-    lattice, keywords: sample, sidebar: sw_sidebar, permalink: spinw_rl.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.rl method, link: spinw.rl, summary: generates reciprocal lattice basis
+    vectors of the crystal lattice, keywords: sample, sidebar: sw_sidebar, permalink: spinw_rl.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

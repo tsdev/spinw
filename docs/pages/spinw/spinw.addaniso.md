@@ -1,7 +1,7 @@
 ---
-{title: spinw.addaniso( ), summary: assigns anisotropy matrices to magnetic ions,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_addaniso.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.addaniso method, link: spinw.addaniso, summary: assigns anisotropy matrices
+    to magnetic ions, keywords: sample, sidebar: sw_sidebar, permalink: spinw_addaniso.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

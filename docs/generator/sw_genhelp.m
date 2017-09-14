@@ -188,8 +188,18 @@ for ii = 1:nPath
             else
                 content.frontmatter.title = ['Functions in ' doctree(ii).name];
             end
+            content.frontmatter.link = content.frontmatter.title;
         else
-            content.frontmatter.title = [content.fun '( )'];
+            if ~doctree(ii).isPackage && ~doctree(ii).isClass
+                content.frontmatter.title = [content.fun '( )'];
+            elseif doctree(ii).isClass && content.isProp
+                content.frontmatter.title = [content.fun ' property'];
+            elseif doctree(ii).isClass
+                content.frontmatter.title = [content.fun ' method'];
+            else
+                content.frontmatter.title = content.fun;
+            end
+            content.frontmatter.link = content.fun;
         end
         % summary
         content.frontmatter.summary = strtrim(content.text{1});
@@ -323,7 +333,7 @@ for ii = 1:nPath
             
             for kk = 1:numel(idx)
                 content = doctree(ii).content(idx(kk));
-                sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).subfolderitems(kk).title  = content.frontmatter.title(1:end-3);
+                sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).subfolderitems(kk).title  = content.frontmatter.link;
                 sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).subfolderitems(kk).url    = ['/' content.frontmatter.permalink];
                 sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).subfolderitems(kk).output = 'web, pdf';
             end

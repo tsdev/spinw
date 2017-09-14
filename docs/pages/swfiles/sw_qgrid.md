@@ -1,6 +1,6 @@
 ---
-{title: sw_qgrid( ), summary: creates a Q grid, keywords: sample, sidebar: sw_sidebar,
-  permalink: sw_qgrid.html, folder: swfiles, mathjax: 'true'}
+{title: sw_qgrid( ), link: sw_qgrid, summary: creates a Q grid, keywords: sample,
+  sidebar: sw_sidebar, permalink: sw_qgrid.html, folder: swfiles, mathjax: 'true'}
 
 ---
  

@@ -1,14 +1,28 @@
 ---
-{title: spinw.lattice( ), summary: Stores the unit cell parameters., keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_lattice.html, folder: spinw, mathjax: 'true'}
+{title: spinw.lattice property, link: spinw.lattice, summary: stores the unit cell
+    parameters, keywords: sample, sidebar: sw_sidebar, permalink: spinw_lattice.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
-Sub fields are:
-  lat_const   lattice constants in a 1x3 vector in Angstrom units
-  angle       (alpha,beta,gamma) angles in 1x3 vector in radian
-  sym         crystal space group, line number in symmetry.dat file
-  origin      Origin of the cell in l.u.
-  label       Label of the space group.
  
-See also SPINW.GENLATTICE, SPINW.ABC, SPINW.BASISVECTOR, SPINW.NOSYM.
+### Sub fields
+ 
+`lat_const`
+: Lattice constants in a $$[1\times 3]$$ vector in units defined in
+  [spinw.unit](spinw_unit.html) (default value is Å).
+ 
+`angle`
+: `[α,β,γ]` angles in a $$[1\times 3]$$ vector in
+  radian units.
+ 
+`sym`
+: Symmetry operators stored in matrix with dimensions of
+  $$[3\times 4 \times n_{op}]$$.
+ 
+`origin`
+: Origin of the cell in lattice units.
+  
+`label`
+: Label of the space group.
+ 
 

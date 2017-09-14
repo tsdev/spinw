@@ -1,6 +1,7 @@
 ---
-{title: spinw.twinq( ), summary: calculates equivalent Q point in twins, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_twinq.html, folder: spinw, mathjax: 'true'}
+{title: spinw.twinq method, link: spinw.twinq, summary: calculates equivalent Q point
+    in twins, keywords: sample, sidebar: sw_sidebar, permalink: spinw_twinq.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

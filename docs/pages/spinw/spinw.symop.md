@@ -1,7 +1,7 @@
 ---
-{title: spinw.symop( ), summary: generates the symmetry operators on bonds and magnetic
-    atoms, keywords: sample, sidebar: sw_sidebar, permalink: spinw_symop.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.symop method, link: spinw.symop, summary: generates the symmetry operators
+    on bonds and magnetic atoms, keywords: sample, sidebar: sw_sidebar, permalink: spinw_symop.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

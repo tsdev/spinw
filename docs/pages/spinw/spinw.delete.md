@@ -1,6 +1,7 @@
 ---
-{title: spinw.delete( ), summary: DELETE   Delete a handle object., keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_delete.html, folder: spinw, mathjax: 'true'}
+{title: spinw.delete method, link: spinw.delete, summary: DELETE   Delete a handle
+    object., keywords: sample, sidebar: sw_sidebar, permalink: spinw_delete.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
    The DELETE method deletes a handle object but does not clear the handle

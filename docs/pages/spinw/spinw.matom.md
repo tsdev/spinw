@@ -1,6 +1,7 @@
 ---
-{title: spinw.matom( ), summary: generates all magnetic atoms in the unit cell, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_matom.html, folder: spinw, mathjax: 'true'}
+{title: spinw.matom method, link: spinw.matom, summary: generates all magnetic atoms
+    in the unit cell, keywords: sample, sidebar: sw_sidebar, permalink: spinw_matom.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

@@ -1,6 +1,6 @@
 ---
-{title: spinw.export( ), summary: export data from spinw object into different file
-    formats, keywords: sample, sidebar: sw_sidebar, permalink: spinw_export.html,
+{title: spinw.export method, link: spinw.export, summary: export data from spinw object
+    into different file formats, keywords: sample, sidebar: sw_sidebar, permalink: spinw_export.html,
   folder: spinw, mathjax: 'true'}
 
 ---

@@ -1,6 +1,7 @@
 ---
-{title: spinw.addatom( ), summary: adds new atom to an spinw object, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_addatom.html, folder: spinw, mathjax: 'true'}
+{title: spinw.addatom method, link: spinw.addatom, summary: adds new atom to an spinw
+    object, keywords: sample, sidebar: sw_sidebar, permalink: spinw_addatom.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

@@ -1,7 +1,7 @@
 ---
-{title: swplot.logo( ), summary: creates the logo of SpinW and saves to a .png file,
-  keywords: sample, sidebar: sw_sidebar, permalink: swplot_logo.html, folder: swplot,
-  mathjax: 'true'}
+{title: swplot.logo, link: swplot.logo, summary: creates the logo of SpinW and saves
+    to a .png file, keywords: sample, sidebar: sw_sidebar, permalink: swplot_logo.html,
+  folder: swplot, mathjax: 'true'}
 
 ---
  

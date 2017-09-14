@@ -1,6 +1,7 @@
 ---
-{title: spinw.spinwavesym( ), summary: calculates symbolic spin wave dispersion, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_spinwavesym.html, folder: spinw, mathjax: 'true'}
+{title: spinw.spinwavesym method, link: spinw.spinwavesym, summary: calculates symbolic
+    spin wave dispersion, keywords: sample, sidebar: sw_sidebar, permalink: spinw_spinwavesym.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

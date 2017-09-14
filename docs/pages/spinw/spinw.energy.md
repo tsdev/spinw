@@ -1,6 +1,7 @@
 ---
-{title: spinw.energy( ), summary: calculates the ground state energy per spin, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_energy.html, folder: spinw, mathjax: 'true'}
+{title: spinw.energy method, link: spinw.energy, summary: calculates the ground state
+    energy per spin, keywords: sample, sidebar: sw_sidebar, permalink: spinw_energy.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

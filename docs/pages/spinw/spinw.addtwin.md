@@ -1,6 +1,7 @@
 ---
-{title: spinw.addtwin( ), summary: adds new twins to an spinw object, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_addtwin.html, folder: spinw, mathjax: 'true'}
+{title: spinw.addtwin method, link: spinw.addtwin, summary: adds new twins to an spinw
+    object, keywords: sample, sidebar: sw_sidebar, permalink: spinw_addtwin.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

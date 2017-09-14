@@ -1,6 +1,6 @@
 ---
-{title: spinw.horace( ), summary: calculates spin wave dispersion/correlation functions
-    to be called from Horace, keywords: sample, sidebar: sw_sidebar, permalink: spinw_horace.html,
+{title: spinw.horace method, link: spinw.horace, summary: calculates spin wave dispersion/correlation
+    functions to be called from Horace, keywords: sample, sidebar: sw_sidebar, permalink: spinw_horace.html,
   folder: spinw, mathjax: 'true'}
 
 ---

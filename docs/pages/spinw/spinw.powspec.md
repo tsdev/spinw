@@ -1,6 +1,7 @@
 ---
-{title: spinw.powspec( ), summary: calculates powder averaged spin wave spectra, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_powspec.html, folder: spinw, mathjax: 'true'}
+{title: spinw.powspec method, link: spinw.powspec, summary: calculates powder averaged
+    spin wave spectra, keywords: sample, sidebar: sw_sidebar, permalink: spinw_powspec.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

@@ -1,6 +1,6 @@
 ---
-{title: swfunc.gaussfwhm( ), summary: normalized gaussian function defined by the
-    FWHM, keywords: sample, sidebar: sw_sidebar, permalink: swfunc_gaussfwhm.html,
+{title: swfunc.gaussfwhm, link: swfunc.gaussfwhm, summary: normalized gaussian function
+    defined by the FWHM, keywords: sample, sidebar: sw_sidebar, permalink: swfunc_gaussfwhm.html,
   folder: swfunc, mathjax: 'true'}
 
 ---

@@ -1,7 +1,7 @@
 ---
-{title: spinw.getmatrix( ), summary: gives the symmetry allowed matrices for a given
-    coupling or anisotropy, keywords: sample, sidebar: sw_sidebar, permalink: spinw_getmatrix.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.getmatrix method, link: spinw.getmatrix, summary: gives the symmetry
+    allowed matrices for a given coupling or anisotropy, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_getmatrix.html, folder: spinw, mathjax: 'true'}
 
 ---
  

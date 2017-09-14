@@ -1,6 +1,7 @@
 ---
-{title: swpref package, summary: package to handle persistent settings, keywords: sample,
-  sidebar: sw_sidebar, permalink: swpref.html, folder: swpref, mathjax: 'true'}
+{title: swpref package, link: swpref package, summary: package to handle persistent
+    settings, keywords: sample, sidebar: sw_sidebar, permalink: swpref.html, folder: swpref,
+  mathjax: 'true'}
 
 ---
   

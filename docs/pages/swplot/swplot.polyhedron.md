@@ -1,6 +1,6 @@
 ---
-{title: swplot.polyhedron( ), summary: draw convex polyhedra or polynom from vertex
-    list, keywords: sample, sidebar: sw_sidebar, permalink: swplot_polyhedron.html,
+{title: swplot.polyhedron, link: swplot.polyhedron, summary: draw convex polyhedra
+    or polynom from vertex list, keywords: sample, sidebar: sw_sidebar, permalink: swplot_polyhedron.html,
   folder: swplot, mathjax: 'true'}
 
 ---

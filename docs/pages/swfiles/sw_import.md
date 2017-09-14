@@ -1,7 +1,7 @@
 ---
-{title: sw_import( ), summary: create SpinW object from .cif and FullProf Studio .fst
-    files, keywords: sample, sidebar: sw_sidebar, permalink: sw_import.html, folder: swfiles,
-  mathjax: 'true'}
+{title: sw_import( ), link: sw_import, summary: create SpinW object from .cif and
+    FullProf Studio .fst files, keywords: sample, sidebar: sw_sidebar, permalink: sw_import.html,
+  folder: swfiles, mathjax: 'true'}
 
 ---
  

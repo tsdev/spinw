@@ -1,6 +1,7 @@
 ---
-{title: spinw.twin( ), summary: Stores the crystallographic twin parameters., keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_twin.html, folder: spinw, mathjax: 'true'}
+{title: spinw.twin property, link: spinw.twin, summary: Stores the crystallographic
+    twin parameters., keywords: sample, sidebar: sw_sidebar, permalink: spinw_twin.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
 Sub fields are:

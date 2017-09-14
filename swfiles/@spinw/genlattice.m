@@ -90,7 +90,7 @@ function R = genlattice(obj, varargin)
 % ```
 %
 % The three lines are equivalent, both will create hexagonal lattice, with
-% `P 6` space group.
+% $P6$ space group.
 %
 % ### See also
 %

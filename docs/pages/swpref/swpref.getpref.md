@@ -1,6 +1,7 @@
 ---
-{title: swpref.getpref( ), summary: returns SpinW global preferences, keywords: sample,
-  sidebar: sw_sidebar, permalink: swpref_getpref.html, folder: swpref, mathjax: 'true'}
+{title: swpref.getpref, link: swpref.getpref, summary: returns SpinW global preferences,
+  keywords: sample, sidebar: sw_sidebar, permalink: swpref_getpref.html, folder: swpref,
+  mathjax: 'true'}
 
 ---
  

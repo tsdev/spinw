@@ -1,7 +1,7 @@
 ---
-{title: sw_fstat( ), summary: calculates termodynamical averages during an annealing
-    simulation, keywords: sample, sidebar: sw_sidebar, permalink: sw_fstat.html, folder: swfiles,
-  mathjax: 'true'}
+{title: sw_fstat( ), link: sw_fstat, summary: calculates termodynamical averages during
+    an annealing simulation, keywords: sample, sidebar: sw_sidebar, permalink: sw_fstat.html,
+  folder: swfiles, mathjax: 'true'}
 
 ---
  

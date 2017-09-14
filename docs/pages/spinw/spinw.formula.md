@@ -1,7 +1,7 @@
 ---
-{title: spinw.formula( ), summary: 'returns chemical formula, mass, volume, etc.',
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_formula.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.formula method, link: spinw.formula, summary: 'returns chemical formula,
+    mass, volume, etc.', keywords: sample, sidebar: sw_sidebar, permalink: spinw_formula.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

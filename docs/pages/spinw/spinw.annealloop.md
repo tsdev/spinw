@@ -1,7 +1,7 @@
 ---
-{title: spinw.annealloop( ), summary: performs simulated annealing on the magnetic
-    structure and measurements, keywords: sample, sidebar: sw_sidebar, permalink: spinw_annealloop.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.annealloop method, link: spinw.annealloop, summary: performs simulated
+    annealing on the magnetic structure and measurements, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_annealloop.html, folder: spinw, mathjax: 'true'}
 
 ---
 at multiple parameter values

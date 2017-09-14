@@ -1,6 +1,7 @@
 ---
-{title: Functions in swfiles, summary: unstructured functions, keywords: sample, sidebar: sw_sidebar,
-  permalink: swfiles.html, folder: swfiles, mathjax: 'true'}
+{title: Functions in swfiles, link: Functions in swfiles, summary: unstructured functions,
+  keywords: sample, sidebar: sw_sidebar, permalink: swfiles.html, folder: swfiles,
+  mathjax: 'true'}
 
 ---
 This folder contains all the files related to SpinW but not yet split out

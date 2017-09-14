@@ -1,6 +1,7 @@
 ---
-{title: spinw.nosym( ), summary: removes the space group symmetry, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_nosym.html, folder: spinw, mathjax: 'true'}
+{title: spinw.nosym method, link: spinw.nosym, summary: removes the space group symmetry,
+  keywords: sample, sidebar: sw_sidebar, permalink: spinw_nosym.html, folder: spinw,
+  mathjax: 'true'}
 
 ---
  

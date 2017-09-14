@@ -1,6 +1,7 @@
 ---
-{title: swplot.raytriangle( ), summary: finds if a ray crosses a triangle, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_raytriangle.html, folder: swplot, mathjax: 'true'}
+{title: swplot.raytriangle, link: swplot.raytriangle, summary: finds if a ray crosses
+    a triangle, keywords: sample, sidebar: sw_sidebar, permalink: swplot_raytriangle.html,
+  folder: swplot, mathjax: 'true'}
 
 ---
  

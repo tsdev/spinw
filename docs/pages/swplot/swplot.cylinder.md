@@ -1,6 +1,7 @@
 ---
-{title: swplot.cylinder( ), summary: draws a closed/open 3D cylinder, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_cylinder.html, folder: swplot, mathjax: 'true'}
+{title: swplot.cylinder, link: swplot.cylinder, summary: draws a closed/open 3D cylinder,
+  keywords: sample, sidebar: sw_sidebar, permalink: swplot_cylinder.html, folder: swplot,
+  mathjax: 'true'}
 
 ---
  

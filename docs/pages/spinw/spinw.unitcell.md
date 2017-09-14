@@ -1,7 +1,7 @@
 ---
-{title: spinw.unitcell( ), summary: returns information on atoms in the crystallographic
-    unit cell, keywords: sample, sidebar: sw_sidebar, permalink: spinw_unitcell.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.unitcell method, link: spinw.unitcell, summary: returns information
+    on atoms in the crystallographic unit cell, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_unitcell.html, folder: spinw, mathjax: 'true'}
 
 ---
  

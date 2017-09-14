@@ -1,6 +1,6 @@
 ---
-{title: swplot package, summary: package for 3D plotting, keywords: sample, sidebar: sw_sidebar,
-  permalink: swplot.html, folder: swplot, mathjax: 'true'}
+{title: swplot package, link: swplot package, summary: package for 3D plotting, keywords: sample,
+  sidebar: sw_sidebar, permalink: swplot.html, folder: swplot, mathjax: 'true'}
 
 ---
  

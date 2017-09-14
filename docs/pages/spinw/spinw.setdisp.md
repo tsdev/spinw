@@ -1,7 +1,7 @@
 ---
-{title: spinw.setdisp( ), summary: SETDISP    Specialized MATLAB object property display.,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_setdisp.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.setdisp method, link: spinw.setdisp, summary: SETDISP    Specialized
+    MATLAB object property display., keywords: sample, sidebar: sw_sidebar, permalink: spinw_setdisp.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
    SETDISP is called by SET when SET is called with no output argument 

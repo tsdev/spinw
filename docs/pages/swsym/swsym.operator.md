@@ -1,7 +1,7 @@
 ---
-{title: swsym.operator( ), summary: calculates all symmetry operators or general positions
-    for a space group, keywords: sample, sidebar: sw_sidebar, permalink: swsym_operator.html,
-  folder: swsym, mathjax: 'true'}
+{title: swsym.operator, link: swsym.operator, summary: calculates all symmetry operators
+    or general positions for a space group, keywords: sample, sidebar: sw_sidebar,
+  permalink: swsym_operator.html, folder: swsym, mathjax: 'true'}
 
 ---
  

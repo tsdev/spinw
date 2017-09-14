@@ -1,10 +1,12 @@
 ---
-{title: spinw.single_ion( ), summary: Stores single ion terms of the Hamiltonian.,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_single_ion.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.single_ion property, link: spinw.single_ion, summary: stores single
+    ion terms of the Hamiltonian, keywords: sample, sidebar: sw_sidebar, permalink: spinw_single_ion.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
-Sub fields are:
+ 
+### Sub fields
+ 
   aniso   vector contains 1 x nMagAtom integers, each integer
           assignes one of the nMatrix from the .matrix field
           to a magnetic atom in the spinw.matom list as a single

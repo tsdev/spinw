@@ -1,6 +1,7 @@
 ---
-{title: spinw.atom( ), summary: generates all atomic positions in the unit cell, keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_atom.html, folder: spinw, mathjax: 'true'}
+{title: spinw.atom method, link: spinw.atom, summary: generates all atomic positions
+    in the unit cell, keywords: sample, sidebar: sw_sidebar, permalink: spinw_atom.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

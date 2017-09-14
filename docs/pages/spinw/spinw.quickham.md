@@ -1,7 +1,7 @@
 ---
-{title: spinw.quickham( ), summary: creates magnetic Hamiltonian with a single command,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_quickham.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.quickham method, link: spinw.quickham, summary: creates magnetic Hamiltonian
+    with a single command, keywords: sample, sidebar: sw_sidebar, permalink: spinw_quickham.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

@@ -1,7 +1,7 @@
 ---
-{title: spinw.spinwave( ), summary: calculates spin correlation function using linear
-    spin wave theory, keywords: sample, sidebar: sw_sidebar, permalink: spinw_spinwave.html,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.spinwave method, link: spinw.spinwave, summary: calculates spin correlation
+    function using linear spin wave theory, keywords: sample, sidebar: sw_sidebar,
+  permalink: spinw_spinwave.html, folder: spinw, mathjax: 'true'}
 
 ---
  

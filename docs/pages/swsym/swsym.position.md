@@ -1,6 +1,7 @@
 ---
-{title: swsym.position( ), summary: generates symmetry equivalent positions, keywords: sample,
-  sidebar: sw_sidebar, permalink: swsym_position.html, folder: swsym, mathjax: 'true'}
+{title: swsym.position, link: swsym.position, summary: generates symmetry equivalent
+    positions, keywords: sample, sidebar: sw_sidebar, permalink: swsym_position.html,
+  folder: swsym, mathjax: 'true'}
 
 ---
  

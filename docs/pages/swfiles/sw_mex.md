@@ -1,5 +1,5 @@
 ---
-{title: sw_mex( ), summary: compiles the mex files and test them, keywords: sample,
+{title: sw_mex( ), link: sw_mex, summary: compiles the mex files and test them, keywords: sample,
   sidebar: sw_sidebar, permalink: sw_mex.html, folder: swfiles, mathjax: 'true'}
 
 ---

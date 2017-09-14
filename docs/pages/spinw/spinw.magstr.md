@@ -1,7 +1,7 @@
 ---
-{title: spinw.magstr( ), summary: generates magnetic structure for the rotating frame,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_magstr.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.magstr method, link: spinw.magstr, summary: generates magnetic structure
+    for the rotating frame, keywords: sample, sidebar: sw_sidebar, permalink: spinw_magstr.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

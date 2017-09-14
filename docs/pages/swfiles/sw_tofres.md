@@ -1,6 +1,7 @@
 ---
-{title: sw_tofres( ), summary: includes Q resolution to the spectrum, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_tofres.html, folder: swfiles, mathjax: 'true'}
+{title: sw_tofres( ), link: sw_tofres, summary: includes Q resolution to the spectrum,
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_tofres.html, folder: swfiles,
+  mathjax: 'true'}
 
 ---
  

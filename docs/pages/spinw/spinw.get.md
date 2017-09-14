@@ -1,6 +1,7 @@
 ---
-{title: spinw.get( ), summary: GET    Get MATLAB object properties., keywords: sample,
-  sidebar: sw_sidebar, permalink: spinw_get.html, folder: spinw, mathjax: 'true'}
+{title: spinw.get method, link: spinw.get, summary: GET    Get MATLAB object properties.,
+  keywords: sample, sidebar: sw_sidebar, permalink: spinw_get.html, folder: spinw,
+  mathjax: 'true'}
 
 ---
    V = GET(H, 'PropertyName') returns the value of the specified

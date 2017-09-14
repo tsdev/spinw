@@ -1,7 +1,7 @@
 ---
-{title: spinw.couplingtable( ), summary: creates tabulated list of all bonds as stored,
-  keywords: sample, sidebar: sw_sidebar, permalink: spinw_couplingtable.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw.couplingtable method, link: spinw.couplingtable, summary: creates tabulated
+    list of all bonds as stored, keywords: sample, sidebar: sw_sidebar, permalink: spinw_couplingtable.html,
+  folder: spinw, mathjax: 'true'}
 
 ---
  

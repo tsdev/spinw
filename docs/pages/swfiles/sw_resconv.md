@@ -1,7 +1,7 @@
 ---
-{title: sw_resconv( ), summary: Convolute Gaussian with variable width along the first
-    dimension of a matrix, keywords: sample, sidebar: sw_sidebar, permalink: sw_resconv.html,
-  folder: swfiles, mathjax: 'true'}
+{title: sw_resconv( ), link: sw_resconv, summary: Convolute Gaussian with variable
+    width along the first dimension of a matrix, keywords: sample, sidebar: sw_sidebar,
+  permalink: sw_resconv.html, folder: swfiles, mathjax: 'true'}
 
 ---
  

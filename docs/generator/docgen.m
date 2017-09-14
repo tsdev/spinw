@@ -7,7 +7,7 @@ swver    = sw_version;
 
 %% generate help
 
-fun0 = {'spinw.spinwave' 'spinw'};
+fun0 = {'spinw.genlattice' 'spinw.unit' 'spinw'};
 fun0 = cell(1,0);
 
 clc

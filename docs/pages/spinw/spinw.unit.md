@@ -1,12 +1,24 @@
 ---
-{title: spinw.unit( ), summary: Stores the physical units in the Hamiltonian., keywords: sample,
+{title: spinw.unit( ), summary: Stores the physical units for the Hamiltonian., keywords: sample,
   sidebar: sw_sidebar, permalink: spinw_unit.html, folder: spinw, mathjax: 'true'}
 
 ---
-Defaults are meV, Tesla Angstrom and Kelvin.
-Sub fields are:
-  kB      Boltzmann constant, default is 0.0862 [meV/K]
-  muB     Bohr magneton, default is 0.0579 [meV/T]
-  mu0     vacuum permeability, 201.335431 [T^2*Angstrom^3/meV]
-  qmat    transformation matrix that converts the given q-values
+ 
+Default values are meV, T, Å and K for energy, magnetic
+field, length and temperature, respectively.
+ 
+### Sub fields
+ 
+`kB`
+: Boltzmann constant, default value is 0.0862 meV/K.
+ 
+`muB`
+: Bohr magneton, default values is 0.0579 meV/T.
+ 
+`mu0`
+: Vacuum permeability, 201.335431 T$$^2$$Å$$^3$$/meV.
+ 
+`qmat`
+: Transformation matrix that converts the given $$Q$$ values with
+dimensions of $$[3\times 3]$$
 

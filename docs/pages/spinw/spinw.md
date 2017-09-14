@@ -50,7 +50,7 @@ object is copied in a `swobj1 = swobj2` command. To create a copy
  
 #### Lattice operations
  
-* [spinw.genlattice](spinw_genlattice.html) generates crystal lattice from given parameters
+* [spinw.genlattice](spinw_genlattice.html) generates crystal lattice
 * [spinw.basisvector](spinw_basisvector.html) generates basis vectors of the crystal lattice
 * [spinw.rl](spinw_rl.html) generates reciprocal lattice basis vectors of the crystal lattice
 * [spinw.nosym](spinw_nosym.html) removes the space group symmetry
@@ -113,7 +113,7 @@ object is copied in a `swobj1 = swobj2` command. To create a copy
     
 #### Calculators
  
-* [spinw.spinwave](spinw_spinwave.html) calculates dynamical spin-spin correlation function using linear spin wave theory
+* [spinw.spinwave](spinw_spinwave.html) calculates spin correlation function using linear spin wave theory
 * [spinw.powspec](spinw_powspec.html) calculates powder averaged spin wave spectra
 * [spinw.energy](spinw_energy.html) calculates the ground state energy per spin
 * [spinw.moment](spinw_moment.html) calculates the size of the reduced moment due to quantum and thermal fluctuations

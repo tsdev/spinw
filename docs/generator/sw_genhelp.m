@@ -110,7 +110,7 @@ for ii = 1:nPath
             doctree(ii).content(jj).text = strsplit(help([doctree(ii).folder filesep doctree(ii).content(jj).file]),newline);
         end
         % remove common leading spaces
-        doctree(ii).content(jj).text = rmspace(doctree(ii).content(jj).text);
+        doctree(ii).content(jj).text = sw_rmspace(doctree(ii).content(jj).text);
     end
     
     % find Contents.m file and put it to the first place
@@ -249,10 +249,12 @@ for ii = 1:numel(pLink)
 end
 % exchange $ --> $$ for math, make it easier to write MarkDown
 allhelp = regexprep(allhelp,'\$','$$');
-% exchange \Angstrom into A
-allhelp = regexprep(allhelp,'\\Angstrom',symbol('ang'));
-% exchange \hbar into h
-allhelp = regexprep(allhelp,'\\hbar',symbol('hbar'));
+% exchange text into symbols, e.g. \\Angstrom --> A
+sText = {'Angstrom' 'hbar' 'alpha' 'beta' 'gamma' 'degree'};
+cText = {'ang' 'hbar' 'alpha' 'beta' 'gamma' 'deg'};
+for ii = 1:numel(sText)
+    allhelp = regexprep(allhelp,['\\\\' sText{ii}],symbol(cText{ii}));
+end
 
 idx = 1;
 % generate the .md files
@@ -375,20 +377,6 @@ yamlStr1 = [yamlStr1{:}];
 fid = fopen([docroot filesep '_data' filesep 'sidebars' filesep 'sw_sidebar.yml'],'w');
 fprintf(fid,yamlStr1);
 fclose(fid);
-
-end
-
-function str = rmspace(str)
-% remove leading spaces
-
-% remove empty lines
-str(cellfun(@(C)isempty(C),str)) = [];
-% lines that begin with space
-sIdx = cellfun(@(C)C(1)==' ' && any(C~=' '),str);
-% minimum space
-nSpace = min(cellfun(@(C)find(diff(C==' '),1,'first'),str(sIdx)));
-% remove leading spaces
-str(sIdx) = cellfun(@(C)C(nSpace+1:end),str(sIdx),'UniformOutput',false);
 
 end
 

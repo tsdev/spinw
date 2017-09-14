@@ -1,5 +1,5 @@
 function spectra = spinwave(obj, hkl, varargin)
-% calculates dynamical spin-spin correlation function using linear spin wave theory
+% calculates spin correlation function using linear spin wave theory
 %
 % * * *
 % `spectra = spinwave(obj, hkl, 'option1', value1 ...)`
@@ -73,7 +73,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %                   $Q$ value
 %   * `atomLabel`   string, label of the selected magnetic atom
 %   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
-%                   column contains a $Q$ vector in $\Angstrom^{-1}$ units.
+%                   column contains a $Q$ vector in $\\Angstrom^{-1}$ units.
 %
 % `gtensor`
 % : If true, the g-tensor will be included in the spin-spin correlation
@@ -164,7 +164,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %               $[3\times 3\times n_{mode}\times n_{hkl}]$. Each
 %               `(:,:,i,j)` submatrix contains the 9 correlation functions
 %               $S^{xx}$, $S^{xy}$, $S^{xz}$, etc. If given, magnetic form
-%               factor is included. Intensity is in \hbar units, normalized
+%               factor is included. Intensity is in \\hbar units, normalized
 %               to the crystallographic unit cell.
 %   * `H`       Quadratic form of the Hamiltonian. Only saved if `saveH` is
 %               true.
@@ -186,7 +186,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %               \end{align}$
 %
 %   * `hkl`     Contains the input $Q$ values, dimensions are $[3\times n_{hkl}]$.
-%   * `hklA`    Same $Q$ values, but in $\Angstrom^{-1}$ unit, in the
+%   * `hklA`    Same $Q$ values, but in $\\Angstrom^{-1}$ unit, in the
 %               lab coordinate system, dimensins are $[3\times n_{hkl}]$.
 %   * `incomm`  Logical value, tells whether the calculated spectra is
 %               incommensurate or not.

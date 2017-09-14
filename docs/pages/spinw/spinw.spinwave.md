@@ -1,6 +1,6 @@
 ---
-{title: spinw.spinwave( ), summary: calculates dynamical spin-spin correlation function
-    using linear spin wave theory, keywords: sample, sidebar: sw_sidebar, permalink: spinw_spinwave.html,
+{title: spinw.spinwave( ), summary: calculates spin correlation function using linear
+    spin wave theory, keywords: sample, sidebar: sw_sidebar, permalink: spinw_spinwave.html,
   folder: spinw, mathjax: 'true'}
 
 ---

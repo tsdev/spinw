@@ -9,7 +9,7 @@ summary:
 
 ## This is the documentation for SpinW
 
-Here I can link to any function reference page like [spinw.plot](spinw_plot).
+Here I can link to any function reference page like [spinw.plot](/spinw_plot.html).
 TODO list:
 
 - automatically convert plain Matlab help into Kramdown

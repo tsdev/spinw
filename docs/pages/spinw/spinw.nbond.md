@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-gives the number of bonds defined in the [spinw](spinw.html) object
  
 nBond = NBOND(obj)
  

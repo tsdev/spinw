@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-exports [swplot figure](swplot_figure.html) into raster/vector image
  
 SWPLOT.EXPORT('Option1',Value1,...)
  
@@ -20,7 +19,7 @@ figure property restored after export.
  
 Options:
  
-figure    Handle of the [swplot figure](swplot_figure.html). Default is the selected figure.
+figure    Handle of the swplot figure. Default is the selected figure.
 filename  String, name of the image file. Image type will be determined
           based on the extension. Supported graphics formats:
               .png    Raster image.

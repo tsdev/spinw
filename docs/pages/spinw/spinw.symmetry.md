@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-true if space group is used to generate couplings
  
 sym = SYMMETRY(obj)
  
@@ -15,8 +14,8 @@ operators. If false, equivalent couplings are generated based
 on bond length, equivalent matrices won't be transformed
 (all identical).
  
-To change it use [spinw](spinw.html).gencoupling with the forceNoSym option.
-To remove all symmetry operators use [spinw](spinw.html).nosym.
+To change it use spinw.gencoupling with the forceNoSym option.
+To remove all symmetry operators use spinw.nosym.
  
 See also SPINW, SPINW.NOSYM, SPINW.GENCOUPLING.
  

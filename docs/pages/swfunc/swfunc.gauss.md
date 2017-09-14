@@ -4,7 +4,6 @@
   folder: swfunc, mathjax: 'true'}
 
 ---
-normalized gaussian function defined by the standard deviation
  
 y = FUNC.GAUSS(x,p)
  

@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_spinwavesym.html, folder: spinw, mathjax: 'true'}
 
 ---
-calculates symbolic spin wave dispersion
  
 spectra = SPINWAVESYM(obj, 'option1', value1 ...)
  
@@ -26,7 +25,7 @@ The method for matrix diagonalization is according to R.M. White, PR 139
  
 Input:
  
-obj           Input structure, [spinw](spinw.html) class object.
+obj           Input structure, spinw class object.
  
 Options:
  

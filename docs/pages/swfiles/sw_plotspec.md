@@ -3,12 +3,11 @@
   permalink: sw_plotspec.html, folder: swfiles, mathjax: 'true'}
 
 ---
-plots spin wave spectrum
  
 [fHandle, pHandle] = SW_PLOTSPEC(spectra, 'option1', value1 ...)
  
 The color plots using cm_inferno() as a default colormap, change the
-default colormap using [swpref.setpref](swpref_setpref.html)('colormap',@my_colomap) command.
+default colormap using swpref.setpref('colormap',@my_colomap) command.
  
 Options:
  
@@ -31,7 +30,7 @@ dE        FWHM value of convoluted Gaussian in energy to simulate finite
           convolution performed. Default is 0.
 fontSize  Font size on the plot, default is 14 pt.
 colormap  Colormap for plotting, default is stored in 
-          [swpref.getpref](swpref_getpref.html)('colormap'). For single plot and for multiple
+          swpref.getpref('colormap'). For single plot and for multiple
           plot it will be a continuous scale from white to different
           color. This is the 'auto' mode. Also colormap can be given
           directly using standard colormaps, like @jet. To overplot
@@ -75,11 +74,11 @@ qlabel    Provide a list of strings for the Q points between linear
 dat       Experimental data points to plot over the calculated spectrum.
           Can be either the name of a data file that contain the
           experimentally fitted dispersion (needs to have the same format
-          as the input for [spinw](spinw.html).fitspec()), or it is a structure that
-          contains the already imported data using [sw_readtable()](sw_readtable.html), for
+          as the input for spinw.fitspec()), or it is a structure that
+          contains the already imported data using sw_readtable(), for
           example:
-              T = [sw_readtable](sw_readtable.html)('myExpData.txt','	');
-              [sw_plotspec](sw_plotspec.html)(spectra,'dat',T);
+              T = sw_readtable('myExpData.txt','\t');
+              sw_plotspec(spectra,'dat',T);
 ddat      Maximum distance between any Q point in the simulated spectrum
           and an experimental data point in A^-1. If an experimental data
           point is further from any Q point of the simulated spectrum

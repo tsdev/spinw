@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: sw_tofres.html, folder: swfiles, mathjax: 'true'}
 
 ---
-includes Q resolution to the spectrum
  
 spectra = SW_TOFRES(spectra, 'Option1', Value1, ...)
  

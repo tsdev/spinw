@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-returns information on elements stored in the atom.dat file
  
 [data atomLabel] = SW_ATOMDATA(atomSymb, {dataType})
  
@@ -23,7 +22,7 @@ dataType  Type of information requested:
               all         All atomic data returned in a struct.
  
 Example:
-[sw_atomdata](sw_atomdata.html)('H','radius') = 0.37
+sw_atomdata('H','radius') = 0.37
 If the atom label does not exists, the function returns radius = 1,
 color = [255 167 0].
  

@@ -4,7 +4,6 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-calculates dispersion and V transformation matrix using linear spin wave theory
  
 [omega, V] = CORESPEC(obj, hkl, 'option1', value1 ...)
  
@@ -19,7 +18,7 @@ case the Hamiltonian has to fulfill this extra rotational symmetry.
  
 Input:
  
-obj           Input structure, [spinw](spinw.html) class object.
+obj           Input structure, spinw class object.
 hkl           Defines the Q points where the spectra is calculated, in
               reciprocal lattice units, size is [3 nHkl]. Q can be also
               defined by several linear scan in reciprocal space. In this

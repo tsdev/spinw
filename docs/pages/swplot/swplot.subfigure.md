@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-changes position of figure window on the screen
  
 SWPLOT.SUBFIGURE(m,n,p,{hFigure})
  

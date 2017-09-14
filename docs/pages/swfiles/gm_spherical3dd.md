@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-magnetic structure constraint function with spherical parameterisation
  
 [M, k, n, name, pname, limit] = GM_SPHERICAL3D(M0, x) 
  

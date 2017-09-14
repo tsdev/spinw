@@ -3,7 +3,6 @@
   permalink: spinw_setunit.html, folder: spinw, mathjax: 'true'}
 
 ---
-sets the physical units
  
 SETUNIT(obj, 'option1', value1 ...)
  

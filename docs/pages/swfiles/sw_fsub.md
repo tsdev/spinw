@@ -3,7 +3,6 @@
   permalink: sw_fsub.html, folder: swfiles, mathjax: 'true'}
 
 ---
-simple graph vertex coloring
  
 cGraph = SW_FSUB(conn, nExt)
  

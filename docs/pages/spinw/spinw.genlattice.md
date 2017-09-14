@@ -4,13 +4,12 @@
   mathjax: 'true'}
 
 ---
-generates crystal lattice from given parameters
  
 {R} = GENLATTICE(obj, 'option1', value1, 'option2', value2...)
  
 Input:
  
-obj       [spinw](spinw.html) class object.
+obj       spinw class object.
  
 Options:
  
@@ -35,8 +34,8 @@ R         Rotation matrix that brings the input basis vector to the SpinW
           compatible form:
                   BVspinw = R*BV
  
-Alternatively the lattice parameters can be given directly when the [spinw](spinw.html)
-object is created using: [spinw](spinw.html)(inpStr), where struct contains the fields
+Alternatively the lattice parameters can be given directly when the spinw
+object is created using: spinw(inpStr), where struct contains the fields
 with initial parameters, e.g.:
   inpStr.lattice.lat_const = [3 3 4];
  
@@ -48,7 +47,7 @@ can be added to the symmetry.dat file using the sw_addsym() function.
 Every line in the symmetry.dat file can be referenced by either its line
 index or by its label (string).
  
-If the sym option is 0, no symmetry will be used. The [spinw](spinw.html).gencoupling()
+If the sym option is 0, no symmetry will be used. The spinw.gencoupling()
 function will determine the equivalent bonds based on bond length.
  
 Output:

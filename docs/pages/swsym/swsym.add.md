@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: swsym_add.html, folder: swsym, mathjax: 'true'}
 
 ---
-saves user defined symmetry operators
  
 sym = SWSYM.ADD(symStr, {symName})
  

@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-initializes [spinw](spinw.html) by removing user entries from the symmetry.dat file
  
 SW_INITIALIZE()
  

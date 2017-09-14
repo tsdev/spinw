@@ -3,25 +3,24 @@
   sidebar: sw_sidebar, permalink: spinw_copy.html, folder: spinw, mathjax: 'true'}
 
 ---
-clones [spinw](spinw.html) object with all data
  
 newObj = COPY(obj)
  
 Use this command instead of the '=' sign if you want to
-create an independent duplicate of an [spinw](spinw.html) class object.
+create an independent duplicate of an spinw class object.
  
 Input:
  
-obj       [spinw](spinw.html) class object.
+obj       spinw class object.
  
 Output:
  
-newObj    New [spinw](spinw.html) class object that contains all the data of
+newObj    New spinw class object that contains all the data of
           obj.
  
 Example:
  
-cryst = [spinw](spinw.html);
+cryst = spinw;
 cryst.addmatrix('label','J1','value',3.1415)
  
 cryst1 = cryst;

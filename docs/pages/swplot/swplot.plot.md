@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: swplot_plot.html, folder: swplot, mathjax: 'true'}
 
 ---
-plots objects to [swplot figure](swplot_figure.html)
  
 SWPLOT.PLOT('Option1',Value1,...)
  
@@ -28,7 +27,7 @@ position  Position of the object/objects in a matrix with dimensions of
           'unit' option.
 name      String, the name of the object. It can be used for finding the
           object handles after plotting.
-text      Text to appear in the tooltip of the [swplot figure](swplot_figure.html) after
+text      Text to appear in the tooltip of the swplot figure after
           clicking on the object. Can be a string that will be the same
           for all objects, or a cell of strings for different text per
           object. Default value is taken from the label option.
@@ -45,7 +44,7 @@ color     Color of objects, either a single color or as many colors as
           many objects are given in a matrix with dimensions of [3 1]/[3
           nObject]. Values are RGB triples with values between [0 255].
           Can be also string or cell of strings with the name of the
-          colors, for details see [swplot.color](swplot_color.html). Default is red.
+          colors, for details see swplot.color. Default is red.
 alpha     Transparency of objects (1 non-transparent, 0 transparent)
           defined as a single number for unitform transparency or as a
           row vector with nObject element to set transparency per object.
@@ -54,7 +53,7 @@ unit      String that determines the coordinate system:
               'lu'    Lattice units are used where the lattice is defined
                       by the stored basis (default).
               'xyz'   Use the original matlab units.
-figure    Handle of the [swplot figure](swplot_figure.html). Default is the selected figure.
+figure    Handle of the swplot figure. Default is the selected figure.
 R         Radius value of cylinder, sphere (if no 'T' is given) and
           arrow, default is 0.06.
 ang       Angle for arrow head in degree units, default is 15 degree.
@@ -74,13 +73,13 @@ lineStyle Line style, default value is '-' for continuous lines. It can
 lineWidth Line width, default value is 0.5, can be a vector with nObject
           columns for different width per line segment.
 fontSize  Font size of text when type option is set to 'text'. Default
-          value is stored in [swpref.getpref](swpref_getpref.html)('fontsize').
+          value is stored in swpref.getpref('fontsize').
 nMesh     Resolution of the ellipse surface mesh. Integer number that is
           used to generate an icosahedron mesh with #mesh number of
           additional triangulation, default value is stored in
-          [swpref.getpref](swpref_getpref.html)('nmesh')
+          swpref.getpref('nmesh')
 nPatch    Number of points on the curve for arrow and cylinder, default
-          value is stored in [swpref.getpref](swpref_getpref.html)('npatch').
+          value is stored in swpref.getpref('npatch').
 tooltip   If true, the tooltip will be switched on at the end of the
           plot. Default is true.
 replace   If true, all object with the same name as the new plot will be

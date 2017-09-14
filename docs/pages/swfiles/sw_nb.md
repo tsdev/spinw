@@ -3,7 +3,6 @@
   keywords: sample, sidebar: sw_sidebar, permalink: sw_nb.html, folder: swfiles, mathjax: 'true'}
 
 ---
-returns the bound coherent neutron scattering length (fm)
  
 bc = SW_NB(atomName)
  

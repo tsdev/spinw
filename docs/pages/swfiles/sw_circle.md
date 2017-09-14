@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-creates an array of the 3D coordinates of the circle circumference
  
 points = SW_CIRCLE(r0, n, R, N) 
  

@@ -3,13 +3,12 @@
   sidebar: sw_sidebar, permalink: spinw_addtwin.html, folder: spinw, mathjax: 'true'}
 
 ---
-adds new twins to an [spinw](spinw.html) object
  
 ADDTWIN(obj,'Option', Value,...)
  
 Input:
  
-obj       [spinw](spinw.html) class object.
+obj       spinw class object.
  
 Options:
  
@@ -30,7 +29,7 @@ overwrite If true, the last twin will be overwritten, instead of adding a
  
 Output:
  
-The function adds extra entries in the 'twin' field of the obj [spinw](spinw.html) object.
+The function adds extra entries in the 'twin' field of the obj spinw object.
  
 Example:
  

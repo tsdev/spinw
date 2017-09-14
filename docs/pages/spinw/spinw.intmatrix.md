@@ -4,13 +4,12 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-creates the interactions matrices (connectors and values)
  
 [SS, SI, RR] = INTMATRIX(obj, 'Option1', Value1, ...)
  
 Input:
  
-obj           Input [spinw](spinw.html) class object.
+obj           Input spinw class object.
  
 Options:
  

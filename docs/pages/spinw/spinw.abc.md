@@ -3,13 +3,12 @@
   sidebar: sw_sidebar, permalink: spinw_abc.html, folder: spinw, mathjax: 'true'}
 
 ---
-returns lattice parameters and angles
  
 latVect = ABC(obj)
  
 Input:
  
-obj       [spinw](spinw.html) class object
+obj       spinw class object
  
 Output:
  

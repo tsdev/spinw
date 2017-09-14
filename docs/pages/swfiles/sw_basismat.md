@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-determines allowed tensor components in a given point group symmetry
  
 [M, asym] = SW_BASISMAT(symOp, r, tol) 
  

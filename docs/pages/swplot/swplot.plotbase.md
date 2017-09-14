@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-plots the edges of unit cells on [swplot figure](swplot_figure.html)
  
 SWPLOT.PLOTBASE('Option1',Value1,...)
  
@@ -22,7 +21,7 @@ length    Determines the length of the a, b and c arrows. If 0, the
           while if non-zero, the number determines the length in
           Angstrom. Default is 2 Angstrom.
 label     Logical variable, plots abc labels if true. Default is true.
-figure    Handle of the [swplot figure](swplot_figure.html). Default is the selected figure.
+figure    Handle of the swplot figure. Default is the selected figure.
 color     Color of the arrows, default is red-green-blue for abc, stored
           in the columns of a 3x3 matrix.
 R         Radius value of arrow body, default is 0.06.

@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: sw_mattype.html, folder: swfiles, mathjax: 'true'}
 
 ---
-determines the type of square input matrix
  
 type = SW_MATTYPE(mat, {epsilon})
  

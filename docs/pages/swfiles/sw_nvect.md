@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-determines the best normal vector for the set of vectors
  
 [n collinear] = SW_NVECT(S, {epsilon})
  

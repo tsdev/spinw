@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: gm_planard.html, folder: swfiles, mathjax: 'true'}
 
 ---
-planar magnetic structure constraint function 
  
 [M, k, n, name, pname, limit] = GM_PLANAR(M0, x) 
  

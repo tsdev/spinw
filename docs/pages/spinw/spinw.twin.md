@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_twin.html, folder: spinw, mathjax: 'true'}
 
 ---
-Stores the crystallographic twin parameters.
 Sub fields are:
   rotc    rotation matrices in the xyz coordinate system for
           every twin, stored in a 3 x 3 x nTwin matrix

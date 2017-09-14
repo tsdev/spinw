@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-displays information about the annealing simulation
  
 SW_ANNEALPLOT(T, E, rate, param,fid)
  

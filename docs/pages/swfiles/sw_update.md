@@ -3,13 +3,12 @@
   sidebar: sw_sidebar, permalink: sw_update.html, folder: swfiles, mathjax: 'true'}
 
 ---
-updates the SpinW installation from the internet
  
 SW_UPDATE()
  
 {onlineRev} = SW_UPDATE(installDir)
  
-[sw_update](sw_update.html) creates a new folder with the latest release beside the current
+sw_update creates a new folder with the latest release beside the current
 SpinW installation and add the new version to the working path (and
 removing the old one).
  

@@ -3,7 +3,6 @@
   permalink: sw_idata.html, folder: swfiles, mathjax: 'true'}
 
 ---
-creates iData object
  
 [omega, swConv] = SW_IDATA(spectrum, 'option1', value1 ...) 
  

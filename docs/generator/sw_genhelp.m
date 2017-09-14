@@ -4,9 +4,9 @@ function doctree = sw_genhelp(varargin)
 % SW_GENHELP('option1', value1, ...)
 %
 
-inpForm.fname  = {'path' 'sidebar'   };
-inpForm.defval = {{}     'sw_sidebar'};
-inpForm.size   = {[1 -1] [1 -2]      };
+inpForm.fname  = {'path' 'sidebar'    'fun'      'verstr'};
+inpForm.defval = {{}     'sw_sidebar' zeros(1,0) struct()};
+inpForm.size   = {[1 -1] [1 -2]       [1 -3]     [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -80,6 +80,15 @@ for ii = 1:nPath
         [doctree(ii).content(:).fun]  = nList{:};
     end
     
+end
+
+if ~isempty(param.fun)
+    for ii = 1:nPath
+        % keep only the selected function
+        doctree(ii).content = doctree(ii).content(ismember({doctree(ii).content.fun},param.fun));
+    end
+    doctree = doctree(cellfun(@(C)~isempty(C),{doctree.content}));
+    nPath   = numel(doctree);
 end
 
 for ii = 1:nPath
@@ -204,6 +213,12 @@ for ii = 1:nPath
     end
 end
 
+% remove H1 line from non-content files
+for ii = 1:nPath
+    temp = cellfun(@(C)C(2:end),{doctree(ii).content(~[doctree(ii).content.isContents]).text},'UniformOutput',false);
+    [doctree(ii).content(~[doctree(ii).content.isContents]).text] = temp{:};
+end
+
 % YAML java
 javaaddpath(YAML.jarfile);
 % Load yaml into java obj
@@ -222,10 +237,16 @@ pLink = cellfun(@(C)C.permalink,{content.frontmatter},'UniformOutput',false);
 fun   = {content.fun};
 % replace function names with links
 for ii = 1:numel(pLink)
-    allhelp = regexprep(allhelp,['(\W+?)(@?' fun{ii} '(\(\))?)(\W+)'],['$1[$2](' pLink{ii} ')$3']);
+    allhelp(~isCont) = regexprep(allhelp(~isCont),['\[(' fun{ii} ')\]'],['[$1](' pLink{ii} ')']);
+    %allhelp(~isCont) = regexprep(allhelp(~isCont),['(\W+?)(@?' fun{ii} '(\(\))?)(\W+)'],['$1[$2](' pLink{ii} ')$3']);
     %allhelp = regexprep(allhelp,['\n([^\<^\<].*?\W+?)(@?' fun{ii} '(\(\))?)(\W+)'],['$1[$2](' pLink{ii} ')$3']);
-    
 end
+% exchange $ --> $$ for math, make it easier to write MarkDown
+allhelp = regexprep(allhelp,'\$','$$');
+% exchange \Angstrom into A
+allhelp = regexprep(allhelp,'\\Angstrom',symbol('ang'));
+% exchange \hbar into h
+allhelp = regexprep(allhelp,'\\hbar',symbol('hbar'));
 
 idx = 1;
 % generate the .md files
@@ -242,18 +263,21 @@ for ii = 1:nPath
         % add newline
         %helpText = cellfun(@(C)[C newline],content.text,'UniformOutput',false);
         helpText = cellfun(@(C)[C newline],allhelp(idx),'UniformOutput',false);
-        fprintf(fid,['---' newline frontmatter newline '---' newline helpText{:}]);
+        fprintf(fid,'%s',['---' newline frontmatter newline '---' newline helpText{:}]);
         fclose(fid);
         idx = idx + 1;
     end
 end
 
 % generate sidebar YAML file
-swver = sw_version;
-if isempty(swver.Version)
-    verStr = ['R' swver.Revision];
+if  all(isfield(param.verstr,{'Version' 'Revision'}))
+    if isempty(param.verstr.Version)
+        verStr = ['R' param.verstr.Revision];
+    else
+        verStr = param.verstr.Version;
+    end
 else
-    verStr = swver.Version;
+    verStr = '';
 end
 
 sidebar = struct;

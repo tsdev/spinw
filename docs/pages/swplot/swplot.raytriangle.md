@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: swplot_raytriangle.html, folder: swplot, mathjax: 'true'}
 
 ---
-finds if a ray crosses a triangle
  
 The code is optimised for a single ray.
  

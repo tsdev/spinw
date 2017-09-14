@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_unit.html, folder: spinw, mathjax: 'true'}
 
 ---
-Stores the physical units in the Hamiltonian.
 Defaults are meV, Tesla Angstrom and Kelvin.
 Sub fields are:
   kB      Boltzmann constant, default is 0.0862 [meV/K]

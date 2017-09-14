@@ -11,13 +11,8 @@ function points = sw_circle(r0, n, R, N)
 % See also SW_CONE, SW_CIRCLESURF, SW_CYLINDER, SW_ARROW.
 %
 
-% $Name: SpinW$ ($Version: 2.1$)
-% $Author: S. Toth$ ($Contact: sandor.toth@psi.ch$)
-% $Revision: 238 $ ($Date: 07-Feb-2015 $)
-% $License: GNU GENERAL PUBLIC LICENSE$
-
 if nargin == 0
-    help sw_circle;
+    help sw_circle
     return
 end
 

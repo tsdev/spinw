@@ -4,13 +4,12 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-calculates the Fourier transformation of a symbolic Hamiltonian
  
 res = FOURIER(obj, 'option1', value1 ...)
  
 Input:
  
-obj           Input structure, [spinw](spinw.html) class object.
+obj           Input structure, spinw class object.
  
 Options:
  

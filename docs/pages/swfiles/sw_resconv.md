@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-Convolute Gaussian with variable width along the first dimension of a matrix
  
 M = SW_RESCONV(M,x,dx,func)
  
@@ -40,7 +39,7 @@ func  Resolution function shape with header:
       meaning of the first 2 elements of the parameter vector are fixed.
           p(1)    integral of the function.
           p(2)    center of mass position of the function.
-      Optional, default value is [@swfunc.gaussfwhm](swfunc_gaussfwhm.html).
+      Optional, default value is @swfunc.gaussfwhm.
  
 Output:
  

@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-callback function for patch face selection
  
 PATCHFACEFCN(obj,hit,callbackfun,selection, {dLim})
  

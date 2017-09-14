@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_mag_str.html, folder: spinw, mathjax: 'true'}
 
 ---
-Stores the magnetic structure.
 Sub fields are:
   S       stores the moment direction for every spin in the
           crystallographic or magnetic supercell in a

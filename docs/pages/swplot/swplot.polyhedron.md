@@ -4,7 +4,6 @@
   folder: swplot, mathjax: 'true'}
 
 ---
-draw convex polyhedra or polynom from vertex list
  
 hPatch = SWPLOT.POLYHEDRON(vertices)
  

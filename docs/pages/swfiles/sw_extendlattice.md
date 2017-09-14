@@ -3,7 +3,6 @@
   permalink: sw_extendlattice.html, folder: swfiles, mathjax: 'true'}
 
 ---
-creates superlattice
  
 [aList, SSext] = SW_EXTENDLATTICE(nExt, aList, {SS})
  
@@ -13,7 +12,7 @@ superlattice.
 Input:
  
 nExt          Number of unit cell extensions, dimensions are [1 3].
-aList         List of the atoms, produced by [spinw](spinw.html).matom.
+aList         List of the atoms, produced by spinw.matom.
 SS            Interactions matrices in the unit cell, optional.
  
 Output:

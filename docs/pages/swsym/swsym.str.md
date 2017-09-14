@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-generates a string equivalent of symmetry operators
  
 symStr = SWSYM.STR(symOp)
  

@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-gives the number of matrices defined in an [spinw](spinw.html) object
  
 nMat = NMAT(obj)
  

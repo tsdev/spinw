@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-creates a right handed Cartesian coordinate system
  
 [vy, vz, vx] = SW_CARTESIAN(n)
  

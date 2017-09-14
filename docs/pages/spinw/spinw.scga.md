@@ -4,7 +4,6 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-applies the self consistent Gaussian approximation at finite temperature
  
 spectra = SCGA(obj, hkl, 'option1', value1 ...)
  
@@ -25,7 +24,7 @@ kbase     Basis vectors that span the Brillouin zone if the system is low
           system is determined automatically.
 nInt      Number of Q points where the Brillouin zone is sampled for the
           integration.
-corr      If true, [spinw](spinw.html) correlations are calculated at the given
+corr      If true, spinw correlations are calculated at the given
           momentum vectors. Default is true.
 chi       If true, the magnetic susceptibility is calculated.
 fitmode       Speedup (for fitting mode only), default is false.

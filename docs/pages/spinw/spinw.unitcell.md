@@ -4,7 +4,6 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-returns information on atoms in the crystallographic unit cell
  
 unit_cell_info = UNITCELL(obj, idx)
  
@@ -12,7 +11,7 @@ The function returns information on symmetry inequivalent atoms.
  
 Input:
  
-obj       [spinw](spinw.html) class object.
+obj       spinw class object.
 idx       Selects certain atoms. If undefined UNIT_CELL(obj) or
           obj.UNIT_CELL returns information on all atoms. The selection
           can be also done according to the atom labels, in this case

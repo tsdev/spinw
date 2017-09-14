@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: sw_label.html, folder: swfiles, mathjax: 'true'}
 
 ---
-returns axis labels for spectrum plot
  
 [xLabel, xAxis] = SW_LABEL(hkl,hklA) 
  

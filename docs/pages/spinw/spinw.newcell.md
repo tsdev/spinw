@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_newcell.html, folder: spinw, mathjax: 'true'}
 
 ---
-changes lattice vectors while keeping atoms
  
 {T} = NEWCELL(obj, 'option1', value1, ...)
  
@@ -15,13 +14,13 @@ ion property definitions will be erased from the structure. The new cell
 will naturally have different reciprocal lattice, however the original
 reciprocal lattice units will be retained automatically, to use the new
 reciprocal lattice, set the 'keepq' option to false. In the default case
-the [spinw](spinw.html).spinwave() function will calculate spin wave dispersion at
+the spinw.spinwave() function will calculate spin wave dispersion at
 reciprocal lattice points of the original lattice. The transformation
-between the two lattices is stored in [spinw](spinw.html).unit.qmat.
+between the two lattices is stored in spinw.unit.qmat.
  
 Input:
  
-obj       [spinw](spinw.html) class object.
+obj       spinw class object.
  
 Options:
  
@@ -34,7 +33,7 @@ bshift    Row vector defines a shift of the position of the unit cell.
 keepq     If true, the reciprocal lattice units of the new model will be
           the same as in the old model. This is achieved by storing the
           transformation matrix between the new and the old coordinate
-          system in [spinw](spinw.html).unit.qmat. Default is true.
+          system in spinw.unit.qmat. Default is true.
  
 Output:
  
@@ -56,7 +55,7 @@ on both model using the same rlu. On the orthorhombic cell, the q value
 will be converted automatically and the calculated spectrum will be the
 same for both cases.
  
-tri = [sw_model](sw_model.html)('triAF',1);
+tri = sw_model('triAF',1);
 tri_orth = copy(tri);
 tri_orth.newcell('bvect',{[1 0 0] [1 2 0] [0 0 1]},'keepq',true);
 tri_orth.gencoupling
@@ -67,9 +66,9 @@ plot(tri_orth)
   
 figure
 subplot(2,1,1)
-[sw_plotspec](sw_plotspec.html)([sw_egrid](sw_egrid.html)(tri.spinwave({[0 0 0] [1 1 0] 501})),'mode','color','dE',0.2)
+sw_plotspec(sw_egrid(tri.spinwave({[0 0 0] [1 1 0] 501})),'mode','color','dE',0.2)
 subplot(2,1,2)
-[sw_plotspec](sw_plotspec.html)([sw_egrid](sw_egrid.html)(tri_orth.spinwave({[0 0 0] [1 1 0] 501})),'mode','color','dE',0.2)
+sw_plotspec(sw_egrid(tri_orth.spinwave({[0 0 0] [1 1 0] 501})),'mode','color','dE',0.2)
  
  
 See also SPINW.GENLATTICE, SPINW.GENCOUPLING, SPINW.NOSYM.

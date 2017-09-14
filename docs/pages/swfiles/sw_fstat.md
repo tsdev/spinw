@@ -4,12 +4,11 @@
   mathjax: 'true'}
 
 ---
-calculates termodynamical averages during an annealing simulation
  
 parOut = SW_FSTAT(state, parIn, T, E, M, nExt)
  
 It calculates statistical properties of different physical variables over
-several sample state. Called by [spinw](spinw.html).anneal.
+several sample state. Called by spinw.anneal.
  
 Input:
  

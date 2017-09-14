@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_optmagk.html, folder: spinw, mathjax: 'true'}
 
 ---
-determines the magnetic propagation vector
  
 res = OPTMAGK(obj,'option1', value1 ...)
  
@@ -16,7 +15,7 @@ Particle-Swarm optimization.
  
 Input:
  
-obj       Input structure, [spinw](spinw.html) class object.
+obj       Input structure, spinw class object.
 kbase     Provide a set of vectors that define the possible k-vector:
               k = sum_i C(i)*kbase(:,i);
           where the optimiser determines the C(i) values that correspond

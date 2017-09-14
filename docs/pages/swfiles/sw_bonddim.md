@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: sw_bonddim.html, folder: swfiles, mathjax: 'true'}
 
 ---
-find dimensionality of a periodic bond network
  
 L = SW_BONDDIM(C, {nAtom})
  

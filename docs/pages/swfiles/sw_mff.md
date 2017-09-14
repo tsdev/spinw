@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-returns the magnetic form factor values and the coefficients
  
 [formFactVal, coeff, S] = SW_MFF(atomName, {Q})
  

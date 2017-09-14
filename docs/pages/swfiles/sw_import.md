@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-create SpinW object from .cif and FullProf Studio .fst files
  
 At present the function can import Crystallographic Information Framework
 (.cif) files or FullProf Studio (.fst) files. It is able to read .cif

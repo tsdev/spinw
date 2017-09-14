@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-returns the unique column vectors within tolerance
  
 [unique, firstIdx] = SW_UNIQUETOL(M,tol)
  

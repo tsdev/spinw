@@ -4,7 +4,6 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-creates tabulated list of all magnetic moments stored in obj
  
 moments = MAGTABLE(obj)
  
@@ -15,7 +14,7 @@ atoms are in lattice units.
  
 Input:
  
-obj           [spinw](spinw.html) class object.
+obj           spinw class object.
  
 Output:
  
@@ -30,7 +29,7 @@ Output:
   R           Matrix, where every column defines the position of the
               magnetic atom in lattice units.
   atom        Pointer to the magnetic atom in the subfields of
-              [spinw](spinw.html).unit_cell.
+              spinw.unit_cell.
  
 See also SPINW.GENMAGSTR.
  

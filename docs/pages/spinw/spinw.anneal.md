@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-performs simulated annealing on the magnetic structure
  
 stat = ANNEAL(obj, 'option1', value1 ...)
  
@@ -16,11 +15,11 @@ Also the g-tensor is fixed to 2.
 WARNING!
 The calculated energies doesn't contain the self energy (moment coupled
 to itself), thus the energies calculated here can differ from the
-result of the [spinw](spinw.html).energy() function.
+result of the spinw.energy() function.
  
 Input:
  
-obj             Input object contains structural data, [spinw](spinw.html) class.
+obj             Input object contains structural data, spinw class.
  
 Options:
  
@@ -81,11 +80,11 @@ fStat     Function handle to evaluate after at the end of the
           with state=3 to calculate final parameters (in the last
           run, input struct.param contains all the annealing
           parameters).
-          Default is <a href="matlab: doc [sw_fstat](sw_fstat.html)">@sw_fstat</a>.
+          Default is <a href="matlab: doc sw_fstat">@sw_fstat</a>.
 fSub      Function to define sublattices for Monte-Carlo speedup.
           cGraph = fSub(conn,nExt), where cGraph is a (1,nMagExt) sized
           vector, conn is a (2,nConn) size matrix and nExt is equal to
-          'nExt'. Default is <a href="matlab: doc [sw_fsub](sw_fsub.html)">@sw_fsub</a>
+          'nExt'. Default is <a href="matlab: doc sw_fsub">@sw_fsub</a>
 subLat    Vector that assigns all magnetic moments into non-interacting
           sublattices, contains a single index (1,2,3...) for every
           magnetic moment, size is (1,nMagExt). If undefined, the
@@ -104,7 +103,7 @@ stat      Struct that contains the calculated thermodynamical
           following fields:
  
 param     All input parameter values of the anneal function.
-obj       The copy of the input [spinw](spinw.html) class obj with the final magnetic
+obj       The copy of the input spinw class obj with the final magnetic
           structure.
 M         Components of the magnetisation after the last annealing
           run, dimensions are [3 nMagExt].
@@ -112,7 +111,7 @@ E         Magnetic energy of the system after the last annealing run.
 T         Final temperature of the sample.
  
 Depending on the 'fStat' parameter, additional fields are included. Using
-the default function ([@sw_fstat](sw_fstat.html)) the following parameters are calculated:
+the default function (@sw_fstat) the following parameters are calculated:
  
 avgM      Average components of the magnetisation over nStat runs,
           dimensions are [3 nMagExt].

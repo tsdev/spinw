@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: swsym_position.html, folder: swsym, mathjax: 'true'}
 
 ---
-generates symmetry equivalent positions
  
 [r, aIdx, opInfo] = SWSYM.POSITION(sym, r0, fid, tol)
   

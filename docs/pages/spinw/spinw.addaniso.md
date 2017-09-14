@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-assigns anisotropy matrices to magnetic ions
  
 ADDANISO(obj, matrixIdx, {atomTypeIdx}, {atomIdx})
  
@@ -30,7 +29,7 @@ atomTypeIdx   String or cell of strings that select magnetic atoms by
 Output:
  
 The function adds extra entries in the 'single_ion.aniso' field of the
-obj [spinw](spinw.html) object.
+obj spinw object.
  
 Example:
  

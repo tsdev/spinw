@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: swplot_legend.html, folder: swplot, mathjax: 'true'}
 
 ---
-draws legend to the [swplot figure](swplot_figure.html)
  
 SWPLOT.LEGEND({switch}, {hFigure})
  
@@ -18,12 +17,12 @@ switch        One of the following string:
                   {'-','--','none'}   change the linestyle of the legend
                                       frame.
               Default is 'on'.
-hFigure       Handle of the [swplot figure](swplot_figure.html). Default is the selected
+hFigure       Handle of the swplot figure. Default is the selected
               figure.
  
 Example:
-  [swplot.figure](swplot_figure.html)
+  swplot.figure
   swplot.addcircle([0 0 0],[0 0 1],1)
-  [swplot.legend](swplot_legend.html)
+  swplot.legend
  
 

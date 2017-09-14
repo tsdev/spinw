@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_genmagstr.html, folder: spinw, mathjax: 'true'}
 
 ---
-generates magnetic structure
  
 GENMAGSTR(obj, 'option1', value1 ...)
  
@@ -11,7 +10,7 @@ There are several ways to generate magnetic structure. The selected
 method depends on the 'mode' option, see below. The magnetic structure is
 stored in the obj.mag_str field. The default mode is 'extend'. The
 magetic structure is stored as Fourier components with arbitrary number
-of wave vectors in the [spinw](spinw.html) object. However spin waves can be only
+of wave vectors in the spinw object. However spin waves can be only
 calculated if the magnetic structure has only a single propagation vector
 (plus a k=0 ferromagnetic component) we simply call it single-k magnetic
 structure. Thus genmagstr() enables to input magnetic structures that
@@ -25,7 +24,7 @@ propagation vector can be approximated to zero.
  
 Input:
  
-obj       [spinw](spinw.html) class object.
+obj       spinw class object.
  
 Options:
  
@@ -41,7 +40,7 @@ mode       Mode how the magnetic structure is generated:
            'tile' (reads S,n,k) default
                   Simply extends the existing or input structure
                   (param.S) into a magnetic supercell by replicating it.
-                  If no structure is stored in the [spinw](spinw.html) object a random
+                  If no structure is stored in the spinw object a random
                   structure is generated automatically. If defined,
                   param.S is used as starting structure for extension
                   overwriting the stored structure. If the original
@@ -86,8 +85,8 @@ mode       Mode how the magnetic structure is generated:
                   the propagation vector, its dimension is [1 3]. n is
                   the normal vector of the spin rotation plane, its
                   dimension is [1 3]. The default function is
-                  [@gm_spherical3d](gm_spherical3d.html). For planar magnetic structure use
-                  [@gm_planar](gm_planar.html). Only param.func and param.x have to be
+                  @gm_spherical3d. For planar magnetic structure use
+                  @gm_planar. Only param.func and param.x have to be
                   defined for this mode.
           'fourier' (reads S,n,k,r0)
                   same as 'helical', except the S option is taken as the
@@ -136,8 +135,8 @@ func      Function that produce the magnetic moments, ordering wave
           where M is (3,nMagExt) size matrix, k is the propagation vector
           with dimensions of [1 3], n is the normal vector of the spin
           rotation plane, its dimensions are [1 3]. The default function
-          is [@gm_spherical3d](gm_spherical3d.html). For planar magnetic structure use
-          [@gm_planar](gm_planar.html).
+          is @gm_spherical3d. For planar magnetic structure use
+          @gm_planar.
 x0        Input parameters for param.func function, dimensions are
           [1 nx].
 norm      Set the length of the generated magnetic moments to be equal to
@@ -154,7 +153,7 @@ Fourier components.
  
 Example:
  
-USb = [spinw](spinw.html);
+USb = spinw;
 USb.genlattice('lat_const',[6.203 6.203 6.203],'angled',[90 90 90],'spgr','F m -3 m')
 USb.addatom('r',[0 0 0],'S',1)
   

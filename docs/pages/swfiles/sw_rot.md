@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: sw_rot.html, folder: swfiles, mathjax: 'true'}
 
 ---
-rotates vectors around arbitrary axis in 3D
  
 [V, rotM] = SW_ROT(rotAxis, rotAngle, {V})
  

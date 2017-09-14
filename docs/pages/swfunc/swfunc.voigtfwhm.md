@@ -4,7 +4,6 @@
   folder: swfunc, mathjax: 'true'}
 
 ---
-normalized function that calculates the voigt profile using FWMH values
  
 y = FITFUN.VOIGTFWHM(x,p)
  

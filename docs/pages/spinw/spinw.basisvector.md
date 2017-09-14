@@ -4,13 +4,12 @@
   mathjax: 'true'}
 
 ---
-generates basis vectors of the crystal lattice
  
 basisVec = BASISVECTOR(obj, {norm})
  
 Input:
  
-obj       [spinw](spinw.html) class object.
+obj       spinw class object.
 norm      If true, the basis vectors are normalized to 1, otherwise the
           length is equal to the lattice constants. Default is false.
           Optional.

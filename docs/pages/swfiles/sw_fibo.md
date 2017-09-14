@@ -4,9 +4,8 @@
   mathjax: 'true'}
 
 ---
-returns the last two Fibonacci number smaller or equal to the
 given number
  
-[Flast Fprev] = [sw_fibo](sw_fibo.html)(Fmax)
+[Flast Fprev] = sw_fibo(Fmax)
  
 

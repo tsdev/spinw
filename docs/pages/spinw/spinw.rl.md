@@ -4,13 +4,12 @@
   mathjax: 'true'}
 
 ---
-generates reciprocal lattice basis vectors of the crystal lattice
  
 rlVec = RL(obj, {norm})
  
 Input:
  
-obj       [spinw](spinw.html) class object.
+obj       spinw class object.
 norm      If true, the basis vectors are normalized to 1. Default is false.
           Optional.
  

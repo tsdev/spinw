@@ -4,7 +4,6 @@
   folder: swsym, mathjax: 'true'}
 
 ---
-reduces the list of symmetry operators to the generators
  
 [symOpG, isGen] = SWSYM.GENREDUCE(symOp)
  

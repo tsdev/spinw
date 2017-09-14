@@ -3,5 +3,7 @@
   sidebar: sw_sidebar, permalink: sw_plotcell.html, folder: swfiles, mathjax: 'true'}
 
 ---
-plots cell structure with circles
+ 
+SW_PLOTCELL(dat,xLab,yLab,tLab,aRange,sc,depth)
+ 
 

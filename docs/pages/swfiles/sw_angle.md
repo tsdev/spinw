@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: sw_angle.html, folder: swfiles, mathjax: 'true'}
 
 ---
-calculates the angle between 2 vectors
  
 phi = SW_ANGLE(V1,V2)
  

@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-generates the COUPLING property of [spinw](spinw.html) object
  
 GENCOUPLING(obj, 'option1', value, ...)
  
@@ -23,7 +22,7 @@ IMPORTANT!
  
 Input:
  
-obj           [spinw](spinw.html) class object.
+obj           spinw class object.
  
 Options:
  
@@ -51,7 +50,7 @@ crystal geometry.
  
 Example:
  
-cryst = [spinw](spinw.html);
+cryst = spinw;
 cryst.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
 cryst.addatom('r',[0 0 0])
 cryst.gencoupling

@@ -3,6 +3,5 @@
   permalink: spinw_spinw.html, folder: spinw, mathjax: 'true'}
 
 ---
-SPINW constructor
  
 

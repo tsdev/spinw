@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-calculates the spin-spin correlation function for magnetic domains
  
 spectra = SW_MAGDOMAIN(spectra, 'Option1', Value1, 'Option2', Value2...)
  
@@ -39,7 +38,7 @@ Output:
 'spectra' will contain the following additional/changed fields:
 Sab       The multi domain spectrum will be stored here.
 Sabraw    The original single domain spectrum is kept here, so that a
-          consecutive run of [sw_magdomain](sw_magdomain.html) will use the original single
+          consecutive run of sw_magdomain will use the original single
           domain spectrum, without the need of recalculating the full
           spectrum.
 domVol    Volume of each domains in a vector, with dimensions of
@@ -51,7 +50,7 @@ Example:
  
 ...
 spec = cryst.spinwave({[0 0 0] [1 0 0]});
-spec = [sw_magdomain](sw_magdomain.html)(spec,'axis',[0 0 1],'angled',[0 90 180 270]);
+spec = sw_magdomain(spec,'axis',[0 0 1],'angled',[0 90 180 270]);
  
 The above example calculates the spectrum for magnetic domains that are
 related by a 90 degree rotation around the z-axis (perpendicular to the

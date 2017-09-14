@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-Stores 3x3 matrices for using them in the Hailtonian.
 Sub fields are:
   mat     stores the actual values of 3x3 matrices, in a
           3 x 3 x nMatrix matrix, defult unit is meV

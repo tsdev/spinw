@@ -3,7 +3,6 @@
   permalink: sw_cmod.html, folder: swfiles, mathjax: 'true'}
 
 ---
-modulo one with tolerance
  
 r = SW_CMOD(r, tol)
  

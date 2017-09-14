@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: sw_readparam.html, folder: swfiles, mathjax: 'true'}
 
 ---
-parse input arguments (option, value pairs)
  
 input = SW_READPARAM(format, raw)
  

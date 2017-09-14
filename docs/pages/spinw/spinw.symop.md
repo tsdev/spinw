@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-generates the symmetry operators on bonds and magnetic atoms
  
 OP = SYMOP(obj)
  

@@ -3,7 +3,6 @@
   permalink: sw_notify.html, folder: swfiles, mathjax: 'true'}
 
 ---
-sends notification in OSX
  
 SW_NOTIFY(message)
  
@@ -16,9 +15,9 @@ the active window.
  
 Install terminal-notifier:
 Using Ruby, you can install it through RubyGems:
-$ [sudo] gem install terminal-notifier
+$$ [sudo] gem install terminal-notifier
 You can also install it via Homebrew:
-$ brew install terminal-notifier
+$$ brew install terminal-notifier
  
 Options:
  

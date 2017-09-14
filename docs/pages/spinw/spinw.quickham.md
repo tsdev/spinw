@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-creates magnetic Hamiltonian with a single command
  
 QUICKHAM(obj, J)
  

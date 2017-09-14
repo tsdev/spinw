@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-plots the structure factor in the selected Q range in 1D or 2D
  
 fHandle = SW_PLOTSF(sFact, 'Option1', Value1, ...)
  

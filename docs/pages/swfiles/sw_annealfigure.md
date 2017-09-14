@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-creates a figure for displaying the status of the annealing simulation
  
 hFigure = SW_ANNEALFIGURE()
  

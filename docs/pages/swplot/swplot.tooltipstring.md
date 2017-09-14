@@ -4,7 +4,6 @@
   folder: swplot, mathjax: 'true'}
 
 ---
-generate tooltip string from the data of a graphical object
  
 SWPLOT.TOOLTIPSTRING(swObject,{obj})
  

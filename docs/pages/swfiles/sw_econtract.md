@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-converts (Q,omega) values to Qm values for diffraction instrument
  
 Qm = SW_FLATCONE(Q,'Option1', Value,...) 
  

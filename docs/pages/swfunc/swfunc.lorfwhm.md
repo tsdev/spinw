@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: swfunc_lorfwhm.html, folder: swfunc, mathjax: 'true'}
 
 ---
-normalized Lorentzian using FWHM
  
 y = LORFWHM(x,p)
  

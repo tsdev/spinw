@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-lists [spinw](spinw.html) data in the Matlab workspace or in a .mat file
  
 list = SW_FILELIST({'Option1',Value1,...)
  

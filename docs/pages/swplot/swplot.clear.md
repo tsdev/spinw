@@ -3,13 +3,12 @@
   permalink: swplot_clear.html, folder: swplot, mathjax: 'true'}
 
 ---
-clear [swplot figure](swplot_figure.html)
  
 SWPLOT.CLEAR(hFigure)
  
-clears [swplot figure](swplot_figure.html) correspondign to hFigure handle
+clears swplot figure correspondign to hFigure handle
  
 SWPLOT.CLEAR
  
-clears the active [swplot figure](swplot_figure.html)
+clears the active swplot figure
 

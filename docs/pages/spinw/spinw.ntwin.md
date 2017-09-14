@@ -3,7 +3,6 @@
   permalink: spinw_ntwin.html, folder: spinw, mathjax: 'true'}
 
 ---
-gives the number of twins
  
 nTwin = NTWIN(obj)
  

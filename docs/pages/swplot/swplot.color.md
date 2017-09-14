@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: swplot_color.html, folder: swplot, mathjax: 'true'}
 
 ---
-generates RGB code from color name string
  
 RGB = SWPLOT.COLOR(cName,{index})
  

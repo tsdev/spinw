@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-creates the logo of SpinW and saves to a .png file
  
 SWPLOT.LOGO({fName})
  

@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-adds a graphical object to the hgtransform of an [swplot figure](swplot_figure.html)
  
 SWPLOT.ADD(hAdd, {hFigure})
  
@@ -21,14 +20,14 @@ hAdd      Either vector of the handles of the graphical objects, or
                           name identifies groups of objects.
               'text'      Text that is shown in the tooltip when clicking
                           on the object.
-              'position'  Position of the object, see [swplot.plot](swplot_plot.html) for
+              'position'  Position of the object, see swplot.plot for
                           details.
               'label'     Label that is shown in the legend.
-              'legend'    Type of legend, see [swplot.plot](swplot_plot.html) for details.
-              'type'      Type of graphical object, see [swplot.plot](swplot_plot.html).
+              'legend'    Type of legend, see swplot.plot for details.
+              'type'      Type of graphical object, see swplot.plot.
               'data'      Arbitrary data assigned to the object.
 hFigure   The handle of the figure (number in the figure title bar). The
-          default is the active [swplot figure](swplot_figure.html) if the argument is not
+          default is the active swplot figure if the argument is not
           provided by the user or it is empty matrix.
  
 See also SWPLOT, SWPLOT.FIGURE, HGTRANSFORM, SWPLOT.PLOT.

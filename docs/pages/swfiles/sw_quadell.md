@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-calculates and plots the parameters of an ellipsoid from a quadratic form
  
 ellM = SW_QUADELL(M, plot)
  

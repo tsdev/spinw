@@ -3,7 +3,6 @@
   permalink: swplot_line.html, folder: swplot, mathjax: 'true'}
 
 ---
-draws a 3D line using patch
  
 hLine = SWPLOT.LINE(rStart, rEnd, {lineStyle}, {lineWidth},{multiPatch})
  

@@ -3,14 +3,13 @@
   permalink: swplot_plotmag.html, folder: swplot, mathjax: 'true'}
 
 ---
-plots magnetic structure
  
 SWPLOT.PLOTMAG('option1', value1, ...)
  
 hFigure = SWPLOT.PLOTMAG(...)
  
 The function plots the magnetic structure of a SpinW object onto an
-[swplot figure](swplot_figure.html).
+swplot figure.
  
 Input:
  
@@ -33,13 +32,13 @@ mode      String, defines the way the magnetic moments are plotted:
                           magnetic structures.
               'arrow'     Plots only the moment directions.
               'none'      Don't plot anything.
-figure    Handle of the [swplot figure](swplot_figure.html). Default is the selected figure.
+figure    Handle of the swplot figure. Default is the selected figure.
 legend    Whether to add the plot to the legend, default is true.
 label     Whether to plot labels for atoms, default is true.
 dText     Distance between item and its text label, default is 0.1
           Angstrom.
 fontSize  Font size of the atom labels in pt, default value is stored in
-          [swpref.getpref](swpref_getpref.html)('fontsize').
+          swpref.getpref('fontsize').
 color     Color of the magnetic moments:
               'auto'      All moments get the same color as the magnetic
                           atom.
@@ -59,7 +58,7 @@ centered  If true, the moment vector is centered on the atom, if false
           the beggining of the spin vector is on the atom. Default is
           true.
 nPatch    Number of points on the curve for the arrows, default
-          value is stored in [swpref.getpref](swpref_getpref.html)('npatch').
+          value is stored in swpref.getpref('npatch').
 tooltip   If true, the tooltips will be shown when clicking on atoms.
           Default is true.
 shift     Column vector with 3 elements, all vectors will be
@@ -69,8 +68,8 @@ translate If true, all plot objects will be translated to the figure
           center. Default is false.
 zoom      If true, figure will be automatically zoomed to the ideal size.
           Default is false.
-copy      If true, a hardcopy of the [spinw](spinw.html) object will be sved in the
-          figure data, otherwise just the handle of the [spinw](spinw.html) object, 
+copy      If true, a hardcopy of the spinw object will be sved in the
+          figure data, otherwise just the handle of the spinw object, 
           thus the figure can be updated when the spin object changed.
           Default value is false. 
 

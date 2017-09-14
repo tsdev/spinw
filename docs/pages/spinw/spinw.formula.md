@@ -4,13 +4,12 @@
   mathjax: 'true'}
 
 ---
-returns chemical formula, mass, volume, etc.
  
 formula = FORMULA(obj)
  
 Options:
  
-obj       [spinw](spinw.html) class object.
+obj       spinw class object.
  
 Output:
  
@@ -25,7 +24,7 @@ chemform      Chemical formula string: series of 'ChemLabel_ChemNum '.
  
 Example:
  
-cryst = [spinw](spinw.html)('https://goo.gl/do6oTh')
+cryst = spinw('https://goo.gl/do6oTh')
 cryst.formula
  
 The formula of the crystal stored in the test.cif file will be printed

@@ -4,12 +4,11 @@
   mathjax: 'true'}
 
 ---
-returns the handle of the active [swplot figure](swplot_figure.html)
  
 {hFigure} = SWPLOT.ACTIVEFIGURE
  
-It gives the handle of the active [swplot figure](swplot_figure.html) and make it selected. If
-no [swplot figure](swplot_figure.html) exists, throws an error.
+It gives the handle of the active swplot figure and make it selected. If
+no swplot figure exists, throws an error.
  
 SWPLOT.ACTIVEFIGURE(hFigure)
  

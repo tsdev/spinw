@@ -4,13 +4,12 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-changes the selected matrix inside the [spinw](spinw.html) object
  
 SETMATRIX(obj, 'Option1', Value1, ...)
  
 Input:
  
-obj           [spinw](spinw.html) class object.
+obj           spinw class object.
  
 Options:
  
@@ -18,7 +17,7 @@ One of the below options has to be given:
  
 mat           Label or index of the matrix that is already assigned to
               a bond, anisotropy or g-tensor.
-bond          Index of the bond in [spinw](spinw.html).coupling.idx.
+bond          Index of the bond in spinw.coupling.idx.
 subIdx        Selects a certain bond, within efault value is 1.
 aniso         Label or index of the magnetic atom that has a single ion
               anisotropy matrix is assigned.

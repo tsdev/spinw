@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_twinq.html, folder: spinw, mathjax: 'true'}
 
 ---
-calculates equivalent Q point in twins
  
 [Qtwin, rotQ] = TWINQ(obj, {Q0})
  

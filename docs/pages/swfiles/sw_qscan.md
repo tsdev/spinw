@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: sw_qscan.html, folder: swfiles, mathjax: 'true'}
 
 ---
-creates linear scans between Q points in 3D
  
 qOut = SW_QSCAN(qLim)
  

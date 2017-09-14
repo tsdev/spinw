@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-generates magnetic structure for the rotating frame
  
 magOut = MAGSTR(obj, 'Option1', 'Value1', ...)
  
@@ -25,5 +24,5 @@ origin    Origin in lattice units, the magnetic structure will be
           calculated relative to this point. Default value is [0 0 0].
           Shifting the origin introduces an overall phase factor.
  
-See also [spinw](spinw.html).genmagstr.
+See also spinw.genmagstr.
 

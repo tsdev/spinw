@@ -1,11 +1,19 @@
+%% setup help generator options
+
+helpPath = {'swfiles' 'swfiles/@spinw' 'swfiles/+swplot' 'swfiles/+swpref' 'swfiles/+swsym' 'swfiles/+swfunc'};
+swr      = sw_rootdir;
+helpPath = cellfun(@(C)[swr C],helpPath,'UniformOutput',false);
+swver    = sw_version;
+
 %% generate help
 
-swr = sw_rootdir;
+fun0 = {'spinw.spinwave' 'spinw'};
+fun0 = cell(1,0);
+
 clc
-helpPath = {'swfiles' 'swfiles/@spinw' 'swfiles/+swplot' 'swfiles/+swpref' 'swfiles/+swsym' 'swfiles/+swfunc'};
-profile on
-doctree = sw_genhelp('path',cellfun(@(C)[swr C],helpPath,'UniformOutput',false));
-profile off
+
+doctree = sw_genhelp('path',helpPath,'fun',fun0,'verstr',swver);
+
 
 %% get all help
 

@@ -4,13 +4,12 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-assigns a predefined matrix as exchange coupling on selected bonds
  
 ADDCOUPLING(obj, 'option1', value1, ...)
  
 Input:
  
-obj           [spinw](spinw.html) class object.
+obj           spinw class object.
  
 Options:
  
@@ -47,7 +46,7 @@ sym           If true, symmetry operators will be applied on the exchange
 Output:
  
 The function adds extra entries in the 'coupling.matrix' field of the obj
-[spinw](spinw.html) object.
+spinw object.
  
 Example:
  

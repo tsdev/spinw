@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_nosym.html, folder: spinw, mathjax: 'true'}
 
 ---
-removes the space group symmetry
  
 NOSYM(obj)
  
@@ -12,7 +11,7 @@ positions, that are now all symmetry inequivalent.
  
 Input:
  
-obj       [spinw](spinw.html) class object.
+obj       spinw class object.
  
 Output:
  
@@ -22,7 +21,7 @@ obj.unit_cell field will contain all the generated atomic positions.
 Example:
  
 sw_addsym('x+1/2,y+1/2,z;x+1/2,y,z+1/2;x,y+1/2,z+1/2','FCC');
-cryst = [spinw](spinw.html);
+cryst = spinw;
 cryst.genlattice('lat_const',[8 8 8],'sym','FCC')
 cryst.addatom('r',[0 0 0],'label','Atom1')
 cryst.nosym

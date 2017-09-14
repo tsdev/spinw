@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-determines point group symmetry at a given position
  
 pOp = SWSYM.POINT(symOp, r)
  

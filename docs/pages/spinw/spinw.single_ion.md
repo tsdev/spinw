@@ -4,15 +4,14 @@
   mathjax: 'true'}
 
 ---
-Stores single ion terms of the Hamiltonian.
 Sub fields are:
   aniso   vector contains 1 x nMagAtom integers, each integer
           assignes one of the nMatrix from the .matrix field
-          to a magnetic atom in the [spinw](spinw.html).matom list as a single
+          to a magnetic atom in the spinw.matom list as a single
           ion anisotropy (zeros for no anisotropy)
   g       vector contains 1 x nMagAtom integers, each integer
           assignes one of the nMatrix from the .matrix field
-          to a magnetic atom in the [spinw](spinw.html).matom list as a
+          to a magnetic atom in the spinw.matom list as a
           g-tensor
   field   external magnetic field stored in a 1x3 vector,
           default unit is Tesla

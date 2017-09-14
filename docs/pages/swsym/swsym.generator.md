@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-returns symmetry operators of a given space group
  
 [symOp, symInfo] = SWSYM.GENERATOR(sym, {fid})
  

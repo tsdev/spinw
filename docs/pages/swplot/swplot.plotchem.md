@@ -3,14 +3,13 @@
   sidebar: sw_sidebar, permalink: swplot_plotchem.html, folder: swplot, mathjax: 'true'}
 
 ---
-plots polyhedra or chemical bonds
  
 SWPLOT.PLOTCHEM('option1', value1, ...)
  
 hFigure = SWPLOT.PLOTCHEM(...)
  
 The function polyhedra around selected  atoms, or chemical bonds between
-atoms an [swplot figure](swplot_figure.html).
+atoms an swplot figure.
  
 Input:
  
@@ -30,10 +29,10 @@ mode      Selects the type of the plot:
               'poly'      Draws polyhedra around the center atoms
                           (default).
               'bond'      Draws bonds between given atoms.
-atom1     Indices of atoms stored in [spinw](spinw.html).unit_cell for the center atom
+atom1     Indices of atoms stored in spinw.unit_cell for the center atom
           of the polyhedra or the first atom of the bonds. Can be also a
           string that identifies the atoms by their labels.
-atom2     Indices or label of the atoms stored in [spinw](spinw.html).unit_cell. It
+atom2     Indices or label of the atoms stored in spinw.unit_cell. It
           determines the vertices of the polyhedra or gives the second
           atom of a bond.
 extend    If true, only atom1 has to be within the plotting range, atom2
@@ -51,16 +50,16 @@ alpha     Transparency of the plotted surfaces between 0 and 1 (1 for
 color     Surface color of the objects. Default is 'auto', when they are
           set to the color of atom1. [R G B] will fix the color of all
           bonds to a uniform one, can be also arbitrary color name (see
-          [swplot.color()](swplot_color.html) function). Can be also 'none', when no faces
+          swplot.color() function). Can be also 'none', when no faces
           will be shown.
 color2    Color of the edges of the polyhedra (unused for bonds), default
           value is 'auto' when the edge gets the same color as the faces.
           'none' will remove the edges.
 radius0   Radius of the cylinder, default value is 0.03.
-figure    Handle of the [swplot figure](swplot_figure.html). Default is the selected figure.
+figure    Handle of the swplot figure. Default is the selected figure.
 legend    Whether to add the plot to the legend, default is true.
 nPatch    Number of points on the curve for the cylinder, default
-          value is stored in [swpref.getpref](swpref_getpref.html)('npatch').
+          value is stored in swpref.getpref('npatch').
 tooltip   If true, the tooltips will be shown when clicking on atoms.
           Default is true.
 shift     Column vector with 3 elements, all atomic positions will be
@@ -71,18 +70,18 @@ translate If true, all plot objects will be translated to the figure
           center. Default is false.
 zoom      If true, figure will be automatically zoomed to the ideal size.
           Default is false.
-copy      If true, a hardcopy of the [spinw](spinw.html) object will be sved in the
-          figure data, otherwise just the handle of the [spinw](spinw.html) object, 
+copy      If true, a hardcopy of the spinw object will be sved in the
+          figure data, otherwise just the handle of the spinw object, 
           thus the figure can be updated when the spin object changed.
           Default value is false. 
  
 Output:
  
-hFigure           Handle of the [swplot figure](swplot_figure.html).
+hFigure           Handle of the swplot figure.
  
 The name of the objects that are created called 'chem'. To find the
 handles and the stored data on these objects, use e.g.
  
-  sObject = [swplot.findobj](swplot_findobj.html)(hFigure,'name','chem')
+  sObject = swplot.findobj(hFigure,'name','chem')
  
 

@@ -3,7 +3,6 @@
   permalink: sw_qgrid.html, folder: swfiles, mathjax: 'true'}
 
 ---
-creates a Q grid
  
 qGrid = SW_QGRID('option1',value1,...)
  

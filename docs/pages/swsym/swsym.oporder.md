@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: swsym_oporder.html, folder: swsym, mathjax: 'true'}
 
 ---
-determine the order of the symmetry operator
  
 N = SWSYM.OPORDER(symOp)
  

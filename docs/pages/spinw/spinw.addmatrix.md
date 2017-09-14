@@ -4,13 +4,12 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-adds new matrix that can be assigned to spins in the Hamiltonian
  
 ADDMATRIX(obj, 'Option1, Value1,...)
  
 Input:
  
-obj       [spinw](spinw.html) class object
+obj       spinw class object
  
 Options:
  

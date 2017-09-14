@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-returns the atomic charge form factor values for X-ray scattering
  
 [formFactVal, coeff] = SW_CFF(atomName, {Q})
  
@@ -30,6 +29,6 @@ coeff         Form factor coefficients according to the following
               where Qs = Q/(4*pi) and [a_1 b_1 a_2 b_2 ... c] are the
               coefficients.
  
-See also [sw_mff](sw_mff.html).
+See also sw_mff.
  
 

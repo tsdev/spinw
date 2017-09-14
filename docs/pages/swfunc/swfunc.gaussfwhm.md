@@ -4,7 +4,6 @@
   folder: swfunc, mathjax: 'true'}
 
 ---
-normalized gaussian function defined by the FWHM
  
 y = FUNC.GAUSSFWHM(x,p)
  

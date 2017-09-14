@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_isvalid.html, folder: spinw, mathjax: 'true'}
 
 ---
-ISVALID   Test handle validity.
    TF = ISVALID(H) performs an element-wise check for validity on the 
    handle elements of H.  The result is a logical array of the same 
    dimensions as H, where each element is the element-wise validity 
@@ -13,7 +12,7 @@ ISVALID   Test handle validity.
    of a handle array and has not yet been initialized.
  
    See also SPINW, SPINW/DELETE
-Help for [spinw](spinw.html)/isvalid is inherited from superclass HANDLE
+Help for spinw/isvalid is inherited from superclass HANDLE
    Reference page in Doc Center
-      doc [spinw](spinw.html)/isvalid
+      doc spinw/isvalid
 

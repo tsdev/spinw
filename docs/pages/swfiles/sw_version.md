@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: sw_version.html, folder: swfiles, mathjax: 'true'}
 
 ---
-returns the installed version of SpinW
  
 SW_VERSION()
  

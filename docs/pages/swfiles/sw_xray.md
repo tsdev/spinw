@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-calculates X-ray scattering intensity for phonon spectrum
  
 spectra = SW_XRAY(spectra, 'Option1', Value1' ...)
  
@@ -28,7 +27,7 @@ formfact      Setting, that determines whether the magnetic form factor
               calculation. Possible values:
                   false   No magnetic form factor is applied (default).
                   true    Magnetic form factors are applied, based on the
-                          label string of the magnetic ions, see [sw_mff()](sw_mff.html)
+                          label string of the magnetic ions, see sw_mff()
                           function help.
                   cell    Cell type that contains mixed labels and
                           numbers for every symmetry inequivalent atom in
@@ -38,7 +37,7 @@ formfact      Setting, that determines whether the magnetic form factor
               correlations on the first atom and using the form factor of
               Cr3+ ion for the second atom.
 formfactfun   Function that calculates the magnetic form factor for given
-              Q value. Default value is [@sw_mff()](sw_mff.html), that uses a tabulated
+              Q value. Default value is @sw_mff(), that uses a tabulated
               coefficients for the form factor calculation. For
               anisotropic form factors a user defined function can be
               written that has the following header:

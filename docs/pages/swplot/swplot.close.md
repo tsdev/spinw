@@ -3,23 +3,22 @@
   permalink: swplot_close.html, folder: swplot, mathjax: 'true'}
 
 ---
-close [swplot figure](swplot_figure.html)
  
 SWPLOT.CLOSE()
  
-Closes the active [swplot figure](swplot_figure.html).
+Closes the active swplot figure.
  
 SWPLOT.CLOSE('all')
  
-Closes all [swplot figure](swplot_figure.html).
+Closes all swplot figure.
  
 SWPLOT.CLOSE(hFigure)
  
-closes the [swplot figure](swplot_figure.html) of the given handle (hFigure).
+closes the swplot figure of the given handle (hFigure).
  
 Input:
  
-hFigure   Handle of the [swplot figure](swplot_figure.html) window.
+hFigure   Handle of the swplot figure window.
  
 See also SWPLOT.FIGURE.
  

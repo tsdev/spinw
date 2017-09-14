@@ -4,9 +4,8 @@
   mathjax: 'true'}
 
 ---
-creates RGB color data for multiple 2D overlapping plots
  
-cMat = [sw_multicolor](sw_multicolor.html)(vMat, cMap, cLim, {nCol}, {flipud})
+cMat = sw_multicolor(vMat, cMap, cLim, {nCol}, {flipud})
  
 Input:
  
@@ -31,7 +30,7 @@ cMat      Matrix with equal dimensions to the input times three for the
 Example:
           Plotting of two random matrices (dimensions are [100 100]) with
           red and blue colors:
-              cMat = [sw_multicolor](sw_multicolor.html)(rand(100,100,2),[1 0;0 1;0 0],[0 1]);
+              cMat = sw_multicolor(rand(100,100,2),[1 0;0 1;0 0],[0 1]);
               image(cMat);
  
 

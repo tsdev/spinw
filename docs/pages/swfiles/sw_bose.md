@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-coefficient for boson correlation functions for different temperatures
  
 C = SW_BOSE(oldT,newT,E)
  

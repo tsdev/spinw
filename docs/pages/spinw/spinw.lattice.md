@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_lattice.html, folder: spinw, mathjax: 'true'}
 
 ---
-Stores the unit cell parameters.
 Sub fields are:
   lat_const   lattice constants in a 1x3 vector in Angstrom units
   angle       (alpha,beta,gamma) angles in 1x3 vector in radian

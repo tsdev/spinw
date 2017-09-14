@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-calculates neutron scattering intensity for spin wave spectrum
  
 spectra = SW_NEUTRON(spectra, 'Option1', Value1' ...)
  

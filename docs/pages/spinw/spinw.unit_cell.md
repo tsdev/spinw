@@ -4,7 +4,6 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-Stores the atoms in the crystallographic unit cell.
 Sub fields are:
   r       positions of the atoms in the unit cell, in a
           3 x nAtom matrix, in lattice units

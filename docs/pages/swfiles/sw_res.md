@@ -4,7 +4,6 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-reads a tabulated energy resolution from a file and fits with polynomial
  
 p = SW_RES(fid,polDeg,{plot})
  
@@ -34,7 +33,7 @@ Example:
  
 To calculate the resolution at an arbitrary energy use:
  
-pRes = [sw_res](sw_res.html)(file,5,false);
+pRes = sw_res(file,5,false);
 Evec = linspace(0,100,501);
 Eres = polyval(polyRes,Evec);
 plot(Evec,Eres);

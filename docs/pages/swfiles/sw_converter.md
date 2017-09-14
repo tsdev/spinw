@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-converts energy and momentum units for a given particle
  
 out = SW_CONVERTER(value, unitIn, unitOut, {particleName}) 
  

@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_addg.html, folder: spinw, mathjax: 'true'}
 
 ---
-assigns g-tensor to magnetic ions
  
 ADDG(obj, matrixIdx, {atomTypeIdx}, {atomIdx})
  

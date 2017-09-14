@@ -4,7 +4,6 @@
   folder: swsym, mathjax: 'true'}
 
 ---
-calculates all symmetry operators or general positions for a space group
  
 [symOp, symInfo] = SWSYM.OPERATOR(sym, fid)
  

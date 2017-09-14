@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_energy.html, folder: spinw, mathjax: 'true'}
 
 ---
-calculates the ground state energy per spin
  
 E = ENERGY(obj, Option1, Value1 ...)
  
@@ -22,7 +21,7 @@ the standard definition of the k vector.
  
 Input:
  
-obj       [spinw](spinw.html) class object.
+obj       spinw class object.
  
 Options:
  

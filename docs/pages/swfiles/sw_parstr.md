@@ -3,7 +3,6 @@
   permalink: sw_parstr.html, folder: swfiles, mathjax: 'true'}
 
 ---
-parses input string
  
 parsed = SW_PARSTR(strIn)
  
@@ -18,7 +17,7 @@ Input:
           function. Letter a and b can be 'x', 'y' or 'z'. For example:
           'Sxx' will convolute the xx component of the correlation
           function with the dispersion. xyz is the standard coordinate
-          system, see online documentation of [spinw](spinw.html).
+          system, see online documentation of spinw.
 'Mab'     convolutes the selected components of the spin-spin
           correlation function. Letter a and b can be 'x', 'y' or 'z'.
           For example: 'Sxx' will convolute the xx component of the
@@ -66,7 +65,7 @@ preFact   Vector contains the values of the prefactors in the sum.
 string    Original input string.
  
 Test it with:
-<a href="matlab:parsed = [sw_parstr](sw_parstr.html)('Sxx + Syy')">parsed = [sw_parstr](sw_parstr.html)('Sxx + Syy')</a>
+<a href="matlab:parsed = sw_parstr('Sxx + Syy')">parsed = sw_parstr('Sxx + Syy')</a>
  
 See also SW_EGRID, SPINW.FITSPEC.
  

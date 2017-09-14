@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-creates mesh by subdividing icosahedron faces
  
 TR = SWPLOT.ICOMESH(nSub)
  

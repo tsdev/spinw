@@ -3,13 +3,12 @@
   sidebar: sw_sidebar, permalink: swplot_getdata.html, folder: swplot, mathjax: 'true'}
 
 ---
-gets the data stored in an [swplot figure](swplot_figure.html)
  
 data = SWPLOT.GETDATA({hFigure},{field}
  
 Input:
  
-hFigure       Handle of the [swplot figure](swplot_figure.html). Default is the active figure.
+hFigure       Handle of the swplot figure. Default is the active figure.
 field         String, determined the stored field name. If omitted, all
               stored data are returned.
  

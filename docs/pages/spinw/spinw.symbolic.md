@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_symbolic.html, folder: spinw, mathjax: 'true'}
 
 ---
-change between symbolic/numeric calculation
  
 symb = SYMBOLIC(obj)
  

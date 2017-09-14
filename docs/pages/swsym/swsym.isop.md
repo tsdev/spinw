@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-function determines whether the matrix is a symmetry operator
  
 result = SWSYM.ISOP(Op)
  

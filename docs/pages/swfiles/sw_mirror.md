@@ -3,7 +3,6 @@
   permalink: sw_mirror.html, folder: swfiles, mathjax: 'true'}
 
 ---
-mirrors a 3D vector
  
 [V, mirM] = SW_MIRROR(n, {V}) 
  

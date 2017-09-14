@@ -1,5 +1,8 @@
 function sw_counter(reset, text)
-% print the number of calls to this functio to the Command Line
+% print the number of calls to this function to the Command Line
+%
+% SW_COUNTER(reset, text)
+%
 
 persistent cnt
 

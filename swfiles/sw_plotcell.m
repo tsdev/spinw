@@ -1,5 +1,8 @@
 function varargout = sw_plotcell(dat,xLab,yLab,tLab,aRange,sc,depth)
 % plots cell structure with circles
+%
+% SW_PLOTCELL(dat,xLab,yLab,tLab,aRange,sc,depth)
+%
 
 if nargin<7
     depth = 0;

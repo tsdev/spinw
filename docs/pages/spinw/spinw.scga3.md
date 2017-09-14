@@ -4,7 +4,6 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-applies the self consistent Gaussian approximation at finite temperature
  
 spectra = SCGA(obj, hkl, 'option1', value1 ...)
  

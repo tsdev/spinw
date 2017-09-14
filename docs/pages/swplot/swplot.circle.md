@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: swplot_circle.html, folder: swplot, mathjax: 'true'}
 
 ---
-creates a circle surface in 3 dimensions
  
 hPatch = SWPLOIT.CIRCLE(r0, n, R, {N})
  
@@ -22,11 +21,11 @@ r0        Center of the circle, vector with three elements.
 n         Vector normal to the circle surface, vector with three elements.
 R         Radius of the circle.
 N         Number of points on the curve, default value is stored in
-          [swpref.getpref](swpref_getpref.html)('npatch').
+          swpref.getpref('npatch').
  
 Example:
  
-[swplot.circle](swplot_circle.html)(zeros(3),eye(3),1,100)
+swplot.circle(zeros(3),eye(3),1,100)
  
 See also SWPLOT.CYLINDER.
  

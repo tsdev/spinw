@@ -4,13 +4,12 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-gives the symmetry allowed matrices for a given coupling or anisotropy
  
 aMat = GETMATRIX(obj, 'Option1', Value1, ...)
  
 Input:
  
-obj           [spinw](spinw.html) class object.
+obj           spinw class object.
  
 Options:
  
@@ -18,7 +17,7 @@ One of the following options has to be given in the input:
  
 mat           Label or index of the matrix that is already assigned to
               a bond, anisotropy or g-tensor.
-bond          Index of the bond in [spinw](spinw.html).coupling.idx.
+bond          Index of the bond in spinw.coupling.idx.
 subIdx        Selects a certain bond, within efault value is 1.
 aniso         Label or index of the magnetic atom that has a single ion
               anisotropy matrix is assigned.
@@ -61,7 +60,7 @@ aMat      If no prefactors are defined, aMat contains all symmetry
  
 Example:
  
-cryst = [spinw](spinw.html);
+cryst = spinw;
 cryst.genlattice('sym','P 4')
 cryst.addatom('r',[0 0 0],'label','MCu2')
 cryst.addmatrix('label','A','value',eye(3))

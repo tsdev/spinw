@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: swplot_text.html, folder: swplot, mathjax: 'true'}
 
 ---
-draws a text at a point in 3D
  
 hText = SWPLOT.TEXT(r, string, {fontSize})
  
@@ -19,7 +18,7 @@ r         Coordinate of the center of the text for a single text or
 string    String contains the text or cell of strings to plot multiple
           text.
 fontSize  Font size in pt, default value is stored in
-          [swpref.getpref](swpref_getpref.html)('fontsize')
+          swpref.getpref('fontsize')
  
 See also TEXT.
  

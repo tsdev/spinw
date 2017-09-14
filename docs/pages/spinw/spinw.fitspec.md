@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-fits spin wave spectra to experimental spectral data
  
 fitsp = FITSPEC(obj, 'Option1', Value1, ...)
  
@@ -40,7 +39,7 @@ func      Function to change the Hamiltonian in obj, it has the following
           header:
                    obj = @func(obj, x);
 datapath  Path to the file that stores the experimental data. For the
-          input data format see <a href="matlab:doc [sw_readspec](sw_readspec.html)">sw_readspec</a>.
+          input data format see <a href="matlab:doc sw_readspec">sw_readspec</a>.
 Evect     Vector, defines the energy binning of the calculated
           dispersion. Larger binning steps solve the issue of fitting
           unresolved modes. Size is [1 nE].
@@ -100,7 +99,7 @@ MaxIter       Maximum number of iterations for the ndbse.pso optimizer.
 Output:
  
 Output fitsp is struct type with the following fields:
-obj       Copy of the input [spinw](spinw.html) class object, with the best fitted
+obj       Copy of the input spinw class object, with the best fitted
           Hamiltonian.
 x         Final values of the fitted parameters, dimensions are
           [nRun nPar]. The rows of x are sorted according to increasing R

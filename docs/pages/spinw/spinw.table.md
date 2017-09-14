@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: spinw_table.html, folder: spinw, mathjax: 'true'}
 
 ---
-outputs easy to read tables of internal data
  
 T = SPINW.TABLE(obj,type,{index},{showVal})
  

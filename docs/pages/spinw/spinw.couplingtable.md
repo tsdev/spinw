@@ -4,13 +4,12 @@
   mathjax: 'true'}
 
 ---
-creates tabulated list of all bonds as stored
  
 bonds = COUPLINGTABLE(obj,{bondIdx})
  
 Input:
  
-obj       [spinw](spinw.html) class object. 
+obj       spinw class object. 
 bondIdx   List of bond indices, by default all bonds will be output.
           Optional. If a bond index is mutiplied by -1, the table output
           is a matlab built in table type, works only for Matlab R2013b

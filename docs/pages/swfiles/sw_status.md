@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-timer function that displays also the remaining time
  
 SW_STATUS(percent, {mode},{fid},{title})
  

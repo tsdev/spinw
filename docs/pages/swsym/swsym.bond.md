@@ -3,7 +3,6 @@
   sidebar: sw_sidebar, permalink: swsym_bond.html, folder: swsym, mathjax: 'true'}
 
 ---
-generates all symmetry equivalent bonds
  
 [genCp ugenCp] = SWSYM.BOND(r, bv, bond, symOp, {tol})
  

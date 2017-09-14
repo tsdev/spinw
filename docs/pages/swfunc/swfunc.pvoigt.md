@@ -3,7 +3,6 @@
   permalink: swfunc_pvoigt.html, folder: swfunc, mathjax: 'true'}
 
 ---
-pseudovoigt function
  
 y = pvoigt(x,p)
  

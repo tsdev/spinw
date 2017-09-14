@@ -4,7 +4,6 @@
   mathjax: 'true'}
 
 ---
-create subplots with variable gaps between axes
  
 SWPLOT.SUBPLOT(m,n,p,space)
  

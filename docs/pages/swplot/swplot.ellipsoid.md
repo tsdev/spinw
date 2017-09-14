@@ -3,7 +3,6 @@
   permalink: swplot_ellipsoid.html, folder: swplot, mathjax: 'true'}
 
 ---
-draw ellipsoid
  
 hPatch = SWPLOT.ELLIPSOID(R0,T,mesh)
  
@@ -30,7 +29,7 @@ T         Transformation matrix that transforms a unit sphere to the
 mesh      Mesh of the ellipse surface, a triangulation class object or an
           integer that used to generate an icosahedron mesh with #mesh
           number of additional triangulation. Default value is stored in
-          [swpref.getpref](swpref_getpref.html)('nmesh')
+          swpref.getpref('nmesh')
  
 See also TRIANGULATION, SWPLOT.ICOMESH.
  

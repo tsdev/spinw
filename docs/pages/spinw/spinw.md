@@ -1,149 +1,156 @@
 ---
-{title: Class spinw, summary: SPINW class defines data structure and methods to calculate
-    spin wave, keywords: sample, sidebar: sw_sidebar, permalink: spinw.html, folder: spinw,
-  mathjax: 'true'}
+{title: spinw class, summary: class to store and solve magnetic Hamiltonians, keywords: sample,
+  sidebar: sw_sidebar, permalink: spinw.html, folder: spinw, mathjax: 'true'}
 
 ---
-SPINW class defines data structure and methods to calculate spin wave
-dispersion in magnetic crystals.
  
-obj = SPINW()
+* * *
+`obj = spinw()`
+* * *
  
 constructs a new spinw class object, with default parameters.
  
-obj = SPINW(obj)
+* * *
+`obj = spinw(obj)`
+* * *
  
-constructs new spinw class object. If obj is spinw class, it only
-checks its data integrity. If obj is struct type, it creates new
-spinw object and checks data integrity.
+constructs new spinw class object. If `obj` is spinw class, it only
+checks the integrity of its internal data structure. If `obj` is
+struct type, it creates new spinw object and checks data integrity.
  
-obj = SPINW(file_path)
+* * *
+`obj = spinw(source)`
+* * *
  
-construct new spinw class object, where file_path contains a string
-of a .cif/.fst file defining an input crystal and/or magnetic
-structure.
+construct new spinw class object, where `source` is either a file
+path pointing to a local cif or fst file or a link to an online file.
  
-obj = SPINW(figure_handle)
+* * *
+`obj = spinw(figure_handle)`
+* * *
  
-copy the SpinW object stored in a previous structural plot.
+copy the spinw object stored in a previous structural3D plot figure.
  
 The data structure behind the spinw object can be accessed by using
-STRUCT(obj). All fields of the struct type data behind the spinw
-object are accessible through the main field names of the obj object.
-For example the lattice parameters:
-  abc = obj.unit_cell.lat_const;
+`struct(obj)`. All fields of the struct type data behind the spinw
+object are accessible through the main field names of the `obj`
+object. For example the lattice parameters can be extracted using:
+```matlab
+  abc = obj.unit_cell.lat_const
+```
  
 spinw is a handle class, that means that only the handle of the
-object is copied in a swobj1 = swobj2 command. To create a copy
-(clone) of an spinw object use:
-   swobj1 = swobj2.COPY;
- 
-See also: SPINW.COPY, SPINW.STRUCT,
-<a href='/Applications/MATLAB_R2012b.app/help/matlab/matlab_oop/comparing-handle-and-value-classes.html'>Comparing handle and value classes</a>.
+object is copied in a `swobj1 = swobj2` command. To create a copy
+(clone) of an spinw object use
+```matlab
+   swobj1 = swobj2.copy
+```
  
 ### Methods
  
 #### Lattice operations
-
-* [spinw.genlattice](/spinw_genlattice) defines lattice parameters, angles and symmetry
-* [spinw.basisvector](/spinw_basisvector) returns the basis vectors in a matrix
-* [spinw.rl](/spinw_rl) returns the reciprocal lattice vectors in a matrix
-* [spinw.nosym](/spinw_nosym) reduces the lattice symmetry to P0
-* [spinw.newcell](/spinw_newcell) generates an arbitrary new cell and reduces symmetry to P0
-* [spinw.addatom](/spinw_addatom) adds a new atoms to the lattice
-* [spinw.unitcell](/spinw_unitcell) selects a subset of the symmetry inequivalent atoms
-* [spinw.abc](/spinw_abc) returns a vector [a b c alpha beta gamma]
-* [spinw.atom](/spinw_atom) returns all symmetry generated atom
-* [spinw.matom](/spinw_matom) returns all symmetry generated magnetic atoms
-* [spinw.natom](/spinw_natom) returns the number of symmetry inequivalent atoms
-* [spinw.formula](/spinw_formula) returns basic unit cell information
-* [spinw.disp](/spinw_disp) return basic lattice information
-* [spinw.symmetry](/spinw_symmetry) returns whether symmetry is on (>P0)
+ 
+* [spinw.genlattice](spinw_genlattice.html) generates crystal lattice from given parameters
+* [spinw.basisvector](spinw_basisvector.html) generates basis vectors of the crystal lattice
+* [spinw.rl](spinw_rl.html) generates reciprocal lattice basis vectors of the crystal lattice
+* [spinw.nosym](spinw_nosym.html) removes the space group symmetry
+* [spinw.newcell](spinw_newcell.html) changes lattice vectors while keeping atoms
+* [spinw.addatom](spinw_addatom.html) adds new atom to an spinw object
+* [spinw.unitcell](spinw_unitcell.html) returns information on atoms in the crystallographic unit cell
+* [spinw.abc](spinw_abc.html) returns lattice parameters and angles
+* [spinw.atom](spinw_atom.html) generates all atomic positions in the unit cell
+* [spinw.matom](spinw_matom.html) generates all magnetic atoms in the unit cell
+* [spinw.natom](spinw_natom.html) gives the number of symmetry unrelated atoms in the unit cell
+* [spinw.formula](spinw_formula.html) returns chemical formula, mass, volume, etc.
+* [spinw.disp](spinw_disp.html) prints the spinw data structure in readable format onto the Command Window
+* [spinw.symmetry](spinw_symmetry.html) true if space group is used to generate couplings
     
 #### Plotting
-
-* [spinw.plot](/spinw_plot) plots crystal, magnetic structure and spin Hamiltonian
+ 
+* [spinw.plot](spinw_plot.html) plots crystal structure, magnetic structure, anisotropy and bonds
  
 #### Crystallographic twin operations
-
-* [spinw.addtwin](/spinw_addtwin) adds crystallographic twin
-* [spinw.twinq](/spinw_twinq) determines reciprocal lattice positions in twins
-* [spinw.notwin](/spinw_notwin) removes the twins
-* [spinw.ntwin](/spinw_ntwin) number of twins
+ 
+* [spinw.addtwin](spinw_addtwin.html) adds new twins to an spinw object
+* [spinw.twinq](spinw_twinq.html) calculates equivalent Q point in twins
+* [spinw.notwin](spinw_notwin.html) removes any twin added to the spinw object
+* [spinw.ntwin](spinw_ntwin.html) gives the number of twins
  
 #### Magnetic structure operations
-
-* [spinw.genmagstr](/spinw_genmagstr) generate different types of magnetic structures
-* [spinw.magstr](/spinw_magstr) returns the magnetic structure in a rotating frame representation
-* [spinw.magtable](/spinw_magtable) returns a table of the magnetic structure
-* [spinw.nmagext](/spinw_nmagext) returns the number of magnetic moments in the supercell
-* [spinw.optmagstr](/spinw_optmagstr) optimizes magnetic structure with constraints
-* [spinw.optmagk](/spinw_optmagk) optimizes the magnetic propagation vector
-* [spinw.optmagsteep](/spinw_optmagsteep) optimizes the moment directions for fixed-k
-* [spinw.anneal](/spinw_anneal) simulated annealing of magnetic structures
-* [spinw.annealloop](/spinw_annealloop) simulated annealing and scanning a parameter in the Hamiltonian
-* [spinw.structfact](/spinw_structfact) calculates magnetic structure factor (EXPERIMENTAL)
+ 
+* [spinw.genmagstr](spinw_genmagstr.html) generates magnetic structure
+* [spinw.magstr](spinw_magstr.html) generates magnetic structure for the rotating frame
+* [spinw.magtable](spinw_magtable.html) creates tabulated list of all magnetic moments stored in obj
+* [spinw.nmagext](spinw_nmagext.html) gives the number of magnetic atoms in the magnetic supercell
+* [spinw.optmagstr](spinw_optmagstr.html) optimises magnetic structure by minimizing the energy using non-linear optimization algorithms
+* [spinw.optmagk](spinw_optmagk.html) determines the magnetic propagation vector
+* [spinw.optmagsteep](spinw_optmagsteep.html) optimise magnetic structure using the method of steepest descent
+* [spinw.anneal](spinw_anneal.html) performs simulated annealing on the magnetic structure
+* [spinw.annealloop](spinw_annealloop.html) performs simulated annealing on the magnetic structure and measurements
+* [spinw.structfact](spinw_structfact.html) calculates magnetic and nuclear structure factor
     
 #### Matrix operations
-
-* [spinw.addmatrix](/spinw_addmatrix) add a new matrix to the internal data
-* [spinw.getmatrix](/spinw_getmatrix) determines the symmetry allowed elements of a matrix
-* [spinw.setmatrix](/spinw_setmatrix) generates matrix values based on symmetry allowed elements
-* [spinw.nmat](/spinw_nmat) number of matrices
+ 
+* [spinw.addmatrix](spinw_addmatrix.html) adds new matrix that can be assigned to spins in the Hamiltonian
+* [spinw.getmatrix](spinw_getmatrix.html) gives the symmetry allowed matrices for a given coupling or anisotropy
+* [spinw.setmatrix](spinw_setmatrix.html) changes the selected matrix inside the spinw object
+* [spinw.nmat](spinw_nmat.html) gives the number of matrices defined in an spinw object
     
 #### Spin Hamiltonian generations
-
-* [spinw.quickham](/spinw_quickham) quick generation of Heisenberg Hamiltonian
-* [spinw.gencoupling](/spinw_gencoupling) generates the list of bonds
-* [spinw.addcoupling](/spinw_addcoupling) assigns a matrix to a bond
-* [spinw.couplingtable](/spinw_couplingtable) lists information on the bonds
-* [spinw.addaniso](/spinw_addaniso) assigns a matrix to a magnetic ion as anisotropy
-* [spinw.addg](/spinw_addg) assigns a matrix to a magnetic ion as g-tensor
-* [spinw.field](/spinw_field) stores the magnetic field
-* [spinw.nbond](/spinw_nbond) number of bonds
-* [spinw.temperature](/spinw_temperature) temperature for thermal population calculation
-* [spinw.intmatrix](/spinw_intmatrix) returns the spin Hamiltonian after symmetry applied (INTERNAL)
-* [spinw.symop](/spinw_symop) generates the symmetry operators on bonds and magnetic atoms (INTERNAL)
-* [spinw.setunit](/spinw_setunit) sets the physical units
+ 
+* [spinw.quickham](spinw_quickham.html) creates magnetic Hamiltonian with a single command
+* [spinw.gencoupling](spinw_gencoupling.html) generates the COUPLING property of spinw object
+* [spinw.addcoupling](spinw_addcoupling.html) assigns a predefined matrix as exchange coupling on selected bonds
+* [spinw.couplingtable](spinw_couplingtable.html) creates tabulated list of all bonds as stored
+* [spinw.addaniso](spinw_addaniso.html) assigns anisotropy matrices to magnetic ions
+* [spinw.addg](spinw_addg.html) assigns g-tensor to magnetic ions
+* [spinw.field](spinw_field.html) get/set magnetic field value
+* [spinw.nbond](spinw_nbond.html) gives the number of bonds defined in the spinw object
+* [spinw.temperature](spinw_temperature.html) get/set stored temperature value
+* [spinw.intmatrix](spinw_intmatrix.html) creates the interactions matrices (connectors and values)
+* [spinw.symop](spinw_symop.html) generates the symmetry operators on bonds and magnetic atoms
+* [spinw.setunit](spinw_setunit.html) sets the physical units
     
 #### Calculators
-
-* [spinw.spinwave](/spinw_spinwave) linear spin wave solver
-* [spinw.powspec](/spinw_powspec) powder spectrum calculator
-* [spinw.energy](/spinw_energy) ground state energy
-* [spinw.moment](/spinw_moment) moment reduction due to quantum fluctuations
-* [spinw.spinwavesym](/spinw_spinwavesym) symbolic spin wave solver
-* [spinw.symbolic](/spinw_symbolic) returns whether symbolic mode is on
-* [spinw.meanfield](/spinw_meanfield) mean field calculation of q-dependent susceptibility (EXPERIMENTAL)
-* [spinw.fourier](/spinw_fourier) fourier transformation of the Hamiltonian (EXPERIMENTAL)
-* [spinw.fouriersym](/spinw_fouriersym) symbolic fourier transformation (EXPERIMENTAL)
+ 
+* [spinw.spinwave](spinw_spinwave.html) calculates dynamical spin-spin correlation function using linear spin wave theory
+* [spinw.powspec](spinw_powspec.html) calculates powder averaged spin wave spectra
+* [spinw.energy](spinw_energy.html) calculates the ground state energy per spin
+* [spinw.moment](spinw_moment.html) calculates the size of the reduced moment due to quantum and thermal fluctuations
+* [spinw.spinwavesym](spinw_spinwavesym.html) calculates symbolic spin wave dispersion
+* [spinw.symbolic](spinw_symbolic.html) change between symbolic/numeric calculation
+* [spinw.meanfield](spinw_meanfield.html) mean field calculation of the wave vector dependent susceptibility
+* [spinw.fourier](spinw_fourier.html) calculates the Fourier transformation of the Hamiltonian
+* [spinw.fouriersym](spinw_fouriersym.html) calculates the Fourier transformation of a symbolic Hamiltonian
  
 #### Fitting spin wave spectrum
-
-* [spinw.fitspec](/spinw_fitspec) fits spin wave energies using global optimization
-* [spinw.matparser](/spinw_matparser) assigns new matrix values based on selectors
-* [spinw.horace](/spinw_horace) outputs spectrum for Horace
+ 
+* [spinw.fitspec](spinw_fitspec.html) fits spin wave spectra to experimental spectral data
+* [spinw.matparser](spinw_matparser.html) assigns new values to existing matrices
+* [spinw.horace](spinw_horace.html) calculates spin wave dispersion/correlation functions to be called from Horace
     
 #### Miscellaneous
-
-* [spinw.copy](/spinw_copy) hard copy of SpinW object
-* [spinw.export](/spinw_export) exports magnetic structure into file
-* [spinw.fileid](/spinw_fileid) controls text output of commands
-* [spinw.table](/spinw_table) formatted output of internal data
-* [spinw.validate](/spinw_validate) validates SpinW object
-* [spinw.version](/spinw_version) version of SpinW used to create the object
-* [spinw.struct](/spinw_struct) convert SpinW ojbect to struct
-* [spinw.clearcache](/spinw_clearcache) clear all data from cache, forcing recalculation (INTERNAL)
-* [spinw.spinw](/spinw_spinw) constructor
  
+* [spinw.copy](spinw_copy.html) clones spinw object with all data
+* [spinw.export](spinw_export.html) export data from spinw object into different file formats
+* [spinw.fileid](spinw_fileid.html) determines where the text out is written
+* [spinw.table](spinw_table.html) outputs easy to read tables of internal data
+* [spinw.validate](spinw_validate.html) validates spinw object properties
+* [spinw.version](spinw_version.html) returns the version of SpinW used to create the object
+* [spinw.struct](spinw_struct.html) extracts all public properties of spinw object into a struct
+* [spinw.clearcache](spinw_clearcache.html) clears the cache
+* [spinw.spinw](spinw_spinw.html) SPINW constructor
  
-#### Tutorials and documentation can be found here
-#### <a href='https//www.psi.ch/spinw'>https//www.psi.ch/spinw</a>
-#### Forum for questions
-#### <a href='https//groups.google.com/forum/#!forum/spinwforum'>https//groups.google.com/forum/#!forum/spinwforum</a>
-#### Lates version and bug reports/feature requests
-#### <a href='https//github.com/tsdev/spinw'>https//github.com/tsdev/spinw</a>
+### Notes
  
-  Reference page in Doc Center
-     doc spinw
+Tutorials and documentation can be found at [psi.ch/spinw](https://psi.ch/spinw)
+ 
+Forum for questions on [Google Groups](https://groups.google.com/forum/#!forum/spinwforum)
+ 
+Lates version and bug reports/feature requests can be submitted on [GitHub](https://github.com/tsdev/spinw)
+ 
+### See also
+ 
+[spinw.copy](spinw_copy.html), [spinw.struct](spinw_struct.html), [Comparing handle and value classes](https://www.google.ch/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0ahUKEwjCvbbctqTWAhVBblAKHQxnAnIQFggyMAI&url=https%3A%2F%2Fwww.mathworks.com%2Fhelp%2Fmatlab%2Fmatlab_oop%2Fcomparing-handle-and-value-classes.html&usg=AFQjCNFoN4qQdn6rPXKWkQ7aoog9G-nHgA)
+ 
 

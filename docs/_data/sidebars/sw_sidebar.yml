@@ -224,6 +224,7 @@ entries:
       - title: Miscellaneous
         output: web, pdf
         subfolderitems:
+        - {title: spinw.clearcache, url: /spinw_clearcache.html, output: 'web, pdf'}
         - {title: spinw.copy, url: /spinw_copy.html, output: 'web, pdf'}
         - {title: spinw.corespec, url: /spinw_corespec.html, output: 'web, pdf'}
         - {title: spinw.delete, url: /spinw_delete.html, output: 'web, pdf'}

@@ -1,136 +1,156 @@
 classdef spinw < handle & matlab.mixin.SetGet
-    % SPINW class defines data structure and methods to calculate spin wave
-    % dispersion in magnetic crystals.
+    % class to store and solve magnetic Hamiltonians
     %
-    % obj = SPINW()
+    % * * *
+    % `obj = spinw()`
+    % * * *
     %
     % constructs a new spinw class object, with default parameters.
     %
-    % obj = SPINW(obj)
+    % * * *
+    % `obj = spinw(obj)`
+    % * * *
     %
-    % constructs new spinw class object. If obj is spinw class, it only
-    % checks its data integrity. If obj is struct type, it creates new
-    % spinw object and checks data integrity.
+    % constructs new spinw class object. If `obj` is spinw class, it only
+    % checks the integrity of its internal data structure. If `obj` is
+    % struct type, it creates new spinw object and checks data integrity.
     %
-    % obj = SPINW(file_path)
+    % * * *
+    % `obj = spinw(source)`
+    % * * *
     %
-    % construct new spinw class object, where file_path contains a string
-    % of a .cif/.fst file defining an input crystal and/or magnetic
-    % structure.
+    % construct new spinw class object, where `source` is either a file
+    % path pointing to a local cif or fst file or a link to an online file.
     %
-    % obj = SPINW(figure_handle)
+    % * * *
+    % `obj = spinw(figure_handle)`
+    % * * *
     %
-    % copy the SpinW object stored in a previous structural plot.
+    % copy the spinw object stored in a previous structural3D plot figure.
     %
     % The data structure behind the spinw object can be accessed by using
-    % STRUCT(obj). All fields of the struct type data behind the spinw
-    % object are accessible through the main field names of the obj object.
-    % For example the lattice parameters:
-    %   abc = obj.unit_cell.lat_const;
+    % `struct(obj)`. All fields of the struct type data behind the spinw
+    % object are accessible through the main field names of the `obj`
+    % object. For example the lattice parameters can be extracted using:
+    % ```matlab
+    %   abc = obj.unit_cell.lat_const
+    % ```
     %
     % spinw is a handle class, that means that only the handle of the
-    % object is copied in a swobj1 = swobj2 command. To create a copy
-    % (clone) of an spinw object use:
-    %    swobj1 = swobj2.COPY;
+    % object is copied in a `swobj1 = swobj2` command. To create a copy
+    % (clone) of an spinw object use
+    % ```matlab
+    %    swobj1 = swobj2.copy
+    % ```
     %
-    % See also: SPINW.COPY, SPINW.STRUCT,
-    % <a href='/Applications/MATLAB_R2012b.app/help/matlab/matlab_oop/comparing-handle-and-value-classes.html'>Comparing handle and value classes</a>.
+    % ### Methods
     %
-    % spinw methods:
+    % #### Lattice operations
     %
-    % Lattice operations:
-    %   genlattice      - defines lattice parameters, angles and symmetry
-    %   basisvector     - returns the basis vectors in a matrix
-    %   rl              - returns the reciprocal lattice vectors in a matrix
-    %   nosym           - reduces the lattice symmetry to P0
-    %   newcell         - generates an arbitrary new cell and reduces symmetry to P0
-    %   addatom         - adds a new atoms to the lattice
-    %   unitcell        - selects a subset of the symmetry inequivalent atoms 
-    %   abc             - returns a vector [a b c alpha beta gamma]
-    %   atom            - returns all symmetry generated atom
-    %   matom           - returns all symmetry generated magnetic atoms
-    %   natom           - returns the number of symmetry inequivalent atoms
-    %   formula         - returns basic unit cell information
-    %   disp            - return basic lattice information
-    %   symmetry        - returns whether symmetry is on (>P0)
+    %   spinw.genlattice
+    %   spinw.basisvector
+    %   spinw.rl
+    %   spinw.nosym
+    %   spinw.newcell
+    %   spinw.addatom
+    %   spinw.unitcell
+    %   spinw.abc
+    %   spinw.atom
+    %   spinw.matom
+    %   spinw.natom
+    %   spinw.formula
+    %   spinw.disp
+    %   spinw.symmetry
     %   
-    % Plotting:
-    %   plot            - plots crystal, magnetic structure and spin Hamiltonian
+    % #### Plotting
     %
-    % Crystallographic twin operations:
-    %   addtwin         - adds crystallographic twin
-    %   twinq           - determines reciprocal lattice positions in twins
-    %   notwin          - removes the twins
-    %   ntwin           - number of twins
+    %   spinw.plot
     %
-    % Magnetic structure operations:
-    %   genmagstr       - generate different types of magnetic structures
-    %   magstr          - returns the magnetic structure in a rotating frame representation
-    %   magtable        - returns a table of the magnetic structure
-    %   nmagext         - returns the number of magnetic moments in the supercell
-    %   optmagstr       - optimizes magnetic structure with constraints
-    %   optmagk         - optimizes the magnetic propagation vector
-    %   optmagsteep     - optimizes the moment directions for fixed-k
-    %   anneal          - simulated annealing of magnetic structures
-    %   annealloop      - simulated annealing and scanning a parameter in the Hamiltonian
-    %   structfact      - calculates magnetic structure factor (EXPERIMENTAL)
+    % #### Crystallographic twin operations
+    %
+    %   spinw.addtwin
+    %   spinw.twinq
+    %   spinw.notwin
+    %   spinw.ntwin
+    %
+    % #### Magnetic structure operations
+    %
+    %   spinw.genmagstr
+    %   spinw.magstr
+    %   spinw.magtable
+    %   spinw.nmagext
+    %   spinw.optmagstr
+    %   spinw.optmagk
+    %   spinw.optmagsteep
+    %   spinw.anneal
+    %   spinw.annealloop
+    %   spinw.structfact
     %   
-    % Matrix operations:
-    %   addmatrix        - add a new matrix to the internal data
-    %   getmatrix       - determines the symmetry allowed elements of a matrix
-    %   setmatrix       - generates matrix values based on symmetry allowed elements
-    %   nmat            - number of matrices
+    % #### Matrix operations
+    %
+    %   spinw.addmatrix
+    %   spinw.getmatrix
+    %   spinw.setmatrix
+    %   spinw.nmat
     %   
-    % Spin Hamiltonian generations:
-    %   quickham        - quick generation of Heisenberg Hamiltonian
-    %   gencoupling     - generates the list of bonds
-    %   addcoupling     - assigns a matrix to a bond
-    %   couplingtable   - lists information on the bonds
-    %   addaniso        - assigns a matrix to a magnetic ion as anisotropy
-    %   addg            - assigns a matrix to a magnetic ion as g-tensor
-    %   field           - stores the magnetic field
-    %   nbond           - number of bonds
-    %   temperature     - temperature for thermal population calculation
-    %   intmatrix       - returns the spin Hamiltonian after symmetry applied (INTERNAL)
-    %   symop           - generates the symmetry operators on bonds and magnetic atoms (INTERNAL)
-    %   setunit         - sets the physical units
+    % #### Spin Hamiltonian generations
+    %
+    %   spinw.quickham
+    %   spinw.gencoupling
+    %   spinw.addcoupling
+    %   spinw.couplingtable
+    %   spinw.addaniso
+    %   spinw.addg
+    %   spinw.field
+    %   spinw.nbond
+    %   spinw.temperature
+    %   spinw.intmatrix
+    %   spinw.symop
+    %   spinw.setunit
     %   
-    % Calculators:
-    %   spinwave        - linear spin wave solver
-    %   powspec         - powder spectrum calculator
-    %   energy          - ground state energy
-    %   moment          - moment reduction due to quantum fluctuations
-    %   spinwavesym     - symbolic spin wave solver
-    %   symbolic        - returns whether symbolic mode is on
-    %   meanfield       - mean field calculation of q-dependent susceptibility (EXPERIMENTAL)
-    %   fourier         - fourier transformation of the Hamiltonian (EXPERIMENTAL)
-    %   fouriersym      - symbolic fourier transformation (EXPERIMENTAL)
+    % #### Calculators
     %
-    % Fitting spin wave spectrum:
-    %   fitspec         - fits spin wave energies using global optimization
-    %   matparser       - assigns new matrix values based on selectors
-    %   horace          - outputs spectrum for Horace
+    %   spinw.spinwave
+    %   spinw.powspec
+    %   spinw.energy
+    %   spinw.moment
+    %   spinw.spinwavesym
+    %   spinw.symbolic
+    %   spinw.meanfield
+    %   spinw.fourier
+    %   spinw.fouriersym
+    %
+    % #### Fitting spin wave spectrum
+    %
+    %   spinw.fitspec
+    %   spinw.matparser
+    %   spinw.horace
     %   
-    % Miscellaneous:
-    %   copy            - hard copy of SpinW object
-    %   export          - exports magnetic structure into file
-    %   fileid          - controls text output of commands
-    %   table           - formatted output of internal data
-    %   validate        - validates SpinW object
-    %   version         - version of SpinW used to create the object
-    %   struct          - convert SpinW ojbect to struct
-    %   clearcache      - clear all data from cache, forcing recalculation (INTERNAL)
-    %   spinw           - constructor
+    % #### Miscellaneous
     %
+    %   spinw.copy
+    %   spinw.export
+    %   spinw.fileid
+    %   spinw.table
+    %   spinw.validate
+    %   spinw.version
+    %   spinw.struct
+    %   spinw.clearcache
+    %   spinw.spinw
     %
-    % Tutorials and documentation can be found here:
-    % <a href='https://www.psi.ch/spinw'>https://www.psi.ch/spinw</a>
-    % Forum for questions:
-    % <a href='https://groups.google.com/forum/#!forum/spinwforum'>https://groups.google.com/forum/#!forum/spinwforum</a>
-    % Lates version and bug reports/feature requests:
-    % <a href='https://github.com/tsdev/spinw'>https://github.com/tsdev/spinw</a>
+    % ### Notes
     %
-    
+    % Tutorials and documentation can be found at [psi.ch/spinw](https://psi.ch/spinw)
+    %
+    % Forum for questions on [Google Groups](https://groups.google.com/forum/#!forum/spinwforum)
+    %
+    % Lates version and bug reports/feature requests can be submitted on [GitHub](https://github.com/tsdev/spinw)
+    %
+    % ### See also
+    %
+    % [spinw.copy], [spinw.struct], [Comparing handle and value classes](https://www.google.ch/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0ahUKEwjCvbbctqTWAhVBblAKHQxnAnIQFggyMAI&url=https%3A%2F%2Fwww.mathworks.com%2Fhelp%2Fmatlab%2Fmatlab_oop%2Fcomparing-handle-and-value-classes.html&usg=AFQjCNFoN4qQdn6rPXKWkQ7aoog9G-nHgA)
+    %
+
     properties (SetObservable)
         % Stores the unit cell parameters.
         % Sub fields are:
@@ -402,25 +422,7 @@ classdef spinw < handle & matlab.mixin.SetGet
             
             nTwin = size(obj.twin.vol,2);
         end
-                
-    end
-    
-    methods(Hidden=true,Static=true)
-            function obj = loadobj(obj)
-                % restore property listeners
-                % add new listeners to the new object
-                if ~isempty(obj.cache.matom)
-                    % add listener to lattice and unit_cell fields
-                    obj.addlistenermulti(1);
-                end
-                if ~isempty(obj.cache.symop)
-                    % add listener to lattice, unit_cell and coupling fields
-                    obj.addlistenermulti(2);
-                end
-            end
-    end
         
-    methods(Hidden=true)
         function clearcache(obj, chgField)
             % clears the cache
             %
@@ -452,6 +454,25 @@ classdef spinw < handle & matlab.mixin.SetGet
                     delete(obj.propl(3:5));
             end
         end
+
+    end
+    
+    methods(Hidden=true,Static=true)
+            function obj = loadobj(obj)
+                % restore property listeners
+                % add new listeners to the new object
+                if ~isempty(obj.cache.matom)
+                    % add listener to lattice and unit_cell fields
+                    obj.addlistenermulti(1);
+                end
+                if ~isempty(obj.cache.symop)
+                    % add listener to lattice, unit_cell and coupling fields
+                    obj.addlistenermulti(2);
+                end
+            end
+    end
+        
+    methods(Hidden=true)
         
         function addlistenermulti(obj, chgField)
             % create the corresponding listeners to each cache subfield

@@ -2,7 +2,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % calculates dynamical spin-spin correlation function using linear spin wave theory
 %
 % * * *
-% `spectra = SPINWAVE(obj, hkl, 'option1', value1 ...)`
+% `spectra = spinwave(obj, hkl, 'option1', value1 ...)`
 % * * *
 %
 % Spin wave dispersion and spin-spin correlation function is calculated at
@@ -190,7 +190,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %               lab coordinate system, dimensins are $[3\times n_{hkl}]$.
 %   * `incomm`  Logical value, tells whether the calculated spectra is
 %               incommensurate or not.
-%   * `obj`     The hard copy of the input `obj`, see [spinw.copy].
+%   * `obj`     The copy (clone) of the input `obj`, see [spinw.copy].
 %
 % The number of magnetic modes (labelled by `nMode`) for commensurate
 % structures is double the number of magnetic atoms in the magnetic cell.

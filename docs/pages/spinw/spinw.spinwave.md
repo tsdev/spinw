@@ -6,7 +6,7 @@
 ---
  
 * * *
-`spectra = SPINWAVE(obj, hkl, 'option1', value1 ...)`
+`spectra = spinwave(obj, hkl, 'option1', value1 ...)`
 * * *
  
 Spin wave dispersion and spin-spin correlation function is calculated at
@@ -165,7 +165,7 @@ details see the [sw_mex](sw_mex.html) and [swpref.setpref](swpref_setpref.html) 
   * `omega`   Calculated spin wave dispersion with dimensions of
               $$[n_{mode}\times n_{hkl}]$$.
   * `Sab`     Dynamical structure factor with dimensins of
-              $$[3\times 3\times n_{Mode}\times n_{hkl}]$$. Each
+              $$[3\times 3\times n_{mode}\times n_{hkl}]$$. Each
               `(:,:,i,j)` submatrix contains the 9 correlation functions
               $$S^{xx}$$, $$S^{xy}$$, $$S^{xz}$$, etc. If given, magnetic form
               factor is included. Intensity is in ħ units, normalized
@@ -177,7 +177,7 @@ details see the [sw_mex](sw_mex.html) and [swpref.setpref](swpref_setpref.html) 
               $$x_i = \sum_j V_{ij} \times x_j'$$
               Only saved if `saveV` is true.
   * `Sabp`    Dynamical structure factor in the rotating frame,
-              dimensions are $$[3\times 3\times n_{Mode}\times n_{hkl}]$$,
+              dimensions are $$[3\times 3\times n_{mode}\times n_{hkl}]$$,
               but the number of modes are equal to twice the number of
               magnetic atoms.
   * `formfact`  Cell containing the labels of the magnetic ions if form
@@ -194,7 +194,7 @@ details see the [sw_mex](sw_mex.html) and [swpref.setpref](swpref_setpref.html) 
               lab coordinate system, dimensins are $$[3\times n_{hkl}]$$.
   * `incomm`  Logical value, tells whether the calculated spectra is
               incommensurate or not.
-  * `obj`     The hard copy of the input `obj`, see [spinw.copy](spinw_copy.html).
+  * `obj`     The copy (clone) of the input `obj`, see [spinw.copy](spinw_copy.html).
  
 The number of magnetic modes (labelled by `nMode`) for commensurate
 structures is double the number of magnetic atoms in the magnetic cell.
@@ -204,7 +204,7 @@ functions. For every $$Q$$ points in the following order:
 $$(Q-k_m,Q,Q+k_m)$$.
  
 If several twins exist in the sample, `omega` and `Sab` are packaged into
-a cell, that contains $$n_{Twin}$$ number of matrices.
+a cell, that contains $$n_{twin}$$ number of matrices.
  
 ### Example
  

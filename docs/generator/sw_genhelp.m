@@ -132,7 +132,7 @@ end
 for ii = 1:nPath
     cIdx = find([doctree(ii).content(:).isContents]);
     for jj = 1:numel(cIdx)
-        [doctree(ii).content(cIdx(jj)), tStruct] = helpcontentfun(doctree(ii).content(cIdx(jj)),doctree(ii).name,doctree(ii).isPackage || doctree(ii).isClass);
+        [doctree(ii).content(cIdx(jj)), tStruct] = helpcontentfun(doctree(ii).content(cIdx(jj)),doctree(ii));
     end
     % assign title from tList
     fList  = {doctree(ii).content(:).fun};
@@ -182,9 +182,9 @@ for ii = 1:nPath
         % title
         if content.isContents
             if doctree(ii).isPackage
-                content.frontmatter.title = ['Package ' doctree(ii).name];
+                content.frontmatter.title = [doctree(ii).name ' package'];
             elseif doctree(ii).isClass
-                content.frontmatter.title = ['Class ' doctree(ii).name];
+                content.frontmatter.title = [doctree(ii).name ' class'];
             else
                 content.frontmatter.title = ['Functions in ' doctree(ii).name];
             end
@@ -213,10 +213,16 @@ for ii = 1:nPath
     end
 end
 
-% remove H1 line from non-content files
+% remove H1 line from all help files and last 2 lines from class files
 for ii = 1:nPath
-    temp = cellfun(@(C)C(2:end),{doctree(ii).content(~[doctree(ii).content.isContents]).text},'UniformOutput',false);
-    [doctree(ii).content(~[doctree(ii).content.isContents]).text] = temp{:};
+    %temp = cellfun(@(C)C(2:end),{doctree(ii).content(~[doctree(ii).content.isContents]).text},'UniformOutput',false);
+    %[doctree(ii).content(~[doctree(ii).content.isContents]).text] = temp{:};
+    temp = cellfun(@(C)C(2:end),{doctree(ii).content.text},'UniformOutput',false);
+    [doctree(ii).content.text] = temp{:};
+
+    temp = cellfun(@(C)C(1:end-2),{doctree(ii).content([doctree(ii).content.isContents] & doctree(ii).isClass).text},'UniformOutput',false);
+    [doctree(ii).content([doctree(ii).content.isContents] & doctree(ii).isClass).text] = temp{:};
+
 end
 
 % YAML java
@@ -227,7 +233,7 @@ snakeyaml = org.yaml.snakeyaml.Yaml;
 % get all the help text
 content = [doctree.content];
 allhelp = {content.text};
-isCont  = [content.isContents];
+
 for ii = 1:numel(allhelp)
     allhelp{ii} = cellfun(@(C)[C newline],allhelp{ii},'UniformOutput',false);
     allhelp{ii} = [allhelp{ii}{:}];
@@ -237,7 +243,7 @@ pLink = cellfun(@(C)C.permalink,{content.frontmatter},'UniformOutput',false);
 fun   = {content.fun};
 % replace function names with links
 for ii = 1:numel(pLink)
-    allhelp(~isCont) = regexprep(allhelp(~isCont),['\[(' fun{ii} ')\]'],['[$1](' pLink{ii} ')']);
+    allhelp = regexprep(allhelp,['\[(' fun{ii} ')\]'],['[$1](' pLink{ii} ')']);
     %allhelp(~isCont) = regexprep(allhelp(~isCont),['(\W+?)(@?' fun{ii} '(\(\))?)(\W+)'],['$1[$2](' pLink{ii} ')$3']);
     %allhelp = regexprep(allhelp,['\n([^\<^\<].*?\W+?)(@?' fun{ii} '(\(\))?)(\W+)'],['$1[$2](' pLink{ii} ')$3']);
 end
@@ -386,56 +392,48 @@ str(sIdx) = cellfun(@(C)C(nSpace+1:end),str(sIdx),'UniformOutput',false);
 
 end
 
-function [doccontent, tList] = helpcontentfun(doccontent,name,isDot)
-% convert Contents.m text
+function [doccontent, tList] = helpcontentfun(doccontent,doctree)
+% convert Contents.m / class help text
 
 text = doccontent.text;
 
-oldheader = {'Files:' [name ' methods:']};
-newheader = {'### Files' '### Methods'};
+header = {'### Files' '### Methods'};
 % find line "Files" / "Methods"
-[lIdx, tIdx] = ismember(doccontent.text,oldheader);
-lIdx = find(lIdx);
+lIdx  = ismember(doccontent.text,header);
+lIdx  = find(lIdx);
+tList = struct('fun',{},'title',{});
+
+% generate H1 lines
+H1 = cellfun(@(C)C(1),{doctree.content.text});
+% generate all functions in the folder
+fList = {doctree.content.fun};
+
 if numel(lIdx) == 1
-    
-    tList = struct('fun',{},'title',{});
-    tIdx = tIdx(lIdx);
-    text{lIdx} = newheader{tIdx};
-    
-    firstLine = true;
-    
-    if isDot
-        ll2 = [name '.'];
-        ll3 = [name '_'];
-    else
-        ll2 = [];
-        ll3 = [];
-    end
+    endoftoc = false;
     
     title = '';
+    idx = lIdx+1;
     
-    for ii = lIdx+1:numel(text)
-        mIdx = find(text{ii}=='-',1,'first');
-        if ~isempty(mIdx) && all(text{ii}~=':')
-            line = strtrim({text{ii}(1:mIdx-1) text{ii}(mIdx+1:end)});
-            % add link
-            if firstLine
-                ll1 = newline;
-            else
-                ll1 = [];
-            end
-            text{ii} = [ll1 '* [' ll2 line{1} '](/' ll3 line{1} ') ' line{2:end}];
-            firstLine = false;
-            tList(end+1).fun = [ll2 line{1}]; %#ok<AGROW>
-            tList(end).title = title;
-        elseif any(text{ii}==':')
+    while idx<=numel(text) && ~endoftoc
+        if isempty(strtrim(text{idx}))
+        elseif text{idx}(1)=='#' && text{idx}(4)~='#'
+            % line starting with ###
+            endoftoc = true;
+        elseif text{idx}(1)=='#' && strcmp(text{idx}(1:4),'####')
             % sub header line
-            title = strtrim(text{ii});
-            title = title(1:end-1);
-            text{ii} = ['#### ' text{ii}(text{ii}~=':')];
-            firstLine = true;
+            title = strtrim(text{idx}(5:end));
+        else
+            % function reference
+            fun = strtrim(text{idx});
+            % add H1 line
+            fIdx = find(ismember(fList,fun),1);
+            if ~isempty(fIdx)
+                text{idx} = ['* [' fun '] ' H1{fIdx}];
+            end
+            tList(end+1).fun = fun; %#ok<AGROW>
+            tList(end).title = title;
         end
-        
+        idx = idx+1;
     end
     
     doccontent.text = text;

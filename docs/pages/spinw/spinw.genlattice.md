@@ -47,7 +47,7 @@ inpStr.lattice.lat_const = [3 3 4];
   The `symmetry.dat` file stores definition of the 230 space groups in
   standard settings as it is in the [International Tables of Crystallography](http://it.iucr.org/A/).
   Additional lines can be added to the `symmetry.dat` file using the
-  [swsym.add](swsym_add.html) function which later can be used in the `spgr` option.
+  [swsym.add] function which later can be used in the `spgr` option.
   
   If the `spgr` option is 0, no symmetry will be used. The
   [spinw.gencoupling](spinw_gencoupling.html) function will determine the equivalent bonds based on
@@ -98,6 +98,6 @@ $$P6$$ space group.
  
 ### See also
  
-[spinw](spinw.html), [swsym.add](swsym_add.html), [swsym.operator](swsym_operator.html), [spinw.gencoupling](spinw_gencoupling.html)
+[spinw](spinw.html), [swsym.add], [swsym.operator], [spinw.gencoupling](spinw_gencoupling.html)
  
 

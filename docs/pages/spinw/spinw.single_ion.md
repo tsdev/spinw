@@ -7,17 +7,26 @@
  
 ### Sub fields
  
-  aniso   vector contains 1 x nMagAtom integers, each integer
-          assignes one of the nMatrix from the .matrix field
-          to a magnetic atom in the spinw.matom list as a single
-          ion anisotropy (zeros for no anisotropy)
-  g       vector contains 1 x nMagAtom integers, each integer
-          assignes one of the nMatrix from the .matrix field
-          to a magnetic atom in the spinw.matom list as a
-          g-tensor
-  field   external magnetic field stored in a 1x3 vector,
-          default unit is Tesla
-  T       temperature, scalar, default unit is Kelvin
+`aniso`
+: Row vector that contains $$n_{magatom}$$ integers, each integer
+  assignes one of the matrices from the [spinw.matrix](spinw_matrix.html) property
+  to a magnetic atom in the generated [spinw.matom](spinw_matom.html) list as a single
+  ion anisotropy. Zero value of `aniso` means no single ion
+  anisotropy for the corresponding magnetic atom.
  
-See also SPINW.ADDANISO, SPINW.ADDG, SPINW.GETMATRIX, SPINW.SETMATRIX, SPINW.INTMATRIX.
+`g`
+: Row vector with $$n_{magatom}$$ integers, each integer
+  assignes one of the matrices from the [spinw.matrix](spinw_matrix.html) property
+  to a magnetic atom in the spinw.matom list as a
+  g-tensor. Zero value of `g` means a default g-value of 2 for
+  the corresponding atoms.
+ 
+`field`
+: External magnetic field stored in a row vector with 3 elements,
+  unit is defined in [spinw.unit](spinw_unit.html) (default unit is Tesla).
+ 
+`T`
+: Temperature, scalar, unit is defined in [spinw.unit](spinw_unit.html) (default
+  unit is Kelvin).
+ 
 

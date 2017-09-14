@@ -138,14 +138,6 @@ classdef spinw < handle & matlab.mixin.SetGet
     %   spinw.clearcache
     %   spinw.spinw
     %
-    % ### Notes
-    %
-    % Tutorials and documentation can be found at [psi.ch/spinw](https://psi.ch/spinw)
-    %
-    % Forum for questions on [Google Groups](https://groups.google.com/forum/#!forum/spinwforum)
-    %
-    % Lates version and bug reports/feature requests can be submitted on [GitHub](https://github.com/tsdev/spinw)
-    %
     % ### See also
     %
     % [spinw.copy], [spinw.struct], [Comparing handle and value classes](https://www.google.ch/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0ahUKEwjCvbbctqTWAhVBblAKHQxnAnIQFggyMAI&url=https%3A%2F%2Fwww.mathworks.com%2Fhelp%2Fmatlab%2Fmatlab_oop%2Fcomparing-handle-and-value-classes.html&usg=AFQjCNFoN4qQdn6rPXKWkQ7aoog9G-nHgA)
@@ -175,72 +167,120 @@ classdef spinw < handle & matlab.mixin.SetGet
         % : Label of the space group.
         %
         lattice
-        % Stores the atoms in the crystallographic unit cell.
-        % Sub fields are:
-        %   r       positions of the atoms in the unit cell, in a
-        %           3 x nAtom matrix, in lattice units
-        %   S       spin quantum number of the atoms, in a 1 x nAtom
-        %           vector, non-magnetic atoms have S=0
-        %   label   label of the atom, strings in a 1 x nAtom cell
-        %   color   color of the atom in 3 x nAtom matrix, where every
-        %           column is an 0-255 RGB color
-        %   ox      oxidation number of the atom, in a 1 x nAtom matrix
-        %   occ     site occupancy in a 1 x nAtom matrix
-        %   b       scattering length of the site for neutron and x-ray
-        %           stored in a 2 x nAtom matrix, first row is neutron,
-        %           second row is for x-ray
-        %   ff      form factor of the site stored in a 2 x 9 x nAtom
-        %           matrix, first row is the magnetic form factor for
-        %           neutrons, the second row is the charge form factor
-        %           for x-ray cross section
-        %   Z       atomic number
-        %   A       atomic mass (N+Z) for isotopes and -1 for natural
-        %           distribution of isotopes
-        %   biso    Isotropic displacement factors in units of Angstrom^2.
-        %           Definition is the same as in FullProf, defining the
-        %           Debye-Waller factor as:
-        %               Wd = 1/8*biso/d^2
-        %           including in the structure factor as exp(-2Wd)
+        % stores the atoms in the crystallographic unit cell
         %
-        % See also SPINW.ADDATOM, SPINW.ATOM, SPINW.MATOM, SPINW.NEWCELL, SPINW.PLOT.
+        % ### Sub fields
+        %
+        % `r`
+        % : Positions of the atoms in the unit cell, stored in a
+        %   matrix with dimensions of $[3\times n_{atom}]$, values are
+        %   in lattice units.
+        %
+        % `S`
+        % : Spin quantum number of the atoms, stored in a row vector with
+        %   $n_{atom}$ number of elements, non-magnetic atoms have `S=0`.
+        %
+        % `label`
+        % : Label of the atom, strings stored in a $[1\times n_{atom}]$
+        %   cell.
+        %
+        % `color`
+        % : Color of the atom stored in a matrix with dimensions of $[3\times n_{atom}]$, where every
+        %   column defines an RGB color with values between 0 and 255.
+        %
+        % `ox`
+        % : Oxidation number of the atom, stored in a $[1\times n_{atom}]$
+        %   matrix.
+        %
+        % `occ`
+        % : Site occupancy in a $[1\times n_{atom}]$ matrix.
+        %
+        % `b`
+        % : Scattering length of the atoms for neutron and x-ray
+        %   stored in a $[2\times n_{atom}]$ matrix, first row is neutron,
+        %   second row is for x-ray.
+        %
+        % `ff`
+        % : Form factor of the site stored in a $[2\times 9\times
+        %   n_{atom}]$ matrix, first row is the magnetic form factor for
+        %   neutrons, the second row is the charge form factor for x-ray
+        %   cross section.
+        %
+        % `Z`
+        % : Atomic number in a row vector.
+        %
+        % `A`
+        % : Atomic mass (N+Z) for isotopes and -1 for natural
+        %   distribution of isotopes stored in a row vector.
+        %
+        % `biso`
+        % : Isotropic displacement factors in units of \\Angstrom$^2$.
+        %   Definition is the same as in
+        %   [FullProf](https://www.ill.eu/sites/fullprof/), defining the
+        %   Debye-Waller factor as $W(d) = 1/8*b_{iso}/d^2$ which is
+        %   included in the structure factor as $\exp(-2W(d))$.
+        %
         unit_cell
-        % Stores the crystallographic twin parameters.
-        % Sub fields are:
-        %   rotc    rotation matrices in the xyz coordinate system for
-        %           every twin, stored in a 3 x 3 x nTwin matrix
-        %   vol     volume ratio of the different twins, stored in a
-        %           1 x nTwin vector
+        % stores the crystal twin parameters
         %
-        % See also SPINW.ADDTWIN, SPINW.TWINQ, SPINW.UNIT_CELL.
+        % ### Sub fields
+        %
+        % `rotc`
+        % : Rotation matrices in the $xyz$ coordinate system for
+        %   every twin, stored in a matrix with dimensions of $[3\times
+        %   3\times n_{twin}]$.
+        %
+        % `vol`
+        % : Volume ratio of the different twins, stored in a
+        %    row vector with $n_{twin}$ elements.
+        %
         twin
-        % Stores 3x3 matrices for using them in the Hailtonian.
-        % Sub fields are:
-        %   mat     stores the actual values of 3x3 matrices, in a
-        %           3 x 3 x nMatrix matrix, defult unit is meV
-        %   color   color assigned for every matrix, stored in a
-        %           3 x nMatrix matrix, with 0-255 RGB columns
-        %   label   label for every matrix, stored as string in a
-        %           1 x nMatrix cell
+        % stores 3x3 matrices for using them in the Hailtonian
         %
-        % See also SPINW.ADDMATRIX, SPINW.NTWIN.
+        % ### Sub fields
+        %
+        % `mat`
+        % : Stores the actual values of 3x3 matrices, in a matrix with
+        % dimensions of $[3\times 3\times n_{matrix}]$, if assigned for a 
+        % bond, the unit of energy is stored in [spinw.unit] (default value 
+        % is meV).
+        %
+        % `color`
+        % : Color assigned for every matrix, stored in a
+        %   matrix with dimensions of $[3\times n_{matrix}]$, with each
+        %   column defining an RGB value.
+        %
+        % `label`
+        % : Label for every matrix, stored as string in a cell with
+        %   dimensions of $[1\times n_{matrix}]$.
+        %
         matrix
         % stores single ion terms of the Hamiltonian
         %
         % ### Sub fields
         %
-        %   aniso   vector contains 1 x nMagAtom integers, each integer
-        %           assignes one of the nMatrix from the .matrix field
-        %           to a magnetic atom in the spinw.matom list as a single
-        %           ion anisotropy (zeros for no anisotropy)
-        %   g       vector contains 1 x nMagAtom integers, each integer
-        %           assignes one of the nMatrix from the .matrix field
-        %           to a magnetic atom in the spinw.matom list as a
-        %           g-tensor
-        %   field   external magnetic field stored in a 1x3 vector,
-        %           default unit is Tesla
-        %   T       temperature, scalar, default unit is Kelvin
+        % `aniso`
+        % : Row vector that contains $n_{magatom}$ integers, each integer
+        %   assignes one of the matrices from the [spinw.matrix] property
+        %   to a magnetic atom in the generated [spinw.matom] list as a single
+        %   ion anisotropy. Zero value of `aniso` means no single ion
+        %   anisotropy for the corresponding magnetic atom.
         %
-        % See also SPINW.ADDANISO, SPINW.ADDG, SPINW.GETMATRIX, SPINW.SETMATRIX, SPINW.INTMATRIX.
+        % `g`
+        % : Row vector with $n_{magatom}$ integers, each integer
+        %   assignes one of the matrices from the [spinw.matrix] property
+        %   to a magnetic atom in the spinw.matom list as a
+        %   g-tensor. Zero value of `g` means a default g-value of 2 for
+        %   the corresponding atoms.
+        %
+        % `field`
+        % : External magnetic field stored in a row vector with 3 elements,
+        %   unit is defined in [spinw.unit] (default unit is Tesla).
+        %
+        % `T`
+        % : Temperature, scalar, unit is defined in [spinw.unit] (default
+        %   unit is Kelvin).
+        %
         single_ion
         % stores the list of bonds
         %

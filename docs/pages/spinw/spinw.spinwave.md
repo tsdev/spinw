@@ -22,7 +22,7 @@ which is not checked programatically.
  
 Some of the code of the function can run faster if mex files are used. To
 switch on mex files, use the `swpref.setpref('usemex',true)` command. For
-details see the [sw_mex](sw_mex.html) and [swpref.setpref](swpref_setpref.html) functions.
+details see the [sw_mex] and [swpref.setpref] functions.
  
  
 ### Input
@@ -83,7 +83,7 @@ details see the [sw_mex](sw_mex.html) and [swpref.setpref](swpref_setpref.html) 
 : If true, the g-tensor will be included in the spin-spin correlation
   function. Including anisotropic g-tensor or different
   g-tensor for different ions is only possible here. Including a simple
-  isotropic g-tensor is possible afterwards using the [sw_instrument](sw_instrument.html)
+  isotropic g-tensor is possible afterwards using the [sw_instrument]
   function.
  
 `fitmode`
@@ -218,6 +218,6 @@ triangular lattice antiferromagnet ($$S=1$$, $$J=1$$) along the $$(h,h,0)$$
 direction in reciprocal space.
  
 ### See also
-[spinw](spinw.html), [spinw.spinwavesym](spinw_spinwavesym.html), [sw_mex](sw_mex.html) and [spinw.powspec](spinw_powspec.html)
+[spinw](spinw.html), [spinw.spinwavesym](spinw_spinwavesym.html), [sw_mex] and [spinw.powspec](spinw_powspec.html)
  
 

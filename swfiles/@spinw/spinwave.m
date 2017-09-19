@@ -1,35 +1,56 @@
 function spectra = spinwave(obj, hkl, varargin)
 % calculates spin correlation function using linear spin wave theory
 %
-% * * *
-% `spectra = spinwave(obj, hkl, 'option1', value1 ...)`
-% * * *
+% ### Syntax
 %
-% Spin wave dispersion and spin-spin correlation function is calculated at
-% the reciprocal space points $k$. The function can deal with arbitrary
-% magnetic structure and magnetic interactions as well as single ion
-% anisotropy and magnetic field. Biquadratic exchange interactions are also
-% implemented, however only for $k=0$ magnetic structures.
+% `spectra = spinwave(obj,Q)`
+%
+% `spectra = spinwave(___,Name,Value)`
+%
+% ### Description
+%
+% `spinwave(obj,Q)` calculates spin wave dispersion and spin-spin
+% correlation function at the reciprocal space points $Q$. The function can
+% solve any single-k magnetic structure exactly and any multi-k magnetic
+% structure appoximately and quadratic spinw-spin interactions as well as
+% single ion anisotropy and magnetic field. Biquadratic exchange
+% interactions are also implemented, however only for $k_m=0$ magnetic
+% structures.
 %
 % If the magnetic ordering wavevector is non-integer, the dispersion is
-% calculated using a coordinate system rotating from cell to cell. In this
-% case the spin Hamiltonian has to fulfill this extra rotational symmetry
-% which is not checked programatically.
+% calculated using a coordinate system rotating from unit cell to unit
+% cell. In this case the spin Hamiltonian has to fulfill this extra
+% rotational symmetry which is not checked programatically.
 %
 % Some of the code of the function can run faster if mex files are used. To
 % switch on mex files, use the `swpref.setpref('usemex',true)` command. For
 % details see the [sw_mex] and [swpref.setpref] functions.
 %
+% `spinwave(___,Name,Value)` specifies additional parameters for the
+% calculation.
 %
-% ### Input
+% ### Examples
+%
+% To calculate and plot the spin wave dispersion of the
+% triangular lattice antiferromagnet ($S=1$, $J=1$) along the $(h,h,0)$
+% direction in reciprocal space we create the built in triangular lattice
+% model using `sw_model`.
+%
+% ```
+% >>tri = sw_model('triAF',1);
+% >>spec = tri.spinwave({[0 0 0] [1 1 0]});
+% >>sw_plotspec(spec)
+% ```
+% 
+% ### Input arguments
 %
 % `obj`
 % : [spinw] object.
 % 
-% `hkl`
+% `Q`
 % : Defines the $Q$ points where the spectra is calculated, in reciprocal
-%   lattice units, size is $[3\times n_{hkl}]$. $Q$ can be also defined by
-%   several linear scan in reciprocal space. In this case `hkl` is cell type,
+%   lattice units, size is $[3\times n_{Q}]$. $Q$ can be also defined by
+%   several linear scan in reciprocal space. In this case `Q` is cell type,
 %   where each element of the cell defines a point in $Q$ space. Linear scans
 %   are assumed between consecutive points. Also the number of $Q$ points can
 %   be specified as a last element, it is 100 by defaults. 
@@ -37,7 +58,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %   For example to define a scan along $(h,0,0)$ from $h=0$ to $h=1$ using
 %   200 $Q$ points the following input should be used:
 %   ```matlab
-%   hkl = {[0 0 0] [1 0 0]  50}
+%   Q = {[0 0 0] [1 0 0]  50}
 %   ```
 %
 %   For symbolic calculation at a general reciprocal space point use `sym`
@@ -45,15 +66,15 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 %   For example to calculate the spectrum along $(h,0,0)$ use:
 %   ```matlab
-%   hkl = [sym('h') 0 0]
+%   Q = [sym('h') 0 0]
 %   ```
 %   To calculate spectrum at a specific $Q$ point symbolically, e.g. at
 %   $(0,1,0)$ use:
 %   ```matlab
-%   hkl = sym([0 1 0])
+%   Q = sym([0 1 0])
 %   ```
 %
-% ### Options
+% ### Name-Value Pair Arguments
 %
 % `formfact`
 % : If true, the magnetic form factor is included in the spin-spin
@@ -95,7 +116,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % : If `true`, the spin wave modes will be sorted. Default is `true`.
 %
 % `optmem`
-% : Parameter to optimise memory usage. The list of hkl values will be cut
+% : Parameter to optimise memory usage. The list of Q values will be cut
 %   into `optmem` number of pieces and will be calculated piece by piece to
 %   decrease peak memory usage. Default value is 0, when the number
 %   of slices are determined automatically from the available free memory.
@@ -121,11 +142,10 @@ function spectra = spinwave(obj, hkl, varargin)
 %               will be diagonalised, which is computationally less
 %               efficient. Default value is `true`.
 %
-% {% include note.html content="
-%   Always use Colpa's method, except when imaginary eigenvalues are
+% {{note Always use Colpa's method, except when imaginary eigenvalues are
 %   expected. In this case only White's method work. The solution in this
 %   case is wrong, however by examining the eigenvalues it can give a hint
-%   where the problem is." %}
+%   where the problem is.}}
 %               
 % `saveH`
 % : If true, the quadratic form of the Hamiltonian is also saved in the
@@ -153,15 +173,15 @@ function spectra = spinwave(obj, hkl, varargin)
 %   * `fid` File ID provided by the `fopen` command, the output is written
 %           into the opened file stream.
 %
-% ### Output
+% ### Output Arguments
 %
 % `spectra`
 % : structure, with the following fields:
 % 
 %   * `omega`   Calculated spin wave dispersion with dimensions of
-%               $[n_{mode}\times n_{hkl}]$.
+%               $[n_{mode}\times n_{Q}]$.
 %   * `Sab`     Dynamical structure factor with dimensins of
-%               $[3\times 3\times n_{mode}\times n_{hkl}]$. Each
+%               $[3\times 3\times n_{mode}\times n_{Q}]$. Each
 %               `(:,:,i,j)` submatrix contains the 9 correlation functions
 %               $S^{xx}$, $S^{xy}$, $S^{xz}$, etc. If given, magnetic form
 %               factor is included. Intensity is in \\hbar units, normalized
@@ -173,7 +193,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %               $x_i = \sum_j V_{ij} \times x_j'$
 %               Only saved if `saveV` is true.
 %   * `Sabp`    Dynamical structure factor in the rotating frame,
-%               dimensions are $[3\times 3\times n_{mode}\times n_{hkl}]$,
+%               dimensions are $[3\times 3\times n_{mode}\times n_{Q}]$,
 %               but the number of modes are equal to twice the number of
 %               magnetic atoms.
 %   * `formfact`  Cell containing the labels of the magnetic ions if form
@@ -185,9 +205,9 @@ function spectra = spinwave(obj, hkl, varargin)
 %                               e_2 &= e_3\times e_1
 %               \end{align}$
 %
-%   * `hkl`     Contains the input $Q$ values, dimensions are $[3\times n_{hkl}]$.
+%   * `hkl`     Contains the input $Q$ values, dimensions are $[3\times n_{Q}]$.
 %   * `hklA`    Same $Q$ values, but in $\\Angstrom^{-1}$ unit, in the
-%               lab coordinate system, dimensins are $[3\times n_{hkl}]$.
+%               lab coordinate system, dimensins are $[3\times n_{Q}]$.
 %   * `incomm`  Logical value, tells whether the calculated spectra is
 %               incommensurate or not.
 %   * `obj`     The copy (clone) of the input `obj`, see [spinw.copy].
@@ -201,17 +221,6 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % If several twins exist in the sample, `omega` and `Sab` are packaged into
 % a cell, that contains $n_{twin}$ number of matrices.
-%
-% ### Example
-%
-% ```matlab
-%   tri = sw_model('triAF',1);
-%   sw_plotspec(tri.spinwave({[0 0 0] [1 1 0]}))
-% ```
-%
-% The above example will calculate and plot the spin wave dispersion of the
-% triangular lattice antiferromagnet ($S=1$, $J=1$) along the $(h,h,0)$
-% direction in reciprocal space.
 %
 % ### See also
 % [spinw], [spinw.spinwavesym], [sw_mex] and [spinw.powspec]

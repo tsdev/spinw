@@ -5,37 +5,61 @@
 
 ---
  
-spectra = POWSPEC(obj, hklA, 'Option1', Value1, ...)
+### Syntax
  
-The function calculates powder averaged spectrum by doing a 3D average in
-momentum space. This method is not efficient for low dimensional (2D, 1D)
-structures. To speed up the calculation with mex files use the
-swpref.setpref('usemex',true) option. The function can do powder average
-on arbitrary spectral function, but it is currently tested with two
-functions:
-      spinw.spinwave  Powder average spin wave spectrum.
-      spinw.scga      Powder averaged diffuse scattering spectrum.
-The type of spectral function is determined by the specfun option.
+`spectra = powspec(obj,QA)`
  
-Input:
+`spectra = powspec(___,Name,Value)`
  
-obj       spinw class object.
-hklA      Vector containing the Q values in inverse Angstrom where powder
-          spectra will be calculated, dimensions are [1 nQ].
+### Description
  
-Options:
+`spectra = powspec(obj,QA)` calculates powder averaged spin wave spectrum
+by averaging over spheres with different radius around origin in
+reciprocal space. This way the spin wave spectrum of polycrystalline
+samples can be calculated. This method is not efficient for low
+dimensional (2D, 1D) magnetic lattices. To speed up the calculation with
+mex files use the `swpref.setpref('usemex',true)` option. 
  
-specfun   Function handle of the spectrum calculation function. Default
-          is @spinwave.
-nRand     Number of random orientations per Q value, default is 100.
-Evect     Vector, defines the center/edge of the energy bins of the
-          calculated output, dimensions are is [1 nE]. The energy units
-          are defined by the unit.kB property of the spinw object. Default
-          value is an edge bin: linspace(0,1.1,101).
-binType   String, determines the type of bin give, possible options:
-              'cbin'    Center bin, the center of each energy bin is given.
-              'ebin'    Edge bin, the edges of each bin is given.
-          Default is 'ebin'.
+`spectra = powspec(___,Value,Name)` specifies additional parameters for
+the calculation. For example the function can calculate powder average of
+arbitrary spectral function, if it is specified using the `specfun`
+option. 
+ 
+### Input arguments
+ 
+`obj`
+: [spinw](spinw.html) object.
+ 
+`QA`
+: Vector containing the $$Q$$ values in units of the inverse of the length
+unit (see [spinw.unit](spinw_unit.html)) with default unit being Å$$^{-1}$$. The
+value are stored in a row vector with $$n_Q$$ elements.
+ 
+### Name-Value Pair Arguments
+ 
+`specfun`
+: Function handle of a solver. Default value is `@spinwave`. It is
+  currently tested with two functions:
+ 
+  * `spinw.spinwave` 	Powder average spin wave spectrum.
+  * `spinw.scga`      Powder averaged diffuse scattering spectrum.
+ 
+`nRand`
+: Number of random orientations per `QA` value, default value is 100.
+ 
+`Evect`
+: Row vector, defines the center/edge of the energy bins of the
+  calculated output, number of elements is $$n_E$$. The energy units are
+  defined by the `spinw.unit.kB` property. Default value is an edge bin
+  `linspace(0,1.1,101)`.
+ 
+`binType`
+: String, determines the type of bin, possible options:
+  * `'cbin'`    Center bin, the center of each energy bin is given.
+  * `'ebin'`    Edge bin, the edges of each bin is given.
+ 
+  Default value is `'ebin'`.
+ 
 T         Temperature to calculate the Bose factor in units
           depending on the Boltzmann constant. Default is taken from
           obj.single_ion.T value.

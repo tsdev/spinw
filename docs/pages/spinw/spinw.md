@@ -142,14 +142,6 @@ object is copied in a `swobj1 = swobj2` command. To create a copy
 * [spinw.clearcache](spinw_clearcache.html) clears the cache
 * [spinw.spinw](spinw_spinw.html) SPINW constructor
  
-### Notes
- 
-Tutorials and documentation can be found at [psi.ch/spinw](https://psi.ch/spinw)
- 
-Forum for questions on [Google Groups](https://groups.google.com/forum/#!forum/spinwforum)
- 
-Lates version and bug reports/feature requests can be submitted on [GitHub](https://github.com/tsdev/spinw)
- 
 ### See also
  
 [spinw.copy](spinw_copy.html), [spinw.struct](spinw_struct.html), [Comparing handle and value classes](https://www.google.ch/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0ahUKEwjCvbbctqTWAhVBblAKHQxnAnIQFggyMAI&url=https%3A%2F%2Fwww.mathworks.com%2Fhelp%2Fmatlab%2Fmatlab_oop%2Fcomparing-handle-and-value-classes.html&usg=AFQjCNFoN4qQdn6rPXKWkQ7aoog9G-nHgA)

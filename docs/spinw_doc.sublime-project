@@ -1,23 +1,21 @@
 {
-    "folders":
-    [
-        {
-            "follow_symlinks": true,
-            "path": "~/spinw_git/docs/"
-        }
-    ],
-
-    "build_systems":
-    [
-        // This will build your Jekyll site, and print a trace to the console
-        {
-            "name": "Jekyll",
-            // Change this directory to match your top-level Jekyll project folder
-            "working_dir": "$project_path",
-            //"cmd": "bundle exec jekyll build --incremental -t",
-            "cmd": "bundle exec jekyll serve --incremental --port 4001 --watch",
-            "shell": true,
-            "encoding": "UTF-8"
-        }
-    ]
+	"build_systems":
+	[
+		{
+			"cmd": "bundle exec jekyll serve --incremental --port 4001 --watch",
+			"encoding": "UTF-8",
+			"name": "Jekyll",
+			"shell": true,
+			"working_dir": "$project_path"
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "~/spinw_git/docs"
+		},
+		{
+			"path": "~/spinw_git/swfiles"
+		}
+	]
 }

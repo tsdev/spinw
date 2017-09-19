@@ -7,12 +7,12 @@ swver    = sw_version;
 
 %% generate help
 
-%fun0 = {'spinw.cache' 'spinw.unit' 'spinw' 'spinw.single_ion' 'spinw.unit_cell'};
+%fun0 = {'spinw' 'spinw.spinwave' 'spinw.powspec'};
 fun0 = cell(1,0);
 
 clc
 
-doctree = sw_genhelp('path',helpPath(1),'fun',fun0,'verstr',swver);
+doctree = sw_genhelp('path',helpPath,'fun',fun0,'verstr',swver);
 
 
 %% get all help

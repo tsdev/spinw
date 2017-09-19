@@ -265,6 +265,12 @@ cText = {'ang' 'hbar' 'alpha' 'beta' 'gamma' 'deg'};
 for ii = 1:numel(sText)
     allhelp = regexprep(allhelp,['\\\\' sText{ii}],symbol(cText{ii}));
 end
+% TODO add matlab after ```
+% TODO execute >> lines and generate images
+% TODO {{str convert to {% include str.html content="
+allhelp = regexprep(allhelp,'{{(\w+?) ','{% include $1.html content=" ');
+% TODO }}     convert to " %}
+allhelp = regexprep(allhelp,'}}','" %}');
 
 idx = 1;
 % generate the .md files

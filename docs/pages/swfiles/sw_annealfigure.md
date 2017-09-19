@@ -4,9 +4,16 @@
   permalink: sw_annealfigure.html, folder: swfiles, mathjax: 'true'}
 
 ---
- 
-hFigure = SW_ANNEALFIGURE()
- 
-See also SPINW.ANNEAL.
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### See Also
+
+[spinw.anneal](spinw_anneal.html)
 

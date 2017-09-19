@@ -3,10 +3,13 @@
   sidebar: sw_sidebar, permalink: sw_notify.html, folder: swfiles, mathjax: 'true'}
 
 ---
- 
-SW_NOTIFY(message)
- 
-SW_NOTIFY('option1',value1, ...)
+
+### Syntax
+
+` `
+
+### Description
+
  
  
 The function can be used to show a notification when a calculation is
@@ -19,6 +22,6 @@ $$ [sudo] gem install terminal-notifier
 You can also install it via Homebrew:
 $$ brew install terminal-notifier
  
-Options:
- 
+
+### Name-Value Pair Arguments
 

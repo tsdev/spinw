@@ -4,14 +4,19 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
- 
-points = SW_CIRCLE(r0, n, R, N) 
- 
-r0    Center of circle, dimensions are [3 1].
+
+### Syntax
+
+` `
+
+### Description
+
 n     Normal to the circle surface, dimensions are [3 1].
 R     Radius of the circle.
 N     Number of points on the curve.
  
-See also SW_CONE, SW_CIRCLESURF, SW_CYLINDER, SW_ARROW.
- 
+
+### See Also
+
+[sw_cone], [sw_circlesurf], [sw_cylinder] and [sw_arrow]
 

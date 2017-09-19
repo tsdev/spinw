@@ -4,29 +4,42 @@
   mathjax: 'true'}
 
 ---
- 
-obj = SW_MODEL(model, param, {fid})
- 
-Input:
- 
-model     String, name of the model, one of the following:
-              'triAF'     Triangular lattice Heisenberg antiferromagnet
-                          in the ab plane (a=b=3 Angstrom), with gamma =
-                          120 deg angle and optimised magnetic structure.
-                          Arbitrary number of Heisenberg interaction can
-                          be defined, param(1) gives the value of 1st
-                          neighbor interaction, param(2) the second etc.
-              'squareAF'  Square lattice antiferromagnet.
-              'chain'     Chain with further neighbor interactions.
- 
-param     Input parameters of the model, depending on which is selected.
-fid       Where to print the text output. Default is 1 to print to the
-          Command Window. Optional.
- 
-Output:
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### Input Arguments
+
+% `model`
+: String, name of the model, one of the following:
+ F'     Triangular lattice Heisenberg antiferromagnet
+        in the ab plane (a=b=3 Angstrom), with gamma =
+        120 deg angle and optimised magnetic structure.
+        Arbitrary number of Heisenberg interaction can
+        be defined, param(1) gives the value of 1st
+        neighbor interaction, param(2) the second etc.
+ reAF'  Square lattice antiferromagnet.
+ n'     Chain with further neighbor interactions.
+
+% `param`
+: Input parameters of the model, depending on which is selected.
+
+% `fid`
+: Where to print the text output. Default is 1 to print to the
+
+% `Command`
+:indow. Optional.
+
+### Output Arguments
+
 obj       spinw class object with the selected model.
- 
-See also SPINW.
- 
+
+### See Also
+
+[spinw](spinw.html)
 

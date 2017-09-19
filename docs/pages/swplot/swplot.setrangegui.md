@@ -4,17 +4,21 @@
   permalink: swplot_setrangegui.html, folder: swplot, mathjax: 'true'}
 
 ---
- 
-SWPLOT.SETRANGEGUI(~,~,hFigure)
- 
-This header is used for callbacks.
+
+### Syntax
+
+` `
+
+### Description
+
  
 SWPLOT.SETRANGEGUI({hFigure})
  
 This can be called anywhere.
  
-Input:
- 
-hFigure   Handle of the swplot figure. Default is the selected figure.
- 
+
+### Input Arguments
+
+% `hFigure`
+: Handle of the swplot figure. Default is the selected figure.
 

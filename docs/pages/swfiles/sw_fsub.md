@@ -3,22 +3,32 @@
   sidebar: sw_sidebar, permalink: sw_fsub.html, folder: swfiles, mathjax: 'true'}
 
 ---
- 
-cGraph = SW_FSUB(conn, nExt)
- 
-It creates a simple graph vertex coloring, determines non connected
+
+### Syntax
+
+` `
+
+### Description
+
 sublattices for Monte-Carlo calculation.
  
-Input:
- 
-conn          Contains edge indices which are connected
-              conn(1,idx)-->conn(2,idx), dimensions are [2 nConn].
-nExt          Size of the magnetic unit cell in units of cells.
- 
-Output:
- 
+
+### Input Arguments
+
+% `conn`
+:tains edge indices which are connected
+
+% `conn(1,idx)-->conn(2,idx),`
+:n(2,idx), dimensions are [2 nConn].
+
+% `nExt`
+:e of the magnetic unit cell in units of cells.
+
+### Output Arguments
+
 cGraph        Vector, that assigns every magnetic moment to a sublattice.
- 
-See also SPINW.ANNEAL.
- 
+
+### See Also
+
+[spinw.anneal](spinw_anneal.html)
 

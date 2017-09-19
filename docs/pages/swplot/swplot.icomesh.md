@@ -4,20 +4,26 @@
   folder: swplot, mathjax: 'true'}
 
 ---
- 
-TR = SWPLOT.ICOMESH(nSub)
- 
-The output is a triangulated surface of the unit sphere, containing
+
+### Syntax
+
+` `
+
+### Description
+
 20*4^nSub triangular faces. The output can be plotted using the trimesh()
 function.
  
-Input:
- 
-nSub      Number of subdivisions. Default is 0 for icosahedron mesh
-          output.
- 
-Output:
- 
+
+### Input Arguments
+
+% `nSub`
+: Number of subdivisions. Default is 0 for icosahedron mesh
+
+% ``
+:
+
+### Output Arguments
+
 TR        Class triangulation object for plotting with trimesh().
- 
 

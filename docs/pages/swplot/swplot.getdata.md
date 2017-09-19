@@ -4,15 +4,27 @@
   folder: swplot, mathjax: 'true'}
 
 ---
- 
-data = SWPLOT.GETDATA({hFigure},{field}
- 
-Input:
- 
-hFigure       Handle of the swplot figure. Default is the active figure.
-field         String, determined the stored field name. If omitted, all
-              stored data are returned.
- 
-See also GETAPPDATA.
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### Input Arguments
+
+% `hFigure`
+:   Handle of the swplot figure. Default is the active figure.
+
+% `field`
+:   String, determined the stored field name. If omitted, all
+
+% `stored`
+: are returned.
+
+### See Also
+
+[getappdata]
 

@@ -4,18 +4,28 @@
   mathjax: 'true'}
 
 ---
- 
-symStr = SWSYM.STR(symOp)
- 
-Input:
- 
-symOp     Symmetry operator with rotations matrices symOp(:,1:3,:) and
-          translation vectors in symOp(:,4,:).
- 
-Output:
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### Input Arguments
+
+% `symOp`
+:Symmetry operator with rotations matrices symOp(:,1:3,:) and
+
+% `translation`
+:n vectors in symOp(:,4,:).
+
+### Output Arguments
+
 strSym    String, contains the symmetry operations.
- 
-See also SWSYM.ADD, SWSYM.GENERATOR.
- 
+
+### See Also
+
+[swsym.add](swsym_add.html) and [swsym.generator](swsym_generator.html)
 

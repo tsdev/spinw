@@ -4,14 +4,24 @@
   folder: swfunc, mathjax: 'true'}
 
 ---
+
+### Syntax
+
+` `
+
+### Description
+
  
-y = FUNC.GAUSSFWHM(x,p)
- 
-The integral of the function is normalized assuming dx = 1.
- 
-Input:
-x         Coordinate vector where the function will be evaluated.
-p         Parameter vector: [I Centre FWHM].
- 
-See also SWFUNC.VOIGT, SWFUNC.GAUSS.
+
+### Input Arguments
+
+% `x`
+: Coordinate vector where the function will be evaluated.
+
+% `p`
+: Parameter vector: [I Centre FWHM].
+
+### See Also
+
+[swfunc.voigt] and [swfunc.gauss](swfunc_gauss.html)
 

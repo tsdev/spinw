@@ -4,15 +4,21 @@
   mathjax: 'true'}
 
 ---
- 
-bc = SW_NB(atomName)
- 
-Input:
- 
-atomName      String, contains the name of the atom or isotope (e.g. 13C for the isotope of carbon).
- 
-Output:
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### Input Arguments
+
+% `atomName`
+: String, contains the name of the atom or isotope (e.g. 13C for the isotope of carbon).
+
+### Output Arguments
+
 bc        Value of the bound coherent neutron scattering length  in fm.
- 
 

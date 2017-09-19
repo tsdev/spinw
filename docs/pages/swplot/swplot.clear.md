@@ -3,10 +3,13 @@
   sidebar: sw_sidebar, permalink: swplot_clear.html, folder: swplot, mathjax: 'true'}
 
 ---
- 
-SWPLOT.CLEAR(hFigure)
- 
-clears swplot figure correspondign to hFigure handle
+
+### Syntax
+
+` `
+
+### Description
+
  
 SWPLOT.CLEAR
  

@@ -4,7 +4,12 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
- 
-SW_COUNTER(reset, text)
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
 

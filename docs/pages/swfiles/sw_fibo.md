@@ -4,8 +4,12 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
-given number
- 
-[Flast Fprev] = sw_fibo(Fmax)
- 
+
+### Syntax
+
+`[flast fprev] = sw_fibo(fmax)`
+
+### Description
+
+
 

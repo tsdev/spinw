@@ -420,7 +420,9 @@ classdef spinw < handle & matlab.mixin.SetGet
         
     methods
         function obj = spinw(varargin)
-            % SPINW constructor
+            % spinw constructor
+            %
+            % obj = SPINW(Value,Name)
             %
             
             % update fid value

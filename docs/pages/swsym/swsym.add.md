@@ -4,18 +4,31 @@
   mathjax: 'true'}
 
 ---
- 
-sym = SWSYM.ADD(symStr, {symName})
- 
-It saves the symmetry generators in symStr into the symmetry.dat file and
+
+### Syntax
+
+` `
+
+### Description
+
 returns the line number of the space group in the symmetry.dat file.
  
-Input:
-symStr        String, that contains the operators of the space group. If
-              not only the generators are given, a possible set of
-              generators will be determined and only those will be saved.
-symName       Label for the space group.
- 
-See also SWSYM.GENERATOR, SWSYM.GENREDUCE.
- 
+
+### Input Arguments
+
+% `symStr`
+:    String, that contains the operators of the space group. If
+
+% `not`
+:he generators are given, a possible set of
+
+% `generators`
+: will be determined and only those will be saved.
+
+% `symName`
+:    Label for the space group.
+
+### See Also
+
+[swsym.generator](swsym_generator.html) and [swsym.genreduce](swsym_genreduce.html)
 

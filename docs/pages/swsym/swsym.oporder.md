@@ -4,22 +4,28 @@
   folder: swsym, mathjax: 'true'}
 
 ---
- 
-N = SWSYM.OPORDER(symOp)
- 
-It determines the order of the symOp symmetry operator, where
+
+### Syntax
+
+` `
+
+### Description
+
 symOp(:,1:3) is a rotation matrix and symOp(:,4) is a translation.
 Maximum order is 10 if the matrix is not a rotation matrix of any
 crystallographic point group.
  
-Input:
- 
-symOp 	Symmetry operator in a matrix.
- 
-Example:
- 
+
+### Examples
+
 R^sw_symorder([R zeros(3,1)]) == eye(3);
- 
-See also SWSYM.GENERATOR, SW_BASISMAT.
- 
+
+### Input Arguments
+
+% `symOp`
+:	Symmetry operator in a matrix.
+
+### See Also
+
+[swsym.generator](swsym_generator.html) and [sw_basismat](sw_basismat.html)
 

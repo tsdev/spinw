@@ -4,13 +4,23 @@
   permalink: swplot_tooltipstring.html, folder: swplot, mathjax: 'true'}
 
 ---
- 
-SWPLOT.TOOLTIPSTRING(swObject,{obj})
- 
-Input:
- 
-swObject  Struct, that contains the object data that is clicked on.
-obj       SpinW object that provides data to the tooltip text, can be
-          empty.
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### Input Arguments
+
+% `swObject`
+:ct  Struct, that contains the object data that is clicked on.
+
+% `obj`
+:pinw] object.
+
+% ``
+:
 

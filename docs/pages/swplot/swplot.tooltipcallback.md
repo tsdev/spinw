@@ -4,16 +4,30 @@
   permalink: swplot_tooltipcallback.html, folder: swplot, mathjax: 'true'}
 
 ---
- 
-SWPLOT.TOOLTIPCALLBACK(obj,hit,hFigure,hTransform)
- 
-Input:
- 
-obj       Object that was clicked on.
-hit       Hit object, defines the point where the mouse clicked.
-hFigure   Handle of parent swplot figure.
-hTransform Parent hgtransform object if exists.
- 
-See also SWPLOT.TOOLTIP.
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### Input Arguments
+
+% `obj`
+:nw] object.
+
+% `hit`
+:  Hit object, defines the point where the mouse clicked.
+
+% `hFigure`
+:  Handle of parent swplot figure.
+
+% `hTransform`
+:rm Parent hgtransform object if exists.
+
+### See Also
+
+[swplot.tooltip](swplot_tooltip.html)
 

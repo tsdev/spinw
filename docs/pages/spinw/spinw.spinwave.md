@@ -13,13 +13,13 @@
  
 ### Description
  
-`spinwave(obj,Q)` calculates spin wave dispersion and spin-spin
-correlation function at the reciprocal space points $$Q$$. The function can
-solve any single-k magnetic structure exactly and any multi-k magnetic
-structure appoximately and quadratic spinw-spin interactions as well as
-single ion anisotropy and magnetic field. Biquadratic exchange
-interactions are also implemented, however only for $$k_m=0$$ magnetic
-structures.
+`spinwave(obj,Q,Name,Value)` calculates spin wave dispersion and
+spin-spin correlation function at the reciprocal space points $$Q$$. The
+function can solve any single-k magnetic structure exactly and any
+multi-k magnetic structure appoximately and quadratic spinw-spin
+interactions as well as single ion anisotropy and magnetic field.
+Biquadratic exchange interactions are also implemented, however only for
+$$k_m=0$$ magnetic structures.
  
 If the magnetic ordering wavevector is non-integer, the dispersion is
 calculated using a coordinate system rotating from unit cell to unit
@@ -28,10 +28,7 @@ rotational symmetry which is not checked programatically.
  
 Some of the code of the function can run faster if mex files are used. To
 switch on mex files, use the `swpref.setpref('usemex',true)` command. For
-details see the [sw_mex](sw_mex.html) and [swpref.setpref](swpref_setpref.html) functions.
- 
-`spinwave(___,Name,Value)` specifies additional parameters for the
-calculation.
+details see the [sw_mex] and [swpref.setpref] functions.
  
 ### Examples
  
@@ -104,7 +101,7 @@ model using `sw_model`.
 : If true, the g-tensor will be included in the spin-spin correlation
   function. Including anisotropic g-tensor or different
   g-tensor for different ions is only possible here. Including a simple
-  isotropic g-tensor is possible afterwards using the [sw_instrument](sw_instrument.html)
+  isotropic g-tensor is possible afterwards using the [sw_instrument]
   function.
  
 `fitmode`
@@ -214,7 +211,7 @@ model using `sw_model`.
               lab coordinate system, dimensins are $$[3\times n_{Q}]$$.
   * `incomm`  Logical value, tells whether the calculated spectra is
               incommensurate or not.
-  * `obj`     The copy (clone) of the input `obj`, see [spinw.copy](spinw_copy.html).
+  * `obj`     The copy (clone) of the input `obj`, see [spinw.copy].
  
 The number of magnetic modes (labelled by `nMode`) for commensurate
 structures is double the number of magnetic atoms in the magnetic cell.
@@ -227,6 +224,6 @@ If several twins exist in the sample, `omega` and `Sab` are packaged into
 a cell, that contains $$n_{twin}$$ number of matrices.
  
 ### See also
-[spinw](spinw.html), [spinw.spinwavesym](spinw_spinwavesym.html), [sw_mex](sw_mex.html) and [spinw.powspec](spinw_powspec.html)
+[spinw](spinw.html), [spinw.spinwavesym], [sw_mex] and [spinw.powspec](spinw_powspec.html)
  
 

@@ -4,20 +4,30 @@
   folder: swplot, mathjax: 'true'}
 
 ---
+
+### Syntax
+
+` `
+
+### Description
+
  
-SWPLOT.SUBPLOT(m,n,p,space)
- 
-SWPLOT.SUBPLOT([m n p],space)
- 
-Input:
- 
-m,n,p     Three integer that defines subplot, for details see the
-          built-in subplot command.
-space     Vector with elements: [margin hgap vgap], where:
-              margin  Top and right margin at the figure edge.
-              hgap    Left margin and horizontal gap between axes.
-              vgap    Bottom margin and vertical gap between axes.
- 
-See also SUBPLOT.
- 
+
+### Input Arguments
+
+% `m,n,p`
+: Three integer that defines subplot, for details see the
+
+% `built-in`
+:subplot command.
+
+% `space`
+: Vector with elements: [margin hgap vgap], where:
+ n  Top and right margin at the figure edge.
+    Left margin and horizontal gap between axes.
+    Bottom margin and vertical gap between axes.
+
+### See Also
+
+[subplot]
 

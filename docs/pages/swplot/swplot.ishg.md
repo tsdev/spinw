@@ -4,12 +4,20 @@
   mathjax: 'true'}
 
 ---
- 
-ishg = SWPLOT.ISHG({hFigure})
- 
-Input:
- 
-hFigure       Handle of the swplot figure. Default is the selected
-              figure.
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### Input Arguments
+
+% `hFigure`
+: Handle of the swplot figure. Default is the selected
+
+% ``
+:
 

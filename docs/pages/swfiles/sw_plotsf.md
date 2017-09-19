@@ -4,18 +4,36 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
- 
-fHandle = SW_PLOTSF(sFact, 'Option1', Value1, ...)
- 
-Options:
- 
-range     Data range in inverse Angstrom, dimensions are [1 2] or [2 2]
-          for 1D and 2D plots respectively, default is the full data
-          range.
-log       Plot 10 based logarithmic intensity, default is false.
-colorbar  To show colorbar, default is true.
-plotStyle Options to the plot command, default is '-'.
- 
-See also SPINW, SPINW.STRUCTFACT, SW_INTSF.
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### Name-Value Pair Arguments
+
+% `range`
+:  Data range in inverse Angstrom, dimensions are [1 2] or [2 2]
+
+% `for`
+:nd 2D plots respectively, default is the full data
+
+% ``
+:
+
+% `log`
+:  Plot 10 based logarithmic intensity, default is false.
+
+% `colorbar`
+:  To show colorbar, default is true.
+
+% `plotStyle`
+:e Options to the plot command, default is '-'.
+
+### See Also
+
+[spinw](spinw.html), [spinw.structfact](spinw_structfact.html) and [sw_intsf](sw_intsf.html)
 

@@ -1,19 +1,30 @@
 function abc = abc(obj,ind)
 % returns lattice parameters and angles
-%
-% latVect = ABC(obj)
-%
-% Input:
-%
-% obj       spinw class object
-%
-% Output:
-%
-% latVect   Vetor with elements [a, b, c, alpha, beta, gamma],
-%           contains the lattice parameters and angles in
-%           Angstrom and degree units respectively.
-%
-% See also SPINW.HORACE.
+% 
+% ### Syntax
+% 
+% `latvect = abc(obj)`
+% 
+% ### Description
+% 
+% `latvect = abc(obj)` extracts the lattice vectors and angles from a
+% [spinw] object.
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Output Arguments
+% 
+% `latVect`
+% : Vetor with elements `[a, b, c, \\alpha, \\beta, \\gamma]`,
+%   contains the lattice parameters and angles by default in \\Angstrom and
+%   degree units respectively (see [spinw.unit] for details).
+% 
+% ### See Also
+% 
+% [spinw.horace]
 %
 
 abc = [obj.lattice.lat_const obj.lattice.angle*180/pi];

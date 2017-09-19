@@ -3,15 +3,27 @@
   sidebar: sw_sidebar, permalink: swplot_view.html, folder: swplot, mathjax: 'true'}
 
 ---
- 
-SWPLOT.VIEW(ax,{hFigure})
- 
-Input:
- 
-ax        String to change view of the 3D plot. Possible options:
-              'ab','bc','ac'  the two axes define the view plane,
-              'hk','kl','hl'  the two reciprocal lattice vectors define
-                              the view plane.
-hFigure   Handle of the swplot figure window, optional.
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### Input Arguments
+
+% `ax`
+:ring to change view of the 3D plot. Possible options:
+
+% `'ab','bc','ac'`
+:c'  the two axes define the view plane,
+
+% `'hk','kl','hl'`
+:l'  the two reciprocal lattice vectors define
+     the view plane.
+
+% `hFigure`
+:ndle of the swplot figure window, optional.
 

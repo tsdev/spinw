@@ -3,10 +3,13 @@
   sidebar: sw_sidebar, permalink: swplot_close.html, folder: swplot, mathjax: 'true'}
 
 ---
- 
-SWPLOT.CLOSE()
- 
-Closes the active swplot figure.
+
+### Syntax
+
+` `
+
+### Description
+
  
 SWPLOT.CLOSE('all')
  
@@ -16,10 +19,13 @@ SWPLOT.CLOSE(hFigure)
  
 closes the swplot figure of the given handle (hFigure).
  
-Input:
- 
-hFigure   Handle of the swplot figure window.
- 
-See also SWPLOT.FIGURE.
- 
+
+### Input Arguments
+
+% `hFigure`
+: Handle of the swplot figure window.
+
+### See Also
+
+[swplot.figure](swplot_figure.html)
 

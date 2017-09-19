@@ -4,25 +4,35 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
- 
-SW_UPDATE()
- 
-{onlineRev} = SW_UPDATE(installDir)
+
+### Syntax
+
+` `
+
+### Description
+
  
 sw_update creates a new folder with the latest release beside the current
 SpinW installation and add the new version to the working path (and
 removing the old one).
  
-Input:
- 
-installDir    Folder name, where the new version is installed. Default is
-              the parent folder of the current version of SpinW. If
-              installDir == '.' update will be installed to current
-              folder.
- 
-Output:
- 
+
+### Input Arguments
+
+% `installDir`
+:r    Folder name, where the new version is installed. Default is
+
+% `the`
+:t folder of the current version of SpinW. If
+
+% `installDir`
+:r == '.' update will be installed to current
+
+% ``
+:
+
+### Output Arguments
+
 onlineVer     If output is expected, the revision number of the online
-              SpinW is given. Optional.
- 
+SpinW is given. Optional.
 

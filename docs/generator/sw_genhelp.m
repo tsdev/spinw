@@ -248,6 +248,14 @@ for ii = 1:numel(allhelp)
     allhelp{ii} = cellfun(@(C)[C newline],allhelp{ii},'UniformOutput',false);
     allhelp{ii} = [allhelp{ii}{:}];
 end
+
+% temporary convert
+for ii = 1:numel(allhelp)
+    if isempty(regexp(allhelp{ii},'###','once'))
+        allhelp{ii} = sw_convhelp(allhelp{ii},false);
+    end
+end
+
 % generate all links
 pLink = cellfun(@(C)C.permalink,{content.frontmatter},'UniformOutput',false);
 fun   = {content.fun};
@@ -286,8 +294,12 @@ for ii = 1:nPath
         fid = fopen([docroot 'pages' filesep content.frontmatter.folder filesep content.fun '.md'],'w');
         % add newline
         %helpText = cellfun(@(C)[C newline],content.text,'UniformOutput',false);
-        helpText = cellfun(@(C)[C newline],allhelp(idx),'UniformOutput',false);
-        fprintf(fid,'%s',['---' newline frontmatter newline '---' newline helpText{:}]);
+%        help1 = allhelp{idx};
+        
+        %helpText = cellfun(@(C)[C newline],help1,'UniformOutput',false);
+        
+        %fprintf(fid,'%s',['---' newline frontmatter newline '---' newline helpText{:}]);
+        fprintf(fid,'%s',['---' newline frontmatter newline '---' newline allhelp{idx} newline]);
         fclose(fid);
         idx = idx + 1;
     end

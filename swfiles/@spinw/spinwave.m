@@ -9,13 +9,13 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % ### Description
 %
-% `spinwave(obj,Q)` calculates spin wave dispersion and spin-spin
-% correlation function at the reciprocal space points $Q$. The function can
-% solve any single-k magnetic structure exactly and any multi-k magnetic
-% structure appoximately and quadratic spinw-spin interactions as well as
-% single ion anisotropy and magnetic field. Biquadratic exchange
-% interactions are also implemented, however only for $k_m=0$ magnetic
-% structures.
+% `spinwave(obj,Q,Name,Value)` calculates spin wave dispersion and
+% spin-spin correlation function at the reciprocal space points $Q$. The
+% function can solve any single-k magnetic structure exactly and any
+% multi-k magnetic structure appoximately and quadratic spinw-spin
+% interactions as well as single ion anisotropy and magnetic field.
+% Biquadratic exchange interactions are also implemented, however only for
+% $k_m=0$ magnetic structures.
 %
 % If the magnetic ordering wavevector is non-integer, the dispersion is
 % calculated using a coordinate system rotating from unit cell to unit
@@ -25,9 +25,6 @@ function spectra = spinwave(obj, hkl, varargin)
 % Some of the code of the function can run faster if mex files are used. To
 % switch on mex files, use the `swpref.setpref('usemex',true)` command. For
 % details see the [sw_mex] and [swpref.setpref] functions.
-%
-% `spinwave(___,Name,Value)` specifies additional parameters for the
-% calculation.
 %
 % ### Examples
 %

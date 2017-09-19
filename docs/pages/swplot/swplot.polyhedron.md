@@ -4,21 +4,31 @@
   folder: swplot, mathjax: 'true'}
 
 ---
- 
-hPatch = SWPLOT.POLYHEDRON(vertices)
- 
-hPatch = SWPLOT.POLYHEDRON(handle,...
+
+### Syntax
+
+` `
+
+### Description
+
  
 Handle can be the handle of an axes object or a patch object. It either
 selects an axis to plot or a patch object (triangulated) to add vertices
 and faces.
  
-Input:
- 
-vertices      Matrix with dimensions [3 nObject nPoint], where nObject is
-              the number of polyhedra to draw, nPoint is the number of
-              vertices per polyhedron.
- 
-See also CONVHULLN.
- 
+
+### Input Arguments
+
+% `vertices`
+:      Matrix with dimensions [3 nObject nPoint], where nObject is
+
+% `the`
+:er of polyhedra to draw, nPoint is the number of
+
+% `vertices`
+: per polyhedron.
+
+### See Also
+
+[convhulln]
 

@@ -4,7 +4,12 @@
   mathjax: 'true'}
 
 ---
- 
-SW_PLOTCELL(dat,xLab,yLab,tLab,aRange,sc,depth)
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
 

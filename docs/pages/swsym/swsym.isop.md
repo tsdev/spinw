@@ -4,14 +4,24 @@
   folder: swsym, mathjax: 'true'}
 
 ---
- 
-result = SWSYM.ISOP(Op)
- 
-Input:
- 
-Op        Symemtry operators with rotation and translation. Dimensions
-          are [3 4 nOp].
- 
-See also SWSYM.GENERATOR, SWSYM.OPERATOR.
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### Input Arguments
+
+% `Op`
+:    Symemtry operators with rotation and translation. Dimensions
+
+% `are`
+: 4 nOp].
+
+### See Also
+
+[swsym.generator](swsym_generator.html) and [swsym.operator](swsym_operator.html)
 

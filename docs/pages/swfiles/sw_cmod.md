@@ -3,12 +3,17 @@
   sidebar: sw_sidebar, permalink: sw_cmod.html, folder: swfiles, mathjax: 'true'}
 
 ---
- 
-r = SW_CMOD(r, tol)
- 
-It calculates modulo one with tolerance, numbers larger than 1-epsilon >
+
+### Syntax
+
+` `
+
+### Description
+
 1-tol will be converted to -epsilon.
  
-See also MOD.
- 
+
+### See Also
+
+[mod]
 

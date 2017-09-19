@@ -4,9 +4,16 @@
   permalink: sw_initialize.html, folder: swfiles, mathjax: 'true'}
 
 ---
- 
-SW_INITIALIZE()
- 
-See also SPINW.
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### See Also
+
+[spinw](spinw.html)
 

@@ -4,10 +4,13 @@
   folder: swplot, mathjax: 'true'}
 
 ---
- 
-swplot.delete(hFigure,number)
- 
-Deletes objects and their data that corresponds to the given unique
+
+### Syntax
+
+` `
+
+### Description
+
 numbers on hFigure swplot figure.
  
 swplot.delete(number)

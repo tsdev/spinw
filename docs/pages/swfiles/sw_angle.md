@@ -4,16 +4,24 @@
   mathjax: 'true'}
 
 ---
- 
-phi = SW_ANGLE(V1,V2)
- 
-Input:
- 
-V1    Input vector with 3 elements.
-V2    Input vector with 3 elements.
- 
-Output:
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### Input Arguments
+
+% `V1`
+: Input vector with 3 elements.
+
+% `V2`
+: Input vector with 3 elements.
+
+### Output Arguments
+
 phi   Angle in radian.
- 
 

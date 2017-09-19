@@ -4,9 +4,16 @@
   mathjax: 'true'}
 
 ---
- 
-rootdir = SW_ROOTDIR()
- 
-See also SPINW.
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### See Also
+
+[spinw](spinw.html)
 

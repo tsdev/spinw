@@ -4,47 +4,47 @@
   mathjax: 'true'}
 
 ---
- 
-:code:`[S, k, n, name, pname, limit] = GM_PLANAR(M0, x)`
- 
-The function generates the parameters of arbitrary planar magnetic
+
+### Syntax
+
+` `
+
+### Description
+
 structure from phi angles (radian), ordering wave vector (rlu) and spin
 plane normal vector (xyz).
  
-Parameters
-----------
- 
-x:
-      Input parameters in the following order: 
-      :math:`(\varphi_1, \varphi_2, ... , k_x, k_y, k_z, n_\theta, n_\phi)`.
-absS:
-      Size of the spins: :math:`(S_1, S_2, ...)` or scalar if all
-      moments are equal.
- 
-Returns
--------
- 
-S:
-      Array, containing the spin orientations with dimensions of [3 nMagExt].
-      Every column contain the :math:`[S_x; S_y; S_z]` magnetic moment components of
-      a magnetic atom in the xyz coordinate system.
-k:
-      Magnetic ordering wavevector in rlu units in a row vector.
-n:
-      Normal vector around which the spins are rotating for non-zero
-      k-vector in a row vector.
-name:
-      String, storing the name of the function. Optional.
-pname:
-      Name of the input parameters in a cell: {'Phi1_rad', ...}.
-      Optional.
-limit:
-      Limits on the input parameters, dimensions are [2 nParam]. Every
-      column contains a lower and upper limit on the corresponding
-      parameter. Optional.
- 
-See also
---------
-gm_spherical3d, gm_planard.
- 
+
+### Input Arguments
+
+% `x`
+:put parameters in the following order: 
+
+% `(\varphi_1,`
+:i_1, \varphi_2, ... , k_x, k_y, k_z, n_\theta, n_\phi).
+
+% `absS`
+:ze of the spins: :math:`(S_1, S_2, ...)` or scalar if all
+
+% `moments`
+: are equal.
+
+### Output Arguments
+
+S     Array, containing the spin orientations with dimensions of [3 nMagExt].
+ Every column contain the :math:`[S_x; S_y; S_z]` magnetic moment components of
+ a magnetic atom in the xyz coordinate system.
+k     Magnetic ordering wavevector in rlu units in a row vector.
+n     Normal vector around which the spins are rotating for non-zero
+ k-vector in a row vector.
+name  String, storing the name of the function. Optional.
+pname Name of the input parameters in a cell: {'Phi1_rad', ...}.
+ Optional.
+limit Limits on the input parameters, dimensions are [2 nParam]. Every
+ column contains a lower and upper limit on the corresponding
+ parameter. Optional.
+
+### See Also
+
+[gm_spherical3d](gm_spherical3d.html) and [gm_planard](gm_planard.html)
 

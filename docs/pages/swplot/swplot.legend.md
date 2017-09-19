@@ -4,26 +4,33 @@
   mathjax: 'true'}
 
 ---
+
+### Syntax
+
+` `
+
+### Description
+
  
-SWPLOT.LEGEND({switch}, {hFigure})
- 
-status = SWPLOT.LEGEND
- 
-Input:
- 
-switch        One of the following string:
-                  'on'                show legend,
-                  'off'               hide legend,
-                  'refresh'           redraw legend,
-                  {'-','--','none'}   change the linestyle of the legend
-                                      frame.
-              Default is 'on'.
-hFigure       Handle of the swplot figure. Default is the selected
-              figure.
- 
-Example:
-  swplot.figure
-  swplot.addcircle([0 0 0],[0 0 1],1)
-  swplot.legend
- 
+
+### Examples
+
+swplot.figure
+swplot.addcircle([0 0 0],[0 0 1],1)
+swplot.legend
+
+### Input Arguments
+
+% `switch`
+: One of the following string:
+    'on'                show legend,
+    'off'               hide legend,
+    'refresh'           redraw legend,
+    {'-','--','none'}   change the linestyle of the legend
+                        frame.
+ efault is 'on'.
+
+% `hFigure`
+: Handle of the swplot figure. Default is the selected
+ igure.
 

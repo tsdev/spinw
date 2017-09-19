@@ -4,10 +4,13 @@
   mathjax: 'true'}
 
 ---
- 
-SWPLOT.BASE(BV, {hFigure})
- 
-BV is a matrix with dimensions of [3 3] and contains the three basis
+
+### Syntax
+
+` `
+
+### Description
+
 vectors of the new coordinate system as column vectors.
  
 SWPLOT.BASE(obj, {hFigure})
@@ -19,14 +22,25 @@ BV = SWPLOT.BASE
  
 Returns the basis vectors stored in the swplot figure.
  
-Input:
- 
-BV            Either a 3x3 matrix of the new basis vectors or a spinw
-              object where the new basis vectors will be the lattice
-              units of the stored crystal.
-hFigure       Handle of the swplot figure. Default is the selected
-              figure.
- 
-See also SWPLOT.PLOT.
- 
+
+### Input Arguments
+
+% `BV`
+:     Either a 3x3 matrix of the new basis vectors or a spinw
+
+% `object`
+:ere the new basis vectors will be the lattice
+
+% `units`
+:the stored crystal.
+
+% `hFigure`
+:     Handle of the swplot figure. Default is the selected
+
+% ``
+:
+
+### See Also
+
+[swplot.plot](swplot_plot.html)
 

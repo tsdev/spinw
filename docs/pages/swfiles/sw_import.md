@@ -4,16 +4,22 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
- 
-At present the function can import Crystallographic Information Framework
-(.cif) files or FullProf Studio (.fst) files. It is able to read .cif
-files from a web link.
+
+### Syntax
+
+`(.cif) files or fullprof studio (.fst) files. it is able to read .cif`
+
+### Description
+
  
 obj = SW_IMPORT(fName, {toPlot})
  
-Input:
- 
-fName     String, contain the file location and name of the .fst file.
-toPlot    If true the structure will be plotted, default is false.
- 
+
+### Input Arguments
+
+% `fName`
+: String, contain the file location and name of the .fst file.
+
+% `toPlot`
+: If true the structure will be plotted, default is false.
 

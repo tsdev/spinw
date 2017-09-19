@@ -4,9 +4,16 @@
   folder: swfiles, mathjax: 'true'}
 
 ---
- 
-SW_ANNEALPLOT(T, E, rate, param,fid)
- 
-See also SPINW.ANNEAL, SW_ANNEALFIGURE.
- 
+
+### Syntax
+
+` `
+
+### Description
+
+
+
+### See Also
+
+[spinw.anneal](spinw_anneal.html) and [sw_annealfigure](sw_annealfigure.html)
 

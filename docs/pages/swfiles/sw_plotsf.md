@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`fhandle = sw_plotsf(sfact,Name,Value)`
 
 ### Description
 
@@ -15,25 +15,21 @@
 
 ### Name-Value Pair Arguments
 
-% `range`
-:  Data range in inverse Angstrom, dimensions are [1 2] or [2 2]
+`range`
+: Data range in inverse Angstrom, dimensions are [1 2] or [2 2]
+  for 1D and 2D plots respectively, default is the full data
+  range.
 
-% `for`
-:nd 2D plots respectively, default is the full data
+`log`
+: Plot 10 based logarithmic intensity, default is false.
 
-% ``
-:
+`colorbar`
+: To show colorbar, default is true.
 
-% `log`
-:  Plot 10 based logarithmic intensity, default is false.
-
-% `colorbar`
-:  To show colorbar, default is true.
-
-% `plotStyle`
-:e Options to the plot command, default is '-'.
+`plotStyle`
+: Options to the plot command, default is '-'.
 
 ### See Also
 
-[spinw](spinw.html), [spinw.structfact](spinw_structfact.html) and [sw_intsf](sw_intsf.html)
+[spinw](spinw.html) \| [spinw.structfact](spinw_structfact.html) \| [sw_intsf](sw_intsf.html)
 

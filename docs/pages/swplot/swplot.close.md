@@ -6,10 +6,11 @@
 
 ### Syntax
 
-` `
+`swplot.close()`
 
 ### Description
 
+Closes the active swplot figure.
  
 SWPLOT.CLOSE('all')
  
@@ -22,7 +23,7 @@ closes the swplot figure of the given handle (hFigure).
 
 ### Input Arguments
 
-% `hFigure`
+`hFigure`
 : Handle of the swplot figure window.
 
 ### See Also

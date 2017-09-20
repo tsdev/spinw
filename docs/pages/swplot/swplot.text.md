@@ -6,36 +6,31 @@
 
 ### Syntax
 
-` `
+`htext = swplot.text(r, string, {fontsize})`
 
 ### Description
 
+hText = SWPLOT.TEXT(handle,...)
  
 Handle of an axes object that selects an axis to plot.
  
 
 ### Input Arguments
 
-% `handle`
-:  Handle of an axis object.
+`handle`
+: Handle of an axis object.
 
-% `r`
-:  Coordinate of the center of the text for a single text or
+`r`
+: Coordinate of the center of the text for a single text or
+  matrix with dimensions [3 nText] for multiple text.
 
-% `matrix`
-:ith dimensions [3 nText] for multiple text.
+`string`
+: String contains the text or cell of strings to plot multiple
+  text.
 
-% `string`
-:  String contains the text or cell of strings to plot multiple
-
-% ``
-:
-
-% `fontSize`
-:  Font size in pt, default value is stored in
-
-% ``
-:etpref('fontsize')
+`fontSize`
+: Font size in pt, default value is stored in
+  swpref.getpref('fontsize')
 
 ### See Also
 

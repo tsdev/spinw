@@ -7,18 +7,19 @@
 
 ### Syntax
 
-` `
+`y = lorfwhm(x,p)`
 
 ### Description
 
+The function is normalized to integral 1 for dx=1.
  
 
 ### Input Arguments
 
-% `x`
+`x`
 : Vector of coordinate values where the function is evaluated.
 
-% `p`
+`p`
 : Parameter vector with values  p = [I Centre FWHM].
 
 ### See Also

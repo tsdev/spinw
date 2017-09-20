@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`sw_annealplot(t, e, rate, param,fid)`
 
 ### Description
 
@@ -15,5 +15,5 @@
 
 ### See Also
 
-[spinw.anneal](spinw_anneal.html) and [sw_annealfigure](sw_annealfigure.html)
+[spinw.anneal](spinw_anneal.html) \| [sw_annealfigure](sw_annealfigure.html)
 

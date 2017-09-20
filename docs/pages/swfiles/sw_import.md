@@ -7,19 +7,20 @@
 
 ### Syntax
 
-`(.cif) files or fullprof studio (.fst) files. it is able to read .cif`
+`at present the function can import crystallographic information framework`
 
 ### Description
 
+files from a web link.
  
 obj = SW_IMPORT(fName, {toPlot})
  
 
 ### Input Arguments
 
-% `fName`
+`fName`
 : String, contain the file location and name of the .fst file.
 
-% `toPlot`
+`toPlot`
 : If true the structure will be plotted, default is false.
 

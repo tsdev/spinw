@@ -6,23 +6,22 @@
 
 ### Syntax
 
-` `
+`cgraph = sw_fsub(conn, next)`
 
 ### Description
 
+It creates a simple graph vertex coloring, determines non connected
 sublattices for Monte-Carlo calculation.
  
 
 ### Input Arguments
 
-% `conn`
-:tains edge indices which are connected
+`conn`
+: Contains edge indices which are connected
+  conn(1,idx)-->conn(2,idx), dimensions are [2 nConn].
 
-% `conn(1,idx)-->conn(2,idx),`
-:n(2,idx), dimensions are [2 nConn].
-
-% `nExt`
-:e of the magnetic unit cell in units of cells.
+`nExt`
+: Size of the magnetic unit cell in units of cells.
 
 ### Output Arguments
 

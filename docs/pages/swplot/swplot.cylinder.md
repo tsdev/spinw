@@ -7,10 +7,11 @@
 
 ### Syntax
 
-` `
+`hpatch = swplot.cylinder(rstart, rend, r, {npatch}, {close})`
 
 ### Description
 
+The function can draw multiple cylinders with a single patch command for
 speedup.
  
 hPatch = SWPLOT.CYLINDER(handle,...)
@@ -22,32 +23,26 @@ and faces.
 
 ### Input Arguments
 
-% `handle`
-:  Handle of an axis or patch object. In case of patch object, the
+`handle`
+: Handle of an axis or patch object. In case of patch object, the
+  constructed faces will be added to the existing object instead
+  of creating a new one.
 
-% `constructed`
-:ted faces will be added to the existing object instead
+`rStart`
+: Coordinate of the starting point with dimensions [3 nCylinder].
 
-% `of`
-:ing a new one.
+`rEnd`
+: Coordinate of the end point with dimensions [3 nCylinder].
 
-% `rStart`
-:  Coordinate of the starting point with dimensions [3 nCylinder].
+`R`
+: Radius of the arrow body.
 
-% `rEnd`
-:  Coordinate of the end point with dimensions [3 nCylinder].
+`nPatch`
+: Number of points on the curve, default value is stored in
+  swpref.getpref('npatch').
 
-% `R`
-:  Radius of the arrow body.
-
-% `nPatch`
-:  Number of points on the curve, default value is stored in
-
-% ``
-:etpref('npatch').
-
-% `close`
-:  If true the cylinder is closed. Default is true.
+`close`
+: If true the cylinder is closed. Default is true.
 
 ### See Also
 

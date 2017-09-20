@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`rootdir = sw_rootdir()`
 
 ### Description
 

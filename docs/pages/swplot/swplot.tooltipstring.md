@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`swplot.tooltipstring(swobject,{obj})`
 
 ### Description
 
@@ -15,12 +15,10 @@
 
 ### Input Arguments
 
-% `swObject`
+`swObject`
 :ct  Struct, that contains the object data that is clicked on.
 
-% `obj`
+`obj`
 :pinw] object.
-
-% ``
-:
+     empty.
 

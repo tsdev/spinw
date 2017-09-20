@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`qm = sw_flatcone(q,Name,Value)`
 
 ### Description
 
@@ -15,29 +15,27 @@
 
 ### Input Arguments
 
-% `Q`
-:Input values in reciprocal space in the scattering plane in
-
-% `Angstrom^-1`
-:1 units, dimensions are [2 nQ].
+`Q`
+: Input values in reciprocal space in the scattering plane in
+  Angstrom^-1 units, dimensions are [2 nQ].
 
 ### Name-Value Pair Arguments
 
-% `omega`
+`omega`
 : Energy transfer value in meV, default is zero.
 
-% `lambda`
+`lambda`
 : Wavelength of the incident beam in Angstrom.
 
-% `ki`
+`ki`
 : Momentum of the incidend beam in Angstrom^-1.
 
-% `sense`
+`sense`
 : Scattering sense:
-    detectors are on the right hand side from the
-    incident beam direction, default.
-    detectors are on the left hand side from the
-    incident beam direction.
+      1       detectors are on the right hand side from the
+              incident beam direction, default.
+     -1       detectors are on the left hand side from the
+              incident beam direction.
 
 ### See Also
 

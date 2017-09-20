@@ -7,10 +7,11 @@
 
 ### Syntax
 
-` `
+`swplot.export(Name,Value)`
 
 ### Description
 
+The function will remove the tooltip before exporting to raster image.
 For vector graphics, also the legend will be removed as it causes a bug
 in the Matlab print command. Also vector graphics export does not support
 transparency, thus all transparency will be removed from the figure. Be
@@ -23,25 +24,19 @@ figure property restored after export.
 
 ### Name-Value Pair Arguments
 
-% `figure`
-:    Handle of the swplot figure. Default is the selected figure.
+`figure`
+: Handle of the swplot figure. Default is the selected figure.
 
-% `filename`
-:me  String, name of the image file. Image type will be determined
+`filename`
+: String, name of the image file. Image type will be determined
+  based on the extension. Supported graphics formats:
+      .png    Raster image.
+      .eps    Vector image.
+  If no filename provided, 
 
-% `based`
-:on the extension. Supported graphics formats:
- ng    Raster image.
- ps    Vector image.
-
-% `If`
-:filename provided, 
-
-% `res`
-:    Resolution for raster images in dpi, default value is 300. Set
-
-% `it`
-:0, to save the image with the screen resolution.
+`res`
+: Resolution for raster images in dpi, default value is 300. Set
+  it to 0, to save the image with the screen resolution.
 
 ### See Also
 

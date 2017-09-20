@@ -7,9 +7,15 @@ end
 
 % remove
 if any(fName==newline)
-    str   = [{''} strsplit(fName,newline)];
+    %str   = [{''} strsplit(fName,newline)];
+    str   = strsplit(fName,newline);
 else
     str   = strsplit(help(fName),newline);
+end
+
+% if there is no H1 line add an empty one
+if isempty(strtrim(str{1}))
+    str = [{' '} str];
 end
 
 % remove leading spaces
@@ -47,11 +53,9 @@ if ~isempty(saIdx)
     seealso = strsplit(seealso,' ');
     if numel(seealso)==1
         seealso1 = ['[' seealso{1} ']'];
-    elseif numel(seealso)==2
-        seealso1 = ['[' seealso{1} '] and [' seealso{2} ']'];
     else
-        seealso1 = sprintf('[%s], ',seealso{1:end-2});
-        seealso1 = [seealso1 '[' seealso{end-1} '] and [' seealso{end} ']'];
+        seealso1 = sprintf('[%s] \\| ',seealso{1:end-1});
+        seealso1 = [seealso1 '[' seealso{end} ']'];
     end
     % save back into string
     str{saIdx} = seealso1;

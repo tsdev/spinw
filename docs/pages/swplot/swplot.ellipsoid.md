@@ -6,10 +6,11 @@
 
 ### Syntax
 
-` `
+`hpatch = swplot.ellipsoid(r0,t,mesh)`
 
 ### Description
 
+The function can draw multiple ellipsoids with a single patch command.
 Significant speedup can be achieved by a single patch compared to ellipse
 per patch.
  
@@ -22,43 +23,27 @@ and faces.
 
 ### Input Arguments
 
-% `handle`
-:   Handle of an axis or patch object. In case of patch object, the
+`handle`
+: Handle of an axis or patch object. In case of patch object, the
+  constructed faces will be added to the existing object instead
+  of creating a new one.
 
-% `constructed`
-:cted faces will be added to the existing object instead
+`R0`
+: Center of the ellipsoid stored in a matrix with dimensions of
+  [3 nEllipse].
 
-% `of`
-:ting a new one.
+`T`
+: Transformation matrix that transforms a unit sphere to the
+  ellipse via: R' = T(:,:,i)*R
+  Dimensions are [3 3 nEllipse].
 
-% `R0`
-:   Center of the ellipsoid stored in a matrix with dimensions of
-
-% `[3`
-:ipse].
-
-% `T`
-:   Transformation matrix that transforms a unit sphere to the
-
-% `ellipse`
-: via: R' = T(:,:,i)*R
-
-% `Dimensions`
-:ons are [3 3 nEllipse].
-
-% `mesh`
-:   Mesh of the ellipse surface, a triangulation class object or an
-
-% `integer`
-: that used to generate an icosahedron mesh with #mesh
-
-% `number`
-:of additional triangulation. Default value is stored in
-
-% ``
-:getpref('nmesh')
+`mesh`
+: Mesh of the ellipse surface, a triangulation class object or an
+  integer that used to generate an icosahedron mesh with #mesh
+  number of additional triangulation. Default value is stored in
+  swpref.getpref('nmesh')
 
 ### See Also
 
-[triangulation] and [swplot.icomesh](swplot_icomesh.html)
+[triangulation] \| [swplot.icomesh](swplot_icomesh.html)
 

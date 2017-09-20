@@ -7,27 +7,24 @@
 
 ### Syntax
 
-` `
+`the code is optimised for a single ray.`
 
 ### Description
 
+SWPLOT.RAYTRIANGLE(V,F,ray)
  
 
 ### Input Arguments
 
-% `V`
-:   Vertex positions in a matrix with dimensions [nVertex 3].
+`V`
+: Vertex positions in a matrix with dimensions [nVertex 3].
 
-% `F`
-:   Faces in a matrix with dimensions [nFace 3], where 
- (F) = nVertex.
+`F`
+: Faces in a matrix with dimensions [nFace 3], where 
+      max(F) = nVertex.
 
-% `ray`
-:   Definition of the ray via 2 points in space, while the ray
-
-% `pointing`
-:g P1-->P2, stored in a matrix [P1;P2] with dimensions 
-
-% `[2`
-:
+`ray`
+: Definition of the ray via 2 points in space, while the ray
+  pointing P1-->P2, stored in a matrix [P1;P2] with dimensions 
+  [2 3].
 

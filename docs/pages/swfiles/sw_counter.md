@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`sw_counter(reset, text)`
 
 ### Description
 

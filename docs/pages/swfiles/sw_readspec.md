@@ -7,10 +7,11 @@
 
 ### Syntax
 
-` `
+`data = sw_readspec(datapath)`
 
 ### Description
 
+It reads experimental spin wave dispersion data from text file, whose
 location is defined in path.
  
 Format of the input data file:
@@ -18,8 +19,8 @@ Every line of the data file contains information about an energy scan at
 constant Q. Data consists of floating point numbers separated by space
 (first line can be a header line):
  
-QH QK QL minE maxE I1 E1 s1 I2 E2 s2 ...
-    where:
+  QH QK QL minE maxE I1 E1 s1 I2 E2 s2 ...
+      where:
  
 QH        H index of the Q point,
 QK        K index of the Q point,
@@ -28,7 +29,7 @@ minE      lower boundary of the E scan,
 maxE      upper boundary of the E scan,
 In        intensity of the n-th spin wave mode,
 En        center of the n-th spin wave mode, has to be in increasing
-        order,
+          order,
 sn        standard deviation of the corresponding energy
  
 The number of modes in a single line of the data file is unlimited,
@@ -63,5 +64,5 @@ QH    QK        QL      ENlim1  ENlim2  I1  EN1       s1    I2  EN2       s2
 
 ### See Also
 
-[sw_egrid](sw_egrid.html) and [spinw.fitspec](spinw_fitspec.html)
+[sw_egrid](sw_egrid.html) \| [spinw.fitspec](spinw_fitspec.html)
 

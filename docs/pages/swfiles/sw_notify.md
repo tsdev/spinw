@@ -6,10 +6,11 @@
 
 ### Syntax
 
-` `
+`sw_notify(message)`
 
 ### Description
 
+SW_NOTIFY('option1',value1, ...)
  
  
 The function can be used to show a notification when a calculation is

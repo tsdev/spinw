@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`data = swplot.getdata({hfigure},{field}`
 
 ### Description
 
@@ -15,14 +15,12 @@
 
 ### Input Arguments
 
-% `hFigure`
-:   Handle of the swplot figure. Default is the active figure.
+`hFigure`
+: Handle of the swplot figure. Default is the active figure.
 
-% `field`
-:   String, determined the stored field name. If omitted, all
-
-% `stored`
-: are returned.
+`field`
+: String, determined the stored field name. If omitted, all
+  stored data are returned.
 
 ### See Also
 

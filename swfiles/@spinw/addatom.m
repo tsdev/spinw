@@ -106,7 +106,7 @@ function addatom(obj, varargin)
 % 
 % ### See Also
 % 
-% [spinw.genlattice], [spinw.addmatrix], [swplot.color], [sw_mff] and [sw_cff]
+% [spinw.genlattice] \| [spinw.addmatrix] \| [swplot.color] \| [sw_mff] \| [sw_cff]
 %
 
 if nargin < 2

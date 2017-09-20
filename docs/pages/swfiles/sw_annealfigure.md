@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`hfigure = sw_annealfigure()`
 
 ### Description
 

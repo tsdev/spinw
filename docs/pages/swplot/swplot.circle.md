@@ -7,10 +7,11 @@
 
 ### Syntax
 
-` `
+`hpatch = swploit.circle(r0, n, r, {n})`
 
 ### Description
 
+hPatch = SWPLOIT.CIRCLE(handle,...)
  
 Handle can be the handle of an axes object or a patch object. It either
 selects an axis to plot or a patch object (triangulated) to add vertices
@@ -23,29 +24,23 @@ swplot.circle(zeros(3),eye(3),1,100)
 
 ### Input Arguments
 
-% `handle`
-:  Handle of an axis or patch object. In case of patch object, the
+`handle`
+: Handle of an axis or patch object. In case of patch object, the
+  constructed faces will be added to the existing object instead
+  of creating a new one.
 
-% `constructed`
-:ted faces will be added to the existing object instead
+`r0`
+: Center of the circle, vector with three elements.
 
-% `of`
-:ing a new one.
+`n`
+: Vector normal to the circle surface, vector with three elements.
 
-% `r0`
-:  Center of the circle, vector with three elements.
+`R`
+: Radius of the circle.
 
-% `n`
-:  Vector normal to the circle surface, vector with three elements.
-
-% `R`
-:  Radius of the circle.
-
-% `N`
-:  Number of points on the curve, default value is stored in
-
-% ``
-:etpref('npatch').
+`N`
+: Number of points on the curve, default value is stored in
+  swpref.getpref('npatch').
 
 ### See Also
 

@@ -7,80 +7,63 @@
 
 ### Syntax
 
-` `
+`swplot.plotbase(Name,Value)`
 
 ### Description
 
+hFigure = SWPLOT.PLOTBASE('Option1',Value1,...)
  
 
 ### Name-Value Pair Arguments
 
-% `mode`
-:  String that determines the type base to plot. Possible values
+`mode`
+: String that determines the type base to plot. Possible values
+  are:
+      abc     Plots the lattice vectors, default.
+      xyz     Plots the lattice Descartes coordinate system.
+      hkl     Plots the reciprocal lattice vectors.
 
-% ``
-:
-     Plots the lattice vectors, default.
-     Plots the lattice Descartes coordinate system.
-     Plots the reciprocal lattice vectors.
+`length`
+: Determines the length of the a, b and c arrows. If 0, the
+  length will be equal to the corresponding lattice parameters,
+  while if non-zero, the number determines the length in
+  Angstrom. Default is 2 Angstrom.
 
-% `length`
-:  Determines the length of the a, b and c arrows. If 0, the
+`label`
+: Logical variable, plots abc labels if true. Default is true.
 
-% `length`
-:ill be equal to the corresponding lattice parameters,
+`figure`
+: Handle of the swplot figure. Default is the selected figure.
 
-% `while`
-: non-zero, the number determines the length in
+`color`
+: Color of the arrows, default is red-green-blue for abc, stored
+  in the columns of a 3x3 matrix.
 
-% `Angstrom.`
-:. Default is 2 Angstrom.
+`R`
+: Radius value of arrow body, default is 0.06.
 
-% `label`
-:  Logical variable, plots abc labels if true. Default is true.
+`alpha`
+: Head angle of the arrow in degree units, default is 30 degree.
 
-% `figure`
-:  Handle of the swplot figure. Default is the selected figure.
+`lHead`
+: Length of the arrow head, default value is 0.5.
 
-% `color`
-:  Color of the arrows, default is red-green-blue for abc, stored
+`d`
+: Distance from origin in xyz units.
 
-% `in`
-:olumns of a 3x3 matrix.
+`dtext`
+: Distance from arrow and in xyz units.
 
-% `R`
-:  Radius value of arrow body, default is 0.06.
+`shift`
+: Column vector with 3 elements, the basis vectors will be
+  shifted by the given values in Angstrom unit. Default value is
+  [0;0;0].
 
-% `alpha`
-:  Head angle of the arrow in degree units, default is 30 degree.
+`translate`
+: If true, all plot objects will be translated to the figure
+  center. Default is false.
 
-% `lHead`
-:  Length of the arrow head, default value is 0.5.
-
-% `d`
-:  Distance from origin in xyz units.
-
-% `dtext`
-:  Distance from arrow and in xyz units.
-
-% `shift`
-:  Column vector with 3 elements, the basis vectors will be
-
-% `shifted`
-:by the given values in Angstrom unit. Default value is
-
-% ``
-:
-
-% `translate`
-:e If true, all plot objects will be translated to the figure
-
-% `center.`
-:Default is false.
-
-% `zoom`
-:  If true, figure will be automatically zoomed to the ideal size.
-
-% `Default`
-:is false.
+`zoom`
+: If true, figure will be automatically zoomed to the ideal size.
+  Default is false.
 

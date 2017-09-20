@@ -7,10 +7,11 @@
 
 ### Syntax
 
-` `
+`swplot.setrangegui(~,~,hfigure)`
 
 ### Description
 
+This header is used for callbacks.
  
 SWPLOT.SETRANGEGUI({hFigure})
  
@@ -19,6 +20,6 @@ This can be called anywhere.
 
 ### Input Arguments
 
-% `hFigure`
+`hFigure`
 : Handle of the swplot figure. Default is the selected figure.
 

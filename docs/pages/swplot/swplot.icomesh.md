@@ -7,21 +7,20 @@
 
 ### Syntax
 
-` `
+`tr = swplot.icomesh(nsub)`
 
 ### Description
 
+The output is a triangulated surface of the unit sphere, containing
 20*4^nSub triangular faces. The output can be plotted using the trimesh()
 function.
  
 
 ### Input Arguments
 
-% `nSub`
+`nSub`
 : Number of subdivisions. Default is 0 for icosahedron mesh
-
-% ``
-:
+  output.
 
 ### Output Arguments
 

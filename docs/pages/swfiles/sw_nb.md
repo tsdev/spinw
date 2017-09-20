@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`bc = sw_nb(atomname)`
 
 ### Description
 
@@ -15,7 +15,7 @@
 
 ### Input Arguments
 
-% `atomName`
+`atomName`
 : String, contains the name of the atom or isotope (e.g. 13C for the isotope of carbon).
 
 ### Output Arguments

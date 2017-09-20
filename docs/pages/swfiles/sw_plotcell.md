@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`sw_plotcell(dat,xlab,ylab,tlab,arange,sc,depth)`
 
 ### Description
 

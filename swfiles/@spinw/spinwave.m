@@ -220,7 +220,8 @@ function spectra = spinwave(obj, hkl, varargin)
 % a cell, that contains $n_{twin}$ number of matrices.
 %
 % ### See also
-% [spinw], [spinw.spinwavesym], [sw_mex] and [spinw.powspec]
+%
+% [spinw] \| [spinw.spinwavesym] \| [sw_mex] \| [spinw.powspec]
 %
 
 % for linear scans create the Q line(s)

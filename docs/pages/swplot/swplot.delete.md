@@ -7,10 +7,11 @@
 
 ### Syntax
 
-` `
+`swplot.delete(hfigure,number)`
 
 ### Description
 
+Deletes objects and their data that corresponds to the given unique
 numbers on hFigure swplot figure.
  
 swplot.delete(number)

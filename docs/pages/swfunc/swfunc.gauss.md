@@ -7,21 +7,22 @@
 
 ### Syntax
 
-` `
+`y = func.gauss(x,p)`
 
 ### Description
 
+The integral of the function is normalized assuming dx = 1.
  
 
 ### Input Arguments
 
-% `x`
+`x`
 : Coordinate vector where the function will be evaluated.
 
-% `p`
+`p`
 : Parameter vector: [I Centre sigma].
 
 ### See Also
 
-[swfunc.voigt] and [swfunc.gaussfwhm](swfunc_gaussfwhm.html)
+[swfunc.voigt] \| [swfunc.gaussfwhm](swfunc_gaussfwhm.html)
 

@@ -32,7 +32,7 @@ option.
  
 `QA`
 : Vector containing the $$Q$$ values in units of the inverse of the length
-unit (see [spinw.unit]) with default unit being Å$$^{-1}$$. The
+unit (see [spinw.unit](spinw_unit.html)) with default unit being Å$$^{-1}$$. The
 value are stored in a row vector with $$n_Q$$ elements.
  
 ### Name-Value Pair Arguments

@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`phi = sw_angle(v1,v2)`
 
 ### Description
 
@@ -15,10 +15,10 @@
 
 ### Input Arguments
 
-% `V1`
+`V1`
 : Input vector with 3 elements.
 
-% `V2`
+`V2`
 : Input vector with 3 elements.
 
 ### Output Arguments

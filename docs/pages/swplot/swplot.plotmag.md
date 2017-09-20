@@ -6,10 +6,11 @@
 
 ### Syntax
 
-` `
+`swplot.plotmag(Name,Value)`
 
 ### Description
 
+hFigure = SWPLOT.PLOTMAG(...)
  
 The function plots the magnetic structure of a SpinW object onto an
 swplot figure.
@@ -19,150 +20,108 @@ swplot figure.
 
 ### Name-Value Pair Arguments
 
-% `obj`
-:  SpinW object.
+`obj`
+: SpinW object.
 
-% `range`
-:  Plotting range of the lattice parameters in lattice units,
+`range`
+: Plotting range of the lattice parameters in lattice units,
+  dimensions are [3 2]. For example to plot the first unit cell,
+  use: [0 1;0 1;0 1]. Also the number unit cells can be given
+  along the a, b and c directions: [2 1 2], that is equivalent to
+  [0 2;0 1;0 2]. Default is the single unit cell.
 
-% `dimensions`
-:ns are [3 2]. For example to plot the first unit cell,
+`unit`
+: Unit in which the range is defined. It can be the following
+  string:
+      'lu'        Lattice units (default).
+      'xyz'       Cartesian coordinate system in Angstrom units.
 
-% `use:`
-:1;0 1;0 1]. Also the number unit cells can be given
+`mode`
+: String, defines the way the magnetic moments are plotted:
+      'all'       Plot both the rotation plane of incommensurate
+                  magnetic structures and the moment directions.
+      'circle'    Plot only the rotation plane of incommensurate
+                  magnetic structures.
+      'arrow'     Plots only the moment directions.
+      'none'      Don't plot anything.
 
-% `along`
-:e a, b and c directions: [2 1 2], that is equivalent to
+`figure`
+: Handle of the swplot figure. Default is the selected figure.
 
-% `[0`
-:;0 2]. Default is the single unit cell.
+`legend`
+: Whether to add the plot to the legend, default is true.
 
-% `unit`
-:  Unit in which the range is defined. It can be the following
+`label`
+: Whether to plot labels for atoms, default is true.
 
-% ``
-:
-         Lattice units (default).
- '       Cartesian coordinate system in Angstrom units.
+`dText`
+: Distance between item and its text label, default is 0.1
+  Angstrom.
 
-% `mode`
-:  String, defines the way the magnetic moments are plotted:
- '       Plot both the rotation plane of incommensurate
-         magnetic structures and the moment directions.
- cle'    Plot only the rotation plane of incommensurate
-         magnetic structures.
- ow'     Plots only the moment directions.
- e'      Don't plot anything.
+`fontSize`
+: Font size of the atom labels in pt, default value is stored in
+  swpref.getpref('fontsize').
 
-% `figure`
-:  Handle of the swplot figure. Default is the selected figure.
+`color`
+: Color of the magnetic moments:
+      'auto'      All moments get the same color as the magnetic
+                  atom.
+      'colorname' All moments will have the same color.
+      [R G B]     RGB code of the color.
 
-% `legend`
-:  Whether to add the plot to the legend, default is true.
+`scale`
+: Scaling factor for the lenght of the magnetic moments relative
+  to the length of the shortest bond (if there are no bonds, 3A 
+  is taken as bond length). Default is 0.4.
 
-% `label`
-:  Whether to plot labels for atoms, default is true.
+`normalize`
+: If true, all moment length will be normalized to the scale
+  factor, default is false.
 
-% `dText`
-:  Distance between item and its text label, default is 0.1
+`radius0`
+: Radius value of arrow body, default is 0.06.
 
-% ``
-:.
+`ang`
+: Angle of the arrow head in degree units, default is 30 degree.
 
-% `fontSize`
-:  Font size of the atom labels in pt, default value is stored in
+`lHead`
+: Length of the arrow head, default value is 0.5.
 
-% ``
-:etpref('fontsize').
+`alpha`
+: Transparency (alpha value) of the circle, representing the
+  rotation plane of the moments, default is 0.07.
 
-% `color`
-:  Color of the magnetic moments:
- o'      All moments get the same color as the magnetic
-         atom.
- orname' All moments will have the same color.
-  B]     RGB code of the color.
+`centered`
+: If true, the moment vector is centered on the atom, if false
+  the beggining of the spin vector is on the atom. Default is
+  true.
 
-% `scale`
-:  Scaling factor for the lenght of the magnetic moments relative
+`nPatch`
+: Number of points on the curve for the arrows, default
+  value is stored in swpref.getpref('npatch').
 
-% `to`
-:ength of the shortest bond (if there are no bonds, 3A 
+`tooltip`
+: If true, the tooltips will be shown when clicking on atoms.
+  Default is true.
 
-% `is`
-: as bond length). Default is 0.4.
+`shift`
+: Column vector with 3 elements, all vectors will be
+  shifted by the given value. Default value is [0;0;0].
 
-% `normalize`
-:e If true, all moment length will be normalized to the scale
+`replace`
+: Replace previous magnetic moment plot if true. Default is true.
 
-% `factor,`
-:default is false.
+`translate`
+: If true, all plot objects will be translated to the figure
+  center. Default is false.
 
-% `radius0`
-:  Radius value of arrow body, default is 0.06.
+`zoom`
+: If true, figure will be automatically zoomed to the ideal size.
+  Default is false.
 
-% `ang`
-:  Angle of the arrow head in degree units, default is 30 degree.
-
-% `lHead`
-:  Length of the arrow head, default value is 0.5.
-
-% `alpha`
-:  Transparency (alpha value) of the circle, representing the
-
-% `rotation`
-: plane of the moments, default is 0.07.
-
-% `centered`
-:  If true, the moment vector is centered on the atom, if false
-
-% `the`
-:ining of the spin vector is on the atom. Default is
-
-% ``
-:
-
-% `nPatch`
-:  Number of points on the curve for the arrows, default
-
-% `value`
-: stored in swpref.getpref('npatch').
-
-% `tooltip`
-:  If true, the tooltips will be shown when clicking on atoms.
-
-% `Default`
-:is true.
-
-% `shift`
-:  Column vector with 3 elements, all vectors will be
-
-% `shifted`
-:by the given value. Default value is [0;0;0].
-
-% `replace`
-:  Replace previous magnetic moment plot if true. Default is true.
-
-% `translate`
-:e If true, all plot objects will be translated to the figure
-
-% `center.`
-:Default is false.
-
-% `zoom`
-:  If true, figure will be automatically zoomed to the ideal size.
-
-% `Default`
-:is false.
-
-% `copy`
-:  If true, a hardcopy of the spinw object will be sved in the
-
-% `figure`
-:ata, otherwise just the handle of the spinw object, 
-
-% `thus`
-: figure can be updated when the spin object changed.
-
-% `Default`
-:value is false. 
+`copy`
+: If true, a hardcopy of the spinw object will be sved in the
+  figure data, otherwise just the handle of the spinw object, 
+  thus the figure can be updated when the spin object changed.
+  Default value is false. 
 

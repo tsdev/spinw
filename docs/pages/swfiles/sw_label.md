@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`[xlabel, xaxis] = sw_label(hkl,hkla) `
 
 ### Description
 
@@ -15,13 +15,13 @@
 
 ### Input Arguments
 
-% `hkl`
+`hkl`
 : Momentum transfer values in r.l.u., dimensions are [3 nQ].
 
-% `hklA`
+`hklA`
 : Momentum transfer values in Angstrom^-1, dimensions are [3 nQ].
 
-% `lUnit`
+`lUnit`
 : Length unit, given in a string.
 
 ### Output Arguments

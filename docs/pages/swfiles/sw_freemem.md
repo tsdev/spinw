@@ -7,9 +7,10 @@
 
 ### Syntax
 
-` `
+`mem = sw_freemem()`
 
 ### Description
 
+If it cannot determine the size of the free memory, it returns zero.
  
 

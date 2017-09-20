@@ -7,10 +7,11 @@
 
 ### Syntax
 
-` `
+`swplot.plotatom(Name,Value)`
 
 ### Description
 
+hFigure = SWPLOT.PLOTATOM(...)
  
 The function plots the crystal structure of a SpinW object onto an swplot
 figure.
@@ -20,98 +21,98 @@ figure.
 
 ### Name-Value Pair Arguments
 
-% `obj`
+`obj`
 : SpinW object.
 
-% `range`
+`range`
 : Plotting range of the lattice parameters in lattice units,
- imensions are [3 2]. For example to plot the first unit cell,
- se: [0 1;0 1;0 1]. Also the number unit cells can be given
- long the a, b and c directions: [2 1 2], that is equivalent to
- 0 2;0 1;0 2]. Default is the single unit cell.
+  dimensions are [3 2]. For example to plot the first unit cell,
+  use: [0 1;0 1;0 1]. Also the number unit cells can be given
+  along the a, b and c directions: [2 1 2], that is equivalent to
+  [0 2;0 1;0 2]. Default is the single unit cell.
 
-% `unit`
+`unit`
 : Unit in which the range is defined. It can be the following
- tring:
-    'lu'        Lattice units (default).
-    'xyz'       Cartesian coordinate system in Angstrom units.
+  string:
+      'lu'        Lattice units (default).
+      'xyz'       Cartesian coordinate system in Angstrom units.
 
-% `mode`
+`mode`
 : String, defines the types of atoms to plot:
-    'all'       Plot all atoms (default).
-    'mag'       Plot magnetic atoms only.
-    'nonmag'    Plot non-magnetic atoms only.
+      'all'       Plot all atoms (default).
+      'mag'       Plot magnetic atoms only.
+      'nonmag'    Plot non-magnetic atoms only.
 
-% `figure`
+`figure`
 : Handle of the swplot figure. Default is the selected figure.
 
-% `legend`
+`legend`
 : Whether to add the plot to the legend, default is true.
 
-% `label`
+`label`
 : Whether to plot labels for atoms, default is false.
 
-% `dText`
+`dText`
 : Distance between item and its text label, default is 0.1
- ngstrom.
+  Angstrom.
 
-% `fontSize`
+`fontSize`
 : Font size of the atom labels in pt, default is stored in
- wpref.getpref('fontsize').
+  swpref.getpref('fontsize').
 
-% `radius0`
+`radius0`
 : Constant atom radius, default value is 0.3 Angstrom.
 
-% `radius`
+`radius`
 : Defines the atom radius:
-    'fix'       Sets the radius of all atoms to the value
-                stored in radius0.
-    'auto'      use radius data from database based on the atom
-                label multiplied by radius0 value.
+      'fix'       Sets the radius of all atoms to the value
+                  stored in radius0.
+      'auto'      use radius data from database based on the atom
+                  label multiplied by radius0 value.
 
-% `color`
+`color`
 : Color of the atoms:
-    'auto'      All atom gets the color stored in obj.unit_cell.
-    'colorname' All atoms will have the same color.
-    [R G B]     RGB code of the color that fix the color of all
-                atoms.
+      'auto'      All atom gets the color stored in obj.unit_cell.
+      'colorname' All atoms will have the same color.
+      [R G B]     RGB code of the color that fix the color of all
+                  atoms.
 
-% `nMesh`
+`nMesh`
 : Resolution of the ellipse surface mesh. Integer number that is
- sed to generate an icosahedron mesh with #mesh number of
- dditional triangulation, default value is stored in
- wpref.getpref('nmesh')
+  used to generate an icosahedron mesh with #mesh number of
+  additional triangulation, default value is stored in
+  swpref.getpref('nmesh')
 
-% `tooltip`
+`tooltip`
 : If true, the tooltips will be shown when clicking on atoms.
- efault is true.
+  Default is true.
 
-% `shift`
+`shift`
 : Column vector with 3 elements, all atomic positions will be
- hifted by the given value in Angstrom units. Default value is
- 0;0;0].
+  shifted by the given value in Angstrom units. Default value is
+  [0;0;0].
 
-% `replace`
+`replace`
 : Replace previous atom plot if true. Default is true.
 
-% `translate`
+`translate`
 : If true, all plot objects will be translated to the figure
- enter. Default is false.
+  center. Default is false.
 
-% `zoom`
+`zoom`
 : If true, figure will be automatically zoomed to the ideal size.
- efault is false.
+  Default is false.
 
-% `copy`
+`copy`
 : If true, a hardcopy of the spinw object will be sved in the
- igure data, otherwise just the handle of the spinw object, 
- hus the figure can be updated when the spin object changed.
- efault value is false. 
+  figure data, otherwise just the handle of the spinw object, 
+  thus the figure can be updated when the spin object changed.
+  Default value is false. 
 
 ### Output Arguments
 
 hFigure           Handle of the swplot figure.
 The name of the objects that are created called 'atom' and 'atom_label'.
 To find the handles and the stored data on these objects, use e.g.
-sObject = swplot.findobj(hFigure,'name','atom')
+  sObject = swplot.findobj(hFigure,'name','atom')
 

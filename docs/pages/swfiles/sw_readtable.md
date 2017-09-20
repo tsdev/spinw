@@ -6,10 +6,11 @@
 
 ### Syntax
 
-` `
+`dat = sw_readtable(datasource, {delimiter},{nheader})`
 
 ### Description
 
+Function reads tabular data that has arbitrary header lines denoted with
 # and the last header line is followed by a column name line. The data
 can be arbitrary combination of strings and numbers. A predefined field
 will be added to the imported data 'MODE', this field contains any
@@ -41,10 +42,10 @@ into a matrix use the command:
 
 ### Input Arguments
 
-% `dataSource`
+`dataSource`
 : Data source, can be file, url or string.
 
-% `delimiter`
+`delimiter`
 : Delimiter of the data, default is whitespace.
 
 ### Output Arguments

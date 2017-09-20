@@ -6,10 +6,11 @@
 
 ### Syntax
 
-` `
+`r = sw_cmod(r, tol)`
 
 ### Description
 
+It calculates modulo one with tolerance, numbers larger than 1-epsilon >
 1-tol will be converted to -epsilon.
  
 

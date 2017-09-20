@@ -7,34 +7,35 @@
 
 ### Syntax
 
-` `
+`[alist, ssext] = sw_extendlattice(next, alist, {ss})`
 
 ### Description
 
+It creates a superlattice and all redefines all given bond for the larger
 superlattice.
  
 
 ### Input Arguments
 
-% `nExt`
+`nExt`
 : Number of unit cell extensions, dimensions are [1 3].
 
-% `aList`
+`aList`
 : List of the atoms, produced by spinw.matom.
 
-% `SS`
+`SS`
 : Interactions matrices in the unit cell, optional.
 
 ### Output Arguments
 
 aList         Parameters of the magnetic atoms.
 aList.RRext   Positions of magnetic atoms, assuming an extended unit
-cell, dimensions are [3 nMagExt].
+              cell, dimensions are [3 nMagExt].
 aList.Sext    Spin length of the magnetic atoms, dimensions are
-[1 nMagExt].
+              [1 nMagExt].
 SSext         Interaction matrix in the extended unit cell, struct type.
-In the struct every field is a matrix. Every column of the
-matrices describes a single interaction.
+              In the struct every field is a matrix. Every column of the
+              matrices describes a single interaction.
 SSext.iso     Isotropic exchange interactions.
 SSext.ani     Anisotropic exchange interations.
 SSext.dm      Dzyaloshinsky-Moriya interaction terms.

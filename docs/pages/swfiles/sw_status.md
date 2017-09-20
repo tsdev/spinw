@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`sw_status(percent, {mode},{fid},{title})`
 
 ### Description
 
@@ -15,32 +15,20 @@
 
 ### Input Arguments
 
-% `percent`
-:nt   Percentage of the calculation that is done.
+`percent`
+: Percentage of the calculation that is done.
 
-% `mode`
-:     Determines the time estimation, optional parameter:
+`mode`
+: Determines the time estimation, optional parameter:
+      1   Starts the time estimation.
+      0   Displays of the remaining time. (default)
+      2   Calculation finished.
 
-% `1`
-:tarts the time estimation.
-
-% `0`
-:isplays of the remaining time. (default)
-
-% `2`
-:alculation finished.
-
-% `fid`
-:     File identifier to print the output:
-
-% `0`
-:o nothing.
-
-% `1`
-:ext output to the Command Window. Default.
-
-% `2`
-:raphical output, using the waitbar() function.
+`fid`
+: File identifier to print the output:
+      0   Do nothing.
+      1   Text output to the Command Window. Default.
+      2   Graphical output, using the waitbar() function.
 
 ### See Also
 

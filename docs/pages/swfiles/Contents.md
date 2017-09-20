@@ -24,7 +24,7 @@ into separate libraries.
 #### Generate list of vectors in reciprocal space
  
 * [sw_qgrid](sw_qgrid.html) creates a Q grid
-* [sw_qscan](sw_qscan.html) creates linear scans between Q points in 3D
+* [sw_qscan](sw_qscan.html) creates continuous line between coordinates
  
 #### Resolution claculation and convolution
  

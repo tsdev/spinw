@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`swplot.zoom(mode, {hfigure})`
 
 ### Description
 
@@ -15,14 +15,12 @@
 
 ### Input Arguments
 
-% `mode`
-:   Either a number determining the relative zoom value, or 'auto'
+`mode`
+: Either a number determining the relative zoom value, or 'auto'
+  that zooms to see every object on the figure.
 
-% `that`
-:oms to see every object on the figure.
-
-% `hFigure`
-:   Handle of the swplot figure window, optional.
+`hFigure`
+: Handle of the swplot figure window, optional.
 
 ### See Also
 

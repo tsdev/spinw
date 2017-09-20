@@ -7,32 +7,33 @@
 
 ### Syntax
 
-` `
+`swplot.tooltip({text}, {hfigure}, {window})`
 
 ### Description
 
+status = SWPLOT.TOOLTIP
  
 
 ### Examples
 
-swplot.figure
-swplot.addcircle([0 0 0],[0 0 1],1)
-swplot.tooltip
+  swplot.figure
+  swplot.addcircle([0 0 0],[0 0 1],1)
+  swplot.tooltip
 
 ### Input Arguments
 
-% `text`
+`text`
 : String, if it is 'on'/'off' the tooltip will be switched
- n/off. Otherwise the text will be shown in the tooltip.
- efault is 'on'.
+  on/off. Otherwise the text will be shown in the tooltip.
+  Default is 'on'.
 
-% `hFigure`
+`hFigure`
 : Handle of the swplot figure. Default is the selected
- igure.
+  figure.
 
-% `window`
+`window`
 : If true, the tooltips will be shown in a separate window.
- efault is false.
+  Default is false.
 
 ### Output Arguments
 

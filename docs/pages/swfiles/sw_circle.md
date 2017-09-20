@@ -7,10 +7,11 @@
 
 ### Syntax
 
-` `
+`points = sw_circle(r0, n, r, n) `
 
 ### Description
 
+r0    Center of circle, dimensions are [3 1].
 n     Normal to the circle surface, dimensions are [3 1].
 R     Radius of the circle.
 N     Number of points on the curve.
@@ -18,5 +19,5 @@ N     Number of points on the curve.
 
 ### See Also
 
-[sw_cone], [sw_circlesurf], [sw_cylinder] and [sw_arrow]
+[sw_cone] \| [sw_circlesurf] \| [sw_cylinder] \| [sw_arrow]
 

@@ -6,10 +6,11 @@
 
 ### Syntax
 
-` `
+`hline = swplot.line(rstart, rend, {linestyle}, {linewidth},{multipatch})`
 
 ### Description
 
+Plots line disconnected segments between multiple rStart --> rEnd pairs
 of coordinates.
  
 hLine = SWPLOT.LINE(r, [], {lineStyle}, {lineWidth},{multiPatch})
@@ -25,59 +26,37 @@ and faces.
 
 ### Input Arguments
 
-% `handle`
-:   Handle of an axis or patch object. In case of patch object, the
+`handle`
+: Handle of an axis or patch object. In case of patch object, the
+  constructed faces will be added to the existing object instead
+  of creating a new one.
 
-% `constructed`
-:cted faces will be added to the existing object instead
+`rStart`
+: Coordinate(s) of the starting point, either a 3 element vector or
+  a matrix with dimensions [3 nLineSegment] to plot multiple line
+  segments.
 
-% `of`
-:ting a new one.
+`rEnd`
+: Coordinate(s) of the end point, either a 3 element vector or
+  a matrix with dimensions [3 nLineSegment] to plot multiple line
+  segments.
 
-% `rStart`
-:   Coordinate(s) of the starting point, either a 3 element vector or
+`r`
+: Matrix with dimensions [3 nCurve nPointPerCurve]. The function
+  will plot a nCurve number of disconnected curves. The i-th
+  curve will follow the x=r(1,i,:), y=r(2,i,:), z=r(3,i,:)
+  (parameteric) curve.
 
-% `a`
-:x with dimensions [3 nLineSegment] to plot multiple line
+`lineStyle`
+: Line style, default is '-' for continuous line.
 
-% ``
-:s.
+`lineWidth`
+: Line with in pt, default is 0.5.
 
-% `rEnd`
-:   Coordinate(s) of the end point, either a 3 element vector or
-
-% `a`
-:x with dimensions [3 nLineSegment] to plot multiple line
-
-% ``
-:s.
-
-% `r`
-:   Matrix with dimensions [3 nCurve nPointPerCurve]. The function
-
-% `will`
-:ot a nCurve number of disconnected curves. The i-th
-
-% `curve`
-:ill follow the x=r(1,i,:), y=r(2,i,:), z=r(3,i,:)
-
-% `(parameteric)`
-:teric) curve.
-
-% `lineStyle`
-:le Line style, default is '-' for continuous line.
-
-% `lineWidth`
-:th Line with in pt, default is 0.5.
-
-% `mPatch`
-:   If true, a separate patch object will be created per line
-
-% `segment.`
-:. Default is false, a single patch object will store all
-
-% `line`
-:gments.
+`mPatch`
+: If true, a separate patch object will be created per line
+  segment. Default is false, a single patch object will store all
+  line segments.
 
 ### See Also
 

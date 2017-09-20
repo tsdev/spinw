@@ -7,28 +7,25 @@
 
 ### Syntax
 
-` `
+`sym = swsym.add(symstr, {symname})`
 
 ### Description
 
+It saves the symmetry generators in symStr into the symmetry.dat file and
 returns the line number of the space group in the symmetry.dat file.
  
 
 ### Input Arguments
 
-% `symStr`
-:    String, that contains the operators of the space group. If
+`symStr`
+: String, that contains the operators of the space group. If
+  not only the generators are given, a possible set of
+  generators will be determined and only those will be saved.
 
-% `not`
-:he generators are given, a possible set of
-
-% `generators`
-: will be determined and only those will be saved.
-
-% `symName`
-:    Label for the space group.
+`symName`
+: Label for the space group.
 
 ### See Also
 
-[swsym.generator](swsym_generator.html) and [swsym.genreduce](swsym_genreduce.html)
+[swsym.generator](swsym_generator.html) \| [swsym.genreduce](swsym_genreduce.html)
 

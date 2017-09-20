@@ -7,25 +7,24 @@
 
 ### Syntax
 
-` `
+`swplot.subplot(m,n,p,space)`
 
 ### Description
 
+SWPLOT.SUBPLOT([m n p],space)
  
 
 ### Input Arguments
 
-% `m,n,p`
+`m,n,p`
 : Three integer that defines subplot, for details see the
+  built-in subplot command.
 
-% `built-in`
-:subplot command.
-
-% `space`
+`space`
 : Vector with elements: [margin hgap vgap], where:
- n  Top and right margin at the figure edge.
-    Left margin and horizontal gap between axes.
-    Bottom margin and vertical gap between axes.
+      margin  Top and right margin at the figure edge.
+      hgap    Left margin and horizontal gap between axes.
+      vgap    Bottom margin and vertical gap between axes.
 
 ### See Also
 

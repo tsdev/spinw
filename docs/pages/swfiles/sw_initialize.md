@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`sw_initialize()`
 
 ### Description
 

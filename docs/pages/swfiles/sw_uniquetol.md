@@ -7,19 +7,20 @@
 
 ### Syntax
 
-` `
+`[unique, firstidx] = sw_uniquetol(m,tol)`
 
 ### Description
 
+Two column vectors are considered unequal, if the distance between them
 is larger than the tolerance.
  
 
 ### Input Arguments
 
-% `M`
+`M`
 : Matrix that contains column vectors.
 
-% `tol`
+`tol`
 : Distance tolerance, default is 1e-5.
 
 ### Output Arguments

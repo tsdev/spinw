@@ -7,13 +7,13 @@ swver    = sw_version;
 
 %% generate help
 
-fun0 = {'spinw' 'spinw.formula' 'spinw.spinwave' 'spinw.powspec' 'spinw.addatom'};
+%fun0 = {'spinw' 'spinw.formula' 'spinw.spinwave' 'spinw.powspec' 'spinw.addatom'};
 %fun0 = {'spinw' 'spinw.clearcache'};
-%fun0 = cell(1,0);
+fun0 = cell(1,0);
 
 clc
 
-doctree = sw_genhelp('path',helpPath(1),'fun',fun0,'verstr',swver);
+doctree = sw_genhelp('path',helpPath,'fun',fun0,'verstr',swver);
 
 
 %% get all help

@@ -6,10 +6,11 @@
 
 ### Syntax
 
-` `
+`hpatch = swplot.arrow(rstart, rend, r, alpha, lhead, {npatch})`
 
 ### Description
 
+hPatch = SWPLOT.ARROW(handle,...)
  
 Handle can be the handle of an axes object or a patch object. It either
 selects an axis to plot or a patch object (triangulated) to add vertices
@@ -18,35 +19,29 @@ and faces.
 
 ### Input Arguments
 
-% `handle`
-:  Handle of an axis or patch object. In case of patch object, the
+`handle`
+: Handle of an axis or patch object. In case of patch object, the
+  constructed faces will be added to the existing object instead
+  of creating a new one.
 
-% `constructed`
-:ted faces will be added to the existing object instead
+`rStart`
+: Coordinate of the starting point.
 
-% `of`
-:ing a new one.
+`rEnd`
+: Coordinate of the end point.
 
-% `rStart`
-:  Coordinate of the starting point.
+`R`
+: Radius of the arrow body.
 
-% `rEnd`
-:  Coordinate of the end point.
+`alpha`
+: Angle of the head in degrees.
 
-% `R`
-:  Radius of the arrow body.
+`lHead`
+: Length of the head.
 
-% `alpha`
-:  Angle of the head in degrees.
-
-% `lHead`
-:  Length of the head.
-
-% `nPatch`
-:  Number of points on the curve, default value is stored in
-
-% ``
-:etpref('npatch').
+`nPatch`
+: Number of points on the curve, default value is stored in
+  swpref.getpref('npatch').
 
 ### See Also
 

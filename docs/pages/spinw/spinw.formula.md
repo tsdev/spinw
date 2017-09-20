@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`formula = formula(obj)`
 
 ### Description
 

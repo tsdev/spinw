@@ -6,10 +6,11 @@
 
 ### Syntax
 
-` `
+`swplot.clear(hfigure)`
 
 ### Description
 
+clears swplot figure correspondign to hFigure handle
  
 SWPLOT.CLEAR
  

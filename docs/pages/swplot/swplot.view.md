@@ -6,7 +6,7 @@
 
 ### Syntax
 
-` `
+`swplot.view(ax,{hfigure})`
 
 ### Description
 
@@ -14,16 +14,12 @@
 
 ### Input Arguments
 
-% `ax`
-:ring to change view of the 3D plot. Possible options:
+`ax`
+: String to change view of the 3D plot. Possible options:
+      'ab','bc','ac'  the two axes define the view plane,
+      'hk','kl','hl'  the two reciprocal lattice vectors define
+                      the view plane.
 
-% `'ab','bc','ac'`
-:c'  the two axes define the view plane,
-
-% `'hk','kl','hl'`
-:l'  the two reciprocal lattice vectors define
-     the view plane.
-
-% `hFigure`
-:ndle of the swplot figure window, optional.
+`hFigure`
+: Handle of the swplot figure window, optional.
 

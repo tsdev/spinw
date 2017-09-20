@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`swplot.tooltipcallback(obj,hit,hfigure,htransform)`
 
 ### Description
 
@@ -15,16 +15,16 @@
 
 ### Input Arguments
 
-% `obj`
+`obj`
 :nw] object.
 
-% `hit`
+`hit`
 :  Hit object, defines the point where the mouse clicked.
 
-% `hFigure`
+`hFigure`
 :  Handle of parent swplot figure.
 
-% `hTransform`
+`hTransform`
 :rm Parent hgtransform object if exists.
 
 ### See Also

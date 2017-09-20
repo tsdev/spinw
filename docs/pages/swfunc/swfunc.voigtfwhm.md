@@ -7,54 +7,43 @@
 
 ### Syntax
 
-` `
+`y = fitfun.voigtfwhm(x,p)`
 
 ### Description
 
+The integral of the function is normalized assumind dx = 1.
  
 
 ### Input Arguments
 
-% `x`
-:  Input coordinates where the function will be calculated.
+`x`
+:Input coordinates where the function will be calculated.
 
-% `p`
-:  Parameters:
+`p`
+:Parameters:
+     A = p(1) integral of the signal assumin dx = 1 (for different
+     dx multiply the amplitude with dx to keep the integral
+     constant).
+     x0 = p(2) peak center positions.
+     wG = p(3) FWHM of the Gaussian component.
+     wL = p(4) FWHM of the Lorentzian component.
 
-% `A`
-:p(1) integral of the signal assumin dx = 1 (for different
+`Conversion`
+:sion between different width:
 
-% `dx`
-:ultiply the amplitude with dx to keep the integral
+`gamma`
+:parameter of the Lorentzian
 
-% ``
-:tant).
+`gamma`
+:= wL/2
 
-% `x0`
-: p(2) peak center positions.
+`Standard`
+:rd deviation of the Gaussian:
 
-% `wG`
-: p(3) FWHM of the Gaussian component.
-
-% `wL`
-: p(4) FWHM of the Lorentzian component.
-
-% `Conversion`
-:ersion between different width:
-
-% `gamma`
-:a parameter of the Lorentzian
-
-% `gamma`
-:a = wL/2
-
-% `Standard`
-:dard deviation of the Gaussian:
-
-% `sigma`
-:a = wG/sqrt(8*ln(2))
+`sigma`
+:= wG/sqrt(8*ln(2))
 
 ### See Also
 
-[func.gauss] and [func.gaussfwhm]
+[func.gauss] \| [func.gaussfwhm]
 

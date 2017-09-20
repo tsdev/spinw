@@ -7,7 +7,7 @@
 
 ### Syntax
 
-` `
+`result = swsym.isop(op)`
 
 ### Description
 
@@ -15,13 +15,11 @@
 
 ### Input Arguments
 
-% `Op`
-:    Symemtry operators with rotation and translation. Dimensions
-
-% `are`
-: 4 nOp].
+`Op`
+: Symemtry operators with rotation and translation. Dimensions
+  are [3 4 nOp].
 
 ### See Also
 
-[swsym.generator](swsym_generator.html) and [swsym.operator](swsym_operator.html)
+[swsym.generator](swsym_generator.html) \| [swsym.operator](swsym_operator.html)
 

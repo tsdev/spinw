@@ -1,5 +1,5 @@
 ---
-{title: sw_circle( ), link: sw_circle, summary: creates an array of the 3D coordinates
+{title: sw_circle, link: sw_circle, summary: creates an array of the 3D coordinates
     of the circle circumference, keywords: sample, sidebar: sw_sidebar, permalink: sw_circle.html,
   folder: swfiles, mathjax: 'true'}
 

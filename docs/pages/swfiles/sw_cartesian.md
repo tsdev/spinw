@@ -1,5 +1,5 @@
 ---
-{title: sw_cartesian( ), link: sw_cartesian, summary: creates a right handed Cartesian
+{title: sw_cartesian, link: sw_cartesian, summary: creates a right handed Cartesian
     coordinate system, keywords: sample, sidebar: sw_sidebar, permalink: sw_cartesian.html,
   folder: swfiles, mathjax: 'true'}
 

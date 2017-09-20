@@ -1,6 +1,6 @@
 ---
-{title: sw_qgrid( ), link: sw_qgrid, summary: creates a Q grid, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_qgrid.html, folder: swfiles, mathjax: 'true'}
+{title: sw_qgrid, link: sw_qgrid, summary: creates a Q grid, keywords: sample, sidebar: sw_sidebar,
+  permalink: sw_qgrid.html, folder: swfiles, mathjax: 'true'}
 
 ---
   
@@ -18,21 +18,21 @@ constructor in [Horace](http://horace.isis.rl.ac.uk/Main_Page).
   
 ### Name-Value Pair Arguments
   
-`u`
+`'u'`
 :  Row vector with 3 elements, determines the first axis in 3D
    space, default value is `[1 0 0]`.
   
-`v`
+`'v'`
 :  Second axis, default value is `[0 1 0]`.
   
-`w`
+`'w'`
 :  Third axis, default value is `[0 0 1]`.
   
-`uoffset`
+`'uoffset'`
 :  Row vector with 3 elements, determines the offset of origin
    in lu, (fourth element is accepted but discarded).
   
-`ubin`
+`'ubin'`
 :  Bin points along the first axis. Can be a vector with 1, 2 or 3
    elements:
  
@@ -40,19 +40,19 @@ constructor in [Horace](http://horace.isis.rl.ac.uk/Main_Page).
    * `[B1 B2]`     range along the $$u$$-axis at coordinates of `[B1:1/nExt:B2]*u`
    * `[B1 dB B2]`  range along the $$u$$-axis at coordinates of `[B1:dB:B2]*u`
   
-`vbin`
+`'vbin'`
 :  Same as `ubin` but along the $$v$$-axis.
   
-`wbin`
+`'wbin'`
 :  Same as `ubin` but along the $$w$$-axis.
   
-`nExt`
+`'nExt'`
 :  Vector with $$n$$-elements that can define fractional bin steps,
    default values is `[1 1 1]`.
   
-`lab`
+`'lab'`
 :  Cell array of projection axis labels with 3 elements (4th
-   element discarded), e.g. {'x' 'y' 'z'}.
+   element discarded), e.g. `{'x' 'y' 'z'}`.
   
 The dimension count $$n$$ is determined by the number of given bins
 ($$1<=n<=3$$), so if only `ubin` is given, $$n=1$$; if both `ubin` and `vbin`

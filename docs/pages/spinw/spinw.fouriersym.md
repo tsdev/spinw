@@ -20,7 +20,7 @@
 
 ### Name-Value Pair Arguments
 
-`hkl`
+`'hkl'`
 : Symbolic definition of q vector. Default is the general Q
   point:
       hkl = [sym('h') sym('k') sym('l')]

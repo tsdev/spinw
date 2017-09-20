@@ -1,5 +1,5 @@
 ---
-{title: sw_neutron( ), link: sw_neutron, summary: calculates neutron scattering intensity
+{title: sw_neutron, link: sw_neutron, summary: calculates neutron scattering intensity
     for spin wave spectrum, keywords: sample, sidebar: sw_sidebar, permalink: sw_neutron.html,
   folder: swfiles, mathjax: 'true'}
 
@@ -23,16 +23,16 @@ neutron scattering on spin waves.
 
 ### Name-Value Pair Arguments
 
-`uv`
+`'uv'`
 : Cell, that contains two vectors, that define the scattering 
   plane in r.l.u. For example: {[1 0 0] [0 1 0]} for the hk
   plane.
 
-`n`
+`'n'`
 : Normal vector to the scattering plane, in real space (xyz
   coordinate system), dimensions are [1 3]. Default is [0 0 1].
 
-`pol`
+`'pol'`
 : Whether to calculate cross sections in the Blume-Maleev
   coordinate system (inP, Pab and Mab fields of spectra). Default
   is false.

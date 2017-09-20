@@ -22,7 +22,7 @@ onto the Command Window.
 
 ### Name-Value Pair Arguments
 
-`obj`
+`'obj'`
 : spinw class object.
 
 ### Output Arguments

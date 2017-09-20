@@ -12,5 +12,5 @@ SpinW for defining instrumental resolution function, etc.
 * [swfunc.gaussfwhm](swfunc_gaussfwhm.html) normalized gaussian function defined by the FWHM
 * [swfunc.lorfwhm](swfunc_lorfwhm.html) normalized Lorentzian using FWHM
 * [swfunc.pvoigt](swfunc_pvoigt.html) pseudovoigt function
-* [swfunc.voigtfwhm](swfunc_voigtfwhm.html) normalized function that calculates the voigt profile using FWMH values
+* [swfunc.voigtfwhm](swfunc_voigtfwhm.html) normalized voigt function
 

@@ -128,10 +128,16 @@ for ii = 2:3
         fdefIdx  = find(defIdx);
         for jj = 1:numel(fdefIdx)
             text0{2,fdefIdx(jj)} = [':' text0{1,fdefIdx(jj)}(spaceEnd:end)];
-            if foredit
-                text0{1,fdefIdx(jj)} = [newline '% `' text0{1,fdefIdx(jj)}(1:(spaceIdx{jj}-1)) '`'];
+            if ii == 3
+                textTemp = [ '`''' text0{1,fdefIdx(jj)}(1:(spaceIdx{jj}-1)) '''`'];
             else
-                text0{1,fdefIdx(jj)} = [newline '`' text0{1,fdefIdx(jj)}(1:(spaceIdx{jj}-1)) '`'];
+                textTemp = [ '`' text0{1,fdefIdx(jj)}(1:(spaceIdx{jj}-1)) '`'];
+            end
+            
+            if foredit
+                text0{1,fdefIdx(jj)} = [newline '% ' textTemp];
+            else
+                text0{1,fdefIdx(jj)} = [newline textTemp];
             end
         end
         text0(1,~defIdx) = cellfun(@(C)[' ' C(spaceEnd:end)],text0(1,~defIdx),'UniformOutput',false);

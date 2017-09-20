@@ -25,24 +25,24 @@
 
 ### Name-Value Pair Arguments
 
-`T`
+`'T'`
 : Temperature of the calculation in units given by obj.unit.
 
-`plot`
+`'plot'`
 : If true, the fitting of the integration constant is plotted.
 
-`Dlim`
+`'Dlim'`
 : Limits of the integration constant.
 
-`Dopt`
+`'Dopt'`
 : If given, the integration is avoided.
 
-`kbase`
+`'kbase'`
 : Basis vectors that span the Brillouin zone if the system is low
   dimensional. Default value is [] when the dimensionality of the
   system is determined automatically.
 
-`nQ`
+`'nQ'`
 : Number of Q points where the Brillouin zone is sampled for the
   integration.
 

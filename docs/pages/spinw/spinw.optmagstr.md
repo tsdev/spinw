@@ -32,7 +32,7 @@ n = [1 0 0]). Then plots the magnetic structure.
 
 ### Name-Value Pair Arguments
 
-`func`
+`'func'`
 :unction that produce the magnetic moments, ordering wave
  ector and normal vector from the optimization
  arameters in the following form:
@@ -43,17 +43,17 @@ n = [1 0 0]). Then plots the magnetic structure.
  efault value is @gm_spherical3d. For planar magnetic structure
  se @gm_planar.
 
-`xmin`
+`'xmin'`
 :inimum limit of the optimisation parameters, optional.
 
-`xmax`
+`'xmax'`
 :aximum limit of the optimisation parameters, optional.
 
-`x0`
+`'x0'`
 :tarting value of the optimisation parameters. If empty
  r undefined, then random values are used.
 
-`boundary`
+`'boundary'`
 :oundary conditions of the extended unit cell.
     'free'  Free, interactions between extedned unit cells are
             omitted.
@@ -61,57 +61,57 @@ n = [1 0 0]). Then plots the magnetic structure.
             are retained.
  efault is {'per' 'per' 'per'}.
 
-`epsilon`
+`'epsilon'`
 :he smalles value of incommensurability that is tolerated
  ithout warning. Default is 1e-5.
 
-`nRun`
+`'nRun'`
 :umber of runs. If random starting parameters are given, the
  ptimisation process will be rerun nRun times and the best
  esult (lowest ground state energy per spin) will be saved in
  he result.
 
-`title`
+`'title'`
 :ives a title string to the simulation that is saved in the
  utput.
 
-`Limits`
+`'Limits'`
 : on selected prameters:
 
-`Limits`
+`'Limits'`
 :be given on any input parameter of the constraint function by
 
-`giving`
+`'giving'`
 :name of the parameter, see the help of the used constraint
 
-`function`
+`'function'`
 : the following format: optmagstr('ParName',[min max],...).
 
-`For`
+`'For'`
 : to fix the nTheta value of @gm_planar during the optimisation
 
-`to`
+`'to'`
 ::
 
-`optmagstr(obj,'func',@gm_planar,'nTheta',[0`
+`'optmagstr(obj,'func',@gm_planar,'nTheta',[0'`
 :bj,'func',@gm_planar,'nTheta',[0 0]);
 
-`Optimisation`
+`'Optimisation'`
 :n parameters:
 
-`tolx`
+`'tolx'`
 :   Minimum change of x when convergence reached, default
     value is 1e-4.
 
-`tolfun`
+`'tolfun'`
 :   Minimum change of the R value when convergence reached,
     default value is 1e-5.
 
-`maxfunevals`
+`'maxfunevals'`
 :   Maximum number of function evaluations, default value
     is 1e7.
 
-`maxiter`
+`'maxiter'`
 :   Maximum number of iterations, default value is 1e4.
 
 ### Output Arguments

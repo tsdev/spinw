@@ -40,49 +40,49 @@ global minimum.
 
 ### Name-Value Pair Arguments
 
-`func`
+`'func'`
 :Function to change the Hamiltonian in obj, it has the following
  header:
           obj = @func(obj, x);
 
-`datapath`
+`'datapath'`
 :Path to the file that stores the experimental data. For the
  input data format see <a href="matlab:doc sw_readspec">sw_readspec</a>.
 
-`Evect`
+`'Evect'`
 :Vector, defines the energy binning of the calculated
  dispersion. Larger binning steps solve the issue of fitting
  unresolved modes. Size is [1 nE].
 
-`xmin`
+`'xmin'`
 :Minimum limit of the optimisation parameters, optional.
 
-`xmax`
+`'xmax'`
 :Maximum limit of the optimisation parameters, optional.
 
-`x0`
+`'x0'`
 :Starting value of the optimisation parameters. If empty
  or undefined, then random values are used.
 
-`optimizer`
+`'optimizer'`
 :String that determines the optimizer to use, possible values:
      'pso'       Particle-swarm optimizer, see ndbase.pso,
                  default.
      'simplex'   Matlab built-in simplex optimizer, see
                  fminsearch.
 
-`nRun`
+`'nRun'`
 :Number of consecutive fitting runs, each result is saved in the
  output fitsp.x and R arrays. If the Hamiltonian given by the
  random x parameters is incompatible with the ground state,
  those x values will be skipped and new random x values will be
  generated. Default is 1.
 
-`nMax`
+`'nMax'`
 :Maximum number of runs, including the ones that produce error
  (due to incompatible ground state). Default is 1000.
 
-`hermit`
+`'hermit'`
 :Method for matrix diagonalization:
         true      J.H.P. Colpa, Physica 93A (1978) 327,
         false     R.M. White, PR 139 (1965) A450.
@@ -96,44 +96,44 @@ global minimum.
  method work.
  Default is true.
 
-`epsilon`
+`'epsilon'`
 :Small number that controls wether the magnetic structure is
  incommensurate or commensurate, default value is 1e-5.
 
-`imagChk`
+`'imagChk'`
 :Checks that the imaginary part of the spin wave dispersion is
  smaller than the energy bin size. Default is true.
 
-`Parameters`
+`'Parameters'`
 : for visualizing the fit results:
 
-`plot`
+`'plot'`
 :If true, the measured dispersion is plotted together with the
  fit. Default is true.
 
-`iFact`
+`'iFact'`
 :Factor of the plotted simulated spin wave intensity (red
  ellipsoids).
 
-`lShift`
+`'lShift'`
 :ertical shift of the Q point labels on the plot.
 
-`Optimisation`
+`'Optimisation'`
 :on options:
 
-`TolX`
+`'TolX'`
 :    Minimum change of x when convergence reached, default
      value is 1e-4.
 
-`TolFun`
+`'TolFun'`
 :    Minimum change of the R value when convergence reached,
      default value is 1e-5.
 
-`MaxFunEvals`
+`'MaxFunEvals'`
 :s   Maximum number of function evaluations, default value is
      1e7.
 
-`MaxIter`
+`'MaxIter'`
 :    Maximum number of iterations for the ndbse.pso optimizer.
      Default value is 20.
 

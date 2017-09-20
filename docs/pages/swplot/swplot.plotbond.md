@@ -20,23 +20,23 @@ swplot figure.
 
 ### Name-Value Pair Arguments
 
-`obj`
+`'obj'`
 : SpinW object.
 
-`range`
+`'range'`
 : Plotting range of the lattice parameters in lattice units,
   dimensions are [3 2]. For example to plot the first unit cell,
   use: [0 1;0 1;0 1]. Also the number unit cells can be given
   along the a, b and c directions: [2 1 2], that is equivalent to
   [0 2;0 1;0 2]. Default is the single unit cell.
 
-`unit`
+`'unit'`
 : Unit in which the range is defined. It can be the following
   string:
       'lu'        Lattice units (default).
       'xyz'       Cartesian coordinate system in Å units.
 
-`mode`
+`'mode'`
 : String, defines how the bond is plotted
       'cylinder'  Bonds are plotted as cylinders (default).
       'arrow'     Bonds are plotted as arrows (default if DM
@@ -44,7 +44,7 @@ swplot figure.
       'line'      Bonds are plotted as lines.
       'empty'     No bonds are plotted.
 
-`mode2`
+`'mode2'`
 : String, defines what is plotted on the bond:
       'none'      Don't plot anything on the bond (default).
       'antisym'   Plot the antisymmetric part (DM vector) of the 
@@ -53,7 +53,7 @@ swplot figure.
       'sym'       Plot the symmetric exchange at the middle
                   of the bond as an ellipsoid.
 
-`sign`
+`'sign'`
 : String, defines how the ellipsoids are generated for exchange
   matrices that contain both negative and positive eigenvalues.
   Possible values are:
@@ -71,7 +71,7 @@ swplot figure.
                   FM type exchange values, has the same problem
                   as the 'min' option.
 
-`linewidth`
+`'linewidth'`
 : Defines the bond radius if it is drawn by a line:
       'fix'       All line will have a width given by linewidth0.
                   Default value.
@@ -83,15 +83,15 @@ swplot figure.
       'pow'       Same as 'auto', but the line width is a
                   power function of J: W~(sum(abs(J))).^widthpow
 
-`widthpow`
+`'widthpow'`
 : Defines the power that determines the linewidth if 'linewidth'
   option is 'pow'.
 
-`linewidth0`
+`'linewidth0'`
 :0 Line width in pt used to draw the bond if 'mode' is 'line'. 
   Default value is 0.5.
 
-`lineStyle`
+`'lineStyle'`
 : Determines the line style when bonds plotted as lines. Possible
   values:
       'auto'      Bonds are plotted as continuous/dashed lines
@@ -102,21 +102,21 @@ swplot figure.
       '--'        Bonds are plotted as dashed lines.
       '-'         Bonds are plotted as lines.
 
-`zero`
+`'zero'`
 : If true, bonds with zero exchange matrix will be plotted as
   well. Default is true.
 
-`radius0`
+`'radius0'`
 : Radius of the cylinder, default value is 0.05.
 
-`radius1`
+`'radius1'`
 : Radius of the DM vector and the minimum radius of the 
   ellipsoid, default value is 0.08.
 
-`radius2`
+`'radius2'`
 : Constant atom radius, default value is 0.3 Å.
 
-`radius`
+`'radius'`
 : Defines the atom radius (important for arrow bonds, to avoid
   overlap with the spheres of the atoms):
       'fix'       Sets the radius of all atoms to the value
@@ -124,67 +124,67 @@ swplot figure.
       'auto'      use radius data from database based on the atom
                   label multiplied by radius2 value.
 
-`ang`
+`'ang'`
 : Angle of the arrow head in ° units, default value is 30 °.
 
-`lHead`
+`'lHead'`
 : Length of the arrow head, default value is 0.3.
 
-`scale`
+`'scale'`
 : Scaling factor for the length of the DM vector or the size of
   the ellipsoid relative to the shortest bond length. Default 
   value is 1/3.
 
-`figure`
+`'figure'`
 : Handle of the swplot figure. Default is the selected figure.
 
-`legend`
+`'legend'`
 : Whether to add the plot to the legend, default value is true.
 
-`color`
+`'color'`
 : Color of the bonds:
       'auto'      All bonds get the stored color.
       'colorname' All bonds will have the same given color.
       [R G B]     RGB code of the color that fix the color of all
                   bonds.
 
-`color2`
+`'color2'`
 : Color of the ellipse or DM vector on the bond:
       'auto'      All object get the color of the bond.
       'colorname' All object will have the same given color.
       [R G B]     RGB code of the color that fix the color of all
                   object.
 
-`nMesh`
+`'nMesh'`
 : Resolution of the ellipse surface mesh. Integer number that is
   used to generate an icosahedron mesh with #mesh number of
   additional triangulation, default value is stored in
   swpref.getpref('nmesh')
 
-`nPatch`
+`'nPatch'`
 : Number of points on the curve for the arrows, default
   value is stored in swpref.getpref('npatch').
 
-`tooltip`
+`'tooltip'`
 : If true, the tooltips will be shown when clicking on atoms.
   Default is true.
 
-`shift`
+`'shift'`
 : Column vector with 3 elements, all atomic positions will be
   shifted by the given value. Default value is [0;0;0].
 
-`replace`
+`'replace'`
 : Replace previous atom plot if true. Default is true.
 
-`translate`
+`'translate'`
 : If true, all plot objects will be translated to the figure
   center. Default is false.
 
-`zoom`
+`'zoom'`
 : If true, figure will be automatically zoomed to the ideal size.
   Default is false.
 
-`copy`
+`'copy'`
 : If true, a hardcopy of the spinw object will be sved in the
   figure data, otherwise just the handle of the spinw object, 
   thus the figure can be updated when the spin object changed.

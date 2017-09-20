@@ -191,7 +191,8 @@ for ii = 1:nPath
             content.frontmatter.link = content.frontmatter.title;
         else
             if ~doctree(ii).isPackage && ~doctree(ii).isClass
-                content.frontmatter.title = [content.fun '( )'];
+                %content.frontmatter.title = [content.fun '( )'];
+                content.frontmatter.title = content.fun;
             elseif doctree(ii).isClass && content.isProp
                 content.frontmatter.title = [content.fun ' property'];
             elseif doctree(ii).isClass

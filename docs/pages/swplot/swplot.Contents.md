@@ -4,8 +4,8 @@
 
 ---
  
-The library contains functions that can create and control plot of
-3D objects. It contains low level function to plot specific shapes on any
+The package contains functions that can create and control plot of 3D
+objects. It contains low level function to plot specific shapes on any
 figure (cylinder, line, arrow, ellipsoid, text) that are vectorized.
 Moreover it provides the plot command to plot multiple objects with
 specified color, transparency, label and legend on the swplot figure that

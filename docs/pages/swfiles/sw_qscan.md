@@ -1,5 +1,5 @@
 ---
-{title: sw_qscan( ), link: sw_qscan, summary: creates continuous line between coordinates,
+{title: sw_qscan, link: sw_qscan, summary: creates continuous line between coordinates,
   keywords: sample, sidebar: sw_sidebar, permalink: sw_qscan.html, folder: swfiles,
   mathjax: 'true'}
 

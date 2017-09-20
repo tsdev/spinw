@@ -1,5 +1,5 @@
 ---
-{title: sw_model( ), link: sw_model, summary: creates different predefined spin models,
+{title: sw_model, link: sw_model, summary: creates different predefined spin models,
   keywords: sample, sidebar: sw_sidebar, permalink: sw_model.html, folder: swfiles,
   mathjax: 'true'}
 

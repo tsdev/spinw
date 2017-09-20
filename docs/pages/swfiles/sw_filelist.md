@@ -1,6 +1,6 @@
 ---
-{title: sw_filelist( ), link: sw_filelist, summary: lists spinw data in the Matlab
-    workspace or in a .mat file, keywords: sample, sidebar: sw_sidebar, permalink: sw_filelist.html,
+{title: sw_filelist, link: sw_filelist, summary: lists spinw data in the Matlab workspace
+    or in a .mat file, keywords: sample, sidebar: sw_sidebar, permalink: sw_filelist.html,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -15,11 +15,11 @@
 
 ### Name-Value Pair Arguments
 
-`fName`
+`'fName'`
 : To check data stored in a .mat file, fName contains the path as
   a string.
 
-`sort`
+`'sort'`
 : To sort according to which column (positive ascending, negative
   descending):
       +/-1    variable name,

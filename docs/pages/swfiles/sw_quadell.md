@@ -1,5 +1,5 @@
 ---
-{title: sw_quadell( ), link: sw_quadell, summary: calculates and plots the parameters
+{title: sw_quadell, link: sw_quadell, summary: calculates and plots the parameters
     of an ellipsoid from a quadratic form, keywords: sample, sidebar: sw_sidebar,
   permalink: sw_quadell.html, folder: swfiles, mathjax: 'true'}
 

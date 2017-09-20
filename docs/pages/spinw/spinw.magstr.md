@@ -21,15 +21,15 @@ unexpected magnetic structures.
 
 ### Name-Value Pair Arguments
 
-`exact`
+`'exact'`
 : If true, a warning appears in case the conversion is not exact.
   Default is true.
 
-`nExt`
+`'nExt'`
 : Size of the magnetic supercell, default value is the value stored in
   the SpinW object (on which the Fourier expansion is defined).
 
-`origin`
+`'origin'`
 : Origin in lattice units, the magnetic structure will be
   calculated relative to this point. Default value is [0 0 0].
   Shifting the origin introduces an overall phase factor.

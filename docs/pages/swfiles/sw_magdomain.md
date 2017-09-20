@@ -1,5 +1,5 @@
 ---
-{title: sw_magdomain( ), link: sw_magdomain, summary: calculates the spin-spin correlation
+{title: sw_magdomain, link: sw_magdomain, summary: calculates the spin-spin correlation
     function for magnetic domains, keywords: sample, sidebar: sw_sidebar, permalink: sw_magdomain.html,
   folder: swfiles, mathjax: 'true'}
 
@@ -35,25 +35,25 @@ ab plane). All domains have equal volume.
 
 ### Name-Value Pair Arguments
 
-`axis`
+`'axis'`
 : Defines axis of rotation to generate twins in the xyz
   coordinate system, dimensions are [1 3].
 
-`angle`
+`'angle'`
 : Defines the angle of rotation to generate twins in radian
   units, several twins can be defined parallel if angle is a
   vector. Dimensions are [1 nTwin].
 
-`angled`
+`'angled'`
 : Defines the angle of rotation to generate twins in °
   units, several twins can be defined parallel if angle is a
   vector. Dimensions are [1 nTwin].
 
-`rotC`
+`'rotC'`
 : Rotation matrices, that define crystallographic twins, can be
   given directly, dimensions are [3 3 nTwin].
 
-`vol`
+`'vol'`
 : Volume fractions of the twins, dimensions are [1 nTwin].
   Default value is ones(1,nTwin).
 

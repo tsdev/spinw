@@ -37,7 +37,7 @@ using sliceomatic.
 
 ### Name-Value Pair Arguments
 
-`component`
+`'component'`
 : Selects the previously calculated intensity component to be
   convoluted. The possible options are:
       'Sperp' convolutes the magnetic neutron scattering
@@ -54,15 +54,15 @@ using sliceomatic.
   component of the spin-spin correlation function and the yy
   component.
 
-`norm`
+`'norm'`
 : If true the spin wave intensity is normalized to mbarn/meV/(unit
   cell) units. Default is false.
 
-`dE`
+`'dE'`
 : Energy bin size, for intensity normalization. Use 1 for no
   division by dE in the intensity.
 
-`param`
+`'param'`
 : Input parameters (can be used also within Tobyfit). Additional
   options ('mat','selector') might be necessary, for details see
   spinw.matparser function. All extra parameters of spinw.horace
@@ -77,7 +77,7 @@ using sliceomatic.
   to use sw_readparam() function to handle the variable number
   arguments within func().
 
-`parfunc`
+`'parfunc'`
 : Parser function of the 'param' input. Default is
   @spinw.matparser which can be used directly by Tobyfit. For user
   defined functions the minimum header has to be:
@@ -85,7 +85,7 @@ using sliceomatic.
   where obj is an spinw type object, param is the parameter
   values forwarded from spinw.horace directly.
 
-`func`
+`'func'`
 : User function that will be called after the parameters set on
   the SpinW object. It can be used to optimize magnetic
   structure for the new parameters, etc. The input should be a

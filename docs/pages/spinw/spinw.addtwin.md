@@ -27,29 +27,29 @@ original orientation there are will be three twins with equal volumes.
 
 ### Name-Value Pair Arguments
 
-`axis`
+`'axis'`
 : Defines axis of rotation to generate twins in the xyz
   coordinate system, dimensions are [1 3].
 
-`phi`
+`'phi'`
 : Defines the angle of rotation to generate twins in radian
   units, several twins can be defined parallel if phi is a
   vector. Dimensions are [1 nTwin].
 
-`phid`
+`'phid'`
 : Defines the angle of rotation to generate twins in °
   units, several twins can be defined parallel if phi is a
   vector. Dimensions are [1 nTwin].
 
-`rotC`
+`'rotC'`
 : Rotation matrices, that define crystallographic twins, can be
   given directly, dimensions are [3 3 nTwin].
 
-`vol`
+`'vol'`
 : Volume fractions of the twins, dimensions are [1 nTwin].
   Default value is ones(1,nTwin).
 
-`overwrite`
+`'overwrite'`
 : If true, the last twin will be overwritten, instead of adding a
   new one. Default is false.
 

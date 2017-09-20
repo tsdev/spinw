@@ -1,49 +1,43 @@
 ---
-{title: swfunc.voigtfwhm, link: swfunc.voigtfwhm, summary: normalized function that
-    calculates the voigt profile using FWMH values, keywords: sample, sidebar: sw_sidebar,
-  permalink: swfunc_voigtfwhm.html, folder: swfunc, mathjax: 'true'}
+{title: swfunc.voigtfwhm, link: swfunc.voigtfwhm, summary: normalized voigt function,
+  keywords: sample, sidebar: sw_sidebar, permalink: swfunc_voigtfwhm.html, folder: swfunc,
+  mathjax: 'true'}
 
 ---
-
-### Syntax
-
-`y = fitfun.voigtfwhm(x,p)`
-
-### Description
-
-The integral of the function is normalized assumind dx = 1.
  
-
+### Syntax
+ 
+`y = fitfun.voigtfwhm(x,p)`
+ 
+### Description
+ 
+`y = fitfun.voigtfwhm(x,p)` calculates the voigt function. The width
+parameters define the FWHM value. The
+integral of the function is normalized assuming that $$dx = 1$$. The
+conversion between different width:
+ 
+* gamma parameter of the Lorentzian $$\gamma = w_L/2$$
+* standard deviation of the Gaussian $$\sigma = w_G/\sqrt{8\cdot\ln(2)}$$
+ 
 ### Input Arguments
-
+ 
 `x`
-:nput coordinates where the function will be calculated.
-
+: Input coordinates where the function will be calculated.
+ 
 `p`
-:arameters:
-    A = p(1) integral of the signal assumin dx = 1 (for different
-    dx multiply the amplitude with dx to keep the integral
-    constant).
-    x0 = p(2) peak center positions.
-    wG = p(3) FWHM of the Gaussian component.
-    wL = p(4) FWHM of the Lorentzian component.
-
-`Conversion`
-:ion between different width:
-
-`γ`
-: parameter of the Lorentzian
-
-`γ`
-: = wL/2
-
-`Standard`
-:d deviation of the Gaussian:
-
-`sigma`
-: wG/sqrt(8*ln(2))
-
-### See Also
-
-[func.gauss] \| [func.gaussfwhm]
+: Parameters in a vector with elements `[A x0 wG wL]`:
+ 
+  * `A` integral of the output assuming $$dx=1$$ (for different $$dx$$
+     multiply the amplitude with $$dx$$ to keep the integral constant).
+  * `x0` peak center positions.
+  * `wG` FWHM of the Gaussian component.
+  * `wL` FWHM of the Lorentzian component.
+ 
+ 
+### See also
+ 
+[swfunc.gauss](swfunc_gauss.html) \| [swfunc.gaussfwhm](swfunc_gaussfwhm.html)
+ 
+*[FWHM]: Full Width at Half Maximum
+ 
 

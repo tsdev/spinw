@@ -1,5 +1,5 @@
 ---
-{title: sw_plotspec( ), link: sw_plotspec, summary: plots spin wave spectrum, keywords: sample,
+{title: sw_plotspec, link: sw_plotspec, summary: plots spin wave spectrum, keywords: sample,
   sidebar: sw_sidebar, permalink: sw_plotspec.html, folder: swfiles, mathjax: 'true'}
 
 ---
@@ -16,41 +16,41 @@ default colormap using swpref.setpref('colormap',@my_colomap) command.
 
 ### Name-Value Pair Arguments
 
-`mode`
+`'mode'`
 : Choose the type of plot, either a string (or number):
       'disp'  dispersion (1),
       'int'   intensity of the correlation functions (2),
       'color' convoluted spectrum (3),
       'fancy' FANCY PLOT MODE (default, 4).
 
-`imag`
+`'imag'`
 : Whether to plot the imaginary values of the dispersion
   and the correlation functions. For convoluted spectra, if true,
   the imaginary part is plotted. Default is false.
 
-`aHandle`
+`'aHandle'`
 : Handle of the axis object for plotting, if undefined the
   active axis will be used (gca).
 
-`colorbar`
+`'colorbar'`
 : Plot colorbar for dispersion and intensity, default value is true.
 
-`nCol`
+`'nCol'`
 : Number of colors in the colormap, default value is 500.
 
-`dashed`
+`'dashed'`
 : Whether to plot dashed vertical line between multiple linear
   scans. Defult is false.
 
-`dE`
+`'dE'`
 : FWHM value of convoluted Gaussian in energy to simulate finite
   energy resolution. Only works for mode=3. If zero, no
   convolution performed. Default is 0.
 
-`fontSize`
+`'fontSize'`
 : Font size on the plot, default value is 14 pt.
 
-`colormap`
+`'colormap'`
 : Colormap for plotting, default value is stored in 
   swpref.getpref('colormap'). For single plot and for multiple
   plot it will be a continuous scale from white to different
@@ -66,61 +66,61 @@ default colormap using swpref.setpref('colormap',@my_colomap) command.
   different colors, the color is determined from the index of the
   mode. Default is 'auto'.
 
-`sortMode`
+`'sortMode'`
 : Sorting the modes before plotting. Default is false.
 
-`axLim`
+`'axLim'`
 : Upper limit for y axis (mode 1,2) or z axis (mode 3), default
   is 'auto'. For color plot of multiple cross section the c axis
   cannot be changed after the plot.
 
-`legend`
+`'legend'`
 : Whether to plot legend for multiple convoluted spectras,
   default value is true.
 
-`title`
+`'title'`
 : Whether to plot figure title, default value is true.
 
-`twin`
+`'twin'`
 : Select which twins to plot for omega plots, default plots all
   twins, dimensions are [1 nTwinToPlot].
 
-`lineStyle`
+`'lineStyle'`
 : Line style for line plots (dispersion and intensity), default
   is {'-' 'o-' '--'}. For example '--' gives dashed lines.
 
-`lineWidth`
+`'lineWidth'`
 : Line width of line plots, default value is 0.5 point.
 
-`log`
+`'log'`
 : Plot 10based logarithmic intensity, default value is false.
 
-`plotf`
+`'plotf'`
 : Plot function for color plot. Default is @surf.
 
-`maxPatch`
+`'maxPatch'`
 : Maximum number of pixels that can be plotted using the patch()
   function within sw_surf(). Using patch for color plot can be
   slow on older machines, but the figure can be exported
   afterwards as a vector graphics, using the print() function.
   Default is 1000.
 
-`norm`
+`'norm'`
 : If true, the convolution with a Gaussian function (in case of
   non-zero 'dE' option) keeps the energy integrated intensity. If
   false the amplitude is kept constant. Default is the input
   spectra.norm value.
 
-`x0`
+`'x0'`
 : Vector with two numbers [x0_min x0_max]. By default the x range
   of the plots is [0 1] irrespective of the given Q points. To
   change this the lower and upper limits can be given here.
 
-`qlabel`
+`'qlabel'`
 : Provide a list of strings for the Q points between linear
   segments.
 
-`dat`
+`'dat'`
 : Experimental data points to plot over the calculated spectrum.
   Can be either the name of a data file that contain the
   experimentally fitted dispersion (needs to have the same format
@@ -130,7 +130,7 @@ default colormap using swpref.setpref('colormap',@my_colomap) command.
       T = sw_readtable('myExpData.txt','\t');
       sw_plotspec(spectra,'dat',T);
 
-`ddat`
+`'ddat'`
 : Maximum distance between any Q point in the simulated spectrum
   and an experimental data point in A$$^{-1}$$. If an experimental data
   point is further from any Q point of the simulated spectrum

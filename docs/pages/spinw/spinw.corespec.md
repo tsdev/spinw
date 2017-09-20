@@ -40,35 +40,35 @@ case the Hamiltonian has to fulfill this extra rotational symmetry.
 
 ### Name-Value Pair Arguments
 
-`fitmode`
+`'fitmode'`
 : Speedup (for fitting mode only), default value is false.
 
-`notwin`
+`'notwin'`
 : If true, the spectra of the twins won't be calculated.
   Default is false.
 
-`sortMode`
+`'sortMode'`
 : The spin wave modes will be sorted if true. Default is
   true.
 
-`optmem`
+`'optmem'`
 : Parameter to optimise memory usage. The list of hkl values
   will be cut into optmem number of pieces and will be
   calculated piece by piece to decrease memory usage. Default
   of optmem is zero, when the number of slices are determined
   automatically from the available free memory.
 
-`tol`
+`'tol'`
 : Tolerance of the incommensurability of the magnetic
   ordering wavevector. Deviations from integer values of the
   ordering wavevector smaller than the tolerance are
   considered to be commensurate. Default value is 1e-4.
 
-`omega_tol`
+`'omega_tol'`
 : Tolerance on the energy difference of degenerate modes when
   diagonalising the quadratic form, default value is 1e-5.
 
-`hermit`
+`'hermit'`
 : Method for matrix diagonalization:
       true      J.H.P. Colpa, Physica 93A (1978) 327,
       false     R.M. White, PR 139 (1965) A450.
@@ -85,14 +85,14 @@ case the Hamiltonian has to fulfill this extra rotational symmetry.
   problem is.
   Default is true.
 
-`nSlice`
+`'nSlice'`
 : Parameter to optimise memory usage. The list of hkl values
   will be cut into nSlice pieces and will be calculated piece
   by piece to decrease memory usage. Default is zero, when
   the number of slices are determined automatically from the
   available free memory.
 
-`onlyV`
+`'onlyV'`
 : Calculate only the dispersion and the V linear
   transformation matrices. The V matrices transform between
   the original magnon operators and the normal magnon

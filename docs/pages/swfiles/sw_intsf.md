@@ -1,6 +1,6 @@
 ---
-{title: sw_intsf( ), link: sw_intsf, summary: integrates the structure factor along
-    given Q directions, keywords: sample, sidebar: sw_sidebar, permalink: sw_intsf.html,
+{title: sw_intsf, link: sw_intsf, summary: integrates the structure factor along given
+    Q directions, keywords: sample, sidebar: sw_sidebar, permalink: sw_intsf.html,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -22,17 +22,17 @@
 
 ### Name-Value Pair Arguments
 
-`axis`
+`'axis'`
 : The index of the axis, along which the data is summed within
   the given range. {1, 2, 3} is for {a*, b*, c*} respectively.
   Zero is to powder average the data. Default is 1. More than one
   axis can be given.
 
-`range`
+`'range'`
 : Data range in r.l.u. along selected dimension to integrate,
   default value is the full data range.
 
-`type`
+`'type'`
 : Type of data to be used for the integration.
       'sf'    integrate the calculated structure factor. (default)
       'perp'  integrate the perpendicular component of the structure

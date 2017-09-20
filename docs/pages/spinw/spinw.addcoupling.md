@@ -29,11 +29,11 @@ between magnetic atoms.
 
 ### Name-Value Pair Arguments
 
-`mat`
+`'mat'`
 : Label or index of the matrix that will be assigned to
   selected bonds.
 
-`bond`
+`'bond'`
 : Selects the interacting atom pairs through the
   obj.coupling.idx number. The coupling.idx numbers are in
   increasing order according to the distances between
@@ -42,7 +42,7 @@ between magnetic atoms.
   bondIdx can be a vector to assign the matrix to multiple
   inequivalent bonds.
 
-`atom`
+`'atom'`
 : Contains labels of atoms or index of atoms in the
   obj.unit_cell list of atoms. If a single string label or
   number is given, only bonds between the selected atoms will
@@ -50,20 +50,20 @@ between magnetic atoms.
   between the two selected atoms will be assigned. Only works
   if space group is P0. Default is [].
 
-`subIdx`
+`'subIdx'`
 : If the above options are not enough to select the desired
   bonds, using subIdx bonds can be selected one-by-one from
   the list of bonds that fulfill the above options. Only
   works if the space group is P0.
 
-`type`
+`'type'`
 : Type of the coupling. Possible values:
       0       Quadratic exchange, default.
       1       Biquadratic exchange.
   Can be also one of the following string: 'quadratic',
   'biquadratic'.
 
-`sym`
+`'sym'`
 : If true, symmetry operators will be applied on the exchange
   matrices to generate the coupling on symmetry equivalent
   bonds, if false all symmetry equivalent bonds will have the

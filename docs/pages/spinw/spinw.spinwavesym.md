@@ -36,32 +36,32 @@ The method for matrix diagonalization is according to R.M. White, PR 139
 
 ### Name-Value Pair Arguments
 
-`hkl`
+`'hkl'`
 : Symbolic definition of q vector. Default is the general Q
   point:
       hkl = [sym('h') sym('k') sym('l')]
 
-`eig`
+`'eig'`
 : If true the symbolic Hamiltonian is diagonalised. For large
   matrices (many magnetic atom per unit cell) this might be
   impossible. Set 'eig' to false to output only the quadratic
   Hamiltonian. Default is true.
 
-`vect`
+`'vect'`
 : If true the eigenvectors are calculated. Default is false.
 
-`tol`
+`'tol'`
 : Tolerance of the incommensurability of the magnetic
   ordering wavevector. Deviations from integer values of the
   ordering wavevector smaller than the tolerance are
   considered to be commensurate. Default value is 1e-4.
 
-`norm`
+`'norm'`
 : Whether to produce the normalized eigenvectors. It can be
   impossible for large matrices, in that case set it to
   false. Default is true.
 
-`title`
+`'title'`
 : Gives a title string to the simulation that is saved in the
   output.
 

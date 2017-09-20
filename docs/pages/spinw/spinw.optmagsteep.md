@@ -20,10 +20,10 @@
 
 ### Name-Value Pair Arguments
 
-`nRun`
+`'nRun'`
 : Number of iterations, default value is 100 (it is usually enough).
 
-`boundary`
+`'boundary'`
 : Boundary conditions of the extended unit cell.
       'free'  Free, interactions between extedned unit cells are
               omitted.
@@ -31,45 +31,45 @@
               are retained.
   Default is {'per' 'per' 'per'}.
 
-`nExt`
+`'nExt'`
 : The size of the magnetic cell in number of unit cells, to
   provide input information to 'fStat'.
   Default is from obj.mag_str.N_ext.
 
-`fSub`
+`'fSub'`
 : Function to define sublattices for Monte-Carlo speedup.
   cGraph = fSub(conn,nExt), where cGraph is a (1,nMagExt) sized
   vector, conn is a (2,nConn) size matrix and nExt is equal to
   'nExt'. Default is <a href="matlab: doc sw_fsub">@sw_fsub</a>
 
-`subLat`
+`'subLat'`
 : Vector that assigns all magnetic moments into non-interacting
   sublattices, contains a single index (1,2,3...) for every
   magnetic moment, size is (1,nMagExt). If undefined, the
   function defined in 'fSub' will be used to partition the
   lattice.
 
-`random`
+`'random'`
 : Random initial conditions, if initial spin configuration
   is undefined (obj.mag_str.S is empty) the initial configuration
   is automaticly random independently of the value of random.
   Default is false.
 
-`TolX`
+`'TolX'`
 : Minimum change of the magnetic moment when the algorithm stops.
 
-`saveAll`
+`'saveAll'`
 : Save moment directions for every loop, default value is false.
 
-`Hmin`
+`'Hmin'`
 : Minimum field value on the spin that moves the spin. If the
   molecular field absolute value is below this, the spin won't be
   turned. Default is zero.
 
-`plot`
+`'plot'`
 : If true, plot magnetic structure in real time. Default is false. 
 
-`pause`
+`'pause'`
 : Time in second to pause after every optimization loop to make
   slower movie. Default is 0.
 

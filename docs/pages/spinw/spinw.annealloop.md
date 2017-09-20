@@ -23,7 +23,7 @@ interactions are not supported yet!
 
 ### Name-Value Pair Arguments
 
-`spinDim`
+`'spinDim'`
 : Dimensionality of the magnetic moments.
       1   Ising spins
       2   XY spins
@@ -34,39 +34,39 @@ interactions are not supported yet!
   the xy-plane. Magnetic fields perpendicular to these directions
   are omitted.
 
-`func`
+`'func'`
 : Function that changes the parameters in the spinw object in every
   loop. Default function is to change the temperature:
       @(obj,T)obj.temperature(T)
   The function takes two input: spinw objec and a parameter vector.
 
-`x`
+`'x'`
 : Matrix of values of the loop parameter, with dimensions of
   [nPar nStep]. Default is 1. In the i-th loop the loop function
   is called as:
       func(obj,x(:,i));
 
-`random`
+`'random'`
 : Random initial conditions before the first loop, if initial
   spin configuration is undefined (obj.mag_str.S is empty) the
   initial configuration is automaticly random independently of
   the value of random. Default is false.
 
-`nMC`
+`'nMC'`
 : Number of Monte-Carlo steps per spin at each loop. Default is
   100.
 
-`nORel`
+`'nORel'`
 : Number of over-relaxation steps after every Monte-Carlo
   steps. It rotates the spins around the direction of the local
   field by 180deg. It is reversible and microcanonical if the
   single ion anisotropy is zero. Default is 0.
 
-`nStat`
+`'nStat'`
 : Number of cycles at the end of each loop to calculate
   statistical averages. Default is 100.
 
-`boundary`
+`'boundary'`
 : Boundary conditions of the extended unit cell.
       'free'  Free, interactions between extedned unit cells are
               omitted.
@@ -74,18 +74,18 @@ interactions are not supported yet!
               are retained.
   Default is {'per' 'per' 'per'}.
 
-`verbosity`
+`'verbosity'`
 : Controls output to the screen.
       0   suppresses all output
       1   gives final report only [default]
       2   plots temperature changes and final report
 
-`nExt`
+`'nExt'`
 : The size of the magnetic cell in number of unit cells, to
   provide input information to 'fStat'. Default is from
   obj.mag_str.N_ext.
 
-`fStat`
+`'fStat'`
 : Function handle to evaluate after at the end of the
   cooling scedule during the last nStat Monte-Carlo steps. The
   function returns a single structure and takes fixed input
@@ -100,24 +100,24 @@ interactions are not supported yet!
   all the annealing parameters).
   Default is <a href="matlab: doc sw_fstat">@sw_fstat</a>.
 
-`fSub`
+`'fSub'`
 : Function to define sublattices for Monte-Carlo speedup.
   cGraph = fSub(conn,nExt), where cGraph is a (1,nMagExt) sized
   vector, conn is a (2,nConn) size matrix and nExt is equal to
   'nExt'. Default is <a href="matlab: doc sw_fsub">@sw_fsub</a>
 
-`subLat`
+`'subLat'`
 : Vector that assigns all magnetic moments into non-interacting
   sublattices, contains a single index (1,2,3...) for every
   magnetic moment, size is (1,nMagExt). If undefined, the
   function defined in 'fSub' will be used to partition the
   lattice.
 
-`saveObj`
+`'saveObj'`
 : If true, the spinw object is saved after every annealing step for
   debugging purposes. Default is false.
 
-`title`
+`'title'`
 : Gives a title string to the simulation that is saved in the
   output.
 

@@ -29,7 +29,7 @@ into separate libraries.
 #### Resolution claculation and convolution
  
 * [sw_res](sw_res.html) reads a tabulated energy resolution from a file and fits with polynomial
-* [sw_resconv](sw_resconv.html) Convolute Gaussian with variable width along the first dimension of a matrix
+* [sw_resconv](sw_resconv.html) convolution of a matrix and a Gaussian
 * [sw_tofres](sw_tofres.html) includes Q resolution to the spectrum
  
 #### SpinW model related functions
@@ -102,7 +102,7 @@ into separate libraries.
  
 #### Miscellaneous
  
-* [sw_freemem](sw_freemem.html) gives the amount of free RAM in bytes
+* [sw_freemem](sw_freemem.html) calculates the available memory
 * [sw_initialize](sw_initialize.html) initializes spinw by removing user entries from the symmetry.dat file
 * [sw_readparam](sw_readparam.html) parse input arguments (option, value pairs)
 * [sw_rootdir](sw_rootdir.html) gives the path to the SpinW code

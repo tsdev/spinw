@@ -1,5 +1,5 @@
 ---
-{title: sw_tofres( ), link: sw_tofres, summary: includes Q resolution to the spectrum,
+{title: sw_tofres, link: sw_tofres, summary: includes Q resolution to the spectrum,
   keywords: sample, sidebar: sw_sidebar, permalink: sw_tofres.html, folder: swfiles,
   mathjax: 'true'}
 
@@ -22,19 +22,19 @@ Simulates the finite bin size of the cuts of TOF data.
 
 ### Name-Value Pair Arguments
 
-`method`
+`'method'`
 : String, determines the method to genera the Q points, options:
       'random'    The bin volume will be randomly sampled.
       'grid'      The bin volume will be split up to a regular
                   grid.
 
-`dQ`
+`'dQ'`
 : Vector with three numbers of scalar. The width of the Q bin
   along the three reciprocal lattice directions. The spectrum
   will be integrated in the Q+/-(dQ/2) range. DEfault value is
   [0.1 0.1 0.1].
 
-`nQ`
+`'nQ'`
 : Vector with three numbers or scalar. Gives the number of Q
   points along the three reciprocal lattice directions to average
   over or the number of random Q points for the random method.

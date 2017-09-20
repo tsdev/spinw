@@ -20,7 +20,7 @@
 
 ### Name-Value Pair Arguments
 
-`mode`
+`'mode'`
 : Type of unit system, defined by one of the following strings:
       'AmeVTK'    Typical units used in neutron/xray scattering:
                       [Å, meV, Tesla and Kelvin]

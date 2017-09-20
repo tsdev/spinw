@@ -1,5 +1,5 @@
 ---
-{title: sw_nb( ), link: sw_nb, summary: returns the bound coherent neutron scattering
+{title: sw_nb, link: sw_nb, summary: returns the bound coherent neutron scattering
     length (fm), keywords: sample, sidebar: sw_sidebar, permalink: sw_nb.html, folder: swfiles,
   mathjax: 'true'}
 

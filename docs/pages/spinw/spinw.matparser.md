@@ -22,12 +22,12 @@ from a given parmeter vector.
 
 ### Name-Value Pair Arguments
 
-`param`
+`'param'`
 : Input vector P with nPar elements that contains the
   new values to be assignd to elements of spinw.matrix.mat
   matrix.
 
-`mat`
+`'mat'`
 : Identifies which matrices to be changed according to their
   label or index. To select matrices with given labels use a
   cell of strings with nPar elements, for example
@@ -44,7 +44,7 @@ from a given parmeter vector.
   will be unchanged. To modify multiple elements of a matrix
   at once, use the option 'selector'.
 
-`selector`
+`'selector'`
 : Matrix with dimensions of [3 3 nPar]. Each S(:,:,ii)
   submatrix can contain +/-1 and 0. Where S(:,:,ii) contains
   ones, the corresponding matrix elements of
@@ -58,7 +58,7 @@ from a given parmeter vector.
   S = cat(3,[0 0 0;0 0 1;0 -1 0],[0 0 -1;0 0 0;1 0 0],[0 1 0;-1 0 0;0 0 0])
   spinw.matparser('param',P,'mat',M,'selector',S)
 
-`init`
+`'init'`
 : Initialize the matrices of spinw.matrix.mat with zeros for all
   selected labels before assigning parameter values. Default
   is false.

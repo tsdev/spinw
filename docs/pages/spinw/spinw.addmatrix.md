@@ -25,7 +25,7 @@ Adds a diagonal matrix, that can describe Heisenberg interaction.
 
 ### Name-Value Pair Arguments
 
-`value`
+`'value'`
 : The value of the matrix, dimensions are  [3 3 nJ], default value is
   eye(3). If the given value is scalar, a diagonal matrix is
   generated with the given value in its diagonal. If the given
@@ -33,14 +33,14 @@ Adds a diagonal matrix, that can describe Heisenberg interaction.
   according to the following rule:
   DM = [0 Dz -Dy;-Dz 0 Dx;Dy -Dx 0].
 
-`mat`
+`'mat'`
 : Alternative option name to 'value'.
 
-`label`
+`'label'`
 : Label for plotting, strings in a cell, dimensions are [1 nJ],
   default value is 'matI', where I is the index of the matrix.
 
-`color`
+`'color'`
 : Color for plotting, either a matrix with dimensions are  [3 nJ]
   that contains color RGB codes (0-255), or string with the name
   of the color (for multiple matrix the string have to be packed

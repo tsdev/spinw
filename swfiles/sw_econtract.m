@@ -19,17 +19,17 @@ function Qm = sw_econtract(Q,varargin)
 % 
 % ### Name-Value Pair Arguments
 % 
-% `omega`
+% `'E'`
 % : Energy transfer value in meV, default value is zero.
 % 
-% `lambda`
+% `'lambda'`
 % : Wavelength of the incident neutron beam in \\Angstrom.
 % 
-% `ki`
+% `'ki'`
 % : Momentum of the incidend neutron beam in \\Angstrom$^{-1}$, alternative
 %   input to `lambda`.
 % 
-% `sense`
+% `'sense'`
 % : Scattering sense:
 %
 %   * `1`  detectors are on the right hand side from the incident beam direction, default.
@@ -45,9 +45,9 @@ if nargin == 0
     return
 end
 
-inpForm.fname  = {'omega' 'lambda' 'ki'  'sense'};
-inpForm.defval = {0       0        0     1      };
-inpForm.size   = {[1 1]   [1 1]    [1 1] [1 1]  };
+inpForm.fname  = {'E'   'lambda' 'ki'  'sense'};
+inpForm.defval = {0     0        0     1      };
+inpForm.size   = {[1 1] [1 1]    [1 1] [1 1]  };
 
 param = sw_readparam(inpForm,varargin{:});
 
@@ -73,7 +73,7 @@ meV2k = sw_converter('meV',1,'k','neutron');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % energy loss due to magnons
-kf = sqrt(ki^2-param.omega*meV2k);
+kf = sqrt(ki^2-param.E*meV2k);
 % theta scattering angle
 theta = acos((ki^2 + kf^2 - Qabs.^2)/2/ki/kf)/2;
 

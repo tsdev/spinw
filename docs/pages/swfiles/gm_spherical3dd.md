@@ -1,5 +1,5 @@
 ---
-{title: gm_spherical3dd( ), link: gm_spherical3dd, summary: magnetic structure constraint
+{title: gm_spherical3dd, link: gm_spherical3dd, summary: magnetic structure constraint
     function with spherical parameterisation, keywords: sample, sidebar: sw_sidebar,
   permalink: gm_spherical3dd.html, folder: swfiles, mathjax: 'true'}
 

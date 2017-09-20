@@ -47,7 +47,7 @@ FQ Fourier components and plots the magnetic structure.
 
 ### Name-Value Pair Arguments
 
-`mode`
+`'mode'`
 :  Mode how the magnetic structure is generated:
    'random' (reads -)
           generates random zero-k magnetic structure.
@@ -104,15 +104,15 @@ FQ Fourier components and plots the magnetic structure.
           generate a sinusoidally modulated structure instead of
           a spiral.
 
-`phi`
+`'phi'`
 : Angle of rotation of the magnetic moments in rad. Default
   value is 0.
 
-`phid`
+`'phid'`
 : Angle of rotation of the magnetic moments in °. Default
   value is 0.
 
-`nExt`
+`'nExt'`
 : Size of the magnetic supercell in multiples of the
   crystallographic cell, dimensions are [1 3]. Default value is
   stored in obj. If nExt is a single number, then the size of the
@@ -122,25 +122,25 @@ FQ Fourier components and plots the magnetic structure.
   the magnetic ordering wave vector is [0 0 0], within the given
   0.01 r.l.u. error.
 
-`k`
+`'k'`
 : Magnetic ordering wavevector in r.l.u., dimensions are [nK 3].
   Default value is defined in obj.
 
-`n`
+`'n'`
 : Normal vector to the spin rotation plane for single-k magnetic
   structures, dimensions are [1 3]. Default value [0 0 1]. The
   coordinate system of the vector is determined by unitS.
 
-`S`
+`'S'`
 : Direct input of the spin values, dimensions are [3 nSpin nK].
   Every column defines the three (S_x, S_y, S_z) components of
   the moment in the xyz Descartes coodinate system or in l.u.
   coordinate system. Default value is stored in obj.
 
-`unitS`
+`'unitS'`
 : Old setting, removed.
 
-`unit`
+`'unit'`
 : Determines the coordinate system for S and n vectors by a
   string:
       'xyz'   Cartesian coordinate system, fixed to the lattice.
@@ -150,11 +150,11 @@ FQ Fourier components and plots the magnetic structure.
               parallel to the lattice vectors but normalized to
               unity.
 
-`epsilon`
+`'epsilon'`
 : The smalles value of incommensurability that is
   tolerated without warning in lattice units. Default is 1e-5.
 
-`func`
+`'func'`
 : Function that produce the magnetic moments, ordering wave
   vector and normal vector from the param.x parameters in the
   following form:
@@ -165,15 +165,15 @@ FQ Fourier components and plots the magnetic structure.
   is @gm_spherical3d. For planar magnetic structure use
   @gm_planar.
 
-`x0`
+`'x0'`
 : Input parameters for param.func function, dimensions are
   [1 nx].
 
-`norm`
+`'norm'`
 : Set the length of the generated magnetic moments to be equal to
   the spin of the magnetic atoms. Default is true.
 
-`r0`
+`'r0'`
 : If true and only a single spin direction is given, the spin
   phases are determined by atomic position times k-vector, while
   if it is false, the first spin will have zero phase. Default is

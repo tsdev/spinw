@@ -1,5 +1,5 @@
 ---
-{title: gm_planar( ), link: gm_planar, summary: planar magnetic structure constraint
+{title: gm_planar, link: gm_planar, summary: planar magnetic structure constraint
     function, keywords: sample, sidebar: sw_sidebar, permalink: gm_planar.html, folder: swfiles,
   mathjax: 'true'}
 

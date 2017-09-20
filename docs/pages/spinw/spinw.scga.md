@@ -25,38 +25,38 @@
 
 ### Name-Value Pair Arguments
 
-`T`
+`'T'`
 : Temperature of the calculation in units given by obj.unit.
 
-`plot`
+`'plot'`
 : If true, the fitting of the integration constant is plotted.
 
-`lambda`
+`'lambda'`
 : If given, the integration is avoided.
 
-`kbase`
+`'kbase'`
 : Basis vectors that span the Brillouin zone if the system is low
   dimensional. Default value is [] when the dimensionality of the
   system is determined automatically.
 
-`nInt`
+`'nInt'`
 : Number of Q points where the Brillouin zone is sampled for the
   integration.
 
-`corr`
+`'corr'`
 : If true, spinw correlations are calculated at the given
   momentum vectors. Default is true.
 
-`chi`
+`'chi'`
 : If true, the magnetic susceptibility is calculated.
 
-`fitmode`
+`'fitmode'`
 :     Speedup (for fitting mode only), default value is false.
 
-`sublat`
+`'sublat'`
 : List of sublattices.
 
-`isomode`
+`'isomode'`
 : ...
 
 ### Output Arguments

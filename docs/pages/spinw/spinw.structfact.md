@@ -36,7 +36,7 @@ obj.unit_cell.biso, using the same definition as FullProf.
 
 ### Name-Value Pair Arguments
 
-`mode`
+`'mode'`
 : String, defines the type of calculation:
       mag     Magnetic structure factor and intensities for
               unpolarised neutron scattering.
@@ -45,22 +45,22 @@ obj.unit_cell.biso, using the same definition as FullProf.
       nucx    X-ray scattering structure factor and
               intensities.
 
-`sortq`
+`'sortq'`
 : Sorting the reflections according to increasing momentum
   value if true. Default is false.
 
-`gtensor`
+`'gtensor'`
 : If true, the g-tensor will be included in the static spin
   correlation function, including anisotropic g-tensor or
   different g-tensor per ion.
 
-`formfact`
+`'formfact'`
 : If true, the magnetic form factor is included in the
   spin-spin correlation function calculation. The form factor
   coefficients are stored in obj.unit_cell.ff(1,:,atomIndex).
   Default value is false.
 
-`formfactfun`
+`'formfactfun'`
 : Function that calculates the magnetic form factor for given
   Q value. Default value is @sw_mff(), that uses a tabulated
   coefficients for the form factor calculation. For
@@ -74,28 +74,28 @@ obj.unit_cell.biso, using the same definition as FullProf.
       Q   matrix with dimensions of [3 nQ], where each column
           contains a Q vector in Å$$^{-1}$$ units.
 
-`lambda`
+`'lambda'`
 : Wavelength. If given, the 2theta value for each reflection
   is calculated.
 
-`dmin`
+`'dmin'`
 : Minimum d-value of a reflection, all higher order
   reflections will be removed from the results.
 
-`output`
+`'output'`
 : String, defines the type of the output:
       struct  Results are returned in a struct type variable,
               default.
       table   Results are returned in a table type output for
               easy viewing and exporting.
 
-`tol`
+`'tol'`
 : Tolerance of the incommensurability of the magnetic
   ordering wavevector. Deviations from integer values of the
   ordering wavevector smaller than the tolerance are considered
   to be commensurate. Default value is 1e-4.
 
-`fitmode`
+`'fitmode'`
 : Speed up the calculation for fitting mode (omitting
   copying the spinw object to the output). Default is false.
 

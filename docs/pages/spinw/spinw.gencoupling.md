@@ -42,29 +42,29 @@ the couplingtable() function lists the 1st, 2nd and 3rd neighbor bonds.
 
 ### Name-Value Pair Arguments
 
-`forceNoSym`
+`'forceNoSym'`
 : If true, equivalent bonds are generated based on
   bond length with .tolDist tolerance. If false symmetry
   operators will be used if they are given
   (obj.lattice.sym>0).
 
-`maxDistance`
+`'maxDistance'`
 : Maximum bond length that will be stored in the
   obj.coupling property in units of Å. Default is 8.
 
-`maxSym`
+`'maxSym'`
 : Maximum bond length until the symmetry equivalent bonds are
   generated. It is usefull if long bonds have to be generated
   for the dipolar interaction, but the symmetry analysis of
   them is not necessary. Default value is equal to
   maxDistance.
 
-`tolDist`
+`'tolDist'`
 : Tolerance of distance, within two bonds are regarded
   equivalent, default value is 1e-3 Å. Only used, when no
   space group is defined.
 
-`dMin`
+`'dMin'`
 : Minimum bond length, below which an error is triggered.
   Default value is 0.5 Å.
 

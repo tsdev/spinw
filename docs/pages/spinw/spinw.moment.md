@@ -25,20 +25,20 @@ random Q points.
 
 ### Name-Value Pair Arguments
 
-`nRand`
+`'nRand'`
 : The number of random Q points in the Brillouin-zone,
   default value is 1000.
 
-`T`
+`'T'`
 : Temperature, default value is taken from obj.single_ion.T.
 
-`tol`
+`'tol'`
 : Tolerance of the incommensurability of the magnetic
   ordering wavevector. Deviations from integer values of the
   ordering wavevector smaller than the tolerance are
   considered to be commensurate. Default value is 1e-4.
 
-`omega_tol`
+`'omega_tol'`
 : Tolerance on the energy difference of degenerate modes when
   diagonalising the quadratic form, default value is 1e-5.
 

@@ -17,7 +17,7 @@ the standard settings of the space groups are stored in the
 * [swsym.add](swsym_add.html) saves user defined symmetry operators
 * [swsym.bond](swsym_bond.html) generates all symmetry equivalent bonds
 * [swsym.generator](swsym_generator.html) returns symmetry operators of a given space group
-* [swsym.genreduce](swsym_genreduce.html) reduces the list of symmetry operators to the generators
+* [swsym.genreduce](swsym_genreduce.html) reduces symmetry operators to the generators
 * [swsym.isop](swsym_isop.html) function determines whether the matrix is a symmetry operator
 * [swsym.operator](swsym_operator.html) calculates all symmetry operators or general positions for a space group
 * [swsym.oporder](swsym_oporder.html) determine the order of the symmetry operator

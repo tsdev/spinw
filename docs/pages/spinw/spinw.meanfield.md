@@ -37,21 +37,21 @@
 
 ### Name-Value Pair Arguments
 
-`Trel`
+`'Trel'`
 : Relative mean field temperature in Kelvin. An effective
   temperature relative to the mean field critical temperature
   Tc (the most negative eigenvalue of J(Q), the Fourier
   transform of the exchange couplings). Default value is 0,
   which means Tmf = Tc.
 
-`Tc`
+`'Tc'`
 : Critical temperature, default value is calculated from the
   exchange matrix sampled on the given Q points. If the Q
   points don't contain the point where J(Q) is minimum, the
   automatically determined Tc will be wrong. In this case it
   is recommended to use this option to give the right Tc.
 
-`formfact`
+`'formfact'`
 : Setting, that determines whether the magnetic form factor
   is included in the spin-spin correlation function
   calculation. Possible values:
@@ -67,7 +67,7 @@
   correlations on the first atom and using the form factor of
   Cr3+ ion for the second atom.
 
-`formfactfun`
+`'formfactfun'`
 : Function that calculates the magnetic form factor for given
   Q value. Default value is @sw_mff(), that uses a tabulated
   coefficients for the form factor calculation. For

@@ -1,7 +1,7 @@
 entries:
 - title: Sidebar
   product: SpinW
-  version: R1417
+  version: R1419
   folders:
   - title: Documentation
     output: web, pdf
@@ -25,6 +25,9 @@ entries:
         - {title: spinw.mag_str, url: /spinw_mag_str.html, output: 'web, pdf'}
         - {title: spinw.unit, url: /spinw_unit.html, output: 'web, pdf'}
         - {title: spinw.cache, url: /spinw_cache.html, output: 'web, pdf'}
+      - title: []
+        output: []
+        subfolderitems: []
       - title: Lattice operations
         output: web, pdf
         subfolderitems:

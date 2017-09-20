@@ -56,17 +56,17 @@ sw_plotspec(sw_egrid(tri_orth.spinwave({[0 0 0] [1 1 0] 501})),'mode','color','d
 
 ### Name-Value Pair Arguments
 
-`bvect`
+`'bvect'`
 : Defines the new lattice vectors in the original lattice
   coordinate system. Cell with the following elements
   {v1 v2 v3} or a 3x3 matrix with v1, v2 and v3 as column
   vectors: [v1 v2 v3].
 
-`bshift`
+`'bshift'`
 : Row vector defines a shift of the position of the unit cell.
   Optional.
 
-`keepq`
+`'keepq'`
 : If true, the reciprocal lattice units of the new model will be
   the same as in the old model. This is achieved by storing the
   transformation matrix between the new and the old coordinate

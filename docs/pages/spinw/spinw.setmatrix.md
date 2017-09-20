@@ -30,31 +30,31 @@ of 1.25 meV.
 
 ### Name-Value Pair Arguments
 
-`One`
+`'One'`
 :below options has to be given:
 
-`mat`
+`'mat'`
 :   Label or index of the matrix that is already assigned to
     a bond, anisotropy or g-tensor.
 
-`bond`
+`'bond'`
 :   Index of the bond in spinw.coupling.idx.
 
-`subIdx`
+`'subIdx'`
 :   Selects a certain bond, within efault value is 1.
 
-`aniso`
+`'aniso'`
 :   Label or index of the magnetic atom that has a single ion
     anisotropy matrix is assigned.
 
-`gtensor`
+`'gtensor'`
 :   Label or index of the magnetic atom that has a g-tensor is 
     assigned.
 
-`Optional`
+`'Optional'`
 :puts:
 
-`pref`
+`'pref'`
 :efines prefactors as a vector for the symmetry allowed
  omponents, dimensions are [1 nSymMat]. Alternatively, if only
   few of the symmetry allowed matrices have non-zero

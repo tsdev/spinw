@@ -20,17 +20,17 @@
 
 ### Name-Value Pair Arguments
 
-`fitmode`
+`'fitmode'`
 : Can be used to speed up calculation, modes:
       true    No speedup (default).
       false   For the interactions stored in SS, only the
               'all' field is calculated.
 
-`plotmode`
+`'plotmode'`
 : If true, additional rows are added to SS.all, to identify
   the couplings for plotting. Default is false.
 
-`sortDM`
+`'sortDM'`
 : If true each coupling is sorted for consistent plotting of
   the DM interaction. Sorting is based on the dR distance
   vector, pointing from atom1 to atom2. Its components should
@@ -40,16 +40,16 @@
       3. dR(z) > 0.
   Default is false.
 
-`zeroC`
+`'zeroC'`
 : Whether to output bonds with assigned matrices that are
   zero. Default is false.
 
-`extend`
+`'extend'`
 : If true, all bonds in the magnetic supercell will be
   generated, if false, only the bonds in the crystallographic
   unit cell is calculated. Default is true.
 
-`conjugate`
+`'conjugate'`
 : Introduce the conjugate of the couplings (atom1 and atom2
   exchanged). Default is false.
 

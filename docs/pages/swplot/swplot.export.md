@@ -24,17 +24,17 @@ figure property restored after export.
 
 ### Name-Value Pair Arguments
 
-`figure`
+`'figure'`
 : Handle of the swplot figure. Default is the selected figure.
 
-`filename`
+`'filename'`
 : String, name of the image file. Image type will be determined
   based on the extension. Supported graphics formats:
       .png    Raster image.
       .eps    Vector image.
   If no filename provided, 
 
-`res`
+`'res'`
 : Resolution for raster images in dpi, default value is 300. Set
   it to 0, to save the image with the screen resolution.
 

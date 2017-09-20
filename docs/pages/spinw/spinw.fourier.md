@@ -42,12 +42,12 @@ anisotropy is not included in the sum.
 
 ### Name-Value Pair Arguments
 
-`extend`
+`'extend'`
 : If true, the Fourier transform will be calculated on the
   magnetic supercell, if false the crystallographic cell will
   be considered. Default is true.
 
-`isomode`
+`'isomode'`
 : Defines how Heisenberg/non-Heisenberg Hamiltonians are
   treated. Can have the following values:
       'off'   Always output the (3x3) form of the
@@ -56,7 +56,7 @@ anisotropy is not included in the sum.
               one of the diagonal values from the (3x3)
               matrices to reduce memory consumption.
 
-`fid`
+`'fid'`
 : Defines whether to provide text output. Default is defined
   by the swpref.getpref('fid') command. The possible values:
       0       No text output is generated.

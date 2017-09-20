@@ -34,7 +34,7 @@ Particle-Swarm optimization.
 
 ### Name-Value Pair Arguments
 
-`Accepts`
+`'Accepts'`
 : all options of ndbase.pso.
 
 ### Output Arguments

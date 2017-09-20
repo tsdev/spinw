@@ -1,7 +1,6 @@
 ---
-{title: sw_extendlattice( ), link: sw_extendlattice, summary: creates superlattice,
-  keywords: sample, sidebar: sw_sidebar, permalink: sw_extendlattice.html, folder: swfiles,
-  mathjax: 'true'}
+{title: sw_extendlattice, link: sw_extendlattice, summary: creates superlattice, keywords: sample,
+  sidebar: sw_sidebar, permalink: sw_extendlattice.html, folder: swfiles, mathjax: 'true'}
 
 ---
 

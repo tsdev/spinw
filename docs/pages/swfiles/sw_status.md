@@ -1,6 +1,6 @@
 ---
-{title: sw_status( ), link: sw_status, summary: timer function that displays also
-    the remaining time, keywords: sample, sidebar: sw_sidebar, permalink: sw_status.html,
+{title: sw_status, link: sw_status, summary: timer function that displays also the
+    remaining time, keywords: sample, sidebar: sw_sidebar, permalink: sw_status.html,
   folder: swfiles, mathjax: 'true'}
 
 ---

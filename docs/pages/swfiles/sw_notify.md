@@ -1,5 +1,5 @@
 ---
-{title: sw_notify( ), link: sw_notify, summary: sends notification in OSX, keywords: sample,
+{title: sw_notify, link: sw_notify, summary: sends notification in OSX, keywords: sample,
   sidebar: sw_sidebar, permalink: sw_notify.html, folder: swfiles, mathjax: 'true'}
 
 ---

@@ -42,7 +42,7 @@ ground state of the magnetic model in cryst.
 
 ### Name-Value Pair Arguments
 
-`epsilon`
+`'epsilon'`
 : The smallest value of incommensurability that is tolerated 
   without warning. Default is 1e-5.
 

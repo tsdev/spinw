@@ -5,49 +5,72 @@
 
 ---
  
-* * *
-`obj = spinw()`
-* * *
+### Syntax
  
-constructs a new spinw class object, with default parameters.
+`obj = spinw`
  
-* * *
 `obj = spinw(obj)`
-* * *
  
-constructs new spinw class object. If `obj` is spinw class, it only
-checks the integrity of its internal data structure. If `obj` is
-struct type, it creates new spinw object and checks data integrity.
- 
-* * *
 `obj = spinw(source)`
-* * *
  
-construct new spinw class object, where `source` is either a file
-path pointing to a local cif or fst file or a link to an online file.
- 
-* * *
 `obj = spinw(figure_handle)`
-* * *
  
-copy the spinw object stored in a previous structural3D plot figure.
+### Description
  
-The data structure behind the spinw object can be accessed by using
-`struct(obj)`. All fields of the struct type data behind the spinw
-object are accessible through the main field names of the `obj`
-object. For example the lattice parameters can be extracted using:
-```matlab
-  abc = obj.unit_cell.lat_const
+`obj = spinw` constructs an empty spinw class object.
+ 
+`obj = spinw(obj)` constructs a spinw class object from the
+parameters defined in `obj`. If `obj` is spinw class, it only checks
+the integrity of its internal data structure. If `obj` is struct
+type, it creates new spinw object and checks data integrity.
+ 
+`obj = spinw(source)` construct new spinw class object, where
+`source` is either a file path pointing to a local `cif` or `fst`
+file or a link to an online file.
+ 
+`obj = spinw(figure_handle)` copy the spinw object stored in a
+previous structural 3D plot figure, referenced by `figure_handle`.
+ 
+ 
+The data structure within the spinw object can be accessed by using
+[spinw.struct](spinw_struct.html) method. All fields of the struct type data behind the
+spinw object are accessible through the main field names of the `obj`
+object. For example the lattice parameters can be accessed using:
+ 
+```
+abc = obj.unit_cell.lat_const
 ```
  
-spinw is a handle class, that means that only the handle of the
-object is copied in a `swobj1 = swobj2` command. To create a copy
-(clone) of an spinw object use
-```matlab
-   swobj1 = swobj2.copy
+spinw is a handle class, which means that only the handle of the
+object is copied in an assinment command `swobj1 = swobj2`. To create
+a copy (clone) of an spinw object use:
+ 
 ```
+swobj1 = swobj2.copy
+```
+ 
+### Properties
+ 
+The data within the `spinw` object is organized into a tree structure
+with the main groups and the type of data they store are the
+following:
+ 
+* [spinw.lattice](spinw_lattice.html) unit cell parameters
+* [spinw.unit_cell](spinw_unit_cell.html) atoms in the crystallographic unit cell
+* [spinw.twin](spinw_twin.html) crystal twin parameters
+* [spinw.matrix](spinw_matrix.html) 3x3 matrices for using them in the Hailtonian
+* [spinw.single_ion](spinw_single_ion.html) single ion terms of the Hamiltonian
+* [spinw.coupling](spinw_coupling.html) list of bonds
+* [spinw.mag_str](spinw_mag_str.html) magnetic structure
+* [spinw.unit](spinw_unit.html) physical units for the Hamiltonian
+* [spinw.cache](spinw_cache.html) temporary values
  
 ### Methods
+ 
+Methods are the different commands that require a `spinw` object as a
+first input, thus they can be called as `method1(obj,...)`,
+alternatively the equivalent command is `obj.method1(...)`. The list
+of public methods is below.
  
 #### Lattice operations
  

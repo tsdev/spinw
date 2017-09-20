@@ -1,5 +1,5 @@
 ---
-{title: sw_egrid( ), link: sw_egrid, summary: creates energy for spectrum color plot,
+{title: sw_egrid, link: sw_egrid, summary: creates energy for spectrum color plot,
   keywords: sample, sidebar: sw_sidebar, permalink: sw_egrid.html, folder: swfiles,
   mathjax: 'true'}
 
@@ -30,7 +30,7 @@ will contain the Szz component of the correlation function.
 
 ### Name-Value Pair Arguments
 
-`component`
+`'component'`
 :t Selects which correlation function component to be binned in
    energy. The possible options are:
        'Sperp' bins the magnetic neutron scattering intensity
@@ -72,39 +72,39 @@ will contain the Szz component of the correlation function.
    each containing any linear combination of cross sections as
    above, the cell array needs to have size [1 nCell].
 
-`Evect`
+`'Evect'`
 :  Vector, defines the center/edge of the energy bins of the
    calculated output, dimensions are is [1 nE]. The energy units
    are defined by the unit.kB property of the spinw object. Default
    value is an edge bin: linspace(0,1.1*maxOmega,501).
 
-`binType`
+`'binType'`
 :  String, determines the type of bin give, possible options:
        'cbin'    Center bin, the center of each energy bin is given.
        'ebin'    Edge bin, the edges of each bin is given.
    Default is 'ebin'.
 
-`T`
+`'T'`
 :  Temperature, used to calculate the Bose factor in units
    depending on the Boltzmann constant (spinw.unit.kB). Default
    temperature is taken from obj.single_ion.T. The Bose factor is
    included in swConv field of the output.
 
-`sumtwin`
+`'sumtwin'`
 :  If true, the spectra of the different twins will be summed
    together weighted with the normalized volume fractions. Default
    is true.
 
-`modeIdx`
+`'modeIdx'`
 :  Select certain spin wave modes from the 2*nMagAtom number of
    modes to include in the output. Default is 1:2*nMagAtom to
    include all modes.
 
-`epsilon`
+`'epsilon'`
 :  Error limit, used to determine whether a given energy bin is
    uniform or not. Default is 1e-5.
 
-`autoEmin`
+`'autoEmin'`
 :  Due to the finite numerical precision, the spin wave energies
    can contain small imaginary energies. These can ruin the
    convoluted spectrum at low energies. To improve the spectrum,
@@ -114,14 +114,14 @@ will contain the Szz component of the correlation function.
    overwrites the given value. Only works if the input energy bin
    starts with zero. Default is false.
 
-`imagChk`
+`'imagChk'`
 :  Checks that the imaginary part of the spin wave dispersion is
    smaller than the energy bin size. Default is true.
 
-`The`
+`'The'`
 :e-Maleev coordinate system is a cartesian coordinate system
 
-`with`
+`'with'`
 :M, yBM and zBM) basis vectors as follows:
    xBM    parallel to the momentum transfer Q,
    yBM    perpendicular to xBM in the scattering plane,

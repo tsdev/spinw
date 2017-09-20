@@ -29,7 +29,7 @@ result of the spinw.energy() function.
 
 ### Name-Value Pair Arguments
 
-`spinDim`
+`'spinDim'`
 : Dimensionality of the magnetic moments.
       1   Ising spins
       2   XY spins
@@ -40,43 +40,43 @@ result of the spinw.energy() function.
   the xy-plane. Magnetic fields perpendicular to these directions
   are omitted.
 
-`initT`
+`'initT'`
 : The initial temperature, can be any positive number,
   unit is Kelvin. Default is 1.
 
-`endT`
+`'endT'`
 : Temperature at which to stop, can be any positive number
   smaller than 'InitTemp', unit is Kelvin.
   Default is 1e-3.
 
-`cool`
+`'cool'`
 : Generates a new temperature from the previous one.
   Any function handle that takes a scalar as input and
   returns a smaller but positive scalar as output.
   Default is @(T) (.92*T).
 
-`random`
+`'random'`
 : Random initial conditions, if initial spin configuration
   is undefined (obj.mag_str.S is empty) the initial configuration
   is automaticly random independently of the value of random.
   Default is false.
 
-`nMC`
+`'nMC'`
 : Number of Monte-Carlo steps per spin at each temperature
   step to reach thermal equilibrium. Default is 100.
 
-`nORel`
+`'nORel'`
 : Number of over-relaxation steps after every Monte-Carlo
   steps. It rotates the spins around the direction of the local
   field by 180deg. It is reversible and microcanonical if the
   single ion anisotropy is zero. Default is 0.
 
-`nStat`
+`'nStat'`
 : Number of cycles at the last temperature to calculate
   statistical averages. It has to be smaller or equal nMC.
   Default is 100.
 
-`boundary`
+`'boundary'`
 : Boundary conditions of the extended unit cell.
       'free'  Free, interactions between extedned unit cells are
               omitted.
@@ -84,18 +84,18 @@ result of the spinw.energy() function.
               are retained.
   Default is {'per' 'per' 'per'}.
 
-`verbosity`
+`'verbosity'`
 : Controls output to the screen.
       0   suppresses all output
       1   gives final report only
       2   plots temperature changes and final report [default]
 
-`nExt`
+`'nExt'`
 : The size of the magnetic cell in number of unit cells, to
   provide input information to 'fStat'.
   Default is from obj.mag_str.N_ext.
 
-`fStat`
+`'fStat'`
 : Function handle to evaluate after at the end of the
   cooling scedule during the last nStat Monte-Carlo steps.
   The function returns a single structure and takes fixed
@@ -111,24 +111,24 @@ result of the spinw.energy() function.
   parameters).
   Default is <a href="matlab: doc sw_fstat">@sw_fstat</a>.
 
-`fSub`
+`'fSub'`
 : Function to define sublattices for Monte-Carlo speedup.
   cGraph = fSub(conn,nExt), where cGraph is a (1,nMagExt) sized
   vector, conn is a (2,nConn) size matrix and nExt is equal to
   'nExt'. Default is <a href="matlab: doc sw_fsub">@sw_fsub</a>
 
-`subLat`
+`'subLat'`
 : Vector that assigns all magnetic moments into non-interacting
   sublattices, contains a single index (1,2,3...) for every
   magnetic moment, size is (1,nMagExt). If undefined, the
   function defined in 'fSub' will be used to partition the
   lattice.
 
-`title`
+`'title'`
 : Gives a title string to the simulation that is saved in the
   output.
 
-`autoK`
+`'autoK'`
 : Bin length of the autocorrelation vector. Should be a few times
   smaller than nMC. Default is zero, no autocorrelation function
   is calculated.

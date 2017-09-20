@@ -26,13 +26,13 @@ in the $$C4$$ point group (the symmetry at the $$(0,0,0)$$ atomic position).
 The allowed matrix elements will be `diag([A A B])`:
  
 ```
->>cryst = spinw;
->>cryst.genlattice('sym','P 4')
->>cryst.addatom('r',[0 0 0],'label','MCu2')
->>cryst.addmatrix('label','A','value',1)
->>cryst.gencoupling
->>cryst.addaniso('A')
->>cryst.getmatrix('mat','A');
+cryst = spinw;
+cryst.genlattice('sym','P 4')
+cryst.addatom('r',[0 0 0],'label','MCu2')
+cryst.addmatrix('label','A','value',1)
+cryst.gencoupling
+cryst.addaniso('A')
+cryst.getmatrix('mat','A');
 ```
   
 ### Input Arguments

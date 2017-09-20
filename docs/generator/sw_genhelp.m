@@ -241,6 +241,24 @@ javaaddpath(YAML.jarfile);
 % Load yaml into java obj
 snakeyaml = org.yaml.snakeyaml.Yaml;
 
+% run the examples
+imgPath = [docroot 'images' filesep 'generated'];
+if isempty(dir(imgPath))
+    mkdir(imgPath)
+end
+close('all');
+for ii = 1:numel(doctree)
+    content = doctree(ii).content;
+    for jj = 1:numel(content)
+
+        if any(cellfun(@(C)~isempty(C),regexp(content(jj).text,'>>')))
+            imgName = ['generated/' content(jj).frontmatter.permalink(1:(end-5))];
+            [content(jj).text,~] = sw_example(content(jj).text,[docroot 'images' filesep],imgName);
+        end
+    end
+    doctree(ii).content = content;
+end
+
 % get all the help text
 content = [doctree.content];
 allhelp = {content.text};

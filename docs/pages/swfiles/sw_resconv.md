@@ -37,7 +37,7 @@ between the given `x` bin center positions.
  
   The standard deviation of the Gaussian is calculated from the given
   $$dx$$ value using the formula $$\sigma_G = fwhm_G/2/\sqrt{2\cdot log(2)}
-  \sim fwhm_G/2.35482$$
+  \sim fwhm_G\cdot 0.424661$$
   If a general resolution function is provided in the `func` argument,
   it will be called as `y = func(x,[1 x0 fwhm])`. In this case the `fwhm`
   can be a row vector and the meaning of the different parameters will

@@ -36,7 +36,8 @@ function spectra = spinwave(obj, hkl, varargin)
 % ```
 % >>tri = sw_model('triAF',1);
 % >>spec = tri.spinwave({[0 0 0] [1 1 0]});
-% >>sw_plotspec(spec)
+% >>sw_plotspec(spec);
+% >>snapnow
 % ```
 % 
 % ### Input arguments

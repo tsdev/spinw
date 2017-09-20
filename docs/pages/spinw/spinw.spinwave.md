@@ -38,9 +38,15 @@ direction in reciprocal space we create the built in triangular lattice
 model using `sw_model`.
  
 ```
->>tri = sw_model('triAF',1);
->>spec = tri.spinwave({[0 0 0] [1 1 0]});
->>sw_plotspec(spec)
+tri = sw_model('triAF',1);
+spec = tri.spinwave({[0 0 0] [1 1 0]});
+sw_plotspec(spec);
+```
+
+{% include image.html file="generated/spinw_spinwave_38.png" alt="sw_plotspec(spec);" %}
+
+```
+
 ```
   
 ### Input arguments

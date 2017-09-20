@@ -32,13 +32,13 @@ Q(1) Q(2)        Q(3) ENlim(1) ENlim(2) I(1)  EN(1)  s(1) I(2)   EN(2)   s(2)
 0     1.1000   2.0000   15      30      1   22.7032   1.0   0   0.0       0.0
 0     1.2000   2.0000   20      35      1   25.1516   1.0   0   0.0       0.0
 The command to import the data
->> dat = sw_readtable('test.dat');
+dat = sw_readtable('test.dat');
 The dat variable will contain the fields MODE, Q, ENlim, I, EN and s and
 it will have 7 entry. The mode variable will contain '[Mxx] [1 0 0]'
 string for the first 4 entry and '[Myy] [1 0 0]' for the last 3 entry.
 For example the field Q has 3 elements per entry, to extract all Q points
 into a matrix use the command:
->> Q = reshape([dat(:).Q],3,[])';
+Q = reshape([dat(:).Q],3,[])';
 
 ### Input Arguments
 

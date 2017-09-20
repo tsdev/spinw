@@ -24,9 +24,9 @@ To add the $$A_1$$ diagonal matrix to all magnetic atoms as
 anisotropy (easy *XY* plane anisotropy) use the following code:
  
 ```
->>cryst.addmatrix('label','A1','value',diag([-0.1 -0.1 0]))
->>cryst.gencoupling
->>cryst.addaniso('A1')
+cryst.addmatrix('label','A1','value',diag([-0.1 -0.1 0]))
+cryst.gencoupling
+cryst.addaniso('A1')
 ```
   
 ### Input arguments

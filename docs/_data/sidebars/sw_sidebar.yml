@@ -1,7 +1,7 @@
 entries:
 - title: Sidebar
   product: SpinW
-  version: R1420
+  version: R1421
   folders:
   - title: Documentation
     output: web, pdf
@@ -92,7 +92,7 @@ entries:
         - {title: spinw.setunit, url: /spinw_setunit.html, output: 'web, pdf'}
         - {title: spinw.symop, url: /spinw_symop.html, output: 'web, pdf'}
         - {title: spinw.temperature, url: /spinw_temperature.html, output: 'web, pdf'}
-      - title: Calculators
+      - title: Solvers
         output: web, pdf
         subfolderitems:
         - {title: spinw.energy, url: /spinw_energy.html, output: 'web, pdf'}

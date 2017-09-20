@@ -7,7 +7,7 @@
 
 ### Syntax
 
-`e = energy(obj, option1, value1 ...)`
+`e = energy(obj,Name,Value)`
 
 ### Description
 

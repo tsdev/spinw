@@ -44,7 +44,7 @@ for ii = 1:nPath
         otherwise
             doctree(ii).name = doctree(ii).fullname;
     end
-
+    
     if doctree(ii).isClass
         % class
         name        = doctree(ii).name;
@@ -136,7 +136,7 @@ for ii = 1:nPath
     end
     % assign title from tList
     fList  = {doctree(ii).content(:).fun};
-        
+    
     if all(cellfun(@(C)isempty(C),{tStruct.title}))
         % no titles are defined
         if doctree(ii).isClass
@@ -230,10 +230,10 @@ for ii = 1:nPath
     %[doctree(ii).content(~[doctree(ii).content.isContents]).text] = temp{:};
     temp = cellfun(@(C)C(2:end),{doctree(ii).content.text},'UniformOutput',false);
     [doctree(ii).content.text] = temp{:};
-
+    
     temp = cellfun(@(C)C(1:end-2),{doctree(ii).content([doctree(ii).content.isContents] & doctree(ii).isClass).text},'UniformOutput',false);
     [doctree(ii).content([doctree(ii).content.isContents] & doctree(ii).isClass).text] = temp{:};
-
+    
 end
 
 % YAML java
@@ -243,18 +243,43 @@ snakeyaml = org.yaml.snakeyaml.Yaml;
 
 % run the examples
 imgPath = [docroot 'images' filesep 'generated'];
-if isempty(dir(imgPath))
-    mkdir(imgPath)
+if ~isempty(dir(imgPath))
+    rmdir(imgPath,'s')
 end
+mkdir(imgPath)
+
 close('all');
+
 for ii = 1:numel(doctree)
     content = doctree(ii).content;
     for jj = 1:numel(content)
-
-        if any(cellfun(@(C)~isempty(C),regexp(content(jj).text,'>>')))
-            imgName = ['generated/' content(jj).frontmatter.permalink(1:(end-5))];
-            [content(jj).text,~] = sw_example(content(jj).text,[docroot 'images' filesep],imgName);
+        % find ``` code blocks
+        text0    = content(jj).text;
+        blockIdx = find(cellfun(@(C)~isempty(C),regexp(text0,'^```')));
+        if mod(numel(blockIdx),2)
+            error('Wrong number of block comments in %s',content(jj).fun)
         end
+        
+        blockIdx = reshape(blockIdx',2,[]);
+        for kk = size(blockIdx,2):-1:1
+            % code
+            selBlock = text0((blockIdx(1,kk)+1):(blockIdx(2,kk)-1));
+            if any(cellfun(@(C)~isempty(C),regexp(text0,'^>>')))
+                %
+                imgName = ['generated/' content(jj).frontmatter.permalink(1:(end-5))];
+                [newText,~] = sw_example(selBlock,[docroot 'images' filesep],imgName);
+                if ~isempty(regexp(newText{end},'```','once'))
+                    text0 = [text0(1:blockIdx(1,kk)) newText(1:(end-1))' text0((blockIdx(2,kk)+1):end)];
+                else
+                    text0 = [text0(1:blockIdx(1,kk)) newText' text0(blockIdx(2,kk):end)];
+                end
+            end
+        end
+        content(jj).text = text0;
+        %if any(cellfun(@(C)~isempty(C),regexp(text0,'>>')))
+        %    imgName = ['generated/' content(jj).frontmatter.permalink(1:(end-5))];
+        %    [content(jj).text,~] = sw_example(text0,[docroot 'images' filesep],imgName);
+        %end
     end
     doctree(ii).content = content;
 end
@@ -313,7 +338,7 @@ for ii = 1:nPath
         fid = fopen([docroot 'pages' filesep content.frontmatter.folder filesep content.fun '.md'],'w');
         % add newline
         %helpText = cellfun(@(C)[C newline],content.text,'UniformOutput',false);
-%        help1 = allhelp{idx};
+        %        help1 = allhelp{idx};
         
         %helpText = cellfun(@(C)[C newline],help1,'UniformOutput',false);
         
@@ -346,8 +371,8 @@ sidebar.entries.folders(1).output = 'web, pdf';
 for ii = 1:nPath
     sidebar.entries.folders(ii+1).title  = doctree(ii).name;
     sidebar.entries.folders(ii+1).output = 'web, pdf';
-
-
+    
+    
     sidebar.entries.folders(ii+1).folderitems(1).title  = 'Description';
     sidebar.entries.folders(ii+1).folderitems(1).url    = ['/' doctree(ii).name '.html'];
     sidebar.entries.folders(ii+1).folderitems(1).output = 'web, pdf';

@@ -7,7 +7,7 @@
 
 ### Syntax
 
-`sfact   = structfact(obj, kgrid, option1, value1, ...)`
+`sfact   = structfact(obj, kgrid,Name,Value)`
 
 ### Description
 

@@ -135,7 +135,7 @@ of public methods is below.
 * [spinw.symop](spinw_symop.html) generates the symmetry operators on bonds and magnetic atoms
 * [spinw.setunit](spinw_setunit.html) sets the physical units
     
-#### Calculators
+#### Solvers
  
 * [spinw.spinwave](spinw_spinwave.html) calculates spin correlation function using linear spin wave theory
 * [spinw.powspec](spinw_powspec.html) calculates powder averaged spin wave spectra

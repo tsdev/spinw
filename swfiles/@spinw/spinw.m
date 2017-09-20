@@ -131,7 +131,7 @@ classdef spinw < handle & matlab.mixin.SetGet
     %   spinw.symop
     %   spinw.setunit
     %   
-    % #### Calculators
+    % #### Solvers
     %
     %   spinw.spinwave
     %   spinw.powspec

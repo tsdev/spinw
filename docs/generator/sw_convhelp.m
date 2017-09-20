@@ -96,9 +96,9 @@ sec = sec(newidx);
 % fix syntax line
 if numel(str)>2
     syntax = ['`' lower(str{3}) '`'];
-    isOpt  = strfind(syntax,'''option');
+    isOpt  = [strfind(syntax,'''option') strfind(syntax,'option')];
     if ~isempty(isOpt)
-        syntax = [strtrim(syntax(1:isOpt-1)) 'Name,Value)`'];
+        syntax = [strtrim(syntax(1:isOpt(1)-1)) 'Name,Value)`'];
     end
     % add syntax and description
     sec = [struct('title',{'Syntax' 'Description'},'text',{{syntax} str(5:(sIdx(1,1)-1))},'idx',{-2 -1}) sec];

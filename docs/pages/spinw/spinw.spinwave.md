@@ -42,12 +42,8 @@ tri = sw_model('triAF',1);
 spec = tri.spinwave({[0 0 0] [1 1 0]});
 sw_plotspec(spec);
 ```
-
-{% include image.html file="generated/spinw_spinwave_38.png" alt="sw_plotspec(spec);" %}
-
-```
-
-```
+ 
+{% include image.html file="generated/spinw_spinwave_1.png" alt="sw_plotspec(spec);" max-width="500" %}
   
 ### Input arguments
  
@@ -83,12 +79,12 @@ sw_plotspec(spec);
  
 ### Name-Value Pair Arguments
  
-`formfact`
+`'formfact'`
 : If true, the magnetic form factor is included in the spin-spin
   correlation function calculation. The form factor coefficients are
   stored in `obj.unit_cell.ff(1,:,atomIndex)`. Default value is `false`.
  
-`formfactfun`
+`'formfactfun'`
 : Function that calculates the magnetic form factor for given $$Q$$ value.
   value. Default value is `@sw_mff`, that uses a tabulated coefficients
   for the form factor calculation. For anisotropic form factors a user
@@ -103,42 +99,42 @@ sw_plotspec(spec);
   * `Q`           matrix with dimensions of $$[3\times n_Q]$$, where each
                   column contains a $$Q$$ vector in $$Å^{-1}$$ units.
  
-`gtensor`
+`'gtensor'`
 : If true, the g-tensor will be included in the spin-spin correlation
   function. Including anisotropic g-tensor or different
   g-tensor for different ions is only possible here. Including a simple
   isotropic g-tensor is possible afterwards using the [sw_instrument](sw_instrument.html)
   function.
  
-`fitmode`
+`'fitmode'`
 : If `true`, function is optimized for multiple consecutive calls (e.g. 
   the output spectrum won't contain the copy of `obj`), default is
   `false`.
  
-`notwin`
+`'notwin'`
 : If `true`, the spectra of the twins won't be calculated. Default is
 `false`.
  
-`sortMode`
+`'sortMode'`
 : If `true`, the spin wave modes will be sorted. Default is `true`.
  
-`optmem`
+`'optmem'`
 : Parameter to optimise memory usage. The list of Q values will be cut
   into `optmem` number of pieces and will be calculated piece by piece to
   decrease peak memory usage. Default value is 0, when the number
   of slices are determined automatically from the available free memory.
  
-`tol`
+`'tol'`
 : Tolerance of the incommensurability of the magnetic ordering wavevector.
   Deviations from integer values of the ordering wavevector smaller than
   the tolerance are considered to be commensurate. Default value is
   $$10^{-4}$$.
  
-`omega_tol`
+`'omega_tol'`
 : Tolerance on the energy difference of degenerate modes when
   diagonalising the quadratic form, default value is $$10^{-5}$$.
  
-`hermit`
+`'hermit'`
 : Method for matrix diagonalization with the following logical values:
   
   * `true`    using Colpa's method (for details see [J.H.P. Colpa, Physica 93A (1978) 327](http://www.sciencedirect.com/science/article/pii/0378437178901607)),
@@ -154,24 +150,24 @@ sw_plotspec(spec);
   case is wrong, however by examining the eigenvalues it can give a hint
   where the problem is." %}
                 
-`saveH`
+`'saveH'`
 : If true, the quadratic form of the Hamiltonian is also saved in the
   output. Be carefull, it can take up lots of memory. Default value is
   `false`.
  
-`saveV`
+`'saveV'`
 : If true, the matrices that transform the normal magnon modes into the
   magnon modes localized on the spins are also saved into the output. Be
   carefull, it can take up lots of memory. Default value is `false`.
  
-`saveSabp`
+`'saveSabp'`
 : If true, the dynamical structure factor in the rotating frame
   $$S'(k,\omega)$$ is saved. Default value is `false`.
  
-`title`
+`'title'`
 : Gives a title string to the simulation that is saved in the output.
  
-`fid`
+`'fid'`
 : Defines whether to provide text output. Default value is defined in
   `obj.fid`. The possible values are:
                     

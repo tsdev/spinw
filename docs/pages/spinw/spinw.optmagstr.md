@@ -7,7 +7,7 @@
 
 ### Syntax
 
-`optm = optmagstr(obj, option1, value1, ...)`
+`optm = optmagstr(obj,Name,Value)`
 
 ### Description
 

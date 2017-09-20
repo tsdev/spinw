@@ -29,7 +29,7 @@ onto the Command Window.
 
 formula struct variable with the following fields:
 m             Mass of the unit cell in g/mol unit.
-V             Volume of the unit cell in Angstrom^3 unit.
+V             Volume of the unit cell in Å^3 unit.
 rho           Density in g/cm^3 unit.
 chemlabel     List of the different elements.
 chemnum       Number of the listed element names

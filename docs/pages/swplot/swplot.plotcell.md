@@ -39,10 +39,10 @@ hFigure = SWPLOT.PLOTCELL('Option1',Value1,...)
   default value is black ('auto').
 
 `lineStyle`
-: Line style of the cell, default is '--'.
+: Line style of the cell, default value is '--'.
 
 `lineWdith`
-: Line width of the cell, default is 1.
+: Line width of the cell, default value is 1.
 
 `translate`
 : If true, all plot objects will be translated to the figure

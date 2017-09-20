@@ -34,7 +34,7 @@ swplot figure.
 : Unit in which the range is defined. It can be the following
   string:
       'lu'        Lattice units (default).
-      'xyz'       Cartesian coordinate system in Angstrom units.
+      'xyz'       Cartesian coordinate system in Å units.
 
 `mode`
 : String, defines the way the magnetic moments are plotted:
@@ -49,14 +49,14 @@ swplot figure.
 : Handle of the swplot figure. Default is the selected figure.
 
 `legend`
-: Whether to add the plot to the legend, default is true.
+: Whether to add the plot to the legend, default value is true.
 
 `label`
-: Whether to plot labels for atoms, default is true.
+: Whether to plot labels for atoms, default value is true.
 
 `dText`
-: Distance between item and its text label, default is 0.1
-  Angstrom.
+: Distance between item and its text label, default value is 0.1
+  Å.
 
 `fontSize`
 : Font size of the atom labels in pt, default value is stored in
@@ -76,20 +76,20 @@ swplot figure.
 
 `normalize`
 : If true, all moment length will be normalized to the scale
-  factor, default is false.
+  factor, default value is false.
 
 `radius0`
-: Radius value of arrow body, default is 0.06.
+: Radius value of arrow body, default value is 0.06.
 
 `ang`
-: Angle of the arrow head in degree units, default is 30 degree.
+: Angle of the arrow head in ° units, default value is 30 °.
 
 `lHead`
 : Length of the arrow head, default value is 0.5.
 
-`alpha`
-: Transparency (alpha value) of the circle, representing the
-  rotation plane of the moments, default is 0.07.
+`α`
+:   Transparency (α value) of the circle, representing the
+  rotation plane of the moments, default value is 0.07.
 
 `centered`
 : If true, the moment vector is centered on the atom, if false

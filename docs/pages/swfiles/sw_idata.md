@@ -28,10 +28,10 @@ the energy and Q axis are linear.
 
 `fwhmQ`
 : Full width half maximum of the Gaussian momentum
-  transfer resolution in A^-1 units. Works properly only
+  transfer resolution in A$$^{-1}$$ units. Works properly only
   for linear scans in reciprocal space. Be carefull for
   example for scans like [1, QK, 0] where the equal QK
-  steps give unequal steps in the A^-1 reciprocal space.
+  steps give unequal steps in the A$$^{-1}$$ reciprocal space.
 
 `nInterp`
 : Number of axis subdivision before convolution, equal

@@ -41,7 +41,7 @@ plot(Evec,Eres);
 
 ### Output Arguments
 
-p             Returns the coefficients for a polynomial p(x) of degree n
+p             Returns the coefficients for a polynomial p(x) of ° n
               that is a best fit (in a least-squares sense) for the resolution data
               in y. The coefficients in p are in descending powers, and
               the length of p is n+1.

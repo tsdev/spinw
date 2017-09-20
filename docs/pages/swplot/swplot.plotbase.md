@@ -27,7 +27,7 @@ hFigure = SWPLOT.PLOTBASE('Option1',Value1,...)
 : Determines the length of the a, b and c arrows. If 0, the
   length will be equal to the corresponding lattice parameters,
   while if non-zero, the number determines the length in
-  Angstrom. Default is 2 Angstrom.
+  Å. Default is 2 Å.
 
 `label`
 : Logical variable, plots abc labels if true. Default is true.
@@ -36,14 +36,14 @@ hFigure = SWPLOT.PLOTBASE('Option1',Value1,...)
 : Handle of the swplot figure. Default is the selected figure.
 
 `color`
-: Color of the arrows, default is red-green-blue for abc, stored
+: Color of the arrows, default value is red-green-blue for abc, stored
   in the columns of a 3x3 matrix.
 
 `R`
-: Radius value of arrow body, default is 0.06.
+: Radius value of arrow body, default value is 0.06.
 
-`alpha`
-: Head angle of the arrow in degree units, default is 30 degree.
+`α`
+:   Head angle of the arrow in ° units, default value is 30 °.
 
 `lHead`
 : Length of the arrow head, default value is 0.5.
@@ -56,7 +56,7 @@ hFigure = SWPLOT.PLOTBASE('Option1',Value1,...)
 
 `shift`
 : Column vector with 3 elements, the basis vectors will be
-  shifted by the given values in Angstrom unit. Default value is
+  shifted by the given values in Å unit. Default value is
   [0;0;0].
 
 `translate`

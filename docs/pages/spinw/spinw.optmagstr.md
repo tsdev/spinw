@@ -40,7 +40,7 @@ n = [1 0 0]). Then plots the magnetic structure.
  here M is (3,nMagExt) size matrix. k is the ordering
  ave vector, its size is (1,3). n is the normal vector
  f the spin rotation plane, its size is (1,3). The
- efault is @gm_spherical3d. For planar magnetic structure
+ efault value is @gm_spherical3d. For planar magnetic structure
  se @gm_planar.
 
 `xmin`

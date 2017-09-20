@@ -18,7 +18,7 @@
 `model`
 : String, name of the model, one of the following:
       'triAF'     Triangular lattice Heisenberg antiferromagnet
-                  in the ab plane (a=b=3 Angstrom), with gamma =
+                  in the ab plane (a=b=3 Å), with γ =
                   120 deg angle and optimised magnetic structure.
                   Arbitrary number of Heisenberg interaction can
                   be defined, param(1) gives the value of 1st

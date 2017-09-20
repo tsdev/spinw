@@ -42,7 +42,7 @@
   100.
 
 `flipud`
-: If true the colormaps are inverted. Optional, default is false.
+: If true the colormaps are inverted. Optional, default value is false.
 
 ### Output Arguments
 

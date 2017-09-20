@@ -35,7 +35,7 @@ figure.
 : Unit in which the range is defined. It can be the following
   string:
       'lu'        Lattice units (default).
-      'xyz'       Cartesian coordinate system in Angstrom units.
+      'xyz'       Cartesian coordinate system in Å units.
 
 `mode`
 : String, defines the types of atoms to plot:
@@ -47,21 +47,21 @@ figure.
 : Handle of the swplot figure. Default is the selected figure.
 
 `legend`
-: Whether to add the plot to the legend, default is true.
+: Whether to add the plot to the legend, default value is true.
 
 `label`
-: Whether to plot labels for atoms, default is false.
+: Whether to plot labels for atoms, default value is false.
 
 `dText`
-: Distance between item and its text label, default is 0.1
-  Angstrom.
+: Distance between item and its text label, default value is 0.1
+  Å.
 
 `fontSize`
-: Font size of the atom labels in pt, default is stored in
+: Font size of the atom labels in pt, default value is stored in
   swpref.getpref('fontsize').
 
 `radius0`
-: Constant atom radius, default value is 0.3 Angstrom.
+: Constant atom radius, default value is 0.3 Å.
 
 `radius`
 : Defines the atom radius:
@@ -89,7 +89,7 @@ figure.
 
 `shift`
 : Column vector with 3 elements, all atomic positions will be
-  shifted by the given value in Angstrom units. Default value is
+  shifted by the given value in Å units. Default value is
   [0;0;0].
 
 `replace`

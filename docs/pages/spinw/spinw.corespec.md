@@ -41,7 +41,7 @@ case the Hamiltonian has to fulfill this extra rotational symmetry.
 ### Name-Value Pair Arguments
 
 `fitmode`
-: Speedup (for fitting mode only), default is false.
+: Speedup (for fitting mode only), default value is false.
 
 `notwin`
 : If true, the spectra of the twins won't be calculated.
@@ -66,7 +66,7 @@ case the Hamiltonian has to fulfill this extra rotational symmetry.
 
 `omega_tol`
 : Tolerance on the energy difference of degenerate modes when
-  diagonalising the quadratic form, default is 1e-5.
+  diagonalising the quadratic form, default value is 1e-5.
 
 `hermit`
 : Method for matrix diagonalization:
@@ -117,7 +117,7 @@ the (Q+/-km) Fourier components in the correlation functions.
 If several twins exist in the sample, omega and Sab are packaged into a
 cell, that contains nTwin number of matrices.
 hkl           Contains the input Q values, dimensins are [3 nHkl].
-hklA          Same Q values, but in reciproc Angstrom units in the
+hklA          Same Q values, but in reciproc Å units in the
               lab coordinate system, dimensins are [3 nHkl].
 incomm        Whether the spectra calculated is incommensurate or not.
 obj           The copy of the input obj.

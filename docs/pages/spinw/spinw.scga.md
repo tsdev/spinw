@@ -51,7 +51,7 @@
 : If true, the magnetic susceptibility is calculated.
 
 `fitmode`
-:     Speedup (for fitting mode only), default is false.
+:     Speedup (for fitting mode only), default value is false.
 
 `sublat`
 : List of sublattices.

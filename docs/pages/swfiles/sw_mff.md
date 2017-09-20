@@ -23,7 +23,7 @@
   Can be also a cell of strings to calculate multiple ions.
 
 `Q`
-: Momentum transfer in Angstrom^-1 units with dimensions of
+: Momentum transfer in Å$$^{-1}$$ units with dimensions of
   [1 nQ] or [3 nQ], optional.
 
 ### Output Arguments

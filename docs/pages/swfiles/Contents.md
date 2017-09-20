@@ -11,7 +11,7 @@ into separate libraries.
  
 #### Transforming and plotting calculated spin wave spectrum
  
-* [sw_econtract](sw_econtract.html) converts (Q,omega) values to Qm values for diffraction instrument
+* [sw_econtract](sw_econtract.html) converts (Q,E) values to Q values for diffraction instrument
 * [sw_egrid](sw_egrid.html) creates energy for spectrum color plot
 * [sw_filelist](sw_filelist.html) lists spinw data in the Matlab workspace or in a .mat file
 * [sw_instrument](sw_instrument.html) includes instrumental factors into the calculated spectrum

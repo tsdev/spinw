@@ -27,9 +27,9 @@
 
 `unitIn`
 : Units of the input value:
-      'A-1'       momentum in Angstrom^-1.
+      'A-1'       momentum in Å$$^{-1}$$.
       'k'         -||-
-      'Angstrom'  wavelength in Angstrom.
+      'Å'  wavelength in Å.
       'lambda'    -||-
       'A'         -||-
       'Kelvin'    temperature in Kelvin.
@@ -38,7 +38,7 @@
       'J'         energy in Joule.
       'meV'       energy in meV.
       'THz'       frequency in Thz.
-      'cm-1'      2*pi/lambda in cm^-1.
+      'cm-1'      2*pi/lambda in cm$$^{-1}$$.
       'eV'        energy in eV.
       'fs'        wave period time in fs.
       'ps'        wave period time in ps.

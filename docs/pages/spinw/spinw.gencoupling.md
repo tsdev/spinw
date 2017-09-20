@@ -50,7 +50,7 @@ the couplingtable() function lists the 1st, 2nd and 3rd neighbor bonds.
 
 `maxDistance`
 : Maximum bond length that will be stored in the
-  obj.coupling property in units of Angstrom. Default is 8.
+  obj.coupling property in units of Å. Default is 8.
 
 `maxSym`
 : Maximum bond length until the symmetry equivalent bonds are
@@ -61,12 +61,12 @@ the couplingtable() function lists the 1st, 2nd and 3rd neighbor bonds.
 
 `tolDist`
 : Tolerance of distance, within two bonds are regarded
-  equivalent, default is 1e-3 Angstrom. Only used, when no
+  equivalent, default value is 1e-3 Å. Only used, when no
   space group is defined.
 
 `dMin`
 : Minimum bond length, below which an error is triggered.
-  Default value is 0.5 Angstrom.
+  Default value is 0.5 Å.
 
 ### Output Arguments
 

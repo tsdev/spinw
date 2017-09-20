@@ -35,7 +35,7 @@ enable continuous rotation with the mouse.
 
 `hFigure`
 : The handle of the figure (number in the figure title bar). The
-  default is the active swplot figure if the argument is not
+  default value is the active swplot figure if the argument is not
   provided by the user or it is empty matrix.
 
 ### See Also

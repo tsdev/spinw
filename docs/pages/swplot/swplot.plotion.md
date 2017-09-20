@@ -35,7 +35,7 @@ object onto an swplot figure.
 : Unit in which the range is defined. It can be the following
   string:
       'lu'        Lattice units (default).
-      'xyz'       Cartesian coordinate system in Angstrom units.
+      'xyz'       Cartesian coordinate system in Å units.
 
 `mode`
 : String, defines how the bond is plotted
@@ -46,8 +46,8 @@ object onto an swplot figure.
 : Scaling factor for the size of the ellipsoid relative to the 
   shortest bond length. Default value is 1/3.
 
-`alpha`
-: Transparency (alpha value) of the ellipsoid, default value is 
+`α`
+:   Transparency (α value) of the ellipsoid, default value is 
   0.3.
 
 `radius1`
@@ -61,7 +61,7 @@ object onto an swplot figure.
 : Handle of the swplot figure. Default is the selected figure.
 
 `legend`
-: Whether to add the plot to the legend, default is true.
+: Whether to add the plot to the legend, default value is true.
 
 `color`
 : Color of the ellipsoid:
@@ -71,7 +71,7 @@ object onto an swplot figure.
                   ellipsoid.
 
 `color2`
-: Color of the main circles, default is 'auto' when the ellipses
+: Color of the main circles, default value is 'auto' when the ellipses
   will have the same color as the ellipsoids. Can be either a row
   vector of RGB code or string of a color name.
 

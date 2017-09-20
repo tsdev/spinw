@@ -15,7 +15,7 @@
 
 ### Examples
 
-To convert from reciprocal lattice unit to Angstrom^-1 (xyz coordinate system):
+To convert from reciprocal lattice unit to Å$$^{-1}$$ (xyz coordinate system):
   Q_xyz =  [h k l] * rlVect;
 
 ### Input Arguments
@@ -33,7 +33,7 @@ rlVec     Stores the three basis vectors in columns, dimensions are
           [3 3].
 The 3x3 rlVec matrix can be used also as a coordinate transformation
 matrix from the relative atomic position to positions in the xyz
-coordinate system in Angstrom units.
+coordinate system in Å units.
 
 ### See Also
 

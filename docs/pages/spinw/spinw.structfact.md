@@ -72,7 +72,7 @@ obj.unit_cell.biso, using the same definition as FullProf.
           input Q value
       atomLabel string, label of the selected magnetic atom
       Q   matrix with dimensions of [3 nQ], where each column
-          contains a Q vector in Angstrom^-1 units.
+          contains a Q vector in Å$$^{-1}$$ units.
 
 `lambda`
 : Wavelength. If given, the 2theta value for each reflection
@@ -109,7 +109,7 @@ Mk            Square of the 3 dimensional magnetic structure factor,
                  [nExt(1)*fExt(1) nExt(2)*fExt(2) nExt(3)*fExt(3)],
               where nExt is the size of the extended unit cell.
 hkl           Contains the input Q values, dimensins are [3 nHkl].
-hklA          Same Q values, but in reciproc Angstrom units in the
+hklA          Same Q values, but in reciproc Å units in the
               lab coordinate system, dimensins are [3 nHkl].
 incomm        Whether the spectra calculated is incommensurate or not.
 formfact      Cell containing the labels of the magnetic ions if form

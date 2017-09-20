@@ -23,6 +23,6 @@
 `mode`
 : Type of unit system, defined by one of the following strings:
       'AmeVTK'    Typical units used in neutron/xray scattering:
-                      [Angstrom, meV, Tesla and Kelvin]
+                      [Å, meV, Tesla and Kelvin]
       '1'         No units, all conversion factors are set to 1.
 

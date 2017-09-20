@@ -18,7 +18,7 @@
 To change coordinate system:
 relative atomic positions --> xyz
   r_xyz = basisvector * [ra; rb; rc];
-reciprocal lattice units --> Angstrom^-1 (xyz coordinate system)
+reciprocal lattice units --> Å$$^{-1}$$ (xyz coordinate system)
   Q_xyz =  [h k l] * 2*pi*inv(basisvector);
 
 ### Input Arguments
@@ -37,7 +37,7 @@ basisVec  Stores the three basis vectors in columns, dimensions are
           [3 3].
 The 3x3 basisVec matrix can be used also as a coordinate transformation
 matrix from the relative atomic position to positions in the xyz
-coordinate system in Angstrom units.
+coordinate system in Å units.
 
 ### See Also
 

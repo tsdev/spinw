@@ -25,7 +25,7 @@ the spin-spin correlation function.
 spec = cryst.spinwave({[0 0 0] [1 0 0]});
 spec = sw_magdomain(spec,'axis',[0 0 1],'angled',[0 90 180 270]);
 The above example calculates the spectrum for magnetic domains that are
-related by a 90 degree rotation around the z-axis (perpendicular to the
+related by a 90 ° rotation around the z-axis (perpendicular to the
 ab plane). All domains have equal volume.
 
 ### Input Arguments
@@ -45,7 +45,7 @@ ab plane). All domains have equal volume.
   vector. Dimensions are [1 nTwin].
 
 `angled`
-: Defines the angle of rotation to generate twins in degree
+: Defines the angle of rotation to generate twins in °
   units, several twins can be defined parallel if angle is a
   vector. Dimensions are [1 nTwin].
 

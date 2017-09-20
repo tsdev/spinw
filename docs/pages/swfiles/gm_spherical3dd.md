@@ -12,7 +12,7 @@
 ### Description
 
 It generates the parameters of magnetic moments and normal vector from
-spherical (theta,phi) coordinates. All angles are in degree.
+spherical (theta,phi) coordinates. All angles are in °.
  
 
 ### Input Arguments

@@ -19,7 +19,7 @@
 : Momentum transfer values in r.l.u., dimensions are [3 nQ].
 
 `hklA`
-: Momentum transfer values in Angstrom^-1, dimensions are [3 nQ].
+: Momentum transfer values in Å$$^{-1}$$, dimensions are [3 nQ].
 
 `lUnit`
 : Length unit, given in a string.

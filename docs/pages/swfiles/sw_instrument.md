@@ -32,7 +32,7 @@ etc.) to the convoluted spectrum.
                energy transfer values, second column contains
                the FWHM resolution values. These values will
                be fitted using a polynomial with a fixed
-               degree, see sw_res() function for details.
+               °, see sw_res() function for details.
      Function  Function handle of a resolution function
                with the following header:
                    E_FWHM = res_fun(E)
@@ -49,20 +49,20 @@ etc.) to the convoluted spectrum.
 
 `dQ`
 :  Momentum transfer resolution of the instrument, FWHM is
-   given in A-1 units, default is 0.
+   given in A-1 units, default value is 0.
 
 `ThetaMin`
-:  Minimum scattering angle in degree, default is 0.
+:  Minimum scattering angle in °, default value is 0.
 
 `plot`
 :  If the resolution is read from file and plot option is
-   true, tre resolution will be plotted, default is true.
+   true, tre resolution will be plotted, default value is true.
 
 `Fixed`
 :nt neutron energy:
 
 `ki`
-:  Momentum of the incident neutrons in A^-1 units.
+:  Momentum of the incident neutrons in A$$^{-1}$$ units.
 
 `Ei`
 :  Energy of the incident neutrons in meV.
@@ -71,7 +71,7 @@ etc.) to the convoluted spectrum.
 :neutron energy:
 
 `kf`
-:  Final momentum of the neutrons in A^-1 units.
+:  Final momentum of the neutrons in A$$^{-1}$$ units.
 
 `Ef`
 :  Final neutron energy in meV.

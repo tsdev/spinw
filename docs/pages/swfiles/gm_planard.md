@@ -13,7 +13,7 @@
 
 It generates the parameters of arbitrary planar magnetic structure from
 phi angles, ordering wave vector and spin plane normal vector. All angles
-are in degree.
+are in °.
  
 
 ### Input Arguments

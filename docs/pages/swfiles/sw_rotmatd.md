@@ -21,7 +21,7 @@ is the right-hand direction).
 : Axis of rotation, dimensions are [1 3].
 
 `rotAngle`
-: Angle of rotation in degree (can be vector with dimensions of
+: Angle of rotation in ° (can be vector with dimensions of
   [1 nAng]).
 
 ### Output Arguments

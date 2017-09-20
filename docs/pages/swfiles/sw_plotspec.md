@@ -33,10 +33,10 @@ default colormap using swpref.setpref('colormap',@my_colomap) command.
   active axis will be used (gca).
 
 `colorbar`
-: Plot colorbar for dispersion and intensity, default is true.
+: Plot colorbar for dispersion and intensity, default value is true.
 
 `nCol`
-: Number of colors in the colormap, default is 500.
+: Number of colors in the colormap, default value is 500.
 
 `dashed`
 : Whether to plot dashed vertical line between multiple linear
@@ -48,10 +48,10 @@ default colormap using swpref.setpref('colormap',@my_colomap) command.
   convolution performed. Default is 0.
 
 `fontSize`
-: Font size on the plot, default is 14 pt.
+: Font size on the plot, default value is 14 pt.
 
 `colormap`
-: Colormap for plotting, default is stored in 
+: Colormap for plotting, default value is stored in 
   swpref.getpref('colormap'). For single plot and for multiple
   plot it will be a continuous scale from white to different
   color. This is the 'auto' mode. Also colormap can be given
@@ -76,10 +76,10 @@ default colormap using swpref.setpref('colormap',@my_colomap) command.
 
 `legend`
 : Whether to plot legend for multiple convoluted spectras,
-  default is true.
+  default value is true.
 
 `title`
-: Whether to plot figure title, default is true.
+: Whether to plot figure title, default value is true.
 
 `twin`
 : Select which twins to plot for omega plots, default plots all
@@ -90,10 +90,10 @@ default colormap using swpref.setpref('colormap',@my_colomap) command.
   is {'-' 'o-' '--'}. For example '--' gives dashed lines.
 
 `lineWidth`
-: Line width of line plots, default is 0.5 point.
+: Line width of line plots, default value is 0.5 point.
 
 `log`
-: Plot 10based logarithmic intensity, default is false.
+: Plot 10based logarithmic intensity, default value is false.
 
 `plotf`
 : Plot function for color plot. Default is @surf.
@@ -132,9 +132,9 @@ default colormap using swpref.setpref('colormap',@my_colomap) command.
 
 `ddat`
 : Maximum distance between any Q point in the simulated spectrum
-  and an experimental data point in A^-1. If an experimental data
+  and an experimental data point in A$$^{-1}$$. If an experimental data
   point is further from any Q point of the simulated spectrum
-  thant ddat, it won't be plotted. Default value is 0.01 A^-1.
+  thant ddat, it won't be plotted. Default value is 0.01 A$$^{-1}$$.
 
 ### Output Arguments
 

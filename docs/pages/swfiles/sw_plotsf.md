@@ -16,18 +16,18 @@
 ### Name-Value Pair Arguments
 
 `range`
-: Data range in inverse Angstrom, dimensions are [1 2] or [2 2]
-  for 1D and 2D plots respectively, default is the full data
+: Data range in inverse Å, dimensions are [1 2] or [2 2]
+  for 1D and 2D plots respectively, default value is the full data
   range.
 
 `log`
-: Plot 10 based logarithmic intensity, default is false.
+: Plot 10 based logarithmic intensity, default value is false.
 
 `colorbar`
-: To show colorbar, default is true.
+: To show colorbar, default value is true.
 
 `plotStyle`
-: Options to the plot command, default is '-'.
+: Options to the plot command, default value is '-'.
 
 ### See Also
 

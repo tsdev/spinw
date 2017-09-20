@@ -32,7 +32,7 @@ the result is printed onto the command window.
 
 `tol`
 : Tolerance, distance within two atoms are considered
-  identical, default is 1e-5 lattice unit. Necessary for
+  identical, default value is 1e-5 lattice unit. Necessary for
   badly defined atomic positions (when atoms are not exactly
   on the symmetry element) and to avoid numerical errors.
 

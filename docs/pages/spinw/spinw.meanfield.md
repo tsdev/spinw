@@ -79,7 +79,7 @@
           input Q value
       atomLabel string, label of the selected magnetic atom
       Q   matrix with dimensions of [3 nQ], where each column
-          contains a Q vector in Angstrom^-1 units.
+          contains a Q vector in Å$$^{-1}$$ units.
 
 ### Output Arguments
 

@@ -26,7 +26,7 @@ unexpected magnetic structures.
   Default is true.
 
 `nExt`
-: Size of the magnetic supercell, default is the value stored in
+: Size of the magnetic supercell, default value is the value stored in
   the SpinW object (on which the Fourier expansion is defined).
 
 `origin`

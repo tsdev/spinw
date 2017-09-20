@@ -46,7 +46,7 @@ into a matrix use the command:
 : Data source, can be file, url or string.
 
 `delimiter`
-: Delimiter of the data, default is whitespace.
+: Delimiter of the data, default value is whitespace.
 
 ### Output Arguments
 

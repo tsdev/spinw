@@ -48,10 +48,10 @@ and faces.
   (parameteric) curve.
 
 `lineStyle`
-: Line style, default is '-' for continuous line.
+: Line style, default value is '-' for continuous line.
 
 `lineWidth`
-: Line with in pt, default is 0.5.
+: Line with in pt, default value is 0.5.
 
 `mPatch`
 : If true, a separate patch object will be created per line

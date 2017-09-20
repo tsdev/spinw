@@ -37,7 +37,7 @@ original orientation there are will be three twins with equal volumes.
   vector. Dimensions are [1 nTwin].
 
 `phid`
-: Defines the angle of rotation to generate twins in degree
+: Defines the angle of rotation to generate twins in °
   units, several twins can be defined parallel if phi is a
   vector. Dimensions are [1 nTwin].
 

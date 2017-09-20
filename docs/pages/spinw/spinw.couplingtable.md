@@ -49,7 +49,7 @@ bonds is a struct type data that contains the following fields:
   bondv   Additional information for every bond defined in the .table
           field. The first three rows define the vector pointing from
           atom1 to atom2 in lattice units. The last row define the bond
-          length in Angstrom.
+          length in Å.
   matrix  Contains the coupling matrix for every bond, dimensions are
           [3 3 nCoupling].
 

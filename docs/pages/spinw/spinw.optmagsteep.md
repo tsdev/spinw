@@ -21,7 +21,7 @@
 ### Name-Value Pair Arguments
 
 `nRun`
-: Number of iterations, default is 100 (it is usually enough).
+: Number of iterations, default value is 100 (it is usually enough).
 
 `boundary`
 : Boundary conditions of the extended unit cell.
@@ -59,7 +59,7 @@
 : Minimum change of the magnetic moment when the algorithm stops.
 
 `saveAll`
-: Save moment directions for every loop, default is false.
+: Save moment directions for every loop, default value is false.
 
 `Hmin`
 : Minimum field value on the spin that moves the spin. If the

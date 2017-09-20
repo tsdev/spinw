@@ -35,7 +35,7 @@ atoms an swplot figure.
 : Unit in which the range is defined. It can be the following
   string:
       'lu'        Lattice units (default).
-      'xyz'       Cartesian coordinate system in Angstrom units.
+      'xyz'       Cartesian coordinate system in Å units.
 
 `mode`
 : Selects the type of the plot:
@@ -66,8 +66,8 @@ atoms an swplot figure.
   given distance range stored as a row vector [dmin dmax].
   Default is 6 to plot octahedra around atom1.
 
-`alpha`
-: Transparency of the plotted surfaces between 0 and 1 (1 for
+`α`
+:   Transparency of the plotted surfaces between 0 and 1 (1 for
   opaque, 0 for transparent). Default value is 1 for bonds and
   0.3 for polyhedron.
 
@@ -90,7 +90,7 @@ atoms an swplot figure.
 : Handle of the swplot figure. Default is the selected figure.
 
 `legend`
-: Whether to add the plot to the legend, default is true.
+: Whether to add the plot to the legend, default value is true.
 
 `nPatch`
 : Number of points on the curve for the cylinder, default
@@ -102,7 +102,7 @@ atoms an swplot figure.
 
 `shift`
 : Column vector with 3 elements, all atomic positions will be
-  shifted by the given value by Angstrom units. Default value is
+  shifted by the given value by Å units. Default value is
   [0;0;0].
 
 `replace`

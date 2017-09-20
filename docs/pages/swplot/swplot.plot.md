@@ -64,8 +64,8 @@ hFigure = SWPLOT.PLOT(...)
   Can be also string or cell of strings with the name of the
   colors, for details see swplot.color. Default is red.
 
-`alpha`
-: Transparency of objects (1 non-transparent, 0 transparent)
+`α`
+:   Transparency of objects (1 non-transparent, 0 transparent)
   defined as a single number for unitform transparency or as a
   row vector with nObject element to set transparency per object.
   Default value is 1.
@@ -81,10 +81,10 @@ hFigure = SWPLOT.PLOT(...)
 
 `R`
 : Radius value of cylinder, sphere (if no 'T' is given) and
-  arrow, default is 0.06.
+  arrow, default value is 0.06.
 
 `ang`
-: Angle for arrow head in degree units, default is 15 degree.
+: Angle for arrow head in ° units, default value is 15 °.
 
 `lHead`
 : Length of the arrow head, default value is 0.5.

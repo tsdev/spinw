@@ -34,7 +34,7 @@ fid       File identifier that is already opened in Matlab using the
 Format related options:
  
 PCR format:
-perm      Permutation of the xyz atomic positions, default is [1 2 3].
+perm      Permutation of the xyz atomic positions, default value is [1 2 3].
  
 MC format:
 boundary  Boundary conditions of the extended unit cell.

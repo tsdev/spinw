@@ -27,10 +27,10 @@ random Q points.
 
 `nRand`
 : The number of random Q points in the Brillouin-zone,
-  default is 1000.
+  default value is 1000.
 
 `T`
-: Temperature, default is taken from obj.single_ion.T.
+: Temperature, default value is taken from obj.single_ion.T.
 
 `tol`
 : Tolerance of the incommensurability of the magnetic
@@ -40,7 +40,7 @@ random Q points.
 
 `omega_tol`
 : Tolerance on the energy difference of degenerate modes when
-  diagonalising the quadratic form, default is 1e-5.
+  diagonalising the quadratic form, default value is 1e-5.
 
 ### Output Arguments
 

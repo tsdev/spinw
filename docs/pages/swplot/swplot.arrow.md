@@ -6,7 +6,7 @@
 
 ### Syntax
 
-`hpatch = swplot.arrow(rstart, rend, r, alpha, lhead, {npatch})`
+`hpatch = swplot.arrow(rstart, rend, r, α, lhead, {npatch})`
 
 ### Description
 
@@ -33,8 +33,8 @@ and faces.
 `R`
 : Radius of the arrow body.
 
-`alpha`
-: Angle of the head in degrees.
+`α`
+:   Angle of the head in °s.
 
 `lHead`
 : Length of the head.

@@ -59,10 +59,10 @@ range     Plotting range of the lattice parameters in lattice units,
 unit      Unit in which the range is defined. It can be the following
           string:
               'lu'        Lattice units (default).
-              'xyz'       Cartesian coordinate system in Angstrom units.
+              'xyz'       Cartesian coordinate system in Å units.
 figure    Handle of the swplot figure. Default is the selected figure.
-legend    Whether to add the plot to the legend, default is true.
-fontSize  Font size of the atom labels in pt, default is stored in
+legend    Whether to add the plot to the legend, default value is true.
+fontSize  Font size of the atom labels in pt, default value is stored in
           swpref.getpref('fontsize').
 nMesh     Resolution of the ellipse surface mesh. Integer number that is
           used to generate an icosahedron mesh with #mesh number of

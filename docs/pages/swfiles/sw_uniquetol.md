@@ -21,7 +21,7 @@ is larger than the tolerance.
 : Matrix that contains column vectors.
 
 `tol`
-: Distance tolerance, default is 1e-5.
+: Distance tolerance, default value is 1e-5.
 
 ### Output Arguments
 

@@ -20,6 +20,15 @@ end
 
 % remove leading spaces
 str   = sw_rmspace(str);
+% exchange common symbols
+sText = {'Angstrom'     'hbar'     'alpha'     'beta'     'gamma'     'degree'     '\^-1'   'default is'};
+cText = {'\\\\Angstrom' '\\\\hbar' '\\\\alpha' '\\\\beta' '\\\\gamma' '\\\\degree' '$\^{-1}$' 'default value is'};
+
+for ii = 1:numel(sText)
+    str = regexprep(str,sText{ii},cText{ii});
+end
+
+
 % create trimmed lines
 strTr = strtrim(str);
 % find sections
@@ -60,6 +69,7 @@ if ~isempty(saIdx)
     % save back into string
     str{saIdx} = seealso1;
 end
+
 
 % find lines
 lIdx = cell(1,(size(sIdx,2)-1));

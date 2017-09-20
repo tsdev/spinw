@@ -30,7 +30,7 @@
 
 `range`
 : Data range in r.l.u. along selected dimension to integrate,
-  default is the full data range.
+  default value is the full data range.
 
 `type`
 : Type of data to be used for the integration.

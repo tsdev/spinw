@@ -34,7 +34,7 @@ swplot figure.
 : Unit in which the range is defined. It can be the following
   string:
       'lu'        Lattice units (default).
-      'xyz'       Cartesian coordinate system in Angstrom units.
+      'xyz'       Cartesian coordinate system in Å units.
 
 `mode`
 : String, defines how the bond is plotted
@@ -114,7 +114,7 @@ swplot figure.
   ellipsoid, default value is 0.08.
 
 `radius2`
-: Constant atom radius, default value is 0.3 Angstrom.
+: Constant atom radius, default value is 0.3 Å.
 
 `radius`
 : Defines the atom radius (important for arrow bonds, to avoid
@@ -125,7 +125,7 @@ swplot figure.
                   label multiplied by radius2 value.
 
 `ang`
-: Angle of the arrow head in degree units, default is 30 degree.
+: Angle of the arrow head in ° units, default value is 30 °.
 
 `lHead`
 : Length of the arrow head, default value is 0.3.
@@ -139,7 +139,7 @@ swplot figure.
 : Handle of the swplot figure. Default is the selected figure.
 
 `legend`
-: Whether to add the plot to the legend, default is true.
+: Whether to add the plot to the legend, default value is true.
 
 `color`
 : Color of the bonds:

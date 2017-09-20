@@ -52,7 +52,7 @@ formfactfun   Function that calculates the magnetic form factor for given
                       input Q value
                   atomLabel string, label of the selected magnetic atom
                   Q   matrix with dimensions of [3 nQ], where each column
-                      contains a Q vector in Angstrom^-1 units.
+                      contains a Q vector in Å$$^{-1}$$ units.
 If several domains exist in the sample, Sperp is packaged into a cell,
 that contains nTwin number of matrices.
 

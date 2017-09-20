@@ -19,7 +19,7 @@ are calculated based on the k vector (the k vector is in the units of the
 crystallographic unit cell) and the n vector (normal to the spin rotation
 plane). The moment directions in further extended unit cells are
 calculated by rotating the spins of the extended unit cell in the origin
-by k*R degree around the n vector, where R is the translation vector of
+by k*R ° around the n vector, where R is the translation vector of
 the origin of the farther extended unit cell. If the extended unit cell
 is equivalent to the crystallographic unit cell, this is equivalent to
 the standard definition of the k vector.

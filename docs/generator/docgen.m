@@ -7,7 +7,7 @@ swver    = sw_version;
 
 %% generate help
 
-%fun0 = {'spinw' 'spinw.formula' 'spinw.spinwave' 'spinw.powspec' 'spinw.addatom'};
+%fun0 = {'spinw' 'spinw.gencoupling' 'spinw.spinwave' 'spinw.addatom'};
 %fun0 = {'spinwave' 'spinw.spinwave' 'spinw.clearcache'};
 fun0 = cell(1,0);
 

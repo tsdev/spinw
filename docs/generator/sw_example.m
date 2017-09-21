@@ -42,14 +42,25 @@ for ii = 1:numel(str)
         keep(ii) = false;
     elseif numel(temp)>2 && strcmp(temp(1:2),'>>')
         if recalc
-            out0 = evalc(str{ii}(3:end));
+            out0 = evalc(str{ii}(str{ii}~='>'));
+            if strcmp(temp(end+(-1:0)),'>>')
+                % add output to the string, remove html tags
+                out1 = regexprep(out0,'<.*?>','');
+                out1 = strsplit(out1,newline);
+                out1 = out1(cellfun(@(C)isempty(C),regexp(out1,'^ans')));
+                out1 = sprintf('%s\n',out1{:});
+                str{ii} = [str{ii} newline '```' newline '*Output*' newline '```' newline out1(1:end-1) newline '```' newline ' ' newline '```'];
+            else
+                % just keep it in out
+                
+            end
         else
             out0 = '';
         end
         if ~isempty(out0)
             out{end+1} = out0; %#ok<AGROW>
         end
-        str{ii} = str{ii}(find(str{ii}=='>',1)+2:end);
+        str{ii} = str{ii}(str{ii}~='>');
     end
 end
 

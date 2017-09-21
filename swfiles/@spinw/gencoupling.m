@@ -27,7 +27,7 @@ function gencoupling(obj, varargin)
 % >>cryst.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
 % >>cryst.addatom('r',[0 0 0],'S',1)
 % >>cryst.gencoupling
-% >>cryst.table('bond',1:3)
+% >>cryst.table('bond',1:3)>>
 % ```
 %
 % ### Input Arguments

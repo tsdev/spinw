@@ -1,1 +1,5 @@
-<figure>{% if {{include.url}} %}<a class="no_icon" target="_blank" href="{{include.url}}">{% endif %}<img class="docimage" src="images/{{include.file}}" alt="{{include.alt}}" {% if {{include.max-width}} %}style="max-width: {{include.max-width}}px"{% endif %} />{% if {{include.url}} %}</a>{% endif %}{% if {{include.caption}} %}<figcaption>{{include.caption}}</figcaption>{% endif %}</figure>
+<figure>
+   {% if {{include.url}} %}<a class="no_icon" target="_blank" href="{{include.url}}">{% endif %}<img class="docimage" src="images/{{include.file}}" alt="{{include.alt}}" style="width: 100%; max-width:500px; height: auto; display: block; margin: 0 auto;" />{% if {{include.url}} %}</a>{% endif %}{% if {{include.caption}} %}
+   <figcaption>{{include.caption}}</figcaption>
+   {% endif %}
+</figure>

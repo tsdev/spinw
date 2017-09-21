@@ -43,7 +43,7 @@ spec = tri.spinwave({[0 0 0] [1 1 0]});
 sw_plotspec(spec);
 ```
  
-{% include image.html file="generated/spinw_spinwave_1.png" alt="sw_plotspec(spec);" max-width="500" %}
+{% include image.html file="generated/spinw_spinwave_1.png" alt="sw_plotspec(spec);" %}
   
 ### Input arguments
  

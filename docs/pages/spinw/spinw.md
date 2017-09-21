@@ -123,7 +123,7 @@ of public methods is below.
 #### Spin Hamiltonian generations
  
 * [spinw.quickham](spinw_quickham.html) creates magnetic Hamiltonian with a single command
-* [spinw.gencoupling](spinw_gencoupling.html) generates the COUPLING property of spinw object
+* [spinw.gencoupling](spinw_gencoupling.html) generates bond list
 * [spinw.addcoupling](spinw_addcoupling.html) assigns a predefined matrix as exchange coupling on selected bonds
 * [spinw.couplingtable](spinw_couplingtable.html) creates tabulated list of all bonds as stored
 * [spinw.addaniso](spinw_addaniso.html) assigns anisotropy to magnetic sites

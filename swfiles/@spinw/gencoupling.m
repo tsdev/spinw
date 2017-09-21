@@ -1,61 +1,75 @@
 function gencoupling(obj, varargin)
-% generates the COUPLING property of spinw object
+% generates bond list
 %
-% GENCOUPLING(obj, 'option1', value, ...)
+% ### Syntax
 %
-% The function calculates equivalent bonds between magnetic atoms. These
-% are determined either based on crystal symmetry or bond length (with
-% tolDist tolerance). If the space group index of 0 is defined
-% (obj.lattice.sym=0), the equivalent bonds will be based on bond length.
-% For space group index larger than 0, the symmetry equivalent bonds will
-% be determined. This can ve overwritten by the forceNoSym parameter to
-% consider bond length.
+% `gencoupling(obj,Name,Value)`
 %
-% IMPORTANT!
-%   This function has to be used after the crystal structure is defined.
-%   The SPINW.ADDCOUPLING, SPINW.COUPLINGTABLE functions will only work
-%   afterwards.
+% ### Description
 %
-% Input:
+% `gencoupling(obj,Name,Value)` generates all bonds up to a certain length
+% between magnetic atoms. It also groups bonds based either on crystal
+% symmetry (is space group is not $P0$) or bond length (with `tolDist`
+% tolerance) is space group is not defined. Sorting bonds based on length
+% can be forced by setting the `forceNoSym` parameter to true. To check
+% whether a space group is defined call the [spinw.symmetry] function.
 %
-% obj           spinw class object.
+% {{warning This function has to be used after the crystal structure is defined.
+%   The [spinw.addcoupling] function will only work afterwards. }}
 %
-% Options:
+% ### Examples
 %
-% forceNoSym    If true, equivalent bonds are generated based on
-%               bond length with .tolDist tolerance. If false symmetry
-%               operators will be used if they are given
-%               (obj.lattice.sym>0).
-% maxDistance   Maximum bond length that will be stored in the
-%               obj.coupling property in units of Angstrom. Default is 8.
-% maxSym        Maximum bond length until the symmetry equivalent bonds are
-%               generated. It is usefull if long bonds have to be generated
-%               for the dipolar interaction, but the symmetry analysis of
-%               them is not necessary. Default value is equal to
-%               maxDistance.
-% tolDist       Tolerance of distance, within two bonds are regarded
-%               equivalent, default is 1e-3 Angstrom. Only used, when no
-%               space group is defined.
-% dMin          Minimum bond length, below which an error is triggered.
-%               Default value is 0.5 Angstrom.
+% A triangular lattice is generated using `spinw.gencoupling` and
+% the [spinw.table] function lists the 1st, 2nd and 3rd neighbor bonds:
 %
-% Output:
+% ```
+% >>cryst = spinw
+% >>cryst.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
+% >>cryst.addatom('r',[0 0 0],'S',1)
+% >>cryst.gencoupling
+% >>cryst.table('bond',1:3)
+% ```
 %
-% The obj.coupling field will be filled with values, depending on the
-% crystal geometry.
+% ### Input Arguments
 %
-% Example:
+% `obj`
+% : [spinw] object.
 %
-% cryst = spinw;
-% cryst.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
-% cryst.addatom('r',[0 0 0])
-% cryst.gencoupling
-% cryst.couplingtable(1:3)
+% ### Name-Value Pair Arguments
 %
-% A triangular lattice is created in cryst and after using gencoupling()
-% the couplingtable() function lists the 1st, 2nd and 3rd neighbor bonds.
+% `'forceNoSym'`
+% : If true, equivalent bonds are always generated based on
+%   bond length with `tolDist` length tolerance. If false symmetry
+%   operators will be used if they are given ([spinw.symmetry] is true).
 %
-% See also SPINW, SPINW.SYMMETRY, SPINW.NOSYM.
+% `'maxDistance'`
+% : Maximum bond length that will be stored in the
+%   [spinw.coupling] property in units of \\Angstrom. Default is 8.
+%
+% `'maxSym'`
+% : Maximum bond length until the symmetry equivalent bonds are
+%   generated. It is usefull if long bonds have to be generated for the
+%   dipolar interaction, but the symmetry analysis of them is not
+%   necessary. Default value is equal to `maxDistance`.
+%
+% `'tolDist'`
+% : Tolerance of distance, within two bonds are considered
+%   equivalent, default value is $10^{-3}$\\Angstrom. Only used, when no
+%   space group is defined.
+%
+% `'dMin'`
+% : Minimum bond length, below which an error is triggered.
+%   Default value is 0.5 \\Angstrom.
+%
+% ### Output Arguments
+%
+% The [spinw.coupling] field of `obj` will store the new bond list, while
+% overwriting previous bond list. This will also remove any previous
+% assignment of exchange matrices to bonds.
+%
+% ### See Also
+%
+% [spinw] \| [spinw.symmetry] \| [spinw.nosym]
 %
 
 % is there any symmetry operator?
@@ -86,7 +100,7 @@ hMax1 = 1./sqrt(sum(inv(obj.basisvector').^2,2));
 
 % calculate the distance of the [1 1 1] point from the origin
 hMax2 = abs(sum(obj.basisvector,2));
-        
+
 % calculate the closest point to the origin
 hMax = min([hMax1 hMax2],[],2);
 

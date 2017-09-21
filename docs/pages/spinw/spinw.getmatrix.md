@@ -25,7 +25,7 @@ To following code will determine the allowed anisotropy matrix elements
 in the $$C4$$ point group (the symmetry at the $$(0,0,0)$$ atomic position).
 The allowed matrix elements will be `diag([A A B])`:
  
-```
+```matlab
 cryst = spinw;
 cryst.genlattice('sym','P 4')
 cryst.addatom('r',[0 0 0],'label','MCu2')

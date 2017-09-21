@@ -55,7 +55,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %   
 %   For example to define a scan along $(h,0,0)$ from $h=0$ to $h=1$ using
 %   200 $Q$ points the following input should be used:
-%   ```matlab
+%   ```
 %   Q = {[0 0 0] [1 0 0]  50}
 %   ```
 %
@@ -63,12 +63,12 @@ function spectra = spinwave(obj, hkl, varargin)
 %   type input. 
 %
 %   For example to calculate the spectrum along $(h,0,0)$ use:
-%   ```matlab
+%   ```
 %   Q = [sym('h') 0 0]
 %   ```
 %   To calculate spectrum at a specific $Q$ point symbolically, e.g. at
 %   $(0,1,0)$ use:
-%   ```matlab
+%   ```
 %   Q = sym([0 1 0])
 %   ```
 %
@@ -84,7 +84,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %   value. Default value is `@sw_mff`, that uses a tabulated coefficients
 %   for the form factor calculation. For anisotropic form factors a user
 %   defined function can be written that has the following header:
-%   ```matlab
+%   ```
 %   F = formfactfun(atomLabel,Q)
 %   ```
 %   where the parameters are:

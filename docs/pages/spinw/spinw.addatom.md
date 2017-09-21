@@ -20,7 +20,7 @@ To add a magnetic atom with $$S=1$$ at position $$r=(0,0,0)$$ and a
 non-magnetic one at $$r=(1/2 0 0)$$ with red and blue color respectively
 use the following command
  
-```
+```matlab
 crystal.addatom('r',[0 1/2; 0 0; 0 0],'S',[1 0],'color',{'red' 'blue'})
 ```
   

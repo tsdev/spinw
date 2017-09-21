@@ -27,7 +27,7 @@ for ii = 1:numel(str)
         print([path filesep fignamei],'-dpng','-r144');
         caption = str{ii-1};
         caption = strtrim(caption(caption~='>'));
-        str{ii} = ['```' newline ' ' newline '{% include image.html file="' fignamei '" alt="' caption '" max-width="500" %}' newline newline '```' newline];
+        str{ii} = ['```' newline ' ' newline '{% include image.html file="' fignamei '" alt="' caption '" max-width="500" %}' newline newline '```matlab' newline];
         keep(ii) = true;
     elseif numel(temp)>3 && strcmp(temp(1:3),'>>>')
         evalc(str{ii}(4:end));

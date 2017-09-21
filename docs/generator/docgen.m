@@ -7,8 +7,8 @@ swver    = sw_version;
 
 %% generate help
 
-fun0 = {'spinw' 'spinw.formula' 'spinw.spinwave' 'spinw.powspec' 'spinw.addatom'};
-%fun0 = {'spinw' 'spinw.clearcache'};
+%fun0 = {'spinw' 'spinw.formula' 'spinw.spinwave' 'spinw.powspec' 'spinw.addatom'};
+%fun0 = {'spinwave' 'spinw.spinwave' 'spinw.clearcache'};
 fun0 = cell(1,0);
 
 clc

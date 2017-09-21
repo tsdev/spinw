@@ -255,7 +255,7 @@ for ii = 1:numel(doctree)
     for jj = 1:numel(content)
         % find ``` code blocks
         text0    = content(jj).text;
-        blockIdx = find(cellfun(@(C)~isempty(C),regexp(text0,'^```')));
+        blockIdx = find(cellfun(@(C)~isempty(C),regexp(text0,'```')));
         if mod(numel(blockIdx),2)
             error('Wrong number of block comments in %s',content(jj).fun)
         end
@@ -263,6 +263,7 @@ for ii = 1:numel(doctree)
         blockIdx = reshape(blockIdx',2,[]);
         for kk = size(blockIdx,2):-1:1
             % code
+            text0{blockIdx(1,kk)} = [text0{blockIdx(1,kk)} 'matlab'];
             selBlock = text0((blockIdx(1,kk)+1):(blockIdx(2,kk)-1));
             if any(cellfun(@(C)~isempty(C),regexp(text0,'^>>')))
                 %

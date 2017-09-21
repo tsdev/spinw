@@ -37,7 +37,7 @@ The data structure within the spinw object can be accessed by using
 spinw object are accessible through the main field names of the `obj`
 object. For example the lattice parameters can be accessed using:
  
-```
+```matlab
 abc = obj.unit_cell.lat_const
 ```
  
@@ -45,7 +45,7 @@ spinw is a handle class, which means that only the handle of the
 object is copied in an assinment command `swobj1 = swobj2`. To create
 a copy (clone) of an spinw object use:
  
-```
+```matlab
 swobj1 = swobj2.copy
 ```
  

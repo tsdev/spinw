@@ -10,7 +10,7 @@ function R = genlattice(obj, varargin)
 % Alternatively the lattice parameters can be given directly when the spinw
 % object is created using `spinw(inpStr)` command, where struct contains
 % the fields with initial parameters, e.g.:
-% ```matlab
+% ```
 % inpStr.lattice.lat_const = [3 3 4];
 % ```
 %
@@ -72,7 +72,7 @@ function R = genlattice(obj, varargin)
 % `R`
 % : Rotation matrix that brings the input basis vector to the SpinW
 %   compatible form:
-%   ```matlab
+%   ```
 %   BVspinw = R*BV
 %   ```
 % 
@@ -83,7 +83,7 @@ function R = genlattice(obj, varargin)
 %
 % ### Example
 %
-% ```matlab
+% ```
 % crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','P 6')
 % crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr',168)
 % crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','-y,x-y,z; -x,-y,z','label','R -3 m')

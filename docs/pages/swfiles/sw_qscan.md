@@ -28,7 +28,7 @@
 To generate a path in the Brillouin-zone between the $$(0,0,0)$$, $$(1,0,0)$$
 and $$(1,1,0)$$ points with 501 points per line segment use:
  
-```
+```matlab
 qLim = {[0 0 0] [1 0 0] [1 1 0] 501}
 ```
  

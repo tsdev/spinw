@@ -37,7 +37,7 @@ triangular lattice antiferromagnet ($$S=1$$, $$J=1$$) along the $$(h,h,0)$$
 direction in reciprocal space we create the built in triangular lattice
 model using `sw_model`.
  
-```
+```matlab
 tri = sw_model('triAF',1);
 spec = tri.spinwave({[0 0 0] [1 1 0]});
 sw_plotspec(spec);

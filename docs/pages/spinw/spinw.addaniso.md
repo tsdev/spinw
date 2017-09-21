@@ -23,7 +23,7 @@ magnetic atoms.
 To add the $$A_1$$ diagonal matrix to all magnetic atoms as
 anisotropy (easy *XY* plane anisotropy) use the following code:
  
-```
+```matlab
 cryst.addmatrix('label','A1','value',diag([-0.1 -0.1 0]))
 cryst.gencoupling
 cryst.addaniso('A1')

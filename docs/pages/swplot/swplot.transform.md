@@ -45,3 +45,4 @@ transformation matrix M.
 
 [swplot.figure](swplot_figure.html) \| [hgtransform]
 
+{% include links.html %}

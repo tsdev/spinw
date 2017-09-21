@@ -60,3 +60,4 @@ that contains nTwin number of matrices.
 
 [spinw](spinw.html) \| [spinw.spinwave](spinw_spinwave.html) \| [sw_neutron](sw_neutron.html)
 
+{% include links.html %}

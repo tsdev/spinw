@@ -31,3 +31,4 @@
 
 [swplot.tooltip](swplot_tooltip.html)
 
+{% include links.html %}

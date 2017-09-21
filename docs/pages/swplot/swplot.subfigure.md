@@ -29,3 +29,4 @@ second figure is the second column of the first row, and so on.
 `hFigure`
 : Handle of the figure window, optional. Default is gcf.
 
+{% include links.html %}

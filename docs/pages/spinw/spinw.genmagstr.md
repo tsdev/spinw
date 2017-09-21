@@ -188,3 +188,4 @@ Fourier components.
 
 [spinw](spinw.html) \| [spinw.anneal](spinw_anneal.html) \| [spinw.optmagstr](spinw_optmagstr.html) \| [gm_spherical3d](gm_spherical3d.html) \| [gm_planar](gm_planar.html)
 
+{% include links.html %}

@@ -74,3 +74,4 @@ domRotC   Rotation matrices for each domain, with dimensions of
 
 [spinw.spinwave](spinw_spinwave.html) \| [spinw.addtwin](spinw_addtwin.html) \| [spinw.twinq](spinw_twinq.html)
 
+{% include links.html %}

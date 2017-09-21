@@ -26,3 +26,4 @@ The function is normalized to integral 1 for dx=1.
 
 [swfunc.gauss](swfunc_gauss.html)
 
+{% include links.html %}

@@ -45,3 +45,4 @@ unit_cell.
 
 [spinw.addtwin](spinw_addtwin.html) \| [spinw.twinq](spinw_twinq.html) \| [spinw.unit_cell](spinw_unit_cell.html)
 
+{% include links.html %}

@@ -22,3 +22,4 @@ Help for spinw/getdisp is inherited from superclass MATLAB.MIXIN.SETGET
     Reference page in Doc Center
        doc spinw/getdisp
 
+{% include links.html %}

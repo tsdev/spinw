@@ -23,3 +23,4 @@ The function returns the current B field value stored in obj.
 
 [spinw](spinw.html) \| [spinw.temperature](spinw_temperature.html)
 
+{% include links.html %}

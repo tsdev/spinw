@@ -29,3 +29,4 @@ p 	Function parameter values: p = [A x0 wG wL mu], where:
 
 [swfunc.gauss](swfunc_gauss.html) \| [swfunc.lorfwhm](swfunc_lorfwhm.html)
 
+{% include links.html %}

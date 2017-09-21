@@ -61,3 +61,4 @@ The function adds extra entries in the 'twin' field of the obj spinw object.
 
 [spinw](spinw.html) \| [spinw.twinq](spinw_twinq.html)
 
+{% include links.html %}

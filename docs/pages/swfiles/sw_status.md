@@ -34,3 +34,4 @@
 
 [waitbar]
 
+{% include links.html %}

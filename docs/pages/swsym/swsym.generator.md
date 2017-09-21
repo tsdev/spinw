@@ -46,3 +46,4 @@ symInfo       Structure containing additional information about the space
 
 [swsym.add](swsym_add.html) \| [spinw](spinw.html) \| [spinw.gencoupling](spinw_gencoupling.html) \| [swsym.position](swsym_position.html)
 
+{% include links.html %}

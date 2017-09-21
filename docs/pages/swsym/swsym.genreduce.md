@@ -37,3 +37,4 @@ can generate the given list.
 [swsym.add](swsym_add.html) \| [swsym.generator](swsym_generator.html) \| [swsym.operator](swsym_operator.html)
  
 
+{% include links.html %}

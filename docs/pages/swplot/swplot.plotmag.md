@@ -125,3 +125,4 @@ swplot figure.
   thus the figure can be updated when the spin object changed.
   Default value is false. 
 
+{% include links.html %}

@@ -27,3 +27,4 @@ corresponding bond and matrix will be created.
 :    Vector containing the Heisenberg exchange values. J(1) for
      first neighbor bonds, etc.
 
+{% include links.html %}

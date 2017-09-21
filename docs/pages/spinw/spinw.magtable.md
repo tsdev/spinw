@@ -41,3 +41,4 @@ atoms are in lattice units.
 
 [spinw.genmagstr](spinw_genmagstr.html)
 
+{% include links.html %}

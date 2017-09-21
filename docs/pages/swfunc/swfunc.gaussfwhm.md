@@ -26,3 +26,4 @@ The integral of the function is normalized assuming dx = 1.
 
 [swfunc.voigt] \| [swfunc.gauss](swfunc_gauss.html)
 
+{% include links.html %}

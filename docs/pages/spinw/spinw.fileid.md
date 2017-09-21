@@ -24,3 +24,4 @@ Outputs the stored fileID value.
 
 [spinw](spinw.html) \| [spinw.display]
 
+{% include links.html %}

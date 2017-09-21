@@ -15,3 +15,4 @@ it resets all settings to factory default after every restart of Matlab.
 * [swpref.pref](swpref_pref.html) returns SpinW global preferences
 * [swpref.setpref](swpref_setpref.html) sets SpinW global preferences
 
+{% include links.html %}

@@ -51,3 +51,4 @@ p             Returns the coefficients for a polynomial p(x) of ° n
 
 [polyfit] \| [sw_instrument](sw_instrument.html)
 
+{% include links.html %}

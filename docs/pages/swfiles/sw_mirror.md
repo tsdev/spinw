@@ -36,3 +36,4 @@ following command:
 
 [spinw.genmagstr](spinw_genmagstr.html) \| [sw_rot](sw_rot.html)
 
+{% include links.html %}

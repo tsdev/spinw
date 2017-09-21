@@ -33,3 +33,4 @@ scans linear in reciprocal space.
 
 [sw_plotspec](sw_plotspec.html)
 
+{% include links.html %}

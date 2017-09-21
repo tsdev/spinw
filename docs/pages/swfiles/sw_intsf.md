@@ -48,3 +48,4 @@
 
 [spinw](spinw.html) \| [spinw.structfact](spinw_structfact.html) \| [sw_plotsf](sw_plotsf.html)
 
+{% include links.html %}

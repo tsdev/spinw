@@ -60,3 +60,4 @@ Help for spinw/set is inherited from superclass MATLAB.MIXIN.SETGET
     Reference page in Doc Center
        doc spinw/set
 
+{% include links.html %}

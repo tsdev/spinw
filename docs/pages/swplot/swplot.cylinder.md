@@ -48,3 +48,4 @@ and faces.
 
 [swplot.arrow](swplot_arrow.html)
 
+{% include links.html %}

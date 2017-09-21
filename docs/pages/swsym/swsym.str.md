@@ -27,3 +27,4 @@ strSym    String, contains the symmetry operations.
 
 [swsym.add](swsym_add.html) \| [swsym.generator](swsym_generator.html)
 
+{% include links.html %}

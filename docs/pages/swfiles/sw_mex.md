@@ -30,3 +30,4 @@ switch to mex in spinw.spinwave.
 
 [swpref]
 
+{% include links.html %}

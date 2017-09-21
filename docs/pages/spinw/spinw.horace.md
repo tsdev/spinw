@@ -105,3 +105,4 @@ s         Cell that contains the calculated element of the spin-spin
 
 [spinw](spinw.html) \| [spinw.spinwave](spinw_spinwave.html) \| [spinw.matparser](spinw_matparser.html) \| [sw_readparam](sw_readparam.html)
 
+{% include links.html %}

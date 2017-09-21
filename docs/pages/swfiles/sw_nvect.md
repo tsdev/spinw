@@ -29,3 +29,4 @@ collinear   If true, the set of vectors are collinear, then n is parallel to the
             input vectors.
  
 
+{% include links.html %}

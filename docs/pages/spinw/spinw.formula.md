@@ -35,3 +35,4 @@ chemlabel     List of the different elements.
 chemnum       Number of the listed element names
 chemform      Chemical formula string: series of 'ChemLabel_ChemNum '.
 
+{% include links.html %}

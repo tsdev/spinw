@@ -30,3 +30,4 @@ closes the swplot figure of the given handle (hFigure).
 
 [swplot.figure](swplot_figure.html)
 
+{% include links.html %}

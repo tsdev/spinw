@@ -23,3 +23,4 @@
 
 [swsym.generator](swsym_generator.html) \| [swsym.operator](swsym_operator.html)
 
+{% include links.html %}

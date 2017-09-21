@@ -1,7 +1,7 @@
 entries:
 - title: Sidebar
   product: SpinW
-  version: R1422
+  version: R1423
   folders:
   - title: Documentation
     output: web, pdf

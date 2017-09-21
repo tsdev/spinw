@@ -34,3 +34,4 @@ Returns the default names, values and labels of each preferences.
 
 [swpref.setpref](swpref_setpref.html)
 
+{% include links.html %}

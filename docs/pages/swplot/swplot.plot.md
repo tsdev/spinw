@@ -148,3 +148,4 @@ hFigure = SWPLOT.PLOT(...)
 
 [swplot.color](swplot_color.html)
 
+{% include links.html %}

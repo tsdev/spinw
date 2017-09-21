@@ -72,3 +72,4 @@ M = S - 0.197
 
 [spinw](spinw.html) \| [spinw.spinwave](spinw_spinwave.html) \| [spinw.genmagstr](spinw_genmagstr.html) \| [spinw.temperature](spinw_temperature.html)
 
+{% include links.html %}

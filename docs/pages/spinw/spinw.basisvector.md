@@ -43,3 +43,4 @@ coordinate system in Å units.
 
 [spinw](spinw.html) \| [spinw.abc](spinw_abc.html) \| [spinw.rl](spinw_rl.html)
 
+{% include links.html %}

@@ -16,3 +16,4 @@
 
 [spinw](spinw.html)
 
+{% include links.html %}

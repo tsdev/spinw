@@ -83,3 +83,4 @@ res           Structure with the following fields:
 
 [spinw.optmagk](spinw_optmagk.html)
 
+{% include links.html %}

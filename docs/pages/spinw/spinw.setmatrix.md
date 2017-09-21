@@ -85,3 +85,4 @@ The selected obj.matrix.mat will contain the new value.
 
 [spinw](spinw.html) \| [spinw.gencoupling](spinw_gencoupling.html) \| [spinw.getmatrix](spinw_getmatrix.html)
 
+{% include links.html %}

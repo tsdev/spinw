@@ -29,3 +29,4 @@ added to the list using the function swplot.add.
 
 [swplot.add](swplot_add.html) \| [hgtransform]
 
+{% include links.html %}

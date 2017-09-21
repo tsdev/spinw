@@ -84,3 +84,4 @@ T     is a transformation matrix that converts Q points (in reciprocal
 
 [spinw.genlattice](spinw_genlattice.html) \| [spinw.gencoupling](spinw_gencoupling.html) \| [spinw.nosym](spinw_nosym.html)
 
+{% include links.html %}

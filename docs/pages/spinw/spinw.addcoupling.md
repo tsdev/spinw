@@ -79,3 +79,4 @@ spinw object.
 
 [spinw](spinw.html) \| [spinw.gencoupling](spinw_gencoupling.html) \| [spinw.addmatrix](spinw_addmatrix.html)
 
+{% include links.html %}

@@ -53,3 +53,4 @@ object.
 
 [spinw](spinw.html) \| [spinw.addcoupling](spinw_addcoupling.html) \| [spinw.addaniso](spinw_addaniso.html) \| [spinw.addmatrix](spinw_addmatrix.html)
 
+{% include links.html %}

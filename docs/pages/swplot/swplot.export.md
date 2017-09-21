@@ -42,3 +42,4 @@ figure property restored after export.
 
 [print]
 
+{% include links.html %}

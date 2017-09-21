@@ -4,9 +4,9 @@ function doctree = sw_genhelp(varargin)
 % SW_GENHELP('option1', value1, ...)
 %
 
-inpForm.fname  = {'path' 'sidebar'    'fun'      'verstr'};
-inpForm.defval = {{}     'sw_sidebar' zeros(1,0) struct()};
-inpForm.size   = {[1 -1] [1 -2]       [1 -3]     [1 1]   };
+inpForm.fname  = {'path' 'sidebar'    'fun'      'verstr' 'recalc'};
+inpForm.defval = {{}     'sw_sidebar' zeros(1,0) struct() true    };
+inpForm.size   = {[1 -1] [1 -2]       [1 -3]     [1 1]    [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -243,10 +243,12 @@ snakeyaml = org.yaml.snakeyaml.Yaml;
 
 % run the examples
 imgPath = [docroot 'images' filesep 'generated'];
-if ~isempty(dir(imgPath))
-    rmdir(imgPath,'s')
+if param.recalc
+    if ~isempty(dir(imgPath))
+        rmdir(imgPath,'s')
+    end
+    mkdir(imgPath)
 end
-mkdir(imgPath)
 
 close('all');
 
@@ -268,7 +270,7 @@ for ii = 1:numel(doctree)
             if any(cellfun(@(C)~isempty(C),regexp(text0,'^>>')))
                 %
                 imgName = ['generated/' content(jj).frontmatter.permalink(1:(end-5))];
-                [newText,~] = sw_example(selBlock,[docroot 'images' filesep],imgName);
+                [newText,~] = sw_example(selBlock,[docroot 'images' filesep],imgName,param.recalc);
                 if ~isempty(regexp(newText{end},'```','once'))
                     text0 = [text0(1:blockIdx(1,kk)) newText(1:(end-1))' text0((blockIdx(2,kk)+1):end)];
                 else
@@ -344,7 +346,7 @@ for ii = 1:nPath
         %helpText = cellfun(@(C)[C newline],help1,'UniformOutput',false);
         
         %fprintf(fid,'%s',['---' newline frontmatter newline '---' newline helpText{:}]);
-        fprintf(fid,'%s',['---' newline frontmatter newline '---' newline allhelp{idx} newline]);
+        fprintf(fid,'%s',['---' newline frontmatter newline '---' newline allhelp{idx} newline '{% include links.html %}' newline]);
         fclose(fid);
         idx = idx + 1;
     end

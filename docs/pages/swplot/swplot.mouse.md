@@ -38,3 +38,4 @@ mouse actions are supported:
 
 [camproj]
 
+{% include links.html %}

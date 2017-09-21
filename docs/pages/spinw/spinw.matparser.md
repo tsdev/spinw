@@ -71,3 +71,4 @@ The spinw object will contain the modified matrix.mat field.
 
 [spinw](spinw.html) \| [spinw.horace](spinw_horace.html) \| [spinw.addmatrix](spinw_addmatrix.html)
 
+{% include links.html %}

@@ -47,3 +47,4 @@ and faces.
 
 [swplot.cylinder](swplot_cylinder.html)
 
+{% include links.html %}

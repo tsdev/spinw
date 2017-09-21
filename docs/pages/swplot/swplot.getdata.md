@@ -26,3 +26,4 @@
 
 [getappdata]
 
+{% include links.html %}

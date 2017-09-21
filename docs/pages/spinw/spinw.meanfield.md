@@ -90,3 +90,4 @@ Tc            Critical temperature in Kelvin, determined from the minimum
 Tmf           Mean field temperature, Tmf = Trel + Tc.
 ...
 
+{% include links.html %}

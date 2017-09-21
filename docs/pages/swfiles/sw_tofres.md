@@ -47,3 +47,4 @@ spectra that contains the calculated intensity in the swConv field.
 
 [sw_egrid](sw_egrid.html) \| [sw_instrument](sw_instrument.html)
 
+{% include links.html %}

@@ -47,3 +47,4 @@ and faces.
 
 [triangulation] \| [swplot.icomesh](swplot_icomesh.html)
 
+{% include links.html %}

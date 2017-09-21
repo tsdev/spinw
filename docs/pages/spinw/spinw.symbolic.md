@@ -22,3 +22,4 @@ symb sets whether the calculations are symbolic/numeric (true/false).
 
 [spinw](spinw.html) \| [spinw.spinwavesym](spinw_spinwavesym.html)
 
+{% include links.html %}

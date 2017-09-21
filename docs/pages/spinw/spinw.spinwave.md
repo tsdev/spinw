@@ -230,3 +230,4 @@ a cell, that contains $$n_{twin}$$ number of matrices.
 [spinw](spinw.html) \| [spinw.spinwavesym](spinw_spinwavesym.html) \| [sw_mex](sw_mex.html) \| [spinw.powspec](spinw_powspec.html)
  
 
+{% include links.html %}

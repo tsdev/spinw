@@ -131,3 +131,4 @@ param     Input parameters, stored in a struct.
 
 [spinw](spinw.html) \| [spinw.anneal](spinw_anneal.html) \| [gm_spherical3d](gm_spherical3d.html) \| [gm_planar](gm_planar.html) \| [fminsearch]
 
+{% include links.html %}

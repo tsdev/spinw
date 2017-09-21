@@ -124,3 +124,4 @@ saving the output into a text file.
 
 [sw_qgrid](sw_qgrid.html) \| [sw_plotsf](sw_plotsf.html) \| [sw_intsf](sw_intsf.html) \| [spinw.anneal](spinw_anneal.html) \| [spinw.genmagstr](spinw_genmagstr.html)
 
+{% include links.html %}

@@ -106,3 +106,4 @@ Optional inputs:
 [spinw.setmatrix](spinw_setmatrix.html)
  
 
+{% include links.html %}

@@ -164,3 +164,4 @@ Chi       Magnetic susceptibility of the sample: (<M^2>-<M>^2)/kB/T.
 
 [spinw](spinw.html) \| [spinw.optmagstr](spinw_optmagstr.html) \| [sw_fsub](sw_fsub.html) \| [sw_fstat](sw_fstat.html)
 
+{% include links.html %}

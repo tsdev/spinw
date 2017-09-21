@@ -26,3 +26,4 @@ To remove all symmetry operators use spinw.nosym.
 
 [spinw](spinw.html) \| [spinw.nosym](spinw_nosym.html) \| [spinw.gencoupling](spinw_gencoupling.html)
 
+{% include links.html %}

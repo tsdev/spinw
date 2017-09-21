@@ -45,3 +45,4 @@ symInfo       Structure containing additional information about the space
 [spinw](spinw.html) \| [swsym.position](swsym_position.html) \| [spinw.atom](spinw_atom.html) \| [spinw.matom](spinw_matom.html) \| [swsym.generator](swsym_generator.html)
 SWSYM.POINT.
 
+{% include links.html %}

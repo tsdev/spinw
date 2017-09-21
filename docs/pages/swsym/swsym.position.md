@@ -54,3 +54,4 @@ opInfo        Structure with the following fields:
 
 [spinw](spinw.html) \| [swsym.operator](swsym_operator.html) \| [spinw.atom](spinw_atom.html) \| [spinw.matom](spinw_matom.html)
 
+{% include links.html %}

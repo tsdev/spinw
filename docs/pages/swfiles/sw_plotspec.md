@@ -145,3 +145,4 @@ pHandle   Handle of the graphics objects on the figure.
 
 [spinw.plot](spinw_plot.html) \| [spinw.spinwave](spinw_spinwave.html) \| [sw_surf] \| [sw_label](sw_label.html)
 
+{% include links.html %}

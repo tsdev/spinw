@@ -20,3 +20,4 @@ Help for spinw/delete is inherited from superclass HANDLE
     Reference page in Doc Center
        doc spinw/delete
 
+{% include links.html %}

@@ -52,3 +52,4 @@ hFigure = SWPLOT.PLOTCELL('Option1',Value1,...)
 : If true, figure will be automatically zoomed to the ideal size.
   Default is false.
 
+{% include links.html %}

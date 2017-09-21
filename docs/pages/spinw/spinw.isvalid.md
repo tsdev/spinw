@@ -23,3 +23,4 @@ Help for spinw/isvalid is inherited from superclass HANDLE
     Reference page in Doc Center
        doc spinw/isvalid
 
+{% include links.html %}

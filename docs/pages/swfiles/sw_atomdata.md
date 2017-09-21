@@ -42,3 +42,4 @@ clean.
 
 [sw_mff](sw_mff.html) \| [sw_cff](sw_cff.html)
 
+{% include links.html %}

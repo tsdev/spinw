@@ -30,3 +30,4 @@ firstIdx  Indices pointing to the first occurence of the unique element.
 This function is similar to the Matlab built-in unique(M,'rows','first'),
 but with arbitrary tolerance.
 
+{% include links.html %}

@@ -30,3 +30,4 @@ R^sw_symorder([R zeros(3,1)]) == eye(3);
 
 [swsym.generator](swsym_generator.html) \| [sw_basismat](sw_basismat.html)
 
+{% include links.html %}

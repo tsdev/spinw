@@ -155,3 +155,4 @@ Any option used by SPINW.SPINWAVE function are also accepted.
 
 [spinw.spinwave](spinw_spinwave.html) \| [spinw.matparser](spinw_matparser.html) \| [sw_egrid](sw_egrid.html) \| [sw_neutron](sw_neutron.html) \| [sw_readspec](sw_readspec.html)
 
+{% include links.html %}

@@ -41,3 +41,4 @@ obj       spinw class object with the selected model.
 
 [spinw](spinw.html)
 
+{% include links.html %}

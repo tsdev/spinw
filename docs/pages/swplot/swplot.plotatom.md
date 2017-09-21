@@ -116,3 +116,4 @@ The name of the objects that are created called 'atom' and 'atom_label'.
 To find the handles and the stored data on these objects, use e.g.
   sObject = swplot.findobj(hFigure,'name','atom')
 
+{% include links.html %}

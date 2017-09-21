@@ -45,3 +45,4 @@ limit Limits on the input parameters, dimensions are [2 nParam]. Every
 
 [gm_spherical3d](gm_spherical3d.html) \| [gm_planard](gm_planard.html)
 
+{% include links.html %}

@@ -91,3 +91,4 @@ Test it with:
 
 [sw_egrid](sw_egrid.html) \| [spinw.fitspec](spinw_fitspec.html)
 
+{% include links.html %}

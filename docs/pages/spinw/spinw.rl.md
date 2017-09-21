@@ -39,3 +39,4 @@ coordinate system in Å units.
 
 [spinw](spinw.html) \| [spinw.abc](spinw_abc.html) \| [spinw.basisvector](spinw_basisvector.html)
 
+{% include links.html %}

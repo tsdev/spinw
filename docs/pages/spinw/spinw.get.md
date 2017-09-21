@@ -40,3 +40,4 @@ Help for spinw/get is inherited from superclass MATLAB.MIXIN.SETGET
     Reference page in Doc Center
        doc spinw/get
 
+{% include links.html %}

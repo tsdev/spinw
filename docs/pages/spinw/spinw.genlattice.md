@@ -101,3 +101,4 @@ $$P6$$ space group.
 [spinw](spinw.html), [swsym.add](swsym_add.html), [swsym.operator](swsym_operator.html), [spinw.gencoupling](spinw_gencoupling.html)
  
 
+{% include links.html %}

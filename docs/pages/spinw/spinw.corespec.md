@@ -126,3 +126,4 @@ obj           The copy of the input obj.
 
 [spinw](spinw.html) \| [spinw.spinwavesym](spinw_spinwavesym.html) \| [sw_neutron](sw_neutron.html) \| [sw_pol] \| [spinw.powspec](spinw_powspec.html) \| [spinw.optmagstr](spinw_optmagstr.html)
 
+{% include links.html %}

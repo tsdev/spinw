@@ -31,3 +31,4 @@ removing the old one).
 onlineVer     If output is expected, the revision number of the online
               SpinW is given. Optional.
 
+{% include links.html %}

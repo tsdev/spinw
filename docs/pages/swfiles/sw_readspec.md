@@ -66,3 +66,4 @@ QH    QK        QL      ENlim1  ENlim2  I1  EN1       s1    I2  EN2       s2
 
 [sw_egrid](sw_egrid.html) \| [spinw.fitspec](spinw_fitspec.html)
 
+{% include links.html %}

@@ -36,3 +36,4 @@ list      Cell of strings, lists each simulation data in the Matlab
 
 [spinw.anneal](spinw_anneal.html) \| [spinw.spinwave](spinw_spinwave.html)
 
+{% include links.html %}

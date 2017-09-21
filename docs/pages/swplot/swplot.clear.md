@@ -16,3 +16,4 @@ SWPLOT.CLEAR
  
 clears the active swplot figure
 
+{% include links.html %}

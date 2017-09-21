@@ -112,3 +112,4 @@ The function modifies the [spinw.unit_cell](spinw_unit_cell.html) property of th
 [spinw.genlattice](spinw_genlattice.html) \| [spinw.addmatrix](spinw_addmatrix.html) \| [swplot.color](swplot_color.html) \| [sw_mff](sw_mff.html) \| [sw_cff](sw_cff.html)
  
 
+{% include links.html %}

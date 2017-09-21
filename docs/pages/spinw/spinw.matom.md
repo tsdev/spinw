@@ -29,3 +29,4 @@ mAtomList is a structure with the following fields:
 
 [spinw.atom](spinw_atom.html)
 
+{% include links.html %}

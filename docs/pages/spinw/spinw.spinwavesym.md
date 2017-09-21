@@ -65,3 +65,4 @@ The method for matrix diagonalization is according to R.M. White, PR 139
 : Gives a title string to the simulation that is saved in the
   output.
 
+{% include links.html %}

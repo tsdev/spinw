@@ -39,3 +39,4 @@ status = SWPLOT.TOOLTIP
 
 status        String, can be 'on' or 'off'.
 
+{% include links.html %}

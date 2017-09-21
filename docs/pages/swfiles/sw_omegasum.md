@@ -38,3 +38,4 @@ It doesn't work for spectra with multiple twins.
 
 [spinw.spinwave](spinw_spinwave.html) \| [sw_egrid](sw_egrid.html)
 
+{% include links.html %}

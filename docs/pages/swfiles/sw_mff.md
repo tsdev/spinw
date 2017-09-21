@@ -40,3 +40,4 @@ The source for the form factor data are:
 [1] A.-J. Dianoux and G. Lander, Neutron Data Booklet (2003).
 [2] K. Kobayashi, T. Nagao, and M. Ito, Acta Crystallogr. A. 67, 473 (2011).
 
+{% include links.html %}

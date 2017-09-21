@@ -20,3 +20,4 @@ equivalent positions (on atoms or bond centers). The results are cached.
 
 [spinw.intmatrix](spinw_intmatrix.html)
 
+{% include links.html %}

@@ -67,3 +67,4 @@ obj [spinw](spinw.html) object.
 [spinw](spinw.html), [spinw.single_ion](spinw_single_ion.html), [spinw.addcoupling](spinw_addcoupling.html), [spinw.addg](spinw_addg.html) and [spinw.addmatrix](spinw_addmatrix.html)
  
 
+{% include links.html %}

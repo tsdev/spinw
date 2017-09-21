@@ -33,3 +33,4 @@
 
 [spinw](spinw.html) \| [spinw.structfact](spinw_structfact.html) \| [sw_intsf](sw_intsf.html)
 
+{% include links.html %}

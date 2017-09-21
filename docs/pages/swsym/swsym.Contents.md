@@ -25,3 +25,4 @@ the standard settings of the space groups are stored in the
 * [swsym.position](swsym_position.html) generates symmetry equivalent positions
 * [swsym.str](swsym_str.html) generates a string equivalent of symmetry operators
 
+{% include links.html %}

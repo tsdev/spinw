@@ -45,3 +45,4 @@ To rotate tensors (3x3 matrices) use the following command:
 
 [spinw.genmagstr](spinw_genmagstr.html) \| [sw_rotmat](sw_rotmat.html) \| [sw_mirror](sw_mirror.html)
 
+{% include links.html %}

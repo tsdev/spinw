@@ -17,3 +17,4 @@
 
 [spinw](spinw.html) \| [spinw.copy](spinw_copy.html)
 
+{% include links.html %}

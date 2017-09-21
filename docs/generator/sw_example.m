@@ -1,4 +1,4 @@
-function [str, out] = sw_example(str,path,figname)
+function [str, out] = sw_example(str,path,figname,recalc)
 % executes example code given in a cell of strings
 %
 % Lines starting with >> will be executed
@@ -14,7 +14,6 @@ warning off
 cc = onCleanup(@() warning(warn0));
 
 % find code blocks
-
 idx = 1;
 
 for ii = 1:numel(str)
@@ -22,18 +21,31 @@ for ii = 1:numel(str)
     if ~isempty(regexp(temp,'snapnow','once'))
         % save figure
         fignamei = [figname '_' num2str(idx) '.png'];
-        idx = idx+1;
-        drawnow;
-        print([path filesep fignamei],'-dpng','-r144');
+        
+        if recalc    
+            idx = idx+1;
+            set(gcf,'Color',[241 240 240]/255)
+            drawnow;
+            ihc = get(gcf,'InvertHardCopy');
+            set(gcf,'InvertHardCopy','off');
+            print([path filesep fignamei],'-dpng','-r144');
+            set(gcf,'InvertHardCopy',ihc);
+        end
         caption = str{ii-1};
         caption = strtrim(caption(caption~='>'));
         str{ii} = ['```' newline ' ' newline '{% include image.html file="' fignamei '" alt="' caption '" max-width="500" %}' newline newline '```matlab' newline];
         keep(ii) = true;
     elseif numel(temp)>3 && strcmp(temp(1:3),'>>>')
-        evalc(str{ii}(4:end));
+        if recalc
+            evalc(str{ii}(4:end));
+        end
         keep(ii) = false;
     elseif numel(temp)>2 && strcmp(temp(1:2),'>>')
-        out0 = evalc(str{ii}(3:end));
+        if recalc
+            out0 = evalc(str{ii}(3:end));
+        else
+            out0 = '';
+        end
         if ~isempty(out0)
             out{end+1} = out0; %#ok<AGROW>
         end

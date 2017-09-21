@@ -42,3 +42,4 @@ enable continuous rotation with the mouse.
 
 [swplot] \| [swplot.figure](swplot_figure.html) \| [hgtransform] \| [swplot.plot](swplot_plot.html)
 
+{% include links.html %}

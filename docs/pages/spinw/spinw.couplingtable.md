@@ -57,3 +57,4 @@ bonds is a struct type data that contains the following fields:
 
 [spinw.matom](spinw_matom.html) \| [spinw.intmatrix](spinw_intmatrix.html) \| [spinw.addcoupling](spinw_addcoupling.html) \| [spinw.gencoupling](spinw_gencoupling.html)
 
+{% include links.html %}

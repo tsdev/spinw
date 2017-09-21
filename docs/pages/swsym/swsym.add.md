@@ -29,3 +29,4 @@ returns the line number of the space group in the symmetry.dat file.
 
 [swsym.generator](swsym_generator.html) \| [swsym.genreduce](swsym_genreduce.html)
 
+{% include links.html %}

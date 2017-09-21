@@ -37,3 +37,4 @@
 RGB       RGB color code, dimensions are [3 nColor], where
           every value is between 0 and 255.
 
+{% include links.html %}

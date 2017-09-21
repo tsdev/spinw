@@ -18,3 +18,4 @@ It calculates modulo one with tolerance, numbers larger than 1-epsilon >
 
 [mod]
 
+{% include links.html %}

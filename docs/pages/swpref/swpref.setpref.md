@@ -28,3 +28,4 @@ Resets all preference values to the default one.
 
 [swpref.setpref](swpref_setpref.html)
 
+{% include links.html %}

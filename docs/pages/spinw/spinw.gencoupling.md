@@ -77,3 +77,4 @@ crystal geometry.
 
 [spinw](spinw.html) \| [spinw.symmetry](spinw_symmetry.html) \| [spinw.nosym](spinw_nosym.html)
 
+{% include links.html %}

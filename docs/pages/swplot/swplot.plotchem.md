@@ -129,3 +129,4 @@ The name of the objects that are created called 'chem'. To find the
 handles and the stored data on these objects, use e.g.
   sObject = swplot.findobj(hFigure,'name','chem')
 
+{% include links.html %}

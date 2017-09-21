@@ -17,3 +17,4 @@
 
 [spinw.anneal](spinw_anneal.html) \| [sw_annealfigure](sw_annealfigure.html)
 
+{% include links.html %}

@@ -26,3 +26,4 @@
 
 [swplot.figure](swplot_figure.html)
 
+{% include links.html %}

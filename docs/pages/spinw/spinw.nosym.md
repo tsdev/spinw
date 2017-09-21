@@ -40,3 +40,4 @@ obj.unit_cell field will contain all the generated atomic positions.
 
 [spinw](spinw.html) \| [spinw.newcell](spinw_newcell.html)
 
+{% include links.html %}

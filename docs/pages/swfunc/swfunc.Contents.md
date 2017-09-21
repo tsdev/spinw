@@ -14,3 +14,4 @@ SpinW for defining instrumental resolution function, etc.
 * [swfunc.pvoigt](swfunc_pvoigt.html) pseudovoigt function
 * [swfunc.voigtfwhm](swfunc_voigtfwhm.html) normalized voigt function
 
+{% include links.html %}

@@ -30,3 +30,4 @@ vertical y-axis and out-of-plane z-axis.
 
 [swplot.zoom](swplot_zoom.html)
 
+{% include links.html %}

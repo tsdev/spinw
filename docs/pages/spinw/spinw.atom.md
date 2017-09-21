@@ -47,3 +47,4 @@ atomList is a structure with the following fields:
 
 [spinw](spinw.html) \| [spinw.matom](spinw_matom.html) \| [swsym.add](swsym_add.html) \| [spinw.genlattice](spinw_genlattice.html) \| [spinw.addatom](spinw_addatom.html)
 
+{% include links.html %}

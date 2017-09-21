@@ -39,3 +39,4 @@ Returns the basis vectors stored in the swplot figure.
 
 [swplot.plot](swplot_plot.html)
 
+{% include links.html %}

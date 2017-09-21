@@ -81,3 +81,4 @@ zoom      If true, figure will be automatically zoomed to the ideal size.
           Default is true.
  
 
+{% include links.html %}

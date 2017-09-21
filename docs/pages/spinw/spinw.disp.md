@@ -33,3 +33,4 @@ swdescr   If output variable is given, the description of the obj object
 
 [spinw](spinw.html)
 
+{% include links.html %}

@@ -68,3 +68,4 @@ are defined then $$n=2$$, etc.
   
 [sw_qscan](sw_qscan.html)
 
+{% include links.html %}

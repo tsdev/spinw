@@ -46,3 +46,4 @@ swplot.circle(zeros(3),eye(3),1,100)
 
 [swplot.cylinder](swplot_cylinder.html)
 
+{% include links.html %}

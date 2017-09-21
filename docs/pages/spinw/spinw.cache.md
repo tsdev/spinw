@@ -19,3 +19,4 @@ discouraged as it can break the code!" %}
 : Generated symmetry operators for each bond.
  
 
+{% include links.html %}

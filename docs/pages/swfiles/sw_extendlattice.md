@@ -44,3 +44,4 @@ SSext.gen     General 3x3 matrix contains the exchange interaction.
 
 [spinw.intmatrix](spinw_intmatrix.html)
 
+{% include links.html %}

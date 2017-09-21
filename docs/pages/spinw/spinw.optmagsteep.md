@@ -93,3 +93,4 @@ title     Title of the simulation, given in the input.
 
 [spinw](spinw.html) \| [spinw.anneal](spinw_anneal.html) \| [sw_fsub](sw_fsub.html) \| [sw_fstat](sw_fstat.html)
 
+{% include links.html %}

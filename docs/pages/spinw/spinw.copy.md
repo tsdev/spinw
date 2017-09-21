@@ -43,3 +43,4 @@ newObj    New spinw class object that contains all the data of
 
 [spinw](spinw.html) \| [spinw.struct](spinw_struct.html)
 
+{% include links.html %}

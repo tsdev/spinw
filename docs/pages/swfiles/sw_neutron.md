@@ -66,3 +66,4 @@ system with (xBM, yBM and zBM) basis vectors as follows:
 
 [spinw](spinw.html) \| [spinw.spinwave](spinw_spinwave.html)
 
+{% include links.html %}

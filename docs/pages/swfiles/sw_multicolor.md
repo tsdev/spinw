@@ -49,3 +49,4 @@
 cMat      Matrix with equal dimensions to the input times three for the
           red, green and blue channels, dimensions are [d1 d2 3].
 
+{% include links.html %}

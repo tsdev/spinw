@@ -55,3 +55,4 @@ The obj output will contain the added matrix in the obj.matrix field.
 
 [spinw](spinw.html) \| [swplot.color](swplot_color.html)
 
+{% include links.html %}

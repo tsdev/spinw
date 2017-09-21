@@ -29,3 +29,4 @@
 
 [spinw.fourier](spinw_fourier.html)
 
+{% include links.html %}

@@ -41,3 +41,4 @@ rotQ      Rotation matrices, dimensions are [3 3 nTwin].
 
 [spinw](spinw.html) \| [spinw.addtwin](spinw_addtwin.html)
 
+{% include links.html %}

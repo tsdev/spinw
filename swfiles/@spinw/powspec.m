@@ -21,6 +21,21 @@ function spectra = powspec(obj, hklA, varargin)
 % arbitrary spectral function, if it is specified using the `specfun`
 % option. 
 %
+% ### Example
+%
+% Using only a few lines of code one can calculate the powder spectrum of
+% the triangular lattice antiferromagnet ($S=1$, $J=1$) between $Q=0$ and 3
+% \\Angstrom$^{-1}$ (the lattice parameter is 3 \\Angstrom).
+%
+% ```
+% >>tri = sw_model('triAF',1);
+% >>E = linspace(0,4,100);
+% >>Q = linspace(0,4,300);
+% >>triSpec = tri.powspec(Q,'Evect',E,'nRand',1e3);
+% >>sw_plotspec(triSpec);
+% >>snapnow
+% ```
+%
 % ### Input arguments
 %
 % `obj`
@@ -56,92 +71,103 @@ function spectra = powspec(obj, hklA, varargin)
 %
 %   Default value is `'ebin'`.
 %
-% T         Temperature to calculate the Bose factor in units
-%           depending on the Boltzmann constant. Default is taken from
-%           obj.single_ion.T value.
-% title     Gives a title string to the simulation that is saved in the
-%           output.
-% extrap    If true, arbitrary additional parameters are passed over to
-%           the spectrum calculation function.
-% fibo      If true, instead of random sampling of the unit sphere the
-%           Fibonacci numerical integration is implemented as described in:
-%           J. Phys. A: Math. Gen. 37 (2004) 11591
-%           The number of points on the sphere is given by the largest
-%           Fibonacci number below nRand. Default is false.
-% imagChk   Checks that the imaginary part of the spin wave dispersion is
-%           smaller than the energy bin size. Default is true.
-% component See the help of sw_egrid() function for description.
+% `'T'`
+% : Temperature to calculate the Bose factor in units
+%   depending on the Boltzmann constant. Default value taken from
+%   `obj.single_ion.T` value.
 %
-% The function accepts all options of spinw.spinwave() with the most
-% important options are:
+% `'title'`
+% : Gives a title to the output of the simulation.
 %
-% formfact      If true, the magnetic form factor is included in the
-%               spin-spin correlation function calculation. Default value
-%               is false.
-% formfactfun   Function that calculates the magnetic form factor for given
-%               Q value. Default value is @sw_mff(), that uses a tabulated
-%               coefficients for the form factor calculation. For
-%               anisotropic form factors a user defined function can be
-%               written that has the following header:
-%                   F = @formfactfun(atomLabel,Q)
-%               where the parameters are:
-%                   F   row vector containing the form factor for every
-%                       input Q value
-%                   atomLabel string, label of the selected magnetic atom
-%                   Q   matrix with dimensions of [3 nQ], where each column
-%                       contains a Q vector in Angstrom^-1 units.
-% gtensor       If true, the g-tensor will be included in the spin-spin
-%               correlation function. Including anisotropic g-tensor or
-%               different g-tensor for different ions is only possible
-%               here.
-% hermit        Method for matrix diagonalization:
-%                   true      J.H.P. Colpa, Physica 93A (1978) 327,
-%                   false     R.M. White, PR 139 (1965) A450.
-%               Colpa: the grand dynamical matrix is converted into another
-%                      Hermitian matrix, that will give the real
-%                      eigenvalues.
-%               White: the non-Hermitian g*H matrix will be diagonalised,
-%                      that is not the elegant method.
-%               Advise:
-%               Always use Colpa's method, except when small imaginary
-%               eigenvalues are expected. In this case only White's method
-%               work. The solution in this case is wrong, however by
-%               examining the eigenvalues it can give a hint where the
-%               problem is.
-%               Default is true.
+% `'extrap'`
+% : If true, arbitrary additional parameters are passed over to
+%   the spectrum calculation function.
 %
-% The function accepts some options of spinw.scga() with the most important
-% options are:
+% `'fibo'`
+% : If true, instead of random sampling of the unit sphere the Fibonacci
+%   numerical integration is implemented as described in
+%   [J. Phys. A: Math. Gen. 37 (2004)
+%   11591](http://iopscience.iop.org/article/10.1088/0305-4470/37/48/005/meta).
+%   The number of points on the sphere is given by the largest
+%   Fibonacci number below `nRand`. Default value is false.
 %
-% nInt      Number of Q points where the Brillouin zone is sampled for the
-%           integration.
+% `'imagChk'`
+% : Checks that the imaginary part of the spin wave dispersion is
+%   smaller than the energy bin size. Default value is true.
 %
-% Output:
+% `'component'`
+% : See [sw_egrid] for the description of this parameter.
 %
-% 'spectra' is a struct type variable with the following fields:
-% swConv    The spectra convoluted with the dispersion. The center
-%           of the energy bins are stored in spectra.Evect. Dimensions are
-%           [nE nQ].
-% hklA      Same Q values as the input hklA [1 nQ]. Evect
-%           Contains the input energy transfer values, dimensions are
-%           [1 nE].
-% param     Contains all the input parameters.
-% obj       The copy of the input obj object.
-% Evect     Energy grid converted to edge bins.
+% The function also accepts all parameters of [spinw.spinwave] with the
+% most important parameters are:
 %
-% Example:
+% `'formfact'`
+% : If true, the magnetic form factor is included in the spin-spin
+%   correlation function calculation. The form factor coefficients are
+%   stored in `obj.unit_cell.ff(1,:,atomIndex)`. Default value is `false`.
 %
-% tri = sw_model('triAF',1);
-% E = linspace(0,4,100);
-% Q = linspace(0,4,300);
-% triSpec = tri.powspec(Q,'Evect',E,'nRand',1e3);
-% sw_plotspec(triSpec);
+% `'formfactfun'`
+% : Function that calculates the magnetic form factor for given $Q$ value.
+%   value. Default value is `@sw_mff`, that uses a tabulated coefficients
+%   for the form factor calculation. For anisotropic form factors a user
+%   defined function can be written that has the following header:
+%   ```
+%   F = formfactfun(atomLabel,Q)
+%   ```
+%   where the parameters are:
+%   * `F`           row vector containing the form factor for every input 
+%                   $Q$ value
+%   * `atomLabel`   string, label of the selected magnetic atom
+%   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
+%                   column contains a $Q$ vector in $\\Angstrom^{-1}$ units.
 %
-% The example calculates the powder spectrum of the triangular lattice
-% antiferromagnet (S=1, J=1) between Q = 0 and 3 A^-1 (the lattice
-% parameter is 3 Angstrom).
+% `'gtensor'`
+% : If true, the g-tensor will be included in the spin-spin correlation
+%   function. Including anisotropic g-tensor or different
+%   g-tensor for different ions is only possible here. Including a simple
+%   isotropic g-tensor is possible afterwards using the [sw_instrument]
+%   function.
 %
-% See also SPINW, SPINW.SPINWAVE, SPINW.OPTMAGSTR, SW_EGRID.
+% `'hermit'`
+% : Method for matrix diagonalization with the following logical values:
+% 
+%   * `true`    using Colpa's method (for details see [J.H.P. Colpa, Physica 93A (1978) 327](http://www.sciencedirect.com/science/article/pii/0378437178901607)),
+%               the dynamical matrix is converted into another Hermitian
+%               matrix, that will give the real eigenvalues.
+%   * `false`   using the standard method (for details see [R.M. White, PR 139 (1965) A450](https://journals.aps.org/pr/abstract/10.1103/PhysRev.139.A450))
+%               the non-Hermitian $\mathcal{g}\times \mathcal{H}$ matrix
+%               will be diagonalised, which is computationally less
+%               efficient. Default value is `true`.
+%
+% {{note Always use Colpa's method, except when imaginary eigenvalues are
+%   expected. In this case only White's method work. The solution in this
+%   case is wrong, however by examining the eigenvalues it can give a hint
+%   where the problem is.}}
+%
+% The function accepts some parameters of [spinw.scga] with the most important
+% parameters are:
+%
+% `'nInt'`
+% : Number of $Q$ points where the Brillouin zone is sampled for the
+%   integration.
+%
+% ### Output Arguments
+%
+% `spectra`
+% : structure with the following fields:
+%
+%   * `swConv` The spectra convoluted with the dispersion. The center
+%     of the energy bins are stored in `spectra.Evect`. Dimensions are
+%     $[n_E\times n_Q]$.
+%   * `hklA` Same $Q$ values as the input `hklA`.
+%   * `Evect` Contains the bins (edge values of the bins) of the energy transfer
+%     values, dimensions are $[1\times n_E+1]$.
+%   * `param` Contains all the input parameters.
+%   * `obj` The clone of the input `obj` object, see [spinw.copy].
+%
+% ### See also
+%
+% [spinw] \| [spinw.spinwave] \| [spinw.optmagstr] \| [sw_egrid]
 %
 
 % help when executed without argument

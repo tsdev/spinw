@@ -89,3 +89,4 @@ RR            Positions of the atoms in lattice units, dimensions are
 
 [spinw.couplingtable](spinw_couplingtable.html) \| [spinw.symop](spinw_symop.html)
 
+{% include links.html %}

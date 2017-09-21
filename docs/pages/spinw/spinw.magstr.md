@@ -38,3 +38,4 @@ unexpected magnetic structures.
 
 [spinw.genmagstr](spinw_genmagstr.html)
 
+{% include links.html %}

@@ -63,3 +63,4 @@ the patch object.
 
 [patch]
 
+{% include links.html %}

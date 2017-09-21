@@ -31,3 +31,4 @@
 [spinw.horace](spinw_horace.html)
  
 
+{% include links.html %}

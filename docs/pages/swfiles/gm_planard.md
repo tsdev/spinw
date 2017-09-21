@@ -46,3 +46,4 @@ limit     Default limits on the input parameters, dimensions are [2 nX].
 
 [gm_spherical3d](gm_spherical3d.html)
 
+{% include links.html %}

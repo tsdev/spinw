@@ -147,3 +147,4 @@ a cell. The dimensions of the cell are [nConv nTwin].
 
 [spinw.spinwave](spinw_spinwave.html) \| [sw_neutron](sw_neutron.html)
 
+{% include links.html %}

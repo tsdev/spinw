@@ -42,3 +42,4 @@ asym      Logical vector, for each 3x3 matrix in M, tells whether it is
 
 [spinw.getmatrix](spinw_getmatrix.html) \| [spinw.setmatrix](spinw_setmatrix.html)
 
+{% include links.html %}

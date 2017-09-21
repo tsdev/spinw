@@ -69,3 +69,4 @@ parOut.Chi    Magnetic susceptibility of the sample: (<M^2>-<M>^2)/kB/T.
 
 [spinw](spinw.html) \| [spinw.anneal](spinw_anneal.html)
 
+{% include links.html %}

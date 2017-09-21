@@ -48,3 +48,4 @@ ugenCp    Logical variable, true if the coupling is unique in the list of
 
 [spinw.gencoupling](spinw_gencoupling.html) \| [swsym.operator](swsym_operator.html) \| [swsym.position](swsym_position.html)
 
+{% include links.html %}

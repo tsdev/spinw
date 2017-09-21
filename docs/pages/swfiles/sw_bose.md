@@ -31,3 +31,4 @@ C         Correction coefficients that multiplies the correlation
           function. If any of the input is a vector, C will be also a
           vector with the same dimensions.
 
+{% include links.html %}

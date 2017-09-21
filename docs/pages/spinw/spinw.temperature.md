@@ -21,3 +21,4 @@ The function returns the current temperature value stored in
 obj.
  
 
+{% include links.html %}

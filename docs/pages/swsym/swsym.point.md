@@ -39,3 +39,4 @@ pOp           Point group operators, dimensions are [3 3 npOp], these
 
 [swsym.generator](swsym_generator.html) \| [swsym.operator](swsym_operator.html) \| [swsym.position](swsym_position.html)
 
+{% include links.html %}

@@ -29,3 +29,4 @@ the next integer.
 
 [:] \| [spinw](spinw.html)
 
+{% include links.html %}

@@ -65,3 +65,4 @@ WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 
 [spinw](spinw.html) \| [spinw.anneal](spinw_anneal.html) \| [spinw.newcell](spinw_newcell.html)
 
+{% include links.html %}

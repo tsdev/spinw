@@ -38,13 +38,14 @@ function gencoupling(obj, varargin)
 % ### Name-Value Pair Arguments
 %
 % `'forceNoSym'`
-% : If true, equivalent bonds are always generated based on
-%   bond length with `tolDist` length tolerance. If false symmetry
-%   operators will be used if they are given ([spinw.symmetry] is true).
+% : If `true`, equivalent bonds are always generated based on
+%   bond length with `tolDist` length tolerance and effectively reducing
+%   the bond symmetry to `P0`. If `false` symmetry operators will be used
+%   if they are given ([spinw.symmetry] returns `true`).
 %
 % `'maxDistance'`
 % : Maximum bond length that will be stored in the
-%   [spinw.coupling] property in units of \\Angstrom. Default is 8.
+%   [spinw.coupling] property in units of \\Angstrom. Default value is 8.
 %
 % `'maxSym'`
 % : Maximum bond length until the symmetry equivalent bonds are

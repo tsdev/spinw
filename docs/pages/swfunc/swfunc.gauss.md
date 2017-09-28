@@ -1,29 +1,29 @@
 ---
-{title: swfunc.gauss, link: swfunc.gauss, summary: normalized gaussian function defined
-    by the standard deviation, keywords: sample, sidebar: sw_sidebar, permalink: swfunc_gauss.html,
-  folder: swfunc, mathjax: 'true'}
+{title: swfunc.gauss, link: swfunc.gauss, summary: normalized gaussian function, keywords: sample,
+  sidebar: sw_sidebar, permalink: swfunc_gauss.html, folder: swfunc, mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
+  
 `y = func.gauss(x,p)`
-
+  
 ### Description
-
-The integral of the function is normalized assuming dx = 1.
- 
-
+  
+`y = func.gauss(x,p)` calculates the $$y$$ values for a Gaussian function
+evaluated at $$x$$ and with parameters defined in `p`.
+  
 ### Input Arguments
-
+  
 `x`
 : Coordinate vector where the function will be evaluated.
-
+  
 `p`
-: Parameter vector: [I Centre sigma].
-
+: Parameter vector with the following elements `[I Centre sigma]` where:
+  
+  
 ### See Also
-
+  
 [swfunc.voigt] \| [swfunc.gaussfwhm](swfunc_gaussfwhm.html)
 
 {% include links.html %}

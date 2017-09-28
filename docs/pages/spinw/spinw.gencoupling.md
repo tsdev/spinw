@@ -56,13 +56,14 @@ cryst.table('bond',1:3)
 ### Name-Value Pair Arguments
  
 `'forceNoSym'`
-: If true, equivalent bonds are always generated based on
-  bond length with `tolDist` length tolerance. If false symmetry
-  operators will be used if they are given ([spinw.symmetry](spinw_symmetry.html) is true).
+: If `true`, equivalent bonds are always generated based on
+  bond length with `tolDist` length tolerance and effectively reducing
+  the bond symmetry to `P0`. If `false` symmetry operators will be used
+  if they are given ([spinw.symmetry](spinw_symmetry.html) returns `true`).
  
 `'maxDistance'`
 : Maximum bond length that will be stored in the
-  [spinw.coupling](spinw_coupling.html) property in units of Å. Default is 8.
+  [spinw.coupling](spinw_coupling.html) property in units of Å. Default value is 8.
  
 `'maxSym'`
 : Maximum bond length until the symmetry equivalent bonds are

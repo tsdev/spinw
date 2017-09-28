@@ -82,7 +82,7 @@ of public methods is below.
 * [spinw.addatom](spinw_addatom.html) adds new atom
 * [spinw.unitcell](spinw_unitcell.html) returns information on atoms in the crystallographic unit cell
 * [spinw.abc](spinw_abc.html) returns lattice parameters and angles
-* [spinw.atom](spinw_atom.html) generates all atomic positions in the unit cell
+* [spinw.atom](spinw_atom.html) generates symmetry equivalent atomic positions
 * [spinw.matom](spinw_matom.html) generates all magnetic atoms in the unit cell
 * [spinw.natom](spinw_natom.html) gives the number of symmetry unrelated atoms in the unit cell
 * [spinw.formula](spinw_formula.html) returns chemical formula, mass, volume, etc.
@@ -115,7 +115,7 @@ of public methods is below.
     
 #### Matrix operations
  
-* [spinw.addmatrix](spinw_addmatrix.html) adds new matrix that can be assigned to spins in the Hamiltonian
+* [spinw.addmatrix](spinw_addmatrix.html) adds new [3x3] matrix
 * [spinw.getmatrix](spinw_getmatrix.html) determines the symmetry allowed tensor elements
 * [spinw.setmatrix](spinw_setmatrix.html) changes the selected matrix inside the spinw object
 * [spinw.nmat](spinw_nmat.html) gives the number of matrices defined in an spinw object
@@ -124,7 +124,7 @@ of public methods is below.
  
 * [spinw.quickham](spinw_quickham.html) creates magnetic Hamiltonian with a single command
 * [spinw.gencoupling](spinw_gencoupling.html) generates bond list
-* [spinw.addcoupling](spinw_addcoupling.html) assigns a predefined matrix as exchange coupling on selected bonds
+* [spinw.addcoupling](spinw_addcoupling.html) assigns an exchange matrix to a bond
 * [spinw.couplingtable](spinw_couplingtable.html) creates tabulated list of all bonds as stored
 * [spinw.addaniso](spinw_addaniso.html) assigns anisotropy to magnetic sites
 * [spinw.addg](spinw_addg.html) assigns g-tensor to magnetic ions

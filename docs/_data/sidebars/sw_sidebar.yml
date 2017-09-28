@@ -1,7 +1,7 @@
 entries:
 - title: Sidebar
   product: SpinW
-  version: R1424
+  version: R1428
   folders:
   - title: Documentation
     output: web, pdf
@@ -122,6 +122,7 @@ entries:
         - {title: spinw.get, url: /spinw_get.html, output: 'web, pdf'}
         - {title: spinw.getdisp, url: /spinw_getdisp.html, output: 'web, pdf'}
         - {title: spinw.isvalid, url: /spinw_isvalid.html, output: 'web, pdf'}
+        - {title: spinw.listener, url: /spinw_listener.html, output: 'web, pdf'}
         - {title: spinw.scga, url: /spinw_scga.html, output: 'web, pdf'}
         - {title: spinw.scga3, url: /spinw_scga3.html, output: 'web, pdf'}
         - {title: spinw.set, url: /spinw_set.html, output: 'web, pdf'}

@@ -24,7 +24,7 @@ for ii = 1:numel(str)
         
         if recalc    
             idx = idx+1;
-            set(gcf,'Color',[241 240 240]/255)
+            set(gcf,'Color',[241 240 240]/255*0+1)
             drawnow;
             ihc = get(gcf,'InvertHardCopy');
             set(gcf,'InvertHardCopy','off');
@@ -33,7 +33,8 @@ for ii = 1:numel(str)
         end
         caption = str{ii-1};
         caption = strtrim(caption(caption~='>'));
-        str{ii} = ['```' newline ' ' newline '{% include image.html file="' fignamei '" alt="' caption '" max-width="500" %}' newline newline '```matlab' newline];
+        % removed --> max-width="500"
+        str{ii} = ['```' newline ' ' newline '{% include image.html file="' fignamei '" alt="' caption '" %}' newline newline '```matlab' newline];
         keep(ii) = true;
     elseif numel(temp)>3 && strcmp(temp(1:3),'>>>')
         if recalc
@@ -49,7 +50,7 @@ for ii = 1:numel(str)
                 out1 = strsplit(out1,newline);
                 out1 = out1(cellfun(@(C)isempty(C),regexp(out1,'^ans')));
                 out1 = sprintf('%s\n',out1{:});
-                str{ii} = [str{ii} newline '```' newline '*Output*' newline '```' newline out1(1:end-1) newline '```' newline ' ' newline '```'];
+                str{ii} = [str{ii} newline '```' newline '*Output*' newline '```' newline out1(1:end-1) newline '```' newline ' ' newline '```matlab'];
             else
                 % just keep it in out
                 

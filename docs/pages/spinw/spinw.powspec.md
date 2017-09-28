@@ -39,7 +39,7 @@ triSpec = tri.powspec(Q,'Evect',E,'nRand',1e3);
 sw_plotspec(triSpec);
 ```
  
-{% include image.html file="generated/spinw_powspec_1.png" alt="sw_plotspec(triSpec);" max-width="500" %}
+{% include image.html file="generated/spinw_powspec_1.png" alt="sw_plotspec(triSpec);" %}
  
 ### Input arguments
  

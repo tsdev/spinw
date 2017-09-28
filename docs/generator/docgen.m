@@ -8,7 +8,7 @@ swver    = sw_version;
 %% generate help
 
 %fun0 = {'spinw' 'spinw.gencoupling' 'spinw.spinwave' 'spinw.addatom'};
-%fun0 = {'spinwave' 'spinw.spinwave' 'spinw.clearcache'};
+%fun0 = {'swfiles' 'sw_egrid'};
 fun0 = cell(1,0);
 
 clc

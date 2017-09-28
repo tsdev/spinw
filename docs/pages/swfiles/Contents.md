@@ -12,13 +12,13 @@ into separate libraries.
 #### Transforming and plotting calculated spin wave spectrum
  
 * [sw_econtract](sw_econtract.html) converts (Q,E) values to Q values for diffraction instrument
-* [sw_egrid](sw_egrid.html) creates energy for spectrum color plot
+* [sw_egrid](sw_egrid.html) calculates energy bins of a spectrum 
 * [sw_filelist](sw_filelist.html) lists spinw data in the Matlab workspace or in a .mat file
-* [sw_instrument](sw_instrument.html) includes instrumental factors into the calculated spectrum
+* [sw_instrument](sw_instrument.html) convolutes spectrum with different functions
 * [sw_magdomain](sw_magdomain.html) calculates the spin-spin correlation function for magnetic domains
 * [sw_neutron](sw_neutron.html) calculates neutron scattering intensity for spin wave spectrum
 * [sw_omegasum](sw_omegasum.html) removes degenerate and ghost magnon modes from spectrum
-* [sw_plotspec](sw_plotspec.html) plots spin wave spectrum
+* [sw_plotspec](sw_plotspec.html) plots spectrum
 * [sw_xray](sw_xray.html) calculates X-ray scattering intensity for phonon spectrum
  
 #### Generate list of vectors in reciprocal space

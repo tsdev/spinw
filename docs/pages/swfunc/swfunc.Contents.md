@@ -8,7 +8,7 @@ The library contains basic mathematical functions that can be used by
 SpinW for defining instrumental resolution function, etc.
  
 ### Files
-* [swfunc.gauss](swfunc_gauss.html) normalized gaussian function defined by the standard deviation
+* [swfunc.gauss](swfunc_gauss.html) normalized gaussian function
 * [swfunc.gaussfwhm](swfunc_gaussfwhm.html) normalized gaussian function defined by the FWHM
 * [swfunc.lorfwhm](swfunc_lorfwhm.html) normalized Lorentzian using FWHM
 * [swfunc.pvoigt](swfunc_pvoigt.html) pseudovoigt function

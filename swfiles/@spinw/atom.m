@@ -1,41 +1,52 @@
 function atomList = atom(obj)
-% generates all atomic positions in the unit cell
+% generates symmetry equivalent atomic positions
+% 
+% ### Syntax
+% 
+% `atomlist = atom(obj)`
+% 
+% ### Description
+% 
+% `atomlist = atom(obj)` generates all atomic positions using the symmetry
+% operators stored in `obj.lattice.sym` and the symmetry inequivalent
+% atomic positions in `obj.unit_cell.r`. If no symmetry is defined (denoted
+% $P0$ symmetry) or the symmetry is $P1$ the function returns simply the
+% positions stored in `obj.unit_cell.r`.
+% 
+% ### Examples
+% 
+% Here we create a new space group, that contains all the translations of
+% the FCC lattice. Then create a crystal with an atom at `[0 0 0]` position.
+% The `cryst.atom` lists all 4 symmetry equivalent positions generated using
+% the FCC symmetry operators:
 %
-% atomList = ATOM(obj)
+% ```
+% >>cryst = spinw
+% >>opStr = 'x+1/2,y+1/2,z;x+1/2,y,z+1/2;x,y+1/2,z+1/2';
+% >>cryst.genlattice('lat_const',[8 8 8],'spgr',opStr,'label','FCC')
+% >>cryst.addatom('r',[0 0 0],'label','Atom1')
+% >>atomList = cryst.atom
+% >>atomList.r>>
+% ```
 %
-% From the given atomic positions in the obj.unit_cell field the function
-% generates all atomic positions using the symmetry operators of the given
-% space group. If no symmetry is defined, the function returns simply the
-% positions stored in obj.unit_cell.
-%
-% Input:
-%
-% obj       spinw class object.
-%
-% Output:
-%
-% atomList is a structure with the following fields:
-%
-%   r       Positions of the atoms in lattice units, dimensions are 
-%           [3 nAtom]. 
-%   idx     Pointer to the atom in the unit_cell field, dimensions are
-%           [nAtom 1].
-%   mag     Logical variable, whether the spin of the atom is non-zero,
-%           dimensions are [nAtom 1].
-%
-% Example:
-%
-% cryst = spinw;
-% cryst.genlattice('lat_const',[8 8 8],'spgr','x+1/2,y+1/2,z;x+1/2,y,z+1/2;x,y+1/2,z+1/2','label','FCC')
-% cryst.addatom('r',[0 0 0],'label','Atom1')
-% atomList = cryst.atom;
-%
-% This will create a new space group, that contains all the translations of
-% the FCC lattice. Then creates a crystal with an atom at [0 0 0] position.
-% The cryst.atom lists all 4 symmetry equivalent positions generated using
-% the 'FCC' symmetry operators.
-%
-% See also SPINW, SPINW.MATOM, SWSYM.ADD, SPINW.GENLATTICE, SPINW.ADDATOM.
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Output Arguments
+% 
+% `atomList` is a structure with the following fields:
+% * `r`     Positions of the atoms in lattice units stored in matrix with
+%           dimensions of $[3\times n_{atom}]$. 
+% * `idx`   Indices of the atoms in the [spinw.unit_cell] field stored in a
+%           matrix with dimensions of $[1\times n_{atom}]$.
+% * `mag`   Vector of logical variables, `true` if the spin of the atom is
+%           non-zero, dimensions are $[1\times n_{atom}]$.
+% 
+% ### See Also
+% 
+% [spinw] \| [spinw.matom] \| [swsym.add] \| [spinw.genlattice] \| [spinw.addatom]
 %
 
 % Generate all symmetry equivalent atoms

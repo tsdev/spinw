@@ -14,15 +14,15 @@ function spectra = sw_egrid(spectra, varargin)
 % default (setting the `component` parameter to `'Sperp'`) it selects the
 % neutron scattering cross section via calculating the following quantity:
 %
-%   $S^\perp(Q,\omega)=\sum_{\alpha\beta}(1-\hat{q}^\alpha\hat{q}^\beta)\cdot S^{\alpha\beta}(Q,\omega)$
+%   $S_\perp(Q,\omega)=\sum_{\alpha\beta}(1-\hat{q}^\alpha\hat{q}^\beta)\cdot S^{\alpha\beta}(Q,\omega)$
 %  
 % 
 % ### Examples
 % 
 % The line will create an energy bin, with steps of 0.1 and bins the
 % spin-spin correlation function. Two different matrices will be
-% calculated, first using the sum of the Sxx and Syy components, second
-% will contain the Szz component of the correlation function.
+% calculated, first using the sum of the $S^{xx}$ and $S^{yy}$ components, second
+% will contain the $S^{zz}$ component of the correlation function.
 %
 % ```
 % >>tri = sw_model('triAF',1)

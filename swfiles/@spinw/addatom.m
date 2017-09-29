@@ -18,7 +18,10 @@ function addatom(obj, varargin)
 % use the following command
 %
 % ```
-% crystal.addatom('r',[0 1/2; 0 0; 0 0],'S',[1 0],'color',{'red' 'blue'})
+% >>crystal = spinw;
+% >>crystal.genlattice('lat_const',[4 3 3])
+% >>crystal.addatom('r',[0 1/2; 0 0; 0 0],'S',[1 0],'color',{'red' 'blue'})
+% >>crystal.plot
 % ```
 % 
 % ### Input Arguments

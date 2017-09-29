@@ -21,7 +21,10 @@ non-magnetic one at $$r=(1/2 0 0)$$ with red and blue color respectively
 use the following command
  
 ```matlab
+crystal = spinw;
+crystal.genlattice('lat_const',[4 3 3])
 crystal.addatom('r',[0 1/2; 0 0; 0 0],'S',[1 0],'color',{'red' 'blue'})
+crystal.plot
 ```
   
 ### Input Arguments

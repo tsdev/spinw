@@ -24,10 +24,16 @@ To add the $$A_1$$ diagonal matrix to all magnetic atoms as
 anisotropy (easy *XY* plane anisotropy) use the following code:
  
 ```matlab
-cryst.addmatrix('label','A1','value',diag([-0.1 -0.1 0]))
+cryst = spinw
+cryst.genlattice('lat_const',[4 4 3],'spgr','P 4')
+cryst.addatom('r',[1/4 1/4 1/2],'S',1)
+cryst.addmatrix('label','A1','value',diag([-0.1 0 0]))
 cryst.gencoupling
 cryst.addaniso('A1')
+plot(cryst)
 ```
+ 
+{% include image.html file="generated/spinw_addaniso_1.png" alt="plot(cryst)" %}
   
 ### Input arguments
  

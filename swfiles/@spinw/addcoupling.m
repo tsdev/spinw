@@ -16,12 +16,14 @@ function addcoupling(obj, varargin)
 % To add the $J_1$ diagonal matrix to all second neighbor bonds
 % between magnetic atoms use the following:
 %
+% ```
 % >>cryst = sw_model('squareAF',1)
 % >>cryst.addmatrix('label','J1','value',diag([1 0.1 0.1]))
 % >>cryst.gencoupling
 % >>cryst.addcoupling('mat','J1','bond',2)
 % >>plot(cryst,'range',[2 2 1])
 % >>snapnow
+% ```
 % 
 % ### Input Arguments
 % 

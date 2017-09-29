@@ -33,20 +33,6 @@ cryst.addatom('r',[0 0 0],'S',1)
 cryst.gencoupling
 cryst.table('bond',1:3)
 ```
-*Output*
-```
-  7×10 table
-    idx    subidx         dl               dr          length     matom1     idx1     matom2     idx2        matrix    
-    ___    ______    _____________    _____________    ______    ________    ____    ________    ____    ______________
-    1      1         0     1     0    0     1     0        3     'atom_1'    1       'atom_1'    1       ''    ''    ''
-    1      2         1     0     0    1     0     0        3     'atom_1'    1       'atom_1'    1       ''    ''    ''
-    1      3         1     1     0    1     1     0        3     'atom_1'    1       'atom_1'    1       ''    ''    ''
-    2      1         0     0     1    0     0     1        5     'atom_1'    1       'atom_1'    1       ''    ''    ''
-    3      1         1    -1     0    1    -1     0    5.196     'atom_1'    1       'atom_1'    1       ''    ''    ''
-    3      2         1     2     0    1     2     0    5.196     'atom_1'    1       'atom_1'    1       ''    ''    ''
-    3      3         2     1     0    2     1     0    5.196     'atom_1'    1       'atom_1'    1       ''    ''    ''
-```
- 
  
 ### Input Arguments
  

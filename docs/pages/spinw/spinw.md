@@ -95,7 +95,7 @@ of public methods is below.
  
 #### Crystallographic twin operations
  
-* [spinw.addtwin](spinw_addtwin.html) adds new twins to an spinw object
+* [spinw.addtwin](spinw_addtwin.html) adds crystallographic twins
 * [spinw.twinq](spinw_twinq.html) calculates equivalent Q point in twins
 * [spinw.notwin](spinw_notwin.html) removes any twin added to the spinw object
 * [spinw.ntwin](spinw_ntwin.html) gives the number of twins
@@ -109,7 +109,7 @@ of public methods is below.
 * [spinw.optmagstr](spinw_optmagstr.html) optimises magnetic structure by minimizing the energy using non-linear optimization algorithms
 * [spinw.optmagk](spinw_optmagk.html) determines the magnetic propagation vector
 * [spinw.optmagsteep](spinw_optmagsteep.html) optimise magnetic structure using the method of steepest descent
-* [spinw.anneal](spinw_anneal.html) performs simulated annealing on the magnetic structure
+* [spinw.anneal](spinw_anneal.html) performs simulated annealing of spins
 * [spinw.annealloop](spinw_annealloop.html) performs simulated annealing on the magnetic structure and measurements
 * [spinw.structfact](spinw_structfact.html) calculates magnetic and nuclear structure factor
     
@@ -127,7 +127,7 @@ of public methods is below.
 * [spinw.addcoupling](spinw_addcoupling.html) assigns an exchange matrix to a bond
 * [spinw.couplingtable](spinw_couplingtable.html) creates tabulated list of all bonds as stored
 * [spinw.addaniso](spinw_addaniso.html) assigns anisotropy to magnetic sites
-* [spinw.addg](spinw_addg.html) assigns g-tensor to magnetic ions
+* [spinw.addg](spinw_addg.html) assigns g-tensor to magnetic atoms
 * [spinw.field](spinw_field.html) get/set magnetic field value
 * [spinw.nbond](spinw_nbond.html) gives the number of bonds defined in the spinw object
 * [spinw.temperature](spinw_temperature.html) get/set stored temperature value

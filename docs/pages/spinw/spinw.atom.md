@@ -32,6 +32,13 @@ cryst.addatom('r',[0 0 0],'label','Atom1')
 atomList = cryst.atom
 atomList.r
 ```
+*Output*
+```
+         0    0.5000    0.5000         0
+         0    0.5000         0    0.5000
+         0         0    0.5000    0.5000
+```
+ 
  
 ### Input Arguments
   

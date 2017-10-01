@@ -109,14 +109,14 @@ output of [spinw.energy](spinw_energy.html)." %}
   for `nStat` Monte-Carlo steps. The function returns a single structure
   and takes fixed input parameters:
   ```matlab
-  struct = fStat(state, struct, T, E, M, nExt).
+  parOut = fStat(state, parIn, T, E, M, nExt).
   ```
   The function is called once before the annealing process
   when `state=1` to initialise the parameters. The function is called
   after every Monte-Carlo cycle with `state=2` and the output of the
   previous function call is assigned to the input struct. `fStat` is called
   once again in the end with `state=3` to calculate final parameters (in
-  the last run, input `struct.param` contains all the annealing
+  the last run, input `parIn.param` contains all the annealing
   parameters). For comparison see the defaul function [sw_fstat](sw_fstat.html).
   Default value is `@sw_fstat`.
   

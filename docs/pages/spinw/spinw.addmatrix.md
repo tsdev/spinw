@@ -28,9 +28,25 @@ interaction if assigned to a bond.
 crystal = spinw
 crystal.addmatrix('value',1,'label','J_1')
 crystal.matrix.mat
+```
+*Output*
+```
+     1     0     0
+     0     1     0
+     0     0     1
+```
+ 
+```matlab
 crystal.addmatrix('value',[1 0 0],'label','J_1')
 crystal.matrix.mat
 ```
+*Output*
+```
+     0     0     0
+     0     0     1
+     0    -1     0
+```
+ 
   
 ### Input Arguments
   

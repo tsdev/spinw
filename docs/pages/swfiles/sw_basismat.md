@@ -1,6 +1,6 @@
 ---
 {title: sw_basismat, link: sw_basismat, summary: determines allowed tensor components
-    in a given point group symmetry, keywords: sample, sidebar: sw_sidebar, permalink: sw_basismat.html,
+    in a given point group symmetry, keywords: sample, sidebar: sw_sidebar, permalink: sw_basismat,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -40,6 +40,6 @@ asym      Logical vector, for each 3x3 matrix in M, tells whether it is
 
 ### See Also
 
-[spinw.getmatrix](spinw_getmatrix.html) \| [spinw.setmatrix](spinw_setmatrix.html)
+[spinw.getmatrix](spinw_getmatrix) \| [spinw.setmatrix](spinw_setmatrix)
 
 {% include links.html %}

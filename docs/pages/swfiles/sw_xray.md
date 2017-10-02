@@ -1,7 +1,7 @@
 ---
 {title: sw_xray, link: sw_xray, summary: calculates X-ray scattering intensity for
-    phonon spectrum, keywords: sample, sidebar: sw_sidebar, permalink: sw_xray.html,
-  folder: swfiles, mathjax: 'true'}
+    phonon spectrum, keywords: sample, sidebar: sw_sidebar, permalink: sw_xray, folder: swfiles,
+  mathjax: 'true'}
 
 ---
 
@@ -58,6 +58,6 @@ that contains nTwin number of matrices.
 
 ### See Also
 
-[spinw](spinw.html) \| [spinw.spinwave](spinw_spinwave.html) \| [sw_neutron](sw_neutron.html)
+[spinw](spinw) \| [spinw.spinwave](spinw_spinwave) \| [sw_neutron](sw_neutron)
 
 {% include links.html %}

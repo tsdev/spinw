@@ -1,6 +1,6 @@
 ---
 {title: swplot.export, link: swplot.export, summary: exports swplot figure into raster/vector
-    image, keywords: sample, sidebar: sw_sidebar, permalink: swplot_export.html, folder: swplot,
+    image, keywords: sample, sidebar: sw_sidebar, permalink: swplot_export, folder: swplot,
   mathjax: 'true'}
 
 ---

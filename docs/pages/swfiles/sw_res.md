@@ -1,6 +1,6 @@
 ---
 {title: sw_res, link: sw_res, summary: reads a tabulated energy resolution from a
-    file and fits with polynomial, keywords: sample, sidebar: sw_sidebar, permalink: sw_res.html,
+    file and fits with polynomial, keywords: sample, sidebar: sw_sidebar, permalink: sw_res,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -49,6 +49,6 @@ p             Returns the coefficients for a polynomial p(x) of ° n
 
 ### See Also
 
-[polyfit] \| [sw_instrument](sw_instrument.html)
+[polyfit] \| [sw_instrument](sw_instrument)
 
 {% include links.html %}

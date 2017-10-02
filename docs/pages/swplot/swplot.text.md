@@ -1,6 +1,6 @@
 ---
 {title: swplot.text, link: swplot.text, summary: draws a text at a point in 3D, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_text.html, folder: swplot, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: swplot_text, folder: swplot, mathjax: 'true'}
 
 ---
 

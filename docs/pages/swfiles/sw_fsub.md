@@ -1,6 +1,6 @@
 ---
 {title: sw_fsub, link: sw_fsub, summary: simple graph vertex coloring, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_fsub.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_fsub, folder: swfiles, mathjax: 'true'}
 
 ---
 
@@ -29,6 +29,6 @@ cGraph        Vector, that assigns every magnetic moment to a sublattice.
 
 ### See Also
 
-[spinw.anneal](spinw_anneal.html)
+[spinw.anneal](spinw_anneal)
 
 {% include links.html %}

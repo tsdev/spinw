@@ -1,7 +1,6 @@
 ---
 {title: sw_model, link: sw_model, summary: creates different predefined spin models,
-  keywords: sample, sidebar: sw_sidebar, permalink: sw_model.html, folder: swfiles,
-  mathjax: 'true'}
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_model, folder: swfiles, mathjax: 'true'}
 
 ---
 
@@ -39,6 +38,6 @@ obj       spinw class object with the selected model.
 
 ### See Also
 
-[spinw](spinw.html)
+[spinw](spinw)
 
 {% include links.html %}

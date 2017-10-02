@@ -210,9 +210,11 @@ for ii = 1:nPath
         content.frontmatter.sidebar   = param.sidebar;
         % permalink
         if content.isContents
-            content.frontmatter.permalink = [doctree(ii).name '.html'];
+            %content.frontmatter.permalink = [doctree(ii).name '.html'];
+            content.frontmatter.permalink = doctree(ii).name;
         else
-            content.frontmatter.permalink = [strrep(content.fun,'.','_'),'.html'];
+            %content.frontmatter.permalink = [strrep(content.fun,'.','_'),'.html'];
+            content.frontmatter.permalink = strrep(content.fun,'.','_');
         end
         % folder
         content.frontmatter.folder    = doctree(ii).name;
@@ -377,7 +379,8 @@ for ii = 1:nPath
     
     
     sidebar.entries.folders(ii+1).folderitems(1).title  = 'Description';
-    sidebar.entries.folders(ii+1).folderitems(1).url    = ['/' doctree(ii).name '.html'];
+    %sidebar.entries.folders(ii+1).folderitems(1).url    = ['/' doctree(ii).name '.html'];
+    sidebar.entries.folders(ii+1).folderitems(1).url    = ['/' doctree(ii).name];
     sidebar.entries.folders(ii+1).folderitems(1).output = 'web, pdf';
     
     % find unique titles

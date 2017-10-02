@@ -1,6 +1,6 @@
 ---
 {title: sw_magdomain, link: sw_magdomain, summary: calculates the spin-spin correlation
-    function for magnetic domains, keywords: sample, sidebar: sw_sidebar, permalink: sw_magdomain.html,
+    function for magnetic domains, keywords: sample, sidebar: sw_sidebar, permalink: sw_magdomain,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -72,6 +72,6 @@ domRotC   Rotation matrices for each domain, with dimensions of
 
 ### See Also
 
-[spinw.spinwave](spinw_spinwave.html) \| [spinw.addtwin](spinw_addtwin.html) \| [spinw.twinq](spinw_twinq.html)
+[spinw.spinwave](spinw_spinwave) \| [spinw.addtwin](spinw_addtwin) \| [spinw.twinq](spinw_twinq)
 
 {% include links.html %}

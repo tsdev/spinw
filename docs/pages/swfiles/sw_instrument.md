@@ -1,7 +1,7 @@
 ---
 {title: sw_instrument, link: sw_instrument, summary: convolutes spectrum with different
-    functions, keywords: sample, sidebar: sw_sidebar, permalink: sw_instrument.html,
-  folder: swfiles, mathjax: 'true'}
+    functions, keywords: sample, sidebar: sw_sidebar, permalink: sw_instrument, folder: swfiles,
+  mathjax: 'true'}
 
 ---
   
@@ -28,13 +28,13 @@ coverage).
                transfer. The file has to contain two columns,
                first is the energy values, the second is the
                FWHM resolution at the given energy transfer
-               value, see [sw_res](sw_res.html) function for details.
+               value, see [sw_res](sw_res) function for details.
   * *number*   Constant FWHM energy resolution given by the number.
   * *matrix*   Dimensions of $$[N\times 2]$$, where the first column contains the
                energy transfer values, second column contains
                the FWHM resolution values. These discrete values will
                be fitted using a polynomial with a fixed
-               degree, see [sw_res](sw_res.html) for details.
+               degree, see [sw_res](sw_res) for details.
   * *function* Function handle of a resolution function
   with the following header:
   ```matlab
@@ -45,7 +45,7 @@ coverage).
   
 `'func'`
 : Shape of the energy resolution function if different from Gaussian.
-  For details see [sw_resconv](sw_resconv.html).
+  For details see [sw_resconv](sw_resconv).
   
 `'polDeg'`
 : Degree of the polynomial that is fitted to the discrete energy 
@@ -55,7 +55,7 @@ coverage).
 `'dQ'`
 : Momentum transfer resolution of the instrument, FWHM is
   given in Å$$^{-1}$$ units by default, unless different units
-  are defined in [spinw.unit](spinw_unit.html). Default value is 0 for no convolution.
+  are defined in [spinw.unit](spinw_unit). Default value is 0 for no convolution.
   
 `'thetaMin'`
 : Minimum scattering angle in °, default value is 0. Can be only
@@ -80,7 +80,7 @@ coverage).
 For simulating the effect of the neutron kinematic limit or the finite 
 detector coverage of a neutron spectrometer one of the following
 parameter has to be given. The unit of these quantities is defined in
-[spinw.unit](spinw_unit.html) with default momentum unit of Å$$^{-1}$$ and energy
+[spinw.unit](spinw_unit) with default momentum unit of Å$$^{-1}$$ and energy
 unit of meV.
  
 `'ki'`
@@ -110,7 +110,7 @@ unit of meV.
   
 ### See Also
   
-[polyfit] \| [polyval] \| [sw_res](sw_res.html) \| [sw_resconv](sw_resconv.html)
+[polyfit] \| [polyval] \| [sw_res](sw_res) \| [sw_resconv](sw_resconv)
  
 [FWHM]: Full Width at Half Maximum
  

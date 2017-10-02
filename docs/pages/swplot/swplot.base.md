@@ -1,6 +1,6 @@
 ---
 {title: swplot.base, link: swplot.base, summary: sets the basis vectors of an swplot
-    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_base.html, folder: swplot,
+    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_base, folder: swplot,
   mathjax: 'true'}
 
 ---
@@ -37,6 +37,6 @@ Returns the basis vectors stored in the swplot figure.
 
 ### See Also
 
-[swplot.plot](swplot_plot.html)
+[swplot.plot](swplot_plot)
 
 {% include links.html %}

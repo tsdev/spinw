@@ -1,6 +1,6 @@
 ---
 {title: sw_filelist, link: sw_filelist, summary: lists spinw data in the Matlab workspace
-    or in a .mat file, keywords: sample, sidebar: sw_sidebar, permalink: sw_filelist.html,
+    or in a .mat file, keywords: sample, sidebar: sw_sidebar, permalink: sw_filelist,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -34,6 +34,6 @@ list      Cell of strings, lists each simulation data in the Matlab
 
 ### See Also
 
-[spinw.anneal](spinw_anneal.html) \| [spinw.spinwave](spinw_spinwave.html)
+[spinw.anneal](spinw_anneal) \| [spinw.spinwave](spinw_spinwave)
 
 {% include links.html %}

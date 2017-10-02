@@ -1,6 +1,6 @@
 ---
 {title: sw_update, link: sw_update, summary: updates the SpinW installation from the
-    internet, keywords: sample, sidebar: sw_sidebar, permalink: sw_update.html, folder: swfiles,
+    internet, keywords: sample, sidebar: sw_sidebar, permalink: sw_update, folder: swfiles,
   mathjax: 'true'}
 
 ---

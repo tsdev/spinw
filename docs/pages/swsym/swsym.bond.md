@@ -1,7 +1,6 @@
 ---
 {title: swsym.bond, link: swsym.bond, summary: generates all symmetry equivalent bonds,
-  keywords: sample, sidebar: sw_sidebar, permalink: swsym_bond.html, folder: swsym,
-  mathjax: 'true'}
+  keywords: sample, sidebar: sw_sidebar, permalink: swsym_bond, folder: swsym, mathjax: 'true'}
 
 ---
 
@@ -46,6 +45,6 @@ ugenCp    Logical variable, true if the coupling is unique in the list of
 
 ### See Also
 
-[spinw.gencoupling](spinw_gencoupling.html) \| [swsym.operator](swsym_operator.html) \| [swsym.position](swsym_position.html)
+[spinw.gencoupling](spinw_gencoupling) \| [swsym.operator](swsym_operator) \| [swsym.position](swsym_position)
 
 {% include links.html %}

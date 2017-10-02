@@ -1,6 +1,6 @@
 ---
 {title: sw_readspec, link: sw_readspec, summary: read spin wave dispersion data from
-    file, keywords: sample, sidebar: sw_sidebar, permalink: sw_readspec.html, folder: swfiles,
+    file, keywords: sample, sidebar: sw_sidebar, permalink: sw_readspec, folder: swfiles,
   mathjax: 'true'}
 
 ---
@@ -64,6 +64,6 @@ QH    QK        QL      ENlim1  ENlim2  I1  EN1       s1    I2  EN2       s2
 
 ### See Also
 
-[sw_egrid](sw_egrid.html) \| [spinw.fitspec](spinw_fitspec.html)
+[sw_egrid](sw_egrid) \| [spinw.fitspec](spinw_fitspec)
 
 {% include links.html %}

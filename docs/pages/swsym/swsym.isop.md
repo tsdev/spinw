@@ -1,6 +1,6 @@
 ---
 {title: swsym.isop, link: swsym.isop, summary: function determines whether the matrix
-    is a symmetry operator, keywords: sample, sidebar: sw_sidebar, permalink: swsym_isop.html,
+    is a symmetry operator, keywords: sample, sidebar: sw_sidebar, permalink: swsym_isop,
   folder: swsym, mathjax: 'true'}
 
 ---
@@ -21,6 +21,6 @@
 
 ### See Also
 
-[swsym.generator](swsym_generator.html) \| [swsym.operator](swsym_operator.html)
+[swsym.generator](swsym_generator) \| [swsym.operator](swsym_operator)
 
 {% include links.html %}

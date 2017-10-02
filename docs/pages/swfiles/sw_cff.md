@@ -1,6 +1,6 @@
 ---
 {title: sw_cff, link: sw_cff, summary: returns the atomic charge form factor values
-    for X-ray scattering, keywords: sample, sidebar: sw_sidebar, permalink: sw_cff.html,
+    for X-ray scattering, keywords: sample, sidebar: sw_sidebar, permalink: sw_cff,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -39,6 +39,6 @@ coeff         Form factor coefficients according to the following
 
 ### See Also
 
-[sw_mff](sw_mff.html)
+[sw_mff](sw_mff)
 
 {% include links.html %}

@@ -1,6 +1,6 @@
 ---
 {title: sw_idata, link: sw_idata, summary: creates iData object, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_idata.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_idata, folder: swfiles, mathjax: 'true'}
 
 ---
 

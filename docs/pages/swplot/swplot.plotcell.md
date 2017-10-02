@@ -1,6 +1,6 @@
 ---
 {title: swplot.plotcell, link: swplot.plotcell, summary: plots the edges of unit cells
-    on swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_plotcell.html,
+    on swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_plotcell,
   folder: swplot, mathjax: 'true'}
 
 ---

@@ -1,6 +1,6 @@
 ---
 {title: sw_plotsf, link: sw_plotsf, summary: plots the structure factor in the selected
-    Q range in 1D or 2D, keywords: sample, sidebar: sw_sidebar, permalink: sw_plotsf.html,
+    Q range in 1D or 2D, keywords: sample, sidebar: sw_sidebar, permalink: sw_plotsf,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -31,6 +31,6 @@
 
 ### See Also
 
-[spinw](spinw.html) \| [spinw.structfact](spinw_structfact.html) \| [sw_intsf](sw_intsf.html)
+[spinw](spinw) \| [spinw.structfact](spinw_structfact) \| [sw_intsf](sw_intsf)
 
 {% include links.html %}

@@ -1,6 +1,6 @@
 ---
 {title: swpref.setpref, link: swpref.setpref, summary: sets SpinW global preferences,
-  keywords: sample, sidebar: sw_sidebar, permalink: swpref_setpref.html, folder: swpref,
+  keywords: sample, sidebar: sw_sidebar, permalink: swpref_setpref, folder: swpref,
   mathjax: 'true'}
 
 ---
@@ -26,6 +26,6 @@ Resets all preference values to the default one.
 
 ### See Also
 
-[swpref.setpref](swpref_setpref.html)
+[swpref.setpref](swpref_setpref)
 
 {% include links.html %}

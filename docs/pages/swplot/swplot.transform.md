@@ -1,7 +1,7 @@
 ---
 {title: swplot.transform, link: swplot.transform, summary: transform objects on swplot
-    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_transform.html,
-  folder: swplot, mathjax: 'true'}
+    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_transform, folder: swplot,
+  mathjax: 'true'}
 
 ---
 
@@ -43,6 +43,6 @@ transformation matrix M.
 
 ### See Also
 
-[swplot.figure](swplot_figure.html) \| [hgtransform]
+[swplot.figure](swplot_figure) \| [hgtransform]
 
 {% include links.html %}

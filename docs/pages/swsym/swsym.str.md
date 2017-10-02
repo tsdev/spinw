@@ -1,6 +1,6 @@
 ---
 {title: swsym.str, link: swsym.str, summary: generates a string equivalent of symmetry
-    operators, keywords: sample, sidebar: sw_sidebar, permalink: swsym_str.html, folder: swsym,
+    operators, keywords: sample, sidebar: sw_sidebar, permalink: swsym_str, folder: swsym,
   mathjax: 'true'}
 
 ---
@@ -25,6 +25,6 @@ strSym    String, contains the symmetry operations.
 
 ### See Also
 
-[swsym.add](swsym_add.html) \| [swsym.generator](swsym_generator.html)
+[swsym.add](swsym_add) \| [swsym.generator](swsym_generator)
 
 {% include links.html %}

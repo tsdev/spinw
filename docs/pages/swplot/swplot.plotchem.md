@@ -1,7 +1,7 @@
 ---
 {title: swplot.plotchem, link: swplot.plotchem, summary: plots polyhedra or chemical
-    bonds, keywords: sample, sidebar: sw_sidebar, permalink: swplot_plotchem.html,
-  folder: swplot, mathjax: 'true'}
+    bonds, keywords: sample, sidebar: sw_sidebar, permalink: swplot_plotchem, folder: swplot,
+  mathjax: 'true'}
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 {title: gm_planard, link: gm_planard, summary: planar magnetic structure constraint
-    function, keywords: sample, sidebar: sw_sidebar, permalink: gm_planard.html, folder: swfiles,
+    function, keywords: sample, sidebar: sw_sidebar, permalink: gm_planard, folder: swfiles,
   mathjax: 'true'}
 
 ---
@@ -44,6 +44,6 @@ limit     Default limits on the input parameters, dimensions are [2 nX].
 
 ### See Also
 
-[gm_spherical3d](gm_spherical3d.html)
+[gm_spherical3d](gm_spherical3d)
 
 {% include links.html %}

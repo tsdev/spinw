@@ -1,6 +1,6 @@
 ---
 {title: swfunc.gaussfwhm, link: swfunc.gaussfwhm, summary: normalized gaussian function
-    defined by the FWHM, keywords: sample, sidebar: sw_sidebar, permalink: swfunc_gaussfwhm.html,
+    defined by the FWHM, keywords: sample, sidebar: sw_sidebar, permalink: swfunc_gaussfwhm,
   folder: swfunc, mathjax: 'true'}
 
 ---
@@ -24,6 +24,6 @@ The integral of the function is normalized assuming dx = 1.
 
 ### See Also
 
-[swfunc.voigt] \| [swfunc.gauss](swfunc_gauss.html)
+[swfunc.voigt] \| [swfunc.gauss](swfunc_gauss)
 
 {% include links.html %}

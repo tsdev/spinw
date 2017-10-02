@@ -1,6 +1,6 @@
 ---
 {title: swplot.ellipsoid, link: swplot.ellipsoid, summary: draw ellipsoid, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_ellipsoid.html, folder: swplot, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: swplot_ellipsoid, folder: swplot, mathjax: 'true'}
 
 ---
 
@@ -45,6 +45,6 @@ and faces.
 
 ### See Also
 
-[triangulation] \| [swplot.icomesh](swplot_icomesh.html)
+[triangulation] \| [swplot.icomesh](swplot_icomesh)
 
 {% include links.html %}

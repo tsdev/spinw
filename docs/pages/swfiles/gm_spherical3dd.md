@@ -1,7 +1,7 @@
 ---
 {title: gm_spherical3dd, link: gm_spherical3dd, summary: magnetic structure constraint
     function with spherical parameterisation, keywords: sample, sidebar: sw_sidebar,
-  permalink: gm_spherical3dd.html, folder: swfiles, mathjax: 'true'}
+  permalink: gm_spherical3dd, folder: swfiles, mathjax: 'true'}
 
 ---
 
@@ -43,6 +43,6 @@ limit     Default limits on the input parameters, dimensions are [2 nX].
 
 ### See Also
 
-[gm_planar](gm_planar.html)
+[gm_planar](gm_planar)
 
 {% include links.html %}

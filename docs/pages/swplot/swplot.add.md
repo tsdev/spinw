@@ -1,6 +1,6 @@
 ---
 {title: swplot.add, link: swplot.add, summary: adds a graphical object to the hgtransform
-    of an swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_add.html,
+    of an swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_add,
   folder: swplot, mathjax: 'true'}
 
 ---
@@ -40,6 +40,6 @@ enable continuous rotation with the mouse.
 
 ### See Also
 
-[swplot] \| [swplot.figure](swplot_figure.html) \| [hgtransform] \| [swplot.plot](swplot_plot.html)
+[swplot] \| [swplot.figure](swplot_figure) \| [hgtransform] \| [swplot.plot](swplot_plot)
 
 {% include links.html %}

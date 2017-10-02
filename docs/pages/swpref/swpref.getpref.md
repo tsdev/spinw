@@ -1,6 +1,6 @@
 ---
 {title: swpref.getpref, link: swpref.getpref, summary: returns SpinW global preferences,
-  keywords: sample, sidebar: sw_sidebar, permalink: swpref_getpref.html, folder: swpref,
+  keywords: sample, sidebar: sw_sidebar, permalink: swpref_getpref, folder: swpref,
   mathjax: 'true'}
 
 ---
@@ -32,6 +32,6 @@ Returns the default names, values and labels of each preferences.
 
 ### See Also
 
-[swpref.setpref](swpref_setpref.html)
+[swpref.setpref](swpref_setpref)
 
 {% include links.html %}

@@ -1,7 +1,6 @@
 ---
 {title: sw_tofres, link: sw_tofres, summary: includes Q resolution to the spectrum,
-  keywords: sample, sidebar: sw_sidebar, permalink: sw_tofres.html, folder: swfiles,
-  mathjax: 'true'}
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_tofres, folder: swfiles, mathjax: 'true'}
 
 ---
 
@@ -45,6 +44,6 @@ spectra that contains the calculated intensity in the swConv field.
 
 ### See Also
 
-[sw_egrid](sw_egrid.html) \| [sw_instrument](sw_instrument.html)
+[sw_egrid](sw_egrid) \| [sw_instrument](sw_instrument)
 
 {% include links.html %}

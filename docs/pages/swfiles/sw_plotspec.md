@@ -1,6 +1,6 @@
 ---
 {title: sw_plotspec, link: sw_plotspec, summary: plots spectrum, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_plotspec.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_plotspec, folder: swfiles, mathjax: 'true'}
 
 ---
   
@@ -11,8 +11,8 @@
 ### Description
   
 `[fhandle, phandle] = sw_plotspec(spectra,Name,Value)` plots excitation
-spectrum that is calculated either by [spinw.spinwave](spinw_spinwave.html) or
-[spinw.powspec](spinw_powspec.html). It can plot dispersion or intensities as line plots or
+spectrum that is calculated either by [spinw.spinwave](spinw_spinwave) or
+[spinw.powspec](spinw_powspec). It can plot dispersion or intensities as line plots or
 the energy binned spectrum as a color plot. The color plots uses
 [cm_inferno] as a default colormap. To change the default colormap use
 the `swpref.setpref('colormap',@my_colomap)` command. The function is
@@ -140,9 +140,9 @@ points.
 : Experimental data points to plot over the calculated spectrum.
   Can be either the name of a data file that contains the
   experimentally fitted dispersion (needs to have the same format
-  as the input file of [spinw.fitspec](spinw_fitspec.html) see help for details on the file
+  as the input file of [spinw.fitspec](spinw_fitspec) see help for details on the file
   format), or it is a structure that contains the already imported data
-  using the [sw_readtable](sw_readtable.html) function, e.g.
+  using the [sw_readtable](sw_readtable) function, e.g.
  
   ```matlab
   T = sw_readtable('myExpData.txt','\t');
@@ -165,7 +165,7 @@ points.
   
 ### See Also
   
-[spinw.plot](spinw_plot.html) \| [spinw.spinwave](spinw_spinwave.html) \| [sw_surf] \| [sw_label](sw_label.html)
+[spinw.plot](spinw_plot) \| [spinw.spinwave](spinw_spinwave) \| [sw_surf] \| [sw_label](sw_label)
  
 [FWHM]: Full Width at Half Maximum
  

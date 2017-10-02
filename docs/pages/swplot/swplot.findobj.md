@@ -1,7 +1,7 @@
 ---
 {title: swplot.findobj, link: swplot.findobj, summary: finds object data on swplot
-    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_findobj.html,
-  folder: swplot, mathjax: 'true'}
+    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_findobj, folder: swplot,
+  mathjax: 'true'}
 
 ---
 

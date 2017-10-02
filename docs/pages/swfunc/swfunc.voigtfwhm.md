@@ -1,6 +1,6 @@
 ---
 {title: swfunc.voigtfwhm, link: swfunc.voigtfwhm, summary: normalized voigt function,
-  keywords: sample, sidebar: sw_sidebar, permalink: swfunc_voigtfwhm.html, folder: swfunc,
+  keywords: sample, sidebar: sw_sidebar, permalink: swfunc_voigtfwhm, folder: swfunc,
   mathjax: 'true'}
 
 ---
@@ -36,7 +36,7 @@ conversion between different width:
  
 ### See also
  
-[swfunc.gauss](swfunc_gauss.html) \| [swfunc.gaussfwhm](swfunc_gaussfwhm.html)
+[swfunc.gauss](swfunc_gauss) \| [swfunc.gaussfwhm](swfunc_gaussfwhm)
  
 *[FWHM]: Full Width at Half Maximum
  

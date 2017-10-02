@@ -1,6 +1,6 @@
 ---
 {title: sw_extendlattice, link: sw_extendlattice, summary: creates superlattice, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_extendlattice.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_extendlattice, folder: swfiles, mathjax: 'true'}
 
 ---
 
@@ -42,6 +42,6 @@ SSext.gen     General 3x3 matrix contains the exchange interaction.
 
 ### See Also
 
-[spinw.intmatrix](spinw_intmatrix.html)
+[spinw.intmatrix](spinw_intmatrix)
 
 {% include links.html %}

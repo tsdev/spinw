@@ -1,6 +1,6 @@
 ---
 {title: swplot.patchfacefcn, link: swplot.patchfacefcn, summary: callback function
-    for patch face selection, keywords: sample, sidebar: sw_sidebar, permalink: swplot_patchfacefcn.html,
+    for patch face selection, keywords: sample, sidebar: sw_sidebar, permalink: swplot_patchfacefcn,
   folder: swplot, mathjax: 'true'}
 
 ---

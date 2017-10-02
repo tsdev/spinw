@@ -1,6 +1,6 @@
 ---
 {title: sw_parstr, link: sw_parstr, summary: parses input string, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_parstr.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_parstr, folder: swfiles, mathjax: 'true'}
 
 ---
 
@@ -89,6 +89,6 @@ Test it with:
 
 ### See Also
 
-[sw_egrid](sw_egrid.html) \| [spinw.fitspec](spinw_fitspec.html)
+[sw_egrid](sw_egrid) \| [spinw.fitspec](spinw_fitspec)
 
 {% include links.html %}

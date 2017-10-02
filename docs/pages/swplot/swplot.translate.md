@@ -1,7 +1,7 @@
 ---
 {title: swplot.translate, link: swplot.translate, summary: translate objects on swplot
-    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_translate.html,
-  folder: swplot, mathjax: 'true'}
+    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_translate, folder: swplot,
+  mathjax: 'true'}
 
 ---
 
@@ -28,6 +28,6 @@ vertical y-axis and out-of-plane z-axis.
 
 ### See Also
 
-[swplot.zoom](swplot_zoom.html)
+[swplot.zoom](swplot_zoom)
 
 {% include links.html %}

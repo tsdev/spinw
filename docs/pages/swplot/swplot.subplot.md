@@ -1,6 +1,6 @@
 ---
 {title: swplot.subplot, link: swplot.subplot, summary: create subplots with variable
-    gaps between axes, keywords: sample, sidebar: sw_sidebar, permalink: swplot_subplot.html,
+    gaps between axes, keywords: sample, sidebar: sw_sidebar, permalink: swplot_subplot,
   folder: swplot, mathjax: 'true'}
 
 ---

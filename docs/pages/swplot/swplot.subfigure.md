@@ -1,6 +1,6 @@
 ---
 {title: swplot.subfigure, link: swplot.subfigure, summary: changes position of figure
-    window on the screen, keywords: sample, sidebar: sw_sidebar, permalink: swplot_subfigure.html,
+    window on the screen, keywords: sample, sidebar: sw_sidebar, permalink: swplot_subfigure,
   folder: swplot, mathjax: 'true'}
 
 ---

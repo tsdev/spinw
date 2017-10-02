@@ -1,7 +1,7 @@
 ---
 {title: sw_nvect, link: sw_nvect, summary: determines the best normal vector for the
-    set of vectors, keywords: sample, sidebar: sw_sidebar, permalink: sw_nvect.html,
-  folder: swfiles, mathjax: 'true'}
+    set of vectors, keywords: sample, sidebar: sw_sidebar, permalink: sw_nvect, folder: swfiles,
+  mathjax: 'true'}
 
 ---
 

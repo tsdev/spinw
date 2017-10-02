@@ -1,7 +1,6 @@
 ---
 {title: sw_resconv, link: sw_resconv, summary: convolution of a matrix and a Gaussian,
-  keywords: sample, sidebar: sw_sidebar, permalink: sw_resconv.html, folder: swfiles,
-  mathjax: 'true'}
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_resconv, folder: swfiles, mathjax: 'true'}
 
 ---
   
@@ -60,7 +59,7 @@ between the given `x` bin center positions.
   
 ### See Also
   
-[sw_res](sw_res.html) \| [swfunc.gaussfwhm](swfunc_gaussfwhm.html)
+[sw_res](sw_res) \| [swfunc.gaussfwhm](swfunc_gaussfwhm)
  
 [FWHM]: Full Width at Half Maximum
  

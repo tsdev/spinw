@@ -1,6 +1,6 @@
 ---
 {title: swplot.getdata, link: swplot.getdata, summary: gets the data stored in an
-    swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_getdata.html,
+    swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_getdata,
   folder: swplot, mathjax: 'true'}
 
 ---

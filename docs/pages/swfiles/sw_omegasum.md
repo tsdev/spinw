@@ -1,6 +1,6 @@
 ---
 {title: sw_omegasum, link: sw_omegasum, summary: removes degenerate and ghost magnon
-    modes from spectrum, keywords: sample, sidebar: sw_sidebar, permalink: sw_omegasum.html,
+    modes from spectrum, keywords: sample, sidebar: sw_sidebar, permalink: sw_omegasum,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -36,6 +36,6 @@ It doesn't work for spectra with multiple twins.
 
 ### See Also
 
-[spinw.spinwave](spinw_spinwave.html) \| [sw_egrid](sw_egrid.html)
+[spinw.spinwave](spinw_spinwave) \| [sw_egrid](sw_egrid)
 
 {% include links.html %}

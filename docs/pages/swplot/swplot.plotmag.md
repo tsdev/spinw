@@ -1,6 +1,6 @@
 ---
 {title: swplot.plotmag, link: swplot.plotmag, summary: plots magnetic structure, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_plotmag.html, folder: swplot, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: swplot_plotmag, folder: swplot, mathjax: 'true'}
 
 ---
 

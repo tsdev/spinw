@@ -1,7 +1,6 @@
 ---
 {title: sw_label, link: sw_label, summary: returns axis labels for spectrum plot,
-  keywords: sample, sidebar: sw_sidebar, permalink: sw_label.html, folder: swfiles,
-  mathjax: 'true'}
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_label, folder: swfiles, mathjax: 'true'}
 
 ---
 
@@ -31,6 +30,6 @@ scans linear in reciprocal space.
 
 ### See Also
 
-[sw_plotspec](sw_plotspec.html)
+[sw_plotspec](sw_plotspec)
 
 {% include links.html %}

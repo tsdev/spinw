@@ -1,6 +1,6 @@
 ---
 {title: sw_econtract, link: sw_econtract, summary: 'converts (Q,E) values to Q values
-    for diffraction instrument', keywords: sample, sidebar: sw_sidebar, permalink: sw_econtract.html,
+    for diffraction instrument', keywords: sample, sidebar: sw_sidebar, permalink: sw_econtract,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -41,7 +41,7 @@ neutron diffraction.
   
 ### See Also
   
-[sw_converter](sw_converter.html)
+[sw_converter](sw_converter)
  
 
 {% include links.html %}

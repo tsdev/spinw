@@ -1,7 +1,7 @@
 ---
 {title: swplot.tooltip, link: swplot.tooltip, summary: creates tooltip axis on swplot
-    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_tooltip.html,
-  folder: swplot, mathjax: 'true'}
+    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_tooltip, folder: swplot,
+  mathjax: 'true'}
 
 ---
 

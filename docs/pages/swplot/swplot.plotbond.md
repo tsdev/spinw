@@ -1,6 +1,6 @@
 ---
 {title: swplot.plotbond, link: swplot.plotbond, summary: plots magnetic bonds, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_plotbond.html, folder: swplot, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: swplot_plotbond, folder: swplot, mathjax: 'true'}
 
 ---
 

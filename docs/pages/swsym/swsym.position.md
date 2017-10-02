@@ -1,7 +1,7 @@
 ---
 {title: swsym.position, link: swsym.position, summary: generates symmetry equivalent
-    positions, keywords: sample, sidebar: sw_sidebar, permalink: swsym_position.html,
-  folder: swsym, mathjax: 'true'}
+    positions, keywords: sample, sidebar: sw_sidebar, permalink: swsym_position, folder: swsym,
+  mathjax: 'true'}
 
 ---
 
@@ -52,6 +52,6 @@ opInfo        Structure with the following fields:
 
 ### See Also
 
-[spinw](spinw.html) \| [swsym.operator](swsym_operator.html) \| [spinw.atom](spinw_atom.html) \| [spinw.matom](spinw_matom.html)
+[spinw](spinw) \| [swsym.operator](swsym_operator) \| [spinw.atom](spinw_atom) \| [spinw.matom](spinw_matom)
 
 {% include links.html %}

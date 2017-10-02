@@ -1,6 +1,6 @@
 ---
 {title: sw_rootdir, link: sw_rootdir, summary: gives the path to the SpinW code, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_rootdir.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_rootdir, folder: swfiles, mathjax: 'true'}
 
 ---
 
@@ -14,6 +14,6 @@
 
 ### See Also
 
-[spinw](spinw.html)
+[spinw](spinw)
 
 {% include links.html %}

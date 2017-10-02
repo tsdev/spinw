@@ -1,6 +1,6 @@
 ---
 {title: swplot.cylinder, link: swplot.cylinder, summary: draws a closed/open 3D cylinder,
-  keywords: sample, sidebar: sw_sidebar, permalink: swplot_cylinder.html, folder: swplot,
+  keywords: sample, sidebar: sw_sidebar, permalink: swplot_cylinder, folder: swplot,
   mathjax: 'true'}
 
 ---
@@ -46,6 +46,6 @@ and faces.
 
 ### See Also
 
-[swplot.arrow](swplot_arrow.html)
+[swplot.arrow](swplot_arrow)
 
 {% include links.html %}

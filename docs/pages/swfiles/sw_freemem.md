@@ -1,6 +1,6 @@
 ---
 {title: sw_freemem, link: sw_freemem, summary: calculates the available memory, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_freemem.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_freemem, folder: swfiles, mathjax: 'true'}
 
 ---
   

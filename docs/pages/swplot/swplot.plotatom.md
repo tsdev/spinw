@@ -1,6 +1,6 @@
 ---
 {title: swplot.plotatom, link: swplot.plotatom, summary: plots crystal structure,
-  keywords: sample, sidebar: sw_sidebar, permalink: swplot_plotatom.html, folder: swplot,
+  keywords: sample, sidebar: sw_sidebar, permalink: swplot_plotatom, folder: swplot,
   mathjax: 'true'}
 
 ---

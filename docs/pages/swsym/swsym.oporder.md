@@ -1,7 +1,7 @@
 ---
 {title: swsym.oporder, link: swsym.oporder, summary: determine the order of the symmetry
-    operator, keywords: sample, sidebar: sw_sidebar, permalink: swsym_oporder.html,
-  folder: swsym, mathjax: 'true'}
+    operator, keywords: sample, sidebar: sw_sidebar, permalink: swsym_oporder, folder: swsym,
+  mathjax: 'true'}
 
 ---
 
@@ -28,6 +28,6 @@ R^sw_symorder([R zeros(3,1)]) == eye(3);
 
 ### See Also
 
-[swsym.generator](swsym_generator.html) \| [sw_basismat](sw_basismat.html)
+[swsym.generator](swsym_generator) \| [sw_basismat](sw_basismat)
 
 {% include links.html %}

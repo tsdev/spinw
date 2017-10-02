@@ -1,6 +1,6 @@
 ---
 {title: swplot.arrow, link: swplot.arrow, summary: draws a 3D arrow using patch, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_arrow.html, folder: swplot, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: swplot_arrow, folder: swplot, mathjax: 'true'}
 
 ---
 
@@ -45,6 +45,6 @@ and faces.
 
 ### See Also
 
-[swplot.cylinder](swplot_cylinder.html)
+[swplot.cylinder](swplot_cylinder)
 
 {% include links.html %}

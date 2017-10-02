@@ -1,6 +1,6 @@
 ---
 {title: sw_neutron, link: sw_neutron, summary: calculates neutron scattering intensity
-    for spin wave spectrum, keywords: sample, sidebar: sw_sidebar, permalink: sw_neutron.html,
+    for spin wave spectrum, keywords: sample, sidebar: sw_sidebar, permalink: sw_neutron,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -64,6 +64,6 @@ system with (xBM, yBM and zBM) basis vectors as follows:
 
 ### See Also
 
-[spinw](spinw.html) \| [spinw.spinwave](spinw_spinwave.html)
+[spinw](spinw) \| [spinw.spinwave](spinw_spinwave)
 
 {% include links.html %}

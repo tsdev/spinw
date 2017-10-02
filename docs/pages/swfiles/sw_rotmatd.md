@@ -1,6 +1,6 @@
 ---
 {title: sw_rotmatd, link: sw_rotmatd, summary: rotates vectors around arbitrary axis
-    in 3D, keywords: sample, sidebar: sw_sidebar, permalink: sw_rotmatd.html, folder: swfiles,
+    in 3D, keywords: sample, sidebar: sw_sidebar, permalink: sw_rotmatd, folder: swfiles,
   mathjax: 'true'}
 
 ---
@@ -39,6 +39,6 @@ To rotate tensors (3x3 matrices) use the following command:
 
 ### See Also
 
-[spinw.genmagstr](spinw_genmagstr.html) \| [sw_rot](sw_rot.html) \| [sw_mirror](sw_mirror.html)
+[spinw.genmagstr](spinw_genmagstr) \| [sw_rot](sw_rot) \| [sw_mirror](sw_mirror)
 
 {% include links.html %}

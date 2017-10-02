@@ -1,6 +1,6 @@
 ---
 {title: swsym.point, link: swsym.point, summary: determines point group symmetry at
-    a given position, keywords: sample, sidebar: sw_sidebar, permalink: swsym_point.html,
+    a given position, keywords: sample, sidebar: sw_sidebar, permalink: swsym_point,
   folder: swsym, mathjax: 'true'}
 
 ---
@@ -37,6 +37,6 @@ pOp           Point group operators, dimensions are [3 3 npOp], these
 
 ### See Also
 
-[swsym.generator](swsym_generator.html) \| [swsym.operator](swsym_operator.html) \| [swsym.position](swsym_position.html)
+[swsym.generator](swsym_generator) \| [swsym.operator](swsym_operator) \| [swsym.position](swsym_position)
 
 {% include links.html %}

@@ -1,6 +1,6 @@
 ---
 {title: sw_qgrid, link: sw_qgrid, summary: creates a Q grid, keywords: sample, sidebar: sw_sidebar,
-  permalink: sw_qgrid.html, folder: swfiles, mathjax: 'true'}
+  permalink: sw_qgrid, folder: swfiles, mathjax: 'true'}
 
 ---
   
@@ -66,6 +66,6 @@ are defined then $$n=2$$, etc.
   
 ### See Also
   
-[sw_qscan](sw_qscan.html)
+[sw_qscan](sw_qscan)
 
 {% include links.html %}

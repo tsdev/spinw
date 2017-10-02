@@ -1,6 +1,6 @@
 ---
 {title: swplot.plot, link: swplot.plot, summary: plots objects to swplot figure, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_plot.html, folder: swplot, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: swplot_plot, folder: swplot, mathjax: 'true'}
 
 ---
 
@@ -146,6 +146,6 @@ hFigure = SWPLOT.PLOT(...)
 
 ### See Also
 
-[swplot.color](swplot_color.html)
+[swplot.color](swplot_color)
 
 {% include links.html %}

@@ -1,6 +1,6 @@
 ---
 {title: swplot.activefigure, link: swplot.activefigure, summary: returns the handle
-    of the active swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_activefigure.html,
+    of the active swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_activefigure,
   folder: swplot, mathjax: 'true'}
 
 ---
@@ -30,6 +30,6 @@ hFigure       Figure handle.
 
 ### See Also
 
-[swplot.figure](swplot_figure.html)
+[swplot.figure](swplot_figure)
 
 {% include links.html %}

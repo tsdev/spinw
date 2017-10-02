@@ -1,6 +1,6 @@
 ---
 {title: swfunc.pvoigt, link: swfunc.pvoigt, summary: pseudovoigt function, keywords: sample,
-  sidebar: sw_sidebar, permalink: swfunc_pvoigt.html, folder: swfunc, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: swfunc_pvoigt, folder: swfunc, mathjax: 'true'}
 
 ---
 
@@ -27,6 +27,6 @@ p 	Function parameter values: p = [A x0 wG wL mu], where:
 
 ### See Also
 
-[swfunc.gauss](swfunc_gauss.html) \| [swfunc.lorfwhm](swfunc_lorfwhm.html)
+[swfunc.gauss](swfunc_gauss) \| [swfunc.lorfwhm](swfunc_lorfwhm)
 
 {% include links.html %}

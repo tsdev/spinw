@@ -1,6 +1,6 @@
 ---
 {title: sw_fstat, link: sw_fstat, summary: calculates termodynamical averages during
-    an annealing simulation, keywords: sample, sidebar: sw_sidebar, permalink: sw_fstat.html,
+    an annealing simulation, keywords: sample, sidebar: sw_sidebar, permalink: sw_fstat,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -67,6 +67,6 @@ parOut.Chi    Magnetic susceptibility of the sample: (<M^2>-<M>^2)/kB/T.
 
 ### See Also
 
-[spinw](spinw.html) \| [spinw.anneal](spinw_anneal.html)
+[spinw](spinw) \| [spinw.anneal](spinw_anneal)
 
 {% include links.html %}

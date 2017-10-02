@@ -1,6 +1,6 @@
 ---
 {title: swfunc.lorfwhm, link: swfunc.lorfwhm, summary: normalized Lorentzian using
-    FWHM, keywords: sample, sidebar: sw_sidebar, permalink: swfunc_lorfwhm.html, folder: swfunc,
+    FWHM, keywords: sample, sidebar: sw_sidebar, permalink: swfunc_lorfwhm, folder: swfunc,
   mathjax: 'true'}
 
 ---
@@ -24,6 +24,6 @@ The function is normalized to integral 1 for dx=1.
 
 ### See Also
 
-[swfunc.gauss](swfunc_gauss.html)
+[swfunc.gauss](swfunc_gauss)
 
 {% include links.html %}

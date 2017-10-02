@@ -1,6 +1,6 @@
 ---
 {title: swsym.genreduce, link: swsym.genreduce, summary: reduces symmetry operators
-    to the generators, keywords: sample, sidebar: sw_sidebar, permalink: swsym_genreduce.html,
+    to the generators, keywords: sample, sidebar: sw_sidebar, permalink: swsym_genreduce,
   folder: swsym, mathjax: 'true'}
 
 ---
@@ -34,7 +34,7 @@ can generate the given list.
   
 ### See Also
   
-[swsym.add](swsym_add.html) \| [swsym.generator](swsym_generator.html) \| [swsym.operator](swsym_operator.html)
+[swsym.add](swsym_add) \| [swsym.generator](swsym_generator) \| [swsym.operator](swsym_operator)
  
 
 {% include links.html %}

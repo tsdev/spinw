@@ -7,13 +7,13 @@ swver    = sw_version;
 
 %% generate help
 
-%fun0 = {'spinw' 'spinw.gencoupling' 'spinw.spinwave' 'spinw.addatom'};
+fun0 = {'spinw' 'spinw.anneal' 'spinw.annealloop'};
 %fun0 = {'swfiles' 'sw_egrid'};
-fun0 = cell(1,0);
+%fun0 = cell(1,0);
 
 clc
 
-doctree = sw_genhelp('path',helpPath,'fun',fun0,'verstr',swver,'recalc',true);
+doctree = sw_genhelp('path',helpPath,'fun',fun0,'verstr',swver,'recalc',false);
 
 
 %% get all help

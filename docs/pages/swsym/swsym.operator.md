@@ -1,7 +1,7 @@
 ---
 {title: swsym.operator, link: swsym.operator, summary: calculates all symmetry operators
     or general positions for a space group, keywords: sample, sidebar: sw_sidebar,
-  permalink: swsym_operator.html, folder: swsym, mathjax: 'true'}
+  permalink: swsym_operator, folder: swsym, mathjax: 'true'}
 
 ---
 
@@ -42,7 +42,7 @@ symInfo       Structure containing additional information about the space
 
 ### See Also
 
-[spinw](spinw.html) \| [swsym.position](swsym_position.html) \| [spinw.atom](spinw_atom.html) \| [spinw.matom](spinw_matom.html) \| [swsym.generator](swsym_generator.html)
+[spinw](spinw) \| [swsym.position](swsym_position) \| [spinw.atom](spinw_atom) \| [spinw.matom](spinw_matom) \| [swsym.generator](swsym_generator)
 SWSYM.POINT.
 
 {% include links.html %}

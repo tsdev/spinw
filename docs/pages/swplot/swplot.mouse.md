@@ -1,6 +1,6 @@
 ---
 {title: swplot.mouse, link: swplot.mouse, summary: adds mouse callbacks to swplot
-    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_mouse.html, folder: swplot,
+    figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_mouse, folder: swplot,
   mathjax: 'true'}
 
 ---

@@ -1,6 +1,6 @@
 ---
 {title: sw_atomdata, link: sw_atomdata, summary: returns information on elements stored
-    in the atom.dat file, keywords: sample, sidebar: sw_sidebar, permalink: sw_atomdata.html,
+    in the atom.dat file, keywords: sample, sidebar: sw_sidebar, permalink: sw_atomdata,
   folder: swfiles, mathjax: 'true'}
 
 ---
@@ -40,6 +40,6 @@ clean.
 
 ### See Also
 
-[sw_mff](sw_mff.html) \| [sw_cff](sw_cff.html)
+[sw_mff](sw_mff) \| [sw_cff](sw_cff)
 
 {% include links.html %}

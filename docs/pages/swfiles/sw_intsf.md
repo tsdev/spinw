@@ -1,7 +1,7 @@
 ---
 {title: sw_intsf, link: sw_intsf, summary: integrates the structure factor along given
-    Q directions, keywords: sample, sidebar: sw_sidebar, permalink: sw_intsf.html,
-  folder: swfiles, mathjax: 'true'}
+    Q directions, keywords: sample, sidebar: sw_sidebar, permalink: sw_intsf, folder: swfiles,
+  mathjax: 'true'}
 
 ---
 
@@ -46,6 +46,6 @@
 
 ### See Also
 
-[spinw](spinw.html) \| [spinw.structfact](spinw_structfact.html) \| [sw_plotsf](sw_plotsf.html)
+[spinw](spinw) \| [spinw.structfact](spinw_structfact) \| [sw_plotsf](sw_plotsf)
 
 {% include links.html %}

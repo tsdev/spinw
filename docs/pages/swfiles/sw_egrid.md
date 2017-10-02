@@ -1,6 +1,6 @@
 ---
 {title: sw_egrid, link: sw_egrid, summary: calculates energy bins of a spectrum, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_egrid.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_egrid, folder: swfiles, mathjax: 'true'}
 
 ---
   
@@ -36,14 +36,14 @@ figure
 sw_plotspec(spectra,'mode','color','axLim',[0 0.5],'dE',0.2)
 ```
  
-{% include image.html file="generated/sw_egrid_1.png" alt="sw_plotspec(spectra,'mode','color','axLim',[0 0.5],'dE',0.2)" %}
+{% include image.html file="generated/sw__1.png" alt="sw_plotspec(spectra,'mode','color','axLim',[0 0.5],'dE',0.2)" %}
  
 ### Input Arguments
   
 `spectra`
 : Input structure, contains spin-spin correlation functions. Supported
-  inputs are produced by [spinw.spinwave](spinw_spinwave.html), [spinw.powspec](spinw_powspec.html) and
-  [spinw.scga](spinw_scga.html).
+  inputs are produced by [spinw.spinwave](spinw_spinwave), [spinw.powspec](spinw_powspec) and
+  [spinw.scga](spinw_scga).
   
 ### Name-Value Pair Arguments
   
@@ -91,7 +91,7 @@ sw_plotspec(spectra,'mode','color','axLim',[0 0.5],'dE',0.2)
 `'Evect'`
 : Row vector that defines the center/edge of the energy bins of the
   calculated output, number of elements is $$n_E$$. The energy units
-  are defined by the [spinw.unit](spinw_unit.html) property. Default
+  are defined by the [spinw.unit](spinw_unit) property. Default
   value is an edge bin: `linspace(0,1.1*maxOmega,501)`.
   
 `'binType'`
@@ -102,14 +102,14 @@ sw_plotspec(spectra,'mode','color','axLim',[0 0.5],'dE',0.2)
   
 `'T'`
 : Temperature, used to calculate the Bose factor in units
-  depending on the Boltzmann constant stored in [spinw.unit](spinw_unit.html). Default
+  depending on the Boltzmann constant stored in [spinw.unit](spinw_unit). Default
   temperature is taken from `obj.single_ion.T`. The Bose factor is
   included in `swConv` field of the output.
   
 `'sumtwin'`
 : If true, the spectra of the different twins will be summed
   together weighted with the normalized volume fractions, see
-  [spinw.twin](spinw_twin.html). Default value is true.
+  [spinw.twin](spinw_twin). Default value is true.
   
 `'modeIdx'`
 : Select certain spin wave modes from the $$2*n_{magatom}$$ number of
@@ -173,7 +173,7 @@ dimensions of the cell are $$[n_{conv}\times n_{twin}]$$.
   
 ### See Also
   
-[spinw.spinwave](spinw_spinwave.html) \| [sw_neutron](sw_neutron.html)
+[spinw.spinwave](spinw_spinwave) \| [sw_neutron](sw_neutron)
  
 
 {% include links.html %}

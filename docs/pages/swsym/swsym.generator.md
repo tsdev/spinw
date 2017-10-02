@@ -1,6 +1,6 @@
 ---
 {title: swsym.generator, link: swsym.generator, summary: returns symmetry operators
-    of a given space group, keywords: sample, sidebar: sw_sidebar, permalink: swsym_generator.html,
+    of a given space group, keywords: sample, sidebar: sw_sidebar, permalink: swsym_generator,
   folder: swsym, mathjax: 'true'}
 
 ---
@@ -44,6 +44,6 @@ symInfo       Structure containing additional information about the space
 
 ### See Also
 
-[swsym.add](swsym_add.html) \| [spinw](spinw.html) \| [spinw.gencoupling](spinw_gencoupling.html) \| [swsym.position](swsym_position.html)
+[swsym.add](swsym_add) \| [spinw](spinw) \| [spinw.gencoupling](spinw_gencoupling) \| [swsym.position](swsym_position)
 
 {% include links.html %}

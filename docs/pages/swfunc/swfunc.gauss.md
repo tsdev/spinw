@@ -1,6 +1,6 @@
 ---
 {title: swfunc.gauss, link: swfunc.gauss, summary: normalized gaussian function, keywords: sample,
-  sidebar: sw_sidebar, permalink: swfunc_gauss.html, folder: swfunc, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: swfunc_gauss, folder: swfunc, mathjax: 'true'}
 
 ---
   
@@ -24,6 +24,6 @@ evaluated at $$x$$ and with parameters defined in `p`.
   
 ### See Also
   
-[swfunc.voigt] \| [swfunc.gaussfwhm](swfunc_gaussfwhm.html)
+[swfunc.voigt] \| [swfunc.gaussfwhm](swfunc_gaussfwhm)
 
 {% include links.html %}

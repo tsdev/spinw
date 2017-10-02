@@ -1,6 +1,6 @@
 ---
 {title: sw_readtable, link: sw_readtable, summary: reads tabular data, keywords: sample,
-  sidebar: sw_sidebar, permalink: sw_readtable.html, folder: swfiles, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: sw_readtable, folder: swfiles, mathjax: 'true'}
 
 ---
 

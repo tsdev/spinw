@@ -1,7 +1,6 @@
 ---
 {title: swsym.add, link: swsym.add, summary: saves user defined symmetry operators,
-  keywords: sample, sidebar: sw_sidebar, permalink: swsym_add.html, folder: swsym,
-  mathjax: 'true'}
+  keywords: sample, sidebar: sw_sidebar, permalink: swsym_add, folder: swsym, mathjax: 'true'}
 
 ---
 
@@ -27,6 +26,6 @@ returns the line number of the space group in the symmetry.dat file.
 
 ### See Also
 
-[swsym.generator](swsym_generator.html) \| [swsym.genreduce](swsym_genreduce.html)
+[swsym.generator](swsym_generator) \| [swsym.genreduce](swsym_genreduce)
 
 {% include links.html %}

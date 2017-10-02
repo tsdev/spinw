@@ -1,6 +1,6 @@
 ---
 {title: swplot.close, link: swplot.close, summary: close swplot figure, keywords: sample,
-  sidebar: sw_sidebar, permalink: swplot_close.html, folder: swplot, mathjax: 'true'}
+  sidebar: sw_sidebar, permalink: swplot_close, folder: swplot, mathjax: 'true'}
 
 ---
 
@@ -28,6 +28,6 @@ closes the swplot figure of the given handle (hFigure).
 
 ### See Also
 
-[swplot.figure](swplot_figure.html)
+[swplot.figure](swplot_figure)
 
 {% include links.html %}

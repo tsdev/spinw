@@ -1,6 +1,6 @@
 ---
 {title: swplot.logo, link: swplot.logo, summary: creates the logo of SpinW and saves
-    to a .png file, keywords: sample, sidebar: sw_sidebar, permalink: swplot_logo.html,
+    to a .png file, keywords: sample, sidebar: sw_sidebar, permalink: swplot_logo,
   folder: swplot, mathjax: 'true'}
 
 ---
@@ -27,6 +27,6 @@ the next integer.
 
 ### See Also
 
-[:] \| [spinw](spinw.html)
+[:] \| [spinw](spinw)
 
 {% include links.html %}

@@ -1,7 +1,6 @@
 ---
 {title: sw_qscan, link: sw_qscan, summary: creates continuous line between coordinates,
-  keywords: sample, sidebar: sw_sidebar, permalink: sw_qscan.html, folder: swfiles,
-  mathjax: 'true'}
+  keywords: sample, sidebar: sw_sidebar, permalink: sw_qscan, folder: swfiles, mathjax: 'true'}
 
 ---
   
@@ -34,7 +33,7 @@ qLim = {[0 0 0] [1 0 0] [1 1 0] 501}
  
 ### See Also
  
-[sw_qgrid](sw_qgrid.html)
+[sw_qgrid](sw_qgrid)
  
 
 {% include links.html %}

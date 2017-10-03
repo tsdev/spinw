@@ -1,0 +1,15 @@
+---
+{title: spinw.ntwin method, link: spinw.ntwin, summary: gives the number of twins,
+  keywords: sample, sidebar: sw_sidebar, permalink: spinw_ntwin, folder: spinw, mathjax: 'true'}
+
+---
+
+### Syntax
+
+`ntwin = ntwin(obj)`
+
+### Description
+
+
+
+{% include links.html %}

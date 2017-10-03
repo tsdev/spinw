@@ -27,7 +27,7 @@ allowed. Also the g-tensor is assumed to be 2.
    
 {% include warning.html content=" The calculated energies does not contain the self energy (spin
 coupled to itself), thus the energies calculated here can differ from the
-output of [spinw.energy]." %}
+output of [spinw.energy](spinw_energy)." %}
    
   
 ### Input Arguments
@@ -118,7 +118,7 @@ output of [spinw.energy]." %}
   previous function call is assigned to the input struct. `fStat` is called
   once again in the end with `state=3` to calculate final parameters (in
   the last run, input `parIn.param` contains all the annealing
-  parameters). For comparison see the defaul function [sw_fstat].
+  parameters). For comparison see the defaul function [sw_fstat](sw_fstat).
   Default value is `@sw_fstat`.
   
 `'fSub'`
@@ -129,7 +129,7 @@ output of [spinw.energy]." %}
   ```
   where `cGraph` is a row vector with $$n_{magExt}$$ number of elements
   `conn` is a matrix with dimensions of $$[2\times n_{conn}]$$ $$n_{ext}$$ is
-  equal to `nExt`. For the SpinW implementation see [sw_fsub]. Default
+  equal to `nExt`. For the SpinW implementation see [sw_fsub](sw_fsub). Default
   value is `@sw_fsub`.
   
 `'subLat'`
@@ -172,7 +172,7 @@ of the simulation with the following fields:
 : Final temperature of the sample.
   
 Depending on the `fStat` parameter, additional fields are included. Using
-the default function [sw_fstat] the following parameters are also
+the default function [sw_fstat](sw_fstat) the following parameters are also
 calculated:
   
 `avgM`
@@ -205,7 +205,7 @@ calculated:
   
 ### See Also
   
-[spinw](spinw) \| [spinw.optmagstr] \| [sw_fsub] \| [sw_fstat]
+[spinw](spinw) \| [spinw.optmagstr](spinw_optmagstr) \| [sw_fsub](sw_fsub) \| [sw_fstat](sw_fstat)
  
 [TD]: Thermodynamic
  

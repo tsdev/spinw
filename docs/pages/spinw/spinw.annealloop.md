@@ -36,7 +36,7 @@ parameters as [spinw.anneal](spinw_anneal) plus an additional
   
 `'x'`
 : Matrix of values of the loop parameter, with dimensions of
-  $$[n_{par}\teimes n_{loop}]$$. Default value is 1. In the i-th loop the
+  $$[n_{par}\times n_{loop}]$$. Default value is 1. In the i-th loop the
   loop function is called as:
   ```matlab
   func(obj,x(:,i));
@@ -58,6 +58,6 @@ with $$n_{loop}$$ number of elements.
   
 ### See Also
   
-[spinw](spinw) \| [spinw.anneal](spinw_anneal) \| [sw_fsub] \| [sw_fstat]
+[spinw](spinw) \| [spinw.anneal](spinw_anneal) \| [sw_fsub](sw_fsub) \| [sw_fstat](sw_fstat)
 
 {% include links.html %}

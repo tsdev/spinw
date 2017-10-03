@@ -313,7 +313,7 @@ end
 SS.iso(:, SS.iso(4,:)==SS.iso(5,:)) = [];
 SS.gen(:, SS.gen(4,:)==SS.gen(5,:)) = [];
 
-if any(SI.field) && ~isempty(SI.g)
+if any(SI.field) && ~isempty(SI.g) && ~param.fastmode
     warning('spinw:anneal:NotSupported','User defined g-tensors are currently not supported, g=2 will be assumed!')
 end
 

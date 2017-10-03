@@ -45,6 +45,15 @@ parameters as [spinw.anneal](spinw_anneal) plus an additional
 `'saveObj'`
 : If `true`, the spinw object is saved after every annealing step for
   debugging purposes. Default is `false`.
+ 
+`'tid'`
+: Determines if the elapsed and required time for the calculation is
+  displayed. The default value is determined by the `tid` preference
+  stored in [swpref]. The following values are allowed (for more details
+  seee [sw_status](sw_status)):
+  * `0` No timing is executed.
+  * `1` Display the timing in the Command Window.
+  * `2` Show the timing in a separat pup-up window.
   
 ### Output Arguments
   

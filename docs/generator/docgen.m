@@ -7,7 +7,7 @@ swver    = sw_version;
 
 %% generate help
 
-%fun0 = {'spinw' 'spinw.anneal' 'spinw.annealloop'};
+%fun0 = {'spinw' 'spinw.spinwave' 'spinw.anneal' 'spinw.annealloop'};
 %fun0 = {'swfiles' 'sw_egrid'};
 fun0 = cell(1,0);
 

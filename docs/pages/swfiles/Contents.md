@@ -69,7 +69,7 @@ into separate libraries.
 * [sw_parstr](sw_parstr) parses input string
 * [sw_plotcell](sw_plotcell) plots cell structure with circles
 * [sw_plotsf](sw_plotsf) plots the structure factor in the selected Q range in 1D or 2D
-* [sw_status](sw_status) timer function that displays also the remaining time
+* [sw_status](sw_status) timer and remaining time estimator
  
 #### Acessing the SpinW database
  

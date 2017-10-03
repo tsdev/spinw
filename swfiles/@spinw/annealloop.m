@@ -41,6 +41,15 @@ function stat = annealloop(obj, varargin)
 % `'saveObj'`
 % : If `true`, the spinw object is saved after every annealing step for
 %   debugging purposes. Default is `false`.
+%
+% `'tid'`
+% : Determines if the elapsed and required time for the calculation is
+%   displayed. The default value is determined by the `tid` preference
+%   stored in [swpref]. The following values are allowed (for more details
+%   seee [sw_status]):
+%   * `0` No timing is executed.
+%   * `1` Display the timing in the Command Window.
+%   * `2` Show the timing in a separat pup-up window.
 % 
 % ### Output Arguments
 % 
@@ -60,44 +69,45 @@ func0 = @(obj,T)obj.temperature(T);
 
 nExt   = double(obj.magstr.N_ext);
 
-inpForm.fname  = {'initT' 'endT' 'cool'        'nMC' 'nStat' 'verbosity' };
-inpForm.defval = {100     1e-2   @(T) (0.92*T) 100   100     1           };
-inpForm.size   = {[1 1]   [1 1]  [1 1]         [1 1] [1 1]   [1 1]       };
-inpForm.soft   = {0       0      0             0      0      0           };
+inpForm.fname  = {'initT' 'endT' 'cool'        'nMC' 'nStat' };
+inpForm.defval = {100     1e-2   @(T) (0.92*T) 100   100     };
+inpForm.size   = {[1 1]   [1 1]  [1 1]         [1 1] [1 1]   };
+inpForm.soft   = {false   false  false         false  false  };
 
 inpForm.fname  = [inpForm.fname  {'spinDim' 'nORel' 'nExt' 'subLat'     }];
 inpForm.defval = [inpForm.defval {3         0       nExt   []           }];
 inpForm.size   = [inpForm.size   {[1 1]     [1 1]   [1 3]  [1 -1]       }];
-inpForm.soft   = [inpForm.soft   {0         0       0      1            }];
+inpForm.soft   = [inpForm.soft   {false     false   false  true         }];
 
 inpForm.fname  = [inpForm.fname  {'fStat'   'fSub'   'random' 'title'   }];
 inpForm.defval = [inpForm.defval {@sw_fstat @sw_fsub false    ''        }];
 inpForm.size   = [inpForm.size   {[1 1]     [1 1]    [1 1]    [1 -2]	}];
-inpForm.soft   = [inpForm.soft   {0         0        0        1         }];
+inpForm.soft   = [inpForm.soft   {false     false    false    true      }];
 
 inpForm.fname  = [inpForm.fname  {'fineT' 'rate' 'boundary'         }];
 inpForm.defval = [inpForm.defval {0       0.1    {'per' 'per' 'per'}}];
 inpForm.size   = [inpForm.size   {[1 1]   [1 1]  [1 3]              }];
-inpForm.soft   = [inpForm.soft   {0       0      0                  }];
+inpForm.soft   = [inpForm.soft   {false   false  false              }];
 
-inpForm.fname  = [inpForm.fname  {'x'     'func' 'saveObj' }];
-inpForm.defval = [inpForm.defval {1       func0  true      }];
-inpForm.size   = [inpForm.size   {[-3 -4] [1 1]  [1 1]     }];
-inpForm.soft   = [inpForm.soft   {0       0      0         }];
+inpForm.fname  = [inpForm.fname  {'x'     'func' 'saveObj' 'tid'}];
+inpForm.defval = [inpForm.defval {1       func0  false     -1   }];
+inpForm.size   = [inpForm.size   {[-3 -4] [1 1]  [1 1]     [1 1]}];
+inpForm.soft   = [inpForm.soft   {false   false  false     false}];
 
 param = sw_readparam(inpForm,varargin{:});
 
+if param.tid == -1
+    param.tid = swpref.getpref('tid',[]);
+end
+
 % check output
-verbosity0 = param.verbosity;
 param.verbosity = 0;
 
 nLoop = size(param.x,2);
 
 aRes = cell(1,nLoop);
 
-if verbosity0 > 0
-    sw_status(0,1);
-end
+sw_status(0,1,param.tid,'Parameter sweep for simulated annealing');
 
 stat = struct;
 
@@ -146,10 +156,7 @@ for ii = 1:nLoop
         warning('TODO');
     end
     
-    if verbosity0 > 0
-        sw_status(ii/nLoop*100);
-    end
-    
+    sw_status(ii/nLoop*100,0,param.tid);
 end
 
 % save extra information
@@ -157,8 +164,6 @@ stat.obj = copy(obj);
 stat.state = aRes;
 stat.param = param;
 
-if verbosity0 > 0
-    sw_status(100,2);
-end
+sw_status(100,2,param.tid);
 
 end

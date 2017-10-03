@@ -149,6 +149,15 @@ most important parameters are:
   case is wrong, however by examining the eigenvalues it can give a hint
   where the problem is." %}
  
+`'tid'`
+: Determines if the elapsed and required time for the calculation is
+  displayed. The default value is determined by the `tid` preference
+  stored in [swpref]. The following values are allowed (for more details
+  seee [sw_status](sw_status)):
+  * `0` No timing is executed.
+  * `1` Display the timing in the Command Window.
+  * `2` Show the timing in a separat pup-up window.
+ 
 The function accepts some parameters of [spinw.scga](spinw_scga) with the most important
 parameters are:
  

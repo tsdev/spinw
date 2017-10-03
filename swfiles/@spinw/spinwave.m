@@ -164,18 +164,25 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % `'fid'`
 % : Defines whether to provide text output. Default value is defined in
-%   `obj.fid`. The possible values are:
-%                   
+%   `obj.fid`. The possible values are: 
 %   * `0`   No text output is generated.
 %   * `1`   Text output in the MATLAB Command Window.
 %   * `fid` File ID provided by the `fopen` command, the output is written
 %           into the opened file stream.
 %
+% `'tid'`
+% : Determines if the elapsed and required time for the calculation is
+%   displayed. The default value is determined by the `tid` preference
+%   stored in [swpref]. The following values are allowed (for more details
+%   seee [sw_status]):
+%   * `0` No timing is executed.
+%   * `1` Display the timing in the Command Window.
+%   * `2` Show the timing in a separat pup-up window.
+%
 % ### Output Arguments
 %
 % `spectra`
 % : structure, with the following fields:
-% 
 %   * `omega`   Calculated spin wave dispersion with dimensions of
 %               $[n_{mode}\times n_{Q}]$.
 %   * `Sab`     Dynamical structure factor with dimensins of

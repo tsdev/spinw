@@ -20,37 +20,21 @@ hChain.unit.muB = 1;
 
 plot(hChain,'range',[1 1/2 1/2]);
 
-%% Random initial spin configuration with 150x1x1 unit cell
-
-hChain.genmagstr('mode','random','nExt',[150 1 1])
 
 %% Plots initial magnetic structure
 
 plot(hChain,'range',[10 1/2 1/2]);
 
-%% Perform simulated annealing with periodic boundary condition
-
-anneal_param.boundary  = {'per' 'free' 'free'};
-anneal_param.verbosity = 2;
-anneal_param.cool      = @(T)(0.8*T);
-anneal_param.initT     = 40;
-anneal_param.endT      = 1e-3;
-anneal_param.nMC       = 1000;
-aRes = hChain.anneal(anneal_param);
-
-%% Plots final magnetic structure
-
-plot(hChain,'range',[4 1/2 1/2]);
-
-%% Simulated annealing with periodic boundary conditions in magnetic field
+%% Perform simulated annealing with periodic boundary condition in magnetic field
+% 150 unit cell along a-axis
 
 hChain.field([0 0 0]);
 
-param = struct('verbosity',1,'cool',@(T)(0.8*T),'initT',40,'endT',1e-2,'nMC',1000,'nStat',1,'random',true);
+param = struct('verbosity',1,'cool',@(T)(0.8*T),'initT',40,'endT',1e-2,'nMC',1e3,'nStat',0,'random',true,'nExt',[150 1 1]);
 hChain.anneal(param);
 
 fieldSweep = [linspace(0,5,10) linspace(5,0,10)];
-loopp = struct('x',fieldSweep,'func',@(obj,x)obj.field([0 0 x]),'nMC',2e3,'nStat',1e3,'verbosity',1);
+loopp = struct('x',fieldSweep,'func',@(obj,x)obj.field([0 0 x]),'nMC',1e3,'nStat',1e3,'tid',1);
 
 profile on
 pStat = hChain.annealloop(loop_param);

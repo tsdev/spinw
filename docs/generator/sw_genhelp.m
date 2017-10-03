@@ -317,8 +317,8 @@ end
 % exchange $ --> $$ for math, make it easier to write MarkDown
 allhelp = regexprep(allhelp,'\$','$$');
 % exchange text into symbols, e.g. \\Angstrom --> A
-sText = {'Angstrom' 'hbar' 'alpha' 'beta' 'gamma' 'degree'};
-cText = {'ang' 'hbar' 'alpha' 'beta' 'gamma' 'deg'};
+sText = {'Angstrom' 'hbar' 'alpha' 'beta' 'gamma' 'degree' 'sigma'};
+cText = {'ang' 'hbar' 'alpha' 'beta' 'gamma' 'deg' 'sigma'};
 for ii = 1:numel(sText)
     allhelp = regexprep(allhelp,['\\\\' sText{ii}],symbol(cText{ii}));
 end

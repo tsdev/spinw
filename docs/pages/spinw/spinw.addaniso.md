@@ -20,8 +20,9 @@ magnetic atoms.
   
 ### Examples
   
-To add the $$A_1$$ diagonal matrix to all magnetic atoms as
-anisotropy (easy *XY* plane anisotropy) use the following code:
+To show the effect of a fourfold axis on anisotropy, we add $$A_1$$
+easy-axis anisotropy to atoms at $$(1/4,1/4,1/2)$$ and plot the result. The
+3D plot shows anistropy using ellipsoid around the magnetic atoms.
  
 ```matlab
 cryst = spinw

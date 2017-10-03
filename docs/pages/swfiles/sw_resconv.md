@@ -61,7 +61,7 @@ between the given `x` bin center positions.
   
 [sw_res](sw_res) \| [swfunc.gaussfwhm](swfunc_gaussfwhm)
  
-[FWHM]: Full Width at Half Maximum
+*[FWHM]: Full Width at Half Maximum
  
 
 {% include links.html %}

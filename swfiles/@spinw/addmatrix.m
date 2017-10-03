@@ -63,8 +63,8 @@ function addmatrix(obj, varargin)
 % 
 % [spinw] \| [swplot.color]
 %
-% [DM]: Dzyaloshinski-Moriya
-% [RGB]: Red-Green-Blue
+% *[DM]: Dzyaloshinski-Moriya
+% *[RGB]: Red-Green-Blue
 %
 
 if nargin < 2

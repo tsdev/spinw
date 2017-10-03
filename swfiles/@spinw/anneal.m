@@ -203,7 +203,7 @@ function stat = anneal(obj, varargin)
 % 
 % [spinw] \| [spinw.optmagstr] \| [sw_fsub] \| [sw_fstat]
 %
-% [TD]: Thermodynamic
+% *[TD]: Thermodynamic
 %
 
 % save the beginning of the calculation

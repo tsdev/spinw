@@ -207,7 +207,7 @@ calculated:
   
 [spinw](spinw) \| [spinw.optmagstr](spinw_optmagstr) \| [sw_fsub](sw_fsub) \| [sw_fstat](sw_fstat)
  
-[TD]: Thermodynamic
+*[TD]: Thermodynamic
  
 
 {% include links.html %}

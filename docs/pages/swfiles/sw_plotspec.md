@@ -167,7 +167,7 @@ points.
   
 [spinw.plot](spinw_plot) \| [spinw.spinwave](spinw_spinwave) \| [sw_surf] \| [sw_label](sw_label)
  
-[FWHM]: Full Width at Half Maximum
+*[FWHM]: Full Width at Half Maximum
  
 
 {% include links.html %}

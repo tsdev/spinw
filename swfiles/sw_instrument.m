@@ -108,7 +108,7 @@ function spectra = sw_instrument(spectra, varargin)
 % 
 % [polyfit] \| [polyval] \| [sw_res] \| [sw_resconv]
 %
-% [FWHM]: Full Width at Half Maximum
+% *[FWHM]: Full Width at Half Maximum
 %
 
 if nargin == 0

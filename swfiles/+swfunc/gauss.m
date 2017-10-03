@@ -16,13 +16,16 @@ function y = gauss(x,p)
 % : Coordinate vector where the function will be evaluated.
 % 
 % `p`
-% : Parameter vector with the following elements `[I Centre sigma]` where:
-% 
+% : Parameter vector with the following elements `p=[I x0 \\sigma]` where:
+%
+%   * `I` Integrated intensity.
+%   * `x0` Center.
+%   * `\\sigma` Standard deviation.
 % 
 % ### See Also
 % 
 % [swfunc.voigt] \| [swfunc.gaussfwhm]
-
+%
 
 % normalized gaussian function
 %

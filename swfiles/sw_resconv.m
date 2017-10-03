@@ -58,7 +58,7 @@ function M = sw_resconv(M,x,dx,func0)
 % 
 % [sw_res] \| [swfunc.gaussfwhm]
 %
-% [FWHM]: Full Width at Half Maximum
+% *[FWHM]: Full Width at Half Maximum
 %
 
 if nargin == 0

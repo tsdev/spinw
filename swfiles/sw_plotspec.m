@@ -164,7 +164,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % 
 % [spinw.plot] \| [spinw.spinwave] \| [sw_surf] \| [sw_label]
 %
-% [FWHM]: Full Width at Half Maximum
+% *[FWHM]: Full Width at Half Maximum
 %
 
 if nargin==0

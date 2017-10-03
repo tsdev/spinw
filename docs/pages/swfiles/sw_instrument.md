@@ -112,7 +112,7 @@ unit of meV.
   
 [polyfit] \| [polyval] \| [sw_res](sw_res) \| [sw_resconv](sw_resconv)
  
-[FWHM]: Full Width at Half Maximum
+*[FWHM]: Full Width at Half Maximum
  
 
 {% include links.html %}

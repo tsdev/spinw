@@ -21,13 +21,13 @@ magnetic atoms.
 ### Examples
   
 The following example will add the $$g_1$$ diagonal matrix to all magnetic
-atoms as anisotropic g-tensor:
+atoms as anisotropic g-tensor and show the effect of a fourfold axis:
   
 ```matlab
 cryst = spinw
 cryst.genlattice('lat_const',[4 4 3],'spgr','P 4')
 cryst.addatom('r',[1/4 1/4 1/2],'S',1)
-cryst.addmatrix('label','g_1','value',diag([-0.1 0 0]))
+cryst.addmatrix('label','g_1','value',diag([2 1 1]))
 cryst.gencoupling
 cryst.addg('g_1')
 cryst.plot('ionMode','g')

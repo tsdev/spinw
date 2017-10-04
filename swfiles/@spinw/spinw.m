@@ -561,12 +561,24 @@ classdef spinw < handle & matlab.mixin.SetGet
         function clearcache(obj, chgField)
             % clears the cache
             %
-            % CLEARCACHE(obj)
+            % ### Syntax
+            %
+            % `clearcache(obj)`
+            %
+            % ### Description
+            %
+            % `clearcache(obj)` clears the cache that contains
+            % precalculated magnetic structure and bond symmetry operators.
+            % It is not necessary to clear the cache at any point as SpinW
+            % clears it whenever necessary. 
+            %
+            % ### See Also
+            %
+            % [spinw.cache]
             %
             
             % listening to changes of the spinw object to clear cache is
             % necessary
-            
             if nargin<2
                 % delete the existing listener handles
                 delete(obj.propl(ishandle(obj.propl)));

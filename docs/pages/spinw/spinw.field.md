@@ -3,23 +3,23 @@
   keywords: sample, sidebar: sw_sidebar, permalink: spinw_field, folder: spinw, mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
-`field(obj, b)`
-
+  
+`field(obj,B)`
+`B = field(obj)`
+  
 ### Description
-
-If B is defined, it sets the magnetic field stored in spinw object to B,
-where B is a 1x3 vector.
- 
-B = FIELD(obj)
- 
-The function returns the current B field value stored in obj.
- 
-
+  
+`field(obj,B)` sets the magnetic field stored in `obj.single_ion.field`
+to `B`, where `B` is a $$[1\times 3]$$ vector.
+   
+`B = field(obj)` returns the current value of the magnetic field value
+stored in `obj`.
+   
 ### See Also
-
-[spinw](spinw) \| [spinw.temperature](spinw_temperature)
+  
+[spinw](spinw) \| [spinw.temperature](spinw_temperature) \| [spinw.single_ion](spinw_single_ion)
+ 
 
 {% include links.html %}

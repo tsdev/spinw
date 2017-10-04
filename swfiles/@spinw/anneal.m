@@ -213,8 +213,10 @@ nExt   = double(obj.mag_str.nExt);
 
 title0 = 'Simulated annealing stat.';
 
+T0 = obj.temperature;
+
 inpForm.fname  = {'initT' 'endT' 'cool'        'nMC' 'nStat' 'verbosity' };
-inpForm.defval = {100     1e-2   @(T) (0.92*T) 100   100     2           };
+inpForm.defval = {T0      1e-2   @(T) (0.92*T) 100   100     2           };
 inpForm.size   = {[1 1]   [1 1]  [1 1]         [1 1] [1 1]   [1 1]       };
 inpForm.soft   = {0       0      0             0      0      0           };
 
@@ -818,8 +820,11 @@ statT.kB = obj.unit.kB;
 stat = fStat(3, statT, T(end), E(end), M, param.nExt);
 
 % For anneal, the result is the average spin value.
-obj.mag_str.F  = stat.M;
-obj.mag_str.k  = [0;0;0];
+obj.mag_str.F   = stat.M;
+obj.mag_str.k   = [0;0;0];
+% save the final temperature
+obj.temperature(T(end));
+
 if ~param.fastmode
     stat.obj       = copy(obj);
 end

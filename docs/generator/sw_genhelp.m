@@ -317,8 +317,8 @@ end
 % exchange $ --> $$ for math, make it easier to write MarkDown
 allhelp = regexprep(allhelp,'\$','$$');
 % exchange text into symbols, e.g. \\Angstrom --> A
-sText = {'Angstrom' 'hbar' 'alpha' 'beta' 'gamma' 'degree' 'sigma'};
-cText = {'ang' 'hbar' 'alpha' 'beta' 'gamma' 'deg' 'sigma'};
+sText = {'Angstrom' 'hbar' 'alpha' 'beta' 'gamma' 'degree' 'sigma' 'deg'};
+cText = {'ang' 'hbar' 'alpha' 'beta' 'gamma' 'deg' 'sigma' 'deg'};
 for ii = 1:numel(sText)
     allhelp = regexprep(allhelp,['\\\\' sText{ii}],symbol(cText{ii}));
 end
@@ -460,7 +460,7 @@ end
 
 function [doccontent, tList] = helpcontentfun(doccontent,doctree)
 % convert Contents.m / class help text
-
+fprintf('%s\n',doccontent.fun);
 text = doccontent.text;
 
 header = {'### Files' '### Methods'};

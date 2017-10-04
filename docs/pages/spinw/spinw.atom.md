@@ -7,11 +7,11 @@
   
 ### Syntax
   
-`atomlist = atom(obj)`
+`atomList = atom(obj)`
   
 ### Description
   
-`atomlist = atom(obj)` generates all atomic positions using the symmetry
+`atomList = atom(obj)` generates all atomic positions using the symmetry
 operators stored in `obj.lattice.sym` and the symmetry inequivalent
 atomic positions in `obj.unit_cell.r`. If no symmetry is defined (denoted
 $$P0$$ symmetry) or the symmetry is $$P1$$ the function returns simply the
@@ -32,6 +32,13 @@ cryst.addatom('r',[0 0 0],'label','Atom1')
 atomList = cryst.atom
 atomList.r
 ```
+*Output*
+```
+         0    0.5000    0.5000         0
+         0    0.5000         0    0.5000
+         0         0    0.5000    0.5000
+```
+ 
  
 ### Input Arguments
   

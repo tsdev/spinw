@@ -87,6 +87,6 @@ RR            Positions of the atoms in lattice units, dimensions are
 
 ### See Also
 
-[spinw.couplingtable](spinw_couplingtable) \| [spinw.symop](spinw_symop)
+[spinw.couplingtable] \| [spinw.symop](spinw_symop)
 
 {% include links.html %}

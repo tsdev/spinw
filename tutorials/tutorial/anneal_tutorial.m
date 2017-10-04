@@ -4,7 +4,7 @@
 %% Defines lattice for antiferromagnetic chains
 
 % AFM chain along a-axis
-hChain = sw_model('chain',1);
+hChain = sw_model('chain',2);
 
 % Adds D easy-axis single-ion anisotropy
 hChain.addmatrix('value',diag([0 0 -0.2]),'label','A','color','red')
@@ -28,24 +28,23 @@ plot(hChain,'range',[10 1/2 1/2]);
 %% Perform simulated annealing with periodic boundary condition in magnetic field
 % 150 unit cell along a-axis
 
+T = 1e-2;
 hChain.field([0 0 0]);
+param = struct('verbosity',1,'cool',@(T)(0.8*T),'initT',40,'endT',T,'nMC',1e3,'nStat',0,'random',true,'nExt',[150 1 1]);
+aRes = hChain.anneal(param);
 
-param = struct('verbosity',1,'cool',@(T)(0.8*T),'initT',40,'endT',1e-2,'nMC',1e3,'nStat',0,'random',true,'nExt',[150 1 1]);
-hChain.anneal(param);
+fieldSweep = [linspace(0,5,40) linspace(5,0,40)];
+loop_param = struct('x',fieldSweep,'func',@(obj,x)obj.field([0 0 x]),'nMC',2e4,'nStat',1e4,'tid',2,'fineT',T);
 
-fieldSweep = [linspace(0,5,10) linspace(5,0,10)];
-loopp = struct('x',fieldSweep,'func',@(obj,x)obj.field([0 0 x]),'nMC',1e3,'nStat',1e3,'tid',1);
-
-profile on
 pStat = hChain.annealloop(loop_param);
-profile off
+
 
 M = squeeze(sum(pStat.avgM,2))/hChain.nmagext;
 
 %% Plot M versus external magnetic field
 
-figure;
-plot(fieldSweep,M(3,:),'r.-')
+hold on
+plot(pStat.x,M(3,:),'g.-')
 
 title(sprintf('S=1 Heisenberg antiferromagnetic chain, 150x1x1 unit cell, T=%g K',param.endT));
 xlabel('Magnetic Field (T)')

@@ -1,27 +1,26 @@
 ---
-{title: spinw.fileid method, link: spinw.fileid, summary: determines where the text
-    out is written, keywords: sample, sidebar: sw_sidebar, permalink: spinw_fileid,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.fileid method, link: spinw.fileid, summary: determines file object for
+    text output, keywords: sample, sidebar: sw_sidebar, permalink: spinw_fileid, folder: spinw,
+  mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
+  
 `fileid(obj,fid)`
-
+`fidOut = fileid(obj)`
+  
 ### Description
-
-Determines the text output of all spinw class methods. Default
-is 1, where all output is printed onto the MATLAB Command
-Window.
- 
-fidOut = FILEID(obj)
- 
-Outputs the stored fileID value.
- 
-
+  
+`fileid(obj,fid)` determines the text output of all [spinw](spinw) class
+methods. Default is 1, where all output is printed onto the MATLAB
+Command Window.
+   
+`fidOut = fileid(obj)` outputs the stored fileID value.
+  
 ### See Also
-
-[spinw](spinw) \| [spinw.display]
+  
+[spinw](spinw) \| [spinw.disp](spinw_disp)
+ 
 
 {% include links.html %}

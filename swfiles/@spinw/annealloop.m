@@ -69,8 +69,10 @@ func0 = @(obj,T)obj.temperature(T);
 
 nExt   = double(obj.magstr.N_ext);
 
+T0 = obj.temperature;
+
 inpForm.fname  = {'initT' 'endT' 'cool'        'nMC' 'nStat' };
-inpForm.defval = {100     1e-2   @(T) (0.92*T) 100   100     };
+inpForm.defval = {T0      T0     @(T) (0.92*T) 100   100     };
 inpForm.size   = {[1 1]   [1 1]  [1 1]         [1 1] [1 1]   };
 inpForm.soft   = {false   false  false         false  false  };
 
@@ -107,6 +109,10 @@ nLoop = size(param.x,2);
 
 aRes = cell(1,nLoop);
 
+if any(obj.field) && ~isempty(obj.single_ion.g)
+    warning('spinw:annealloop:NotSupported','User defined g-tensors are currently not supported, g=2 will be assumed!')
+end
+
 sw_status(0,1,param.tid,'Parameter sweep for simulated annealing');
 
 stat = struct;
@@ -115,8 +121,6 @@ for ii = 1:nLoop
     
     % change parameters
     param.func(obj,param.x(:,ii));
-    param.initT = obj.temperature;
-    param.endT  = obj.temperature;
     
     % do the annealing procedure
     warnState = warning('off','sw_readparam:UnreadInput');
@@ -160,8 +164,9 @@ for ii = 1:nLoop
 end
 
 % save extra information
-stat.obj = copy(obj);
+stat.obj   = copy(obj);
 stat.state = aRes;
+stat.x     = param.x;
 stat.param = param;
 
 sw_status(100,2,param.tid);

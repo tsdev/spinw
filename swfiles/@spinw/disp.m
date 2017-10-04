@@ -1,4 +1,45 @@
 function varargout = disp(obj)
+% prints information
+% 
+% ### Syntax
+% 
+% `{swdescr} = disp(obj)`
+% 
+% ### Description
+% 
+% `{swdescr} = disp(obj)` generates text summary of a [spinw] object.
+% Calling it with output argument, it will generate a text version of the
+% internal data structure giving also the dimensions of the different
+% matrices.
+% 
+% ### Examples
+% 
+% Here the internal data structure is generated:
+%
+% ```
+% >>crystal = spinw
+% >>swFields = disp(crystal)>>
+% ```
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Output Arguments
+% 
+% `swdescr`
+% : If output variable is given, the description of the `obj` object
+%   will be output into the `swdescr` variable, instead of being
+%   written onto the Command Window/file. Optional.
+% 
+% ### See Also
+% 
+% [spinw]
+%
+
+
+
 % prints the spinw data structure in readable format onto the Command Window
 %
 % {swDescr} = DISPLAY(obj)

@@ -75,7 +75,7 @@ of public methods is below.
 #### Lattice operations
  
 * [spinw.genlattice](spinw_genlattice) generates crystal lattice
-* [spinw.basisvector](spinw_basisvector) generates basis vectors of the crystal lattice
+* [spinw.basisvector](spinw_basisvector) generates lattice vectors
 * [spinw.rl](spinw_rl) generates reciprocal lattice basis vectors of the crystal lattice
 * [spinw.nosym](spinw_nosym) removes the space group symmetry
 * [spinw.newcell](spinw_newcell) changes lattice vectors while keeping atoms
@@ -85,8 +85,8 @@ of public methods is below.
 * [spinw.atom](spinw_atom) generates symmetry equivalent atomic positions
 * [spinw.matom](spinw_matom) generates all magnetic atoms in the unit cell
 * [spinw.natom](spinw_natom) gives the number of symmetry unrelated atoms in the unit cell
-* [spinw.formula](spinw_formula) returns chemical formula, mass, volume, etc.
-* [spinw.disp](spinw_disp) prints the spinw data structure in readable format onto the Command Window
+* [spinw.formula](spinw_formula) returns basic physical properties
+* [spinw.disp](spinw_disp) prints information
 * [spinw.symmetry](spinw_symmetry) true if space group is used to generate couplings
     
 #### Plotting
@@ -125,7 +125,7 @@ of public methods is below.
 * [spinw.quickham](spinw_quickham) creates magnetic Hamiltonian with a single command
 * [spinw.gencoupling](spinw_gencoupling) generates bond list
 * [spinw.addcoupling](spinw_addcoupling) assigns an exchange matrix to a bond
-* [spinw.couplingtable](spinw_couplingtable) creates tabulated list of all bonds as stored
+  spinw.couplingtable
 * [spinw.addaniso](spinw_addaniso) assigns anisotropy to magnetic sites
 * [spinw.addg](spinw_addg) assigns g-tensor to magnetic atoms
 * [spinw.field](spinw_field) get/set magnetic field value
@@ -139,25 +139,25 @@ of public methods is below.
  
 * [spinw.spinwave](spinw_spinwave) calculates spin correlation function using linear spin wave theory
 * [spinw.powspec](spinw_powspec) calculates powder averaged spin wave spectra
-* [spinw.energy](spinw_energy) calculates the ground state energy per spin
+* [spinw.energy](spinw_energy) calculates the ground state energy
 * [spinw.moment](spinw_moment) calculates the size of the reduced moment due to quantum and thermal fluctuations
 * [spinw.spinwavesym](spinw_spinwavesym) calculates symbolic spin wave dispersion
 * [spinw.symbolic](spinw_symbolic) change between symbolic/numeric calculation
 * [spinw.meanfield](spinw_meanfield) mean field calculation of the wave vector dependent susceptibility
 * [spinw.fourier](spinw_fourier) calculates the Fourier transformation of the Hamiltonian
-* [spinw.fouriersym](spinw_fouriersym) calculates the Fourier transformation of a symbolic Hamiltonian
+* [spinw.fouriersym](spinw_fouriersym) calculates the Fourier transformation of the symbolic Hamiltonian
  
 #### Fitting spin wave spectrum
  
-* [spinw.fitspec](spinw_fitspec) fits spin wave spectra to experimental spectral data
+* [spinw.fitspec](spinw_fitspec) fits experimental spin wave data
 * [spinw.matparser](spinw_matparser) assigns new values to existing matrices
-* [spinw.horace](spinw_horace) calculates spin wave dispersion/correlation functions to be called from Horace
+* [spinw.horace](spinw_horace) spin wave calculator with interface to Horace
     
 #### Miscellaneous
  
-* [spinw.copy](spinw_copy) clones spinw object with all data
-* [spinw.export](spinw_export) export data from spinw object into different file formats
-* [spinw.fileid](spinw_fileid) determines where the text out is written
+* [spinw.copy](spinw_copy) clones spinw object
+* [spinw.export](spinw_export) export data into file
+* [spinw.fileid](spinw_fileid) determines file object for text output
 * [spinw.table](spinw_table) outputs easy to read tables of internal data
 * [spinw.validate](spinw_validate) validates spinw object properties
 * [spinw.version](spinw_version) returns the version of SpinW used to create the object

@@ -1,35 +1,61 @@
 function basisVector = basisvector(obj, varargin)
-% generates basis vectors of the crystal lattice
+% generates lattice vectors
+% 
+% ### Syntax
+% 
+% `basisVec = basisvector(obj, {norm})`
+% 
+% ### Description
+% 
+% `basisVec = basisvector(obj, {norm})` returns the lattice vectors of the
+% unit cell in a $[3\times 3]$ matrix, with the $a$, $b$ and $c$ vectors
+% stored in columns. The vectors are normalized to the lattice parameters
+% by default.
+% 
+% ### Examples
+% 
+% The `basisVec` matrix can be used to change coordinate system, converting
+% between positions expressed in lattice units to positions expressed in
+% \\Angstrom, using `r_lu` for lattice unit coordinates and `r_xyz` for
+% \\Angstrom units (both stored in a column vector) the conversions are the
+% following:
+% ```
+% r_xyz = basisVec * r_lu
+% ```
+% or
+% ```
+% r_lu = inv(basisVec)*r_xyz
+% ```
 %
-% basisVec = BASISVECTOR(obj, {norm})
-%
-% Input:
-%
-% obj       spinw class object.
-% norm      If true, the basis vectors are normalized to 1, otherwise the
-%           length is equal to the lattice constants. Default is false.
-%           Optional.
-%
-% Output:
-%
-% basisVec  Stores the three basis vectors in columns, dimensions are 
-%           [3 3].
-%
-% The 3x3 basisVec matrix can be used also as a coordinate transformation
-% matrix from the relative atomic position to positions in the xyz
-% coordinate system in Angstrom units.
-%
-% Example:
-%
-% To change coordinate system:
-%
-% relative atomic positions --> xyz
-%   r_xyz = basisvector * [ra; rb; rc];
-%
-% reciprocal lattice units --> Angstrom^-1 (xyz coordinate system)
-%   Q_xyz =  [h k l] * 2*pi*inv(basisvector);
-%
-% See also SPINW, SPINW.ABC, SPINW.RL.
+% It is also possible to convert between momentum vector in reciprocal
+% lattice units (rlu) into \\Angstrom$^{-1}$ units. Assuming that momentum
+% vectors are row vectors:
+% ```
+% Q_xyz =  Q_rlu * 2*pi*inv(basisVec)
+% ```
+% or
+% ```
+% Q_rlu = 1/(2*pi)*Q_xyz*basisVect
+% ```
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% `norm`
+% : If `true`, the basis vectors are normalized to 1, otherwise the
+%   length of the basis vectors are equal to the lattice constants. Default
+%   is `false`.
+% 
+% ### Output Arguments
+% 
+% `basisVec`
+% : Stores the three lattice vectors in columns, dimensions are $[3\times 3]$.
+% 
+% ### See Also
+% 
+% [spinw] \| [spinw.abc] \| [spinw.rl]
 %
 
 if nargin < 2

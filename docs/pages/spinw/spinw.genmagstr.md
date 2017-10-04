@@ -4,188 +4,216 @@
   folder: spinw, mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
+  
 `genmagstr(obj,Name,Value)`
-
+  
 ### Description
-
-There are several ways to generate magnetic structure. The selected
-method depends on the 'mode' option, see below. The magnetic structure is
-stored in the obj.mag_str field. The default mode is 'extend'. The
-magetic structure is stored as Fourier components with arbitrary number
-of wave vectors in the spinw object. However spin waves can be only
-calculated if the magnetic structure has only a single propagation vector
-(plus a k=0 ferromagnetic component) we simply call it single-k magnetic
-structure. Thus genmagstr() enables to input magnetic structures that
-comply with this restriction by defining a magnetic structure by the
-moment directions (S) in the crystallographic cell, a propagation vector
-(km) and a vector that defines the normal of the rotation of the spin
-spiral (n). The function converts these values into Fourier components to
-store. To solve spin wave dispersion of magnetic structures with multiple
-propagation vectors, a magnetic supercell has to be defined where the
-propagation vector can be approximated to zero.
- 
-
+  
+`genmagstr(obj,Name,Value)` is a Swiss knife for generating magnetic
+structures. It allows the definition of magnetic structures using several
+different ways, depending on the `mode` parameter. The generated magnetic
+structure is stored in the [obj.mag_str] field. The magetic structure is
+stored as Fourier components with arbitrary number of wave vectors in the
+[spinw](spinw) object. However spin waves can be only calculated if the magnetic
+structure has a single propagation vector (plus a k=0 ferromagnetic
+component perpendicular to the incommensurate magnetization), we simply
+call it single-k magnetic structure. Thus `genmagstr` enables to input
+magnetic structures that comply with this restriction by defining a
+magnetic structure by the moment directions (`S`) in the crystallographic
+cell, a propagation vector (`km`) and a vector that defines the normal of
+the rotation of the spin spiral (`n`). The function converts these values
+into Fourier components to store. To solve spin wave dispersion of
+magnetic structures with multiple propagation vectors, a magnetic
+supercell has to be defined where the propagation vector can be
+approximated to zero.
+  
 ### Examples
-
-USb = spinw;
-USb.genlattice('lat_const',[6.203 6.203 6.203],'angled',[90 90 90],'spgr','F m -3 m')
+  
+The example creates the multi-k magnetic structure of USb given by the
+`FQ` Fourier components and plots the magnetic structure:
+  
+```matlab
+USb = spinw
+USb.genlattice('lat_const',[6.203 6.203 6.203],'spgr','F m -3 m')
 USb.addatom('r',[0 0 0],'S',1)
-FQ = cat(3,[0;0;1+1i],[0;1+1i;0],[1+1i;0;0]);
+FQ = cat(3,[0;0;1+1i],[0;1+1i;0],[1+1i;0;0])
+```
+*Output*
+```
+FQ(:,:,1) =
+   0.0000 + 0.0000i
+   0.0000 + 0.0000i
+   1.0000 + 1.0000i
+FQ(:,:,2) =
+   0.0000 + 0.0000i
+   1.0000 + 1.0000i
+   0.0000 + 0.0000i
+FQ(:,:,3) =
+   1.0000 + 1.0000i
+   0.0000 + 0.0000i
+   0.0000 + 0.0000i
+```
+ 
+```matlab
 k  = [0 0 1;0 1 0;1 0 0];
 USb.genmagstr('mode','fourier','S',FQ,'nExt',[1 1 1],'k',k)
 plot(USb,'range',[1 1 1])
-The above example creates the multi-q magnetic structure of USb with the
-FQ Fourier components and plots the magnetic structure.
-
+```
+ 
+{% include image.html file="generated/spinw_genm_1.png" alt="plot(USb,'range',[1 1 1])" %}
+ 
 ### Input Arguments
-
+  
 `obj`
 : [spinw](spinw) object.
-
+  
 ### Name-Value Pair Arguments
-
+  
 `'mode'`
-:  Mode how the magnetic structure is generated:
-   'random' (reads -)
-          generates random zero-k magnetic structure.
-   'direct' (reads S,n,k)
+: Mode that determines how the magnetic structure is generated:
+  * `'random'` (reads -)
+     generates random zero-k magnetic structure.
+  * `'direct'` (reads `S`,`n`,`k`)
           direct input of the magnetic structure using the 
           parameters of the single-k magnetic structure.
-   'tile' (reads S,n,k) default
+  * `'tile'` (reads `S`,`n`,`k`) 
           Simply extends the existing or input structure
-          (param.S) into a magnetic supercell by replicating it.
-          If no structure is stored in the spinw object a random
+          (`S`) into a magnetic supercell by replicating it.
+          If no structure is stored in the [spinw](spinw) object a random
           structure is generated automatically. If defined,
-          param.S is used as starting structure for extension
+          `S` is used as starting structure for extension
           overwriting the stored structure. If the original
           structure is already extended with other size, only the
           moments in the crystallographic cell wil be replicated.
-          Magnetic ordering wavevector k will be set to zero. To
-          generate structure with non-zero k, use 'helical' or
-          'direct' option.
-   'helical' (reads S,n,k,r0)
+          Magnetic ordering wavevector `k` will be set to zero. To
+          generate structure with non-zero k, use the `'helical'` or
+          `'direct'` option.
+  * `'helical'` (reads `S`,`n`,`k`,`r0`)
           generates helical structure in a single cell or in a
-          supercell. In contrary to the 'extend' option the
+          supercell. In contrary to the `'extend'` option the
           magnetic structure is not generated by replication but
           by rotation of the moments using the following formula:
-              S_gen_i(r) = ROT(2*pi*km*r)*S_i.
-          where S_i has either a single moment or as many moments
+ 
+    $$\mathbf{S}^{gen}_i(\mathbf{r}) = R(2 \pi \mathbf{k_m} \cdot \mathbf{r})\cdot \mathbf{S}_i$$
+ 
+    where $$S_i$$ has either a single moment or as many moments
           as the number of magnetic atoms in the crystallographic
-          cell. In the first case 'r' denotes the atomic
-          positions, while for the second case 'r' denotes the
+          cell. In the first case $$r$$ denotes the atomic
+          positions, while for the second case $$r$$ denotes the
           position of the origin of the cell.
-   'rotate' (reads S,n,k)
+  * `'rotate'` (reads `S`,`n`,`k`)
           uniform rotation of all magnetic moments with a
-          param.phi angle around the param.n vector. If
-          param.phi=0, all moments are rotated so, that the first
-          moment is parallel to param.n vector in case of
+          `phi` angle around the given `n` vector. If
+          `phi=0`, all moments are rotated so, that the first
+          moment is parallel to `n` vector in case of
           collinear structure or in case of planar structure
-          param.n defines the normal of the plane of the magnetic
+          `n` defines the normal of the plane of the magnetic
           moments.
-   'func' (reads func, x0)
+  * `'func'` (reads `func`,`x0`)
           function that defines the parameters of the single-k
           magnetic structure: moment vectors, propagation vector
           and normal vector from arbitrary parameters in the
           following form:
-              [S, k, n] = @(x)func(S0, x)
-          where S is matrix with dimensions of [3 nMagExt]. k is
-          the propagation vector, its dimension is [1 3]. n is
-          the normal vector of the spin rotation plane, its
-          dimension is [1 3]. The default function is
-          @gm_spherical3d. For planar magnetic structure use
-          @gm_planar. Only param.func and param.x have to be
-          defined for this mode.
-  'fourier' (reads S,n,k,r0)
-          same as 'helical', except the S option is taken as the
-          Fourier components, thus if it is real, it will
+    ```matlab
+    [S, k, n] = @(x)func(S0, x)
+    ```  
+    where `S` is matrix with dimensions of $$[3\times n_{magExt}]$$. `k` is
+          the propagation vector in a 3-element row vector. `n` is the
+          normal vector of the spin rotation plane also 3-element row
+          vector. The default value for `func` is `@gm_spherical3d`. For planar
+          magnetic structure use `@gm_planar`. Only `func` and `x`
+          have to be defined for this mode.
+ * `'fourier'` (reads `S`,`n`,`k`,`r0`)
+          same as `'helical'`, except the `S` option is taken as the
+          Fourier components, thus if it contains real numbers, it will
           generate a sinusoidally modulated structure instead of
           a spiral.
-
+  
 `'phi'`
-: Angle of rotation of the magnetic moments in rad. Default
+: Angle of rotation of the magnetic moments in radian. Default
   value is 0.
-
+  
 `'phid'`
 : Angle of rotation of the magnetic moments in °. Default
   value is 0.
-
+  
 `'nExt'`
 : Size of the magnetic supercell in multiples of the
-  crystallographic cell, dimensions are [1 3]. Default value is
-  stored in obj. If nExt is a single number, then the size of the
-  extended unit cell is automatically determined from the FIRST
-  magnetic ordering wavevector. If nExt = 0.01, then the number
+  crystallographic cell, dimensions are $$[1\times 3]$$. Default value is
+  stored in `obj`. If `nExt` is a single number, then the size of the
+  extended unit cell is automatically determined from the first
+  magnetic ordering wavevector. E.g. if `nExt = 0.01`, then the number
   of unit cells is determined so, that in the extended unit cell,
-  the magnetic ordering wave vector is [0 0 0], within the given
-  0.01 r.l.u. error.
-
+  the magnetic ordering wave vector is `[0 0 0]`, within the given
+  0.01 rlu tolerance.
+  
 `'k'`
-: Magnetic ordering wavevector in r.l.u., dimensions are [nK 3].
-  Default value is defined in obj.
-
+: Magnetic ordering wavevector in rlu, dimensions are $$[n_K\times 3]$$.
+  Default value is defined in `obj`.
+  
 `'n'`
 : Normal vector to the spin rotation plane for single-k magnetic
-  structures, dimensions are [1 3]. Default value [0 0 1]. The
-  coordinate system of the vector is determined by unitS.
-
+  structures, stored in a 3-element row vector. Default value `[0 0 1]`. The
+  coordinate system of the vector is determined by `unit`.
+  
 `'S'`
-: Direct input of the spin values, dimensions are [3 nSpin nK].
-  Every column defines the three (S_x, S_y, S_z) components of
-  the moment in the xyz Descartes coodinate system or in l.u.
-  coordinate system. Default value is stored in obj.
-
-`'unitS'`
-: Old setting, removed.
-
+: Vector values of the spins (expectation value), dimensions are $$[3\times n_{spin} n_K]$$.
+  Every column defines the three $$(S_x, S_y, S_z)$$ components of
+  the spin (magnetic moment) in the $$xyz$$ Descartes coodinate system or
+  in lu. Default value is stored in `obj`.
+  
 `'unit'`
-: Determines the coordinate system for S and n vectors by a
+: Determines the coordinate system for `S` and `n` vectors using a
   string:
-      'xyz'   Cartesian coordinate system, fixed to the lattice.
+  * `'xyz'`   Cartesian coordinate system, fixed to the lattice.
               Default value.
-      'lu' 	Lattice coordinate system (not necessarily
+  * `'lu'`	Lattice coordinate system (not necessarily
               Cartesian. The three coordinate vectors are
               parallel to the lattice vectors but normalized to
               unity.
-
+  
 `'epsilon'`
 : The smalles value of incommensurability that is
-  tolerated without warning in lattice units. Default is 1e-5.
-
+  tolerated without warning in lattice units. Default is $$10^{-5}$$.
+  
 `'func'`
-: Function that produce the magnetic moments, ordering wave
-  vector and normal vector from the param.x parameters in the
+: Function handle that produces the magnetic moments, ordering wave
+  vector and normal vector from the `x` parameters in the
   following form:
-    [M, k, n] = @(x)func(M0,x)
-  where M is (3,nMagExt) size matrix, k is the propagation vector
-  with dimensions of [1 3], n is the normal vector of the spin
-  rotation plane, its dimensions are [1 3]. The default function
-  is @gm_spherical3d. For planar magnetic structure use
-  @gm_planar.
-
+  ```matlab
+  [M, k, n] = @(x)func(M0,x)
+  ```
+  where `M` is a matrix with dimensions of $$[3\times n_{magExt}]$$, `k` is
+  the propagation vector, `n` is the normal vector of the spin rotation
+  plane. The default function is [gm_spherical3d](gm_spherical3d). For planar magnetic
+  structure use [gm_planar](gm_planar).
+  
 `'x0'`
-: Input parameters for param.func function, dimensions are
-  [1 nx].
-
+: Input parameters for `func` function, row vector with $$n_X$$ number of
+  elements.
+  
 `'norm'`
 : Set the length of the generated magnetic moments to be equal to
-  the spin of the magnetic atoms. Default is true.
-
+  the spin of the magnetic atoms. Default is `true`.
+  
 `'r0'`
-: If true and only a single spin direction is given, the spin
+: If `true` and only a single spin direction is given, the spin
   phases are determined by atomic position times k-vector, while
-  if it is false, the first spin will have zero phase. Default is
-  true.
-
+  if it is `false`, the first spin will have 0 phase. Default is
+  `true`.
+  
 ### Output Arguments
-
-The obj.mag_str field will contain the new magnetic structure using
-Fourier components.
-
+  
+The [obj.mag_str] field will contain the new magnetic structure.
+  
 ### See Also
-
+  
 [spinw](spinw) \| [spinw.anneal](spinw_anneal) \| [spinw.optmagstr](spinw_optmagstr) \| [gm_spherical3d](gm_spherical3d) \| [gm_planar](gm_planar)
+ 
+*[rlu]: Reciprocal Lattice Units
+*[lu]: Lattice Units
+ 
 
 {% include links.html %}

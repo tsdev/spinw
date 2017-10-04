@@ -19,19 +19,15 @@ evaluated at $$x$$ and with parameters defined in `p`.
 : Coordinate vector where the function will be evaluated.
   
 `p`
-: Parameter vector with the following elements `[I x0 σ]` where:
+: Parameter vector with the following elements `p=[I x0 σ]` where:
  
   * `I` Integrated intensity.
-  * 'x0' Center.
+  * `x0` Center.
   * `σ` Standard deviation.
   
 ### See Also
   
-<<<<<<< Updated upstream
 [swfunc.voigt] \| [swfunc.gaussfwhm](swfunc_gaussfwhm)
-=======
-[swfunc.voigt] \| [swfunc.gaussfwhm](swfunc_gaussfwhm.html)
  
->>>>>>> Stashed changes
 
 {% include links.html %}

@@ -1,7 +1,7 @@
 entries:
 - title: Sidebar
   product: SpinW
-  version: R1433
+  version: R1435
   folders:
   - title: Documentation
     output: web, pdf
@@ -82,7 +82,6 @@ entries:
         - {title: spinw.addaniso, url: /spinw_addaniso, output: 'web, pdf'}
         - {title: spinw.addcoupling, url: /spinw_addcoupling, output: 'web, pdf'}
         - {title: spinw.addg, url: /spinw_addg, output: 'web, pdf'}
-        - {title: spinw.couplingtable, url: /spinw_couplingtable, output: 'web, pdf'}
         - {title: spinw.field, url: /spinw_field, output: 'web, pdf'}
         - {title: spinw.gencoupling, url: /spinw_gencoupling, output: 'web, pdf'}
         - {title: spinw.intmatrix, url: /spinw_intmatrix, output: 'web, pdf'}
@@ -114,7 +113,6 @@ entries:
         subfolderitems:
         - {title: spinw.clearcache, url: /spinw_clearcache, output: 'web, pdf'}
         - {title: spinw.copy, url: /spinw_copy, output: 'web, pdf'}
-        - {title: spinw.corespec, url: /spinw_corespec, output: 'web, pdf'}
         - {title: spinw.delete, url: /spinw_delete, output: 'web, pdf'}
         - {title: spinw.export, url: /spinw_export, output: 'web, pdf'}
         - {title: spinw.fileid, url: /spinw_fileid, output: 'web, pdf'}

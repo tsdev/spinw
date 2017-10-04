@@ -22,13 +22,13 @@ function [aMatOut, paramOut, pOpOut] = getmatrix(obj, varargin)
 % The allowed matrix elements will be `diag([A A B])`:
 %
 % ```
-% cryst = spinw;
-% cryst.genlattice('sym','P 4')
-% cryst.addatom('r',[0 0 0],'label','MCu2')
-% cryst.addmatrix('label','A','value',1)
-% cryst.gencoupling
-% cryst.addaniso('A')
-% cryst.getmatrix('mat','A');
+% >>cryst = spinw
+% >>cryst.genlattice('sym','P 4')
+% >>cryst.addatom('r',[0 0 0],'label','MCu2')
+% >>cryst.addmatrix('label','A','value',1)
+% >>cryst.gencoupling
+% >>cryst.addaniso('A')
+% >>cryst.getmatrix('mat','A')>>
 % ```
 % 
 % ### Input Arguments
@@ -74,7 +74,7 @@ function [aMatOut, paramOut, pOpOut] = getmatrix(obj, varargin)
 %   `{[6 0.1 5 0.25]}` which means, the 6th symmetry allowed matrix have
 %   prefactor 0.1, the 5th symmetry allowed matrix have prefactor 0.25.
 %   Since Heisenberg isotropic couplings are always allowed, a cell with a
-%   single element will create a Heisenberg coupling, e.g. `{0.1}, which is
+%   single element will create a Heisenberg coupling, e.g. `{0.1}`, which is
 %   identical to `obj.matrix.mat = eye(3)*0.1`. For Dzyaloshinskii-Moriya
 %   interactions (antisymmetric exchange matrices), use a three element
 %   vector in a cell, e.g. `pref = {[D1 D2 D3]}`. In this case, these will

@@ -1,21 +1,32 @@
 function res = fouriersym(obj,varargin)
-% calculates the Fourier transformation of a symbolic Hamiltonian
-%
-% res = FOURIER(obj, 'option1', value1 ...)
-%
-% Input:
-%
-% obj           Input structure, spinw class object.
-%
-% Options:
-%
-% hkl           Symbolic definition of q vector. Default is the general Q
-%               point:
-%                   hkl = [sym('h') sym('k') sym('l')]
-%
-%
-%
-% See also SPINW.FOURIER.
+% calculates the Fourier transformation of the symbolic Hamiltonian
+% 
+% ### Syntax
+% 
+% `res = fouriersym(obj,Name,Value)`
+% 
+% ### Description
+% 
+% `res = fouriersym(obj,Name,Value)` solves the symbolic Fourier transform
+% problem.
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Name-Value Pair Arguments
+% 
+% `'hkl'`
+% : Symbolic definition of positions in momentum space. Default value is
+%   the general $Q$ point:
+%   ```
+%   hkl = [sym('h') sym('k') sym('l')]
+%   ```
+% 
+% ### See Also
+% 
+% [spinw.fourier]
 %
 
 % TODO: test for magnetic supercell

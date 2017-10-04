@@ -7,7 +7,7 @@ swver    = sw_version;
 
 %% generate help
 
-%fun0 = {'spinw' 'spinw.horace'};
+fun0 = {'spinw' 'spinw.matparser'};
 %fun0 = {'swfiles' 'sw_egrid'};
 fun0 = cell(1,0);
 

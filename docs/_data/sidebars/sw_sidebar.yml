@@ -1,7 +1,7 @@
 entries:
 - title: Sidebar
   product: SpinW
-  version: R1435
+  version: R
   folders:
   - title: Documentation
     output: web, pdf
@@ -63,7 +63,6 @@ entries:
         - {title: spinw.annealloop, url: /spinw_annealloop, output: 'web, pdf'}
         - {title: spinw.genmagstr, url: /spinw_genmagstr, output: 'web, pdf'}
         - {title: spinw.magstr, url: /spinw_magstr, output: 'web, pdf'}
-        - {title: spinw.magtable, url: /spinw_magtable, output: 'web, pdf'}
         - {title: spinw.nmagext, url: /spinw_nmagext, output: 'web, pdf'}
         - {title: spinw.optmagk, url: /spinw_optmagk, output: 'web, pdf'}
         - {title: spinw.optmagsteep, url: /spinw_optmagsteep, output: 'web, pdf'}

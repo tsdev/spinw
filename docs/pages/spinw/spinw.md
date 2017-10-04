@@ -83,7 +83,7 @@ of public methods is below.
 * [spinw.unitcell](spinw_unitcell) returns information on atoms in the crystallographic unit cell
 * [spinw.abc](spinw_abc) returns lattice parameters and angles
 * [spinw.atom](spinw_atom) generates symmetry equivalent atomic positions
-* [spinw.matom](spinw_matom) generates all magnetic atoms in the unit cell
+* [spinw.matom](spinw_matom) generates magnetic lattice
 * [spinw.natom](spinw_natom) gives the number of symmetry unrelated atoms in the unit cell
 * [spinw.formula](spinw_formula) returns basic physical properties
 * [spinw.disp](spinw_disp) prints information
@@ -103,8 +103,8 @@ of public methods is below.
 #### Magnetic structure operations
  
 * [spinw.genmagstr](spinw_genmagstr) generates magnetic structure
-* [spinw.magstr](spinw_magstr) generates magnetic structure for the rotating frame
-* [spinw.magtable](spinw_magtable) creates tabulated list of all magnetic moments stored in obj
+* [spinw.magstr](spinw_magstr) returns single-k magnetic structure representation
+  spinw.magtable
 * [spinw.nmagext](spinw_nmagext) gives the number of magnetic atoms in the magnetic supercell
 * [spinw.optmagstr](spinw_optmagstr) optimises magnetic structure by minimizing the energy using non-linear optimization algorithms
 * [spinw.optmagk](spinw_optmagk) determines the magnetic propagation vector
@@ -131,7 +131,7 @@ of public methods is below.
 * [spinw.field](spinw_field) get/set magnetic field value
 * [spinw.nbond](spinw_nbond) gives the number of bonds defined in the spinw object
 * [spinw.temperature](spinw_temperature) get/set stored temperature value
-* [spinw.intmatrix](spinw_intmatrix) creates the interactions matrices (connectors and values)
+* [spinw.intmatrix](spinw_intmatrix) generates interaction matrix
 * [spinw.symop](spinw_symop) generates the symmetry operators on bonds and magnetic atoms
 * [spinw.setunit](spinw_setunit) sets the physical units
     
@@ -150,7 +150,7 @@ of public methods is below.
 #### Fitting spin wave spectrum
  
 * [spinw.fitspec](spinw_fitspec) fits experimental spin wave data
-* [spinw.matparser](spinw_matparser) assigns new values to existing matrices
+* [spinw.matparser](spinw_matparser) parses parameter vector into matrices
 * [spinw.horace](spinw_horace) spin wave calculator with interface to Horace
     
 #### Miscellaneous

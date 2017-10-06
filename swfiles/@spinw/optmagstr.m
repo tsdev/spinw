@@ -1,89 +1,144 @@
 function optm = optmagstr(obj, varargin)
-% optimises magnetic structure by minimizing the energy using non-linear optimization algorithms
+% general magnetic structure optimizer
+% 
+% ### Syntax
+% 
+% `optm = optmagstr(obj,Name,Value)`
+% 
+% ### Description
+% 
+% `optm = optmagstr(obj,Name,Value)` is a general magnetic structure
+% optimizer that as the name suggests is general however usually less
+% efficient than [spinw.optmagk] or [spinw.optmagsteep]. However this
+% function enables the usage of constraint functions to improve the
+% optimization. This function is most usefull if there is 1-2 parameters
+% that has to be optimized, such as a canting angle of the spins in
+% magnetic field. To optimize large number of spin angles
+% [spinw.optmagsteep] might be faster.
+% 
+% ### Examples
+% 
+% The example determines the propagation vector of the ground state of the
+% triangular lattice antiferromagnet. The magnetic structure is constrained
+% to be planar in the $xy$-plane. The [gm_planard] constraint function is
+% used where the first 3 parameter determined the propagation vector,
+% followed by the polar angles of the magnetic moments (here there is only
+% 1 magnetic moment in the unit cell) which is fixed to 0. Finally the last
+% 2 parameters corresponds to the polar angles of the normal to the
+% spin-plane which is the $z$-axis ($\theta=0$, $\varphi=0$). The optimized
+% magnetic structure is plotted.
 %
-% optm = OPTMAGSTR(obj, Option1, Value1, ...)
+% ```
+% >>tri = sw_model('triAF',1)
+% >>X1 = [0 0 0 0 0 0]
+% >>X2 = [0 1/2 1/2 0 0 0]
+% >>optRes = tri.optmagstr('func',@gm_planard,'xmin',X1,'xmax',X2)
+% >>km = optRes.x(1:3)>>
+% >>plot(tri)
+% >>>swplot.zoom(1.5)
+% >>snapnow
+% ```
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Name-Value Pair Arguments
+% 
+% `'func'`
+% : Function that produces the spin orientations, propagation vector and
+%   normal vector from the optimization parameters and has the following
+%   argument list:
+%   ```
+%   [M, k, n] = @(x)func(M0, x)
+%   ```
+%  here `M` is matrix with dimensions of $[3\times n_{magExt}]$, `k` is the
+%  propagation vector (row vector with 3 elements), `n` is the normal vector
+%  of the spin rotation plane (row vector with 3 elements). The
+%  default value is `@gm_spherical3d`. For planar magnetic structures
+%  use `@gm_planar`.
+% 
+% `'xmin'`
+% : Lower limit of the optimisation parameters.
+% 
+% `'xmax'`
+% : Upper limit of the optimisation parameters.
+% 
+% `'x0'`
+% : Starting value of the optimisation parameters. If empty
+%   or undefined, then random values are used within the given limits.
+% 
+% `'boundary'`
+% : Boundary conditions of the magnetic cell:
+%   * `'free'`  Free, interactions between extedned unit cells are
+%             omitted.
+%   * `'per'`   Periodic, interactions between extended unit cells
+%             are retained.
 %
-% Input:
-%
-% obj       spinw class object.
-%
-% Options:
-%
-% func      Function that produce the magnetic moments, ordering wave
-%           vector and normal vector from the optimization
-%           parameters in the following form:
-%               [M, k, n] = @(x)func(M0, x)
-%           where M is (3,nMagExt) size matrix. k is the ordering
-%           wave vector, its size is (1,3). n is the normal vector
-%           of the spin rotation plane, its size is (1,3). The
-%           default is @gm_spherical3d. For planar magnetic structure
-%           use @gm_planar.
-% xmin      Minimum limit of the optimisation parameters, optional.
-% xmax      Maximum limit of the optimisation parameters, optional.
-% x0        Starting value of the optimisation parameters. If empty
-%           or undefined, then random values are used.
-% boundary  Boundary conditions of the extended unit cell.
-%               'free'  Free, interactions between extedned unit cells are
-%                       omitted.
-%               'per'   Periodic, interactions between extended unit cells
-%                       are retained.
-%           Default is {'per' 'per' 'per'}.
-% epsilon   The smalles value of incommensurability that is tolerated
-%           without warning. Default is 1e-5.
-% nRun      Number of runs. If random starting parameters are given, the
-%           optimisation process will be rerun nRun times and the best
-%           result (lowest ground state energy per spin) will be saved in
-%           the result.
-% title     Gives a title string to the simulation that is saved in the
-%           output.
-%
-% Limits only on selected prameters:
+%   Default value is `{'per' 'per' 'per'}`.
+% 
+% `'epsilon'`
+% : The smallest value of incommensurability that is tolerated
+%   without warning. Default value is $10^{-5}$.
+% 
+% `'nRun'`
+% : Number of runs. If random starting parameters are given, the
+%   optimisation process will be rerun `nRun` times and the best
+%   result (lowest ground state energy per spin) will be kept.
+% 
+% `'title'`
+% : Gives a title string to the simulation that is saved in the
+%   output.
+% 
+% #### Limits on selected prameters
 %
 % Limits can be given on any input parameter of the constraint function by
-% giving the name of the parameter, see the help of the used constraint
-% function in the following format: optmagstr('ParName',[min max],...).
-% For example to fix the nTheta value of @gm_planar during the optimisation
-% to zero use:
-% optmagstr(obj,'func',@gm_planar,'nTheta',[0 0]);
+% giving the name of the parameter. For parameter names see the help of the
+% used constraint function. Limits per optimization parameter can be given
+% in the following format: `optmagstr('ParName',[min max],...)`. For example
+% to fix the `nTheta` value of [gm_planar] during the optimisation to zero
+% use: `optmagstr(obj,'func',@gm_planar,'nTheta',[0 0])`.
 %
-% Optimisation parameters:
+% 
+% #### Optimisation parameters
+% 
+% The optimization parameters are identical to the input options of the
+% Matlab built-in optimizer [fminsearch](https://www.mathworks.com/help/matlab/ref/fminsearch.html).
 %
-% tolx          Minimum change of x when convergence reached, default
-%               value is 1e-4.
-% tolfun        Minimum change of the R value when convergence reached,
-%               default value is 1e-5.
-% maxfunevals   Maximum number of function evaluations, default value
-%               is 1e7.
-% maxiter       Maximum number of iterations, default value is 1e4.
-%
-%
-% Output:
-%
-% 'optm' is a struct type variable with the following fields:
-% obj       spinw object that contains the optimised magnetic structure.
-% x         Optimised paramters, dimensions are [1 nPar].
-% fname     Name of the contraint function.
-% xname     Cell containing the name of the x parameters, dimensions are
-%           [1 nPar].
-% e         Energy per spin in the optimised structure.
-% exitflag  Exit flag of the optimisation code, see fminsearch.
-% output    Detailed output of the optimisation code, see fminsearch.
-% param     Input parameters, stored in a struct.
-%
-% Example:
-%
-% tri = sw_model('triAF',1);
-% X1 = [0 0 0 0 pi/2 0];
-% X2 = [0 1/2 1/2 0 pi/2 0];
-% optRes = tri.optmagstr('func',@gm_planar,'xmin',X1,'xmax',X2);
-% plot(tri)
-%
-% The example determined the magnetic structure of the triangular lattice
-% antiferromagnet assuming planar magnetic structure and constraining the
-% moments into the [0 y z] plane (nTheta = 90 deg, nPhi = 0 deg or
-% n = [1 0 0]). Then plots the magnetic structure.
-%
-% See also SPINW, SPINW.ANNEAL, GM_SPHERICAL3D, GM_PLANAR, FMINSEARCH.
+% `'tolx'`
+% : Minimum change of `x` when convergence reached, default
+%     value is $10^{-4}$.
+% 
+% `'tolfun'`
+% : Minimum change of the $R$ value when convergence reached,
+%     default value is $10^{-5}$.
+% 
+% `'maxfunevals'`
+% : Maximum number of function evaluations, default value
+%     is $10^7$.
+% 
+% `'maxiter'`
+% : Maximum number of iterations, default value is $10^4$.
+% 
+% ### Output Arguments
+% 
+% `optm`
+% : Struct type variable with the following fields:
+%   * `obj`       spinw object that contains the optimised magnetic structure.
+%   * `x`         Optimised paramters in a row vector with $n_{par}$ number
+%                 of elements.
+%   * `fname`     Name of the contraint function.
+%   * `xname`     Cell containing the name of the $x$ parameters with
+%                   $n_{par}$ elements.
+%   * `e`         Energy per spin in the optimised structure.
+%   * `exitflag`  Exit flag of the optimisation code, see [fminsearch](https://www.mathworks.com/help/matlab/ref/fminsearch.html).
+%   * `output`    Detailed output of the optimisation code, see [fminsearch](https://www.mathworks.com/help/matlab/ref/fminsearch.html).
+%   * `param`     Input parameters, stored in a struct.
+% 
+% ### See Also
+% 
+% [spinw] \| [spinw.anneal] \| [gm_spherical3d] \| [gm_planar] \| [fminsearch]
 %
 
 if ~any(obj.atom.mag)

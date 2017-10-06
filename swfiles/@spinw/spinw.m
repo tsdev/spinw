@@ -94,7 +94,6 @@ classdef spinw < handle & matlab.mixin.SetGet
     %   spinw.addtwin
     %   spinw.twinq
     %   spinw.notwin
-    %   spinw.ntwin
     %
     % #### Magnetic structure operations
     %
@@ -114,7 +113,6 @@ classdef spinw < handle & matlab.mixin.SetGet
     %   spinw.addmatrix
     %   spinw.getmatrix
     %   spinw.setmatrix
-    %   spinw.nmat
     %   
     % #### Spin Hamiltonian generations
     %
@@ -125,7 +123,6 @@ classdef spinw < handle & matlab.mixin.SetGet
     %   spinw.addaniso
     %   spinw.addg
     %   spinw.field
-    %   spinw.nbond
     %   spinw.temperature
     %   spinw.intmatrix
     %   spinw.symop
@@ -399,8 +396,9 @@ classdef spinw < handle & matlab.mixin.SetGet
         % : Number of formula units in the unit cell.
         %
         % `qmat`
-        % : Transformation matrix that converts the given $Q$ values with
-        % dimensions of $[3\times 3]$.
+        % : Transformation matrix that converts the given $Q$ values into
+        % the internal reciprocal lattice. The matrix has dimensions of
+        % $[3\times 3]$.
         %
         unit
         % stores temporary values
@@ -517,47 +515,48 @@ classdef spinw < handle & matlab.mixin.SetGet
         
         
         function nMagExt = nmagext(obj)
-            % gives the number of magnetic atoms in the magnetic supercell
+            % number of magnetic sites
             %
-            % nMagExt = NMAGEXT(obj)
+            % ### Syntax
+            %
+            % `nMagExt = nmagext(obj)`
+            %
+            % ### Description
+            %
+            % `nMagExt = nmagext(obj)` returns the number of magnetic sites
+            % in the magnetic supercell. If the magnetic supercell (stored
+            % in `spinw.mag_str.nExt` is identical to the crystal lattice)
+            % the number of magnetic sites is equal to the number of
+            % magnetic atoms in the unit cell. Where the number of magnetic
+            % atoms in the unit cell can be calculated using [spinw.matom].
+            %
+            % ### See Also
+            %
+            % [spinw.matom] \| [spinw.natom]
             %
             
             nMagExt = size(obj.mag_str.F,2);
         end
         function nAtom = natom(obj)
-            % gives the number of symmetry unrelated atoms in the unit cell
+            % number of symmetry unrelated atoms
             %
-            % nAtom = NATOM(obj)
+            % ### Syntax
+            %
+            % `nAtom = natom(obj)`
+            %
+            % ### Description
+            %
+            % `nAtom = natom(obj)` return the number of symmetry unrelated
+            % atoms stored in `obj`.
+            %
+            % ### See Also
+            %
+            % [spinw.nmagext] \| [spinw.atom]
             %
             
             nAtom = size(obj.unit_cell.r,2);
         end
-        function nBond = nbond(obj)
-            % gives the number of bonds defined in the spinw object
-            %
-            % nBond = NBOND(obj)
-            %
-            
-            nBond = size(obj.coupling.idx,2);
-        end
-        
-        function nMat = nmat(obj)
-            % gives the number of matrices defined in an spinw object
-            %
-            % nMat = NMAT(obj)
-            %
-            
-            nMat = size(obj.matrix.mat,3);
-        end
-        function nTwin = ntwin(obj)
-            % gives the number of twins
-            %
-            % nTwin = NTWIN(obj)
-            %
-            
-            nTwin = size(obj.twin.vol,2);
-        end
-        
+                
         function clearcache(obj, chgField)
             % clears the cache
             %

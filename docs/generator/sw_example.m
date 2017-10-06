@@ -30,6 +30,7 @@ for ii = 1:numel(str)
             set(gcf,'InvertHardCopy','off');
             print([path filesep fignamei],'-dpng','-r144');
             set(gcf,'InvertHardCopy',ihc);
+            close(gcf);
         end
         caption = str{ii-1};
         caption = strtrim(caption(caption~='>'));

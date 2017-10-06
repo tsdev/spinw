@@ -77,38 +77,37 @@ of public methods is below.
 * [spinw.genlattice](spinw_genlattice) generates crystal lattice
 * [spinw.basisvector](spinw_basisvector) generates lattice vectors
 * [spinw.rl](spinw_rl) generates reciprocal lattice basis vectors of the crystal lattice
-* [spinw.nosym](spinw_nosym) removes the space group symmetry
-* [spinw.newcell](spinw_newcell) changes lattice vectors while keeping atoms
+* [spinw.nosym](spinw_nosym) reduces symmetry to P0
+* [spinw.newcell](spinw_newcell) transforms lattice
 * [spinw.addatom](spinw_addatom) adds new atom
 * [spinw.unitcell](spinw_unitcell) returns information on atoms in the crystallographic unit cell
 * [spinw.abc](spinw_abc) returns lattice parameters and angles
 * [spinw.atom](spinw_atom) generates symmetry equivalent atomic positions
 * [spinw.matom](spinw_matom) generates magnetic lattice
-* [spinw.natom](spinw_natom) gives the number of symmetry unrelated atoms in the unit cell
+* [spinw.natom](spinw_natom) number of symmetry unrelated atoms
 * [spinw.formula](spinw_formula) returns basic physical properties
 * [spinw.disp](spinw_disp) prints information
 * [spinw.symmetry](spinw_symmetry) true if space group is used to generate couplings
     
 #### Plotting
  
-* [spinw.plot](spinw_plot) plots crystal structure, magnetic structure, anisotropy and bonds
+* [spinw.plot](spinw_plot) plots 3D model
  
 #### Crystallographic twin operations
  
 * [spinw.addtwin](spinw_addtwin) adds crystallographic twins
 * [spinw.twinq](spinw_twinq) calculates equivalent Q point in twins
-* [spinw.notwin](spinw_notwin) removes any twin added to the spinw object
-* [spinw.ntwin](spinw_ntwin) gives the number of twins
+* [spinw.notwin](spinw_notwin) removes all twins
  
 #### Magnetic structure operations
  
 * [spinw.genmagstr](spinw_genmagstr) generates magnetic structure
 * [spinw.magstr](spinw_magstr) returns single-k magnetic structure representation
   spinw.magtable
-* [spinw.nmagext](spinw_nmagext) gives the number of magnetic atoms in the magnetic supercell
-* [spinw.optmagstr](spinw_optmagstr) optimises magnetic structure by minimizing the energy using non-linear optimization algorithms
+* [spinw.nmagext](spinw_nmagext) number of magnetic sites
+* [spinw.optmagstr](spinw_optmagstr) general magnetic structure optimizer
 * [spinw.optmagk](spinw_optmagk) determines the magnetic propagation vector
-* [spinw.optmagsteep](spinw_optmagsteep) optimise magnetic structure using the method of steepest descent
+* [spinw.optmagsteep](spinw_optmagsteep) quench optimization of magnetic structure
 * [spinw.anneal](spinw_anneal) performs simulated annealing of spins
 * [spinw.annealloop](spinw_annealloop) parameter sweep for simulated annealing
 * [spinw.structfact](spinw_structfact) calculates magnetic and nuclear structure factor
@@ -118,18 +117,16 @@ of public methods is below.
 * [spinw.addmatrix](spinw_addmatrix) adds new [3x3] matrix
 * [spinw.getmatrix](spinw_getmatrix) determines the symmetry allowed tensor elements
 * [spinw.setmatrix](spinw_setmatrix) changes the selected matrix inside the spinw object
-* [spinw.nmat](spinw_nmat) gives the number of matrices defined in an spinw object
     
 #### Spin Hamiltonian generations
  
-* [spinw.quickham](spinw_quickham) creates magnetic Hamiltonian with a single command
+* [spinw.quickham](spinw_quickham) quickly generate magnetic Hamiltonian
 * [spinw.gencoupling](spinw_gencoupling) generates bond list
 * [spinw.addcoupling](spinw_addcoupling) assigns an exchange matrix to a bond
   spinw.couplingtable
 * [spinw.addaniso](spinw_addaniso) assigns anisotropy to magnetic sites
 * [spinw.addg](spinw_addg) assigns g-tensor to magnetic atoms
 * [spinw.field](spinw_field) get/set magnetic field value
-* [spinw.nbond](spinw_nbond) gives the number of bonds defined in the spinw object
 * [spinw.temperature](spinw_temperature) get/set stored temperature value
 * [spinw.intmatrix](spinw_intmatrix) generates interaction matrix
 * [spinw.symop](spinw_symop) generates the symmetry operators on bonds and magnetic atoms
@@ -140,10 +137,10 @@ of public methods is below.
 * [spinw.spinwave](spinw_spinwave) calculates spin correlation function using linear spin wave theory
 * [spinw.powspec](spinw_powspec) calculates powder averaged spin wave spectra
 * [spinw.energy](spinw_energy) calculates the ground state energy
-* [spinw.moment](spinw_moment) calculates the size of the reduced moment due to quantum and thermal fluctuations
+* [spinw.moment](spinw_moment) calculates quantum correction on ordered moment
 * [spinw.spinwavesym](spinw_spinwavesym) calculates symbolic spin wave dispersion
 * [spinw.symbolic](spinw_symbolic) change between symbolic/numeric calculation
-* [spinw.meanfield](spinw_meanfield) mean field calculation of the wave vector dependent susceptibility
+  spinw.meanfield
 * [spinw.fourier](spinw_fourier) calculates the Fourier transformation of the Hamiltonian
 * [spinw.fouriersym](spinw_fouriersym) calculates the Fourier transformation of the symbolic Hamiltonian
  

@@ -54,7 +54,6 @@ entries:
         subfolderitems:
         - {title: spinw.addtwin, url: /spinw_addtwin, output: 'web, pdf'}
         - {title: spinw.notwin, url: /spinw_notwin, output: 'web, pdf'}
-        - {title: spinw.ntwin, url: /spinw_ntwin, output: 'web, pdf'}
         - {title: spinw.twinq, url: /spinw_twinq, output: 'web, pdf'}
       - title: Magnetic structure operations
         output: web, pdf
@@ -73,7 +72,6 @@ entries:
         subfolderitems:
         - {title: spinw.addmatrix, url: /spinw_addmatrix, output: 'web, pdf'}
         - {title: spinw.getmatrix, url: /spinw_getmatrix, output: 'web, pdf'}
-        - {title: spinw.nmat, url: /spinw_nmat, output: 'web, pdf'}
         - {title: spinw.setmatrix, url: /spinw_setmatrix, output: 'web, pdf'}
       - title: Spin Hamiltonian generations
         output: web, pdf
@@ -84,7 +82,6 @@ entries:
         - {title: spinw.field, url: /spinw_field, output: 'web, pdf'}
         - {title: spinw.gencoupling, url: /spinw_gencoupling, output: 'web, pdf'}
         - {title: spinw.intmatrix, url: /spinw_intmatrix, output: 'web, pdf'}
-        - {title: spinw.nbond, url: /spinw_nbond, output: 'web, pdf'}
         - {title: spinw.quickham, url: /spinw_quickham, output: 'web, pdf'}
         - {title: spinw.setunit, url: /spinw_setunit, output: 'web, pdf'}
         - {title: spinw.symop, url: /spinw_symop, output: 'web, pdf'}
@@ -95,7 +92,6 @@ entries:
         - {title: spinw.energy, url: /spinw_energy, output: 'web, pdf'}
         - {title: spinw.fourier, url: /spinw_fourier, output: 'web, pdf'}
         - {title: spinw.fouriersym, url: /spinw_fouriersym, output: 'web, pdf'}
-        - {title: spinw.meanfield, url: /spinw_meanfield, output: 'web, pdf'}
         - {title: spinw.moment, url: /spinw_moment, output: 'web, pdf'}
         - {title: spinw.powspec, url: /spinw_powspec, output: 'web, pdf'}
         - {title: spinw.spinwave, url: /spinw_spinwave, output: 'web, pdf'}

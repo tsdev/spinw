@@ -27,8 +27,9 @@ stored in a cell with dimensions $$[1\times 4]$$.
 : Number of formula units in the unit cell.
  
 `qmat`
-: Transformation matrix that converts the given $$Q$$ values with
-dimensions of $$[3\times 3]$$.
+: Transformation matrix that converts the given $$Q$$ values into
+the internal reciprocal lattice. The matrix has dimensions of
+$$[3\times 3]$$.
  
 
 {% include links.html %}

@@ -62,7 +62,8 @@
 %   swplot.patchfacefcn   
 %   swplot.raytriangle    
 %   swplot.setrangegui    
-%   swplot.subfigure      
+%   swplot.subfigure
+%   swplot.subplot
 %   swplot.tooltipcallback
-%   swplot.tooltipstring  
+%   swplot.tooltipstring
 %

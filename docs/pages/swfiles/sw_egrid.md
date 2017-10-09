@@ -43,7 +43,7 @@ sw_plotspec(spectra,'mode','color','axLim',[0 0.5],'dE',0.2)
 `spectra`
 : Input structure, contains spin-spin correlation functions. Supported
   inputs are produced by [spinw.spinwave](spinw_spinwave), [spinw.powspec](spinw_powspec) and
-  [spinw.scga](spinw_scga).
+  [spinw.scga].
   
 ### Name-Value Pair Arguments
   

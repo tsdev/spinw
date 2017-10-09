@@ -47,7 +47,7 @@ rotAxis = rotAxis./sqrt(sum(rotAxis.^2));
 nx  = [0 -rotAxis(3) rotAxis(2); rotAxis(3) 0 -rotAxis(1); -rotAxis(2) rotAxis(1) 0];
 % Rodrigues' rotation formula.
 % works for multiple rotation angles as well
-rotM = bsxfun(@times,eye(3),cos(rotAngle)) + bsxfun(@times,nx,sin(rotAngle)) + bsxfun(@times,(rotAxis')*rotAxis,1-cos(rotAngle));
+rotM = bsxfunsym(@times,eye(3),cos(rotAngle)) + bsxfunsym(@times,nx,sin(rotAngle)) + bsxfunsym(@times,(rotAxis')*rotAxis,1-cos(rotAngle));
 
 if nargin > 2
     V = mmat(rotM,V);

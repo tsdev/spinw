@@ -1,9 +1,13 @@
-function [str, out] = sw_example(str,path,figname,recalc)
+function [str, out] = sw_example(str,path,figname,recalc,funName)
 % executes example code given in a cell of strings
 %
 % Lines starting with >> will be executed
 % Lines starting with >>> will be executed, but not shown
 % Line containing snapnow causes to save the image of the last figure
+
+if nargin<5
+    funName = '';
+end
 
 keep = true(1,numel(str));
 
@@ -22,7 +26,7 @@ for ii = 1:numel(str)
         % save figure
         fignamei = [figname '_' num2str(idx) '.png'];
         
-        if recalc    
+        if recalc
             idx = idx+1;
             set(gcf,'Color',[241 240 240]/255*0+1)
             drawnow;
@@ -39,12 +43,21 @@ for ii = 1:numel(str)
         keep(ii) = true;
     elseif numel(temp)>3 && strcmp(temp(1:3),'>>>')
         if recalc
-            evalc(str{ii}(4:end));
+            try
+                evalc(str{ii}(4:end));
+            catch
+                
+            end
         end
         keep(ii) = false;
     elseif numel(temp)>2 && strcmp(temp(1:2),'>>')
         if recalc
-            out0 = evalc(str{ii}(str{ii}~='>'));
+            try
+                out0 = evalc(str{ii}(str{ii}~='>'));
+            catch
+                out0 = '';
+                warning('Error in %s!',funName);
+            end
             if strcmp(temp(end+(-1:0)),'>>')
                 % add output to the string, remove html tags
                 out1 = regexprep(out0,'<.*?>','');
@@ -58,6 +71,7 @@ for ii = 1:numel(str)
             end
         else
             out0 = '';
+            warning('Error in %s!',funName);
         end
         if ~isempty(out0)
             out{end+1} = out0; %#ok<AGROW>

@@ -673,6 +673,19 @@ classdef spinw < handle & matlab.mixin.SetGet
         function TF = ge(varargin)
             TF = ge@handle(varargin{:});
         end
+        
+        function varargout = set(varargin)
+            varargout = set@handle(varargin{:});
+        end
+        function varargout = setdisp(varargin)
+            varargout = setdisp@handle(varargin{:});
+        end
+        function varargout = getdisp(varargin)
+            varargout = getdisp@handle(varargin{:});
+        end
+        function varargout = get(varargin)
+            varargout = get@handle(varargin{:});
+        end
     end % classdef
     
 end

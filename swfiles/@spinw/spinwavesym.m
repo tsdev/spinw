@@ -1,94 +1,113 @@
 function spectra = spinwavesym(obj, varargin)
 % calculates symbolic spin wave dispersion
-%
-% spectra = SPINWAVESYM(obj, 'option1', value1 ...)
-%
-% Symbolic spin wave dispersion is calculated as a function of reciprocal
-% space points. The function can deal with arbitrary magnetic structure and
-% magnetic interactions as well as single ion anisotropy and magnetic
-% field. Biquadratic exchange interactions are also implemented, however
-% only for k=0 magnetic structures.
-%
-% If the magnetic ordering wavevector is non-integer, the dispersion is
+% 
+% ### Syntax
+% 
+% `spectra = spinwavesym(obj,Name,Value)`
+% 
+% ### Description
+% 
+% `spectra = spinwavesym(obj,Name,Value)` calculates symbolic spin wave
+% dispersion as a function of $Q$. The function can deal with arbitrary
+% magnetic structure and magnetic interactions as well as single ion
+% anisotropy and magnetic field. Biquadratic exchange interactions are also
+% implemented, however only for $k=0$ magnetic structures.
+% 
+% If the magnetic propagation vector is non-integer, the dispersion is
 % calculated using a coordinate system rotating from cell to cell. In this
 % case the Hamiltonian has to fulfill this extra rotational symmetry.
-%
+%  
 % The method works for incommensurate structures, however the calculated
-% omega dispersion does not contain the omega(k+/-km) terms that has to be
+% omega dispersion does not contain the $\omega(\mathbf{k}\pm \mathbf{k}_m)$ terms that has to be
 % added manually.
-%
+%  
 % The method for matrix diagonalization is according to R.M. White, PR 139
 % (1965) A450. The non-Hermitian g*H matrix will be diagonalised.
+%  
+% ### Examples
 %
-% Input:
+% The first section of the example calculates the symbolic spin wave
+% spectrum. Unfortunatelly the symbolic expression needs manipulations to
+% bring it to readable form. To check the solution, the second section
+% converts the symbolic expression into a numerical vector and the third
+% section plots the real and imaginary part of the solution.
 %
-% obj           Input structure, spinw class object.
+% ```
+% >>tri = sw_model('triAF',1)
+% >>tri.symbolic(true)
+% >>tri.genmagstr('mode','direct','k',[1/3 1/3 0],'S',[1 0 0])
+% >>symSpec = tri.spinwave
+% >>pretty(symSpec.omega)>>
+% >>J_1 = 1
+% >>h = linspace(0,1,500)
+% >>k = h
+% >>omega = eval(symSpec.omega)
+% >>p1 = plot(h,real(omega(1,:)),'k-')
+% >>hold on
+% >>plot(h,real(omega(2,:)),'k-')
+% >>p2 = plot(h,imag(omega(1,:)),'r-')
+% >>plot(h,imag(omega(2,:)),'r-')
+% >>xlabel('Momentum (h,h,0) (r.l.u.)')
+% >>ylabel('Energy (meV)')
+% >>legend([p1 p2],'Real(\omega(Q))','Imag(\omega(Q))')
+% >>title('Spin wave dispersion of the TLHAF')
+% >>snapnow
+% ```
 %
-% Options:
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Name-Value Pair Arguments
+% 
+% `'hkl'`
+% : Symbolic definition of $Q$ vector. Default is the general $Q$
+%   point:
+%   ```
+%   hkl = [sym('h') sym('k') sym('l')]
+%   ```
+% 
+% `'eig'`
+% : If true the symbolic Hamiltonian is diagonalised symbolically. For
+%   large matrices (many magnetic atom per unit cell) this might be
+%   impossible. Set `eig` to `false` to output only the quadratic
+%   Hamiltonian. Default is `true`.
+% 
+% `'vect'`
+% : If `true` the eigenvectors are also calculated. Default is `false`.
+% 
+% `'tol'`
+% : Tolerance of the incommensurability of the magnetic
+%   ordering wavevector. Deviations from integer values of the
+%   ordering wavevector smaller than the tolerance are
+%   considered to be commensurate. Default value is $10^{-4}$.
+% 
+% `'norm'`
+% : Whether to produce the normalized symbolic eigenvectors. It can be
+%   impossible for large matrices, in that case set it to
+%   `false`. Default is `true`.
+% 
+% `'title'`
+% : Gives a title string to the simulation that is saved in the
+%   output.
 %
-% hkl           Symbolic definition of q vector. Default is the general Q
-%               point:
-%                   hkl = [sym('h') sym('k') sym('l')]
-% eig           If true the symbolic Hamiltonian is diagonalised. For large
-%               matrices (many magnetic atom per unit cell) this might be
-%               impossible. Set 'eig' to false to output only the quadratic
-%               Hamiltonian. Default is true.
-% vect          If true the eigenvectors are calculated. Default is false.
-% tol           Tolerance of the incommensurability of the magnetic
-%               ordering wavevector. Deviations from integer values of the
-%               ordering wavevector smaller than the tolerance are
-%               considered to be commensurate. Default value is 1e-4.
-% norm          Whether to produce the normalized eigenvectors. It can be
-%               impossible for large matrices, in that case set it to
-%               false. Default is true.
-% title         Gives a title string to the simulation that is saved in the
-%               output.
-
-% Output:
+% ### Output Arguments
 %
-% 'spectra' is a structure, with the following fields:
-% omega         Calculated spin wave dispersion, dimensins are
-%               [2*nMagExt nHkl], where nMagExt is the number of magnetic
+% `spectra`
+% : Structure, with the following fields:
+%   * `omega`   Calculated spin wave dispersion, dimensins are
+%               $[2*n_{magExt}\times n_{hkl}]$, where $n_{magExt}$ is the number of magnetic
 %               atoms in the extended unit cell.
-% V0            Eigenvectors of the quadratic Hamiltonian.
-% V             Normalized eigenvectors of the quadratic Hamiltonian.
-% ham           Symbolic matrix of the Hamiltonian.
+%   * `V0`      Eigenvectors of the quadratic Hamiltonian.
+%   * `V`       Normalized eigenvectors of the quadratic Hamiltonian.
+%   * `ham`     Symbolic matrix of the Hamiltonian.
+%   * `incomm`  Whether the spectra calculated is incommensurate or not.
+%   * `obj`     The clone of the input `obj`.
 %
-% If several domains exist in the sample, omega and Sab are packaged into a
-% cell, that contains nTwin number of matrices.
-%
-% incomm        Whether the spectra calculated is incommensurate or not.
-% obj           The copy of the input obj.
-%
-% Example:
-%
-% tri = sw_model('triAF',1);
-% tri.symbolic(true)
-% tri.genmagstr('mode','direct','k',[1/3 1/3 0],'S',[1 0 0])
-% symSpec = tri.spinwave;
-%
-% J1 = 1;
-% h = linspace(0,1,500);
-% k = h;
-% omega = eval(symSpec.omega);
-%
-% p1 = plot(h,real(omega(1,:)),'ko');
-% hold on
-% plot(h,real(omega(2,:)),'ko')
-% p2 = plot(h,imag(omega(1,:)),'r-');
-% plot(h,imag(omega(2,:)),'r-')
-% xlabel('Momentum (H,H,0) (r.l.u.)')
-% ylabel('Energy (meV)')
-% legend([p1 p2],'Real(\omega(Q))','Imag(\omega(Q))')
-% title('Spin wave dispersion of the TLHAF')
-%
-% The first section calculates the symbolic spin wave spectrum.
-% Unfortunatelly the symbolic expression needs manipulations to bring it to
-% readable form. To check the solution, the second section converts the
-% symbolic expression into a numerical vector and the third section plots
-% the real and imaginary part of the solution.
-%
-% See also SPINW, SPINW.SPINWAVE, SW_NEUTRON, SW_POL, SPINW.POWSPEC, SPINW.OPTMAGSTR.
+% ### See Also
+ %
+% [spinw] \| [spinw.spinwave]
 %
 
 % save the begining time of the calculation
@@ -127,7 +146,8 @@ fid = obj.fid;
 % magnetic unit cell.
 %[SS, SI, RR] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2);
 %if obj.symmetry && any(sw_mattype(obj.matrix.mat)~=1)
-%    warning('spinw:spinwavesym:symmetry','The non-isotropic symbolic matrices will not be rotated unsing the point group operators, define them manually!')
+%    warning('spinw:spinwavesym:symmetry',['The non-isotropic symbolic matrices will'...
+%    'not be rotated unsing the point group operators, define them manually!'])
 %end
 %[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true,'rotMat',false);
 %[SS, SI] = obj.intmatrix('plotmode',true,'extend',true,'fitmode',2,'conjugate',true);
@@ -199,7 +219,7 @@ else
 end
 
 % remove zero anisotropy matrices
-anyIdx = ~sw_always(squeeze(sum(sum(abs(JJ),1),2)) == 0);
+anyIdx = ~sw_always(squeeze(sumsym(sumsym(abs(JJ),1),2)) == 0);
 
 dR    = dR(:,anyIdx);
 atom1 = atom1(1,anyIdx);
@@ -224,9 +244,9 @@ etaR = repmat(permute(eta(:,atom2),[3 1 2]),[3 1 1]);
 SiSj = sqrt(S0(atom1).*S0(atom2));
 
 % Creates temporary values for calculating matrix elements.
-A0 =  SiSj.*shiftdim(sum(sum(zedL.*JJ.*conj(zedR),2),1),1);
-B0 =  SiSj.*shiftdim(sum(sum(zedL.*JJ.*     zedR ,2),1),1);
-C0 =  shiftdim(sum(sum(etaL.*JJ.*etaR,2),1),1);
+A0 =  SiSj.*shiftdim(sumsym(sumsym(zedL.*JJ.*conj(zedR),2),1),1);
+B0 =  SiSj.*shiftdim(sumsym(sumsym(zedL.*JJ.*     zedR ,2),1),1);
+C0 =  shiftdim(sumsym(sumsym(etaL.*JJ.*etaR,2),1),1);
 C1 = -2*S0(atom2).*C0;
 C2 = -2*S0(atom1).*C0;
 

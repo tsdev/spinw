@@ -1,24 +1,24 @@
 ---
-{title: spinw.temperature method, link: spinw.temperature, summary: get/set stored
-    temperature value, keywords: sample, sidebar: sw_sidebar, permalink: spinw_temperature,
-  folder: spinw, mathjax: 'true'}
+{title: spinw.temperature method, link: spinw.temperature, summary: get/set temperature,
+  keywords: sample, sidebar: sw_sidebar, permalink: spinw_temperature, folder: spinw,
+  mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
-`temperature(obj, t)`
-
+  
+`temperature(obj, T)`
+ 
+`T = temperature(obj)`
+  
 ### Description
-
-If T is defined, it sets the temperature stored in obj object
-to T, where T is scalar. The units of temerature is
-determined by the spinw.unit.kB value, default value is Kelvin.
- 
-T = TEMPERATURE(obj)
- 
-The function returns the current temperature value stored in
-obj.
- 
+  
+`temperature(obj, T)` sets the temperature stored in `obj` to `T`, where
+`T` is scalar. The units of temerature is determined by the
+`spinw.unit.kB` value, default unit is Kelvin.
+   
+`T = temperature(obj)` returns the current temperature value stored in
+`obj`.
+   
 
 {% include links.html %}

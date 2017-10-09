@@ -24,8 +24,8 @@ nList = [nList cellfun(@(C)[upper(C(1)) C(2:end)],nList([14:28 30:end]),'Uniform
 cList = char([295 197 169 174 176:179 215 449 10178 8747 8364 945:969 913:929 931:937]);
 
 % add other symbols
-nList = [nList      {'skull' 'sun' 'moon'}];
-cList = [cList char([9760    9788  9789 ])];
+nList = [nList      {'skull' 'sun' 'moon' 'ok'  }];
+cList = [cList char([9760    9788  9789   10004])];
 
 nL = numel(nList);
 

@@ -98,16 +98,16 @@ cIdx        = cat(4,cIdx{:});
 % calculate the translation vectors that generate the rotations in the new supercell
 tIdx = floor(bsxfun(@rdivide,cIdx,permute(nExt0,[1 3 4 2])));
 % propagation vector in the original supercell
-kExt0 = bsxfun(@times,obj.mag_str.k,nExt0');
+kExt0 = bsxfunsym(@times,obj.mag_str.k,nExt0');
 % calculate the phases that generate the rotations for the new supercell
-phi  = sum(bsxfun(@times,tIdx,permute(kExt0,[3 4 5 1 2])),4);
+phi  = sumsym(bsxfunsym(@times,tIdx,permute(kExt0,[3 4 5 1 2])),4);
 % complex phase factors
 %M = real(bsxfun(@times,M0,exp(-2*pi*1i*permute(phi+param.phi0,[4 6 1:3 5]))));
-M = real(bsxfun(@times,M0,exp(-2*pi*1i*permute(phi,[4 6 1:3 5]))));
+M = real(bsxfunsym(@times,M0,exp(-2*pi*1i*permute(phi,[4 6 1:3 5]))));
 % sum up the wave vectors and reshape to standard dimensions
 magOut.S = reshape(sum(M,6),3,[]);
 % keep only the first non-zero wave vector
-kInc = find(sum(mod(kExt0,1) == 0,1)<3);
+kInc = find(sumsym(mod(kExt0,1) == 0,1)<3);
 if ~isempty(kInc)
     magOut.k = obj.mag_str.k(:,kInc(1))';
     n = cross(real(obj.mag_str.F(:,1,kInc(1))),imag(obj.mag_str.F(:,1,kInc(1))))';

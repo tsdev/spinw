@@ -6,7 +6,7 @@ entries:
   - title: Documentation
     output: web, pdf
     folderitems: []
-  - title: spinw
+  - title: spinw ✔
     output: web, pdf
     folderitems:
     - title: Description
@@ -62,6 +62,7 @@ entries:
         - {title: spinw.annealloop, url: /spinw_annealloop, output: 'web, pdf'}
         - {title: spinw.genmagstr, url: /spinw_genmagstr, output: 'web, pdf'}
         - {title: spinw.magstr, url: /spinw_magstr, output: 'web, pdf'}
+        - {title: spinw.magtable, url: /spinw_magtable, output: 'web, pdf'}
         - {title: spinw.nmagext, url: /spinw_nmagext, output: 'web, pdf'}
         - {title: spinw.optmagk, url: /spinw_optmagk, output: 'web, pdf'}
         - {title: spinw.optmagsteep, url: /spinw_optmagsteep, output: 'web, pdf'}
@@ -111,14 +112,8 @@ entries:
         - {title: spinw.delete, url: /spinw_delete, output: 'web, pdf'}
         - {title: spinw.export, url: /spinw_export, output: 'web, pdf'}
         - {title: spinw.fileid, url: /spinw_fileid, output: 'web, pdf'}
-        - {title: spinw.get, url: /spinw_get, output: 'web, pdf'}
-        - {title: spinw.getdisp, url: /spinw_getdisp, output: 'web, pdf'}
         - {title: spinw.isvalid, url: /spinw_isvalid, output: 'web, pdf'}
         - {title: spinw.listener, url: /spinw_listener, output: 'web, pdf'}
-        - {title: spinw.scga, url: /spinw_scga, output: 'web, pdf'}
-        - {title: spinw.scga3, url: /spinw_scga3, output: 'web, pdf'}
-        - {title: spinw.set, url: /spinw_set, output: 'web, pdf'}
-        - {title: spinw.setdisp, url: /spinw_setdisp, output: 'web, pdf'}
         - {title: spinw.spinw, url: /spinw_spinw, output: 'web, pdf'}
         - {title: spinw.struct, url: /spinw_struct, output: 'web, pdf'}
         - {title: spinw.table, url: /spinw_table, output: 'web, pdf'}

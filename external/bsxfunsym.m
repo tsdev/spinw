@@ -1,12 +1,17 @@
-function C = bsxfun(op,A,B)
-% C = BSXFUN(@op,A,B) extends the bsxfun to sym class variables, for any
+function C = bsxfunsym(op,A,B)
+% C = BSXFUNSYM(@op,A,B) extends the bsxfun to sym class variables, for any
 % other input type it calls the standrd bsxfun function.
 %
 % See also sym, syms.
 %
 
-if ~isa(B,'sym')
+if ~isa(A,'sym') && ~isa(B,'sym')
+    C = bsxfun(op,A,B);
+    return
+elseif ~isa(B,'sym')
     B = sym(B);
+elseif ~isa(A,'sym')
+    A = sym(A);
 end
 
 nA = ndims(A);

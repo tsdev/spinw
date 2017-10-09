@@ -1,18 +1,32 @@
 function setunit(obj, varargin)
 % sets the physical units
+% 
+% ### Syntax
+% 
+% `setunit(obj,Name,Value)`
+% 
+% ### Description
+% 
+% `setunit(obj,Name,Value)` sets the physical units of the Hamiltonian.
+% This includes the magnetic field, exchange interaction, length and
+% temperature.
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Name-Value Pair Arguments
+% 
+% `'mode'`
+% : Type of unit system, defined by one of the following strings:
+%   * `'AmeVTK'`    Typical units used in neutron/x-ray scattering:
+%                       [\\Angstrom, meV, Tesla and Kelvin]
+%   * `'1'`         No units, all conversion factors are set to 1.
 %
-% SETUNIT(obj, 'option1', value1 ...)
+% ### See Also
 %
-% Input:
-%
-% obj       SpinW object.
-%
-% Options:
-%
-% mode      Type of unit system, defined by one of the following strings:
-%               'AmeVTK'    Typical units used in neutron/xray scattering:
-%                               [Angstrom, meV, Tesla and Kelvin]
-%               '1'         No units, all conversion factors are set to 1.
+% [spinw.unit]
 %
 
 inpForm.fname  = {'mode'  };

@@ -124,7 +124,11 @@ if ~obj.symmetry
         paramOut = [];
         pOpOut   = zeros(3,3,0);
     end
-    warning('spinw:getmatrix:NoSymmetry','The SpinW object does not contain symmetry!')
+    if isempty(obj.lattice.sym)
+        warning('spinw:getmatrix:NoSymmetry','The SpinW object does not contain symmetry!')
+    else
+        warning('spinw:getmatrix:NoSymmetry','Use spinw.gencoupling first to generate bonds!')
+    end
     return
 end
     
@@ -205,7 +209,12 @@ if bondIdx ~= 0
     if isempty(iSel)
         error('spinw:getmatrix:WrongInput','The given bond index does not existst, check your input!');
     end
-
+    
+    
+    if param.subIdx>numel(iSel)
+        error('spinw:getmatrix:WrongInput','The given subIdx reaches the number of bonds within the given symmetry (%d)!',numel(iSel));
+    end
+    
     if param.subIdx ~=1
         iSel = iSel(param.subIdx);
     end
@@ -254,7 +263,7 @@ else
     
 end
 
-if matIdx ~= 0
+if ~isempty(matIdx) && (matIdx ~= 0)
     % determine the label of the matrix
     param.mat = obj.matrix.label{matIdx};
 end
@@ -285,7 +294,7 @@ nSymMat = size(aMat,3);
 
 % convert aMat in case subIdx is non-zero for coupling matrices
 mod_mat = false;
-if param.subIdx > 1 && anisoIdx == 0 && gIdx == 0
+if param.subIdx > 1 && anisoIdx == 0 && gIdx == 0 && ~isempty(matIdx)
     mod_mat = true;
     % get the matrices for the first bond
     % TODO use cache.symop

@@ -158,7 +158,7 @@ most important parameters are:
   * `1` Display the timing in the Command Window.
   * `2` Show the timing in a separat pup-up window.
  
-The function accepts some parameters of [spinw.scga](spinw_scga) with the most important
+The function accepts some parameters of [spinw.scga] with the most important
 parameters are:
  
 `'nInt'`

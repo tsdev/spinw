@@ -468,7 +468,7 @@ end
 if param.norm
     normS = sqrt(sum(real(S).^2,1))./repmat(mAtom.S,[1 prod(nExt)]);
     normS(normS==0) = 1;
-    S = bsxfun(@rdivide,S,normS);
+    S = bsxfunsym(@rdivide,S,normS);
 end
 
 % simplify expressions

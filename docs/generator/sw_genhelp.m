@@ -4,9 +4,9 @@ function doctree = sw_genhelp(varargin)
 % SW_GENHELP('option1', value1, ...)
 %
 
-inpForm.fname  = {'path' 'sidebar'    'fun'      'verstr' 'recalc'};
-inpForm.defval = {{}     'sw_sidebar' zeros(1,0) struct() true    };
-inpForm.size   = {[1 -1] [1 -2]       [1 -3]     [1 1]    [1 1]   };
+inpForm.fname  = {'path' 'sidebar'    'fun'      'verstr' 'recalc' 'done'    };
+inpForm.defval = {{}     'sw_sidebar' zeros(1,0) struct() true     zeros(1,0)};
+inpForm.size   = {[1 -1] [1 -2]       [1 -3]     [1 1]    [1 1]    [1 -4]    };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -272,7 +272,7 @@ for ii = 1:numel(doctree)
             if any(cellfun(@(C)~isempty(C),regexp(text0,'^>>')))
                 %
                 imgName = ['generated/' content(jj).frontmatter.permalink(1:(end-5))];
-                [newText,~] = sw_example(selBlock,[docroot 'images' filesep],imgName,param.recalc);
+                [newText,~] = sw_example(selBlock,[docroot 'images' filesep],imgName,param.recalc,content(jj).fun);
                 if ~isempty(regexp(newText{end},'```','once'))
                     text0 = [text0(1:blockIdx(1,kk)) newText(1:(end-1))' text0((blockIdx(2,kk)+1):end)];
                 else
@@ -373,8 +373,20 @@ sidebar.entries.version = verStr;
 sidebar.entries.folders(1).title  = 'Documentation';
 sidebar.entries.folders(1).output = 'web, pdf';
 
+if isempty(param.done)
+    done = false(1,numel(doctree));
+else
+    done = param.done;
+end
+
+okSymbol = symbol('ok');
+
 for ii = 1:nPath
-    sidebar.entries.folders(ii+1).title  = doctree(ii).name;
+    if done(ii)
+        sidebar.entries.folders(ii+1).title  = [doctree(ii).name ' ' okSymbol];
+    else
+        sidebar.entries.folders(ii+1).title  = doctree(ii).name;
+    end
     sidebar.entries.folders(ii+1).output = 'web, pdf';
     
     

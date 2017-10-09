@@ -76,18 +76,18 @@ of public methods is below.
  
 * [spinw.genlattice](spinw_genlattice) generates crystal lattice
 * [spinw.basisvector](spinw_basisvector) generates lattice vectors
-* [spinw.rl](spinw_rl) generates reciprocal lattice basis vectors of the crystal lattice
+* [spinw.rl](spinw_rl) generates reciprocal lattice vectors
 * [spinw.nosym](spinw_nosym) reduces symmetry to P0
 * [spinw.newcell](spinw_newcell) transforms lattice
 * [spinw.addatom](spinw_addatom) adds new atom
-* [spinw.unitcell](spinw_unitcell) returns information on atoms in the crystallographic unit cell
+* [spinw.unitcell](spinw_unitcell) returns unit cell data
 * [spinw.abc](spinw_abc) returns lattice parameters and angles
 * [spinw.atom](spinw_atom) generates symmetry equivalent atomic positions
 * [spinw.matom](spinw_matom) generates magnetic lattice
 * [spinw.natom](spinw_natom) number of symmetry unrelated atoms
 * [spinw.formula](spinw_formula) returns basic physical properties
 * [spinw.disp](spinw_disp) prints information
-* [spinw.symmetry](spinw_symmetry) true if space group is used to generate couplings
+* [spinw.symmetry](spinw_symmetry) returns whether symmetry is defined
     
 #### Plotting
  
@@ -103,7 +103,7 @@ of public methods is below.
  
 * [spinw.genmagstr](spinw_genmagstr) generates magnetic structure
 * [spinw.magstr](spinw_magstr) returns single-k magnetic structure representation
-  spinw.magtable
+* [spinw.magtable](spinw_magtable) creates tabulated list of all magnetic moments stored in obj
 * [spinw.nmagext](spinw_nmagext) number of magnetic sites
 * [spinw.optmagstr](spinw_optmagstr) general magnetic structure optimizer
 * [spinw.optmagk](spinw_optmagk) determines the magnetic propagation vector
@@ -116,7 +116,7 @@ of public methods is below.
  
 * [spinw.addmatrix](spinw_addmatrix) adds new [3x3] matrix
 * [spinw.getmatrix](spinw_getmatrix) determines the symmetry allowed tensor elements
-* [spinw.setmatrix](spinw_setmatrix) changes the selected matrix inside the spinw object
+* [spinw.setmatrix](spinw_setmatrix) sets exchange tensor values
     
 #### Spin Hamiltonian generations
  
@@ -127,9 +127,9 @@ of public methods is below.
 * [spinw.addaniso](spinw_addaniso) assigns anisotropy to magnetic sites
 * [spinw.addg](spinw_addg) assigns g-tensor to magnetic atoms
 * [spinw.field](spinw_field) get/set magnetic field value
-* [spinw.temperature](spinw_temperature) get/set stored temperature value
+* [spinw.temperature](spinw_temperature) get/set temperature
 * [spinw.intmatrix](spinw_intmatrix) generates interaction matrix
-* [spinw.symop](spinw_symop) generates the symmetry operators on bonds and magnetic atoms
+* [spinw.symop](spinw_symop) generates the bond symmetry operators
 * [spinw.setunit](spinw_setunit) sets the physical units
     
 #### Solvers
@@ -139,7 +139,7 @@ of public methods is below.
 * [spinw.energy](spinw_energy) calculates the ground state energy
 * [spinw.moment](spinw_moment) calculates quantum correction on ordered moment
 * [spinw.spinwavesym](spinw_spinwavesym) calculates symbolic spin wave dispersion
-* [spinw.symbolic](spinw_symbolic) change between symbolic/numeric calculation
+* [spinw.symbolic](spinw_symbolic) switches between symbolic/numeric mode
   spinw.meanfield
 * [spinw.fourier](spinw_fourier) calculates the Fourier transformation of the Hamiltonian
 * [spinw.fouriersym](spinw_fouriersym) calculates the Fourier transformation of the symbolic Hamiltonian
@@ -157,8 +157,8 @@ of public methods is below.
 * [spinw.fileid](spinw_fileid) determines file object for text output
 * [spinw.table](spinw_table) outputs easy to read tables of internal data
 * [spinw.validate](spinw_validate) validates spinw object properties
-* [spinw.version](spinw_version) returns the version of SpinW used to create the object
-* [spinw.struct](spinw_struct) extracts all public properties of spinw object into a struct
+* [spinw.version](spinw_version) returns the version of SpinW
+* [spinw.struct](spinw_struct) converts properties into struct
 * [spinw.clearcache](spinw_clearcache) clears the cache
 * [spinw.spinw](spinw_spinw) spinw constructor
  

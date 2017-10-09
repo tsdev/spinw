@@ -1,19 +1,20 @@
 %% setup help generator options
 
 helpPath = {'swfiles/@spinw' 'swfiles' 'swfiles/+swplot' 'swfiles/+swpref' 'swfiles/+swsym' 'swfiles/+swfunc'};
+done     = [true             false     false             false             false            false            ];   
 swr      = sw_rootdir;
 helpPath = cellfun(@(C)[swr C],helpPath,'UniformOutput',false);
 swver    = sw_version;
 
 %% generate help
 
-%fun0 = {'spinw' 'spinw.plot'};
+%fun0 = {'spinw' 'spinw.version'};
 %fun0 = {'swfiles' 'sw_egrid'};
 fun0 = cell(1,0);
 
 clc
 
-doctree = sw_genhelp('path',helpPath,'fun',fun0,'verstr',swver,'recalc',true);
+doctree = sw_genhelp('path',helpPath,'fun',fun0,'verstr',swver,'recalc',true,'done',done);
 
 
 %% get all help

@@ -271,7 +271,7 @@ param = sw_readparam(inpForm, varargin{:});
 
 if isnan(param.fid)
     % Print output into the following file
-    fid = obj.fid;
+    fid = obj.fileid;
 else
     fid = param.fid;
 end

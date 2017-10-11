@@ -1,5 +1,5 @@
 function spectra = sw_instrument(spectra, varargin)
-% convolutes spectrum with different functions
+% convolutes spectrum with resolution function
 % 
 % ### Syntax
 % 

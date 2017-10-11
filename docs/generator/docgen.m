@@ -8,9 +8,9 @@ swver    = sw_version;
 
 %% generate help
 
-%fun0 = {'spinw' 'spinw.version'};
+fun0 = {'swfiles' 'spinw' 'gm_planard' 'sw_readspec'};
 %fun0 = {'swfiles' 'sw_egrid'};
-fun0 = cell(1,0);
+%fun0 = cell(1,0);
 
 clc
 

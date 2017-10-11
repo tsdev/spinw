@@ -14,5 +14,6 @@ TODO list:
 
 - automatically convert plain Matlab help into Kramdown
 - generate automatic linking for function names
+- open links in Matlab directly [Live Script](matlab:matlab.desktop.editor.newDocument(sprintf('sin(1)\ncos(1)'));)
 
 {% include links.html %}

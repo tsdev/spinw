@@ -64,6 +64,7 @@ function qGrid = sw_qgrid(varargin)
 % ### See Also
 % 
 % [sw_qscan]
+%
 
 fid = swpref.getpref('fid',true);
 

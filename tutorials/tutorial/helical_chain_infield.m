@@ -27,5 +27,4 @@ plot(chain)
 %% k-vector
 
 res = chain.optmagk;
-chain.genmagstr('mode','helical','S',[1 0 0]','k',1+res.k')
 chain.energy

@@ -1,7 +1,7 @@
 entries:
 - title: Sidebar
   product: SpinW
-  version: R
+  version: R1439
   folders:
   - title: Documentation
     output: web, pdf
@@ -9,116 +9,7 @@ entries:
   - title: spinw ✔
     output: web, pdf
     folderitems:
-    - title: Description
-      url: /spinw
-      output: web, pdf
-      subfolders:
-      - title: Properties
-        output: web, pdf
-        subfolderitems:
-        - {title: spinw.lattice, url: /spinw_lattice, output: 'web, pdf'}
-        - {title: spinw.unit_cell, url: /spinw_unit_cell, output: 'web, pdf'}
-        - {title: spinw.twin, url: /spinw_twin, output: 'web, pdf'}
-        - {title: spinw.matrix, url: /spinw_matrix, output: 'web, pdf'}
-        - {title: spinw.single_ion, url: /spinw_single_ion, output: 'web, pdf'}
-        - {title: spinw.coupling, url: /spinw_coupling, output: 'web, pdf'}
-        - {title: spinw.mag_str, url: /spinw_mag_str, output: 'web, pdf'}
-        - {title: spinw.unit, url: /spinw_unit, output: 'web, pdf'}
-        - {title: spinw.cache, url: /spinw_cache, output: 'web, pdf'}
-      - title: []
-        output: []
-        subfolderitems: []
-      - title: Lattice operations
-        output: web, pdf
-        subfolderitems:
-        - {title: spinw.abc, url: /spinw_abc, output: 'web, pdf'}
-        - {title: spinw.addatom, url: /spinw_addatom, output: 'web, pdf'}
-        - {title: spinw.atom, url: /spinw_atom, output: 'web, pdf'}
-        - {title: spinw.basisvector, url: /spinw_basisvector, output: 'web, pdf'}
-        - {title: spinw.disp, url: /spinw_disp, output: 'web, pdf'}
-        - {title: spinw.formula, url: /spinw_formula, output: 'web, pdf'}
-        - {title: spinw.genlattice, url: /spinw_genlattice, output: 'web, pdf'}
-        - {title: spinw.matom, url: /spinw_matom, output: 'web, pdf'}
-        - {title: spinw.natom, url: /spinw_natom, output: 'web, pdf'}
-        - {title: spinw.newcell, url: /spinw_newcell, output: 'web, pdf'}
-        - {title: spinw.nosym, url: /spinw_nosym, output: 'web, pdf'}
-        - {title: spinw.rl, url: /spinw_rl, output: 'web, pdf'}
-        - {title: spinw.symmetry, url: /spinw_symmetry, output: 'web, pdf'}
-        - {title: spinw.unitcell, url: /spinw_unitcell, output: 'web, pdf'}
-      - title: Plotting
-        output: web, pdf
-        subfolderitems:
-        - {title: spinw.plot, url: /spinw_plot, output: 'web, pdf'}
-      - title: Crystallographic twin operations
-        output: web, pdf
-        subfolderitems:
-        - {title: spinw.addtwin, url: /spinw_addtwin, output: 'web, pdf'}
-        - {title: spinw.notwin, url: /spinw_notwin, output: 'web, pdf'}
-        - {title: spinw.twinq, url: /spinw_twinq, output: 'web, pdf'}
-      - title: Magnetic structure operations
-        output: web, pdf
-        subfolderitems:
-        - {title: spinw.anneal, url: /spinw_anneal, output: 'web, pdf'}
-        - {title: spinw.annealloop, url: /spinw_annealloop, output: 'web, pdf'}
-        - {title: spinw.genmagstr, url: /spinw_genmagstr, output: 'web, pdf'}
-        - {title: spinw.magstr, url: /spinw_magstr, output: 'web, pdf'}
-        - {title: spinw.magtable, url: /spinw_magtable, output: 'web, pdf'}
-        - {title: spinw.nmagext, url: /spinw_nmagext, output: 'web, pdf'}
-        - {title: spinw.optmagk, url: /spinw_optmagk, output: 'web, pdf'}
-        - {title: spinw.optmagsteep, url: /spinw_optmagsteep, output: 'web, pdf'}
-        - {title: spinw.optmagstr, url: /spinw_optmagstr, output: 'web, pdf'}
-        - {title: spinw.structfact, url: /spinw_structfact, output: 'web, pdf'}
-      - title: Matrix operations
-        output: web, pdf
-        subfolderitems:
-        - {title: spinw.addmatrix, url: /spinw_addmatrix, output: 'web, pdf'}
-        - {title: spinw.getmatrix, url: /spinw_getmatrix, output: 'web, pdf'}
-        - {title: spinw.setmatrix, url: /spinw_setmatrix, output: 'web, pdf'}
-      - title: Spin Hamiltonian generations
-        output: web, pdf
-        subfolderitems:
-        - {title: spinw.addaniso, url: /spinw_addaniso, output: 'web, pdf'}
-        - {title: spinw.addcoupling, url: /spinw_addcoupling, output: 'web, pdf'}
-        - {title: spinw.addg, url: /spinw_addg, output: 'web, pdf'}
-        - {title: spinw.field, url: /spinw_field, output: 'web, pdf'}
-        - {title: spinw.gencoupling, url: /spinw_gencoupling, output: 'web, pdf'}
-        - {title: spinw.intmatrix, url: /spinw_intmatrix, output: 'web, pdf'}
-        - {title: spinw.quickham, url: /spinw_quickham, output: 'web, pdf'}
-        - {title: spinw.setunit, url: /spinw_setunit, output: 'web, pdf'}
-        - {title: spinw.symop, url: /spinw_symop, output: 'web, pdf'}
-        - {title: spinw.temperature, url: /spinw_temperature, output: 'web, pdf'}
-      - title: Solvers
-        output: web, pdf
-        subfolderitems:
-        - {title: spinw.energy, url: /spinw_energy, output: 'web, pdf'}
-        - {title: spinw.fourier, url: /spinw_fourier, output: 'web, pdf'}
-        - {title: spinw.fouriersym, url: /spinw_fouriersym, output: 'web, pdf'}
-        - {title: spinw.moment, url: /spinw_moment, output: 'web, pdf'}
-        - {title: spinw.powspec, url: /spinw_powspec, output: 'web, pdf'}
-        - {title: spinw.spinwave, url: /spinw_spinwave, output: 'web, pdf'}
-        - {title: spinw.spinwavesym, url: /spinw_spinwavesym, output: 'web, pdf'}
-        - {title: spinw.symbolic, url: /spinw_symbolic, output: 'web, pdf'}
-      - title: Fitting spin wave spectrum
-        output: web, pdf
-        subfolderitems:
-        - {title: spinw.fitspec, url: /spinw_fitspec, output: 'web, pdf'}
-        - {title: spinw.horace, url: /spinw_horace, output: 'web, pdf'}
-        - {title: spinw.matparser, url: /spinw_matparser, output: 'web, pdf'}
-      - title: Miscellaneous
-        output: web, pdf
-        subfolderitems:
-        - {title: spinw.clearcache, url: /spinw_clearcache, output: 'web, pdf'}
-        - {title: spinw.copy, url: /spinw_copy, output: 'web, pdf'}
-        - {title: spinw.delete, url: /spinw_delete, output: 'web, pdf'}
-        - {title: spinw.export, url: /spinw_export, output: 'web, pdf'}
-        - {title: spinw.fileid, url: /spinw_fileid, output: 'web, pdf'}
-        - {title: spinw.isvalid, url: /spinw_isvalid, output: 'web, pdf'}
-        - {title: spinw.listener, url: /spinw_listener, output: 'web, pdf'}
-        - {title: spinw.spinw, url: /spinw_spinw, output: 'web, pdf'}
-        - {title: spinw.struct, url: /spinw_struct, output: 'web, pdf'}
-        - {title: spinw.table, url: /spinw_table, output: 'web, pdf'}
-        - {title: spinw.validate, url: /spinw_validate, output: 'web, pdf'}
-        - {title: spinw.version, url: /spinw_version, output: 'web, pdf'}
+    - {title: Description, url: /spinw, output: 'web, pdf'}
   - title: swfiles
     output: web, pdf
     folderitems:
@@ -129,231 +20,36 @@ entries:
       - title: []
         output: []
         subfolderitems: []
-      - title: Transforming and plotting calculated spin wave spectrum
-        output: web, pdf
-        subfolderitems:
-        - {title: sw_econtract, url: /sw_econtract, output: 'web, pdf'}
-        - {title: sw_egrid, url: /sw_egrid, output: 'web, pdf'}
-        - {title: sw_filelist, url: /sw_filelist, output: 'web, pdf'}
-        - {title: sw_instrument, url: /sw_instrument, output: 'web, pdf'}
-        - {title: sw_magdomain, url: /sw_magdomain, output: 'web, pdf'}
-        - {title: sw_neutron, url: /sw_neutron, output: 'web, pdf'}
-        - {title: sw_omegasum, url: /sw_omegasum, output: 'web, pdf'}
-        - {title: sw_plotspec, url: /sw_plotspec, output: 'web, pdf'}
-        - {title: sw_xray, url: /sw_xray, output: 'web, pdf'}
-      - title: Generate list of vectors in reciprocal space
-        output: web, pdf
-        subfolderitems:
-        - {title: sw_qgrid, url: /sw_qgrid, output: 'web, pdf'}
-        - {title: sw_qscan, url: /sw_qscan, output: 'web, pdf'}
-      - title: Resolution claculation and convolution
-        output: web, pdf
-        subfolderitems:
-        - {title: sw_res, url: /sw_res, output: 'web, pdf'}
-        - {title: sw_resconv, url: /sw_resconv, output: 'web, pdf'}
-        - {title: sw_tofres, url: /sw_tofres, output: 'web, pdf'}
-      - title: SpinW model related functions
-        output: web, pdf
-        subfolderitems:
-        - {title: sw_bonddim, url: /sw_bonddim, output: 'web, pdf'}
-        - {title: sw_extendlattice, url: /sw_extendlattice, output: 'web, pdf'}
-        - {title: sw_fstat, url: /sw_fstat, output: 'web, pdf'}
-        - {title: sw_intsf, url: /sw_intsf, output: 'web, pdf'}
-        - {title: sw_model, url: /sw_model, output: 'web, pdf'}
-      - title: Constraint functions
-        output: web, pdf
-        subfolderitems:
-        - {title: gm_planar, url: /gm_planar, output: 'web, pdf'}
-        - {title: gm_planard, url: /gm_planard, output: 'web, pdf'}
-        - {title: gm_spherical3d, url: /gm_spherical3d, output: 'web, pdf'}
-        - {title: gm_spherical3dd, url: /gm_spherical3dd, output: 'web, pdf'}
-      - title: Geometrical calculations
-        output: web, pdf
-        subfolderitems:
-        - {title: sw_angle, url: /sw_angle, output: 'web, pdf'}
-        - {title: sw_cartesian, url: /sw_cartesian, output: 'web, pdf'}
-        - {title: sw_cmod, url: /sw_cmod, output: 'web, pdf'}
-        - {title: sw_fsub, url: /sw_fsub, output: 'web, pdf'}
-        - {title: sw_mattype, url: /sw_mattype, output: 'web, pdf'}
-        - {title: sw_nvect, url: /sw_nvect, output: 'web, pdf'}
-        - {title: sw_quadell, url: /sw_quadell, output: 'web, pdf'}
-        - {title: sw_rot, url: /sw_rot, output: 'web, pdf'}
-        - {title: sw_rotmat, url: /sw_rotmat, output: 'web, pdf'}
-        - {title: sw_rotmatd, url: /sw_rotmatd, output: 'web, pdf'}
-      - title: Text and graphical input/output for different high level commands
-        output: web, pdf
-        subfolderitems:
-        - {title: sw_annealfigure, url: /sw_annealfigure, output: 'web, pdf'}
-        - {title: sw_annealplot, url: /sw_annealplot, output: 'web, pdf'}
-        - {title: sw_circle, url: /sw_circle, output: 'web, pdf'}
-        - {title: sw_counter, url: /sw_counter, output: 'web, pdf'}
-        - {title: sw_label, url: /sw_label, output: 'web, pdf'}
-        - {title: sw_multicolor, url: /sw_multicolor, output: 'web, pdf'}
-        - {title: sw_parstr, url: /sw_parstr, output: 'web, pdf'}
-        - {title: sw_plotcell, url: /sw_plotcell, output: 'web, pdf'}
-        - {title: sw_plotsf, url: /sw_plotsf, output: 'web, pdf'}
-        - {title: sw_status, url: /sw_status, output: 'web, pdf'}
-      - title: Acessing the SpinW database
-        output: web, pdf
-        subfolderitems:
-        - {title: sw_atomdata, url: /sw_atomdata, output: 'web, pdf'}
-        - {title: sw_cff, url: /sw_cff, output: 'web, pdf'}
-        - {title: sw_mff, url: /sw_mff, output: 'web, pdf'}
-        - {title: sw_nb, url: /sw_nb, output: 'web, pdf'}
-      - title: Symmetry calculations
-        output: web, pdf
-        subfolderitems:
-        - {title: sw_basismat, url: /sw_basismat, output: 'web, pdf'}
-        - {title: sw_mirror, url: /sw_mirror, output: 'web, pdf'}
-      - title: Useful functions for physics
-        output: web, pdf
-        subfolderitems:
-        - {title: sw_bose, url: /sw_bose, output: 'web, pdf'}
-        - {title: sw_converter, url: /sw_converter, output: 'web, pdf'}
-        - {title: sw_fibo, url: /sw_fibo, output: 'web, pdf'}
-      - title: Import functions
-        output: web, pdf
-        subfolderitems:
-        - {title: sw_import, url: /sw_import, output: 'web, pdf'}
-        - {title: sw_readspec, url: /sw_readspec, output: 'web, pdf'}
-        - {title: sw_readtable, url: /sw_readtable, output: 'web, pdf'}
-      - title: Export functions
-        output: web, pdf
-        subfolderitems:
-        - {title: sw_idata, url: /sw_idata, output: 'web, pdf'}
+      - title: []
+        output: []
+        subfolderitems: []
+      - title: []
+        output: []
+        subfolderitems: []
+      - title: []
+        output: []
+        subfolderitems: []
+      - title: []
+        output: []
+        subfolderitems: []
+      - title: []
+        output: []
+        subfolderitems: []
+      - title: []
+        output: []
+        subfolderitems: []
+      - title: []
+        output: []
+        subfolderitems: []
+      - title: []
+        output: []
+        subfolderitems: []
+      - title: []
+        output: []
+        subfolderitems: []
       - title: Miscellaneous
         output: web, pdf
         subfolderitems:
-        - {title: sw_freemem, url: /sw_freemem, output: 'web, pdf'}
-        - {title: sw_initialize, url: /sw_initialize, output: 'web, pdf'}
-        - {title: sw_mex, url: /sw_mex, output: 'web, pdf'}
-        - {title: sw_notify, url: /sw_notify, output: 'web, pdf'}
-        - {title: sw_readparam, url: /sw_readparam, output: 'web, pdf'}
-        - {title: sw_rootdir, url: /sw_rootdir, output: 'web, pdf'}
-        - {title: sw_uniquetol, url: /sw_uniquetol, output: 'web, pdf'}
-        - {title: sw_update, url: /sw_update, output: 'web, pdf'}
-        - {title: sw_version, url: /sw_version, output: 'web, pdf'}
-  - title: swplot
-    output: web, pdf
-    folderitems:
-    - title: Description
-      url: /swplot
-      output: web, pdf
-      subfolders:
-      - title: []
-        output: []
-        subfolderitems: []
-      - title: Basic 3D objects
-        output: web, pdf
-        subfolderitems:
-        - {title: swplot.arrow, url: /swplot_arrow, output: 'web, pdf'}
-        - {title: swplot.circle, url: /swplot_circle, output: 'web, pdf'}
-        - {title: swplot.cylinder, url: /swplot_cylinder, output: 'web, pdf'}
-        - {title: swplot.ellipsoid, url: /swplot_ellipsoid, output: 'web, pdf'}
-        - {title: swplot.line, url: /swplot_line, output: 'web, pdf'}
-        - {title: swplot.polyhedron, url: /swplot_polyhedron, output: 'web, pdf'}
-        - {title: swplot.text, url: /swplot_text, output: 'web, pdf'}
-      - title: Creating and modifying swplot figure
-        output: web, pdf
-        subfolderitems:
-        - {title: swplot.activefigure, url: /swplot_activefigure, output: 'web, pdf'}
-        - {title: swplot.add, url: /swplot_add, output: 'web, pdf'}
-        - {title: swplot.base, url: /swplot_base, output: 'web, pdf'}
-        - {title: swplot.clear, url: /swplot_clear, output: 'web, pdf'}
-        - {title: swplot.close, url: /swplot_close, output: 'web, pdf'}
-        - {title: swplot.delete, url: /swplot_delete, output: 'web, pdf'}
-        - {title: swplot.export, url: /swplot_export, output: 'web, pdf'}
-        - {title: swplot.figure, url: /swplot_figure, output: 'web, pdf'}
-        - {title: swplot.findobj, url: /swplot_findobj, output: 'web, pdf'}
-        - {title: swplot.getdata, url: /swplot_getdata, output: 'web, pdf'}
-        - {title: swplot.ishg, url: /swplot_ishg, output: 'web, pdf'}
-        - {title: swplot.legend, url: /swplot_legend, output: 'web, pdf'}
-        - {title: swplot.mouse, url: /swplot_mouse, output: 'web, pdf'}
-        - {title: swplot.plot, url: /swplot_plot, output: 'web, pdf'}
-        - {title: swplot.tooltip, url: /swplot_tooltip, output: 'web, pdf'}
-        - {title: swplot.transform, url: /swplot_transform, output: 'web, pdf'}
-        - {title: swplot.translate, url: /swplot_translate, output: 'web, pdf'}
-        - {title: swplot.view, url: /swplot_view, output: 'web, pdf'}
-        - {title: swplot.zoom, url: /swplot_zoom, output: 'web, pdf'}
-      - title: Plotting SpinW object on swplot figure
-        output: web, pdf
-        subfolderitems:
-        - {title: swplot.plotatom, url: /swplot_plotatom, output: 'web, pdf'}
-        - {title: swplot.plotbase, url: /swplot_plotbase, output: 'web, pdf'}
-        - {title: swplot.plotbond, url: /swplot_plotbond, output: 'web, pdf'}
-        - {title: swplot.plotcell, url: /swplot_plotcell, output: 'web, pdf'}
-        - {title: swplot.plotchem, url: /swplot_plotchem, output: 'web, pdf'}
-        - {title: swplot.plotion, url: /swplot_plotion, output: 'web, pdf'}
-        - {title: swplot.plotmag, url: /swplot_plotmag, output: 'web, pdf'}
-      - title: Related functions
-        output: web, pdf
-        subfolderitems:
-        - {title: swplot.color, url: /swplot_color, output: 'web, pdf'}
-        - {title: swplot.icomesh, url: /swplot_icomesh, output: 'web, pdf'}
-        - {title: swplot.logo, url: /swplot_logo, output: 'web, pdf'}
-        - {title: swplot.patchfacefcn, url: /swplot_patchfacefcn, output: 'web, pdf'}
-        - {title: swplot.raytriangle, url: /swplot_raytriangle, output: 'web, pdf'}
-        - {title: swplot.setrangegui, url: /swplot_setrangegui, output: 'web, pdf'}
-        - {title: swplot.subfigure, url: /swplot_subfigure, output: 'web, pdf'}
-        - {title: swplot.tooltipcallback, url: /swplot_tooltipcallback, output: 'web,
-          - pdf'}
-        - {title: swplot.tooltipstring, url: /swplot_tooltipstring, output: 'web,
-          - pdf'}
-  - title: swpref
-    output: web, pdf
-    folderitems:
-    - title: Description
-      url: /swpref
-      output: web, pdf
-      subfolders:
-      - title: []
-        output: []
-        subfolderitems: []
-      - title: Files
-        output: web, pdf
-        subfolderitems:
-        - {title: swpref.getpref, url: /swpref_getpref, output: 'web, pdf'}
-        - {title: swpref.pref, url: /swpref_pref, output: 'web, pdf'}
-        - {title: swpref.setpref, url: /swpref_setpref, output: 'web, pdf'}
-  - title: swsym
-    output: web, pdf
-    folderitems:
-    - title: Description
-      url: /swsym
-      output: web, pdf
-      subfolders:
-      - title: []
-        output: []
-        subfolderitems: []
-      - title: Files
-        output: web, pdf
-        subfolderitems:
-        - {title: swsym.add, url: /swsym_add, output: 'web, pdf'}
-        - {title: swsym.bond, url: /swsym_bond, output: 'web, pdf'}
-        - {title: swsym.generator, url: /swsym_generator, output: 'web, pdf'}
-        - {title: swsym.genreduce, url: /swsym_genreduce, output: 'web, pdf'}
-        - {title: swsym.isop, url: /swsym_isop, output: 'web, pdf'}
-        - {title: swsym.operator, url: /swsym_operator, output: 'web, pdf'}
-        - {title: swsym.oporder, url: /swsym_oporder, output: 'web, pdf'}
-        - {title: swsym.point, url: /swsym_point, output: 'web, pdf'}
-        - {title: swsym.position, url: /swsym_position, output: 'web, pdf'}
-        - {title: swsym.str, url: /swsym_str, output: 'web, pdf'}
-  - title: swfunc
-    output: web, pdf
-    folderitems:
-    - title: Description
-      url: /swfunc
-      output: web, pdf
-      subfolders:
-      - title: []
-        output: []
-        subfolderitems: []
-      - title: Files
-        output: web, pdf
-        subfolderitems:
-        - {title: swfunc.gauss, url: /swfunc_gauss, output: 'web, pdf'}
-        - {title: swfunc.gaussfwhm, url: /swfunc_gaussfwhm, output: 'web, pdf'}
-        - {title: swfunc.lorfwhm, url: /swfunc_lorfwhm, output: 'web, pdf'}
-        - {title: swfunc.pvoigt, url: /swfunc_pvoigt, output: 'web, pdf'}
-        - {title: swfunc.voigtfwhm, url: /swfunc_voigtfwhm, output: 'web, pdf'}
+        - {title: gm_planard, url: /gm_planard, output: 'web, pdf'}
+        - {title: sw_readspec, url: /sw_readspec, output: 'web, pdf'}
 

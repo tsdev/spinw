@@ -141,10 +141,10 @@ switch swObject.name
             
         
     case {'base' 'base_label'}
-        BV = swObject.data;
-        RL = 2*pi*inv(BV); %#ok<MINV>
-        abc = sqrt(sum(BV.^2,1));
-        ang = [sw_angle(BV(:,2),BV(:,3)) sw_angle(BV(:,1),BV(:,3)) sw_angle(BV(:,1),BV(:,2))]*180/pi;
+        BV  = obj.basisvector;
+        RL  = obj.rl;
+        abc = obj.lattice.lat_const;
+        ang = obj.lattice.angle*180/pi;
         
         string = ['Lattice parameters' newline...
             sprintf(['%7.3f ' unitR ', '],abc)];

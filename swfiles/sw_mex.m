@@ -1,21 +1,31 @@
 function sw_mex(varargin)
-% compiles the mex files and test them
-%
-% SW_MEX('Option1',Value1, ...)
-%
-% The compiled mex files will speed up the spinw.spinwave function. The
+% compiles and tests the mex files
+% 
+% ### Syntax
+% 
+% `sw_mex(Name,Value)`
+% 
+% ### Description
+% 
+% `sw_mex(Name,Value)` compiles and tests the generated mex files. The
+% compiled mex files will speed up the [spinw.spinwave] function. The
 % expected speedup is larger for smaller magnetic unit cells. Once the mex
-% files are compiled, use the swpref.setpref('usemex',true) command to
-% switch to mex in spinw.spinwave.
-%
-% Options:
-%
-% test      If true, the compiled .mex files will be tested. Default is
-%           false.
-% swtest    If true, 3 spin wave calculation will run with and without .mex
-%           files and the results will be compared. Default is false.
-%
-% See also SWPREF.
+% files are compiled, use the `swpref.setpref('usemex',true)` command to
+% switch on using mex files in [spinw.spinwave].
+% 
+% ### Name-Value Pair Arguments
+% 
+% `'test'`
+% : If `true`, the compiled .mex files will be tested. Default is
+%   `false`.
+% 
+% `'swtest'`
+% : If `true`, 3 spin wave calculation will run with and without .mex
+%   files and the results will be compared. Default is `false`.
+% 
+% ### See Also
+% 
+% [swpref]
 %
 
 inpForm.fname  = {'test' 'compile' 'swtest' };

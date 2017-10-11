@@ -30,7 +30,7 @@ plot(hChain,'range',[10 1/2 1/2]);
 
 T = 1e-2;
 hChain.field([0 0 0]);
-param = struct('verbosity',1,'cool',@(T)(0.8*T),'initT',40,'endT',T,'nMC',1e3,'nStat',0,'random',true,'nExt',[150 1 1]);
+param = struct('verbosity',2,'cool',@(T)(0.8*T),'initT',40,'endT',T,'nMC',1e3,'nStat',0,'random',true,'nExt',[150 1 1]);
 aRes = hChain.anneal(param);
 
 fieldSweep = [linspace(0,5,40) linspace(5,0,40)];

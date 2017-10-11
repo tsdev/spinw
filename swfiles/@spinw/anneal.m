@@ -1,12 +1,12 @@
 function stat = anneal(obj, varargin)
 % performs simulated annealing of spins
-% 
+%
 % ### Syntax
-% 
+%
 % `stat = anneal(obj,Name,Value)`
-% 
+%
 % ### Description
-% 
+%
 % `stat = anneal(obj,Name,Value)` performs simulated annealing on the spin
 % Hamiltonian defined in `obj`. It assumes a classical spin system and
 % employs the [Metropolis–Hastings
@@ -20,19 +20,19 @@ function stat = anneal(obj, varargin)
 % (default) to 2 or 1 to speed up simulation on xy and Ising systems. For
 % these restricted dimensions only isotropic exchange interactions are
 % allowed. Also the g-tensor is assumed to be 2.
-%  
+%
 % {{warning The calculated energies does not contain the self energy (spin
 % coupled to itself), thus the energies calculated here can differ from the
 % output of [spinw.energy].}}
-%  
-% 
+%
+%
 % ### Input Arguments
-% 
+%
 % `obj`
 % : [spinw] object.
-% 
+%
 % ### Name-Value Pair Arguments
-% 
+%
 % `'spinDim'`
 % : Dimensionality of the spins:
 %   * **1**     Ising spins.
@@ -44,44 +44,44 @@ function stat = anneal(obj, varargin)
 %   the direction of the spins are along x-axis, for XY model the
 %   the xy-plane. Magnetic fields perpendicular to these directions
 %   are omitted.
-% 
+%
 % `'initT'`
 % : The initial temperature, can be any positive number
 %   in units of Kelvin. Default value is 1.
-% 
+%
 % `'endT'`
 % : Temperature at which the annealing will stop, can be any positive number
 %   smaller than `initT`, unit is Kelvin.
 %   Default value is $10^{-3}$.
-% 
+%
 % `'cool'`
 % : Defines how the following temperature value is calculated from the
 %   previous one using a user function. Any function that takes a scalar as input and
 %   returns a smaller but positive scalar as output. Default is `@(T)(0.92*T)`.
-% 
+%
 % `'random'`
 % : If `true` the initial spin orientation will be random, which is
 %   effectively a $T=\infty$ paramagnet. If the initial spin configuration
 %   is undefined (`obj.magstr.S` is empty) the initial configuration
 %   is always random independently of this parameter.
 %   Default value is `false`.
-% 
+%
 % `'nMC'`
 % : Number of Monte-Carlo steps per spin at each temperature
-%   step  which includes thermalization and the sampling for the extracted 
+%   step  which includes thermalization and the sampling for the extracted
 %   TD properties at the last temperature). Default is 100.
-% 
+%
 % `'nORel'`
 % : Number of over-relaxation steps after every Monte-Carlo
 %   steps. It rotates the spins around the direction of the local field by
 %   180\\degree. It is reversible and microcanonical if the single ion
 %   anisotropy is 0. Default value is 0, to omit over-relaxation.
-% 
+%
 % `'nStat'`
 % : Number of cycles at the last temperature to calculate
 %   statistical averages. It has to be smaller or equal $n_{MC}$.
 %   Default value is 100.
-% 
+%
 % `'boundary'`
 % : Boundary conditions of the extended unit cell:
 %   * **free**  Free, interactions between extedned unit cells are
@@ -89,18 +89,18 @@ function stat = anneal(obj, varargin)
 %   * **per**   Periodic, interactions between extended unit cells
 %               are retained.
 %   Default value is `{'per' 'per' 'per'}`.
-% 
+%
 % `'verbosity'`
 % : Controls the amount of output to the Command Window:
 %   * **0**   Suppresses all output.
 %   * **1**   Gives final report only.
 %   * **2**   Plots temperature changes and final report, default value.
-% 
+%
 % `'nExt'`
 % : The size of the magnetic cell in number of unit cells that can override
 %   the value stored in `obj.magstr.N_ext`, given by a row vector with
 %   three integers
-% 
+%
 % `'fStat'`
 % : Function handle to measure TD quantities at the final temperature
 %   for `nStat` Monte-Carlo steps. The function returns a single structure
@@ -116,7 +116,7 @@ function stat = anneal(obj, varargin)
 %   the last run, input `parIn.param` contains all the annealing
 %   parameters). For comparison see the defaul function [sw_fstat].
 %   Default value is `@sw_fstat`.
-% 
+%
 % `'fSub'`
 % : Function to define sublattices for Monte-Carlo speedup. Function handle
 %   with the following header:
@@ -127,69 +127,69 @@ function stat = anneal(obj, varargin)
 %   `conn` is a matrix with dimensions of $[2\times n_{conn}]$ $n_{ext}$ is
 %   equal to `nExt`. For the SpinW implementation see [sw_fsub]. Default
 %   value is `@sw_fsub`.
-% 
+%
 % `'subLat'`
 % : Vector that assigns all magnetic moments into non-interacting
 %   sublattices, contains a single index $(1,2,3...)$ for every
 %   magnetic moment, row vector with $n_{magExt}$ number of elements. If
 %   undefined, the function defined in `fSub` parameter will be used to
 %   partition the lattice.
-% 
+%
 % `'title'`
 % : Gives a title string to the simulation that is saved in the
 %   output.
-% 
+%
 % `'autoK'`
 % : Bin length of the autocorrelation vector. Should be a few times
 %   smaller than `nMC`. Default value is 0 when no autocorrelation function
 %   is calculated.
-% 
+%
 % ### Output Arguments
-% 
+%
 % `stat` struct that contains the calculated TD averages and the parameters
 % of the simulation with the following fields:
 %
 % `param`
 % : All input parameter values of the anneal function.
-% 
+%
 % `obj`
 % : The clone of the input `obj` updated with the final magnetic
 %   structure.
-% 
+%
 % `M`
 % : Components of the magnetisation after the last annealing
 %   run stored in a matrix with dimensions of $[3\times n_{magExt}]$.
-% 
+%
 % `E`
 % : Energy of the system after the last annealing run, excluding the self
 %   energy.
-% 
+%
 % `T`
 % : Final temperature of the sample.
-% 
+%
 % Depending on the `fStat` parameter, additional fields are included. Using
 % the default function [sw_fstat] the following parameters are also
 % calculated:
-% 
+%
 % `avgM`
 % : Average value of the magnetisation vector sampled over `nStat` runs,
 %   stored in a matrix with dimensions of $[3\times n_{magExt}]$.
-% 
+%
 % `stdM`
 % : Standard deviation of the mgnetisation vector sampled over
 %   `nStat` runs, stored in a matrix with dimensions of $[3\times
 %   n_{magExt}]$.
-% 
+%
 % `avgE`
 % : Average system energy per spin averaged over `nStat` runs, scalar.
-% 
+%
 % `stdE`
 % : Standard deviation of the system energy per spin over
 %   `nStat` runs, scalar.
-% 
+%
 % `Cp`
 % : Heat capacity of the sample, calculated using the formula $(\langle E^2\rangle-\langle E\rangle^2)/k_B/T^2$.
-% 
+%
 % `Chi`
 % : Magnetic susceptibility of the sample calculated using the formula $(\langle M^2\rangle-\langle M\rangle^2)/k_B/T$.
 %
@@ -198,9 +198,9 @@ function stat = anneal(obj, varargin)
 %
 %    Kirkpatrick, S., Gelatt, C.D., & Vecchi, M.P. (1983). Optimization by
 %    Simulated Annealing. _Science, 220_, 671-680.
-% 
+%
 % ### See Also
-% 
+%
 % [spinw] \| [spinw.optmagstr] \| [sw_fsub] \| [sw_fstat]
 %
 % *[TD]: Thermodynamic
@@ -561,7 +561,7 @@ while 1
                     [C, dA] = sw_autocorr(C,M(:,ceil(end/2)),param.autoK);
                     A(end,:) = A(end,:) + dA;
                 end
-
+                
             end
             % XY model %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         case 2
@@ -786,7 +786,7 @@ while 1
                     % Save the statistics  of the parameters
                     statT = fStat(2, statT, T(end), ETemp/nMagExt, M, param.nExt);
                 end
-
+                
                 % calculate autocorrelation time
                 if param.autoK > 0
                     % select a moment far from the boundary
@@ -912,5 +912,175 @@ if size(C,2) == autoK+1
 else
     dA = 0;
 end
+
+end
+
+function hFigure = sw_annealplot(T, E, rate, param,fid, varargin)
+% displays information about the annealing simulation
+%
+% ### Syntax
+%
+% `sw_annealplot(t, e, rate, param,fid)`
+%
+% ### Description
+%
+% `sw_annealplot(t, e, rate, param,fid)`
+%
+% ### See Also
+%
+% [spinw.anneal] \| [sw_annealfigure]
+%
+
+if nargin == 0
+    help sw_annealplot
+    return
+end
+
+if  (param.verbosity > 0) && ~any(any(E))
+    tic;
+    dateStr = date;
+    clockV  = clock;
+    timeStr = sprintf('%02d:%02d:%02d',floor(clockV(4:6)));
+    fprintf0(fid,'Starting time: %s %s.\n',dateStr,timeStr);
+end
+
+hFigure = [];
+
+if (param.verbosity > 0) && ~isempty(E)
+    MCTime = toc; tic;
+    % Display current temperature, system energy, acceptance rate and number of
+    % steps per temperature per spin.
+    if size(E,2) == 1
+        fprintf0(fid,'  T = %11.6f, E = %10.5f per moment, acc\\rej=%10.5f, Steps=%6d, Time=%10.3f s\n',T(end),...
+            E(end),sum(rate)/length(rate),param.nMC,MCTime);
+    else
+        % Output for parallel tempering.
+        fprintf0(fid,'  Time=%7.0f s\n',MCTime*param.nCycle);
+    end
+    
+    if param.verbosity > 1
+        % create figure for annealing
+        if isempty(varargin)
+            hFigure = sw_annealfigure(varargin{:});
+        else
+            hFigure = varargin{:};
+        end
+        
+        if size(E,2) == 1
+            % Plot for simulated annealing.
+            if ~isempty(E)
+                nPlot = 100;
+                ratePlot = zeros(1,nPlot);
+                
+                for ii = 1:nPlot
+                    idx = ceil((ii-1)*length(rate)/nPlot+1):ceil(ii*length(rate)/nPlot);
+                    ratePlot(ii) = sum(rate(idx))/length(idx)*100;
+                end
+                
+                % Plots spin flip rate as a function of time.
+                subplot(2,1,1); box on; grid on; hold on; pcolor = jet(1000);
+                plot(linspace(0,100,nPlot),ratePlot,'Color',pcolor(randi(600,1)+200,:));
+                title('Acceptance rate at the last temperature during thermalisation')
+                xlabel('Time (percent)'); ylabel('Acceptance rate (percent)')
+                axis([0 100 0 min(max(ratePlot)*3,100)+1e-8]);
+                
+                % Plots system energy as a function of temperature.
+                subplot(2,1,2); hold off; semilogx(T, E, 'o-'); grid on;
+                xlabel('Temperature (K)'); ylabel('Energy per extended magnetic unit cell (meV)');
+            end
+        elseif any(any(E))
+            % Plot for parallel tempering.
+            % Bin the energy distribution.
+            E    = E(any(E'),:);
+            nT   = length(T);
+            minE = min(min(E));
+            maxE = max(max(E));
+            nX   = nT*15;
+            x    = linspace(minE,maxE,nX);
+            binE = zeros(nT,nX);
+            
+            for ii = 1:size(E,1)
+                for jj = 1:nT
+                    idx = floor((E(ii,jj)-minE)/(maxE-minE)*(nX-1))+1;
+                    binE(jj,idx) = binE(jj,idx) + 1;
+                end
+            end
+            binE = binE/max(max(binE));
+            
+            % Create random colors for the Gaussian curves.
+            cList = jet(nT);
+            cList = cList(mod((1:nT)*103,nT)+1,:);
+            
+            % Calculate overlaps.
+            oLap = zeros(1,nT-1);
+            for ii = 1:nT-1
+                oLap(ii) = 2*sum(min([binE(ii,:); binE(ii+1,:)]))/sum(sum(binE(ii+(0:1),:)));
+            end
+            
+            % Plot the energy distribution and overlaps.
+            subplot(2,1,1)
+            cla;
+            for ii = 1:nT
+                plot(x,binE(ii,:),'Color',cList(ii,:));
+                hold on
+            end
+            pOL = plot(linspace(minE,maxE,nT-1),oLap,'ko-','LineWidth',1.5);
+            legend(pOL,'Energy overlap of neighbouring temperatures')
+            axis([minE maxE 0 1]);
+            title(['Cycle #' num2str(size(E,1))]);
+            xlabel('Energy per spin')
+            ylabel('Normalized distribution')
+            
+            % Plots system energy as a function of temperature.
+            subplot(2,1,2); hold off; semilogx(T, E(end,:), 'o-'); grid on;
+            xlabel('Temperature (K)'); ylabel('Energy per extended magnetic unit cell (meV)');
+            axis([min(T) max(T) minE maxE]);
+        end
+        drawnow;
+    end
+    if (size(E,2) == 1) && (T(end)<param.endT)
+        dateStr = date;
+        clockV  = clock;
+        timeStr = sprintf('%02d:%02d:%02d',floor(clockV(4:6)));
+        fprintf0(fid,'End time: %s %s.\n',dateStr,timeStr);
+    end
+    
+end
+
+end
+
+function hFigure = sw_annealfigure()
+% creates figure for annealing simulation
+% 
+% ### Syntax
+% 
+% `hfigure = sw_annealfigure`
+% 
+% ### Description
+% 
+% `hfigure = sw_annealfigure` creates a figure to display the status of the
+% annealing simulation.
+% 
+% ### See Also
+% 
+% [spinw.anneal]
+%
+
+% Position of the new figure window.
+posFig = get(0,'DefaultFigurePosition');
+posFig = [posFig(1:2) 400 400];
+
+% Create new figure.
+hFigure = figure;
+
+set(0,'Showhidden','on')
+
+set(hFigure,...
+    'Position',      posFig,...
+    'DockControls',  'off',...
+    'PaperType',     'A4',...
+    'Tag',           'sw_anneal',...
+    'Toolbar',       'figure',...
+    'Name',          'SpinW : Annealing status');
 
 end

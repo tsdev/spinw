@@ -50,7 +50,7 @@ for ii = 1:numel(str)
             end
         end
         keep(ii) = false;
-    elseif numel(temp)>2 && strcmp(temp(1:2),'>>')
+    elseif numel(temp)>=2 && strcmp(temp(1:2),'>>')
         if recalc
             try
                 out0 = evalc(str{ii}(str{ii}~='>'));
@@ -58,7 +58,7 @@ for ii = 1:numel(str)
                 out0 = '';
                 warning('Error in %s!',funName);
             end
-            if strcmp(temp(end+(-1:0)),'>>')
+            if numel(temp)>2 && strcmp(temp(end+(-1:0)),'>>')
                 % add output to the string, remove html tags
                 out1 = regexprep(out0,'<.*?>','');
                 out1 = strsplit(out1,newline);
@@ -77,6 +77,9 @@ for ii = 1:numel(str)
             out{end+1} = out0; %#ok<AGROW>
         end
         str{ii} = str{ii}(str{ii}~='>');
+        if isempty(str{ii})
+            str{ii} = ' ';
+        end
     end
 end
 

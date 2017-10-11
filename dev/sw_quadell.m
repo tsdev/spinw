@@ -121,3 +121,58 @@ if toplot
 end
 
 end
+
+function points = sw_circle(r0, n, R, N)
+% creates the 3D coordinates of the circle circumference
+% 
+% ### Syntax
+% 
+% `R = sw_circle(r0, n, r, n)`
+% 
+% ### Description
+%
+% `points = sw_circle(r0, n, r, n)` generates the 3D coordinates of a
+% circle circumference defined by the position of the circle, normal vector
+% and radius.
+%
+% ### Input Arguments
+%
+% `r0`
+% : Center of circle in a column vector with 3 elements.
+%
+% `n`
+% : Normal to the circle surface, in a column vector with 3 elements.
+%
+% `R`
+% : Radius of the circle.
+% 
+% `N`
+% : Number of points on the circumference.
+% 
+% ### Output Arguments
+%
+% `R`
+% : Matrix with dimensions of $[3\times N]$ containing the 3D coordinates
+%   in columns.
+%
+
+if nargin == 0
+    help sw_circle
+    return
+end
+
+if any(cross(n,[0; 0; 1]))
+    a = cross(n,[0; 0; 1]);
+else
+    a = cross(n,[0; 1; 0]);
+end
+
+b = cross(n,a);
+a = a/norm(a);
+b = b/norm(b);
+
+phi = linspace(0,2*pi,N);
+
+points = R*(a*cos(phi)+b*sin(phi))+repmat(r0,1,N);
+
+end

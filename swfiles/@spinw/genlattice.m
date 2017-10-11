@@ -154,7 +154,6 @@ if ~isempty(param.bv)
     % rotation matrix that bring the basis vectors to the right direction
     if nargout > 0
         R = R3*R2*R1;
-        %R = R2*R1;
     end
     
     % the new abc vectors compatible with the SpinW format
@@ -163,7 +162,10 @@ if ~isempty(param.bv)
     c = BV2(:,3);
     
     obj.lattice.lat_const = [norm(a) norm(b) norm(c)];
-    obj.lattice.angle     = [sw_angle(b,c),sw_angle(a,c),sw_angle(b,c)];
+    
+    angle2 = @(V1,V2)atan2(norm(cross(V1,V2)),dot(V1,V2));
+    
+    obj.lattice.angle     = [angle2(b,c),angle2(a,c),angle2(b,c)];
     
 else
     

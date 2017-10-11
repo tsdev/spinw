@@ -267,7 +267,11 @@ for ii = 1:numel(doctree)
         blockIdx = reshape(blockIdx',2,[]);
         for kk = size(blockIdx,2):-1:1
             % code
-            text0{blockIdx(1,kk)} = [text0{blockIdx(1,kk)} 'matlab'];
+            if ~isempty(regexp(text0{blockIdx(1,kk)},'none','ONCE'))
+                text0{blockIdx(1,kk)} = regexprep(text0{blockIdx(1,kk)},'none','');
+            else
+                text0{blockIdx(1,kk)} = [text0{blockIdx(1,kk)} 'matlab'];
+            end
             selBlock = text0((blockIdx(1,kk)+1):(blockIdx(2,kk)-1));
             if any(cellfun(@(C)~isempty(C),regexp(text0,'^>>')))
                 %

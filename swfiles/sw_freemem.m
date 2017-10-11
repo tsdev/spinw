@@ -1,4 +1,4 @@
-function mem = sw_freemem()
+function mem = sw_freemem
 % calculates the available memory
 % 
 % ### Syntax
@@ -9,6 +9,7 @@ function mem = sw_freemem()
 % 
 % `mem = sw_freemem` determines the available free memory (RAM). If the
 % function cannot determine the size of the free memory, it returns zero.
+% The function is compatible with Linux, macOS and Windows.
 % 
 % ### Output Arguments
 %
@@ -37,7 +38,7 @@ try %#ok<TRYNC>
             mem = mem(3);
         else
             [~, mem_free] = strtok(memStr(20:end));
-            mem = str2num(mem_free);
+            mem = str2double(mem_free);
         end
     end
 end

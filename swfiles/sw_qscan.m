@@ -25,7 +25,14 @@ function qOut = sw_qscan(qLim)
 % and $(1,1,0)$ points with 501 points per line segment use:
 %
 % ```
-% qLim = {[0 0 0] [1 0 0] [1 1 0] 501}
+% >>Q = sw_qscan({[0 0 0] [1 0 0] [1 1 0] [0 0 0] 501});
+% >>>figure
+% >>plot(Q(1,:),Q(2,:),'linewidth',2)
+% >>xlabel H
+% >>ylabel K
+% >>>axis([-1 2 -1 2])
+% >>>grid on
+% >>snapnow
 % ```
 %
 % ### See Also

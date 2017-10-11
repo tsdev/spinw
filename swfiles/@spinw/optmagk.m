@@ -137,7 +137,6 @@ kOpt = (kbase*pOpt(:));
 
 % is there any value larger than 1/2
 kOpt = mod(kOpt,1);
-kOpt(kOpt>1/2) = 1-kOpt(kOpt>1/2);
 
 [Eopt, V] = optfun(pOpt);
 % 

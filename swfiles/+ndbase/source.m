@@ -36,6 +36,8 @@ switch type
         type = 2;
     case 'url'
         type = 3;
+    case 'string'
+        type = 4;
     otherwise
         error('ndbase:source:WrongInput','The given data source type is invalid!')
 end
@@ -75,6 +77,10 @@ switch type
         
         source = dataSource;
         isfile = false;
+    case 4
+        dataStr = dataSource;
+        isfile = false;
+        
 end
 
 dataStr = char(dataStr(:))';

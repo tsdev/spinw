@@ -25,7 +25,7 @@ function [omega, swConv] = sw_idata(spectrum, varargin)
 %
 
 if nargin == 0
-    help sw_idata;
+    help sw_idata
     return;
 end
 

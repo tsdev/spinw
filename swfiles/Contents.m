@@ -31,7 +31,6 @@
 %
 %   sw_extendlattice
 %   sw_fstat        
-%   sw_intsf        
 %   sw_model        
 %   sw_bonddim      
 %
@@ -43,9 +42,7 @@
 %   gm_spherical3dd
 %
 % #### Geometrical calculations
-%   sw_angle    
 %   sw_cartesian
-%   sw_cmod     
 %   sw_fsub     
 %   sw_mattype  
 %   sw_nvect    
@@ -56,15 +53,8 @@
 %
 % #### Text and graphical input/output for different high level commands
 %
-%   sw_annealfigure
-%   sw_annealplot  
-%   sw_label       
-%   sw_circle      
-%   sw_counter     
 %   sw_multicolor  
 %   sw_parstr      
-%   sw_plotcell    
-%   sw_plotsf      
 %   sw_status      
 %
 % #### Acessing the SpinW database
@@ -83,7 +73,6 @@
 %
 %   sw_bose     
 %   sw_converter
-%   sw_fibo     
 %
 % #### Import functions
 %
@@ -91,18 +80,12 @@
 %   sw_readspec 
 %   sw_readtable
 %
-% #### Export functions
-%
-%   sw_idata
-%
 % #### Miscellaneous
 %
 %   sw_freemem   
-%   sw_initialize
 %   sw_readparam 
 %   sw_rootdir   
 %   sw_uniquetol 
 %   sw_update    
 %   sw_version   
 %   sw_mex       
-%   sw_notify    

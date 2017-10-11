@@ -1,38 +1,56 @@
 function [M, k, n, name, pname, limit] = gm_spherical3d(M0, x)
 % magnetic structure constraint function with spherical parameterisation
+% 
+% ### Syntax
+% 
+% `[m, k, n, name, pname, limit] = gm_spherical3d(S0, x)`
+% 
+% ### Description
+% 
+% `[m, k, n, name, pname, limit] = gm_spherical3d(S0, x)` generates
+% magnetic structure from given parameters while constraining the length of
+% the spin on each atom. The parametrization of the magnetic structure
+% consists of 2 spherical coordinates $(\theta,\varphi)$ angles per
+% magnetic atom. All angles are in radian.
+%   
+% ### Input Arguments
+%   
+% `x`
+% : Input parameters in the following order: 
+%   $[\theta_1, \varphi_1, ... , k_x, k_y, k_z, n_\theta, n_\varphi]$.
+% 
+% `S0`
+% : Spin quantum number in a row vector $(S_1, S_2, ...)$ or scalar if all
+%   spins are equal.
+%   
+% ### Output Arguments
+%   
+% `S`
+% : Matrix, containing the spin orientations with dimensions of $[3\times n_{magExt}]$.
+%       Every column contains the $(S_x S_y S_z)$ spin components of
+%       a magnetic atom in the $xyz$ coordinate system.
 %
-% [M, k, n, name, pname, limit] = GM_SPHERICAL3D(M0, x) 
+% `k`
+% : Magnetic ordering wavevector in rlu units in a row vector.
 %
-% It generates the parameters of magnetic moments and normal vector from
-% spherical (theta,phi) coordinates. All angles are in radian.
+% `n`
+% : Normal vector around which the spins are rotating for non-zero
+%       propagation vector in a row vector.
 %
-% Input:
+% `name`
+% : String, storing the name of the function.
 %
-% x         Input parameters in the following order:
-%           (Theta1, Phi1, Theta2, Phi2, ... , kx, ky, kz, nTheta, nPhi).
-% M0        Size of magnetic moments: (M1, M2, ...) or scalar if all
-%           moments are equal.
+% `pname`
+% : Name of the input parameters in a cell: `{'Phi1_rad', ...}`.
 %
-% Output:
-%
-% M         Array, containing the magnetic moments, dimensions are
-%           [3 nMagExt]. Every column contain the [Mx; My; Mz] magnetic
-%           moment components of a magnetic atom in the xyz coordinate
-%           system.
-% k         Magnetic ordering wavevector in r.l.u., dimensions are [1 3].
-% n         Normal vector to the plane of the incommensurate spins (if k
-%           non-zero).
-%
-% Optional outputs:
-% only produced if the output is requested.
-%
-% name      Name of the function.
-% pname     Name of the input parameters in a cell: {'Param1' 'Param2',...}
-% limit     Default limits on the input parameters, dimensions are [2 nX].
-%           Every column contains a lower and upper limit on the parameter.
-%
-% See also GM_PLANAR.
-%
+% `limit`
+% : Limits on the input parameters in a matrix with dimensions of $[2\times n_{param}]$. Every
+%       column contains a lower and upper limit on the corresponding
+%       parameter.
+%   
+% ### See Also
+%   
+% [gm_planar]
 
 if nargin == 0
     help gm_spherical3d

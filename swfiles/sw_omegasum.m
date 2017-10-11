@@ -1,26 +1,40 @@
 function spectra = sw_omegasum(spectra, varargin)
 % removes degenerate and ghost magnon modes from spectrum
+% 
+% ### Syntax
+% 
+% `spec = sw_omegasum(spec,Name,Value)`
+% 
+% ### Description
+% 
+% `spec = sw_omegasum(spec,Name,Value)` removes the degenerate modes from
+% the dispersion stored in `spec.omega` and sorts the modes according to
+% increasing energy. It also removes ghost modes if a lower intensity limit
+% is given.
+%  
+% The degenerate energies are substituted with `NaN` values.
 %
-% spec = sw_omegasum(spec, 'Option1', Value1, ...)
-%
-% It removes the degenerate modes from the dispersion stored in
-% spectra.omega and sorts omega according to the energy.
-%
-% The degenerate dispersion energies are substituted with NaN values. Be
-% carefull, after this function sw_egrid() won't work properly on spectra.
-% It doesn't work for spectra with multiple twins.
-%
-% Options:
-%
-% tol       Tolerance, within two energies are considered equal. Default
-%           value is 1e-5.
-% zeroint   The minimum intensity value, below the mode is dropped. Default
-%           value is zero (no modes are dropped due to weak intensity).
-% emptyval  Value that is assigned to modes, that are removed due to the
-%           summation. Default value is NaN (good for plotting). Zero can
-%           be used for further numerical treatmen.
-%
-% See also SPINW.SPINWAVE, SW_EGRID.
+% {{warning Be carefull, after this function [sw_egrid] won't work properly.
+% This function won't work with spectra of multiple twins.}}
+% 
+% ### Name-Value Pair Arguments
+% 
+% `'tol'`
+% : Energy tolerance, within the given value two energies are considered
+%   equal. Default value is $10^{-5}$.
+% 
+% `'zeroint'`
+% : The minimum intensity value, below which the mode is removed. Default
+%   value is 0 (no modes are dropped due to weak intensity).
+% 
+% `'emptyval'`
+% : Value that is assigned to modes that are removed. Default value is NaN
+%   (good for plotting). 0 can be used if further numerical analysis, such
+%   as binning will be applied.
+% 
+% ### See Also
+% 
+% [spinw.spinwave] \| [sw_egrid]
 %
 
 if iscell(spectra.omega)

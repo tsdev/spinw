@@ -1,34 +1,55 @@
 function [aList, SSext] = sw_extendlattice(nExt, aList, SS)
 % creates superlattice
+% 
+% ### Syntax
+% 
+% `aList = sw_extendlattice(nExt,aList)`
+% 
+% `[aList, SSext] = sw_extendlattice(nExt,aList,SS)`
 %
-% [aList, SSext] = SW_EXTENDLATTICE(nExt, aList, {SS})
+% ### Description
+% 
+% `aList = sw_extendlattice(nExt,aList)` creates a superlattice
+% and calculates all atomic positions within the new superlattice by
+% tiling it with the original cell.
 %
-% It creates a superlattice and all redefines all given bond for the larger
-% superlattice.
+% `[aList, SSext] = sw_extendlattice(nExt,aList,SS)` also calculates the
+% bond matrix for the supercell by properly including all internal bonds
+% and bonds between atoms in different supercells.
+% 
+% ### Input Arguments
+% 
+% `nExt`
+% : Size of the supercell in units of the original cell in a row vector
+%   with 3 elements.
+% 
+% `aList`
+% : List of the atoms, produced by [spinw.matom].
+% 
+% `SS`
+% : Interactions matrices in the unit cell. Struct where each field
+%   contains an interaction matrix.
+% 
+% ### Output Arguments
+% 
+% `aList`
+% : Parameters of the magnetic atoms in a struct with the following fields:
+%   * `RRext` Positions of magnetic atoms in lattice units of the supercell stored in a matrix with dimensions of $[3\times n_{magExt}]$.
+%   * `Sext`  Spin length of the magnetic atoms in a row vector with $n_{magExt}$ number of elements.
 %
-% Input:
-%
-% nExt          Number of unit cell extensions, dimensions are [1 3].
-% aList         List of the atoms, produced by spinw.matom.
-% SS            Interactions matrices in the unit cell, optional.
-%
-% Output:
-%
-% aList         Parameters of the magnetic atoms.
-% aList.RRext   Positions of magnetic atoms, assuming an extended unit
-%               cell, dimensions are [3 nMagExt].
-% aList.Sext    Spin length of the magnetic atoms, dimensions are
-%               [1 nMagExt].
-%
-% SSext         Interaction matrix in the extended unit cell, struct type.
-%               In the struct every field is a matrix. Every column of the
-%               matrices describes a single interaction.
-% SSext.iso     Isotropic exchange interactions.
-% SSext.ani     Anisotropic exchange interations.
-% SSext.dm      Dzyaloshinsky-Moriya interaction terms.
-% SSext.gen     General 3x3 matrix contains the exchange interaction.
-%
-% See also SPINW.INTMATRIX.
+% `SSext`
+% : Interaction matrix in the extended unit cell, struct type.
+%   In the struct every field is a matrix. Every column of the
+%   matrices describes a single bond, the following fields are generally
+%   defined:
+% 	* `iso`     Isotropic exchange interactions.
+% 	* `ani`     Anisotropic exchange interations.
+% 	* `dm`      Dzyaloshinsky-Moriya interaction terms.
+% 	* `gen`     General $[3\times 3]$ matrix contains the exchange interaction.
+% 
+% ### See Also
+% 
+% [spinw.intmatrix]
 %
 
 if nargin == 0

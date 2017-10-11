@@ -284,7 +284,7 @@ inpForm.defval = {false     false    true       0        1e-4  true    };
 inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]   };
 
 inpForm.fname  = [inpForm.fname  {'omega_tol' 'saveSabp' 'saveV' 'saveH'}];
-inpForm.defval = [inpForm.defval {1e-5        true       false   false  }];
+inpForm.defval = [inpForm.defval {1e-5        false      false   false  }];
 inpForm.size   = [inpForm.size   {[1 1]       [1 1]      [1 1]   [1 1]  }];
 
 inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];

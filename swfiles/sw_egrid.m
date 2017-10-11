@@ -321,7 +321,7 @@ if isfield(spectra,'Sab') && iscell(spectra.Sab)
     intP  = {intP};
     Pab   = {Pab};
     Mab   = {Mab};
-    Sperp = {Sperp};
+    Sperp = Sperp;
     
 elseif isfield(spectra,'Sperp') && iscell(spectra.Sperp)
     nTwin = numel(spectra.Sperp);
@@ -335,7 +335,7 @@ elseif isfield(spectra,'Sperp') && iscell(spectra.Sperp)
     Pab   = {Pab};
     Mab   = {Mab};
     Sperp = spectra.Sperp;
-elseif isfield(spectra,'Sperp')
+elseif ~isfield(spectra,'Sab')
     nTwin = 1;
     if ~isfield(spectra,'omega')
         omega = {[]};
@@ -363,7 +363,7 @@ end
 
 % number of modes and Q points
 if isfield(spectra,'Sab')
-    nMode = size(spectra.Sab,3);
+    nMode = size(Sab{1},3);
 else
     nMode = size(spectra.Sperp,1);
 end
@@ -536,7 +536,7 @@ end
 % sum up twin spectra if requested
 if param.sumtwin
     % normalised volume fractions of the twins
-    if isfield(spectra,'obj')
+    if isfield(spectra,'obj') && nTwin>1
         vol = spectra.obj.twin.vol/sum(spectra.obj.twin.vol);
     else
         vol = 1;

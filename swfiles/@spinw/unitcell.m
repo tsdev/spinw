@@ -1,38 +1,49 @@
 function unit_cell_info = unitcell(obj, idx)
-% returns information on atoms in the crystallographic unit cell
-%
-% unit_cell_info = UNITCELL(obj, idx)
-%
-% The function returns information on symmetry inequivalent atoms. 
-%
-% Input:
-%
-% obj       spinw class object.
-% idx       Selects certain atoms. If undefined UNIT_CELL(obj) or
-%           obj.UNIT_CELL returns information on all atoms. The selection
-%           can be also done according to the atom labels, in this case
-%           either a string of the label or cell of strings for several
-%           labels can be given.
-%
-% Output:
-%
-% 'unit_cell_info' is a tructure with that contains all the fields of
-% unit_cell.
-%
-% Example:
-%
-% ...
-% cryst.unit_cell = unitcell(cryst,[1 3]);
-%
+% returns unit cell data
+% 
+% ### Syntax
+% 
+% `cellInfo = unitcell(obj, idx)`
+% 
+% ### Description
+% 
+% `cellInfo = unitcell(obj, idx)` returns information on symmetry
+% inequivalent atoms and allowing to subselect certain atoms using the
+% `idx` index vector.
+% 
+% ### Examples
+% 
 % The example keeps only the first and third symmetry inequivalent atoms in
-% cryst object.
-%
-% ...
+% `cryst` object.
+% ```
+% cryst.unit_cell = unitcell(cryst,[1 3]);
+% ```
+% The example keeps only the atoms with labels `'O'` (Oxygen) atoms in
+% `cryst` object.
+% ```
 % cryst.unit_cell = unitcell(cryst,'O');
-%
-% The example keeps only the Oxygen atoms in cryst object.
-%
-% See also SPINW.ADDTWIN, SPINW.TWINQ, SPINW.UNIT_CELL.
+% ```
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% `idx`
+% : Selects certain atoms. If undefined `unit_cell(obj)` or
+%      `obj.unit_cell` returns information on all atoms. The selection
+%      can be also done according to the atom labels, in this case
+%      either a string of the label or cell of strings for several
+%      labels can be given.
+% 
+% ### Output Arguments
+% 
+% `cellInfo`
+% : Structure that contains all the fields of [spinw.unit_cell].
+% 
+% ### See Also
+% 
+% [spinw.addtwin] \| [spinw.twinq] \| [spinw.unit_cell]
 %
 
 if nargin == 1

@@ -1,4 +1,61 @@
 function [polyRes, yout] = sw_res(fid,polDeg,toplot,varargin)
+% fits energy resolution with polynomial
+% 
+% ### Syntax
+% 
+% `p = sw_res(source,poldeg)`
+% 
+% `p = sw_res(source,poldeg,true)`
+%
+% ### Description
+% 
+% `p = sw_res(fid,poldeg)` reads tabulated resolution data from the
+% `source` file which contains the FWHM energy resolution values as a
+% function of energy transfer in two columns. First  column is the energy
+% transfer values (positive is energy loss), while the second is the FWHM
+% of the Gaussian resolution at the given energy transfer.
+% 
+% `p = sw_res(fid,poldeg)` the polynomial fit will be shown in a figure.
+%
+% ### Examples
+% 
+% To calculate the resolution at an arbitrary energy use:
+%
+% pRes = sw_res(fileName,5);
+% Evec = linspace(0,100,501);
+% Eres = polyval(polyRes,Evec);
+% plot(Evec,Eres);
+% 
+% ### Input Arguments
+% 
+% `fid`
+% : String, path to the resolution file or a matrix with the
+%   same format as the data file.
+% 
+% `polDeg`
+% : Degree of the fitted polynomial to the instrumental
+%   resolution data. Default is 5.
+% 
+% `plot`
+% : If true the resolution will be plotted, optional, default
+%   is true.
+% 
+% ### Output Arguments
+% 
+% p             Returns the coefficients for a polynomial p(x) of \\degree n
+%               that is a best fit (in a least-squares sense) for the resolution data
+%               in y. The coefficients in p are in descending powers, and
+%               the length of p is n+1.
+%               p(x)=p_1*x^n+p_2*x^(n-1)+...+p_n*x+p_(n+1).
+% 
+% ### See Also
+% 
+% [polyfit] \| [sw_instrument]
+%
+% *[FWHM]: Full Width at Half Maximum
+%
+
+
 % reads a tabulated energy resolution from a file and fits with polynomial
 %
 % p = SW_RES(fid,polDeg,{plot})
@@ -25,11 +82,21 @@ function [polyRes, yout] = sw_res(fid,polDeg,toplot,varargin)
 %               the length of p is n+1.
 %               p(x)=p_1*x^n+p_2*x^(n-1)+...+p_n*x+p_(n+1).
 %
+% Example:
+%
+% To calculate the resolution at an arbitrary energy use:
+%
+% pRes = sw_res(file,5,false);
+% Evec = linspace(0,100,501);
+% Eres = polyval(polyRes,Evec);
+% plot(Evec,Eres);
+%
+%
 % See also POLYFIT, SW_INSTRUMENT.
 %
 
 if nargin == 0
-    help sw_res;
+    help sw_res
     return
 end
 

@@ -1,14 +1,52 @@
-function varargout = disp(obj, fid)
+function varargout = disp(obj)
+% prints information
+% 
+% ### Syntax
+% 
+% `{swdescr} = disp(obj)`
+% 
+% ### Description
+% 
+% `{swdescr} = disp(obj)` generates text summary of a [spinw] object.
+% Calling it with output argument, it will generate a text version of the
+% internal data structure giving also the dimensions of the different
+% matrices.
+% 
+% ### Examples
+% 
+% Here the internal data structure is generated:
+%
+% ```
+% >>crystal = spinw
+% >>swFields = disp(crystal)>>
+% ```
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Output Arguments
+% 
+% `swdescr`
+% : If output variable is given, the description of the `obj` object
+%   will be output into the `swdescr` variable, instead of being
+%   written onto the Command Window/file. Optional.
+% 
+% ### See Also
+% 
+% [spinw]
+%
+
+
+
 % prints the spinw data structure in readable format onto the Command Window
 %
-% {swDescr} = DISPLAY(obj, {fid})
+% {swDescr} = DISPLAY(obj)
 %
 % Input:
 %
 % obj       spinw class object.
-% fid       File identifier (created by fopen function) where the output
-%           will be written. Default is stored in obj, the output will be
-%           written onto the Command Line. Optional.
 %
 % Output:
 %
@@ -81,7 +119,7 @@ if nargout == 1
                 clear sF sS
                 plotSize = false;
             end
-            swDescr = [swDescr sprintf('\n')];
+            swDescr = [swDescr sprintf('\n')]; %#ok<SPRINTFN>
             index = index + 1;
         end
     end
@@ -93,7 +131,7 @@ else
     chem.chemform(chem.chemform == ' ') = [];
     chem.chemform(chem.chemform == '_') = [];
     abc  = obj.abc;
-    aa   = symbol('angs');
+    aa   = obj.unit.label{1};
     
     swDescr = ['     <strong>SpinW</strong> object, <a href="matlab:doc @spinw">spinw</a> class:\n'...
         sprintf('     <strong>Chemical formula</strong>: %s\n',chem.chemform) ...

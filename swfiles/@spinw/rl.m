@@ -1,30 +1,45 @@
 function rlVect = rl(obj, norm)
-% generates reciprocal lattice basis vectors of the crystal lattice
+% generates reciprocal lattice vectors
+% 
+% ### Syntax
+% 
+% `rlVec = rl(obj, {norm})`
+% 
+% ### Description
+% 
+% `rlVec = rl(obj, {norm})` returns the lattice vectors of the reciprocal
+% lattice in a $[3\times 3]$ matrix, with the $a^*$, $b^*$ and $c^*$ vectors
+% stored in **rows**. 
 %
-% rlVec = RL(obj, {norm})
+% 
+% ### Examples
+% 
+% To convert from reciprocal lattice unit to \\Angstrom$^{-1}$ ($xyz$
+% Cartesian coordinate system) use: (`Q_rlu` is a row vector with 3
+% elements):
 %
-% Input:
-%
-% obj       spinw class object.
-% norm      If true, the basis vectors are normalized to 1. Default is false.
-%           Optional.
-%
-% Output:
-%
-% rlVec     Stores the three basis vectors in columns, dimensions are
-%           [3 3].
-%
-% The 3x3 rlVec matrix can be used also as a coordinate transformation
-% matrix from the relative atomic position to positions in the xyz
-% coordinate system in Angstrom units.
-%
-% Example:
-%
-% To convert from reciprocal lattice unit to Angstrom^-1 (xyz coordinate system):
-%
-%   Q_xyz =  [h k l] * rlVect;
-%
-% See also SPINW, SPINW.ABC, SPINW.BASISVECTOR.
+% ```
+% Q_xyz =  Q_rlu * rlVect
+% ```
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% `norm`
+% : If `true`, the basis vectors are normalized to 1. Default values is
+% `false`, optional.
+% 
+% ### Output Arguments
+% 
+% `rlVec`
+% : Stores the three basis vectors in the rows of matrix with dimensions of
+%   $[3\times 3]$.
+% 
+% ### See Also
+% 
+% [spinw] \| [spinw.abc] \| [spinw.basisvector]
 %
 
 rlVect = 2*pi*inv(obj.basisvector); %#ok<MINV>

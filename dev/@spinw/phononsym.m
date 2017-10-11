@@ -53,25 +53,25 @@ D     = mean(SS.all([6 10 14],:));
 % convert dR into xyz coordinate system (Angstrom)
 dRxyz = obj.basisvector*dR;
 %dRxyz = dR;
-dRxyz  = bsxfunsym(@rdivide,dRxyz,sqrt(sum(dRxyz.^2,1)));
+dRxyz  = bsxfun(@rdivide,dRxyz,sqrt(sum(dRxyz.^2,1)));
 
 % partial derivative of the distance vector between 2 interacting atoms
 % dimensions: [3 3 nBond] --> [alpha beta nBond]
 %phiab = bsxfun(@rdivide,bsxfun(@times,permute(dRxyz,[1 3 2]),permute(dRxyz,[3 1 2])),permute(dRl2,[1 3 2]));
-phiab = bsxfunsym(@times,permute(dRxyz,[1 3 2]),permute(dRxyz,[3 1 2]));
+phiab = bsxfun(@times,permute(dRxyz,[1 3 2]),permute(dRxyz,[3 1 2]));
 
 %phiab = permute(phiab,[2 1 3]);
 
 % include the spring constant
-phiab = bsxfunsym(@times,permute(D,[1 3 2]),phiab);
+phiab = bsxfun(@times,permute(D,[1 3 2]),phiab);
 
 % Furier transform exp(-i*2*pi*k*R) factor
 % dimensions [1 1 nBond]
-dRQ = exp(-1i*2*pi*sumsym(bsxfunsym(@times,permute(dR,[3 4 2 1]),permute(hkl,[3 4 2 1])),4));
+dRQ = exp(-1i*2*pi*sum(bsxfun(@times,permute(dR,[3 4 2 1]),permute(hkl,[3 4 2 1])),4));
 
 % dynamical matrix
 % dimensions are [3 3]
-Dab = bsxfunsym(@plus,-permute(sumsym(bsxfunsym(@times,phiab,dRQ),3),[1 2 4 3]),sumsym(phiab,3));
+Dab = bsxfun(@plus,-permute(sum(bsxfun(@times,phiab,dRQ),3),[1 2 4 3]),sum(phiab,3));
 
 % solve the eigenvalue problem
 [ea,om2] = eig(Dab);
@@ -79,7 +79,7 @@ om = sqrt(om2);
 
 % % X-ray cross section
 hklA = (hkl'*2*pi*inv(obj.basisvector))';
-int  = permute(sumsym(bsxfunsym(@times,ea,permute(hklA,[1 3 2])),1),[2 3 1]).^2;
+int  = permute(sum(bsxfun(@times,ea,permute(hklA,[1 3 2])),1),[2 3 1]).^2;
 
 spectra.Sab   = ea;
 spectra.omega = om;

@@ -26,6 +26,8 @@ function udat = spaghetti(dat,varargin)
 %               coo = cell(1,2);
 %               [coo{:}] = ndgrid(udat.x,udat.y);
 %               surf(coo{:},udat.sig);
+% axscale   Scale of the unit on the x-axis. Defines what A^-1 value
+%           corresponds to unit 1. Default value is 1.
 %
 % Output:
 %
@@ -40,10 +42,10 @@ function udat = spaghetti(dat,varargin)
 %               clim    Limits of the c-axis, row vector with 2 elements.
 %
 
-inpForm.fname  = {'flip' 'label' 'dashed' 'ylim' 'plot' 'pad'};
-inpForm.defval = {[]     []      true     'auto' true   false};
-inpForm.size   = {[1 -1] [1 -2]  [1 1]    [1 -3] [1 1]  [1 1]};
-inpForm.soft   = {true   true    false    false  false  false};
+inpForm.fname  = {'flip' 'label' 'dashed' 'ylim' 'plot' 'pad' 'axscale'};
+inpForm.defval = {[]     []      true     'auto' true   false 1        };
+inpForm.size   = {[1 -1] [1 -2]  [1 1]    [1 -3] [1 1]  [1 1] [1 1]    };
+inpForm.soft   = {true   true    false    false  false  false false    };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -57,6 +59,10 @@ else
         error('spaghetti:WrongOption','The ''flip'' option should containt true/false for each data piece!');
     end
     param.flip = logical(param.flip);
+end
+
+if isa(dat,'sqw')
+    dat = d2d(dat);
 end
 
 if ~isa(dat,'d2d')
@@ -83,8 +89,9 @@ if param.flip(1)
 end
 
 ax0   = spags.p{1}(:)*spags.ulen(spags.pax(1));
-%ax{1} = ax0-mean(ax0(1:2));
-ax{1} = ax0;
+% start from 0
+ax{1} = ax0-mean(ax0(1:2));
+%ax{1} = ax0;
 ax{2} = spags.p{2}(:);
 dash  = zeros(1,nDat-1);
 
@@ -135,9 +142,15 @@ else
     cLim = [min(sig(:)) max(sig(:))];
 end
 
+% scale x-axis for plotting
+axscale = 1/param.axscale;
+axp    = ax;
+axp{1} = axp{1}*axscale;
+axLim(1:2) = axLim(1:2)*axscale;
+
 % draw the plot
 if param.plot
-    [xx, yy] = ndgrid(ax{:});
+    [xx, yy] = ndgrid(axp{:});
     % pad signal
     sigP = sig;
     sigP(end+1,:) = nan;
@@ -149,12 +162,12 @@ if param.plot
     
     if param.dashed && nDat>1
         xD = [dash(:) dash(:) nan*dash(:)]';
-        yD = repmat([min(ax{2}) max(ax{2}) nan],[size(xD,2) 1])';
+        yD = repmat([min(axp{2}) max(axp{2}) nan],[size(xD,2) 1])';
         line(xD(:),yD(:),'LineStyle','--','Color','k');
     end
     
     if ~isempty(param.label)
-        hAxis.XTick = [0 dash mean(ax{1}(end-1:end))];
+        hAxis.XTick = [mean(axp{1}(1:2)) dash mean(axp{1}(end-1:end))];
         hAxis.XTickLabel = param.label;
     end
     
@@ -167,6 +180,7 @@ if param.plot
     box on
     grid off
     colormap(cm_viridis(500))
+    set(gca,'layer','top')
 end
 
 udat.x      = ax{1};

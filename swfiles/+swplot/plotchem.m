@@ -32,6 +32,10 @@ function varargout = plotchem(varargin)
 % atom2     Indices or label of the atoms stored in spinw.unit_cell. It
 %           determines the vertices of the polyhedra or gives the second
 %           atom of a bond.
+% extend    If true, only atom1 has to be within the plotting range, atom2
+%           will be searched +/-2 extra unit cells around the plotting
+%           range. If false, both atom1 and atom2 have to be within the
+%           unit cell.
 % limit     Can be a single number which will restrict the number of
 %           nearest negihbours of atom1 to connect. Can be also a vector
 %           that defines bonds/polyhedra between atoms that are within the
@@ -88,10 +92,10 @@ inpForm.defval = {[]      true     true    'lu'   'poly' 1       2       false }
 inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 -3] [1 -4] [1 -5]  [1 -6]  [1 1] };
 inpForm.soft   = {true    false    false   false  false  false   false   false };
 
-inpForm.fname  = [inpForm.fname  {'limit' 'alpha' 'color' 'nmesh' 'npatch'}];
-inpForm.defval = [inpForm.defval {6       []      'auto'  nMesh0  nPatch0 }];
-inpForm.size   = [inpForm.size   {[1 -7]  [1 1]   [1 -8]  [1 1]   [1 1]   }];
-inpForm.soft   = [inpForm.soft   {false   true    false   false   false   }];
+inpForm.fname  = [inpForm.fname  {'limit' 'alpha' 'color' 'nmesh' 'npatch' 'extend'}];
+inpForm.defval = [inpForm.defval {6       []      'auto'  nMesh0  nPatch0  true    }];
+inpForm.size   = [inpForm.size   {[1 -7]  [1 1]   [1 -8]  [1 1]   [1 1]    [1 1]   }];
+inpForm.soft   = [inpForm.soft   {false   true    false   false   false    false   }];
 
 inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'color2' 'tooltip' 'radius0'}];
 inpForm.defval = [inpForm.defval {[]       []    'auto'   true      0.03     }];
@@ -314,6 +318,14 @@ elseif numel(limit)==2
     % also select the position vectors
     pos1 = cat(3,pos1(linIdx),pos1(linIdx+numel(dist)),pos1(linIdx+2*numel(dist)));
     pos2 = cat(3,pos2(linIdx),pos2(linIdx+numel(dist)),pos2(linIdx+2*numel(dist)));
+end
+
+if ~param.extend && strcmp(param.mode,'bond')
+    % cut out wrong bonds but only for 'bond' mode
+    %idx = any(bsxfun(@ge,permute(range(:,1),[2 3 1]),pos2),3) | any(bsxfun(@le,permute(range(:,2),[2 3 1]),pos2),3);
+    % TODO
+    %atom1idx(idx) = [];
+
 end
 
 % shift positions

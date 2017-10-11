@@ -3,10 +3,11 @@ function cm_data = cm_viridis(nCol,white)
 %
 % CM_VIRIDIS(nCol,{white})
 %
-% This is a honest colormap, unlike the Matlab default parula(). This
-% means this colormap is perceptionally uniform, thus it will not emphasize
-% any value on the plot. It is also compatible with black and white output.
-% The colormap is copied from the Python package Matplotlib.
+% This is a honest colormap, unlike the Matlab default parula(). This means
+% this colormap is perceptionally uniform, thus it will not emphasize any
+% value on the plot. It is also compatible with black and white output. The
+% colormap is copied from the Python package Matplotlib
+% (https://bids.github.io/colormap).
 %
 % Input:
 %
@@ -280,7 +281,7 @@ else
     cm_data = interp1(linspace(0,1,size(cm,1)),cm,linspace(0,1,nCol));
 end
 
-if nargin == 1
+if nargin < 2
     white = 'off';
 end
 

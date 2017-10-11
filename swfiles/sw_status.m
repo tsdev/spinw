@@ -1,29 +1,51 @@
 function sw_status(percent,varargin)
-% timer function that displays also the remaining time
+% timer and remaining time estimator
+% 
+% ### Syntax
+% 
+% `sw_status(percent, {mode},{tid},{title})`
+% 
+% ### Description
+% 
+% `sw_status(percent, {mode},{fid},{title})` can display remaining time of
+% a calculation that is run for a fixed number of iterations. It can output
+% the status both in the Command Window and in a pup up window using
+% [waitbar].
+% 
+% ### Input Arguments
+% 
+% `percent`
+% : Percentage of the calculation that is already done.
+% 
+% `mode`
+% : Controls the time estimation, optional parameter:
+%   * `1` Starts the time estimation.
+%   * `0` Displays of the remaining time, default value.
+%   * `2` The calculation finished, show a summary.
+% 
+% `tid`
+% : Determines if the elapsed and required time for the calculation is
+%   displayed. The default value is determined by the `tid` preference
+%   stored in [swpref]. The following values are allowed:
+%   * `0` No timing is displayed.
+%   * `1` Display the timing in the Command Window.
+%   * `2` Show the timing in a separat pup-up window.
 %
-% SW_STATUS(percent, {mode},{fid},{title})
-%
-% Input:
-%
-% percent   Percentage of the calculation that is done.
-% mode      Determines the time estimation, optional parameter:
-%               1   Starts the time estimation.
-%               0   Displays of the remaining time. (default)
-%               2   Calculation finished.
-% fid       File identifier to print the output:
-%               0   Do nothing.
-%               1   Text output to the Command Window. Default.
-%               2   Graphical output, using the waitbar() function.
-%
-% See also WAITBAR.
-%
+% `title`
+% : The text to show in the pup up window.
+% 
+% ### See Also
+% 
+% [waitbar]
+
+global sw_time
 
 if nargin == 0
     help sw_status
     return
 end
 
-if nargin > 2 && ~isempty(varargin{2})
+if nargin > 2 && ~isempty(varargin{2}) && ~ischar(varargin{2})
     fid = varargin{2};
 else
     fid = swpref.getpref('tid',[]);
@@ -53,7 +75,7 @@ end
 switch start
     case 1
         % start the time estimation
-        tic
+        sw_time = tic;
         switch fid
             case 1
                 fprintf([repmat(' ',[1 40]) '\n']);
@@ -66,7 +88,7 @@ switch start
         end
     case 0
         % refresh the displayed time
-        etime = double(toc);
+        etime = double(toc(sw_time));
         if percent == 0
             percent = 1e-5;
         end
@@ -89,7 +111,7 @@ switch start
         
     case  2
         % finish extimation
-        etime = double(toc);
+        etime = double(toc(sw_time));
         hou = floor(etime/60^2);
         etime = etime-hou*60^2;
         min = floor(etime/60);

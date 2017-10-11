@@ -71,7 +71,7 @@ for ii = 1:nAtom
     % corrected for R*pos+T
     rTemp  = permute(mod(mmat(symOp(:,1:3,:),r0(:,ii))+symOp(:,4,:),1),[1 3 2]);
     % take out the overlapping positions, using modulo with tolerance
-    isMoved{ii} = sum(bsxfunsym(@minus,sw_cmod(rTemp,tol),sw_cmod(r0(:,ii),tol)).^2,1) > tol^2;
+    isMoved{ii} = sum(bsxfun(@minus,sw_cmod(rTemp,tol),sw_cmod(r0(:,ii),tol)).^2,1) > tol^2;
     if numel(rTemp) > 3
         % select unique atomic positions and the indices
         [rTemp, idxF] = sw_uniquetol(sw_cmod(rTemp,tol),tol);
@@ -100,5 +100,28 @@ if fid ~= 0
         end
     end
 end
+
+end
+
+function r = sw_cmod(r, tol)
+% modulo one with tolerance
+% 
+% ### Syntax
+% 
+% `r = sw_cmod(r, tol)`
+% 
+% ### Description
+% 
+% `r = sw_cmod(r, tol)` calculates modulo one with tolerance, numbers
+% larger than $1-\epsilon$  $-\epsilon$.
+% 
+% ### See Also
+% 
+% [mod]
+%
+
+r = mod(r,1);
+
+r(r > 1-tol) = r(r > 1-tol)-1;
 
 end

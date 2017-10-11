@@ -1,61 +1,68 @@
 function  Eout = energy(obj, varargin)
-% calculates the ground state energy per spin
-%
-% E = ENERGY(obj, Option1, Value1 ...)
-%
-% The extended magnetic unit cell, stored in obj, is used for the
-% calculation. For non-zero k vector, the interaction energies between
-% neighbouring extended unit cells depend on the direction of the moments
-% in the two extended unit cells. The angles in further extended unit cells
-% are calculated based on the k vector (the k vector is in the units of the
-% crystallographic unit cell) and the n vector (normal to the spin rotation
-% plane). The moment directions in further extended unit cells are
-% calculated by rotating the spins of the extended unit cell in the origin
-% by k*R degree around the n vector, where R is the translation vector of
-% the origin of the farther extended unit cell. If the extended unit cell
-% is equivalent to the crystallographic unit cell, this is equivalent to
-% the standard definition of the k vector.
-%
-% Input:
-%
-% obj       spinw class object.
-%
-% Options:
-%
-% epsilon   The smallest value of incommensurability that is tolerated 
-%           without warning. Default is 1e-5.
-%
-% Output:
-%
-% E         Energy per moment (anisotropy + exchange + Zeeman energy).
-%
-%
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
-%
-% The calculated energy can be wrong for incommensurate structures. For
-% example a structure where the spins are rotating in XY plane with an
-% incommensurate wavevector of (1/3,0,0). The function only calculates the
-% anisotropy energy in the first unit cell, that is for single spin
-% Eaniso = Axx*Sxx^2+Ayy*Syy^2. While the anisotropy energy in reality is
-% independent of the spin orientation in the XY plane Eaniso=3S*(Axx+Ayy)/2.
-% Thus for incommensurate structures one has to be carefull! In the
-% triangular case one has to extend the unit cell to nExt = [3 3 1] (in the
-% hexagonal setting), in this case the energy will be correct.
-%
-% WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
-%
-% Example:
-%
-% ...
-% cryst.optmagstr('nRun',10)
-% E = cryst.energy
-%
-% After optimising the magnetic structure (by minimizing the ground state 
+% calculates the ground state energy
+% 
+% ### Syntax
+% 
+% `E = energy(obj,Name,Value)`
+% 
+% ### Description
+% 
+% `E = energy(obj,Name,Value)` calculates the classical ground state energy
+% per spin. The calculation correctly takes into account the magnetic
+% supercell. The function gives correct results on single-k magnetic
+% structures even defined on magnetic supercells. For multi-k magnetic
+% structures first a definition of a larger supercell is necessary where an
+% effective $k=0$ representation is possible.
+% 
+% ### Examples
+% 
+% After optimising the magnetic structure (by minimizing the ground state
 % energy), the energy per spin is calculated. This can be compared to
 % different ground state structures to decide which is the right classical
-% ground state of the magnetic model in cryst.
+% ground state of the magnetic model in cryst. Here we use the triangular
+% lattice antiferromagnet where we define the magnetic structure on a
+% $[3\times 3]$ magnetic supercell where the optimal structure (120\\degree
+% angle between neighboring spins) has a 0 propagation vector. In this case
+% the exact energy is $3\cdot 1^2\cdot \cos(120^\circ) = -1.5$.
 %
-% See also SPINW, SPINW.ANNEAL, SPINW.NEWCELL.
+% ```
+% >>cryst = sw_model('triAF',1)
+% >>cryst.genmagstr('mode','random','nExt',[3 3 1])
+% >>cryst.optmagsteep('nRun',10)
+% >>cryst.energy>>
+% ```
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Name-Value Pair Arguments
+% 
+% `'epsilon'`
+% : The smallest value of incommensurability that is tolerated 
+%   without warning. Default is $10^{-5}$.
+% 
+% ### Output Arguments
+% 
+% `E`
+% : Energy per moment (anisotropy + exchange + Zeeman energy).
+%
+% {{warning The calculated energy can be wrong for incommensurate
+% structures. For example a structure where the spins are rotating in $XY$
+% plane with an incommensurate wavevector of $(1/3,0,0)$. The function only
+% calculates the anisotropy energy in the first unit cell, that is for
+% single spin $E_{aniso} = A_{xx}\cdot S_{xx}^2+A_{yy}\cdot S_{yy}^2$.
+% While the anisotropy energy in reality is independent of the spin
+% orientation in the $XY$ plane $E_{aniso}=3S\cdot (A_{xx}+A_{yy})/2$. Thus
+% using `spinw.energy` on incommensurate structures together with single
+% ion anisotropy one has to be carefull! In the triangular case one has to
+% extend the unit cell to `nExt = [3 3 1]` (in the hexagonal setting), in
+% this case the energy will be correct.}}
+% 
+% ### See Also
+% 
+% [spinw] \| [spinw.anneal] \| [spinw.newcell]
 %
 
 inpForm.fname  = {'epsilon'};
@@ -113,17 +120,18 @@ if nMagExt>0
         dRIdx = find(any(dR));
         for ii = 1:numel(dRIdx)
             %M2(:,dRIdx(ii)) = sw_rot(n, kExt*dR(:,dRIdx(ii))*2*pi, M2(:,dRIdx(ii)));
-            M2(:,dRIdx(ii)) = real(bsxfunsym(@times,M2cmplx(:,dRIdx(ii)),exp(1i*kExt*dR(:,dRIdx(ii))*2*pi)));
+            % TODO check - sign in front of phase
+            M2(:,dRIdx(ii)) = real(bsxfun(@times,M2cmplx(:,dRIdx(ii)),exp(-1i*kExt*dR(:,dRIdx(ii))*2*pi)));
         end
     end
     
     Ml = repmat(permute(M1,[1 3 2]),[1 3 1]);
     Mr = repmat(permute(M2,[3 1 2]),[3 1 1]);
     
-    exchE   =  sumsym(sumsym(sumsym(Ml.*JJ.*Mr,3),2),1);
+    exchE   =  sum(sum(sum(Ml.*JJ.*Mr,3),2),1);
     % TODO
     % correct energy for twins
-    ZeemanE = -sumsym(SI.field*permute(mmat(SI.g,permute(M0,[1 3 2])),[1 3 2]),2)*obj.unit.muB;
+    ZeemanE = -sum(SI.field*permute(mmat(SI.g,permute(M0,[1 3 2])),[1 3 2]),2)*obj.unit.muB;
     
     % energy per spin
     E = (exchE + ZeemanE)/nMagExt;
@@ -138,7 +146,7 @@ if nargout > 0
 else
     if obj.symbolic
         fprintf('Ground state energy (1/spin):\n')
-        pretty(E);
+        pretty(sym('E')==E);
     else
         fprintf(['Ground state energy: %5.3f ' obj.unit.label{2} '/spin.\n'],E);
     end

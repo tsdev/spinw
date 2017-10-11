@@ -106,10 +106,6 @@ function spectra = spinwavefast(obj, hkl, varargin)
 %   the output spectrum won't contain the copy of `obj`), default is
 %   `false`.
 %
-% `'notwin'`
-% : If `true`, the spectra of the twins won't be calculated. Default is
-% `false`.
-%
 % `'sortMode'`
 % : If `true`, the spin wave modes will be sorted. Default is `true`.
 %
@@ -585,6 +581,12 @@ else
     spectra.formfact = false;
 end
 
+if incomm
+    Sperp = zeros(nMagExt*3,nHkl);
+else
+    Sperp = zeros(nMagExt,nHkl);
+end
+
 for jj = 1:nSlice
     % q indices selected for every chunk
     hklIdxMEM  = hklIdx(jj):(hklIdx(jj+1)-1);
@@ -637,19 +639,8 @@ for jj = 1:nSlice
     %ABCD   = [A1     B     conj(B)  D1]; % SP1
     ABCD   = [A1     2*B      D1];
 
-%   % Stores the matrix elements in ham.
-%   %idx3   = repmat(1:nHklMEM,[4*nCoupling 1]); % SP1
-%   idx3   = repmat(1:nHklMEM,[3*nCoupling 1]);
-%   idxAll = [repmat(idxAll,[nHklMEM 1]) idx3(:)];
-%   idxAll = idxAll(:,[2 1 3]);
-%  
-%   ABCD   = ABCD';
-%  
-%   % quadratic form of the boson Hamiltonian stored as a square matrix
-%   ham = accumarray(idxAll,ABCD(:),[2*nMagExt 2*nMagExt nHklMEM]);
-
     idxAll = sub2ind([2*nMagExt 2*nMagExt],idxAll(:,1),idxAll(:,2));
-    [C,ia,ic] = unique(idxAll);
+    [C,~,ic] = unique(idxAll);
     ham = zeros(4*nMagExt^2, nHklMEM);
     for ii=1:numel(C)
         ham(C(ii),:) = sum(ABCD(:,ic==ii),2);

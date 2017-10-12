@@ -1,61 +1,76 @@
 function gencoupling(obj, varargin)
-% generates the COUPLING property of sw object
+% generates bond list
 %
-% GENCOUPLING(obj, 'option1', value, ...)
+% ### Syntax
 %
-% The function calculates equivalent bonds between magnetic atoms. These
-% are determined either based on crystal symmetry or bond length (with
-% tolDist tolerance). If the space group index of 0 is defined
-% (obj.lattice.sym=0), the equivalent bonds will be based on bond length.
-% For space group index larger than 0, the symmetry equivalent bonds will
-% be determined. This can ve overwritten by the forceNoSym parameter to
-% consider bond length.
+% `gencoupling(obj,Name,Value)`
 %
-% IMPORTANT!
-%   This function has to be used after the crystal structure is defined.
-%   The SW.ADDCOUPLING, SW.COUPLINGTABLE functions will only work
-%   afterwards.
+% ### Description
 %
-% Input:
+% `gencoupling(obj,Name,Value)` generates all bonds up to a certain length
+% between magnetic atoms. It also groups bonds based either on crystal
+% symmetry (is space group is not $P0$) or bond length (with `tolDist`
+% tolerance) is space group is not defined. Sorting bonds based on length
+% can be forced by setting the `forceNoSym` parameter to true. To check
+% whether a space group is defined call the [spinw.symmetry] function.
 %
-% obj           spinw class object.
+% {{warning This function has to be used after the crystal structure is defined.
+%   The [spinw.addcoupling] function will only work afterwards. }}
 %
-% Options:
+% ### Examples
 %
-% forceNoSym    If true, equivalent bonds are generated based on
-%               bond length with .tolDist tolerance. If false symmetry
-%               operators will be used if they are given
-%               (obj.lattice.sym>0).
-% maxDistance   Maximum bond length that will be stored in the
-%               obj.coupling property in units of Angstrom. Default is 8.
-% maxSym        Maximum bond length until the symmetry equivalent bonds are
-%               generated. It is usefull if long bonds have to be generated
-%               for the dipolar interaction, but the symmetry analysis of
-%               them is not necessary. Default value is equal to
-%               maxDistance.
-% tolDist       Tolerance of distance, within two bonds are regarded
-%               equivalent, default is 1e-3 Angstrom. Only used, when no
-%               space group is defined.
-% dMin          Minimum bond length, below which an error is triggered.
-%               Default value is 0.5 Angstrom.
+% A triangular lattice is generated using `spinw.gencoupling` and
+% the [spinw.table] function lists the 1st, 2nd and 3rd neighbor bonds:
 %
-% Output:
+% ```
+% >>cryst = spinw
+% >>cryst.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
+% >>cryst.addatom('r',[0 0 0],'S',1)
+% >>cryst.gencoupling
+% >>cryst.table('bond',1:3)>>
+% ```
 %
-% The obj.coupling field will be filled with values, depending on the
-% crystal geometry.
+% ### Input Arguments
 %
-% Example:
+% `obj`
+% : [spinw] object.
 %
-% cryst = spinw;
-% cryst.genlattice('lat_const',[3 3 5],'angled',[90 90 120])
-% cryst.addatom('r',[0 0 0])
-% cryst.gencoupling
-% cryst.couplingtable(1:3)
+% ### Name-Value Pair Arguments
 %
-% A triangular lattice is created in cryst and after using gencoupling()
-% the couplingtable() function lists the 1st, 2nd and 3rd neighbor bonds.
+% `'forceNoSym'`
+% : If `true`, equivalent bonds are always generated based on
+%   bond length with `tolDist` length tolerance and effectively reducing
+%   the bond symmetry to `P0`. If `false` symmetry operators will be used
+%   if they are given ([spinw.symmetry] returns `true`).
 %
-% See also SPINW, SPINW.SYMMETRY, SPINW.NOSYM.
+% `'maxDistance'`
+% : Maximum bond length that will be stored in the
+%   [spinw.coupling] property in units of \\Angstrom. Default value is 8.
+%
+% `'maxSym'`
+% : Maximum bond length until the symmetry equivalent bonds are
+%   generated. It is usefull if long bonds have to be generated for the
+%   dipolar interaction, but the symmetry analysis of them is not
+%   necessary. Default value is equal to `maxDistance`.
+%
+% `'tolDist'`
+% : Tolerance of distance, within two bonds are considered
+%   equivalent, default value is $10^{-3}$\\Angstrom. Only used, when no
+%   space group is defined.
+%
+% `'dMin'`
+% : Minimum bond length, below which an error is triggered.
+%   Default value is 0.5 \\Angstrom.
+%
+% ### Output Arguments
+%
+% The [spinw.coupling] field of `obj` will store the new bond list, while
+% overwriting previous bond list. This will also remove any previous
+% assignment of exchange matrices to bonds.
+%
+% ### See Also
+%
+% [spinw] \| [spinw.symmetry] \| [spinw.nosym]
 %
 
 % is there any symmetry operator?
@@ -85,8 +100,8 @@ fid = obj.fileid;
 hMax1 = 1./sqrt(sum(inv(obj.basisvector').^2,2));
 
 % calculate the distance of the [1 1 1] point from the origin
-hMax2 = sum(obj.basisvector,2);
-        
+hMax2 = abs(sum(obj.basisvector,2));
+
 % calculate the closest point to the origin
 hMax = min([hMax1 hMax2],[],2);
 
@@ -100,7 +115,7 @@ if param.forceNoSym
 end
 
 if fid ~= 0
-    fprintf0(fid,['Creating the bond list (maxDistance = %g ' symbol('ang')...
+    fprintf0(fid,['Creating the bond list (maxDistance = %g ' obj.unit.label{1}...
         ', nCell = %dx%dx%d)...\n'],param.maxDistance-tol,nC);
 end
 
@@ -114,7 +129,7 @@ mAtom = obj.matom;
 nMagAtom = size(mAtom.r,2);
 
 if nMagAtom == 0
-    error('sw:gencoupling:NoMagAtom','There is no magnetic atom (S>0) in the unit cell!');
+    error('spinw:gencoupling:NoMagAtom','There is no magnetic atom (S>0) in the unit cell!');
 end
 
 % Use half 'cube' around the center unit cell and remove the identical
@@ -145,7 +160,7 @@ aPos = bsxfun(@plus,permute(mAtom.r,[3:6 2 1]),cTr);
 % r(atom2) - r(atom1)
 % Na x Nb x Nc x nMagAtom x nMagAtom x 3
 dR  = bsxfun(@minus,aPos,permute(mAtom.r,[3:5 2 6 1]));
-% mark duplicate bonds bonds within the (0,0,0) cell with nan
+% mark duplicate bonds within the (0,0,0) cell with nan
 R0 = permute(dR(1,nC(2)+1,nC(3)+1,:,:,:),[4:6 1:3]);
 dR(1,nC(2)+1,nC(3)+1,:,:,:) = bsxfun(@times,tril(nan(nMagAtom))+1,R0);
 % calculate the absolute value of the distances in Angstrom
@@ -171,7 +186,7 @@ cMat(7,:) = cumsum([1 diff(cMat(6,:))>tolD]);
 
 % check whether some atoms are too close
 if cMat(6,1) < param.dMin
-    error('sw:gencoupling:AtomPos',['Some atoms are too close (Dmin=' ...
+    error('spinw:gencoupling:AtomPos',['Some atoms are too close (Dmin=' ...
         num2str(cMat(6,1)) '<' num2str(param.dMin) '), check your crystal structure!']);
 end
 
@@ -182,7 +197,7 @@ cMat = cMat([1:5 7],:);
 
 % symmetry equivalent couplings
 if isSym
-    % store the final sorted couoplings in nMat
+    % store the final sorted couplings in nMat
     nMat = zeros(6,0);
     ii  = 1;
     idx = 1;
@@ -202,7 +217,7 @@ if isSym
             % list
             genC(:,~unC) = [];
             if sum(~iNew) ~= sum(unC)
-                error('sw:gencoupling:SymProblem','Symmetry error! ii=%d, idx=%d. Try to change ''tol'' parameter.',ii,idx);
+                error('spinw:gencoupling:SymProblem','Symmetry error! ii=%d, idx=%d. Try to change ''tol'' parameter.',ii,idx);
             end
             % move the non-unique (not new) couplings (symmetry equivalent ones)
             nMat = [nMat [genC;ones(1,size(genC,2))*idx]]; %#ok<AGROW>
@@ -248,7 +263,7 @@ obj.coupling         = coupling;
 obj.single_ion.aniso = aniso;
 obj.single_ion.g     = g;
 
-validate(obj);
+spinw.validate(obj);
 
 end
 

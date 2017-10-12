@@ -76,12 +76,11 @@ function varargout = plotion(varargin)
 %fontSize0 = swpref.getpref('fontsize',[]);
 nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
-range0    = [0 1;0 1;0 1];
 
 inpForm.fname  = {'range' 'legend' 'label' 'scale' 'linewidth' 'alpha'};
-inpForm.defval = {range0  true     true    1/3     0.5         0.3    };
+inpForm.defval = {[]      true     true    1/3     0.5         0.3    };
 inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 1]   [1 3]       [1 1]  };
-inpForm.soft   = {false   false    false   false   false       false  };
+inpForm.soft   = {true    false    false   false   false       false  };
 
 inpForm.fname  = [inpForm.fname  {'mode'  'color' 'nmesh' 'npatch' 'color2'}];
 inpForm.defval = [inpForm.defval {'aniso' 'auto'  nMesh0  nPatch0  'auto'  }];
@@ -130,14 +129,26 @@ BV = obj.basisvector;
 % set figure title
 set(hFigure,'Name', 'SpinW: Single ion properties');
 
-% change range, if the number of unit cells are given
-if numel(param.range) == 3
-    param.range = [ zeros(3,1) param.range(:)];
-elseif numel(param.range) ~=6
+% select range
+if numel(param.range) == 6
+    range = param.range;
+elseif isempty(param.range)
+    % get range from figure
+    fRange = getappdata(hFigure,'range');
+    if isempty(fRange)
+        % fallback to default range
+        range = [0 1;0 1;0 1];
+    else
+        % get plotting range and unit
+        range       = fRange.range;
+        param.unit  = fRange.unit;
+    end
+elseif numel(param.range) == 3
+    % change range, if the number of unit cells are given
+    range = [zeros(3,1) param.range(:)];
+else
     error('plotion:WrongInput','The given plotting range is invalid!');
 end
-
-range = param.range;
 
 switch param.unit
     case 'lu'
@@ -195,11 +206,11 @@ pos  = reshape(pos,3,[]);
 switch param.unit
     case 'lu'
         % L>= lower range, L<= upper range
-        pIdx = all(bsxfun(@ge,pos,range(:,1)) & bsxfun(@le,pos,range(:,2)),1);
+        pIdx = all(bsxfun(@ge,pos,range(:,1)-10*eps) & bsxfun(@le,pos,range(:,2)+10*eps),1);
     case 'xyz'
         % convert to xyz
         posxyz = BV*pos;
-        pIdx = all(bsxfun(@ge,posxyz,range(:,1)) & bsxfun(@le,posxyz,range(:,2)),1);
+        pIdx = all(bsxfun(@ge,posxyz,range(:,1)-10*eps) & bsxfun(@le,posxyz,range(:,2)+10*eps),1);
 end
 
 if ~any(pIdx)
@@ -213,9 +224,6 @@ mIdx = mIdx(pIdx);
 %aIdx = aIdx(:)';
 mIdx = mIdx(:)';
 mat  = mat(:,:,mIdx);
-
-% number of ellipse to plot
-nEllipse = size(mat,3);
 
 % color
 if strcmp(param.color,'auto')
@@ -251,6 +259,10 @@ rmMat = permute(sumn(abs(mat),[1 2])==0,[1 3 2]);
 mat   = mat(:,:,~rmMat);
 pos   = pos(:,~rmMat);
 color = color(:,~rmMat);
+
+% number of ellipse to plot
+nEllipse = size(mat,3);
+
 % calculating the main radiuses of the ellipsoid.
 [V, Rell] = eigorth(mat,1e-5);
 % creating positive definite matrix by adding constant to all

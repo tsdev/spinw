@@ -1,27 +1,50 @@
 function varargout = sw_filelist(varargin)
-% lists spinw data in the Matlab workspace or in a .mat file
+% lists spinw objects in the Matlab workspace or in a .mat file
+% 
+% ### Syntax
+% 
+% `list = sw_filelist(Name,Value)`
+% 
+% ### Description
+% 
+%  `list = sw_filelist(Name,Value)` lists SpinW objects and calculated
+%  spectra in the Matlab workspace of in a given .mat file.
+% 
+% ### Examples
 %
-% list = SW_FILELIST({'Option1',Value1,...)
+% After calculating a few spectra, we list them:
 %
+% ```
+% >>tri = sw_model('triAF',1)
+% >>sq  = sw_model('squareAF',1)
+% >>specSq  = sq.spinwave({[0 0 0] [1 1 0] 21})
+% >>specTri = tri.spinwave({[0 0 0] [1 0 0] 21})
+% >>sw_filelist>>
+% ```
 %
-% Options:
-%
-% fName     To check data stored in a .mat file, fName contains the path as
-%           a string.
-% sort      To sort according to which column (positive ascending, negative
-%           descending):
-%               +/-1    variable name,
-%               +/-2    title,
-%               +/-3    creation date,
-%               +/-4    completion date, default.
-%
-%
-% Output:
-%
-% list      Cell of strings, lists each simulation data in the Matlab
-%           memory, even data stored in cells.
-%
-% See also SW.ANNEAL, SW.SPINWAVE.
+% ### Name-Value Pair Arguments
+% 
+% `'fName'`
+% : File path in a string pointing to a .mat file, default value is empty
+%   when no files are checked.
+% 
+% `'sort'`
+% : Selects the column to sort the generated table with positive/nagetive
+%   sign means ascending, descending:
+%   * `'+1'`/`'-1'`    variable name,
+%   * `'+2'`/`'-2'`    title,
+%   * `'+3'`/`'-3'`    creation date,
+%   * `'+4'`/`'-4'`    completion date, default value.
+% 
+% ### Output Arguments
+% 
+% `list`
+% : Cell of strings, lists each simulation data in the Matlab
+%   memory, even data stored in cells.
+% 
+% ### See Also
+% 
+% [spinw.anneal] \| [spinw.spinwave]
 %
 
 inpForm.fname  = {'fName' 'sort' };

@@ -32,6 +32,10 @@ function varargout = plotchem(varargin)
 % atom2     Indices or label of the atoms stored in spinw.unit_cell. It
 %           determines the vertices of the polyhedra or gives the second
 %           atom of a bond.
+% extend    If true, only atom1 has to be within the plotting range, atom2
+%           will be searched +/-2 extra unit cells around the plotting
+%           range. If false, both atom1 and atom2 have to be within the
+%           unit cell.
 % limit     Can be a single number which will restrict the number of
 %           nearest negihbours of atom1 to connect. Can be also a vector
 %           that defines bonds/polyhedra between atoms that are within the
@@ -82,17 +86,16 @@ function varargout = plotchem(varargin)
 % default values
 nMesh0    = swpref.getpref('nmesh',[]);
 nPatch0   = swpref.getpref('npatch',[]);
-range0    = [0 1;0 1;0 1];
 
 inpForm.fname  = {'range' 'legend' 'label' 'unit' 'mode' 'atom1' 'atom2' 'copy'};
-inpForm.defval = {range0  true     true    'lu'   'poly' 1       2       false };
+inpForm.defval = {[]      true     true    'lu'   'poly' 1       2       false };
 inpForm.size   = {[-1 -2] [1 1]    [1 1]   [1 -3] [1 -4] [1 -5]  [1 -6]  [1 1] };
-inpForm.soft   = {false   false    false   false  false  false   false   false };
+inpForm.soft   = {true    false    false   false  false  false   false   false };
 
-inpForm.fname  = [inpForm.fname  {'limit' 'alpha' 'color' 'nmesh' 'npatch'}];
-inpForm.defval = [inpForm.defval {6       []      'auto'  nMesh0  nPatch0 }];
-inpForm.size   = [inpForm.size   {[1 -7]  [1 1]   [1 -8]  [1 1]   [1 1]   }];
-inpForm.soft   = [inpForm.soft   {false   true    false   false   false   }];
+inpForm.fname  = [inpForm.fname  {'limit' 'alpha' 'color' 'nmesh' 'npatch' 'extend'}];
+inpForm.defval = [inpForm.defval {6       []      'auto'  nMesh0  nPatch0  true    }];
+inpForm.size   = [inpForm.size   {[1 -7]  [1 1]   [1 -8]  [1 1]   [1 1]    [1 1]   }];
+inpForm.soft   = [inpForm.soft   {false   true    false   false   false    false   }];
 
 inpForm.fname  = [inpForm.fname  {'figure' 'obj' 'color2' 'tooltip' 'radius0'}];
 inpForm.defval = [inpForm.defval {[]       []    'auto'   true      0.03     }];
@@ -142,14 +145,26 @@ BV = obj.basisvector;
 % set figure title
 set(hFigure,'Name', 'SpinW: Chemical bonds');
 
-% change range, if the number of unit cells are given
-if numel(param.range) == 3
-    param.range = [ zeros(3,1) param.range(:)];
-elseif numel(param.range) ~=6
+% select range
+if numel(param.range) == 6
+    range = param.range;
+elseif isempty(param.range)
+    % get range from figure
+    fRange = getappdata(hFigure,'range');
+    if isempty(fRange)
+        % fallback to default range
+        range = [0 1;0 1;0 1];
+    else
+        % get plotting range and unit
+        range       = fRange.range;
+        param.unit  = fRange.unit;
+    end
+elseif numel(param.range) == 3
+    % change range, if the number of unit cells are given
+    range = [zeros(3,1) param.range(:)];
+else
     error('plotchem:WrongInput','The given plotting range is invalid!');
 end
-
-range = param.range;
 
 switch param.unit
     case 'lu'
@@ -167,7 +182,7 @@ end
 % atom data
 atom  = obj.atom;
 
-% convert atom label to index
+% convert atom labels to indices
 if ischar(param.atom1)
     atom1 = find(cellfun(@isempty,strfind(obj.unit_cell.label,param.atom1))==false);
 else
@@ -224,11 +239,11 @@ pos2      = reshape(pos2,3,[]);
 switch param.unit
     case 'lu'
         % L>= lower range, L<= upper range
-        pIdx = all(bsxfun(@ge,pos1,range(:,1)) & bsxfun(@le,pos1,range(:,2)),1);
+        pIdx = all(bsxfun(@ge,pos1,range(:,1)-10*eps) & bsxfun(@le,pos1,range(:,2)+10*eps),1);
     case 'xyz'
         % convert to xyz
         posxyz = BV*pos1;
-        pIdx = all(bsxfun(@ge,posxyz,range(:,1)) & bsxfun(@le,posxyz,range(:,2)),1);
+        pIdx = all(bsxfun(@ge,posxyz,range(:,1)-10*eps) & bsxfun(@le,posxyz,range(:,2)+10*eps),1);
 end
 
 if ~any(pIdx)
@@ -303,6 +318,14 @@ elseif numel(limit)==2
     % also select the position vectors
     pos1 = cat(3,pos1(linIdx),pos1(linIdx+numel(dist)),pos1(linIdx+2*numel(dist)));
     pos2 = cat(3,pos2(linIdx),pos2(linIdx+numel(dist)),pos2(linIdx+2*numel(dist)));
+end
+
+if ~param.extend && strcmp(param.mode,'bond')
+    % cut out wrong bonds but only for 'bond' mode
+    %idx = any(bsxfun(@ge,permute(range(:,1),[2 3 1]),pos2),3) | any(bsxfun(@le,permute(range(:,2),[2 3 1]),pos2),3);
+    % TODO
+    %atom1idx(idx) = [];
+
 end
 
 % shift positions
@@ -403,7 +426,7 @@ end
 % end
 
 % save range
-setappdata(hFigure,'range',struct('range',param.range,'unit',param.unit));
+setappdata(hFigure,'range',struct('range',range,'unit',param.unit));
 
 if param.tooltip
     swplot.tooltip('on',hFigure);

@@ -1,31 +1,44 @@
 function [formFactVal, coeff] = sw_cff(atomName, Q)
 % returns the atomic charge form factor values for X-ray scattering
-%
-% [formFactVal, coeff] = SW_CFF(atomName, {Q})
-%
-% The provided form factor values at Q=0 are normalized to Z.
-%
-% Input:
-%
-% atomName      String, contains the name of the ion in using the symbol of
-%               the element following the charge, e.g. Cr3+. It can be also
-%               the coefficients to calculate f. If the string contains
-%               whitespace, the first word will be used as input.
-% Q             Momentum transfer in Angstrom^-1 units with dimensions of
-%               [1 nQ] or [3 nQ], optional.
-%
-% Output:
-%
-% formFactVal   Value of form factor, evaluated at the Q points if Q is
+% 
+% ### Syntax
+% 
+% `[formfactval, coeff] = sw_cff(atomname, {q})`
+% 
+% ### Description
+% 
+% `[formfactval, coeff] = sw_cff(atomname, {q})` returns the atomic charge
+% form factors for x-ray scattering. The provided form factor values at Q=0
+% are normalized to Z.
+% 
+% ### Input Arguments
+% 
+% `atomName`
+% : String, contains the name of the ion in using the symbol of
+%   the element following the charge, e.g. `'Cr3+'`. It can be also
+%   the coefficients to calculate f. If the string contains
+%   whitespace, the first word will be used as input.
+% 
+% `Q`
+% : Momentum transfer in \\Angstrom$^{-1}$ units in a matrix with dimensions of
+%   $[1\times n_Q]$ or $[3\times n_Q]$, optional.
+% 
+% ### Output Arguments
+% 
+% `formFactVal`
+% : Value of form factor, evaluated at the $Q$ points if $Q$ is
 %               defined.
-% coeff         Form factor coefficients according to the following
-%               formula:
-%                   f0(Qs) = c + SUM a_i*EXP(-b_i*(Qs^2))
-%                                i=1,5
-%               where Qs = Q/(4*pi) and [a_1 b_1 a_2 b_2 ... c] are the
-%               coefficients.
 %
-% See also sw_mff.
+% `coeff`
+% : Form factor coefficients according to the following
+%               formula:
+%                   $f_0(Q_s) = c + \sum_{i=1}^5 a_i\cdot \exp(-b_i Q_s^2)$,
+%               where $Q_s = \frac{Q}{4*\pi}$ and $[a_1, b_1, a_2, b_2, ... c]$ are the
+%               coefficients.
+% 
+% ### See Also
+% 
+% [sw_mff]
 %
 
 if nargin == 0
@@ -86,7 +99,7 @@ if iscell(atomName)
         fIdx = find(idx == numel(formFact));
         warning('sw_cff:WrongInput',['The x-ray scattering form factor for %s is undefined,'...
             ' constant 1 will be used instead! If you don''t want to see this message add a'...
-            ' line to xrayion.dat for the corresponding ion!'],atomName{fIdx(1)})
+            ' line to xrayion.dat (use the ''edit xrayion.dat'' command) for the corresponding ion!'],atomName{fIdx(1)})
     end
 elseif size(atomName,2) == 11
     coeff = atomName;

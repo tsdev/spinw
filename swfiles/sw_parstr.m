@@ -1,4 +1,57 @@
-function parsed = sw_parstr(strIn, spectra)
+function parsed = sw_parstr(strIn)
+% parses input string
+%
+% ### Syntax
+%
+% `parsed = sw_parstr(strIn)`
+%
+% ### Description
+%
+% `parsed = sw_parstr(strIn)` parses input string containing a mathematical
+% expression, a linear combination of symbols with numerical prefactors.
+% The numerical symbols begin with `'S'`, `'M'` or `'P'` followed by two
+% letters from the set of `'xyz'` or `'P'` can be followed be a single
+% letter from the `'xyz'` set. For example a valid input string is
+% `'Sxx-0.33*Syy'`.
+%
+% ### Examples
+%
+% Simple test:
+% ```
+% >>sw_parstr('Sxx + Syy')>>
+% ```
+%
+% ### Input Arguments
+%
+% `strIn`
+% : String that contains a linear combination of symbols, e.g
+%   `'0.1*Sxx+0.23*Syy'`.
+%
+% ### Output Arguments
+%
+% `parsed`
+% : Struct type with the following fields:
+%   * `type`    Cell contains the same number of elements as in the sum. Each element
+%               is a vector as follows:
+%     * `type{idx}(1)`    Index of type of cross section:
+%       * 1 for `Sperp`,
+%       * 2 for `Sab`,
+%       * 3 for `Mab`,
+%       * 4 for `Pab`,
+%       * 5 for  `Pa`.
+%     * `type{idx}(2:3)`  Index of the component:
+%       * 1 for `x`,
+%       * 2 for `y`,
+%       * 3 for `z`.
+%   * `preFact` Vector contains the values of the prefactors in the sum.
+%   * `string`  Original input string.
+%
+% ### See Also
+%
+% [sw_egrid] \| [spinw.fitspec]
+
+
+
 % parses input string
 %
 % parsed = SW_PARSTR(strIn)
@@ -14,7 +67,7 @@ function parsed = sw_parstr(strIn, spectra)
 %           function. Letter a and b can be 'x', 'y' or 'z'. For example:
 %           'Sxx' will convolute the xx component of the correlation
 %           function with the dispersion. xyz is the standard coordinate
-%           system, see online documentation of sw.
+%           system, see online documentation of spinw.
 % 'Mab'     convolutes the selected components of the spin-spin
 %           correlation function. Letter a and b can be 'x', 'y' or 'z'.
 %           For example: 'Sxx' will convolute the xx component of the
@@ -64,16 +117,12 @@ function parsed = sw_parstr(strIn, spectra)
 % Test it with:
 % <a href="matlab:parsed = sw_parstr('Sxx + Syy')">parsed = sw_parstr('Sxx + Syy')</a>
 %
-% See also SW_EGRID, SW.FITSPEC.
+% See also SW_EGRID, SPINW.FITSPEC.
 %
 
 if nargin == 0
-    help sw_parstr;
-    return;
-end
-
-if nargin == 1
-    spectra = struct;
+    help sw_parstr
+    return
 end
 
 strIn0 = strIn;
@@ -118,52 +167,51 @@ end
 
 % convert xyz components into numerical indices
 for ii = 1:nTerm
-    if ~isfield(spectra,strS{ii})
-        strTemp = strS{ii};
-        strS{ii} = 0;
-        if (numel(strTemp)>1) || (numel(strTemp)>3)
-            if strcmpi(strTemp,'Sperp')
-                strS{ii} = 1;
-            elseif any(strcmpi(strTemp(1),{'P' 'S' 'M'}))
-                if strcmpi(strTemp(1),'P')
-                    strS{ii} = 4; % Pab
-                elseif strcmpi(strTemp(1),'M')
-                    strS{ii} = 3; % Mab
-                else
-                    strS{ii} = 2; % Sab
-                end
-                if numel(strTemp)==2
-                    if strS{ii} == 4
-                        strS{ii} = 5; % Pa
-                    else
-                        error('sw:sw_parse:WrongString','Wrong input string!');
-                    end
-                end
-                idxA = strcmpi(strTemp(2),{'x' 'y' 'z'});
-                if any(idxA)
-                    strS{ii} = [strS{ii} find(idxA)];
-                else
-                    error('sw:sw_parse:WrongString','Wrong input string!');
-                end
-                if numel(strTemp)==3
-                    idxB = strcmpi(strTemp(3),{'x' 'y' 'z'});
-                    if any(idxB)
-                        strS{ii} = [strS{ii} find(idxB)];
-                    else
-                        error('sw:sw_parse:WrongString','Wrong input string!');
-                    end
-                    
-                end
+    strTemp = strS{ii};
+    strS{ii} = 0;
+    if (numel(strTemp)>1) || (numel(strTemp)>3)
+        if strcmpi(strTemp,'Sperp')
+            strS{ii} = 1;
+        elseif any(strcmpi(strTemp(1),{'P' 'S' 'M'}))
+            if strcmpi(strTemp(1),'P')
+                strS{ii} = 4; % Pab
+            elseif strcmpi(strTemp(1),'M')
+                strS{ii} = 3; % Mab
             else
-                error('sw:sw_parse:WrongString','Wrong input string!');
+                strS{ii} = 2; % Sab
+            end
+            if numel(strTemp)==2
+                if strS{ii} == 4
+                    strS{ii} = 5; % Pa
+                else
+                    error('sw_parstr:WrongString','Wrong input string!');
+                end
+            end
+            idxA = strcmpi(strTemp(2),{'x' 'y' 'z'});
+            if any(idxA)
+                strS{ii} = [strS{ii} find(idxA)];
+            else
+                error('sw_parstr:WrongString','Wrong input string!');
+            end
+            if numel(strTemp)==3
+                idxB = strcmpi(strTemp(3),{'x' 'y' 'z'});
+                if any(idxB)
+                    strS{ii} = [strS{ii} find(idxB)];
+                else
+                    error('sw_parstr:WrongString','Wrong input string!');
+                end
+                
             end
         else
-            error('sw:sw_parse:WrongString','Wrong input string!');
+            error('sw_parstr:WrongString','Wrong input string!');
         end
+    else
+        error('sw_parstr:WrongString','Wrong input string!');
     end
 end
 
 parsed.type    = strS;
 parsed.preFact = preFact;
 parsed.string  = strIn0;
+
 end

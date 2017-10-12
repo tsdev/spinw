@@ -16,7 +16,7 @@ typefield = Datstruct.typefield;
 
 % Validate only selected mainfield of the struct.
 indexFieldToValidate = [];
-if (nargin > 1)
+if nargin > 1
     if isa(varargin{2},'char')
         fieldToValidate = varargin(2);
     end

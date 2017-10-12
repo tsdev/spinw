@@ -1,41 +1,24 @@
 function [M, k, n, name, pname, limit] = gm_spherical3dd(M0, x)
 % magnetic structure constraint function with spherical parameterisation
+% 
+% ### Syntax
+% 
+% `[m, k, n, name, pname, limit] = gm_spherical3dd(m0, x) `
+% 
+% ### Description
+% 
+% Same function as [gm_spherical3d], except that the input angles are all in
+% degree.
+%  
 %
-% [M, k, n, name, pname, limit] = GM_SPHERICAL3D(M0, x) 
-%
-% It generates the parameters of magnetic moments and normal vector from
-% spherical (theta,phi) coordinates. All angles are in radian.
-%
-% Input:
-%
-% x         Input parameters in the following order:
-%           (Theta1, Phi1, Theta2, Phi2, ... , kx, ky, kz, nTheta, nPhi).
-% M0        Size of magnetic moments: (M1, M2, ...) or scalar if all
-%           moments are equal.
-%
-% Output:
-%
-% M         Array, containing the magnetic moments, dimensions are
-%           [3 nMagExt]. Every column contain the [Mx; My; Mz] magnetic
-%           moment components of a magnetic atom in the xyz coordinate
-%           system.
-% k         Magnetic ordering wavevector in r.l.u., dimensions are [1 3].
-% n         Normal vector to the plane of the incommensurate spins (if k
-%           non-zero).
-%
-% Optional outputs:
-% only produced if the output is requested.
-%
-% name      Name of the function.
-% pname     Name of the input parameters in a cell: {'Param1' 'Param2',...}
-% limit     Default limits on the input parameters, dimensions are [2 nX].
-%           Every column contains a lower and upper limit on the parameter.
-%
-% See also GM_PLANAR.
+% ### See Also
+% 
+% [gm_spherical3d]
 %
 
+
 if nargin == 0
-    help gm_spherical3dd;
+    help gm_spherical3dd
     return
 end
 
@@ -52,7 +35,7 @@ if nargout <= 3
     else
         % Check that the number of magnetic atoms is right
         if length(MTheta)~=length(M0)
-            error('sw:gm_spherical3d:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
+            error('gm_spherical3d:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
         end
         % Magnetic moments in orthogonal coordinate sysyem.
         M = bsxfun(@times,[sind(MTheta).*cosd(MPhi); sind(MTheta).*sind(MPhi); cosd(MTheta)],M0);

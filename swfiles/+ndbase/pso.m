@@ -53,7 +53,7 @@ function [pOpt,fVal,stat] = pso(dat,func,p0,varargin)
 %           Default value is 1e5.
 % MaxIter   Maximum number of iterations, default value is 100*M.
 % MaxFunEvals Maximum number of function evaluations, default value is
-%           1000*M.
+%           1000*M. NOT IMPLEMENTED!
 % TolX      Convergence tolerance for parameters, default value is 1e-3.
 % Display   Level of information to print onto the Command Line during
 %           optimisation. Possible values are 'off', 'notify' and 'iter'.
@@ -79,6 +79,12 @@ function [pOpt,fVal,stat] = pso(dat,func,p0,varargin)
 %               Good Parameters for Particle Swarm Optimization By Magnus Erik Hvass Pedersen Hvass Laboratories
 %               Technical Report no. HL1001
 %               http://www.hvass-labs.org/people/magnus/publications/pedersen10good-pso.pdf
+% tid       Setup time estimation with the following values:
+%               0   Do nothing (default).
+%               1   Text output to the Command Window. Default.
+%               2   Graphical output, using the waitbar() function.
+%              -1   Set the value from the SpinW preferences (needs SpinW
+%                   installed).
 %
 % See also NDBASE.LM.
 %
@@ -110,15 +116,20 @@ Np    = numel(p0);
 
 oNp = ones(1,Np);
 
-inpForm.fname  = {'Display' 'TolFun' 'TolX' 'MaxIter' 'MaxFunEvals' 'SwarmC1' 'seed'       };
-inpForm.defval = {'off'     1e-3     1e-3   100*Np    1000*Np       2.8      sum(100*clock)};
-inpForm.size   = {[1 -1]    [1 1]    [1 1]  [1 1]     [1 1]         [1 1]    [1 1]         };
+% not implemented yet: 'MaxFunEvals'
+inpForm.fname  = {'Display' 'TolFun' 'TolX' 'MaxIter' 'SwarmC1' 'seed'        'tid'};
+inpForm.defval = {'off'     1e-3     1e-3   100*Np    2.8      sum(100*clock)  0   };
+inpForm.size   = {[1 -1]    [1 1]    [1 1]  [1 1]     [1 1]    [1 1]          [1 1]};
 
 inpForm.fname  = [inpForm.fname  {'SwarmC2' 'PopulationSize' 'lb'      'ub'     'autoTune' 'k0'}];
 inpForm.defval = [inpForm.defval {1.3       25               -1e5*oNp   1e5*oNp false      1   }];
 inpForm.size   = [inpForm.size   {[1 1]     [1 1]            [1 Np]     [1 Np]  [1 1]     [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
+
+if param.tid == -1
+    param.tid = swpref.getpref('tid',[]);
+end
 
 % parameter boundaries
 UB = param.ub;
@@ -252,6 +263,9 @@ end
 % calculate constriction factor
 param.ConstrictionFactor = 2*param.k0/(abs(2-(swarmC1+swarmC2)-sqrt((swarmC1+swarmC2)^2-4*(swarmC1+swarmC2))));
 
+% setup timer function
+sw_status(0,1,param.tid,'Particle swarm optimization');
+
 % for each iteration....
 for ii = 1:maxIter
     
@@ -341,7 +355,13 @@ for ii = 1:maxIter
         break
     end
     
+    % recalculate time
+    sw_status(ii/maxIter*100,0,param.tid);
+    
 end
+
+% finish timer
+sw_status(100,2,param.tid);
 
 if exitFlag == 0
     % no convergence,but maximum number of iterations has been reached

@@ -1,72 +1,108 @@
 function [SS, SI, RR] = intmatrix(obj, varargin)
-% creates the interactions matrices (connectors and values)
+% generates interaction matrix
+% 
+% ### Syntax
+% 
+% `[SS, SI, RR] = intmatrix(obj,Name,Value)`
+% 
+% ### Description
+% 
+% `[SS, SI, RR] = intmatrix(obj,Name,Value)` lists the bonds and generates
+% the corresponding exchange matrices by applying the bond symmetry
+% operators on the stored matrices. Also applies symmetry on the single ion
+% anisotropies and can generate the representation of bonds, anistropies
+% and atomic positions in an arbitrary supercell. The output argument `SS`
+% contains the different types of exchange interactions separated into
+% different fields, such as `SS.DM` for the Dzyaloshinskii-Moriya
+% interaction, `SS.iso` for Heisenberg exchange, `SS.all` for general
+% exchange etc.
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Name-Value Pair Arguments
+% 
+% `'fitmode'`
+% : Can be used to speed up calculation, modes:
+%   * `true`    No speedup (default).
+%   * `false`   For the interactions stored in `SS`, only the
+%               `SS.all` field is calculated.
+% 
+% `'plotmode'`
+% : If `true`, additional rows are added to `SS.all`, to identify
+%   the couplings for plotting. Default is `false`.
+% 
+% `'sortDM'`
+% : If true each coupling is sorted for consistent plotting of
+%   the DM interaction. Sorting is based on the `dR` bond vector that
+%   points from `atom1` to `atom2`, for details see [spinw.coupling].
+%   After sorting `dR` vector components fulfill the following rules in
+%   hierarchical order:
+%   1. `dR(x) > 0`
+%   2. `dR(y) > 0`
+%   3. `dR(z) > 0`.
 %
-% [SS, SI, RR] = INTMATRIX(obj, 'Option1', Value1, ...)
+%   Default is `false`.
+% 
+% `'zeroC'`
+% : Whether to output bonds with assigned matrices that have only
+%   zero values. Default is `false`.
+% 
+% `'extend'`
+% : If `true`, all bonds in the magnetic supercell will be
+%   generated, if `false`, only the bonds in the crystallographic
+%   unit cell is calculated. Default is `true`.
+% 
+% `'conjugate'`
+% : Introduce the conjugate of the couplings (by exchanging the interacting
+%   `atom1` and `atom2`). Default is `false`.
+% 
+% ### Output Arguments
+% 
+% `SS`
+% : structure with fields `iso`, `ani`, `dm`, `gen`, `bq`, `dip` and
+%   `all`. It describes the bonds between spins. Every field is a matrix,
+%               where every column is a coupling between two spins. The
+%               first 3 rows contain the unit cell translation vector
+%               between the interacting spins, the 4th and 5th rows contain
+%               the indices of the two interacting spins in the
+%               [spinw.matom] list. The following rows contains the
+%               strength of the interaction. For isotropic exchange it is a
+%               single number, for DM interaction it is a column vector
+%               `[DMx; DMy; DMz]`, for anisotropic interaction `[Jxx; Jyy;
+%               Jzz]` and for general interaction `[Jxx; Jxy; Jxz; Jyx; Jyy;
+%               Jyz; Jzx; Jzy; Jzz]` and for biquadratic exchange it is also
+%               a single number. For example:
+%   ```
+%   SS.iso = [dl_a; dl_b; dl_c; matom1; matom2; Jval]
+%   ```
+%   If `plotmode` is `true`, two additional rows are added to `SS.all`,
+%               that contains the `idx` indices of the
+%               `obj.matrix(:,:,idx)` corresponding matrix for each
+%               coupling and the `idx` values of the couplings (stored in
+%               `spinw.coupling.idx`). The `dip` field contains the dipolar
+%               interactions that are not added to the `SS.all` field.
 %
-% Input:
-%
-% obj           Input spinw class object.
-%
-% Options:
-%
-% fitmode       Can be used to speed up calculation, modes:
-%               0   No speedup, default.
-%               1   Only atomic positions are precalculated and equivalent
-%                   coupling matrices are summed up.
-%               2   Same as mode == 1, moreover only SS.all is calculated.
-% plotmode      If true, additional rows are added to SS.all, to identify
-%               the couplings for plotting. Default is false.
-% sortDM        If true each coupling is sorted for consistent plotting of
-%               the DM interaction. Sorting is based on the dR distance
-%               vector, pointing from atom1 to atom2. Its components should
-%               fulfill the following rules in hierarchical order:
-%                   1. dR(x) > 0
-%                   2. dR(y) > 0
-%                   3. dR(z) > 0.
-%               Default is false.
-% zeroC         Whether to output bonds with assigned matrices that are
-%               zero. Default is false.
-% extend        If true, all bonds in the magnetic supercell will be
-%               generated, if false, only the bonds in the crystallographic
-%               unit cell is calculated. Default is true.
-% conjugate     Introduce the conjugate of the couplings (atom1 and atom2
-%               exchanged). Default is false.
-%
-% Output:
-%
-% SS            Structure with  fields {iso,ani,dm,gen,bq,dip}. It
-%               describes the interactions between spins. Every field is a
-%               matrix, where every column is a coupling between two spins.
-%               The first 3 rows contain the unit cell translation vector
-%               between the interacting spins, the 4th and 5th row contains
-%               the indices of the two interacting spins in the 'spin'
-%               variable. The following rows contains the strength of the
-%               interaction. For isotropic exchange it is a single number,
-%               for DM interaction [DMx; DMy; DMz], for anisotropic
-%               interaction [Jxx; Jyy; Jzz] and for general interaction
-%               [Jxx; Jxy; Jxz; Jyx; Jyy; Jyz; Jzx; Jzy; Jzz] and for
-%               biquadratic exchange it is also a single number.
-%               For example:
-%                SS.iso = [dLatX; dLatY; dLatZ; spinIdx1; spinIdx2; Jval].
-%               For plotmode true, two additional rows are added to SS.all,
-%               that contains the idx indices of the obj.matrix(:,:,idx)
-%               corresponding matrix for each coupling and the .idx values
-%               of the couplings. The dip field contains the dipolar
-%               interactions that are not added to the SS.all field.
-%
-% SI            Single ion energy, due to anisotropy and magnetic field.
-% SI.aniso      Matrix with dimensions of [3 3 nMagAtom] sized matrix,
-%               where the energy of the i-th spin is
-%               E_aniso = spin(:)*A(:,:,i)*spin(:)'.
-% SI.g          g-tensor, with dimensions of [3 3 nMagAtom]. It determines
+% `SI`
+% : single ion properties stored in a structure with fields:
+%   * `aniso`   Matrix with dimensions of $[3\times 3\times n_{magAtom}]$,
+%               where the classical energy of the $i$-th spin is expressed
+%               as `E_aniso = spin(:)*A(:,:,i)*spin(:)'`
+% 	* `g`       g-tensor, with dimensions of $[3\times 3\times n_{magAtom}]$. It determines
 %               the energy of the magnetic moment in external field:
-%               E_field = B(:)*g(:,:,i)*spin(:)'.
-% SI.field      External magnetic field [Bx By Bz].
+%               `E_field = B(:)*g(:,:,i)*spin(:)'`
+% 	* `field`   External magnetic field in a row vector with three elements $(B_x, B_y, B_z)$.
 %
-% RR            Positions of the atoms in lattice units, dimensions are
-%               [3 nMAgExt].
+% `RR`
+% : Positions of the atoms in lattice units in a matrix with dimensions of $[3\times n_{magExt}]$.
+% 
+% ### See Also
+% 
+% [spinw.table] \| [spinw.symop]
 %
-% See also SPINW.COUPLINGTABLE.
+% *[DM]: Dzyaloshinskii-Moriya
 %
 
 %if obj.symbolic && obj.symmetry
@@ -79,8 +115,8 @@ function [SS, SI, RR] = intmatrix(obj, varargin)
 nExt0 = double(obj.mag_str.nExt);
 
 inpForm.fname  = {'fitmode' 'plotmode' 'zeroC' 'extend' 'conjugate' 'sortDM' 'nExt'};
-inpForm.defval = {0          false     false   true     false       false    nExt0 };
-inpForm.size   = {[1 1]      [1 1]     [1 1]   [1 1]    [1 1]       [1 1]    [1 3] };
+inpForm.defval = {false     false      false   true     false       false    nExt0 };
+inpForm.size   = {[1 1]     [1 1]      [1 1]   [1 1]    [1 1]       [1 1]    [1 3] };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -133,59 +169,6 @@ SS.all   = double([coupling.dl; coupling.atom1; coupling.atom2; coupling.idx]);
 % find the last symmetry generated matrix
 lastSym = find(coupling.idx <= coupling.nsym,1,'last');
 
-% generate the symmetry operators if necessary
-if isempty(obj.cache.symop)
-    if coupling.nsym > 0
-        % transformation matrix between l.u. and xyz coordinate systems
-        A = obj.basisvector(false,obj.symbolic);
-        
-        
-        % generate symmetry operators for anisotropy matrice using the space group symmetry
-        % generate the rotation matrices
-        if obj.symbolic
-            [~, ~, opInfo] = swsym.position(obj.lattice.sym,obj.unit_cell.r(:,~sw_always(obj.unit_cell.S==0)));
-        else
-            [~, ~, opInfo] = swsym.position(obj.lattice.sym,obj.unit_cell.r(:,obj.unit_cell.S>0));
-        end
-        
-        % convert rotation operators to xyz Cartesian coordinate system
-        rotOpA = mmat(A,mmat(opInfo.opmove,inv(A)));
-        
-        % generate symmetry operators for exchange matrices
-        % first positions of the couplings with identical idx values used to
-        % generate the coupling matrices for the rest
-        % only calculate for the symmetry generated bonds
-        bondSel = [true logical(diff(SS.all(6,:)))] & SS.all(6,:)<= coupling.nsym;
-        % keep the bonds the will generate the space group operators
-        firstBond = SS.all(1:5,bondSel);
-        rotOpB = zeros(3,3,lastSym);
-        % select rotation matrices for each generated coupling
-        bIdx = 0;
-        for ii = 1:size(firstBond,2)
-            [~, rotIdx] = swsym.bond(obj.matom.r,obj.basisvector, firstBond(:,ii), obj.lattice.sym, 1e-5);
-            rotOpB(:,:,bIdx+(1:sum(rotIdx))) = obj.lattice.sym(:,1:3,rotIdx);
-            bIdx = bIdx + sum(rotIdx);
-        end
-        
-        % convert rotation operators to xyz Cartesian coordinate system
-        rotOpB = mmat(A,mmat(rotOpB,inv(A)));
-        
-        % save to the cache
-        obj.cache.symop.sion = rotOpA;
-        obj.cache.symop.bond = rotOpB;
-    else
-        % save to the cache
-        obj.cache.symop.sion = zeros(3,3,0);
-        obj.cache.symop.bond = zeros(3,3,0);
-    end
-    % add listener to lattice and unit_cell fields
-    obj.addlistenermulti(2);
-else
-    % get the stored operators from cache
-    rotOpA = obj.cache.symop.sion;
-    rotOpB = obj.cache.symop.bond;
-end
-
 % extract the assigned bonds
 mat_idx  = coupling.mat_idx';
 mat_type = double(coupling.type)';
@@ -208,7 +191,11 @@ JJ.mat  = mat(:,:,JJ.idx);
 
 % rotate the anisotropy & g matrices according to the symmetry operators
 if obj.sym
-    % rotate the matrices: R*M*R'
+    % gather the symmetry operators
+    symop  = obj.symop;
+    rotOpA = symop.sion;
+    rotOpB = symop.bond;
+
     SI.aniso = mmat(rotOpA,mmat(SI.aniso,permute(rotOpA,[2 1 3])));
     % generate g-tensor using the space group symmetry
     % rotate the matrices: R*M*R'
@@ -216,6 +203,12 @@ if obj.sym
     
     % rotate the coupling matrices only when symmetry operator requested
     colSym = colSel <= lastSym & JJ.sym';
+    % only rotate non-Heisenberg matrices
+    isHeis = sw_mattype(obj.matrix.mat,0) == 1;
+    isHeis = isHeis(JJ.idx);
+    % remove Heisenberg
+    colSym = colSym & ~isHeis(:)';
+    % rotate the matrices: R*M*R'
     JJ.mat(:,:,colSym) = mmat(rotOpB(:,:,colSel(colSym)),mmat(JJ.mat(:,:,colSym),permute(rotOpB(:,:,colSel(colSym)),[2 1 3])));
 end
 
@@ -330,15 +323,16 @@ if ~param.zeroC
     JJ.idx  = JJ.idx(nzeroJ);
     JJ.mat  = JJ.mat(:,:,nzeroJ);
     idxTemp = idxTemp(nzeroJ);
+    colSel  = colSel(nzeroJ);
 end
 
 if param.plotmode
     % Saves all coupling matrix indices in SS.all in case of non-fitting mode
     % in the bottom row
     if ~isempty(SS.all)
-        SS.all   = [SS.all(1:14,:); double(JJ.idx'); idxTemp; SS.all(15,:)];
+        SS.all   = [SS.all(1:14,:); double(JJ.idx'); idxTemp; SS.all(15,:); colSel];
     else
-        SS.all   = zeros(17,0);
+        SS.all   = zeros(18,0);
     end
 end
 
@@ -352,7 +346,7 @@ if param.sortDM && (~isempty(SS.all))
     multL = ceil(fliplr(cumprod([1 [1 1]*(rmax+1)])));
     
     % find the couplings that have to be flipped
-    flip = find(sum(bsxfunsym(@times,rv,multL'),1) < 0);
+    flip = find(sum(bsxfun(@times,rv,multL'),1) < 0);
     % flip the selected couplings
     SS.all(1:3,flip)   = -SS.all(1:3,flip);
     SS.all([4 5],flip) =  SS.all([5 4],flip);

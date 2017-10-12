@@ -1,26 +1,39 @@
 function type = sw_mattype(mat, epsilon)
-% determines the type of square input matrix
+% classifies square matrices
+% 
+% ### Syntax
+% 
+% `type = sw_mattype(mat)`
+% 
+% `type = sw_mattype(mat,epsilon)`
 %
-% type = SW_MATTYPE(mat, {epsilon})
+% ### Description
+% 
+% `type = sw_mattype(mat)` determines the type of the input matrix `mat`
+% which stacked $[3\times 3]$ matrices. It determines the type of exchnge
+% interaction that the matrix belongs to.
+% 
+% {{note Also works on symbolic matrices, but keep all symbols real for consistent
+% result!}}
 %
-% The function determines the type of the mat 3x3xN matrix and returns a
-% vector with dimensions of [1 N].
+% ### Input Arguments
+% 
+% `mat`
+% : Matrix with dimensions of $[3\times 3\times N]$.
+% 
+% `epsilon`
+% : optional error bar on small matrix elements, default value is $10^{-5}$.
+% 
+% ### Output Arguments
+% 
+% `type`
+% : Row vector with $N$ elements each having one of the following value:
+%   * `1`   Heisenberg exchange,
+%   * `2`   anisotropic exchange,
+%   * `3`   DM interaction,
+%   * `4`   general matrix.
 %
-% Input:
-%
-% mat       Matrix with dimensions of [3 3 N].
-% epsilon   Error bar on small matrix element. Defult is 1e-5.
-%           Optional.
-%
-% Output:
-%
-% type      1   Heisenberg exchange
-%           2   Anisotropic exchange
-%           3   DM interaction
-%           4   General matrix
-%
-% Also works on symbolic matrices, but keep all symbols real for consistent
-% result!
+% *[DM]: Dzyaloshinskii-Moriya
 %
 
 if nargin==0
@@ -36,11 +49,11 @@ end
 type = zeros(1,mSize(3));
 
 if any(mSize(1:2)-[3 3])
-    error('sw:sw_mattype:InputError','Dimensions of the Input matrix is not 3x3xN!');
+    error('sw_mattype:InputError','Dimensions of the Input matrix is not 3x3xN!');
 end
 
 if ~isreal(mat) && ~isa(mat,'sym')
-    error('sw:sw_mattype:InputError','Input matrix is not real or symbolic!');
+    error('sw_mattype:InputError','Input matrix is not real or symbolic!');
 end
 
 if ~isa(mat,'sym')
@@ -48,15 +61,15 @@ if ~isa(mat,'sym')
     for ii = 1:mSize(3)
         matI = mat(:,:,ii);
         dM = diag(matI);
-        if sum(sum(abs(diag(dM)-matI))) < epsilon*6
-            if sum(abs(dM-dM(1))) < epsilon*3
+        if sum(sum(abs(diag(dM)-matI))) <= epsilon*6
+            if sum(abs(dM-dM(1))) <= epsilon*3
                 % unity matrix * scalar
                 typeT = 1;
             else
                 % anisotropic diagonal
                 typeT = 2;
             end
-        elseif sum(sum(abs((matI+matI')))) < epsilon*6
+        elseif sum(sum(abs((matI+matI')))) <= epsilon*6
             % pure antisymmetric
             typeT = 3;
         else

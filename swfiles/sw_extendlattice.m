@@ -1,34 +1,55 @@
 function [aList, SSext] = sw_extendlattice(nExt, aList, SS)
 % creates superlattice
+% 
+% ### Syntax
+% 
+% `aList = sw_extendlattice(nExt,aList)`
+% 
+% `[aList, SSext] = sw_extendlattice(nExt,aList,SS)`
 %
-% [aList, SSext] = SW_EXTENDLATTICE(nExt, aList, {SS})
+% ### Description
+% 
+% `aList = sw_extendlattice(nExt,aList)` creates a superlattice
+% and calculates all atomic positions within the new superlattice by
+% tiling it with the original cell.
 %
-% It creates a superlattice and all redefines all given bond for the larger
-% superlattice.
+% `[aList, SSext] = sw_extendlattice(nExt,aList,SS)` also calculates the
+% bond matrix for the supercell by properly including all internal bonds
+% and bonds between atoms in different supercells.
+% 
+% ### Input Arguments
+% 
+% `nExt`
+% : Size of the supercell in units of the original cell in a row vector
+%   with 3 elements.
+% 
+% `aList`
+% : List of the atoms, produced by [spinw.matom].
+% 
+% `SS`
+% : Interactions matrices in the unit cell. Struct where each field
+%   contains an interaction matrix.
+% 
+% ### Output Arguments
+% 
+% `aList`
+% : Parameters of the magnetic atoms in a struct with the following fields:
+%   * `RRext` Positions of magnetic atoms in lattice units of the supercell stored in a matrix with dimensions of $[3\times n_{magExt}]$.
+%   * `Sext`  Spin length of the magnetic atoms in a row vector with $n_{magExt}$ number of elements.
 %
-% Input:
-%
-% nExt          Number of unit cell extensions, dimensions are [1 3].
-% aList         List of the atoms, produced by sw.matom.
-% SS            Interactions matrices in the unit cell, optional.
-%
-% Output:
-%
-% aList         Parameters of the magnetic atoms.
-% aList.RRext   Positions of magnetic atoms, assuming an extended unit
-%               cell, dimensions are [3 nMagExt].
-% aList.Sext    Spin length of the magnetic atoms, dimensions are
-%               [1 nMagExt].
-%
-% SSext         Interaction matrix in the extended unit cell, struct type.
-%               In the struct every field is a matrix. Every column of the
-%               matrices describes a single interaction.
-% SSext.iso     Isotropic exchange interactions.
-% SSext.ani     Anisotropic exchange interations.
-% SSext.dm      Dzyaloshinsky-Moriya interaction terms.
-% SSext.gen     General 3x3 matrix contains the exchange interaction.
-%
-% See also SW.INTMATRIX.
+% `SSext`
+% : Interaction matrix in the extended unit cell, struct type.
+%   In the struct every field is a matrix. Every column of the
+%   matrices describes a single bond, the following fields are generally
+%   defined:
+% 	* `iso`     Isotropic exchange interactions.
+% 	* `ani`     Anisotropic exchange interations.
+% 	* `dm`      Dzyaloshinsky-Moriya interaction terms.
+% 	* `gen`     General $[3\times 3]$ matrix contains the exchange interaction.
+% 
+% ### See Also
+% 
+% [spinw.intmatrix]
 %
 
 if nargin == 0
@@ -72,13 +93,13 @@ for ii = 1:numel(fNameV)
     SSext.(fName) = repmat(SS.(fName),[1 nCell]);
     if ~isempty(SS.(fName))
         % first atom index within the uspercell
-        SSext.(fName)(4,:) = reshape(bsxfunsym(@plus,addIdx,SS.(fName)(4,:)),1,[]);
+        SSext.(fName)(4,:) = reshape(bsxfun(@plus,addIdx,SS.(fName)(4,:)),1,[]);
         % end of bond vector still in original cell dimensions
-        bVect = reshape(permute(bsxfunsym(@plus,cIdx,permute(SS.(fName)(1:3,:),[3:5 1 2])),[4 5 1:3]),3,[]);
+        bVect = reshape(permute(bsxfun(@plus,cIdx,permute(SS.(fName)(1:3,:),[3:5 1 2])),[4 5 1:3]),3,[]);
         % normalize bond vector to supercell dimensions
-        SSext.(fName)(1:3,:) = floor(bsxfunsym(@rdivide,bVect,nExt));
+        SSext.(fName)(1:3,:) = floor(bsxfun(@rdivide,bVect,nExt));
         % indices are between (0:nCell-1)*nAtom
-        SSext.(fName)(5,:) = sum(bsxfunsym(@times,bVect-bsxfunsym(@times,SSext.(fName)(1:3,:),nExt),[1;nExt(1);prod(nExt(1:2))]),1)*nAtom+SSext.(fName)(5,:);
+        SSext.(fName)(5,:) = sum(bsxfun(@times,bVect-bsxfun(@times,SSext.(fName)(1:3,:),nExt),[1;nExt(1);prod(nExt(1:2))]),1)*nAtom+SSext.(fName)(5,:);
     end
 end
 

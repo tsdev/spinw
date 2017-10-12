@@ -25,7 +25,7 @@ function moments = magtable(obj)
 %   R           Matrix, where every column defines the position of the
 %               magnetic atom in lattice units.
 %   atom        Pointer to the magnetic atom in the subfields of
-%               sw.unit_cell.
+%               spinw.unit_cell.
 %
 % See also SPINW.GENMAGSTR.
 %
@@ -83,10 +83,6 @@ else
     
     % atom idx values
     moments.atom = repmat(mAtom.idx,[1 prod(nExt)]);
-end
-
-if ~verLessThan('matlab','R2013b')
-    % TODO add table
 end
 
 end

@@ -1,42 +1,63 @@
 function result = optmagk(obj,varargin)
 % determines the magnetic propagation vector
+% 
+% ### Syntax
+% 
+% `res = optmagk(obj,Name,Value)`
+% 
+% ### Description
+% 
+% `res = optmagk(obj,Name,Value)` determines the optimal propagation vector
+% using the Luttinger-Tisza method. It calculates the Fourier transform of
+% the Hamiltonian as a function of wave vector and finds the wave vector
+% that corresponds to the smalles global eigenvalue of the Hamiltonian. It
+% also returns the normal vector that corresponds to the rotating
+% coordinate system. The global optimization is achieved using
+% Particle-Swarm optimizer.
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Name-Value Pair Arguments
 %
-% res = OPTMAGK(obj,'option1', value1 ...)
+% `kbase`
+% : Provides a set of vectors that span the space for possible propagation
+%   vectors:
 %
-% The function determines the optimal propagation vector by calculating the
-% Fourier transform of the Hamiltonian as a function of wave vector and
-% finding the wave vector that corresponds to the smalles eigenvalue of the
-% Hamiltonian. It also returns the normal vector that corresponds to the
-% rotating coordinate system. The optimization is achieved via
-% Particle-Swarm optimization.
+%   $ \mathbf{k} = \sum_i C(i)\cdot \mathbf{k}_{base}(i);$
 %
-% Input:
-%
-% obj       Input structure, spinw class object.
-%
-% Options:
-%
-% Accepts all options of ndbase.pso.
-%
-% Output:
-%
-% res       Structure with the following fields:
-%               k       Value of the optimal k-vector, with values between 0
+%   where the optimiser determines the $C(i)$ values that correspond
+%      to the lowest ground state energy. $\mathbf{k}_{base}$ is a
+%      matrix with dimensions $[3\times n_{base}]$, where $n_{base}\leq 3$. The basis
+%      vectors have to be linearly independent.
+% 
+% The function also accepts all options of [ndbase.pso].
+% 
+% ### Output Arguments
+% 
+% `res`
+% : Structure with the following fields:
+%   * `k`       Value of the optimal k-vector, with values between 0
 %                       and 1/2.
-%               n       Normal vector, defines the rotation axis of the
+%   * `n`       Normal vector, defines the rotation axis of the
 %                       rotating coordinate system.
-%               E       The most negative eigenvalue at the given propagation
+%   * `E`       The most negative eigenvalue at the given propagation
 %                       vector.
-%               stat    Full output of the ndbase.pso() optimizer.
-%
-% See also NDBASE.PSO.
+%   * `stat`    Full output of the [ndbase.pso] optimizer.
+% 
+% ### See Also
+% 
+% [ndbase.pso]
 %
 
-%inpForm.fname  = {'fitmode' };
-%inpForm.defval = {false     };
-%inpForm.size   = {[1 1]     };
-%
-%param = sw_readparam(inpForm, varargin{:});
+inpForm.fname  = {'kbase'};
+inpForm.defval = {[]     };
+inpForm.size   = {[3 -1] };
+inpForm.soft   = {true   };
+
+param = sw_readparam(inpForm, varargin{:});
 
 
 
@@ -87,13 +108,18 @@ idx4 = repmat(permute(1:nHkl,[1 3 2]),[9 nBond 1]);
 % indices all
 idxAll = [idx1(:) idx2(:) idx3(:) idx4(:)];
 
-% find the dimensionality of the bonds
-% bond vectors of non-zero couplings
-dl = SS.all(1:3,:);
-% system dimensionality
-D = rank(dl);
-% k-vector directions
-kbase = orth(dl);
+if isempty(param.kbase)
+    % find the dimensionality of the bonds
+    % bond vectors of non-zero couplings
+    dl = SS.all(1:3,:);
+    % system dimensionality
+    D = rank(dl);
+    % k-vector directions
+    kbase = orth(dl);
+else
+    kbase = param.kbase;
+    D = size(kbase,2);
+end
 
 kones = ones(1,D);
 
@@ -111,7 +137,6 @@ kOpt = (kbase*pOpt(:));
 
 % is there any value larger than 1/2
 kOpt = mod(kOpt,1);
-kOpt(kOpt>1/2) = 1-kOpt(kOpt>1/2);
 
 [Eopt, V] = optfun(pOpt);
 % 

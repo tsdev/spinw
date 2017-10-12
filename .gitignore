@@ -1,8 +1,13 @@
-docs/_build/
+
 *.mat
 
 .DS_Store
 
 *.m~
 
-external/tensordot.m~
+docs/_site/
+docs/.sass-cache/
+.jekyll-metadata
+_pdf
+
+*.sublime-workspace

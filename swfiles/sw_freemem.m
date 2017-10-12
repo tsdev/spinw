@@ -1,9 +1,20 @@
-function mem = sw_freemem()
-% gives the amount of free RAM in bytes
+function mem = sw_freemem
+% calculates the available memory
+% 
+% ### Syntax
+% 
+% `mem = sw_freemem`
+% 
+% ### Description
+% 
+% `mem = sw_freemem` determines the available free memory (RAM). If the
+% function cannot determine the size of the free memory, it returns zero.
+% The function is compatible with Linux, macOS and Windows.
+% 
+% ### Output Arguments
 %
-% mem = SW_FREEMEM()
-%
-% If it cannot determine the size of the free memory, it returns zero.
+% `mem`
+% : Size of free memory in bytes.
 %
 
 mem = 0;
@@ -27,7 +38,7 @@ try %#ok<TRYNC>
             mem = mem(3);
         else
             [~, mem_free] = strtok(memStr(20:end));
-            mem = str2num(mem_free);
+            mem = str2double(mem_free);
         end
     end
 end

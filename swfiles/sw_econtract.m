@@ -1,35 +1,53 @@
 function Qm = sw_econtract(Q,varargin)
-% converts (Q,omega) values to Qm values for diffraction instrument
+% converts (Q,E) values to Q values for diffraction instrument
+% 
+% ### Syntax
+% 
+% `Qm = sw_econtract(Q,Name,Value)`
+% 
+% ### Description
+% 
+% `Qm = sw_econtract(Q,Name,Value)` converts $(Q,E)$ values in the phase
+% space into $Q$ values as it would appear when measuring it with via
+% neutron diffraction.
+% 
+% ### Input Arguments
+% 
+% `Q`
+% : Input values in reciprocal space in the scattering plane in
+%   \\Angstrom$^{-1}$ units, dimensions are $[2\times n_Q]$.
+% 
+% ### Name-Value Pair Arguments
+% 
+% `'E'`
+% : Energy transfer value in meV, default value is zero.
+% 
+% `'lambda'`
+% : Wavelength of the incident neutron beam in \\Angstrom.
+% 
+% `'ki'`
+% : Momentum of the incidend neutron beam in \\Angstrom$^{-1}$, alternative
+%   input to `lambda`.
+% 
+% `'sense'`
+% : Scattering sense:
 %
-% Qm = SW_FLATCONE(Q,'Option1', Value,...) 
-%
-% Input:
-%
-% Q         Input values in reciprocal space in the scattering plane in
-%           Angstrom^-1 units, dimensions are [2 nQ].
-%
-% Options:
-%
-% omega     Energy transfer value in meV, default is zero.
-% lambda    Wavelength of the incident beam in Angstrom.
-% ki        Momentum of the incidend beam in Angstrom^-1.
-% sense     Scattering sense:
-%               1       detectors are on the right hand side from the
-%                       incident beam direction, default.
-%              -1       detectors are on the left hand side from the
-%                       incident beam direction.
-%
-% See also SW_CONVERTER.
+%   * `1`  detectors are on the right hand side from the incident beam direction, default.
+%   * `-1` detectors are on the left hand side from the incident beam direction.
+% 
+% ### See Also
+% 
+% [sw_converter]
 %
 
 if nargin == 0
-    help sw_econtract;
+    help sw_econtract
     return
 end
 
-inpForm.fname  = {'omega' 'lambda' 'ki'  'sense'};
-inpForm.defval = {0       0        0     1      };
-inpForm.size   = {[1 1]   [1 1]    [1 1] [1 1]  };
+inpForm.fname  = {'E'   'lambda' 'ki'  'sense'};
+inpForm.defval = {0     0        0     1      };
+inpForm.size   = {[1 1] [1 1]    [1 1] [1 1]  };
 
 param = sw_readparam(inpForm,varargin{:});
 
@@ -42,7 +60,7 @@ else
 end
 
 if ki == 0
-    error('sw:sw_flatcone:kierror','Missing ki or lambda!');
+    error('sw_flatcone:kierror','Missing ki or lambda!');
 end
 
 % Q absolute values
@@ -55,7 +73,7 @@ meV2k = sw_converter('meV',1,'k','neutron');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % energy loss due to magnons
-kf = sqrt(ki^2-param.omega*meV2k);
+kf = sqrt(ki^2-param.E*meV2k);
 % theta scattering angle
 theta = acos((ki^2 + kf^2 - Qabs.^2)/2/ki/kf)/2;
 

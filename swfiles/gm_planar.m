@@ -1,47 +1,58 @@
 function [S, k, n, name, pname, limit] = gm_planar(absS, x)
 % planar magnetic structure constraint function 
+% 
+% ### Syntax
+% 
+% `[s, k, n, name, pname, limit] = gm_planar(S0, x)`
+% 
+% ### Description
+% 
+% `[s, k, n, name, pname, limit] = gm_planar(S0, x)` generates the
+% parameters of arbitrary planar magnetic structure from $\varphi$ angles
+% (in radian), ordering wave vector (rlu) and spin plane normal vector
+% ($xyz$).
+%  
+% 
+% ### Input Arguments
+% 
+% `x`
+% : Input parameters in the following order: 
+%   $[\varphi_1, \varphi_2, ... , k_x, k_y, k_z, n_\theta, n_\varphi]$.
+% 
+% `S0`
+% : Spin quantum number in a row vector $(S_1, S_2, ...)$ or scalar if all
+%   spins are equal.
+% 
+% ### Output Arguments
+% 
+% `S`
+% : Matrix, containing the spin orientations with dimensions of $[3\times n_{magExt}]$.
+%       Every column contains the $(S_x S_y S_z)$ spin components of
+%       a magnetic atom in the $xyz$ coordinate system.
 %
-% :code:`[S, k, n, name, pname, limit] = GM_PLANAR(M0, x)`
+% `k`
+% : Magnetic ordering wavevector in rlu units in a row vector.
 %
-% The function generates the parameters of arbitrary planar magnetic
-% structure from phi angles (radian), ordering wave vector (rlu) and spin
-% plane normal vector (xyz).
+% `n`
+% : Normal vector around which the spins are rotating for non-zero
+%       propagation vector in a row vector.
 %
-% Parameters
-% ----------
+% `name`
+% : String, storing the name of the function.
 %
-% x:
-%       Input parameters in the following order: 
-%       :math:`(\varphi_1, \varphi_2, ... , k_x, k_y, k_z, n_\theta, n_\phi)`.
-% absS:
-%       Size of the spins: :math:`(S_1, S_2, ...)` or scalar if all
-%       moments are equal.
+% `pname`
+% : Name of the input parameters in a cell: `{'Phi1_rad', ...}`.
 %
-% Returns
-% -------
-%
-% S:
-%       Array, containing the spin orientations with dimensions of [3 nMagExt].
-%       Every column contain the :math:`[S_x; S_y; S_z]` magnetic moment components of
-%       a magnetic atom in the xyz coordinate system.
-% k:
-%       Magnetic ordering wavevector in rlu units in a row vector.
-% n:
-%       Normal vector around which the spins are rotating for non-zero
-%       k-vector in a row vector.
-% name:
-%       String, storing the name of the function. Optional.
-% pname:
-%       Name of the input parameters in a cell: {'Phi1_rad', ...}.
-%       Optional.
-% limit:
-%       Limits on the input parameters, dimensions are [2 nParam]. Every
+% `limit`
+% : Limits on the input parameters in a matrix with dimensions of $[2\times n_{param}]$. Every
 %       column contains a lower and upper limit on the corresponding
-%       parameter. Optional.
+%       parameter.
+% 
+% ### See Also
+% 
+% [gm_spherical3d] \| [gm_planard]
 %
-% See also
-% --------
-% gm_spherical3d, gm_planard.
+% *[rlu]: Reciprocal Lattice Unit
 %
 
 if nargin == 0
@@ -71,10 +82,10 @@ if nargout <= 3
     else
         % Check that the number of magnetic atoms is right
         if length(phi)~=length(absS)
-            error('sw:gm_planar:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
+            error('gm_planar:NumberOfMoments','The number of fitting parameters doesn''t produce the right number of moments!');
         end
         % Magnetic moments in orthogonal coordinate sysyem.
-        S = bsxfunsym(@times,u*cos(phi) + v*sin(phi),absS);
+        S = bsxfun(@times,u*cos(phi) + v*sin(phi),absS);
     end
 else
     nMagExt = size(absS,2);

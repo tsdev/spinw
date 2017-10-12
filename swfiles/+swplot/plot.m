@@ -20,7 +20,8 @@ function varargout = plot(varargin)
 %               'text'          position specifies the center of the text
 % position  Position of the object/objects in a matrix with dimensions of
 %           [3 nObject 2]/[3 nObject]/[3 nObject nPoint] depending on the
-%           type of object.
+%           type of object. The unit of the positions is determined by the
+%           'unit' option.
 % name      String, the name of the object. It can be used for finding the
 %           object handles after plotting.
 % text      Text to appear in the tooltip of the swplot figure after
@@ -68,6 +69,8 @@ function varargout = plot(varargin)
 %               5   'none'
 % lineWidth Line width, default value is 0.5, can be a vector with nObject
 %           columns for different width per line segment.
+% fontSize  Font size of text when type option is set to 'text'. Default
+%           value is stored in swpref.getpref('fontsize').
 % nMesh     Resolution of the ellipse surface mesh. Integer number that is
 %           used to generate an icosahedron mesh with #mesh number of
 %           additional triangulation, default value is stored in

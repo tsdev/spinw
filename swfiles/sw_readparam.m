@@ -1,22 +1,34 @@
 function input = sw_readparam(format, varargin)
-% parse input arguments (option, value pairs)
+% parse input arguments
+% 
+% ### Syntax
+% 
+% `parsed = sw_readparam(format,Name,Value)`
+% 
+% ### Description
+% 
+% `parsed = sw_readparam(format,Name,Vale)` parses name-value pair
+% arguments. The parsing is controlled by the given `format` input. The
+% name-value pairs are converted into the parsed struct which has field
+% names identical to the given parameter names and corresponding values
+% taken from the input. `format` can also define required dimensionality of
+% a given value and default values for select parameters.
 %
-% input = SW_READPARAM(format, raw) 
-%
-% It reads in parameters from input structure. Lower and upper case
-% insensitive, the output structure has the names stored in format.fname.
-% Instead of a struct type input, also a list of parmeters can be given in
-% a parameter name, value pairs. Where the parameter name is a string.
-%
-% Input:
-%
-% format is struct type with the following fields:
-% fname     Field names, strings in cell, dimensions are [nParm 1].
-% size      field size, if negative means index, field sizes with same
-%           negative index have to be the same size.
-% defval    Optional, default value if missing.
-% soft      Optional, if exist and equal to 1, in case of bad input
-%           value, defval is used without error message.
+% `sw_readparam` is used in most of the method functions of [spinw].
+% 
+% ### Input Arguments
+% 
+% `format`
+% : A struct with the following fields:
+%   * `fname` Field names, $n_{param}$ strings in cell.
+%   * `size` Required dimensions of the corresponding value in a cell of
+%     $n_{param}$ vectors. Negative integer means dimension has to match with
+%     any other dimension which has the identical negative integer.
+%   * `defval` Cell of $n_{param}$ values, provides default values for
+%     missing parameters.
+%   * `soft` Cell of $n_{param}$ logical values, optional. If `soft(i)` is
+%     true, in case of missing parameter value $i$, no warning will be
+%     given.
 %
 
 if nargin == 0
@@ -39,7 +51,13 @@ end
 %    format.soft   = [format.soft   {true      }];
 %end
 
-if (nargin>2) && (mod(nargin,2) == 1)
+check = true;
+if nargin==3 && isstruct(varargin{1}) && strcmp(varargin{2},'noCheck')
+    % just return the structure without checking for speedup, use it only
+    % for internal calls
+    raw   = varargin{1};
+    check = false;
+elseif (nargin>2) && (mod(nargin,2) == 1)
     nPar = nargin-1;
     raw = struct;
     for ii = 1:2:nPar
@@ -72,23 +90,24 @@ for ii = 1:length(fName)
         inputValid = true;
         
         % Go through all dimension of the selected field to check size.
-        for jj = 1:length(format.size{ii})
-            if format.size{ii}(jj)>0
-                if format.size{ii}(jj) ~= size(raw.(rName{rawIdx}),jj)
-                    inputValid = false;
-                end
-            else
-                if storeSize(-format.size{ii}(jj)) == 0
-                    storeSize(-format.size{ii}(jj)) = size(raw.(rName{rawIdx}),jj);
-                else
-                    if storeSize(-format.size{ii}(jj)) ~= size(raw.(rName{rawIdx}),jj)
+        if check
+            for jj = 1:length(format.size{ii})
+                if format.size{ii}(jj)>0
+                    if format.size{ii}(jj) ~= size(raw.(rName{rawIdx}),jj)
                         inputValid = false;
                     end
-                    
+                else
+                    if storeSize(-format.size{ii}(jj)) == 0
+                        storeSize(-format.size{ii}(jj)) = size(raw.(rName{rawIdx}),jj);
+                    else
+                        if storeSize(-format.size{ii}(jj)) ~= size(raw.(rName{rawIdx}),jj)
+                            inputValid = false;
+                        end
+                        
+                    end
                 end
             end
         end
-        
         if inputValid
             input.(fName{ii}) = raw.(rName{rawIdx});
         else

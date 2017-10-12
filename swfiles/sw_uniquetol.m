@@ -21,22 +21,22 @@ function [unique, firstIdx] = sw_uniquetol(M,tol)
 %
 
 if nargin == 0
-    help sw_uniquetol;
-    return;
+    help sw_uniquetol
+    return
 end
 
 if nargin < 2
     tol = 1e-5;
 end
 
-unique = zeros(size(M));
+unique = M*0;
 tol2 = tol(1)^2;
 
 if nargout < 2
     idx = 1;
     while ~isempty(M)
         unique(:,idx) = M(:,1);
-        idxSame = sum(bsxfun(@minus,M,unique(:,idx)).^2,1) < tol2;
+        idxSame = sum(bsxfunsym(@minus,M,unique(:,idx)).^2,1) < tol2;
         M(:,idxSame) = [];
         idx = idx + 1;
     end

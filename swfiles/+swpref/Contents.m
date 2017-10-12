@@ -1,9 +1,11 @@
-% The SWPREF library handles the permanent settings of the SpinW objects
-% that persist during a single Matlab session. It is different from the
-% Matlab built-in preferences, as it resets all settings to factory default
-% after every restart of Matlab.
+% package to handle persistent settings
+% 
+% The settings defined for spinw objects will persist during a single
+% Matlab session. It is different from the Matlab built-in preferences, as
+% it resets all settings to factory default after every restart of Matlab.
 %
-% Files
-%   getpref - returns SpinW global preferences
-%   pref    - returns SpinW global preferences
-%   setpref - sets SpinW global preferences
+% ### Files
+%
+%   swpref.getpref
+%   swpref.pref   
+%   swpref.setpref

@@ -1,9 +1,18 @@
 function objS = struct(obj)
-% extracts all public properties of spinw object into a struct
-%
-% objS = STRUCT(obj)
-%
-% See also SPINW, SPINW.COPY.
+% converts properties into struct
+% 
+% ### Syntax
+% 
+% `objS = struct(obj)`
+% 
+% ### Description
+% 
+% `objS = struct(obj)` converts all public properties of `obj` and saves
+% them into `objS` struct.
+% 
+% ### See Also
+% 
+% [spinw] \| [spinw.copy]
 %
 
 objS   = struct;

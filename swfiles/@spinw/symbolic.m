@@ -1,21 +1,33 @@
 function varargout = symbolic(obj, symb)
-% change between symbolic/numeric calculation
+% switches between symbolic/numeric mode
+% 
+% ### Syntax
+% 
+% `symb = symbolic(obj)`
 %
-% symb = SYMBOLIC(obj)
-%
-% Returns true is symbolic calculation mode is on, false for numeric mode.
-%
-% SYMBOLIC(obj, symb)
-%
-% symb sets whether the calculations are symbolic/numeric (true/false).
-%
-% See also SPINW, SPINW.SPINWAVESYM.
+% `symbolic(obj, symb)`
+% 
+% ### Description
+% 
+% `symb = symbolic(obj)` returns `true` if symbolic calculation mode is on,
+% `false` for numeric mode.
+%  
+% `symbolic(obj, symb)` sets whether the calculations are in
+% symbolic/numeric (`true`/`false`) mode. Switching to symbolic mode, the
+% spin values, matrix elements, magnetic field, magnetic structure and
+% physical units are converted into symbolic variables. If this is not
+% desired, start with a symbolic mode from the beggining and have full
+% control over the values of the above mentioned variables.
+% 
+% ### See Also
+% 
+% [spinw] \| [spinw.spinwavesym]
 %
 
 % Only returns symb value.
 if nargin == 1
     varargout{1} = logical(obj.symb);
-    return;
+    return
 end
 
 % No change!
@@ -34,9 +46,8 @@ switch symb
         obj.unit_cell.S = sym(obj.unit_cell.S);
 
         % Magnetic structure
-        obj.mag_str.S = sym(obj.mag_str.S);
+        obj.mag_str.F = sym(obj.mag_str.F);
         obj.mag_str.k = sym(obj.mag_str.k);
-        obj.mag_str.n = sym(obj.mag_str.n);
         
         % Interaction matrices
         nMat = numel(obj.matrix.label);
@@ -74,11 +85,11 @@ switch symb
         end
         
         % Magnetic structure
-        symVar1 = symvar(obj.mag_str.S);
+        symVar1 = symvar(obj.mag_str.F);
         if ~isempty(symVar1)
-            obj.mag_str.S = double(subs(obj.mag_str.S,symVar1,ones(1,numel(symVar1))));
+            obj.mag_str.F = double(subs(obj.mag_str.F,symVar1,ones(1,numel(symVar1))));
         else
-            obj.mag_str.S = double(obj.mag_str.S);
+            obj.mag_str.F = double(obj.mag_str.F);
         end
         
         symVar1 = symvar(obj.mag_str.k);
@@ -86,13 +97,6 @@ switch symb
             obj.mag_str.k = double(subs(obj.mag_str.k,symVar1,ones(1,numel(symVar1))));
         else
             obj.mag_str.k = double(obj.mag_str.k);
-        end
-        
-        symVar1 = symvar(obj.mag_str.n);
-        if ~isempty(symVar1)
-            obj.mag_str.n = double(subs(obj.mag_str.n,symVar1,ones(1,numel(symVar1))));
-        else
-            obj.mag_str.n = double(obj.mag_str.n);
         end
         
         % Interaction matrices
@@ -111,8 +115,10 @@ switch symb
             obj.single_ion.field = double(obj.single_ion.field);
         end
         
-        % Units
+        % Use SI units
+        % 0.086173324     Boltzmann constant: k_B [meV/K]
         obj.unit.kB  = 0.086173324;
+        % 0.057883818066  Bohr magneton: mu_B [meV/T]
         obj.unit.muB = 0.057883818066;
         
     otherwise

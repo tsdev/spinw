@@ -1,19 +1,48 @@
 function qOut = sw_qscan(qLim)
-% creates linear scans between Q points in 3D
+% creates continuous line between coordinates
+% 
+% ### Syntax
+% 
+% `qOut = sw_qscan(qLim)`
+% 
+% ### Description
+% 
+%  `qOut = sw_qscan(qLim)` generates connected lines between given
+%  positions in $n$-dimensional space ($n>1$). The output contains equally
+%  spaced points along each line section in a matrix, by default 100
+%  points. The function can be used to generates points along a path
+%  defined by corner points.
 %
-% qOut = SW_QSCAN(qLim)
+% ### Input Arguments
 %
-% Example:
+% `qLim`
+% : Cell that contains row vectors with $n$ elements each and optionally an
+%   additional integer, e.g. `{[0 0] [1 0] 201}`.
 %
-% qLim = {[0 1 0] [0 0 0]}
-% If the last element of qLim is a scalar, it defines the number of point
-% in each linear scan, by default this value is 100.
-% qLim = {[0 1 0] [0 0 0] 50}
+% ### Examples
+% 
+% To generate a path in the Brillouin-zone between the $(0,0,0)$, $(1,0,0)$
+% and $(1,1,0)$ points with 501 points per line segment use:
+%
+% ```
+% >>Q = sw_qscan({[0 0 0] [1 0 0] [1 1 0] [0 0 0] 501});
+% >>>figure
+% >>plot(Q(1,:),Q(2,:),'linewidth',2)
+% >>xlabel H
+% >>ylabel K
+% >>>axis([-1 2 -1 2])
+% >>>grid on
+% >>snapnow
+% ```
+%
+% ### See Also
+%
+% [sw_qgrid]
 %
 
 if nargin == 0
-    help sw_qscan;
-    return;
+    help sw_qscan
+    return
 end
 
 if ~iscell(qLim)

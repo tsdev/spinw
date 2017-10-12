@@ -1,40 +1,70 @@
 function addmatrix(obj, varargin)
-% adds new matrix that can be assigned to spins in the Hamiltonian
+% adds new [3x3] matrix
+% 
+% ### Syntax
+% 
+% `addmatrix(obj,Name,Value)`
+% 
+% ### Description
+% 
+% `addmatrix(obj,Name,Value)` adds a new $[3\times 3]$ matrix to the
+% [spinw.matrix] field of `obj`. The added matrices can be later assigned
+% to bonds, single ion anisotropy terms or g-tensors of magnetic atoms. If
+% the given matrix label already exists in `obj`, instead of adding new
+% matrix the existing one will be overwritten.
+% 
+% ### Examples
+% 
+% The first example adds a diagonal matrix `eye(3)`, that can describe
+% Heisenberg interaction if assigned to a bond. The second example adds an
+% ansisymmetric matrix that can decribe Dzyaloshinskii-Moriya (DM)
+% interaction if assigned to a bond.
 %
-% ADDMATRIX(obj, 'Option1, Value1,...)
+% ```
+% >>crystal = spinw
+% >>crystal.addmatrix('value',1,'label','J_1')
+% >>crystal.matrix.mat>>
+% >>crystal.addmatrix('value',[1 0 0],'label','J_1')
+% >>crystal.matrix.mat>>
+% ```
+% 
+% ### Input Arguments
+% 
+% `obj`
+% : [spinw] object.
+% 
+% ### Name-Value Pair Arguments
+% 
+% `'value'`
+% : The actual numerical values to be added as a matrix. It can have the
+%   following shapes:
+%   * $[3\times 3]$ the given values will be stored in [spinw.matrix] as
+%     they are given.
+%   * $[1\times 1]$ the given value will be multiplied with `eye(3)`.
+%   * `[Mx My Mz]` the given triplet will be used to define an
+%     antisymmetric matrix `M = [0 M3 -M2;-M3 0 M1;M2 -M1 0]`. 
+% 
+% `'label'`
+% : Label string for plotting default value is `'matI'`, where $I$ is the index
+%   of the matrix.
+% 
+% `'color'`
+% : Color for plotting, either row vector
+%   that contains color RGB codes (values of 0-255), or a string with the
+%   name of the color, for possible colors names [swplot.color]. Default
+%   color is a random color.
+% 
+% ### Output Arguments
+% 
+% The `obj` output will contain the additional matrix in the [spinw.matrix]
+% field.
+% 
+% ### See Also
+% 
+% [spinw] \| [swplot.color]
 %
-% Input:
-%
-% obj       spinw class object
-%
-% Options:
-%
-% value     The value of the matrix, dimensions are  [3 3 nJ], default is
-%           eye(3). If the given value is scalar, a diagonal matrix is
-%           generated with the given value in its diagonal. If the given
-%           value is a 3 element vector, a DM interaction matrix is created
-%           according to the following rule:
-%           DM = [0 Dz -Dy;-Dz 0 Dx;Dy -Dx 0].
-% mat       Alternative option name to 'value'.
-% label     Label for plotting, strings in a cell, dimensions are [1 nJ],
-%           default is 'matI', where I is the index of the matrix.
-% color     Color for plotting, either a matrix with dimensions are  [3 nJ]
-%           that contains color RGB codes (0-255), or string with the name
-%           of the color (for multiple matrix the string have to be packed
-%           into a cell. Default color is a random color from the color.dat
-%           file.
-%
-% Output:
-%
-% The obj output will contain the added matrix in the obj.matrix field.
-%
-% Example:
-%
-% crystal.ADDMATRIX('value',eye(3))
-%
-% Adds a diagonal matrix, that can describe Heisenberg interaction.
-%
-% See also SPINW, SWPLOT.COLOR.
+% *[DM]: Dzyaloshinski-Moriya
+% *[RGB]: Red-Green-Blue
 %
 
 if nargin < 2
@@ -137,7 +167,7 @@ for ii = 1:size(newMat.mat,3)
     newJItem.color = int32(newMat.color(:,ii));
     newObj.matrix  = newJItem;
     
-    %validate(newObj,'matrix');
+    %spinw.validate(newObj,'matrix');
     
     cIdx = find(strcmp(obj.matrix.label,newJItem.label));
     
@@ -174,6 +204,6 @@ for ii = 1:size(newMat.mat,3)
     end
 end
 
-%validate(obj);
+%spinw.validate(obj);
 
 end

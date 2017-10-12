@@ -85,8 +85,4 @@ else
     moments.atom = repmat(mAtom.idx,[1 prod(nExt)]);
 end
 
-if ~verLessThan('matlab','R2013b')
-    % TODO add table
-end
-
 end

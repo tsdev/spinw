@@ -1,0 +1,86 @@
+
+#(C) 2017 by FIZ Karlsruhe - Leibniz Institute for Information Infrastructure.  All rights reserved.
+data_40973-ICSD
+_database_code_ICSD 40973
+_audit_creation_date 2000-07-15
+_audit_update_record 2005-10-01
+_chemical_name_systematic 'Dicopper divanadate - alpha'
+_chemical_formula_structural 'Cu2 (V2 O7)'
+_chemical_formula_sum 'Cu2 O7 V2'
+_chemical_name_structure_type Cu2V2O7
+_chemical_name_mineral Blossite
+_exptl_crystal_density_diffrn 4.05
+_publ_section_title
+
+;
+Blossite alpha-Cu(2+)2 V(5+)2 O7, a new fumarolic sublimate from Izalco
+Volcano, El Salvador
+;
+loop_
+_citation_id
+_citation_journal_full
+_citation_year
+_citation_journal_volume
+_citation_page_first
+_citation_page_last
+_citation_journal_id_ASTM
+primary 'American Mineralogist' 1987 72 397 400 AMMIAY
+loop_
+_publ_author_name
+'Robinson, P.D.'
+'Hughes, J.M.'
+'Malinconico, M.L.'
+_cell_length_a 20.6760(60)
+_cell_length_b 8.392(3)
+_cell_length_c 6.446(2)
+_cell_angle_alpha 90.
+_cell_angle_beta 90.
+_cell_angle_gamma 90.
+_cell_volume 1118.46
+_cell_formula_units_Z 8
+_symmetry_space_group_name_H-M 'F d d 2'
+_symmetry_Int_Tables_number 43
+_refine_ls_R_factor_all 0.047
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x+1/4, -y+1/4, z+1/4'
+2 '-x+1/4, y+1/4, z+1/4'
+3 '-x, -y, z'
+4 'x, y, z'
+5 'x+1/4, -y+3/4, z+3/4'
+6 '-x+1/4, y+3/4, z+3/4'
+7 '-x, -y+1/2, z+1/2'
+8 'x, y+1/2, z+1/2'
+9 'x+3/4, -y+1/4, z+3/4'
+10 '-x+3/4, y+1/4, z+3/4'
+11 '-x+1/2, -y, z+1/2'
+12 'x+1/2, y, z+1/2'
+13 'x+3/4, -y+3/4, z+1/4'
+14 '-x+3/4, y+3/4, z+1/4'
+15 '-x+1/2, -y+1/2, z'
+16 'x+1/2, y+1/2, z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+Cu2+ 2
+V5+ 5
+O2- -2
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_B_iso_or_equiv
+_atom_site_occupancy
+_atom_site_attached_hydrogens
+Cu1 Cu2+ 16 b 0.16580(4) 0.36460(9) 0.75 0.016 1. 0
+V1 V5+ 16 b 0.19906(4) 0.4054(1) 0.2343(2) 0.005 1. 0
+O1 O2- 16 b 0.2453(2) 0.5622(6) 0.2774(8) 0.021 1. 0
+O2 O2- 16 b 0.1446(2) 0.4368(5) 0.0332(7) 0.01 1. 0
+O3 O2- 16 b 0.1619(2) 0.3477(5) 0.4592(8) 0.013 1. 0
+O4 O2- 8 a 0.25 0.25 0.1592(12) 0.028 1. 0
+#End of TTdata_40973-ICSD

@@ -104,6 +104,29 @@ symIdx = max(bsxfun(@times,~notequal(:,idx(~isnew)),(1:size(notequal,1))'),[],1)
 
 end
 
+function r = sw_cmod(r, tol)
+% modulo one with tolerance
+% 
+% ### Syntax
+% 
+% `r = sw_cmod(r, tol)`
+% 
+% ### Description
+% 
+% `r = sw_cmod(r, tol)` calculates modulo one with tolerance, numbers
+% larger than $1-\epsilon$  $-\epsilon$.
+% 
+% ### See Also
+% 
+% [mod]
+%
+
+r = mod(r,1);
+
+r(r > 1-tol) = r(r > 1-tol)-1;
+
+end
+
 function r = cfloor(r0, tol)
 % floor for atomic positions
 %

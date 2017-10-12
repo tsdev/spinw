@@ -3,8 +3,6 @@ function subfigure(m,n,p,hFigure)
 %
 % SWPLOT.SUBFIGURE(m,n,p,{hFigure})
 %
-% Input:
-%
 % Changes the position of the figure window on the screen, the position is
 % determined similarly to the Matlab function subplot(). Here the screen is
 % the canvas where the figure window is positioned.

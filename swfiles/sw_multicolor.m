@@ -1,33 +1,100 @@
-function cMat = sw_multicolor(vMat, cMap, cLim, nCol, pflipud)
-% creates RGB color data for multiple 2D overlapping plots
+function cMat = sw_multicolor(vMat, cMap, cLim, nCol, cflip)
+% overlays monochrome maps into a single RGB map
+% 
+% ### Syntax
+% 
+% `cmat = sw_multicolor(vmat, cmap, clim, {ncol}, {flipud})`
+% 
+% ### Description
+% 
+% `cmat = sw_multicolor(vmat, cmap, clim, {ncol}, {flipud})` takes 2D
+% matrices and overlays them and generating RGB color additively from the
+% user defined colors correspond to each map. The function is used in
+% [sw_plotspec] when multiple correlation functions are overlayed on the
+% same plot.
+% 
+% ### Examples
+% 
+% In this example we create two intensity maps stored in the square
+% matrices `A` and `B` (linearly changing intensity along $x$ and $y$ axes
+% respectively, intensity ranging between -2 and 2). We plot these
+% intensity maps by converting them to RGB colors using the inline function
+% `rgbMap` and the Matlab built-in function `image`. We use `sw_multicolor`
+% function to additively combine `A` and `B` and providing a color
+% saturation value of 1 (and lowest value of -1). It is clearly visible on
+% the resulting plot of `C` that it is white where both `A` and `B` has
+% zero value (or below the lowest color value of -1) and it is red+green
+% where both `A` and `B` are saturated.
 %
-% cMat = sw_multicolor(vMat, cMap, cLim, {nCol}, {flipud})
+% ```
+% >>rgbMap  = @(mat,RGB,clim)bsxfun(@plus,ones(1,1,3),bsxfun(@times,(mat-clim(1))/diff(clim),permute(RGB(:)-1,[2 3 1])));
+% >>
+% >>red   = [1;0;0];
+% >>green = [0;1;0];
+% >>
+% >>[A,B] = ndgrid(linspace(-2,2,501),linspace(-2,2,501));
+% >>C = sw_multicolor(cat(3,A,B),[red green],[-1 1]);
+% >>
+% >>figure
+% >>
+% >>subplot(1,3,1)
+% >>image(rgbMap(A,red,[-1 1]))
+% >>title A
+% >>
+% >>subplot(1,3,2)
+% >>image(rgbMap(B,green,[-1 1]))
+% >>title B
+% >>
+% >>subplot(1,3,3)
+% >>image(C)
+% >>title C=A+B
+% >>>pos = get(gcf,'Position')
+% >>>pos(4) = round(pos(4)*0.4)
+% >>>set(gcf,'Position',pos)
+% >>snapnow
+% ```
+% 
+% ### Input Arguments
+% 
+% `vMat`
+% : Matrix that contains the input 2D intensity data, dimensions are
+%   $[d_1\times d_2\times n_{plot}]$, where each intensity map has a
+%   dimension of $[d_1\times d_2]$.
+% 
+% `cMap`
+% : Defines the color map that maps intensity values within the `cLim`
+%   limits to colors, can be the following types:
+%   * `matrix`  Matrix of RGB colors, where each column
+%               corresponds to an RGB triplet. The dimension of the matrix
+%               is $[3\times n_{plot}]$ and the $i$th color corresponds to
+%               the color of the $i$th intensity map in the `vMat` stack.
+%   * `cell`    Cell of $n_{plot}$ colormap functions. For example
+%               `{@copper @gray}`.
+% 
+% `cLim`
+% : Defines the maximum and minimum intensity values that the given color
+%   map will span. Values in vMat smaller than the minimum and larger than
+%   the maximum will be shown with the minimum and maximum color in the
+%   colormap respectively. `cLim` is a row vector with 2 elements..
+% 
+% `nCol`
+% : Number of colors in the colormap. Optional, default value is
+%   100.
+% 
+% `flipud`
+% : If `true` the given colormaps are inverted. Optional, default value is
+%   `false`.
+% 
+% ### Output Arguments
+% 
+% `cMat`
+% : Matrix that contains the RGB image, with dimensions of $[d_1\times
+%   d_2\times 3]$. The image can be shown using the `image` built-in Matlab
+%   command.
 %
-% Input:
+% ### See Also
 %
-% vMat      Matrix that contains the input 2D data, dimensions are
-%           [d1 d2 nPlot]. Where each plot has a dimensions of [d1 d2].
-% cMap      Cell of colormap functions containing used for the different
-%           overlayed plots. For example:
-%           cMap = {@copper @gray}.
-% cLim      Maximum and minimum values of the color map. Values in vMat
-%           smaller than the minimum and larger than the maximum will be
-%           shown with the minimum and maximum values in the colormap
-%           respectively. The dimensions of cLim is [1 2].
-% nCol      Number of colors in the colormap. Optional, default value is
-%           100.
-% flipud    If true the colormaps are inverted. Optional, default is false.
-%
-% Output:
-%
-% cMat      Matrix with equal dimensions to the input times three for the
-%           red, green and blue channels, dimensions are [d1 d2 3].
-%
-% Example:
-%           Plotting of two random matrices (dimensions are [100 100]) with
-%           red and blue colors:
-%               cMat = sw_multicolor(rand(100,100,2),[1 0;0 1;0 0],[0 1]);
-%               image(cMat);
+% [sw_plotspec]
 %
 
 if nargin < 3
@@ -38,8 +105,9 @@ end
 if nargin == 3
     nCol = 100;
 end
+
 if nargin < 5
-    pflipud = false;
+    cflip = false;
 end
 
 nPlot = size(vMat,3);
@@ -54,11 +122,22 @@ vMat = round(vMat*(nCol-1))+1;
 
 % create colormaps for every individual plot
 cMapGen = zeros(nCol,4,nPlot);
-for ii = 1:nPlot
-    if pflipud
-        cMapGen(:,1:3,ii) = flipud(cMap{ii}(nCol));
-    else
-        cMapGen(:,1:3,ii) = cMap{ii}(nCol);
+if iscell(cMap)
+    for ii = 1:nPlot
+        if cflip
+            cMapGen(:,1:3,ii) = flipud(cMap{ii}(nCol));
+        else
+            cMapGen(:,1:3,ii) = cMap{ii}(nCol);
+        end
+    end
+else
+    for ii = 1:nPlot
+
+        cMapGen(:,1:3,ii) = bsxfun(@plus,ones(1,3),bsxfun(@times,cMap(:,ii)'-1,linspace(0,1,nCol)'));
+        
+        if cflip
+            cMapGen(:,1:3,ii) = flipud(cMapGen(:,1:3,ii));
+        end
     end
 end
 

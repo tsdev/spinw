@@ -1,27 +1,56 @@
 function magOut = magstr(obj, varargin)
-% generates magnetic structure for the rotating frame
+% returns single-k magnetic structure representation
+% 
+% ### Syntax
+% 
+% `magout = magstr(obj,Name,Value)`
+% 
+% ### Description
+% 
+% `magout = magstr(obj,Name,Value)` converts the internally stored magnetic
+% structure (general Fourier representation) into a rotating frame
+% representation with a single propagation vector, real magnetisation
+% vectors and the normal axis of the rotation. The conversion is not always
+% possible, in that case the best possible approximation is used, that
+% might lead sometimes to unexpected magnetic structures. In this case a
+% warning is triggered.
+% 
+% ### Example
 %
-% magOut = MAGSTR(obj, 'Option1', 'Value1', ...)
+% The example shows the equivalent represenation of a simple spin helix in
+% the $ab$-plane using Fourier components of the magnetization and using
+% the rotating frame. The complex magnetization in the Fourier
+% representation is converted into a real spin vector and a normal vector
+% that defines the axis of rotation.
 %
-% The function converts the internally stored magnetic structure (general
-% Fourier representation) into a rotating frame representation with a
-% single propagation vector, real magnetisation vectors and the normal axis
-% of the rotation. The conversion is not always possible, in that case the
-% best possible approximation is used, that might lead sometimes to
-% unexpected magnetic structures.
+% ```
+% >>model = spinw
+% >>model.addatom('r',[0 0 0],'S',1)
+% >>model.genmagstr('mode','fourier','S',[1i 1 0]','k',[1/3 0 0])
+% >>model.mag_str.F>>
+% >>model.magstr>>
+% >>model.magstr.S>>
+% ```
 %
-% Options:
+% ### Name-Value Pair Arguments
+% 
+% `'exact'`
+% : If `true`, a warning appears in case the conversion is not exact.
+%   Default is `true`.
+% 
+% `'nExt'`
+% : Size of the magnetic supercell, default value is the value stored in
+%   the [spinw] object (on which the Fourier expansion is defined).
+% 
+% `'origin'`
+% : Origin in lattice units, the magnetic structure will be
+%   calculated relative to this point. Default value is `[0 0 0]`.
+%   Shifting the origin introduces an overall phase factor.
+% 
+% ### See Also
+% 
+% [spinw.genmagstr]
 %
-% exact     If true, a warning appears in case the conversion is not exact.
-%           Default is true.
-% nExt      Size of the magnetic supercell, default is the value stored in
-%           the SpinW object (on which the Fourier expansion is defined).
-% origin    Origin in lattice units, the magnetic structure will be
-%           calculated relative to this point. Default value is [0 0 0].
-%           Shifting the origin introduces an overall phase factor.
-%
-% See also spinw.genmagstr.
-
 
 nExt0 = double(obj.mag_str.nExt);
 
@@ -69,22 +98,25 @@ cIdx        = cat(4,cIdx{:});
 % calculate the translation vectors that generate the rotations in the new supercell
 tIdx = floor(bsxfun(@rdivide,cIdx,permute(nExt0,[1 3 4 2])));
 % propagation vector in the original supercell
-kExt0 = bsxfun(@times,obj.mag_str.k,nExt0');
+kExt0 = bsxfunsym(@times,obj.mag_str.k,nExt0');
 % calculate the phases that generate the rotations for the new supercell
-phi  = sum(bsxfun(@times,tIdx,permute(kExt0,[3 4 5 1 2])),4);
+phi  = sumsym(bsxfunsym(@times,tIdx,permute(kExt0,[3 4 5 1 2])),4);
 % complex phase factors
 %M = real(bsxfun(@times,M0,exp(-2*pi*1i*permute(phi+param.phi0,[4 6 1:3 5]))));
-M = real(bsxfun(@times,M0,exp(-2*pi*1i*permute(phi,[4 6 1:3 5]))));
+M = real(bsxfunsym(@times,M0,exp(-2*pi*1i*permute(phi,[4 6 1:3 5]))));
 % sum up the wave vectors and reshape to standard dimensions
 magOut.S = reshape(sum(M,6),3,[]);
 % keep only the first non-zero wave vector
-kInc = find(sum(mod(kExt0,1) == 0,1)<3);
+kInc = find(sumsym(mod(kExt0,1) == 0,1)<3);
 if ~isempty(kInc)
     magOut.k = obj.mag_str.k(:,kInc(1))';
     n = cross(real(obj.mag_str.F(:,1,kInc(1))),imag(obj.mag_str.F(:,1,kInc(1))))';
     % normalize n-vector
-    if norm(n) == 0
-        magOut.n = [0 0 1];
+    if sw_always(norm(n) < 10*eps)
+        % find any n perpendicular to the first spin vector (in most cases
+        % it works)
+        V = sw_cartesian(real(obj.mag_str.F(:,1)));
+        magOut.n = V(:,2)';
     else
         magOut.n = n/norm(n);
     end

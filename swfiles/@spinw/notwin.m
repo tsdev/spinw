@@ -1,9 +1,18 @@
 function varargout = notwin(obj)
-% removes any twin added to the spinw object
+% removes all twins
+% 
+% ### Syntax
+% 
+% `notwin(obj)`
+% 
+% ### Description
+% 
+% `notwin(obj)` removes any crystallographic twin added using the
+% [spinw.addtwin] function.
+%  
+% ### See Also
 %
-% NOTWIN(obj)
-%
-% The function keeps only the original twin.
+% [spinw.addtwin]
 %
 
 obj.twin.vol = 1;

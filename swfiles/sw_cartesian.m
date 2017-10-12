@@ -1,25 +1,34 @@
 function [vyOut, vzOut, vxOut] = sw_cartesian(n)
 % creates a right handed Cartesian coordinate system
+% 
+% ### Syntax
+% 
+% `[vy, vz, vx] = sw_cartesian(n)`
 %
-% [vy, vz, vx] = SW_CARTESIAN(n)
+% `V = sw_cartesian(n)`
+% 
+% ### Description
+% 
+% `[vy, vz, vx] = sw_cartesian(n)` creates an $(x,y,z)$ right handed
+% Cartesian coordinate system with $v_x$, $v_y$ and $v_z$ defining the
+% basis vectors. 
 %
-% V = SW_CARTESIAN(n)
-%
-% It creates an (x,y,z) right handed Cartesian coordinate system with vx,
-% vy and vz defines the basis vectors. If only a single output is required,
-% V will contain the basis vectors in a matrix: V = [vx vy vz].
-%
-% Input:
-%
-% n         Either a 3 element row/column vector or a 3x3 matrix with
-%           columns defining 3 vectors.
-% Output:
-%
-% vy,vz,vx  Vectors defining the right handed coordinate system. They are
+% `V = sw_cartesian(n)` the generated basis vectors are stored in the `V`
+% matrix: `V = [vx vy vz]` as column vectors.
+% 
+% ### Input Arguments
+% 
+% `n`
+% : Either a 3 element row/column vector or a $[3\times 3]$ matrix with
+%   columns defining 3 vectors.
+% 
+% ### Output Arguments
+% 
+% `vy,vz,vx`
+% : Vectors defining the right handed coordinate system. They are
 %           either column of row vectors depending on the shape of the
-%           input n.
+%           input `n`.
 %
-
 
 if nargin == 0
     help sw_cartesian

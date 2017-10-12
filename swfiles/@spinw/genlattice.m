@@ -1,68 +1,100 @@
 function R = genlattice(obj, varargin)
-% generates crystal lattice from given parameters
+% generates crystal lattice
+% 
+% `{R} = genlattice(obj, 'option1', value1, ...)`
+% * * *
 %
-% {R} = GENLATTICE(obj, 'option1', value1, 'option2', value2...)
-%
-% Input:
-%
-% obj       spinw class object.
-%
-% Options:
-%
-% angled    Alpha, beta, gamma angles in degree, dimensions are [1 3].
-% angle     Alpha, beta, gamma angles in radian, dimensions are [1 3].
-% lat_const a, b, c lattice parameters, dimensions are [1 3].
-% spgr      Space group index, or space group label (string), or space group
-%           operators in a matrix with dimensions [3 4 nOp].
-% label     Optional label for the space group if the generators are given
-%           in the 'spgr' option.
-% bv        Basis vectors given in a matrix with dimensions of [3 3], where
-%           each column defines a basis vector.
-% origin    Origin for the space group operators. Default is [0 0 0].
-% perm      Permutation of the abc axes of the space group operators.
-% nformula  Gives the number of formula units in the unit cell. It is used
-%           to normalize cross section in absolute units. Default is 0,
-%           when cross section is normalized per unit cell.
-%
-% Output:
-%
-% R         Rotation matrix that brings the input basis vector to the SpinW
-%           compatible form:
-%                   BVspinw = R*BV
+% The function generates all necessary parameters to define a lattice with
+% symmetry and store it in `obj.lattice`.
 %
 % Alternatively the lattice parameters can be given directly when the spinw
-% object is created using: spinw(inpStr), where struct contains the fields
-% with initial parameters, e.g.:
-%   inpStr.lattice.lat_const = [3 3 4];
+% object is created using `spinw(inpStr)` command, where struct contains
+% the fields with initial parameters, e.g.:
+% ```
+% inpStr.lattice.lat_const = [3 3 4];
+% ```
 %
-% The sym option points to the appropriate line in the symmetry.dat file,
-% where every line defines a space group by its generators. The first 230
-% lines contains all crystallographic space groups with standard setting
-% as it is in the International Tables of Crystallography. Additional lines
-% can be added to the symmetry.dat file using the sw_addsym() function.
-% Every line in the symmetry.dat file can be referenced by either its line
-% index or by its label (string).
+% ### Input
 %
-% If the sym option is 0, no symmetry will be used. The spinw.gencoupling()
-% function will determine the equivalent bonds based on bond length.
+% `obj`
+% : [spinw] object.
+% 
+% ### Options
+% 
+% `angled`
+% : `[\\alpha, \\beta, \\gamma]` angles in \\degree, dimensions are $[1\times 3]$.
+% 
+% `angle`
+% : `[\\alpha, \\beta, \\gamma]` angles in radian, dimensions are $[1\times 3]$.
+% 
+% `lat_const`
+% : `[a, b, c]` lattice parameters in units defined in [spinw.unit] (with \\Angstrom
+%   being the default), dimensions are $[1\times 3]$.
+% 
+% `spgr`
+% : Defines the space group. Can have the following values:
 %
-% Output:
+%   * **space group label** string, name of the space group, can be any
+%     label defined in the `symmetry.dat` file.
+%   * **space group index** line number in the `symmetry.dat` file.
+%   * **space group operators** matrix with dimensions 
+%     $[3\times 4\times n_{op}]$.
+%   
+%   The `symmetry.dat` file stores definition of the 230 space groups in
+%   standard settings as it is in the [International Tables of Crystallography](http://it.iucr.org/A/).
+%   Additional lines can be added to the `symmetry.dat` file using the
+%   [swsym.add] function which later can be used in the `spgr` option.
+% 
+%   If the `spgr` option is 0, no symmetry will be used. The
+%   [spinw.gencoupling] function will determine the equivalent bonds based on
+%   bond length.
+% 
+% `label`
+% : Optional label for the space group if the generators are given in the
+%   `spgr` option.
+% `bv`
+% : Basis vectors given in a matrix with dimensions of $[3\times 3]$, where
+%   each column defines a basis vector.
+% 
+% `origin`
+% : Origin for the space group operators, default value is `[0 0 0]`.
+% 
+% `perm`
+% : Permutation of the abc axes of the space group operators.
+% 
+% `nformula`
+% : Gives the number of formula units in the unit cell. It is used
+%   to normalize cross section in absolute units. Default value is 0, when
+%   cross section is normalized per unit cell.
+% 
+% ### Output
+% 
+% `R`
+% : Rotation matrix that brings the input basis vector to the SpinW
+%   compatible form:
+%   ```
+%   BVspinw = R*BV
+%   ```
+% 
+% The result of the `spinw.genlattice` function is that `obj.lattice` field
+% will be changed based on the input, the lattice parameters are stored
+% directly and the optional space group string is converted into space
+% group operator matrices.
 %
-% The obj.lattice field will be changed based on the input, the lattice
-% constants stored directly and the optional space group string is
-% converted to the integer type index.
+% ### Example
 %
-% Example:
-%
-% ...
+% ```
 % crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','P 6')
 % crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr',168)
 % crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','-y,x-y,z; -x,-y,z','label','R -3 m')
+% ```
 %
 % The three lines are equivalent, both will create hexagonal lattice, with
-% 'P 6' space group.
+% $P6$ space group.
 %
-% See also SPINW, SWSYM.ADD, SWSYM.OPERATOR, SPINW.GENCOUPLING.
+% ### See also
+%
+% [spinw], [swsym.add], [swsym.operator], [spinw.gencoupling]
 %
 
 inpForm.fname  = {'angle'           'lat_const'           'sym'       'label'};
@@ -122,7 +154,6 @@ if ~isempty(param.bv)
     % rotation matrix that bring the basis vectors to the right direction
     if nargout > 0
         R = R3*R2*R1;
-        %R = R2*R1;
     end
     
     % the new abc vectors compatible with the SpinW format
@@ -131,7 +162,10 @@ if ~isempty(param.bv)
     c = BV2(:,3);
     
     obj.lattice.lat_const = [norm(a) norm(b) norm(c)];
-    obj.lattice.angle     = [sw_angle(b,c),sw_angle(a,c),sw_angle(b,c)];
+    
+    angle2 = @(V1,V2)atan2(norm(cross(V1,V2)),dot(V1,V2));
+    
+    obj.lattice.angle     = [angle2(b,c),angle2(a,c),angle2(b,c)];
     
 else
     

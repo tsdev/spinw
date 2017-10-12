@@ -1,13 +1,20 @@
 function op = symop(obj)
-% generates the symmetry operators on bonds and magnetic atoms
-%
-% OP = SYMOP(obj)
-%
-% The function generates the rotation matrices that transform single ion
-% anisotropy, g-tensor and exchange interaction matrices between symmetry
-% equivalent positions (on atoms or bond centers). The results are cached.
-%
-% See also SPINW.INTMATRIX.
+% generates the bond symmetry operators
+% 
+% ### Syntax
+% 
+% `op = symop(obj)`
+% 
+% ### Description
+% 
+% `op = symop(obj)` generates the rotation matrices that transform single
+% ion anisotropy, g-tensor and exchange interaction matrices between
+% symmetry equivalent positions (on atoms or bond centers). The results are
+% cached.
+% 
+% ### See Also
+% 
+% [spinw.intmatrix]
 %
 
 % bonds

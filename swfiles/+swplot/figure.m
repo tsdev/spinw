@@ -75,10 +75,14 @@ if verLessThan('matlab','8.4.0')
     hToolbar = hToolbarT(end);
 else
     idx = 1;
-    while ~isa(hToolbarT(idx),'matlab.ui.container.Toolbar')
+    while ~isa(hToolbarT(idx),'matlab.ui.container.Toolbar') && idx<numel(hToolbarT)
         idx = idx + 1;
     end
-    hToolbar = hToolbarT(idx);
+    if idx>numel(hToolbarT)
+        hToolbar = hToolbarT(end);
+    else
+        hToolbar = hToolbarT(idx);
+    end
 end
 
 hButton  = get(hToolbar,'children');

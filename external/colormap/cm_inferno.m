@@ -3,14 +3,15 @@ function cm_data = cm_inferno(nCol)
 %
 % CM_INFERNO(nCol)
 %
-% This is a honest colormap, unlike the Matlab default parula(). This
-% means this colormap is perceptionally uniform, thus it will not emphasize
-% any value on the plot. It is also compatible with black and white output.
-% The colormap is copied from the Python package Matplotlib.
+% This is a honest colormap, unlike the Matlab default parula(). This means
+% this colormap is perceptionally uniform, thus it will not emphasize any
+% value on the plot. It is also compatible with black and white output. The
+% colormap is copied from the Python package Matplotlib
+% (https://bids.github.io/colormap/).
 %
 % Input:
 %
-% nPoint    Number of colors, default value is 256.
+% nCol      Number of colors, default value is 256.
 %
 
 cm = [[1.46159096e-03    4.66127766e-04    1.38655200e-02]

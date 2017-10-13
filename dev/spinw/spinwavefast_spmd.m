@@ -301,7 +301,9 @@ incomm = any(abs(km-round(km)) > param.tol);
 hkl = obj.unit.qmat*hkl;
 
 % Calculates momentum transfer in A^-1 units.
-hklA = 2*pi*(hkl'/obj.basisvector)';
+hklA = Composite();
+hklA{1} = 2*pi*(hkl'/obj.basisvector)';
+hklA(2:end) = {[]};
 
 % Check for 2*km
 tol = param.tol*2;
@@ -580,17 +582,36 @@ if param.formfact
     % store form factor per Q point for each atom in the magnetic supercell
     % TODO check prod(nExt)? instead of nExt
     %FF = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[1 nExt]);
-    FF = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[prod(nExt) 1]);
+    FF = Composite();
+    FF{1} = repmat(param.formfactfun(permute(obj.unit_cell.ff(1,:,obj.matom.idx),[3 2 1]),hklA0),[prod(nExt) 1]);
+    FF(2:end) = {[]};
 else
     spectra.formfact = false;
 end
 
+Sperp = Composite();
 if incomm
-    Sperp = zeros(nMagExt*3,nHkl);
+    Sperp{1} = zeros(nMagExt*3,nHkl);
 else
-    Sperp = zeros(nMagExt,nHkl);
+    Sperp{1} = zeros(nMagExt,nHkl);
 end
+Sperp(2:end) = {[]};
 % hklIdx2 = parallel.pool.Constant(hklIdx2);
+
+% To be transfered 
+spmd
+  hklA = labBroadcast(1, hklA);
+  Sperp = labBroadcast(1, Sperp);
+  if param.formfact
+    FF = labBroadcast(1, FF);
+  end
+end
+% These are too small to care about
+% km
+% nExt
+% AD0
+% BC0
+
 spmd
     for jj = 1:nSlice
         hklIdx = hklIdx2{jj};
@@ -935,8 +956,13 @@ warning(singWarn0.state,'MATLAB:nearlySingularMatrix');
 
 % If number of formula units are given per cell normalize to formula
 % unit
+if incomm
+    Sperp = reshape([Sperp{:}],nMagExt*3,[],nwSlice);
+else
+    Sperp = reshape([Sperp{:}],nMagExt,[],nwSlice);
+end
 if obj.unit.nformula > 0
-    Sperp = Sperp/double(obj.unit.nformula);
+    Sperp = sum(Sperp,3)/double(obj.unit.nformula);
 end
 
 % sw_status(100,2,param.tid);
@@ -955,12 +981,12 @@ end
 % Creates output structure with the calculated values.
 spectra.omega    = [omega{:}];
 spectra.hkl      = obj.unit.qmat\hkl(:,1:nHkl0);
-spectra.hklA     = hklA;
+spectra.hklA     = [hklA{:}];
 spectra.incomm   = incomm;
 spectra.helical  = any([helical{:}]);
 spectra.norm     = false;
 spectra.nformula = double(obj.unit.nformula);
-spectra.Sperp    = [Sperp{:}];
+spectra.Sperp    = Sperp;
 
 % save the important parameters
 spectra.param.sortMode  = param.sortMode;

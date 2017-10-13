@@ -4,34 +4,39 @@
   mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
-`rpref = swpref.getpref`
-
+  
+`allPref = swpref.getpref`
+  
+`selPref = swpref.getpref(prefName)`
+ 
+`val = swpref.getpref(prefName,true)`
+ 
+`rPref = swpref.getpref('default')`
+ 
 ### Description
-
-The preferences are reset after every restart of Matlab, unlike the
+  
+`allPref = swpref.getpref` returns all preference in a struct where each
+field-value pair corresponds to a prefernce name-value pair.
+ 
+`selPref = swpref.getpref(prefName)` returns a struct that contains the
+value, name and label of the selected preference.
+ 
+`val = swpref.getpref(prefName,true)` just returns the stored value
+corresponding to `prefName` preference.
+ 
+`rPref = swpref.getpref('default')` returns the default preference names,
+values and labels of each preferences.
+  
+{% include note.html content=" The preferences are reset after every restart of Matlab, unlike the
 Matlab built-in preferences that are persistent between Matlab sessions.
 If you want certain preferences to keep after closing matlab, define them
-in the <a href="matlab:edit('startup.m')">startup.m</a> file.
+in the `startup.m` file." %}
  
-swpref.getpref() returns the names and current values for all
-preferences. rPref is a struct.
- 
-rPref = swpref.getpref(pName, {true})
- 
-Returns only the requested SpinW preference name, value and label in a
-struct. Each field contains the requested value. If a second argument is
-given (true), only the value of the preference is returned.
- 
-rPref = swpref.getpref('default')
- 
-Returns the default names, values and labels of each preferences.
- 
-
 ### See Also
-
+  
 [swpref.setpref](swpref_setpref)
+ 
 
 {% include links.html %}

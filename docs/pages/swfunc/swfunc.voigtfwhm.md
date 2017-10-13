@@ -36,7 +36,7 @@ conversion between different width:
  
 ### See also
  
-[swfunc.gauss](swfunc_gauss) \| [swfunc.gaussfwhm](swfunc_gaussfwhm)
+[swfunc.gauss](swfunc_gauss) \| [swfunc.gaussfwhm](swfunc_gaussfwhm) \| [swfunc.pvoigt](swfunc_pvoigt)
  
 *[FWHM]: Full Width at Half Maximum
  

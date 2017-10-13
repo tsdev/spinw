@@ -257,7 +257,7 @@ minX = zeros(1,nPar);
 fid = obj.fid;
 
 
-sw_status(0,1,[],'Optimizing magnetic structure');
+sw_timeit(0,1,[],'Optimizing magnetic structure');
 
 dx = param.xmax - param.xmin;
 
@@ -276,11 +276,11 @@ for ii = 1:param.nRun
         minX = X;
     end
     
-    sw_status(ii/param.nRun*100);
+    sw_timeit(ii/param.nRun*100);
         
 end
 
-sw_status(100,2);
+sw_timeit(100,2);
 fprintf0(fid,'Calculation finished.\n');
 
 [M, k, n] = param.func(S, minX);

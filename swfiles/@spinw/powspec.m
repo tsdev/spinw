@@ -148,7 +148,7 @@ function spectra = powspec(obj, hklA, varargin)
 % : Determines if the elapsed and required time for the calculation is
 %   displayed. The default value is determined by the `tid` preference
 %   stored in [swpref]. The following values are allowed (for more details
-%   seee [sw_status]):
+%   see [sw_timeit]):
 %   * `0` No timing is executed.
 %   * `1` Display the timing in the Command Window.
 %   * `2` Show the timing in a separat pup-up window.
@@ -246,7 +246,7 @@ fprintf0(fid,[yesNo{param.formfact+1} ' magnetic form factor is'...
 fprintf0(fid,[yesNo{param.gtensor+1} ' g-tensor is included in the '...
     'calculated structure factor.\n']);
 
-sw_status(0,1,param.tid,'Powder spectrum calculation');
+sw_timeit(0,1,param.tid,'Powder spectrum calculation');
 
 if param.fibo
     % apply the Fibonacci numerical integration on a sphere
@@ -309,10 +309,10 @@ for ii = 1:nQ
     specQ = sw_egrid(specQ,struct('Evect',param.Evect,'T',param.T,'binType',param.binType,...
     'imagChk',param.imagChk,'component',param.component),'noCheck');
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
-    sw_status(ii/nQ*100,0,param.tid);
+    sw_timeit(ii/nQ*100,0,param.tid);
 end
 
-sw_status(100,2,param.tid);
+sw_timeit(100,2,param.tid);
 
 fprintf0(fid,'Calculation finished.\n');
 

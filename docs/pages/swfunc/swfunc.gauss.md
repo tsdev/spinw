@@ -1,5 +1,5 @@
 ---
-{title: swfunc.gauss, link: swfunc.gauss, summary: normalized gaussian function, keywords: sample,
+{title: swfunc.gauss, link: swfunc.gauss, summary: normalized Gaussian function, keywords: sample,
   sidebar: sw_sidebar, permalink: swfunc_gauss, folder: swfunc, mathjax: 'true'}
 
 ---
@@ -20,14 +20,13 @@ evaluated at $$x$$ and with parameters defined in `p`.
   
 `p`
 : Parameter vector with the following elements `p=[I x0 σ]` where:
- 
-  * `I` Integrated intensity.
-  * `x0` Center.
-  * `σ` Standard deviation.
+  * `I` integrated intensity,
+  * `x0` center,
+  * `σ` standard deviation.
   
 ### See Also
   
-[swfunc.voigt] \| [swfunc.gaussfwhm](swfunc_gaussfwhm)
+[swfunc.pvoigt](swfunc_pvoigt) \| [swfunc.gaussfwhm](swfunc_gaussfwhm)
  
 
 {% include links.html %}

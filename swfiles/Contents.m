@@ -55,7 +55,7 @@
 %
 %   sw_multicolor  
 %   sw_parstr      
-%   sw_status      
+%   sw_timeit      
 %
 % #### Acessing the SpinW database
 %

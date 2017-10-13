@@ -1,16 +1,30 @@
 function y = lorfwhm(x,p)
-% normalized Lorentzian using FWHM
+% normalized Lorentzian function
+% 
+% ### Syntax
+% 
+% `y = func.lorfwhm(x,p)`
+% 
+% ### Description
+% 
+% `y = func.lorfwhm(x,p)` calculates the $y$ values for a Lorentzian
+% function evaluated at $x$ and with parameters defined in `p`.
+% 
+% ### Input Arguments
+% 
+% `x`
+% : Coordinate vector where the function will be evaluated.
+% 
+% `p`
+% : Parameter vector with the following elements `p=[I x0 FWHM]` where:
+%   * `I`       integrated intensity,
+%   * `x0`      center,
+%   * `FWHM`    Full Width at Half Maximum value.
+% 
+% ### See Also
+% 
+% [swfunc.pvoigt] \| [swfunc.gaussfwhm]
 %
-% y = LORFWHM(x,p)
-%
-% The function is normalized to integral 1 for dx=1.
-%
-% Input:
-%
-% x     Vector of coordinate values where the function is evaluated.
-% p     Parameter vector with values  p = [I Centre FWHM].
-%
-% See also SWFUNC.GAUSS.
 
 y = p(1)/(pi*p(3))./(1+((x-p(2))/p(3)).^2);
 

@@ -13,7 +13,7 @@
   
 `data = sw_readspec(datapath)` reads experimental spin wave dispersion
 data from a text file at the given location. The general format of the
-data file is described in [sw_readtable] with `sw_readspec` requires
+data file is described in [sw_readtable](sw_readtable) with `sw_readspec` requires
 predefined header names and only specific tag strings are allowed. The
 following header line is required:
    
@@ -41,10 +41,10 @@ or zero energy." %}
    
 Before any data line a special tag line can be inserted that gives the
 measured correlation in square brackets, for axample: `'[Mxx+Myy]'`. For
-the formatting of this string, see [sw_parstr]. If the measured type of
+the formatting of this string, see [sw_parstr](sw_parstr). If the measured type of
 correlation is undefined, unpolarised neutron scattering intensity is
 assumed (equivalent to `'Sperp'`). When cross sections measured in the
-Blume-Maleev coordinate system, see [sw_egrid], the normal to the
+Blume-Maleev coordinate system, see [sw_egrid](sw_egrid), the normal to the
 scattering plane has to be also defined. This can be given in a second
 pair of square brackes in the $$xyz$$ coordinate system, for example: `'[Myy]
 [1 0 0]'`. If $$n$$ is undefined, the default value is `'[0 0 1]'`.
@@ -68,7 +68,7 @@ QH    QK        QL      ENlim1  ENlim2  I1  EN1       s1    I2  EN2       s2
   
 ### See Also
   
-[sw_egrid] \| [spinw.fitspec]
+[sw_egrid](sw_egrid) \| [spinw.fitspec](spinw_fitspec)
  
 *[rlu]: reciprocal lattice unit
  

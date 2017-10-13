@@ -32,7 +32,7 @@ function y = voigtfwhm(x,p)
 %
 % ### See also
 %
-% [swfunc.gauss] \| [swfunc.gaussfwhm]
+% [swfunc.gauss] \| [swfunc.gaussfwhm] \| [swfunc.pvoigt]
 %
 % *[FWHM]: Full Width at Half Maximum
 %

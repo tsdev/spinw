@@ -67,6 +67,7 @@ plotbase, plotcell, plotchem).
 * [swplot.raytriangle](swplot_raytriangle) finds if a ray crosses a triangle
 * [swplot.setrangegui](swplot_setrangegui) shows a window to change the plotting range of an swplot figure
 * [swplot.subfigure](swplot_subfigure) changes position of figure window on the screen
+* [swplot.subplot](swplot_subplot) create subplots with variable gaps between axes
 * [swplot.tooltipcallback](swplot_tooltipcallback) call tooltip on clicking an object on an swplot figure
 * [swplot.tooltipstring](swplot_tooltipstring) generate tooltip string from the data of a graphical object
  

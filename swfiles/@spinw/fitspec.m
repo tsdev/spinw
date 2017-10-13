@@ -208,7 +208,7 @@ dat.x = (1:numel(dat.y))';
 dat.y = dat.y(:);
 dat.e = dat.e(:);
 
-sw_status(0,1,param.tid,'Fitting spin wave spectra');
+sw_timeit(0,1,param.tid,'Fitting spin wave spectra');
 
 idx = 1;
 idxAll = 1;
@@ -263,10 +263,10 @@ while idx <= nRun
     %         end
     %     end
     idxAll = idxAll + 1;
-    sw_status(idx/nRun*100,0,param.tid);
+    sw_timeit(idx/nRun*100,0,param.tid);
 end
 
-sw_status(100,2,param.tid);
+sw_timeit(100,2,param.tid);
 
 % Sort results
 [R, sortIdx] = sort(R);

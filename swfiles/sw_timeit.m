@@ -1,13 +1,13 @@
-function sw_status(percent,varargin)
+function sw_timeit(percent,varargin)
 % timer and remaining time estimator
 % 
 % ### Syntax
 % 
-% `sw_status(percent, {mode},{tid},{title})`
+% `sw_timeit(percent, {mode},{tid},{title})`
 % 
 % ### Description
 % 
-% `sw_status(percent, {mode},{fid},{title})` can display remaining time of
+% `sw_timeit(percent, {mode},{fid},{title})` can display remaining time of
 % a calculation that is run for a fixed number of iterations. It can output
 % the status both in the Command Window and in a pup up window using
 % [waitbar].
@@ -37,11 +37,12 @@ function sw_status(percent,varargin)
 % ### See Also
 % 
 % [waitbar]
+%
 
 global sw_time
 
 if nargin == 0
-    help sw_status
+    help sw_timeit
     return
 end
 
@@ -59,7 +60,7 @@ end
 if nargin>3
     title0 = varargin{3};
 else
-    title0 = 'sw_status';
+    title0 = 'sw_timeit';
 end
 
 if ~ismember(fid,[1 2])
@@ -82,7 +83,7 @@ switch start
             case 2
                 hBar = waitbar(0,'Initializing...');
                 hBar.HandleVisibility='on';
-                hBar.Tag = 'sw_status';
+                hBar.Tag = 'sw_timeit';
                 hBar.Name = title0;
                 drawnow;
         end
@@ -102,7 +103,7 @@ switch start
                 fprintf([repmat('\b',[1 41]) '%6.2f%%, remained: %03d:%02d:%02d (HH:MM:SS).\n'],...
                     percent,hou,min,sec);
             case 2
-                hBar = findobj('Tag','sw_status');
+                hBar = findobj('Tag','sw_timeit');
                 if ~isempty(hBar)
                     waitbar(percent/100,hBar(1),sprintf('%6.2f%%, remained: %03d:%02d:%02d (HH:MM:SS)',percent,hou,min,sec))
                     drawnow;
@@ -124,7 +125,7 @@ switch start
                 fprintf(repmat('\b',1,40+1));
                 fprintf('Calculation is finished in %02d:%02d:%02d (hh:mm:ss).\n',hou,min,sec);
             case 2
-                hBar = findobj('Tag','sw_status');
+                hBar = findobj('Tag','sw_timeit');
                 delete(hBar);
                 fprintf('Calculation is finished in %02d:%02d:%02d (hh:mm:ss).\n',hou,min,sec);
         end
@@ -147,6 +148,6 @@ pauseBtnPos(2) = pauseBtnPos(2)+1;
 
 hPauseBtn = uicontrol(h, 'Style', 'pushbutton', 'String', 'Debug',...
     'Position', pauseBtnPos,...
-    'Callback', 'dbstop in sw_status.m at 23');
+    'Callback', 'dbstop in sw_timeit.m at 23');
 
 end

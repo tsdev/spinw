@@ -11,13 +11,13 @@
   
 ### Description
   
-Same function as [gm_planar], except that the input angles are all in
+Same function as [gm_planar](gm_planar), except that the input angles are all in
 degree.
    
  
 ### See Also
   
-[gm_planar]
+[gm_planar](gm_planar)
  
 
 {% include links.html %}

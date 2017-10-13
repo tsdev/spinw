@@ -18,8 +18,8 @@ plotbase, plotcell, plotchem).
  
 #### Basic 3D objects
  
-* [swplot.arrow](swplot_arrow) draws a 3D arrow using patch
-* [swplot.circle](swplot_circle) creates a circle surface in 3 dimensions
+* [swplot.arrow](swplot_arrow) creates a 3D arrow patch
+* [swplot.circle](swplot_circle) creates a 3D circle surface patch
 * [swplot.cylinder](swplot_cylinder) draws a closed/open 3D cylinder
 * [swplot.ellipsoid](swplot_ellipsoid) draw ellipsoid
 * [swplot.line](swplot_line) draws a 3D line using patch
@@ -29,10 +29,10 @@ plotbase, plotcell, plotchem).
 #### Creating and modifying swplot figure
  
 * [swplot.activefigure](swplot_activefigure) returns the handle of the active swplot figure
-* [swplot.add](swplot_add) adds a graphical object to the hgtransform of an swplot figure
+* [swplot.add](swplot_add) adds a graphical object to an swplot figure
 * [swplot.base](swplot_base) sets the basis vectors of an swplot figure
-* [swplot.clear](swplot_clear) clear swplot figure
-* [swplot.close](swplot_close) close swplot figure
+* [swplot.clear](swplot_clear) clears swplot figure
+* [swplot.close](swplot_close) closes swplot figure
 * [swplot.delete](swplot_delete) deletes objects and their data on swplot figure
 * [swplot.export](swplot_export) exports swplot figure into raster/vector image
 * [swplot.figure](swplot_figure) creates swplot figure
@@ -60,7 +60,7 @@ plotbase, plotcell, plotchem).
  
 #### Related functions
  
-* [swplot.color](swplot_color) generates RGB code from color name string
+* [swplot.color](swplot_color) generates RGB code from color name
 * [swplot.icomesh](swplot_icomesh) creates mesh by subdividing icosahedron faces
 * [swplot.logo](swplot_logo) creates the logo of SpinW and saves to a .png file
 * [swplot.patchfacefcn](swplot_patchfacefcn) callback function for patch face selection

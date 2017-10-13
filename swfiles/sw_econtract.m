@@ -15,7 +15,7 @@ function Qm = sw_econtract(Q,varargin)
 % 
 % `Q`
 % : Input values in reciprocal space in the scattering plane in
-%   \\Angstrom$^{-1}$ units, dimensions are $[2\times n_Q]$.
+%   \\ang$^{-1}$ units, dimensions are $[2\times n_Q]$.
 % 
 % ### Name-Value Pair Arguments
 % 
@@ -23,10 +23,10 @@ function Qm = sw_econtract(Q,varargin)
 % : Energy transfer value in meV, default value is zero.
 % 
 % `'lambda'`
-% : Wavelength of the incident neutron beam in \\Angstrom.
+% : Wavelength of the incident neutron beam in \\ang.
 % 
 % `'ki'`
-% : Momentum of the incidend neutron beam in \\Angstrom$^{-1}$, alternative
+% : Momentum of the incidend neutron beam in \\ang$^{-1}$, alternative
 %   input to `lambda`.
 % 
 % `'sense'`

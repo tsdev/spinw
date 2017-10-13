@@ -25,7 +25,7 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % Using only a few lines of code one can calculate the powder spectrum of
 % the triangular lattice antiferromagnet ($S=1$, $J=1$) between $Q=0$ and 3
-% \\Angstrom$^{-1}$ (the lattice parameter is 3 \\Angstrom).
+% \\ang$^{-1}$ (the lattice parameter is 3 \\ang).
 %
 % ```
 % >>tri = sw_model('triAF',1);
@@ -43,7 +43,7 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % `QA`
 % : Vector containing the $Q$ values in units of the inverse of the length
-% unit (see [spinw.unit]) with default unit being \\Angstrom$^{-1}$. The
+% unit (see [spinw.unit]) with default unit being \\ang$^{-1}$. The
 % value are stored in a row vector with $n_Q$ elements.
 %
 % ### Name-Value Pair Arguments
@@ -119,7 +119,7 @@ function spectra = powspec(obj, hklA, varargin)
 %                   $Q$ value
 %   * `atomLabel`   string, label of the selected magnetic atom
 %   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
-%                   column contains a $Q$ vector in $\\Angstrom^{-1}$ units.
+%                   column contains a $Q$ vector in $\\ang^{-1}$ units.
 %
 % `'gtensor'`
 % : If true, the g-tensor will be included in the spin-spin correlation

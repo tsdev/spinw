@@ -4,39 +4,41 @@
   mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
-`swplot.base(bv, {hfigure})`
-
+  
+`swplot.base(BV)`
+ 
+`swplot.base(obj)`
+  
+`BV = swplot.base`
+ 
 ### Description
-
-BV is a matrix with dimensions of [3 3] and contains the three basis
-vectors of the new coordinate system as column vectors.
+  
+`swplot.base(BV)` sets the basis vector for an swplot figure. The basis
+vectors can be used to define a non-orthogonal coordinate system for
+graphic objects.
  
-SWPLOT.BASE(obj, {hFigure})
- 
-obj is a spinw object that defines the swplot coordinate system as
-lattice units.
- 
-BV = SWPLOT.BASE
- 
-Returns the basis vectors stored in the swplot figure.
- 
-
+`swplot.base(obj)` sets the basis vectors to the lattice units of a given
+[spinw] object `obj`.
+   
+`BV = swplot.base` returns the basis vectors stored in the swplot figure.
+   
+  
 ### Input Arguments
-
+  
 `BV`
-: Either a 3x3 matrix of the new basis vectors or a spinw
+: Either a $$[3\times 3]$$ matrix of the new basis vectors or a [spinw]
   object where the new basis vectors will be the lattice
-  units of the stored crystal.
-
+  units and the basis vectors are generated via [spinw.basisvector].
+  
 `hFigure`
-: Handle of the swplot figure. Default is the selected
+: Handle of the [swplot] figure. Default is the active
   figure.
-
+  
 ### See Also
-
+  
 [swplot.plot](swplot_plot)
+ 
 
 {% include links.html %}

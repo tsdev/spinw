@@ -4,32 +4,35 @@
   folder: swplot, mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
-`{hfigure} = swplot.activefigure`
-
+  
+`hFigure = swplot.activefigure`
+ 
+`swplot.activefigure(hFigure)`
+  
 ### Description
-
-It gives the handle of the active swplot figure and make it selected. If
-no swplot figure exists, throws an error.
- 
-SWPLOT.ACTIVEFIGURE(hFigure)
- 
-It makes hFigure the active figure.
- 
-
+  
+`hfigure = swplot.activefigure` returns the handle of the active swplot
+figure and makes it selected. If no swplot figure exists, the function
+throws an error.
+   
+`swplot.activefigure(hFigure)` makes the figure of `hFigure` handle the
+active figure.
+  
 ### Input Arguments
-
+  
 `hFigure`
 : Figure handle or figure number.
-
+  
 ### Output Arguments
-
-hFigure       Figure handle.
-
+  
+`hFigure`
+: Handle of the active swplot figure.
+  
 ### See Also
-
+  
 [swplot.figure](swplot_figure)
+ 
 
 {% include links.html %}

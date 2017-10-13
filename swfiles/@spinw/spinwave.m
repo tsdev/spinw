@@ -92,7 +92,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %                   $Q$ value
 %   * `atomLabel`   string, label of the selected magnetic atom
 %   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
-%                   column contains a $Q$ vector in $\\Angstrom^{-1}$ units.
+%                   column contains a $Q$ vector in $\\ang^{-1}$ units.
 %
 % `'gtensor'`
 % : If true, the g-tensor will be included in the spin-spin correlation
@@ -211,7 +211,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %               \end{align}$
 %
 %   * `hkl`     Contains the input $Q$ values, dimensions are $[3\times n_{Q}]$.
-%   * `hklA`    Same $Q$ values, but in $\\Angstrom^{-1}$ unit, in the
+%   * `hklA`    Same $Q$ values, but in $\\ang^{-1}$ unit, in the
 %               lab coordinate system, dimensins are $[3\times n_{Q}]$.
 %   * `incomm`  Logical value, tells whether the calculated spectra is
 %               incommensurate or not.

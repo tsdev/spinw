@@ -1,19 +1,25 @@
 ---
-{title: swplot.clear, link: swplot.clear, summary: clear swplot figure, keywords: sample,
+{title: swplot.clear, link: swplot.clear, summary: clears swplot figure, keywords: sample,
   sidebar: sw_sidebar, permalink: swplot_clear, folder: swplot, mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
-`swplot.clear(hfigure)`
-
+  
+`swplot.clear`
+ 
+`swplot.clear(hFigure)`
+  
 ### Description
-
-clears swplot figure correspondign to hFigure handle
+  
+`swplot.clear` clears the active swplot figure.
  
-SWPLOT.CLEAR
+`swplot.clear(hFigure)` clears the swplot figure correspondign to
+`hFigure` handle
+   
+### See Also
+  
+[swplot.figure](swplot_figure)
  
-clears the active swplot figure
 
 {% include links.html %}

@@ -19,13 +19,13 @@ function out = sw_converter(value, unitIn, unitOut, particleName,invert)
 % ### Example
 %
 % Calculate the energy of a neutron (in meV) which has a wavelength of
-% 5 \\Angstrom:
+% 5 \\ang:
 %
 % ```
 % >>sw_converter(5,'A','meV')>>
 % ```
 %
-% Calculate the wavelength of X-ray in \\Angstrom that has 7.5 keV energy:
+% Calculate the wavelength of X-ray in \\ang that has 7.5 keV energy:
 %
 % ```
 % >>sw_converter(7.5,'keV','A','photon')>>
@@ -39,11 +39,11 @@ function out = sw_converter(value, unitIn, unitOut, particleName,invert)
 %
 % `unitIn`
 % : Units of the input value, one of the following string:
-%   * `'A-1'`        momentum in \\Angstrom$^{-1}$,
-%   * `'k'`          momentum in \\Angstrom$^{-1}$,
-%   * `'Angstrom'`   wavelength in \\Angstrom,
-%   * `'lambda'`     wavelength in \\Angstrom,
-%   * `'A'`          wavelength in \\Angstrom,
+%   * `'A-1'`        momentum in \\ang$^{-1}$,
+%   * `'k'`          momentum in \\ang$^{-1}$,
+%   * `'Angstrom'`   wavelength in \\ang,
+%   * `'lambda'`     wavelength in \\ang,
+%   * `'A'`          wavelength in \\ang,
 %   * `'K'`          temperature in Kelvin,
 %   * `'m/s'`        speed in m/s,
 %   * `'J'`          energy in Joule,

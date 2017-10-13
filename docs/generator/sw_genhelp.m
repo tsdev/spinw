@@ -321,16 +321,20 @@ end
 % exchange $ --> $$ for math, make it easier to write MarkDown
 allhelp = regexprep(allhelp,'\$','$$');
 % exchange text into symbols, e.g. \\Angstrom --> A
-sText = {'Angstrom' 'hbar' 'alpha' 'beta' 'gamma' 'degree' 'sigma' 'deg'};
-cText = {'ang' 'hbar' 'alpha' 'beta' 'gamma' 'deg' 'sigma' 'deg'};
-for ii = 1:numel(sText)
-    allhelp = regexprep(allhelp,['\\\\' sText{ii}],symbol(cText{ii}));
-end
-% TODO add matlab after ```
-% TODO execute >> lines and generate images
-% TODO {{str convert to {% include str.html content="
+%sText = {'Angstrom' 'hbar' 'alpha' 'beta' 'gamma' 'degree' 'sigma' 'deg'};
+%cText = {'ang' 'hbar' 'alpha' 'beta' 'gamma' 'deg' 'sigma' 'deg'};
+%for ii = 1:numel(sText)
+%    allhelp = regexprep(allhelp,['\\\\' sText{ii}],symbol(cText{ii}));
+%end
+
+% exchange any symbol referenced by \\label into the output of the symbol
+% command symbol(label)
+allhelp = regexprep(allhelp,'\\\\(\w+)','${symbol($1,true)}');
+% substitue [matlab.funname] links into
+% "[funname](https://www.mathworks.com/help/matlab/ref/funname.html)"
+allhelp = regexprep(allhelp,'\[matlab\.(\w+?)\]','[$1](https://www.mathworks.com/help/matlab/ref/$1.html)');
+
 allhelp = regexprep(allhelp,'{{(\w+?) ','{% include $1.html content=" ');
-% TODO }}     convert to " %}
 allhelp = regexprep(allhelp,'}}','" %}');
 
 idx = 1;

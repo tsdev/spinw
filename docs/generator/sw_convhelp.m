@@ -22,7 +22,7 @@ end
 str   = sw_rmspace(str);
 % exchange common symbols
 sText = {'Angstrom'     'hbar'     'alpha'     'beta'     'gamma'     'degree'     '\^-1'   'default is'};
-cText = {'\\\\Angstrom' '\\\\hbar' '\\\\alpha' '\\\\beta' '\\\\gamma' '\\\\degree' '$\^{-1}$' 'default value is'};
+cText = {'\\\\ang' '\\\\hbar' '\\\\alpha' '\\\\beta' '\\\\gamma' '\\\\deg' '$\^{-1}$' 'default value is'};
 
 for ii = 1:numel(sText)
     str = regexprep(str,sText{ii},cText{ii});

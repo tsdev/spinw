@@ -21,7 +21,7 @@ function spectra = sw_magdomain(spectra, varargin)
 % ### Examples
 % 
 % The above example calculates the spectrum for magnetic domains that are
-% related by a 90 \\degree rotation around the $z$-axis (perpendicular to the
+% related by a 90 \\deg rotation around the $z$-axis (perpendicular to the
 % $ab$ plane). All domains have equal volume.
 % 
 % ```
@@ -46,7 +46,7 @@ function spectra = sw_magdomain(spectra, varargin)
 %   row vector with $n_{dom}$ number of elements.
 % 
 % `'angled'`
-% : Same as the `angle` parameter, just in \\degree units.
+% : Same as the `angle` parameter, just in \\deg units.
 % 
 % `'rotC'`
 % : Rotation matrices, that define crystallographic domains, alternative

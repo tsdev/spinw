@@ -45,7 +45,7 @@ function gencoupling(obj, varargin)
 %
 % `'maxDistance'`
 % : Maximum bond length that will be stored in the
-%   [spinw.coupling] property in units of \\Angstrom. Default value is 8.
+%   [spinw.coupling] property in units of \\ang. Default value is 8.
 %
 % `'maxSym'`
 % : Maximum bond length until the symmetry equivalent bonds are
@@ -55,12 +55,12 @@ function gencoupling(obj, varargin)
 %
 % `'tolDist'`
 % : Tolerance of distance, within two bonds are considered
-%   equivalent, default value is $10^{-3}$\\Angstrom. Only used, when no
+%   equivalent, default value is $10^{-3}$\\ang. Only used, when no
 %   space group is defined.
 %
 % `'dMin'`
 % : Minimum bond length, below which an error is triggered.
-%   Default value is 0.5 \\Angstrom.
+%   Default value is 0.5 \\ang.
 %
 % ### Output Arguments
 %

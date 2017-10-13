@@ -1,40 +1,58 @@
 ---
-{title: swplot.color, link: swplot.color, summary: generates RGB code from color name
-    string, keywords: sample, sidebar: sw_sidebar, permalink: swplot_color, folder: swplot,
+{title: swplot.color, link: swplot.color, summary: generates RGB code from color name,
+  keywords: sample, sidebar: sw_sidebar, permalink: swplot_color, folder: swplot,
   mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
-`rgb = swplot.color(cname,{index})`
-
+  
+`RGB = swplot.color(cName)`
+ 
+`RGB = swplot.color(cName,index)`
+  
 ### Description
-
-
-
+  
+`RGB = swplot.color(cName)` reads the color RGB values from the
+`color.dat` file corresponding to the given color name `cName`. The
+color name can be either a single character (see [colorspec](https://www.mathworks.com/help/matlab/ref/colorspec.html)) or
+any [HTML color name](https://www.w3schools.com/colors/colors_names.asp)
+that is stored in the `color.dat` file.
+  
+`RGB = swplot.color(cName,index)` if `index` is true, RGB code
+corresponding to the `cName` color index is read.
+ 
 ### Examples
-
-  RGB = SWPLOT.COLOR('LightGray')
-  the output RGB will be [211; 211; 211].
-
+  
+Read the RGB code corresponding to light gray:
+```matlab
+RGB = swplot.color('LightGray')
+```
+*Output*
+```
+RGB =
+   211
+   211
+   211
+```
+ 
+  
 ### Input Arguments
-
+  
 `cName`
-: String that contains the name of the color, either a single
-  character (see <a href="matlab: doc ColorSpec">ColorSpec</a>) or use any HTML color name,
-  (see http://www.w3schools.com/html/html_colornames.asp).
-  For multiple colors, use a cell containing the strings. The
-  name of the colors are stored in the <a href="matlab: edit color.dat">color.dat</a> file.
-
+: String of a color name. For multiple colors, use a cell of strings.
+  
 `index`
-: If true, the index of the color in the color.dat file is read.
-  Index 1 corresponds to the 9th entry (the first 8 entry has
-  already names in Matlab). Default is false.
-
+: If `true`, instead of the color name, `cName` means the index of the
+  color in the `color.dat` file. index 1 corresponds to the 9th entry
+  (the first 8 entry are standard Matlab color names), default value is
+  `false`.
+  
 ### Output Arguments
-
-RGB       RGB color code, dimensions are [3 nColor], where
-          every value is between 0 and 255.
+  
+`RGB`
+: RGB color codes in a matrix with dimensions of $$[3\times n_{color}]$$, where
+  every value is an integer between 0 and 255.
+ 
 
 {% include links.html %}

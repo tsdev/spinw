@@ -148,7 +148,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % 
 % `'ddat'`
 % : Maximum distance between any $Q$ point in the simulated spectrum
-%   and an experimental data point in \\Angstrom$^{-1}$ unit. If an
+%   and an experimental data point in \\ang$^{-1}$ unit. If an
 %   experimental data point is further from any $Q$ point than the given 
 %   limit, it will be omitted. Default value is 0.01.
 % 
@@ -928,7 +928,7 @@ function [xLabel, xAxis] = sw_label(hkl,hklA,lUnit)
 % : Momentum transfer values in r.l.u., dimensions are [3 nQ].
 % 
 % `hklA`
-% : Momentum transfer values in \\Angstrom$^{-1}$, dimensions are [3 nQ].
+% : Momentum transfer values in \\ang$^{-1}$, dimensions are [3 nQ].
 % 
 % `lUnit`
 % : Length unit, given in a string.

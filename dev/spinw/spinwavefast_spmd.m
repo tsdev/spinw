@@ -1,4 +1,4 @@
-function spectra = spinwavefast(obj, hkl, varargin)
+function spectra = spinwavefast_spmd(obj, hkl, varargin)
 % calculates spin correlation function using linear spin wave theory
 %
 % ### Syntax

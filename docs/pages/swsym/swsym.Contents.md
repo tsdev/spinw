@@ -4,13 +4,15 @@
 
 ---
  
-The functions can be used independently from other parts of spinw. All
-symmetry operators `symOp` are defined by a matrix with dimensions of
-$$[3\times 4\times n_{op}]$$, where `symOp(:,1:3,:)` defines the rotation
-matrices while the `symOp(:,4,:)` the corresponding translations. Also
-the standard settings of the space groups are stored in the
-`symmetry.dat` file that can be loaded using the [swsym.generator](swsym_generator) or
-[swsym.operator](swsym_operator) functions.
+This package deals with symmetry operators of crystallographic space
+groups. It can read the standard space group definitions stored in
+`symmetry.dat`, generate all symmmetry elements, determine all symmetry
+equivalent positions, etc. 
+ 
+All symmetry operators `symOp` are defined by a matrix with dimensions of
+$$[3\times 4\times n_{op}]$$, where `symOp(1:3,1:3,:)` stores the $$[3\times
+3]$$ rotation matrices while the `symOp(1:3,4,:)` holds the corresponding
+translation vectors.
  
 ### Files
  
@@ -18,10 +20,10 @@ the standard settings of the space groups are stored in the
 * [swsym.bond](swsym_bond) generates all symmetry equivalent bonds
 * [swsym.generator](swsym_generator) returns symmetry operators of a given space group
 * [swsym.genreduce](swsym_genreduce) reduces symmetry operators to the generators
-* [swsym.isop](swsym_isop) function determines whether the matrix is a symmetry operator
-* [swsym.operator](swsym_operator) calculates all symmetry operators or general positions for a space group
+* [swsym.isop](swsym_isop) determines if a matrix is symmetry operator
+* [swsym.operator](swsym_operator) generates all symmetry elements from given space group
 * [swsym.oporder](swsym_oporder) determine the order of the symmetry operator
-* [swsym.point](swsym_point) determines point group symmetry at a given position
+* [swsym.point](swsym_point) determines local point group symmetry in a space group
 * [swsym.position](swsym_position) generates symmetry equivalent positions
 * [swsym.str](swsym_str) generates a string equivalent of symmetry operators
 

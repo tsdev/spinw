@@ -76,7 +76,7 @@ function varargout = newcell(obj,varargin)
 %   transformation matrix between the new and the old coordinate system in
 %   `spinw.unit.qmat` and applying it every time a reciprocal space
 %   definition is invoked, such as in [spinw.spinwave]. Default value is
-%   `true`.
+%   `false`.
 % 
 % ### Output Arguments
 % 
@@ -102,7 +102,7 @@ if nargin <= 1
 end
 
 inpForm.fname  = {'bvect' 'bshift' 'keepq'};
-inpForm.defval = {eye(3)  [0 0 0]  true   };
+inpForm.defval = {eye(3)  [0 0 0]  false  };
 inpForm.size   = {[-1 3]  [1 3]    [1 1]  };
 
 param = sw_readparam(inpForm, varargin{:});

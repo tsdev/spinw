@@ -41,7 +41,7 @@ function add(hAdd, hFigure, showtooltip)
 % 
 % ### See Also
 % 
-% [swplot] \| [swplot.figure] \| [matlab.hgtransform] \| [swplot.plot]
+% [swplot] \| [swplot.figure] \| [matlab.hgtransform] \| [swplot.delete]
 %
 
 if nargin == 0

@@ -20,8 +20,8 @@ plotbase, plotcell, plotchem).
  
 * [swplot.arrow](swplot_arrow) creates a 3D arrow patch
 * [swplot.circle](swplot_circle) creates a 3D circle surface patch
-* [swplot.cylinder](swplot_cylinder) draws a closed/open 3D cylinder
-* [swplot.ellipsoid](swplot_ellipsoid) draw ellipsoid
+* [swplot.cylinder](swplot_cylinder) creates a closed/open 3D cylinder patch
+* [swplot.ellipsoid](swplot_ellipsoid) creates a 3D ellipsoid patch
 * [swplot.line](swplot_line) draws a 3D line using patch
 * [swplot.polyhedron](swplot_polyhedron) draw convex polyhedra or polynom from vertex list
 * [swplot.text](swplot_text) draws a text at a point in 3D
@@ -33,7 +33,7 @@ plotbase, plotcell, plotchem).
 * [swplot.base](swplot_base) sets the basis vectors of an swplot figure
 * [swplot.clear](swplot_clear) clears swplot figure
 * [swplot.close](swplot_close) closes swplot figure
-* [swplot.delete](swplot_delete) deletes objects and their data on swplot figure
+* [swplot.delete](swplot_delete) deletes objects and corresponding data from swplot figure
 * [swplot.export](swplot_export) exports swplot figure into raster/vector image
 * [swplot.figure](swplot_figure) creates swplot figure
 * [swplot.findobj](swplot_findobj) finds object data on swplot figure

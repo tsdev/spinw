@@ -20,7 +20,7 @@ vectors can be used to define a non-orthogonal coordinate system for
 graphic objects.
  
 `swplot.base(obj)` sets the basis vectors to the lattice units of a given
-[spinw] object `obj`.
+[spinw](spinw) object `obj`.
    
 `BV = swplot.base` returns the basis vectors stored in the swplot figure.
    
@@ -28,9 +28,9 @@ graphic objects.
 ### Input Arguments
   
 `BV`
-: Either a $$[3\times 3]$$ matrix of the new basis vectors or a [spinw]
+: Either a $$[3\times 3]$$ matrix of the new basis vectors or a [spinw](spinw)
   object where the new basis vectors will be the lattice
-  units and the basis vectors are generated via [spinw.basisvector].
+  units and the basis vectors are generated via [spinw.basisvector](spinw_basisvector).
   
 `hFigure`
 : Handle of the [swplot] figure. Default is the active

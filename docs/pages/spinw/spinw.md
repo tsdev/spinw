@@ -160,11 +160,11 @@ of public methods is below.
 * [spinw.version](spinw_version) returns the version of SpinW
 * [spinw.struct](spinw_struct) converts properties into struct
 * [spinw.clearcache](spinw_clearcache) clears the cache
-* [spinw.spinw](spinw_spinw) Operators and special characters.
+* [spinw.spinw](spinw_spinw) spinw constructor
  
 ### See also
  
-[spinw.copy](spinw_copy), [spinw.struct](spinw_struct), [Comparing handle and value classes](https://www.google.ch/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0ahUKEwjCvbbctqTWAhVBblAKHQxnAnIQFggyMAI&url=https%3A%2F%2Fwww.mathworks.com%2Fhelp%2Fmatlab%2Fmatlab_oop%2Fcomparing-handle-and-value-classes.html&usg=AFQjCNFoN4qQdn6rPXKWkQ7aoog9G-nHgA)
+[spinw.copy](spinw_copy), [spinw.struct](spinw_struct), [Comparing handle and value classes](https://www.mathworks.com/help/matlab/matlab_oop/comparing-handle-and-value-classes.html)
  
 
 {% include links.html %}

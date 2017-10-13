@@ -14,7 +14,7 @@ fun0 = cell(1,0);
 
 clc
 
-doctree = sw_genhelp('path',helpPath(3),'fun',fun0,'verstr',swver,'recalc',true,'done',done);
+doctree = sw_genhelp('path',helpPath,'fun',fun0,'verstr',swver,'recalc',true,'done',done);
 
 
 %% get all help

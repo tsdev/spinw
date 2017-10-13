@@ -81,7 +81,7 @@ sw_plotspec(sw_egrid(tri_orth.spinwave({[0 0 0] [1 1 0] 501})),'mode','color','d
   transformation matrix between the new and the old coordinate system in
   `spinw.unit.qmat` and applying it every time a reciprocal space
   definition is invoked, such as in [spinw.spinwave](spinw_spinwave). Default value is
-  `true`.
+  `false`.
   
 ### Output Arguments
   

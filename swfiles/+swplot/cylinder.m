@@ -37,25 +37,28 @@ function hPatch = cylinder(varargin)
 % ### Input Arguments
 % 
 % `handle`
-% : Handle of an axis or patch object. In case of patch object, the
-%   constructed faces will be added to the existing object instead
-%   of creating a new one.
+% : Handle of an axis or patch object. In case of [matlab.patch] object,
+%   the constructed faces will be added to the existing object instead of
+%   creating a new one.
 % 
 % `rStart`
-% : Coordinate of the starting point with dimensions [3 nCylinder].
+% : Coordinate of the starting point or multiple starting points in a
+%   matrix with dimensions $[3\times n_{obj}]$.
 % 
 % `rEnd`
-% : Coordinate of the end point with dimensions [3 nCylinder].
+% : Coordinate of the end point or multiple end points in a
+%   matrix with dimensions $[3\times n_{obj}]$.
 % 
 % `R`
-% : Radius of the arrow body.
+% : Radius of the arrow body, scalar.
 % 
 % `nPatch`
-% : Number of points on the curve, default value is stored in
-%   swpref.getpref('npatch').
+% : Number of points on the circle of the body, default value is stored in
+%   `swpref.getpref('npatch')`. The final patch object will have
+%   $4n_{patch}$ number of faces and $2n_{patch}$ number of vertices.
 % 
 % `close`
-% : If true the cylinder is closed. Default is true.
+% : If `true` the cylinder is closed at both ends. Default is `true`.
 % 
 % ### See Also
 % 

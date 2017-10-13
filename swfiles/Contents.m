@@ -82,6 +82,7 @@
 %
 % #### Miscellaneous
 %
+%   sw_docs
 %   sw_freemem   
 %   sw_readparam 
 %   sw_rootdir   

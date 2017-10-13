@@ -71,6 +71,10 @@ else
     error('sw_readparam:WrongNumberOfInput','Wrong number of input options!');
 end
 
+if ~isstruct(raw)
+    error('sw_readparam:WrongInput','Parameter name-value pairs are expected!')
+end
+
 fName     = format.fname;
 rName     = fieldnames(raw);
 storeSize = zeros(20,1);

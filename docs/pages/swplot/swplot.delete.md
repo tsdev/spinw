@@ -1,25 +1,30 @@
 ---
-{title: swplot.delete, link: swplot.delete, summary: deletes objects and their data
-    on swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_delete,
+{title: swplot.delete, link: swplot.delete, summary: deletes objects and corresponding
+    data from swplot figure, keywords: sample, sidebar: sw_sidebar, permalink: swplot_delete,
   folder: swplot, mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
-`swplot.delete(hfigure,number)`
-
+  
+`swplot.delete(objID)`
+ 
+`swplot.delete(hFigure,objID)`
+  
 ### Description
-
-Deletes objects and their data that corresponds to the given unique
-numbers on hFigure swplot figure.
+  
+`swplot.delete(objID)` deletes objects and their data that corresponds to
+the given unique `objID` (integer number) on the active swplot figure.
  
-swplot.delete(number)
+`swplot.delete(hFigure,objID)` deletes objects from the swplot figure
+corresponding to `hFigure` handle.
+   
+If `objID` equals to 0, all objects will be deleted from the swplot
+figure.
+   
+### See Also
  
-Deletes objects and their data that corresponds to the given unique
-numbers on the active swplot figure.
- 
-If number equals to 0, all objects will be deleted from the figure.
+[swplot.figure](swplot_figure) \| [swplot.add](swplot_add)
  
 
 {% include links.html %}

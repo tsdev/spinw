@@ -45,7 +45,7 @@ the figure handle `hFigure`.
   
 ### See Also
   
-[swplot] \| [swplot.figure](swplot_figure) \| [hgtransform](https://www.mathworks.com/help/matlab/ref/hgtransform.html) \| [swplot.plot](swplot_plot)
+[swplot] \| [swplot.figure](swplot_figure) \| [hgtransform](https://www.mathworks.com/help/matlab/ref/hgtransform.html) \| [swplot.delete](swplot_delete)
  
 
 {% include links.html %}

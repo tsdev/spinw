@@ -27,6 +27,6 @@ the next integer.
 
 ### See Also
 
-[:] \| [spinw]
+[:] \| [spinw](spinw)
 
 {% include links.html %}

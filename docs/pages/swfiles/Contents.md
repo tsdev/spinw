@@ -86,6 +86,7 @@ into separate libraries.
  
 #### Miscellaneous
  
+  sw_docs
 * [sw_freemem](sw_freemem) calculates the available memory
 * [sw_readparam](sw_readparam) parse input arguments
 * [sw_rootdir](sw_rootdir) path to the SpinW folder

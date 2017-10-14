@@ -10,6 +10,10 @@ function rPref = pref(prefName, mode, value)
 % [swpref.setpref] \| [swpref.getpref]
 %
 
+if nargin == 0
+    return
+end
+
 % the storage name within built-in getpref/setpref
 %store = 'spinw_global';
 

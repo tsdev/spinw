@@ -1,12 +1,23 @@
 function ishg = ishg(hFigure)
 % does the swplot figure uses hgtransform
+% 
+% ### Syntax
+% 
+% `ishg = swplot.ishg`
 %
-% ishg = SWPLOT.ISHG({hFigure})
+% `ishg = swplot.ishg(hFigure)`
+% 
+% ### Description
+% 
+% `ishg = swplot.ishg` `true` if the active swplot figure uses
+% [matlab.hgtransfrom], otherwise `false`.
+% 
+% `ishg = swplot.ishg(hFigure)` applies to the swplot figure referenced by
+% the `hFigure` handle.
 %
-% Input:
+% ### See Also
 %
-% hFigure       Handle of the swplot figure. Default is the selected
-%               figure.
+% [swplot.figure]
 %
 
 if nargin == 0

@@ -22,7 +22,7 @@ plotbase, plotcell, plotchem).
 * [swplot.circle](swplot_circle) creates a 3D circle surface patch
 * [swplot.cylinder](swplot_cylinder) creates a closed/open 3D cylinder patch
 * [swplot.ellipsoid](swplot_ellipsoid) creates a 3D ellipsoid patch
-* [swplot.line](swplot_line) draws a 3D line using patch
+* [swplot.line](swplot_line) creates 3D line patch
 * [swplot.polyhedron](swplot_polyhedron) draw convex polyhedra or polynom from vertex list
 * [swplot.text](swplot_text) draws a text at a point in 3D
  
@@ -39,7 +39,7 @@ plotbase, plotcell, plotchem).
 * [swplot.findobj](swplot_findobj) finds object data on swplot figure
 * [swplot.getdata](swplot_getdata) gets the data stored in an swplot figure
 * [swplot.ishg](swplot_ishg) does the swplot figure uses hgtransform
-* [swplot.legend](swplot_legend) draws legend to the swplot figure
+* [swplot.legend](swplot_legend) adds legend to the swplot figure
 * [swplot.mouse](swplot_mouse) adds mouse callbacks to swplot figure
 * [swplot.plot](swplot_plot) plots objects to swplot figure
 * [swplot.tooltip](swplot_tooltip) creates tooltip axis on swplot figure
@@ -62,7 +62,7 @@ plotbase, plotcell, plotchem).
  
 * [swplot.color](swplot_color) generates RGB code from color name
 * [swplot.icomesh](swplot_icomesh) creates mesh by subdividing icosahedron faces
-* [swplot.logo](swplot_logo) creates the logo of SpinW and saves to a .png file
+* [swplot.logo](swplot_logo) creates the SpinW logo
 * [swplot.patchfacefcn](swplot_patchfacefcn) callback function for patch face selection
 * [swplot.raytriangle](swplot_raytriangle) finds if a ray crosses a triangle
 * [swplot.setrangegui](swplot_setrangegui) shows a window to change the plotting range of an swplot figure

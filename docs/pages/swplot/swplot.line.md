@@ -1,65 +1,68 @@
 ---
-{title: swplot.line, link: swplot.line, summary: draws a 3D line using patch, keywords: sample,
+{title: swplot.line, link: swplot.line, summary: creates 3D line patch, keywords: sample,
   sidebar: sw_sidebar, permalink: swplot_line, folder: swplot, mathjax: 'true'}
 
 ---
-
+  
 ### Syntax
-
-`hline = swplot.line(rstart, rend, {linestyle}, {linewidth},{multipatch})`
-
+  
+`hLine = swplot.line(rStart, rEnd)`
+ 
+`hLine = swplot.line(r,[])`
+  
+`hLine = swplot.line(rStart, rEnd, lineStyle, lineWidth, multiPatch)`
+ 
 ### Description
-
-Plots line disconnected segments between multiple rStart --> rEnd pairs
-of coordinates.
  
-hLine = SWPLOT.LINE(r, [], {lineStyle}, {lineWidth},{multiPatch})
- 
-Plots multiple continuous curves defined in the r matrix.
- 
-hLine = SWPLOT.LINE(handle,...)
- 
-Handle can be the handle of an axes object or a line object. It either
-selects an axis to plot or a patch object (triangulated) to add vertices
-and faces.
- 
-
+`hLine = swplot.line(rStart, rEnd)` creates disconnected line segments
+between multiple `rStart(:,i)` `rEnd(:,i)` pairs of 3D coordinates. The
+lines are shown as patch faces.
+   
+`hLine = swplot.line(r,[])` creates connected line segments  between
+the consicutive points `r(:,i)`.
+   
+`hPatch = swplot.line(handle, ...)` adds the generated patch object to a
+given axis if `handle` is an axis handle or adds the lines to an
+existing [patch](https://www.mathworks.com/help/matlab/ref/patch.html) object, if the given `handle` points to a patch
+object.  
+  
 ### Input Arguments
-
+  
 `handle`
-: Handle of an axis or patch object. In case of patch object, the
-  constructed faces will be added to the existing object instead
-  of creating a new one.
-
+: Handle of an axis or triangulated patch object. In case of patch
+  object, the constructed faces will be added to the existing object.
+  
 `rStart`
 : Coordinate(s) of the starting point, either a 3 element vector or
-  a matrix with dimensions [3 nLineSegment] to plot multiple line
+  a matrix with dimensions of $$[3\times n_{lineSegment}] to plot multiple line
   segments.
-
+  
 `rEnd`
 : Coordinate(s) of the end point, either a 3 element vector or
-  a matrix with dimensions [3 nLineSegment] to plot multiple line
+  a matrix with dimensions of $$[3\times n_{lineSegment}]$$ to plot multiple line
   segments.
-
+  
 `r`
-: Matrix with dimensions [3 nCurve nPointPerCurve]. The function
-  will plot a nCurve number of disconnected curves. The i-th
-  curve will follow the x=r(1,i,:), y=r(2,i,:), z=r(3,i,:)
-  (parameteric) curve.
-
+: Matrix with dimensions of $$[3\times n_{obj}\times n_{lineSegment}]$$. The function
+  will plot $$n_{obj}$$ number of disconnected curves. The $$i$$th
+  curve will follow the `x=r(1,i,:)`, `y=r(2,i,:)`, `z=r(3,i,:)`
+  (parameteric) segmented curve.
+  
 `lineStyle`
-: Line style, default value is '-' for continuous line.
-
+: Line style, default value is `'-'` for continuous line. Any other
+  Matlab line style string is accepted: `'--'`\|`':'`\|`'-.'`\|`'none'`.
+  
 `lineWidth`
-: Line with in pt, default value is 0.5.
-
+: Line width in pt, default value is 0.5.
+  
 `mPatch`
-: If true, a separate patch object will be created per line
-  segment. Default is false, a single patch object will store all
+: If `true`, a separate patch object will be created per line
+  segment. Default is `false`, a single patch object will store all
   line segments.
-
+  
 ### See Also
-
-[line]
+  
+[line](https://www.mathworks.com/help/matlab/ref/line.html)
+ 
 
 {% include links.html %}

@@ -50,8 +50,8 @@ pretty(symSpec.omega)
 \  #1 /
 where
    #1 == (sqrt(2) J_1 exp(-4 pi #2) sqrt(exp(2 pi #2) + #6 + #5
-      + exp(4 pi #2) 3 + #4 + #3 + exp(6 pi #2)) sqrt(- exp(2 pi #2) - #6
-      - #5 + exp(4 pi #2) 6 - #4 - #3 - exp(6 pi #2)))/2
+      + exp(4 pi #2) 3 + #4 + #3 + exp(6 pi #2)) sqrt(- exp(2 pi #2) - #6 - #5
+      + exp(4 pi #2) 6 - #4 - #3 - exp(6 pi #2)))/2
    #2 == h 1i + k 1i
    #3 == exp(2 pi (h 3i + k 2i))
    #4 == exp(2 pi (h 2i + k 3i))

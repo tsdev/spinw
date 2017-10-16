@@ -4,9 +4,9 @@ function doctree = sw_genhelp(varargin)
 % SW_GENHELP('option1', value1, ...)
 %
 
-inpForm.fname  = {'sourcepath' 'docpath' 'sidebar'    'fun'      'verstr' 'recalc' 'done'    };
-inpForm.defval = {{}           ''        'sw_sidebar' zeros(1,0) struct() true     zeros(1,0)};
-inpForm.size   = {[1 -1]       [1 -5]    [1 -2]       [1 -3]     [1 1]    [1 1]    [1 -4]    };
+inpForm.fname  = {'sourcepath' 'outpath' 'sidebar'    'fun'      'verstr' 'recalc' 'done'     'docpath'};
+inpForm.defval = {{}           ''        'sw_sidebar' zeros(1,0) struct() true     zeros(1,0) ''       };
+inpForm.size   = {[1 -1]       [1 -5]    [1 -2]       [1 -3]     [1 1]    [1 1]    [1 -4]     [1 -6]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -19,7 +19,7 @@ end
 nPath = numel(path0);
 
 %docroot  = [sw_rootdir 'docs' filesep];
-docroot  = [param.docpath filesep];
+docroot  = [param.outpath filesep];
 doctree  = struct('name',cell(1,nPath),'folder',[],'content',[]);
 
 % loop over all path to generate help files
@@ -90,16 +90,6 @@ if ~isempty(param.fun)
     end
     doctree = doctree(cellfun(@(C)~isempty(C),{doctree.content}));
     nPath   = numel(doctree);
-end
-
-for ii = 1:nPath
-    % remove old documents
-    try
-        rmdir([docroot 'pages' filesep doctree(ii).name],'s')
-    catch
-    end
-    % add new empty folder
-    mkdir([docroot 'pages' filesep doctree(ii).name]);
 end
 
 for ii = 1:nPath
@@ -244,6 +234,75 @@ javaaddpath(YAML.jarfile);
 % Load yaml into java obj
 snakeyaml = org.yaml.snakeyaml.Yaml;
 
+
+% add doc to the beginning of doctree
+doctree = doctree([1 1:end]);
+doctree(1).name      = 'documentation';
+doctree(1).folder    = [param.docpath filesep 'source'];
+doctree(1).fullname  = 'docs';
+doctree(1).isPackage = false;
+doctree(1).isClass   = false;
+doctree(1).utitle    = {};
+% remove existing content
+doctree(1).content   = doctree(1).content([]);
+
+% load all the documentation stored in .md files
+docFiles = dir([param.docpath filesep 'source' filesep '*.md']);
+% remove index.md from the list
+docFiles = docFiles(~ismember({docFiles(:).name},'index.md'));
+
+for ii = 1:numel(docFiles)
+    docText = strsplit(fileread([param.docpath filesep 'source' filesep docFiles(ii).name]),'---');
+    % parse the frontmatter
+    if numel(docText) == 3
+        docFrontMatter = docText{2};
+        docText        = docText{3};
+        
+        docFrontMatter = YAML.load(docFrontMatter);
+    elseif numel(docText) == 1
+        docFrontMatter = struct;
+        docText        = docText{1};
+        docFrontMatter.title = 'NO TITLE DEFINED';
+    else
+        error('sw_genhelp:ParseDocFrontMatter','Cannot parse the documentation frontmatter!')
+    end
+    % change permalink, remove .html
+    docText = regexprep(docText,[newline newline] ,[newline ' ' newline]);
+    doctree(1).content(ii).text   = strsplit(docText,newline);
+    [~,docFunName] = fileparts(docFiles(ii).name);
+    % remove leading numbers: "DD_...."
+    docFunName = regexprep(docFunName,'^\d\d\_','');
+    docFrontMatter.permalink = docFunName;
+    doctree(1).content(ii).fun    = docFunName;
+    doctree(1).content(ii).isProp = false;
+    doctree(1).content(ii).file   = docFiles(ii).name;
+    doctree(1).content(ii).frontmatter = docFrontMatter;
+end
+
+isDoc = num2cell([true false(1,nPath)]);
+[doctree(:).isDoc] = deal(isDoc{:});
+
+nPath = nPath+1;
+
+%doctree(:).is
+% remove old folders and make new ones
+for ii = 1:nPath
+    try
+        rmdir([docroot 'pages' filesep doctree(ii).name],'s')
+    catch
+    end
+    % add new empty folder
+    mkdir([docroot 'pages' filesep doctree(ii).name]);
+end
+
+% copy index.md straight into the doc folder
+if ~isempty(dir([param.docpath filesep 'source' filesep 'index.md']))
+    copyfile([param.docpath filesep 'source' filesep 'index.md'],[docroot 'index.md']);
+end
+
+% copy resources
+copyfile([param.docpath filesep 'resources' filesep '*'],[docroot 'images' filesep]);
+
 % run the examples
 imgPath = [docroot 'images' filesep 'generated'];
 if param.recalc
@@ -252,7 +311,7 @@ if param.recalc
     end
     mkdir(imgPath)
 end
-
+% close all figures open before the examples
 close('all');
 
 for ii = 1:numel(doctree)
@@ -303,12 +362,13 @@ for ii = 1:numel(allhelp)
     allhelp{ii} = [allhelp{ii}{:}];
 end
 
-% temporary convert
-for ii = 1:numel(allhelp)
-    if isempty(regexp(allhelp{ii},'###','once'))
-        allhelp{ii} = sw_convhelp(allhelp{ii},false);
-    end
-end
+% % temporary convert
+% no need any more
+% for ii = 1:numel(allhelp)
+%     if isempty(regexp(allhelp{ii},'###','once'))
+%         allhelp{ii} = sw_convhelp(allhelp{ii},false);
+%     end
+% end
 
 % generate all links
 pLink = cellfun(@(C)C.permalink,{content.frontmatter},'UniformOutput',false);
@@ -349,7 +409,12 @@ for ii = 1:nPath
         % Convert to matlab object
         frontmatter = char(snakeyaml.dump(YAML.dump_data(content.frontmatter)));
         % save the text as .md file
-        fid = fopen([docroot 'pages' filesep content.frontmatter.folder filesep content.fun '.md'],'w');
+        if isfield(content.frontmatter,'folder')
+            newFile = [docroot 'pages' filesep content.frontmatter.folder filesep content.fun '.md'];
+        else
+            newFile = [docroot 'pages' filesep content.fun '.md'];
+        end
+        fid = fopen(newFile,'w');
         % add newline
         %helpText = cellfun(@(C)[C newline],content.text,'UniformOutput',false);
         %        help1 = allhelp{idx};
@@ -379,8 +444,8 @@ sidebar.entries.title   = 'Sidebar';
 sidebar.entries.product = 'SpinW';
 sidebar.entries.version = verStr;
 % documentation
-sidebar.entries.folders(1).title  = 'Documentation';
-sidebar.entries.folders(1).output = 'web, pdf';
+%sidebar.entries.folders(1).title  = 'Documentation';
+%sidebar.entries.folders(1).output = 'web, pdf';
 
 if isempty(param.done)
     done = false(1,numel(doctree));
@@ -391,42 +456,61 @@ end
 okSymbol = symbol('ok');
 
 for ii = 1:nPath
+    isDoc = doctree(ii).isDoc;
+    
     if done(ii)
-        sidebar.entries.folders(ii+1).title  = [doctree(ii).name ' ' okSymbol];
+        sidebar.entries.folders(ii).title  = [doctree(ii).name ' ' okSymbol];
     else
-        sidebar.entries.folders(ii+1).title  = doctree(ii).name;
-    end
-    sidebar.entries.folders(ii+1).output = 'web, pdf';
-    
-    
-    sidebar.entries.folders(ii+1).folderitems(1).title  = 'Description';
-    %sidebar.entries.folders(ii+1).folderitems(1).url    = ['/' doctree(ii).name '.html'];
-    sidebar.entries.folders(ii+1).folderitems(1).url    = ['/' doctree(ii).name];
-    sidebar.entries.folders(ii+1).folderitems(1).output = 'web, pdf';
-    
-    % find unique titles
-    tCell   = {doctree(ii).content.title};
-    %tUnique = unique(tCell,'stable');
-    tUnique = doctree(ii).utitle;
-    mIdx = find(ismember(tUnique,'Miscellaneous'));
-    if ~isempty(mIdx)
-        tUnique = tUnique([1:(mIdx-1) (mIdx+1):end mIdx]);
+        sidebar.entries.folders(ii).title  = doctree(ii).name;
     end
     
-    for jj = 1:numel(tUnique)
-        idx = find(ismember(tCell,tUnique{jj}) & ~[doctree(ii).content.isContents]);
-        if ~isempty(idx)
-            % title
-            sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).title = tUnique{jj};
-            sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).output = 'web, pdf';
-            
-            for kk = 1:numel(idx)
-                content = doctree(ii).content(idx(kk));
-                sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).subfolderitems(kk).title  = content.frontmatter.link;
-                sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).subfolderitems(kk).url    = ['/' content.frontmatter.permalink];
-                sidebar.entries.folders(ii+1).folderitems(1).subfolders(jj).subfolderitems(kk).output = 'web, pdf';
+    if isDoc
+        % first letter upp
+        tempStr = sidebar.entries.folders(ii).title;
+        sidebar.entries.folders(ii).title  = [upper(tempStr(1)) tempStr(2:end)];
+    end
+    
+    sidebar.entries.folders(ii).output = 'web, pdf';
+    
+    if ~isDoc
+        sidebar.entries.folders(ii).folderitems(1).title  = 'Description';
+        %sidebar.entries.folders(ii).folderitems(1).url    = ['/' doctree(ii).name '.html'];
+        sidebar.entries.folders(ii).folderitems(1).url    = ['/' doctree(ii).name];
+        sidebar.entries.folders(ii).folderitems(1).output = 'web, pdf';
+        
+        % find unique titles
+        tCell   = {doctree(ii).content.title};
+        %tUnique = unique(tCell,'stable');
+        tUnique = doctree(ii).utitle;
+        mIdx = find(ismember(tUnique,'Miscellaneous'));
+        if ~isempty(mIdx)
+            tUnique = tUnique([1:(mIdx-1) (mIdx+1):end mIdx]);
+        end
+        
+        for jj = 1:numel(tUnique)
+            idx = find(ismember(tCell,tUnique{jj}) & ~[doctree(ii).content.isContents]);
+            if ~isempty(idx)
+                % title
+                sidebar.entries.folders(ii).folderitems(1).subfolders(jj).title = tUnique{jj};
+                sidebar.entries.folders(ii).folderitems(1).subfolders(jj).output = 'web, pdf';
+                
+                for kk = 1:numel(idx)
+                    content = doctree(ii).content(idx(kk));
+                    sidebar.entries.folders(ii).folderitems(1).subfolders(jj).subfolderitems(kk).title  = content.frontmatter.link;
+                    sidebar.entries.folders(ii).folderitems(1).subfolders(jj).subfolderitems(kk).url    = ['/' content.frontmatter.permalink];
+                    sidebar.entries.folders(ii).folderitems(1).subfolders(jj).subfolderitems(kk).output = 'web, pdf';
+                end
             end
         end
+    else
+        for kk = 1:numel(doctree(ii).content)
+            content = doctree(ii).content(kk);
+            sidebar.entries.folders(ii).folderitems(kk).title  = content.frontmatter.title;
+            sidebar.entries.folders(ii).folderitems(kk).url    = ['/' content.frontmatter.permalink];
+            sidebar.entries.folders(ii).folderitems(kk).output = 'web, pdf';
+        end
+
+        
     end
     
 end

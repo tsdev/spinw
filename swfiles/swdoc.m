@@ -20,11 +20,11 @@ function varargout = swdoc(funName0)
 % documentation.
 %
 
-funName = funName0;
-
 if nargin == 0
-    funName = '';
+    funName0 = '';
 end
+
+funName = funName0;
 
 % list of supported classes where method/property names can be defined
 classList = {'spinw'};

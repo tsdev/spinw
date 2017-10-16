@@ -4,21 +4,22 @@ function doctree = sw_genhelp(varargin)
 % SW_GENHELP('option1', value1, ...)
 %
 
-inpForm.fname  = {'path' 'sidebar'    'fun'      'verstr' 'recalc' 'done'    };
-inpForm.defval = {{}     'sw_sidebar' zeros(1,0) struct() true     zeros(1,0)};
-inpForm.size   = {[1 -1] [1 -2]       [1 -3]     [1 1]    [1 1]    [1 -4]    };
+inpForm.fname  = {'sourcepath' 'docpath' 'sidebar'    'fun'      'verstr' 'recalc' 'done'    };
+inpForm.defval = {{}           ''        'sw_sidebar' zeros(1,0) struct() true     zeros(1,0)};
+inpForm.size   = {[1 -1]       [1 -5]    [1 -2]       [1 -3]     [1 1]    [1 1]    [1 -4]    };
 
 param = sw_readparam(inpForm, varargin{:});
 
-if ~iscell(param.path)
-    path0 = {param.path};
+if ~iscell(param.sourcepath)
+    path0 = {param.sourcepath};
 else
-    path0 = param.path;
+    path0 = param.sourcepath;
 end
 
 nPath = numel(path0);
 
-docroot  = [sw_rootdir 'docs' filesep];
+%docroot  = [sw_rootdir 'docs' filesep];
+docroot  = [param.docpath filesep];
 doctree  = struct('name',cell(1,nPath),'folder',[],'content',[]);
 
 % loop over all path to generate help files

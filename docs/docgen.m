@@ -1,10 +1,11 @@
 %% setup help generator options
 
-helpPath = {'swfiles/@spinw' 'swfiles' 'swfiles/+swplot' 'swfiles/+swpref' 'swfiles/+swsym' 'swfiles/+swfunc'};
+swPath = {'swfiles/@spinw' 'swfiles' 'swfiles/+swplot' 'swfiles/+swpref' 'swfiles/+swsym' 'swfiles/+swfunc'};
 done     = [true             true     false             true             true            true            ];   
 swr      = sw_rootdir;
-helpPath = cellfun(@(C)[swr C],helpPath,'UniformOutput',false);
+swPath = cellfun(@(C)[swr C],swPath,'UniformOutput',false);
 swver    = sw_version;
+docPath  = '~/spinwdoc_git';
 
 %% generate help
 
@@ -14,7 +15,7 @@ fun0 = cell(1,0);
 
 clc
 
-doctree = sw_genhelp('path',helpPath,'fun',fun0,'verstr',swver,'recalc',true,'done',done);
+doctree = sw_genhelp('sourcepath',swPath,'docpath',docPath,'fun',fun0,'verstr',swver,'recalc',false,'done',done);
 
 
 %% get all help

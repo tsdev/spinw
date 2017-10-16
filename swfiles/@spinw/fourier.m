@@ -68,7 +68,7 @@ function res = fourier(obj,hkl,varargin)
 %   by the `swpref.getpref('fid')` command. The possible values:
 %   * `0`       No text output is generated.
 %   * `1`       Text output in the MATLAB Command Window.
-%   * `fid`     File ID provided by the [fopen](https://www.mathworks.com/help/matlab/ref/fopen.html) command, the
+%   * `fid`     File ID provided by the [matlab.fopen] command, the
 %               output is written into the opened file stream.
 % 
 % ### Output Arguments

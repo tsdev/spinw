@@ -1,20 +1,32 @@
 function varargout = subplot(varargin)
 % create subplots with variable gaps between axes
+% 
+% ### Syntax
+% 
+% `swplot.subplot(m,n,p,space)`
+% 
+% `swplot.subplot([m,n,p],space)`
 %
-% SWPLOT.SUBPLOT(m,n,p,space)
-%
-% SWPLOT.SUBPLOT([m n p],space)
-%
-% Input:
-%
-% m,n,p     Three integer that defines subplot, for details see the
-%           built-in subplot command.
-% space     Vector with elements: [margin hgap vgap], where:
-%               margin  Top and right margin at the figure edge.
-%               hgap    Left margin and horizontal gap between axes.
-%               vgap    Bottom margin and vertical gap between axes.
-%
-% See also SUBPLOT.
+% ### Description
+% 
+% `swplot.subplot(m,n,p,space)` is equivalent to the [matlab.subplot]
+% command, except that the space between axes can be controlled.
+% 
+% ### Input Arguments
+% 
+% `m,n,p`
+% : Three integer that defines subplot, for details see the
+%   built-in [matlab.subplot] command.
+% 
+% `space`
+% : Vector with elements: `[margin hgap vgap]`, where:
+%   * `margin`  Top and right margin at the figure edge.
+%   * `hgap`    Left margin and horizontal gap between axes.
+%   * `vgap`    Bottom margin and vertical gap between axes.
+% 
+% ### See Also
+% 
+% [matlab.subplot]
 %
 
 if nargin==3 || nargin == 1

@@ -1,29 +1,41 @@
 function pOp = point(symOp, r)
-% determines point group symmetry at a given position
+% determines local point group symmetry in a space group
+% 
+% ### Syntax
+% 
+% `pOp = swsym.point(symOp, r)`
+% 
+% ### Description
+% 
+% `pOp = swsym.point(symOp, r)` determines the point group symmetry at a
+% given position in the unit cell in a given space group. It returns all the
+% rotation matrices of the point group.
+% 
+% ### Input Arguments
+% 
+% `symOp`
+% : Symmetry operators of the space group stored in a matrix
+%   with dimensions of $[3\times 4\times n_{op}]$.
+% 
+% `r`
+% : Column vector with 3 elements, position in the unit cell.
+% 
+% ### Output Arguments
+% 
+% `pOp`
+% : Point group operators in a matrix with dimensions of $[3\times 3\times
+%   n_{op}]$, the operators act on the relative atomic positions. To
+%   convert these rotation operators to Cartesian coordinate system, use:
 %
-% pOp = SWSYM.POINT(symOp, r)
-%
-% The function determines point group symmetry in an arbitrary position in
-% the unit cell in any space group. Returns all the generators of the point
-% group.
-%
-% Input:
-%
-% symOp         Symmetry operators of the space group stored in a matrix
-%               with dimensions of [3 4 nOp].
-% r             Position in the unit cell, dimensions are [3 1].
-%
-% Output:
-%
-% pOp           Point group operators, dimensions are [3 3 npOp], these
-%               operators act on the relative atomic positions (they are in
-%               the lattice coordinate system). To convert them to
-%               Cartesian coordinate system, use:
-%                   R = A*pOp(:,:,ii)*inv(A)
-%               Where A is a 3x3 matrix, containing the basis vectors of
-%               the lattice as column vectors.
-%
-% See also SWSYM.GENERATOR, SWSYM.OPERATOR, SWSYM.POSITION.
+%   ```
+%   R = BV*pOp(:,:,i)*inv(BV)
+%   ```
+%   where `BV` is the matrix of lattice basis vectors, see
+%   [spinw.basisvector].
+% 
+% ### See Also
+% 
+% [swsym.generator] \| [swsym.operator] \| [swsym.position]
 %
 
 if nargin == 0

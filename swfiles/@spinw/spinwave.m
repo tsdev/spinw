@@ -92,7 +92,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %                   $Q$ value
 %   * `atomLabel`   string, label of the selected magnetic atom
 %   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
-%                   column contains a $Q$ vector in $\\Angstrom^{-1}$ units.
+%                   column contains a $Q$ vector in $\\ang^{-1}$ units.
 %
 % `'gtensor'`
 % : If true, the g-tensor will be included in the spin-spin correlation
@@ -174,7 +174,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % : Determines if the elapsed and required time for the calculation is
 %   displayed. The default value is determined by the `tid` preference
 %   stored in [swpref]. The following values are allowed (for more details
-%   seee [sw_status]):
+%   see [sw_timeit]):
 %   * `0` No timing is executed.
 %   * `1` Display the timing in the Command Window.
 %   * `2` Show the timing in a separat pup-up window.
@@ -211,7 +211,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %               \end{align}$
 %
 %   * `hkl`     Contains the input $Q$ values, dimensions are $[3\times n_{Q}]$.
-%   * `hklA`    Same $Q$ values, but in $\\Angstrom^{-1}$ unit, in the
+%   * `hklA`    Same $Q$ values, but in $\\ang^{-1}$ unit, in the
 %               lab coordinate system, dimensins are $[3\times n_{Q}]$.
 %   * `incomm`  Logical value, tells whether the calculated spectra is
 %               incommensurate or not.
@@ -670,7 +670,7 @@ if param.saveH
     Hsave = zeros(2*nMagExt,2*nMagExt,nHkl);
 end
 
-sw_status(0,1,param.tid,'Spin wave spectrum calculation');
+sw_timeit(0,1,param.tid,'Spin wave spectrum calculation');
 
 warn1 = false;
 
@@ -800,7 +800,7 @@ for jj = 1:nSlice
                     catch PD
                         if param.tid == 2
                             % close timer window
-                            sw_status(100,2,param.tid);
+                            sw_timeit(100,2,param.tid);
                         end
                         error('spinw:spinwave:NonPosDefHamiltonian',...
                             ['Hamiltonian matrix is not positive definite, probably'...
@@ -904,7 +904,7 @@ for jj = 1:nSlice
     % Normalizes the intensity to single unit cell.
     Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     
-    sw_status(jj/nSlice*100,0,param.tid);
+    sw_timeit(jj/nSlice*100,0,param.tid);
 end
 
 [~,singWarn] = lastwarn;
@@ -917,7 +917,7 @@ if obj.unit.nformula > 0
     Sab = Sab/double(obj.unit.nformula);
 end
 
-sw_status(100,2,param.tid);
+sw_timeit(100,2,param.tid);
 
 fprintf0(fid,'Calculation finished.\n');
 

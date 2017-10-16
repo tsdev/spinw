@@ -321,7 +321,7 @@ for ii = 1:nSub
 end
 
 if fid == 1
-    sw_status(0,1,'Magnetic structure optimization');
+    sw_timeit(0,1,'Magnetic structure optimization');
 end
 
 if nargout == 1
@@ -423,13 +423,13 @@ while (rIdx < nRun) && (dM>param.TolX)
     end
     
     if fid == 1
-        sw_status(rIdx/param.nRun*100);
+        sw_timeit(rIdx/param.nRun*100);
     end
 
 end
 
 if fid == 1
-    sw_status(100,2);
+    sw_timeit(100,2);
 else
     if fid ~= 0
         fprintf0(fid,'Calculation finished.\n');

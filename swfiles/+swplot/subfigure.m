@@ -1,21 +1,34 @@
 function subfigure(m,n,p,hFigure)
 % changes position of figure window on the screen
+% 
+% ### Syntax
+% 
+% `swplot.subfigure(m,n,p)`
+% 
+% `swplot.subfigure(m,n,p,hFigure)`
 %
-% SWPLOT.SUBFIGURE(m,n,p,{hFigure})
+% ### Description
+% 
+% `swplot.subfigure(m,n,p)` changes the position of the current figure
+% window on the screen, the position is determined similarly to the Matlab
+% function [matlab.subplot]. Here the screen is the canvas where the figure
+% window is positioned.
+%  
+% The function divides the display into an $m$-by-$n$ grid and moves the
+% figure window in the position specified by $p$. It numbers the figures by
+% row major, such that the first figure is the first column of the first
+% row, the second figure is the second column of the first row, and so on.
 %
-% Changes the position of the figure window on the screen, the position is
-% determined similarly to the Matlab function subplot(). Here the screen is
-% the canvas where the figure window is positioned.
-%
-% SUBFIGURE divides the display into an m-by-n grid and moves the figure
-% window in the position specified by p. It numbers its figures by row,
-% such that the first figure is the first column of the first row, the
-% second figure is the second column of the first row, and so on.
-%
-% Input:
-%
-% m,n,p     Integer numbers, defining figure window position.
-% hFigure   Handle of the figure window, optional. Default is gcf.
+% `swplot.subfigure(m,n,p,hFigure)` repositions the figure related to
+% `hFigure` handle.
+% 
+% ### Input Arguments
+% 
+% `m,n,p`
+% : Integer numbers that define the figure window position.
+% 
+% `hFigure`
+% : Handle of the figure window, optional. Default value is [matlab.gcf].
 %
 
 if nargin < 4

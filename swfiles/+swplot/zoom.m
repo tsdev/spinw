@@ -1,15 +1,32 @@
 function zoom(mode, hFigure)
-% zooming objects on swplot figure
+% zooms to objects
+% 
+% ### Syntax
+% 
+% `swplot.zoom(mode)`
+% 
+% `swplot.zoom(mode, hFigure)`
 %
-% SWPLOT.ZOOM(mode, {hFigure})
+% ### Description
+% 
+% `swplot.zoom(mode)` controls the zoom (angle of view of the virtual
+% camera) level on the active [swplot] figure.
+% 
+% `swplot.zoom(mode, hFigure)` controls the zoom on the swplot figure
+% referenced by the `hFigure` handle.
 %
-% Input:
-%
-% mode      Either a number determining the relative zoom value, or 'auto'
-%           that zooms to see every object on the figure.
-% hFigure   Handle of the swplot figure window, optional.
-%
-% See also SWPLOT.FIGURE.
+% ### Input Arguments
+% 
+% `mode`
+% : Either a number determining the relative zoom value, or `'auto'`
+%   that zooms to fit every object into the figure.
+% 
+% `hFigure`
+% : Handle of the swplot figure, default value is the active swplot figure.
+% 
+% ### See Also
+% 
+% [swplot.figure]
 %
 
 if nargin == 0

@@ -46,7 +46,7 @@ function stat = annealloop(obj, varargin)
 % : Determines if the elapsed and required time for the calculation is
 %   displayed. The default value is determined by the `tid` preference
 %   stored in [swpref]. The following values are allowed (for more details
-%   seee [sw_status]):
+%   seee [sw_timeit]):
 %   * `0` No timing is executed.
 %   * `1` Display the timing in the Command Window.
 %   * `2` Show the timing in a separat pup-up window.
@@ -113,7 +113,7 @@ if any(obj.field) && ~isempty(obj.single_ion.g)
     warning('spinw:annealloop:NotSupported','User defined g-tensors are currently not supported, g=2 will be assumed!')
 end
 
-sw_status(0,1,param.tid,'Parameter sweep for simulated annealing');
+sw_timeit(0,1,param.tid,'Parameter sweep for simulated annealing');
 
 stat = struct;
 
@@ -160,7 +160,7 @@ for ii = 1:nLoop
         warning('TODO');
     end
     
-    sw_status(ii/nLoop*100,0,param.tid);
+    sw_timeit(ii/nLoop*100,0,param.tid);
 end
 
 % save extra information
@@ -169,6 +169,6 @@ stat.state = aRes;
 stat.x     = param.x;
 stat.param = param;
 
-sw_status(100,2,param.tid);
+sw_timeit(100,2,param.tid);
 
 end

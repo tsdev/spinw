@@ -14,7 +14,7 @@ function rlVect = rl(obj, norm)
 % 
 % ### Examples
 % 
-% To convert from reciprocal lattice unit to \\Angstrom$^{-1}$ ($xyz$
+% To convert from reciprocal lattice unit to \\ang$^{-1}$ ($xyz$
 % Cartesian coordinate system) use: (`Q_rlu` is a row vector with 3
 % elements):
 %

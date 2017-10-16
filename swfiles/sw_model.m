@@ -17,7 +17,7 @@ function obj = sw_model(model, param, fid)
 % `model`
 % : String, name of the model, one of the following:
 %   * `'triAF'`     Triangular lattice Heisenberg antiferromagnet
-%                   in the $ab$ plane ($a=b=3$ \\Angstrom), with \\gamma =
+%                   in the $ab$ plane ($a=b=3$ \\ang), with \\gamma =
 %                   120\\deg angle and optimised magnetic structure.
 %   * `'squareAF'`  Square lattice antiferromagnet.
 %   * `'chain'`     Chain with further neighbor interactions.

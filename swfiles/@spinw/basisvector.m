@@ -16,8 +16,8 @@ function basisVector = basisvector(obj, varargin)
 % 
 % The `basisVec` matrix can be used to change coordinate system, converting
 % between positions expressed in lattice units to positions expressed in
-% \\Angstrom, using `r_lu` for lattice unit coordinates and `r_xyz` for
-% \\Angstrom units (both stored in a column vector) the conversions are the
+% \\ang, using `r_lu` for lattice unit coordinates and `r_xyz` for
+% \\ang units (both stored in a column vector) the conversions are the
 % following:
 % ```
 % r_xyz = basisVec * r_lu
@@ -28,7 +28,7 @@ function basisVector = basisvector(obj, varargin)
 % ```
 %
 % It is also possible to convert between momentum vector in reciprocal
-% lattice units (rlu) into \\Angstrom$^{-1}$ units. Assuming that momentum
+% lattice units (rlu) into \\ang$^{-1}$ units. Assuming that momentum
 % vectors are row vectors:
 % ```
 % Q_xyz =  Q_rlu * 2*pi*inv(basisVec)

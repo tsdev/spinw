@@ -50,11 +50,11 @@ function spectra = sw_instrument(spectra, varargin)
 % 
 % `'dQ'`
 % : Momentum transfer resolution of the instrument, FWHM is
-%   given in \\Angstrom$^{-1}$ units by default, unless different units
+%   given in \\ang$^{-1}$ units by default, unless different units
 %   are defined in [spinw.unit]. Default value is 0 for no convolution.
 % 
 % `'thetaMin'`
-% : Minimum scattering angle in \\degree, default value is 0. Can be only
+% : Minimum scattering angle in \\deg, default value is 0. Can be only
 %   applied if one of the `ki`, `Ei`, `kf` or `Ef` parameters is defined.
 % 
 % `'plot'`
@@ -76,7 +76,7 @@ function spectra = sw_instrument(spectra, varargin)
 % For simulating the effect of the neutron kinematic limit or the finite 
 % detector coverage of a neutron spectrometer one of the following
 % parameter has to be given. The unit of these quantities is defined in
-% [spinw.unit] with default momentum unit of \\Angstrom$^{-1}$ and energy
+% [spinw.unit] with default momentum unit of \\ang$^{-1}$ and energy
 % unit of meV.
 %
 % `'ki'`

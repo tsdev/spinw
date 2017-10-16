@@ -264,7 +264,7 @@ end
 param.ConstrictionFactor = 2*param.k0/(abs(2-(swarmC1+swarmC2)-sqrt((swarmC1+swarmC2)^2-4*(swarmC1+swarmC2))));
 
 % setup timer function
-sw_status(0,1,param.tid,'Particle swarm optimization');
+sw_timeit(0,1,param.tid,'Particle swarm optimization');
 
 % for each iteration....
 for ii = 1:maxIter
@@ -356,12 +356,12 @@ for ii = 1:maxIter
     end
     
     % recalculate time
-    sw_status(ii/maxIter*100,0,param.tid);
+    sw_timeit(ii/maxIter*100,0,param.tid);
     
 end
 
 % finish timer
-sw_status(100,2,param.tid);
+sw_timeit(100,2,param.tid);
 
 if exitFlag == 0
     % no convergence,but maximum number of iterations has been reached

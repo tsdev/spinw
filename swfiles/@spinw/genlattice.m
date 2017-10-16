@@ -22,13 +22,13 @@ function R = genlattice(obj, varargin)
 % ### Options
 % 
 % `angled`
-% : `[\\alpha, \\beta, \\gamma]` angles in \\degree, dimensions are $[1\times 3]$.
+% : `[\\alpha, \\beta, \\gamma]` angles in \\deg, dimensions are $[1\times 3]$.
 % 
 % `angle`
 % : `[\\alpha, \\beta, \\gamma]` angles in radian, dimensions are $[1\times 3]$.
 % 
 % `lat_const`
-% : `[a, b, c]` lattice parameters in units defined in [spinw.unit] (with \\Angstrom
+% : `[a, b, c]` lattice parameters in units defined in [spinw.unit] (with \\ang
 %   being the default), dimensions are $[1\times 3]$.
 % 
 % `spgr`

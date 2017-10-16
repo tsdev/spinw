@@ -30,7 +30,7 @@ function varargout = formula(obj)
 % 
 % `formula` struct variable with the following fields:
 % * `m`         Mass of the unit cell in g/mol units.
-% * `V`         Volume of the unit cell in \\Angstrom$^3$ units.
+% * `V`         Volume of the unit cell in \\ang$^3$ units.
 % * `rho`       Density in g/cm$^3$ unit.
 % * `chemlabel` List of the different elements.
 % * `chemnum`   Number of the listed element names

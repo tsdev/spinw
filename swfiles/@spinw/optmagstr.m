@@ -104,7 +104,7 @@ function optm = optmagstr(obj, varargin)
 % #### Optimisation parameters
 % 
 % The optimization parameters are identical to the input options of the
-% Matlab built-in optimizer [fminsearch](https://www.mathworks.com/help/matlab/ref/fminsearch.html).
+% Matlab built-in optimizer [matlab.fminsearch].
 %
 % `'tolx'`
 % : Minimum change of `x` when convergence reached, default
@@ -132,8 +132,8 @@ function optm = optmagstr(obj, varargin)
 %   * `xname`     Cell containing the name of the $x$ parameters with
 %                   $n_{par}$ elements.
 %   * `e`         Energy per spin in the optimised structure.
-%   * `exitflag`  Exit flag of the optimisation code, see [fminsearch](https://www.mathworks.com/help/matlab/ref/fminsearch.html).
-%   * `output`    Detailed output of the optimisation code, see [fminsearch](https://www.mathworks.com/help/matlab/ref/fminsearch.html).
+%   * `exitflag`  Exit flag of the optimisation code, see [matlab.fminsearch].
+%   * `output`    Detailed output of the optimisation code, see [matlab.fminsearch].
 %   * `param`     Input parameters, stored in a struct.
 % 
 % ### See Also
@@ -257,7 +257,7 @@ minX = zeros(1,nPar);
 fid = obj.fid;
 
 
-sw_status(0,1,[],'Optimizing magnetic structure');
+sw_timeit(0,1,[],'Optimizing magnetic structure');
 
 dx = param.xmax - param.xmin;
 
@@ -276,11 +276,11 @@ for ii = 1:param.nRun
         minX = X;
     end
     
-    sw_status(ii/param.nRun*100);
+    sw_timeit(ii/param.nRun*100);
         
 end
 
-sw_status(100,2);
+sw_timeit(100,2);
 fprintf0(fid,'Calculation finished.\n');
 
 [M, k, n] = param.func(S, minX);

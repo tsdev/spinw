@@ -68,7 +68,7 @@ yig.getmatrix('bond',4);
 
 %% Create spin Hamiltonian
 % change from BCC to primitive cubic cell
-T = yig.newcell({pBV(1,:) pBV(2,:) pBV(3,:)});
+T = yig.newcell('bvect',{pBV(1,:) pBV(2,:) pBV(3,:)});
 
 % exchange values from the paper
 Jad = sw_converter(9.60e-21,'J','THz','photon');

@@ -55,7 +55,7 @@ function varargout = plot(obj, varargin)
 % : Unit in which the range is defined. It can be the following
 %   string:
 %   * `'lu'`        Lattice units (default).
-%   * `'xyz'`       Cartesian coordinate system in \\Angstrom units.
+%   * `'xyz'`       Cartesian coordinate system in \\ang units.
 % 
 % `'figure'`
 % : Handle of the [swplot] figure. Default is the active figure.

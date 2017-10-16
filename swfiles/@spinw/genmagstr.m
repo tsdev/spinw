@@ -113,7 +113,7 @@ function genmagstr(obj, varargin)
 %   value is 0.
 % 
 % `'phid'`
-% : Angle of rotation of the magnetic moments in \\degree. Default
+% : Angle of rotation of the magnetic moments in \\deg. Default
 %   value is 0.
 % 
 % `'nExt'`

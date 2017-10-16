@@ -227,7 +227,7 @@ end
 hklIdx = [floor(((1:nSlice)-1)/nSlice*nRand)+1 nRand+1];
 
 if fid == 1
-    sw_status(0,1);
+    sw_timeit(0,1);
 end
 
 for jj = 1:nSlice
@@ -337,14 +337,14 @@ for jj = 1:nSlice
     M.moment = M.moment + sum(sum(abs(V).^2.*repmat(permute(nBose,[3 1 2]),[nMagExt*2 1 1]),3),2);
     
     if fid == 1
-        sw_status(jj/nSlice*100);
+        sw_timeit(jj/nSlice*100);
     end
     
 end
 
 
 if fid == 1
-    sw_status(100,2);
+    sw_timeit(100,2);
 else
     if fid ~= 0
         fprintf0(fid,'Calculation finished.\n');

@@ -21,7 +21,7 @@ function  Eout = energy(obj, varargin)
 % different ground state structures to decide which is the right classical
 % ground state of the magnetic model in cryst. Here we use the triangular
 % lattice antiferromagnet where we define the magnetic structure on a
-% $[3\times 3]$ magnetic supercell where the optimal structure (120\\degree
+% $[3\times 3]$ magnetic supercell where the optimal structure (120\\deg
 % angle between neighboring spins) has a 0 propagation vector. In this case
 % the exact energy is $3\cdot 1^2\cdot \cos(120^\circ) = -1.5$.
 %

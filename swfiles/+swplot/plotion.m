@@ -1,75 +1,129 @@
 function varargout = plotion(varargin)
 % plots magnetic ion properties
+% 
+% ### Syntax
+% 
+% `swplot.plotion(Name,Value)`
+% 
+% `hFigure = swplot.plotion(Name,Value)`
 %
-% SWPLOT.PLOTION('option1', value1, ...)
+% ### Description
+% 
+% `swplot.plotion(Name,Value)` visualizes selected properties of magnetic
+% ions stored in a [spinw] object onto an swplot figure. The supported
+% properties are the g-tensor and single ion anisotropy.
+% 
+% ### Name-Value Pair Arguments
+% 
+% `'mode'`
+% : String that defines the type of property that is visualized:
+%   * `'aniso'`     ellipsoid is plotted to visualize single ion anisotropy,
+%   * `'g'`     	ellipsoid is plotted to visualize g-tensor.
+% 
+% `'scale'`
+% : Scaling factor for the size of the ellipsoid relative to the 
+%   shortest bond length. Default value is 1/3.
+% 
+% `'alpha'`
+% : Transparency (alpha value) of the ellipsoid (1 for opaque, 0 for
+%   transparent), default value is 0.3.
+% 
+% `'radius1'`
+% : Minimum radius of the ellipsoid, default value is 0.08 \\ang.
+% 
+% `'lineWidth'`
+% : Line width in pt of the main circles surrounding the ellipsoid, 
+%   if zero no circles are drawn. Default is 0.5 pt.
+% 
+% `'color'`
+% : Color of the ellipsoid, one of the following values:
+%   * `'auto'`      all ellipsoids get the color of the central atom,
+%   * `'colorname'` all ellipsoids will have the same color defined by the
+%                   string, e.g. `'red'`,
+%   * `[R G B]`     all ellipsoids will have the same color defined by the RGB
+%                   code.
+% `'color2'`
+% : Color of the lines of the main circles, default value is `'auto'` when
+%   the ellipses will have the same color as the ellipsoids. Can be either
+%   a row vector of RGB code or string of a color name, see the `color`
+%   parameter.
+% 
+% #### General paraters
 %
-% hFigure = SWPLOT.PLOTION(...)
+% These parameters have the same effect on any of the `swplot.plot...`
+% functions.
 %
-% The function plots selected properties of magnetic ions stored in a SpinW
-% object onto an swplot figure.
+% `'obj'`
+% : [spinw] object.
+% 
+% `'unit'`
+% : Unit in which the plotting range is defined. It can be one of the
+%   following strings:
+%   * `'lu'`        plot range is defined in lattice units (default),
+%   * `'xyz'`       plot range is defined in the $xyz$ Cartesian coordinate
+%                   system in \\ang units.
 %
-% Input:
+% `'range'`
+% : Defines the plotting range. Depending on the `unit` parameter, the
+%   given range can be in lattice units or in units of the $xyz$ Cartesian
+%   coordinate system. It is either a matrix with dimensions of $[3\times
+%   2]$ where the first and second columns define the lower and upper plot
+%   limits respectively. It can be alternatively a vector with three
+%   elements `[a,b,c]` which is equivalent to `[0 a;0 b;0 c]`. Default
+%   value is `[0 1;0 1;0 1]` to show a single cell.
+% 
+% `'figure'`
+% : Handle of the swplot figure. Default value is the active figure handle.
+% 
+% `'legend'`
+% : Whether to show the plot on the legend, default value is `true`.
 %
-% Options:
+% `'tooltip'`
+% : If `true`, the tooltips will be shown when clicking on the plot
+%   objects. Default value is `true`.
+% 
+% `'shift'`
+% : Column vector with 3 elements, all object positions will be
+%   shifted by the given value in \\ang units. Default value is
+%   `[0;0;0]`.
+% 
+% `'replace'`
+% : If `true` the plot will replace the previous plot of the same type.
+%   Default value is `true`.
+% 
+% `'translate'`
+% : If `true`, the plot will be centered, independent of the range. Default
+%   value is `false`.
+% 
+% `'zoom'`
+% : If `true`, the swplot figure will be zoomed to make the plot objects
+%   cover the full figure. Default is `true`.
+% 
+% `'copy'`
+% : If `true`, a clone of the [spinw] object will be saved in the
+%   swplot figure data which can be retwrived using
+%   `swplot.getdata('obj')`. If `false`, the handle of the original [spinw]
+%   object is saved which is linked to the input `obj` and so it changes
+%   when `obj` is changed. Default value is `false`.
+% 
+% `nMesh`
+% : Mesh of the ellipse surface, a triangulation class object or an
+%   integer that used to generate an icosahedron mesh with $n_{mesh}$
+%   number of additional subdivision into triangles. Default value is
+%   stored in `swpref.getpref('nmesh')`, see also [swplot.icomesh].
+% 
+% `nPatch`
+% : Number of vertices on any patch object that is not the icosahedron,
+%   default value is stored in `swpref.getpref('npatch')`.
 %
-% obj       SpinW object.
-% range     Plotting range of the lattice parameters in lattice units,
-%           dimensions are [3 2]. For example to plot the first unit cell,
-%           use: [0 1;0 1;0 1]. Also the number unit cells can be given
-%           along the a, b and c directions: [2 1 2], that is equivalent to
-%           [0 2;0 1;0 2]. Default is the single unit cell.
-% unit      Unit in which the range is defined. It can be the following
-%           string:
-%               'lu'        Lattice units (default).
-%               'xyz'       Cartesian coordinate system in Angstrom units.
-% mode      String, defines how the bond is plotted
-%               'aniso'     Ellipsoid is plotted for single ion anisotropy.
-%               'g'     	Ellipsoid is drawn for g-tensor.
-% scale     Scaling factor for the size of the ellipsoid relative to the 
-%           shortest bond length. Default value is 1/3.
-% alpha     Transparency (alpha value) of the ellipsoid, default value is 
-%           0.3.
-% radius1   Minimum radius of the ellipsoid, default value is 0.08.
-% lineWidth Line width in pt of the main circles surrounding the ellipsoid, 
-%           if zero no circles are drawn. Default is 0.5.
-% figure    Handle of the swplot figure. Default is the selected figure.
-% legend    Whether to add the plot to the legend, default is true.
-% color     Color of the ellipsoid:
-%               'auto'      All ellipsoid gets the color of the ion.
-%               'colorname' All ellipsoid will have the same given color.
-%               [R G B]     RGB code of the color that fix the color of all
-%                           ellipsoid.
-% color2    Color of the main circles, default is 'auto' when the ellipses
-%           will have the same color as the ellipsoids. Can be either a row
-%           vector of RGB code or string of a color name.
-% nMesh     Resolution of the ellipse surface mesh. Integer number that is
-%           used to generate an icosahedron mesh with #mesh number of
-%           additional triangulation, default value is stored in
-%           swpref.getpref('nmesh')
-% nPatch    Number of points on the curve for the arrows, default
-%           value is stored in swpref.getpref('npatch').
-% tooltip   If true, the tooltips will be shown when clicking on atoms.
-%           Default is true.
-% shift     Column vector with 3 elements, all atomic positions will be
-%           shifted by the given value. Default value is [0;0;0].
-% replace   Replace previous atom plot if true. Default is true.
-% translate If true, all plot objects will be translated to the figure
-%           center. Default is false.
-% zoom      If true, figure will be automatically zoomed to the ideal size.
-%           Default is false.
-% copy      If true, a hardcopy of the spinw object will be sved in the
-%           figure data, otherwise just the handle of the spinw object, 
-%           thus the figure can be updated when the spin object changed.
-%           Default value is false. 
+% ### Output Arguments
+% 
+% `hFigure`
+% : Handle of the swplot figure.
 %
-% Output:
-%
-% hFigure           Handle of the swplot figure.
-%
-% The name of the objects that are created called 'bond'. To find the
-% handles and the stored data on these objects, use e.g.
-%
-%   sObject = swplot.findobj(hFigure,'name','bond')
+% The name of the objects that are created are `'ion'` and `'ion_edge'`.
+% To find the handles and the corresponding data on these objects, use e.g.
+% sObject = swplot.findobj(hFigure,'name','ion')`.
 %
 
 % default values

@@ -20,7 +20,7 @@ end
 prefName = lower(prefName);
     
 % default link to the online documentation
-doclink0 = 'https://tsdev.github.io/spinw/';
+doclink0 = 'https://tsdev.github.io/spinwdoc/';
 
 % default values
 dn = {'fid' 'expert' 'tag'    'nmesh' 'maxmesh' 'npatch' 'fontsize' 'tid' 'colormap'  'usemex' 'docport' 'doclink'};

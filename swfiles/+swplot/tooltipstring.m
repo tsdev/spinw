@@ -1,13 +1,24 @@
 function string = tooltipstring(swObject,obj)
-% generate tooltip string from the data of a graphical object
+% generates tooltip text
+% 
+% ### Syntax
+% 
+% `swplot.tooltipstring(swObject,[])`
+% 
+% `swplot.tooltipstring(swObject,obj)`
 %
-% SWPLOT.TOOLTIPSTRING(swObject,{obj})
-%
-% Input:
-%
-% swObject  Struct, that contains the object data that is clicked on.
-% obj       SpinW object that provides data to the tooltip text, can be
-%           empty.
+% ### Description
+% 
+% `swplot.tooltipstring(swObject)` generates tooltip string from the data
+% of a graphical object.
+% 
+% ### Input Arguments
+% 
+% `swObject`
+% : Struct, that contains the object data that is clicked on.
+% 
+% `obj`
+% : [spinw] object that provides data to the tooltip text, optional.
 %
 
 newline = char(10); %#ok<CHARTEN>

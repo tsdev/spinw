@@ -1,21 +1,36 @@
 function hPatch = polyhedron(varargin)
-% draw convex polyhedra or polynom from vertex list
+% creates convex polyhedra or polygon from vertex list
+% 
+% ### Syntax
+% 
+% `hPatch = swplot.polyhedron(vertices)`
+% 
+% `hPatch = swplot.polyhedron(handle, ...)`
 %
-% hPatch = SWPLOT.POLYHEDRON(vertices)
-%
-% hPatch = SWPLOT.POLYHEDRON(handle,...
-%
-% Handle can be the handle of an axes object or a patch object. It either
-% selects an axis to plot or a patch object (triangulated) to add vertices
-% and faces.
-%
-% Input:
-%
-% vertices      Matrix with dimensions [3 nObject nPoint], where nObject is
-%               the number of polyhedra to draw, nPoint is the number of
-%               vertices per polyhedron.
-%
-% See also CONVHULLN.
+% ### Description
+% 
+% `hPatch = swplot.polyhedron(vertices)` creates convex polyhedra or
+% polygon from a given vertex list (unordered list of 3D coordinates). To
+% draw the polyhedron the convex hull of the given point cloud is
+% calculated using [matlab.convhulln]. It is automatically detected if the
+% given vertex points lie on a plane in which case the convex polygon is
+% drawn.
+%  
+% `hPatch = swplot.polyhedron(handle, ...)` adds the generated patch object
+% to a given axis if `handle` is an axis handle or adds the polyhedron to
+% an existing [matlab.patch] object, if the given `handle` points to a
+% patch object.
+% 
+% ### Input Arguments
+% 
+% `vertices`
+% : Matrix with dimensions of $[3\times n_{obj}\times n_{point}]$, where
+%   $n_{obj}$ is the number of polyhedra to draw, $n_{point}$ is the number
+%   of vertices per polyhedron.
+% 
+% ### See Also
+% 
+% [matlab.convhulln]
 %
 
 if nargin == 0

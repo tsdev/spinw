@@ -1,11 +1,11 @@
 %% setup help generator options
 
-swPath = {'swfiles/@spinw' 'swfiles' 'swfiles/+swplot' 'swfiles/+swpref' 'swfiles/+swsym' 'swfiles/+swfunc'};
-done     = [true             true     false             true             true            true            ];   
-swr      = sw_rootdir;
-swPath = cellfun(@(C)[swr C],swPath,'UniformOutput',false);
-swver    = sw_version;
-docPath  = '~/spinwdoc_git';
+swPath  = {'swfiles/@spinw' 'swfiles' 'swfiles/+swplot' 'swfiles/+swpref' 'swfiles/+swsym' 'swfiles/+swfunc'};
+done    = [true             true      true             true              true             true             ]*0;   
+swr     = sw_rootdir;
+swPath  = cellfun(@(C)[swr C],swPath,'UniformOutput',false);
+swver   = sw_version;
+docPath = '~/spinwdoc_git';
 
 %% generate help
 

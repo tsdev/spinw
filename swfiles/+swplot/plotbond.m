@@ -85,6 +85,8 @@ function varargout = plotbond(varargin)
 %                   label ends with `'-'`, otherwise continuous) (default).
 %   * `'--'`        Bonds are plotted as dashed lines.
 %   * `'-'`         Bonds are plotted as lines.
+%   * `':'`         Bonds are plotted using dotted lines.
+%   * `'-.'`        Bonds are plotted using dash-dotted lines.
 % 
 % `'zero'`
 % : If `true`, bonds with zero exchange matrix will be plotted as

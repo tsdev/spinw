@@ -366,7 +366,7 @@ end
 
 if incomm
     % TODO
-    if ~helical
+    if ~helical && ~param.fitmode
         warning('spinw:spinwave:Twokm',['The two times the magnetic ordering '...
             'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
     end

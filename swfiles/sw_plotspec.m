@@ -572,6 +572,9 @@ if param.mode == 1
     end
 end
 
+% current axis
+hAxis = gca;
+
 if param.mode == 3
     
     % filter out imaginary, inf and NaN values
@@ -816,11 +819,14 @@ if param.mode == 3
         sel = sel < param.ddat;
         idxD = idxD(sel);
         
+        % add new axis
+        hAxis(2) = axes('Position',hAxis.Position,'Color','none');
+        linkaxes(hAxis,'xy');
         hold on
         for jj = 1:nMode
             errorbar(xAxis(idxD),dat.E(jj,sel),dat.s(jj,sel),'or')
         end
-        
+        axes(hAxis(1));
     end
     
 end
@@ -893,6 +899,13 @@ if nargout == 1
 elseif nargout == 2
     fHandle0 = fHandle;
     pHandle0 = hPlot;
+end
+
+if numel(hAxis)>1
+    legend off
+    axes(hAxis(2));
+    hAxis(2).Visible = 'off';
+    hAxis(2).Position = hAxis(1).Position;
 end
 
 end

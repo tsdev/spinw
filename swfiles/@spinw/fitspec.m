@@ -233,7 +233,8 @@ while idx <= nRun
     switch param.optimizer
         case 'pso'
             [x(idx,:),fVal, output(idx)] = ndbase.pso(dat,@(x,p)spec_fitfun(obj, data, param.func, p, param0),x0,'lb',param.xmin,'ub',param.xmax,...
-                'TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'MaxIter',param.maxiter);
+                'TolX',param.tolx,'TolFun',param.tolfun,'MaxIter',param.maxiter);
+            % 'MaxFunEvals',param.maxfunevals
             R(idx) = sqrt(sum(((dat.y-fVal(:))./dat.e).^2)/numel(fVal));
             
         case 'simplex'
@@ -374,10 +375,12 @@ for ii = 1:nConv
         R = R + mind;
         
         if param.plot
-            plot(jj+Qc+sim.E*0,sim.E,'ko');
+            simE = real(sim.E);
+            simI = real(sim.I);
+            plot(jj+Qc+sim.E*0,simE,'ko');
             hold on
-            for kk = 1:length(sim.E)
-                cPoints = sw_circle([jj+Qc sim.E(kk) 0]',[0 0 1]',sqrt(sim.I(kk))*param.iFact,param.nPoints);
+            for kk = 1:length(simE)
+                cPoints = sw_circle([jj+Qc simE(kk) 0]',[0 0 1]',sqrt(simI(kk))*param.iFact,param.nPoints);
                 pHandle(end+1) = plot(cPoints(1,:),cPoints(2,:)); %#ok<*AGROW>
                 set(pHandle(end),'Color','k');
             end

@@ -205,9 +205,9 @@ inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType' 'component'
 inpForm.defval = [inpForm.defval {false    false  0        'ebin'    'Sperp'    }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]     [1 -5]    }];
 
-inpForm.fname  = [inpForm.fname  {'fid'}];
-inpForm.defval = [inpForm.defval {fid  }];
-inpForm.size   = [inpForm.size   {[1 1]}];
+inpForm.fname  = [inpForm.fname  {'fid'    'toFile'}];
+inpForm.defval = [inpForm.defval {fid      nan}];
+inpForm.size   = [inpForm.size   {[1 1]    [1 -2]}];
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -291,7 +291,7 @@ switch funIdx
         warning(warnState);
     case 1
         % @spinwave
-        specQ = spinwave(obj,hkl,struct('fitmode',true,'notwin',true,...
+        specQ = spinwavefast_spmd(obj,hkl,struct('fitmode',true,'notwin',true,...
             'Hermit',param.hermit,'formfact',param.formfact,...
             'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
             'optmem',param.optmem,'tid',0,'fid',0),'noCheck');
@@ -303,7 +303,7 @@ switch funIdx
             'plot',false),'noCheck');
 end
 
-specQ = sw_neutron(specQ,'pol',false);
+% specQ = sw_neutron(specQ,'pol',false);
 specQ = split_spec(specQ,nQ);
 for ii = 1:length(specQ)
     specQ(ii).obj = obj;
@@ -312,7 +312,7 @@ for ii = 1:length(specQ)
     powSpec(:,ii) = sum(temp.swConv,2)/param.nRand;
 end
 % sw_status(ii/nQ*100,0,param.tid);
-% 
+%
 % sw_status(100,2,param.tid);
 
 fprintf0(fid,'Calculation finished.\n');
@@ -344,6 +344,11 @@ switch funIdx
         spectra.lambda   = temp.lambda;
 end
 
+if ~isnan(param.toFile)
+    save(sprintf('%s.mat',param.toFile),'spectra')
+    spectra = param.toFile;
+end
+
 end
 
 function [F,F1] = fibonacci(Fmax)
@@ -370,15 +375,15 @@ end
 
 function [s_out] = split_spec(inobj,n)
 % Splits a concatonated spinw object into smaller ones
-    idx = [floor(((1:n)-1)/n*size(inobj.hkl,2))+1 size(inobj.hkl,2)+1];
+idx = [floor(((1:n)-1)/n*size(inobj.hkl,2))+1 size(inobj.hkl,2)+1];
     function sout = split(i1,i2)
         sout = inobj;
         id = i1:i2;
         sout.omega = inobj.omega(:,id);
-        sout.Sab = inobj.Sab(:,:,:,id);
+%         sout.Sab = inobj.Sab(:,:,:,id);
         sout.hkl = inobj.hkl(:,id);
         sout.hklA = inobj.hklA(:,id);
         sout.Sperp = inobj.Sperp(:,id);
     end
-    s_out = arrayfun(@split,idx(1:end-1),idx(2:end)-1);
+s_out = arrayfun(@split,idx(1:end-1),idx(2:end)-1);
 end

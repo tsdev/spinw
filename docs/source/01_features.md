@@ -67,5 +67,3 @@ where $\textbf{S}_i$ are spin vector operators, $J_{ij}$ are $[3\times 3]$ matri
 * possible to fit any parameter in the Hamiltonian
 * robust fitting, even when the number of simulated spin wave modes differs from the measured number of modes
 
-
-{% include links.html %}

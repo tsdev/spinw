@@ -16,8 +16,15 @@ fun0 = cell(1,0);
 
 clc
 
-doctree = sw_genhelp('sourcepath',swPath(4),'outpath',outPath,'docpath',docPath,'fun',fun0,'verstr',swver,'recalc',true,'done',done);
+doctree = sw_genhelp('sourcepath',swPath,'outpath',outPath,'docpath',docPath,'fun',fun0,'verstr',swver,'recalc',true,'done',done);
 
+% upload git
+pwd0 = pwd;
+cd(outPath)
+!git add .
+!git commit -m "Regenerated documentation"
+!git push
+cd(pwd0)
 
 %% get all help
 

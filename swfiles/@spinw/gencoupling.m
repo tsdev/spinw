@@ -62,6 +62,14 @@ function gencoupling(obj, varargin)
 % : Minimum bond length, below which an error is triggered.
 %   Default value is 0.5 \\ang.
 %
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
+%
 % ### Output Arguments
 %
 % The [spinw.coupling] field of `obj` will store the new bond list, while
@@ -76,10 +84,10 @@ function gencoupling(obj, varargin)
 % is there any symmetry operator?
 isSym = size(obj.lattice.sym,3) > 0;
 
-inpForm.fname  = {'forceNoSym' 'maxDistance' 'tol' 'tolDist' 'dMin' 'maxSym'};
-inpForm.defval = {false         8             1e-5  1e-3      0.5   []      };
-inpForm.size   = {[1 1]        [1 1]         [1 1] [1 1]     [1 1]  [1 1]   };
-inpForm.soft   = {false        false          false false    false  true    };
+inpForm.fname  = {'forceNoSym' 'maxDistance' 'tol' 'tolDist' 'dMin' 'maxSym' 'fid'};
+inpForm.defval = {false         8             1e-5  1e-3      0.5   []       -1   };
+inpForm.size   = {[1 1]        [1 1]         [1 1] [1 1]     [1 1]  [1 1]   [1 1] };
+inpForm.soft   = {false        false          false false    false  true    false };
 
 
 param = sw_readparam(inpForm, varargin{:});
@@ -94,7 +102,11 @@ if isempty(param.maxSym)
     param.maxSym = param.maxDistance;
 end
 
-fid = obj.fileid;
+if param.fid == -1
+    fid = swpref.getpref('fid',true);
+else
+    fid = param.fid;
+end
 
 % calculate the height of the paralellepiped of a unit cell
 hMax1 = 1./sqrt(sum(inv(obj.basisvector').^2,2));

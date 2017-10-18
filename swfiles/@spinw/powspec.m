@@ -144,6 +144,14 @@ function spectra = powspec(obj, hklA, varargin)
 %   case is wrong, however by examining the eigenvalues it can give a hint
 %   where the problem is.}}
 %
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
+%
 % `'tid'`
 % : Determines if the elapsed and required time for the calculation is
 %   displayed. The default value is determined by the `tid` preference
@@ -185,8 +193,6 @@ if nargin==1
     return
 end
 
-fid = swpref.getpref('fid',true);
-
 hklA = hklA(:)';
 T0 = obj.single_ion.T;
 
@@ -206,12 +212,16 @@ inpForm.defval = [inpForm.defval {false    false  0        'ebin'    'Sperp'    
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]     [1 -5]    }];
 
 inpForm.fname  = [inpForm.fname  {'fid'}];
-inpForm.defval = [inpForm.defval {fid  }];
+inpForm.defval = [inpForm.defval {-1   }];
 inpForm.size   = [inpForm.size   {[1 1]}];
 
 param  = sw_readparam(inpForm, varargin{:});
 
-fid = param.fid;
+if param.fid == -1
+    fid = swpref.getpref('fid',true);
+else
+    fid = param.fid;
+end
 
 % list of supported functions:
 %   0:  unknown

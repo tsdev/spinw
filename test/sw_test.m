@@ -25,12 +25,16 @@ warnLevel = warning;
 warning('off','all');
 
 inpForm.fname  = {'fid' 'tol' };
-inpForm.defval = {1     1e-5  };
+inpForm.defval = {-1    1e-5  };
 inpForm.size   = {[1 1] [1 1] };
 
 param = sw_readparam(inpForm, varargin{:});
 
-fid = param.fid;
+if param.fid == -1
+    param.fid = swpref.getpref('fid',true);
+else
+    fid = param.fid;
+end
 
 Res = [];
 errMsg = {};

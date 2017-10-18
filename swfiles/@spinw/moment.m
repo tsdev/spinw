@@ -69,6 +69,14 @@ function M = moment(obj, varargin)
 % `'omega_tol'`
 % : Tolerance on the energy difference of degenerate modes when
 %   diagonalising the quadratic form, default value is $10^{-5}$.
+%
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
 % 
 % ### Output Arguments
 % 
@@ -87,9 +95,9 @@ function M = moment(obj, varargin)
 
 T0 = obj.single_ion.T;
 
-inpForm.fname  = {'T'   'nRand' 'tol' 'omega_tol' 'hermit'};
-inpForm.defval = {T0    1000    1e-4  1e-5        true    };
-inpForm.size   = {[1 1] [1 1]   [1 1] [1 1]       [1 1]   };
+inpForm.fname  = {'T'   'nRand' 'tol' 'omega_tol' 'hermit' 'fid'};
+inpForm.defval = {T0    1000    1e-4  1e-5        true     -1   };
+inpForm.size   = {[1 1] [1 1]   [1 1] [1 1]       [1 1]    [1 1]};
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -105,8 +113,12 @@ km = magstr.k.*nExt;
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
 
+if param.fid == -1
+    fid = swpref.getpref('fid',true);
+else
+    fid = param.fid;
+end
 
-fid      = obj.fid;
 nRand    = param.nRand;
 
 % sum up the moment reduction

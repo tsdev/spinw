@@ -150,7 +150,6 @@ classdef spinw < handle & matlab.mixin.SetGet
     %
     %   spinw.copy
     %   spinw.export
-    %   spinw.fileid
     %   spinw.table
     %   spinw.validate
     %   spinw.version
@@ -427,8 +426,6 @@ classdef spinw < handle & matlab.mixin.SetGet
         sym   = false;
         % stores whether the calculation are done symbolically
         symb  = false;
-        % stores the file ID of the text output, default is the Command Window (see swpref)
-        fid   = 1;
         % use the version property as contant, this will be executed only
         % once
         ver   = sw_version;
@@ -474,9 +471,6 @@ classdef spinw < handle & matlab.mixin.SetGet
             % `obj = spinw(obj)` checks the input SpinW object for
             % consistency.
             %
-            
-            % update fid value
-            obj.fid = swpref.getpref('fid',[]);
 
             if nargin==0
                 objS = initfield(struct);

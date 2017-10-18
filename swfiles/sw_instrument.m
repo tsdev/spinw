@@ -91,7 +91,14 @@ function spectra = sw_instrument(spectra, varargin)
 % `'Ef'`
 % : Fixed final energy of the neutrons.
 % 
-% 
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
+%
 % ### Output Arguments
 % 
 % `spectra`
@@ -123,15 +130,19 @@ inpForm.defval = {[]      0     0     0     0     false   5        0        };
 inpForm.size   = {[-1 -2] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]     };
 inpForm.soft   = {true    false false false false false  false    false     };
 
-inpForm.fname  = [inpForm.fname  {'formFact' 'dQ'  'norm' 'useRaw' 'func'}];
-inpForm.defval = [inpForm.defval { 'auto'    0     false   true    func0 }];
-inpForm.size   = [inpForm.size   { [1 -2]    [1 1] [1 1]   [1 1]   [1 1] }];
-inpForm.soft   = [inpForm.soft   {false      false false   false   false }];
+inpForm.fname  = [inpForm.fname  {'formFact' 'dQ'  'norm' 'useRaw' 'func' 'fid'}];
+inpForm.defval = [inpForm.defval { 'auto'    0     false   true    func0  -1   }];
+inpForm.size   = [inpForm.size   { [1 -2]    [1 1] [1 1]   [1 1]   [1 1]  [1 1]}];
+inpForm.soft   = [inpForm.soft   {false      false false   false   false  false}];
 
 param = sw_readparam(inpForm, varargin{:});
 
 % Print output
-fid0 = spectra.obj.fileid;
+if param.fid == -1
+    fid = swpref.getpref('fid',[]);
+else
+    fid = param.fid;
+end
 
 if isfield(spectra,'swRaw')
     % take raw convoluted spectra if exists and request
@@ -187,7 +198,7 @@ if calcres
         spectra.swConv{jj} = sw_resconv(spectra.swConv{jj},cEvect',param.dE,param.func);
     end
     
-    fprintf0(fid0,'Finite instrumental energy resolution is applied.\n');
+    fprintf0(fid,'Finite instrumental energy resolution is applied.\n');
 end
 spectra.dE = param.dE;
 
@@ -220,7 +231,7 @@ if param.dQ > 0
         spectra.swConv{jj} = swConvTemp;
     end
     
-    fprintf0(fid0,'Finite instrumental momentum resolution of %5.3f A-1 is applied.\n',param.dQ);
+    fprintf0(fid,'Finite instrumental momentum resolution of %5.3f A-1 is applied.\n',param.dQ);
 end
 
 spectra.dQ = param.dQ;
@@ -288,7 +299,7 @@ if FX > 0
         swConv(idx) = NaN;
         spectra.swConv{jj} = swConv;
     end
-    fprintf0(fid0,'Energy transfer is limited to instrument, using %s=%5.3f A-1.\n',kstr,k0);
+    fprintf0(fid,'Energy transfer is limited to instrument, using %s=%5.3f A-1.\n',kstr,k0);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -328,14 +339,14 @@ if param.norm
     % set 'normalized units' switch on
     spectra.norm = true;
     if spectra.obj.unit.nformula > 0
-        fprintf0(fid0,'Intensity is converted to mbarn/meV/f.u. units.\n');
+        fprintf0(fid,'Intensity is converted to mbarn/meV/f.u. units.\n');
     else
-        fprintf0(fid0,'Intensity is converted to mbarn/meV/cell units.\n');
+        fprintf0(fid,'Intensity is converted to mbarn/meV/cell units.\n');
     end
     if spectra.gtensor
-        fprintf0(fid0,'g-tensor was already included in the spin wave calculation.\n');
+        fprintf0(fid,'g-tensor was already included in the spin wave calculation.\n');
     else
-        fprintf0(fid0,'Isotropic g-tensor of 2 assumed here.\n');
+        fprintf0(fid,'Isotropic g-tensor of 2 assumed here.\n');
     end
     
 else

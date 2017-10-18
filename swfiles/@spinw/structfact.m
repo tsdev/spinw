@@ -96,6 +96,14 @@ function sFact = structfact(obj, kGrid, varargin)
 % : Speed up the calculation for fitting mode (omitting
 %   cloning the [spinw] object into the output). Default is `false`.
 % 
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
+%
 % ### Output Arguments
 % 
 % `sFact`
@@ -130,17 +138,17 @@ inpF.defval = {'mag'  false   false     false       @sw_mff      false    };
 inpF.size   = {[1 -1] [1 1]   [1 1]     [1 1]       [1 1]        [1 1]    };
 inpF.soft   = {false  false   false     false       false        false    };
 
-inpF.fname  = [inpF.fname  {'lambda' 'output' 'dmin' 'rmzero' 'delta'}];
-inpF.defval = [inpF.defval {[]       'struct' []     false    1e-10  }];
-inpF.size   = [inpF.size   {[1 1]    [1 -2]   [1 1]  [1 1]    [1 1]  }];
-inpF.soft   = [inpF.soft   {true     false    true   false    false  }];
+inpF.fname  = [inpF.fname  {'lambda' 'output' 'dmin' 'rmzero' 'delta' 'fid'}];
+inpF.defval = [inpF.defval {[]       'struct' []     false    1e-10   -1   }];
+inpF.size   = [inpF.size   {[1 1]    [1 -2]   [1 1]  [1 1]    [1 1]   [1 1]}];
+inpF.soft   = [inpF.soft   {true     false    true   false    false   false}];
   
 param = sw_readparam(inpF, varargin{:});
 
-if param.fitmode
-    fid = 0;
+if param.fid == -1
+    fid = swpref.getpref('fid',[]);
 else
-    fid = obj.fileid;
+    fid = param.fid;
 end
 
 % make a list of k-vectors from a grid and remember original dimensions

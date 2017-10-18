@@ -10,9 +10,9 @@ function compile_server_linux(varargin)
 % zmqlib            Name of the zeroMQ library file with full path.
 %
 
-if ~isunix || ismac
-    error('This function works only on Linux!')
-end
+%if ~isunix || ismac
+%    error('This function works only on Linux!')
+%end
 
 % kill all running apps
 [~,~] = system('killall -9 spinw_server');
@@ -62,13 +62,13 @@ eval(mccCommand);
 rmdir(tPath,'s');
 
 % remove unnecessary files
-toDel = {'mccExcludedFiles.log' 'readme.txt' 'requiredMCRProducts.txt' 'run_pyspinw.sh'};
+toDel = {'mccExcludedFiles.log' 'readme.txt' 'requiredMCRProducts.txt' 'run_spinw_server.sh'};
 for ii = 1:numel(toDel)
     delete([cRoot '/Linux/' toDel{ii}])
 end
 
 % add the script file to the app
-copyfile([cRoot '/pyspinw_linux.sh'],[cRoot '/Linux/pyspinw.sh'])
+%copyfile([cRoot '/spinw_server_linux.sh'],[cRoot '/Linux/spinw_server.sh'])
 
 disp('Done!')
 toc

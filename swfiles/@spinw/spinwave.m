@@ -291,9 +291,9 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
-inpForm.fname  = [inpForm.fname  {'cmplxBase' 'tid' 'fid' }];
-inpForm.defval = [inpForm.defval {false       -1    -1    }];
-inpForm.size   = [inpForm.size   {[1 1]       [1 1] [1 1] }];
+inpForm.fname  = [inpForm.fname  {'cmplxBase' 'tid' 'fid' 'toFile'}];
+inpForm.defval = [inpForm.defval {false       -1    -1    nan     }];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1] [1 1] [1 -2]  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -312,9 +312,10 @@ if param.tid == -1
 end
 
 if param.fid == -1
-    param.fid = swpref.getpref('fid',[]);
+    fid = swpref.getpref('fid',[]);
+else
+    fid = param.fid;
 end
-fid = param.fid;
 
 % generate magnetic structure in the rotating noation
 magStr = obj.magstr;
@@ -1035,6 +1036,11 @@ spectra.gtensor         = param.gtensor;
 if ~param.fitmode
     spectra.dateend = datestr(now);
     spectra.obj = copy(obj);
+end
+
+if ~isnan(param.toFile)
+    save(sprintf('%s.mat',param.toFile),'spectra')
+    spectra = param.toFile;
 end
 
 if ~param.gtensor && any(obj.single_ion.g)

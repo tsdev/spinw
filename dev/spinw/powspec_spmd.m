@@ -274,7 +274,7 @@ specQ.lambda = [];
 
 
 if param.fibo
-    Q = QF*hklA(ii);
+    Q = bsxfun(@mtimes,reshape(QF,3,param.nRand,1),reshape(hklA,1,1,[]));
 else
     rQ  = randn(3,param.nRand,nQ);
     Q   = bsxfun(@mtimes,bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2))),reshape(hklA,1,1,[]));

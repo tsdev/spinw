@@ -151,7 +151,7 @@ hkl = obj.unit.qmat*param.hkl;
 if param.fid == -1
     fid = swpref.getpref('fid',true);
 else
-    fid = param..fid;
+    fid = param.fid;
 end
 
 % Create the interaction matrix and atomic positions in the extended

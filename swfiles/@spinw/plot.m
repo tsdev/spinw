@@ -103,8 +103,10 @@ function varargout = plot(obj, varargin)
 % [swplot.plotbond] \| [swplot.plotbase] \| [swplot.plotcell]
 %
 
+fid = swpref.getpref('fid',true);
+
 % preparation
-fprintf0(obj.fileid,'Creating 3D plot... \n');
+fprintf0(fid,'Creating 3D plot... \n');
 
 if numel(varargin) == 1
     % handle input structures
@@ -338,7 +340,7 @@ nFaces    = sum(cellfun(@(C)size(C,1),get(hPatch,'Faces')));
 nVertices = sum(cellfun(@(C)size(C,1),get(hPatch,'Vertices')));
 
 % ready
-fprintf0(obj.fileid,'...%dk faces and %dk vertices are drawn!\n',round(nFaces/1e3),round(nVertices/1e3));
+fprintf0(fid,'...%dk faces and %dk vertices are drawn!\n',round(nFaces/1e3),round(nVertices/1e3));
 
 warning(warn0);
 

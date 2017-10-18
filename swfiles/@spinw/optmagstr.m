@@ -91,6 +91,15 @@ function optm = optmagstr(obj, varargin)
 % : Gives a title string to the simulation that is saved in the
 %   output.
 % 
+% `'tid'`
+% : Determines if the elapsed and required time for the calculation is
+%   displayed. The default value is determined by the `tid` preference
+%   stored in [swpref]. The following values are allowed (for more details
+%   see [sw_timeit]):
+%   * `0` No timing is executed.
+%   * `1` Display the timing in the Command Window.
+%   * `2` Show the timing in a separat pup-up window.
+%
 % #### Limits on selected prameters
 %
 % Limits can be given on any input parameter of the constraint function by
@@ -157,10 +166,10 @@ inpForm.defval = {1e-5      @gm_spherical3d  {'per' 'per' 'per'} []       []    
 inpForm.size   = {[1 1]     [1 1]            [1 3]               [1 -1]   [1 -2]  [1 -3] };
 inpForm.soft   = {0         0                0                   1        1       1      };
 
-inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'nRun' 'maxiter' 'title'}];
-inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           1      1e4       title0 }];
-inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 1]  [1 1]     [1 -4] }];
-inpForm.soft   = [inpForm.soft   {0      0        0             0      0         1      }];
+inpForm.fname  = [inpForm.fname  {'tolx' 'tolfun' 'maxfunevals' 'nRun' 'maxiter' 'title' 'tid'}];
+inpForm.defval = [inpForm.defval {1e-4   1e-5     1e7           1      1e4       title0  -1   }];
+inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]         [1 1]  [1 1]     [1 -4]  [1 1]}];
+inpForm.soft   = [inpForm.soft   {0      0        0             0      0         1       false}];
 
 % creat initial magnetic structure
 warnState = warning('off','sw_readparam:UnreadInput');
@@ -178,6 +187,10 @@ end
 S       = sqrt(sum(magStr.S.^2,1));
 nExt    = double(magStr.N_ext);
 nMagExt = length(S);
+
+if param.tid == -1
+    param.tid = swpref.getpref('tid',[]);
+end
 
 
 % determine the limits from the constraint function
@@ -254,10 +267,7 @@ Bg  = permute(mmat(SI.field,g)*obj.unit.muB,[2 3 1]);
 minE = 0;
 minX = zeros(1,nPar);
 
-fid = obj.fid;
-
-
-sw_timeit(0,1,[],'Optimizing magnetic structure');
+sw_timeit(0,1,param.tid,'Optimizing magnetic structure');
 
 dx = param.xmax - param.xmin;
 
@@ -276,12 +286,11 @@ for ii = 1:param.nRun
         minX = X;
     end
     
-    sw_timeit(ii/param.nRun*100);
+    sw_timeit(ii/param.nRun*100,0,param.tid);
         
 end
 
-sw_timeit(100,2);
-fprintf0(fid,'Calculation finished.\n');
+sw_timeit(100,2,param.tid);
 
 [M, k, n] = param.func(S, minX);
 
@@ -304,14 +313,12 @@ if nargout > 0
     optm.xname    = pname;
     optm.dateend  = datestr(now);
     optm.title    = param.title;
-
 end
 
 end
 
-%% Energy function
 function E = efunc(x, S, dR, atom1, atom2, JJ, nExt, Bg, epsilon, func)
-% Cost function to optimize.
+% Energy function, cost function to optimize.
 
 [M, k, n] = func(S, x);
 

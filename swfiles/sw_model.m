@@ -49,7 +49,6 @@ end
 fprintf0(fid,'Preparing ''%s'' model ...\n',model);
 
 obj = spinw;
-fileid(obj,fid)
 
 switch model
     case 'triAF'

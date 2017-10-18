@@ -213,9 +213,6 @@ sw_timeit(0,1,param.tid,'Fitting spin wave spectra');
 idx = 1;
 idxAll = 1;
 
-fidSave = obj.fileid;
-obj.fileid (0);
-
 while idx <= nRun
     %try
     if ~isempty(param.x0)
@@ -233,7 +230,8 @@ while idx <= nRun
     switch param.optimizer
         case 'pso'
             [x(idx,:),fVal, output(idx)] = ndbase.pso(dat,@(x,p)spec_fitfun(obj, data, param.func, p, param0),x0,'lb',param.xmin,'ub',param.xmax,...
-                'TolX',param.tolx,'TolFun',param.tolfun,'MaxFunEvals',param.maxfunevals,'MaxIter',param.maxiter);
+                'TolX',param.tolx,'TolFun',param.tolfun,'MaxIter',param.maxiter);
+            % 'MaxFunEvals',param.maxfunevals
             R(idx) = sqrt(sum(((dat.y-fVal(:))./dat.e).^2)/numel(fVal));
             
         case 'simplex'
@@ -283,8 +281,6 @@ end
 % set the best fit to the spinw object
 param.func(obj,x(1,:));
 
-obj.fileid(fidSave);
-
 % Store all output in a struct variable.
 fitsp.obj      = copy(obj);
 fitsp.x        = x;
@@ -329,7 +325,7 @@ for ii = 1:nConv
     
     % calculate spin-spin correlation function
     spec = obj.spinwave(data.Q,'fitmode',true,'hermit',param.hermit,...
-        'tid',0,'optMem',param.optmem,'tid',param.tid,'gtensor',any(obj.single_ion.g));
+        'tid',0,'optMem',param.optmem,'gtensor',any(obj.single_ion.g),'fid',0);
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy
@@ -374,10 +370,12 @@ for ii = 1:nConv
         R = R + mind;
         
         if param.plot
-            plot(jj+Qc+sim.E*0,sim.E,'ko');
+            simE = real(sim.E);
+            simI = real(sim.I);
+            plot(jj+Qc+sim.E*0,simE,'ko');
             hold on
-            for kk = 1:length(sim.E)
-                cPoints = sw_circle([jj+Qc sim.E(kk) 0]',[0 0 1]',sqrt(sim.I(kk))*param.iFact,param.nPoints);
+            for kk = 1:length(simE)
+                cPoints = sw_circle([jj+Qc simE(kk) 0]',[0 0 1]',sqrt(simI(kk))*param.iFact,param.nPoints);
                 pHandle(end+1) = plot(cPoints(1,:),cPoints(2,:)); %#ok<*AGROW>
                 set(pHandle(end),'Color','k');
             end

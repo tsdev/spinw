@@ -1,12 +1,12 @@
 function input = sw_readparam(format, varargin)
 % parse input arguments
-% 
+%
 % ### Syntax
-% 
+%
 % `parsed = sw_readparam(format,Name,Value)`
-% 
+%
 % ### Description
-% 
+%
 % `parsed = sw_readparam(format,Name,Vale)` parses name-value pair
 % arguments. The parsing is controlled by the given `format` input. The
 % name-value pairs are converted into the parsed struct which has field
@@ -15,9 +15,9 @@ function input = sw_readparam(format, varargin)
 % a given value and default values for select parameters.
 %
 % `sw_readparam` is used in most of the method functions of [spinw].
-% 
+%
 % ### Input Arguments
-% 
+%
 % `format`
 % : A struct with the following fields:
 %   * `fname` Field names, $n_{param}$ strings in cell.
@@ -40,7 +40,7 @@ if nargin == 2 && ischar(varargin{1}) && varargin{1} == '-'
     % return all variable strings onto the Command Window
     varStr = sprintf('%s ',format.fname{:});
     clipboard('copy',varStr(1:end-1));
-    error('sw_readparam:List','All input variable names are copied to the clipboard!');
+    warning('sw_readparam:ClipboardCopy','Input parameter names are copied to the clipboard!');
 end
 
 % create a showWarn field to check whether to show warnings (default true)
@@ -68,11 +68,11 @@ elseif nargin == 2
 elseif nargin == 1
     raw = struct;
 else
-    error('sw_readparam:WrongNumberOfInput','Wrong number of input options!');
+    MException('sw_readparam:WrongParameter','Parameter name-value pairs are expected!').throwAsCaller;
 end
 
 if ~isstruct(raw)
-    error('sw_readparam:WrongInput','Parameter name-value pairs are expected!')
+    MException('sw_readparam:WrongParameter','Parameter name-value pairs are expected!').throwAsCaller;
 end
 
 fName     = format.fname;
@@ -118,21 +118,29 @@ for ii = 1:length(fName)
             if isfield(format,'soft') && format.soft{ii}
                 input.(fName{ii}) = format.defval{ii};
             else
-                error('spinw:sw_readparam:SizeMismatch',['Input parameter size mismatch in option ''' fName{ii} '''']);
+                MException('sw_readparam:ParameterSizeMismatch',['Input parameter size mismatch in parameter ''' fName{ii} '''!']).throwAsCaller;
             end
         end
     else
         if isfield(format,'defval') && (any(size(format.defval{ii})) || (isfield(format,'soft') && format.soft{ii}))
             input.(fName{ii}) = format.defval{ii};
         else
-            error('spinw:sw_readparam:ParameterMissing',['Necessary input option is missing ''' fName{ii} '''']);
+            MException('sw_readparam:MissingParameter',['Necessary input parameter ''' fName{ii} ''' is missing!']).throwAsCaller;
         end
     end
 end
 
 if ~all(usedField)
-    wName = sprintf('%s, ',rName{~usedField});
-    warning('sw_readparam:UnreadInput','Invalid input option names: %s\b\b!',wName);
+    mName = rName(~usedField);
+    if numel(mName) == 1
+        wName = [' "' mName{1} '"'];
+    elseif numel(mName) == 2
+        wName = ['s "' mName{1} '" and "' mName{2} '"'];
+    else
+        wName = ['s ' sprintf('"%s", "',mName{1:(end-2)}) mName{end-1} '" and "' mName{end} '"'];
+    end
+
+    warning('sw_readparam:UnreadInput','Unregognised input parameter%s!',wName);
 end
 
 end

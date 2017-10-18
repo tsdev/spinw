@@ -398,6 +398,23 @@ allhelp = regexprep(allhelp,'\[matlab\.(\w+?)\]','[$1](https://www.mathworks.com
 allhelp = regexprep(allhelp,'{{(\w+?) ','{% include $1.html content=" ');
 allhelp = regexprep(allhelp,'}}','" %}');
 
+% restore standard KramDown behaviour by converting standard KramDown into
+% {include } like shit
+% image with caption and url
+regexp0 = '\[\!\[([^\!\[\]]+?)\]\((\S+?)\)\{(.+?)\}\]\((\S+?)\)';
+allhelp = regexprep(allhelp,regexp0,'{% include image.html file="$2" alt="$1" caption="$3" url="$4" %}');
+
+% image with caption only
+regexp0 = '\!\[([^\!\[\]]+?)\]\((\S+?)\)\{(.+?)\}';
+allhelp = regexprep(allhelp,regexp0,'{% include image.html file="$2" alt="$1" caption="$3"%}');
+
+% image without caption
+regexp0 = '\!\[([^\!\[\]]+?)\]\((\S+?)\)';
+allhelp = regexprep(allhelp,regexp0,'{% include image.html file="$2" alt="$1" %}');
+
+% convert section names
+allhelp = regexprep(allhelp,'\[section\.(\S+?)\]','\[$1\]($1)');
+
 idx = 1;
 % generate the .md files
 for ii = 1:nPath

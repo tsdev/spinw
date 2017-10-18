@@ -29,10 +29,6 @@ function quickham(obj,J)
 % [spinw.addmatrix]
 %
 
-fid = obj.fileid;
-
-obj.fileid(0);
-
 dMax = 8;
 nMax = 0;
 nJ   = numel(J);
@@ -40,14 +36,12 @@ nJ   = numel(J);
 idx = 1;
 % generate the necessary bonds and avoid infinite loop
 while nMax < nJ && idx < 12
-    obj.gencoupling('maxDistance',dMax);
+    obj.gencoupling('maxDistance',dMax,'fid',0);
     dMax = dMax+8;
     % maximum bond index
     nMax = obj.coupling.idx(end);
     idx  = idx+1;
 end
-
-obj.fileid(fid);
 
 if nMax < nJ
     warning('The necessary bond length is too long (d>100 A), not all Js will be assigned!');

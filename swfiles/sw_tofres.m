@@ -40,8 +40,8 @@ function spec = sw_tofres(spec, varargin)
 %   the number of random $Q$ points.
 %
 % `'fid'`
-% : Defines whether to provide text output. Default value is defined in
-%   `obj.fid`. The possible values are: 
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
 %   * `0`   No text output is generated.
 %   * `1`   Text output in the MATLAB Command Window.
 %   * `fid` File ID provided by the `fopen` command, the output is written
@@ -80,15 +80,15 @@ dQ0 = ones(1,3)*0.1;
 nQ0 = ones(1,3)*5;
 
 inpForm.fname  = {'method'  'dQ'  'nQ' 'fid' 'tid'};
-inpForm.defval = {'grid'    dQ0    nQ0 nan   -1   };
+inpForm.defval = {'grid'    dQ0    nQ0 -1    -1   };
 inpForm.size   = {[1 -1] [1 -2] [1 -3] [1 1] [1 1]};
 
 param = sw_readparam(inpForm, varargin{:});
 obj   = spec.obj;
 
-if isnan(param.fid)
+if param.fid == -1
     % Print output into the following file
-    fid = obj.fileid;
+    fid = swpref.getpref('fid',true);
 else
     fid = param.fid;
 end
@@ -112,15 +112,13 @@ switch param.method
         
         conv0 = zeros(nE,size(hkl,2));
         
-        obj.fileid(0);
-        
         fprintf0(fid,'Calculating TOF Q-binning using random method...\n')
         
         sw_timeit(0,1,param.tid,'TOF Q-binning resolution calculation');
         
         for ii = 1:prod(nQ)
             hklC = bsxfun(@minus,bsxfun(@times,dQ',rand(size(hkl))),dQ'/2)+hkl;
-            spec0 = obj.spinwave(hklC,'formfact',spec.formfact);
+            spec0 = obj.spinwave(hklC,'formfact',spec.formfact,'fid',0);
             spec0 = sw_egrid(spec0,'Evect',Evect,'component',spec.component);
             conv0 = conv0 + spec0.swConv;
             
@@ -149,8 +147,6 @@ switch param.method
         
         
         conv0 = zeros(nE,size(hkl,2));
-        
-        obj.fileid(0);
         
         fprintf0(fid,'Calculating TOF Q-binning using grid method...\n')
         

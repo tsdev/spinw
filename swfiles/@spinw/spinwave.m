@@ -163,8 +163,8 @@ function spectra = spinwave(obj, hkl, varargin)
 % : Gives a title string to the simulation that is saved in the output.
 %
 % `'fid'`
-% : Defines whether to provide text output. Default value is defined in
-%   `obj.fid`. The possible values are: 
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
 %   * `0`   No text output is generated.
 %   * `1`   Text output in the MATLAB Command Window.
 %   * `fid` File ID provided by the `fopen` command, the output is written
@@ -292,17 +292,10 @@ inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
 inpForm.fname  = [inpForm.fname  {'cmplxBase' 'tid' 'fid' }];
-inpForm.defval = [inpForm.defval {false       -1    nan   }];
+inpForm.defval = [inpForm.defval {false       -1    -1    }];
 inpForm.size   = [inpForm.size   {[1 1]       [1 1] [1 1] }];
 
 param = sw_readparam(inpForm, varargin{:});
-
-if isnan(param.fid)
-    % Print output into the following file
-    fid = obj.fid;
-else
-    fid = param.fid;
-end
 
 if ~param.fitmode
     % save the time of the beginning of the calculation
@@ -317,6 +310,11 @@ end
 if param.tid == -1
     param.tid = swpref.getpref('tid',[]);
 end
+
+if param.fid == -1
+    param.fid = swpref.getpref('fid',[]);
+end
+fid = param.fid;
 
 % generate magnetic structure in the rotating noation
 magStr = obj.magstr;
@@ -366,7 +364,7 @@ end
 
 if incomm
     % TODO
-    if ~helical
+    if ~helical && ~param.fitmode
         warning('spinw:spinwave:Twokm',['The two times the magnetic ordering '...
             'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
     end

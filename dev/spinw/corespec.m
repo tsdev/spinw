@@ -124,7 +124,7 @@ km = obj.mag_str.k.*nExt;
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
 
-fid = obj.fid;
+fid = swpref.getpref('fid',true);
 
 nHkl    = size(hkl,2);
 

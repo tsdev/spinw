@@ -34,5 +34,19 @@
         {"name": "norm","kind": "namevalue","type": [["logical"],["double"],["int32"]]},
         {"name": "x0","kind": "namevalue","type": "double"}
 	]
+},
+"swdoc":
+{
+    "inputs":
+    [
+		{"name":"name", "kind":"optional", "type":"identifier=variable,function,localfunction,package,classdef"}
+    ]
+},
+"swdoc":
+{
+    "inputs":
+    [
+		{"name":"filename", "kind":"optional", "type":"filepath"}
+    ]
 }
 }

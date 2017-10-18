@@ -1,40 +1,40 @@
 function varargout = disp(obj)
 % prints information
-% 
+%
 % ### Syntax
-% 
+%
 % `{swdescr} = disp(obj)`
-% 
+%
 % ### Description
-% 
+%
 % `{swdescr} = disp(obj)` generates text summary of a [spinw] object.
 % Calling it with output argument, it will generate a text version of the
 % internal data structure giving also the dimensions of the different
 % matrices.
-% 
+%
 % ### Examples
-% 
+%
 % Here the internal data structure is generated:
 %
 % ```
 % >>crystal = spinw
 % >>swFields = disp(crystal)>>
 % ```
-% 
+%
 % ### Input Arguments
-% 
+%
 % `obj`
 % : [spinw] object.
-% 
+%
 % ### Output Arguments
-% 
+%
 % `swdescr`
 % : If output variable is given, the description of the `obj` object
 %   will be output into the `swdescr` variable, instead of being
 %   written onto the Command Window/file. Optional.
-% 
+%
 % ### See Also
-% 
+%
 % [spinw]
 %
 
@@ -68,10 +68,16 @@ choiceStr = {'off' 'on'};
 symbStr = choiceStr{obj.symbolic+1};
 symmStr = choiceStr{obj.symmetry+1};
 
+fid = swpref.getpref('fid',true);
+if fid == 0
+    fidStr = 'none';
+else
+    fidStr = fopen(fid);
+end
 
 if nargout == 1
-    swDescr = sprintf('spinw object (symbolic: %s, symmetry: %s, textoutput: %s)\n',symbStr,symmStr,fopen(obj.fileid));
     
+    swDescr = sprintf('spinw object (symbolic: %s, symmetry: %s, textoutput: %s)\n',symbStr,symmStr,fidStr);
     
     for ii = 1:length(Datastruct.mainfield)
         swDescr = [swDescr sprintf('%s\n', Datastruct.mainfield{ii})]; %#ok<*AGROW>
@@ -139,7 +145,7 @@ else
         sprintf(['     <strong>Lattice</strong>:\n       a=%7.4f ' aa ', b=%7.4f ' aa ', c=%7.4f ' aa '\n'],abc(1),abc(2),abc(3))...
         sprintf(['       ' char(945) '=%6.2f' char(176) ',   ' char(946) '=%6.2f' char(176) ',   ' char(947) '=%6.2f' char(176) '\n'],abc(4),abc(5),abc(6))...
         sprintf('     <strong>Magnetic atoms in the unit cell</strong>: %d\n',numel(obj.matom.S))...
-        sprintf('     <strong>Mode</strong>:\n       symbolic: %s, symmetry: %s, textoutput: %s\n',symbStr,symmStr,fopen(obj.fileid))...
+        sprintf('     <strong>Mode</strong>:\n       symbolic: %s, symmetry: %s, textoutput: %s\n',symbStr,symmStr,fidStr)...
         ];
     
     % print the text

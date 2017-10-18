@@ -44,13 +44,13 @@ end
 funName(funName=='@') = [];
 funName(funName=='.') = '_';
 
-if isempty(swpref.getpref('docport',true))
-    % read documentation from the web
-    link = [swpref.getpref('doclink',true) funName];
-else
-    % read documentation from localhost with the given port number
-    link = ['http://localhost:' num2str(swpref.getpref('docport',true)) '/' funName];
+% open documentation using stored url + function name
+docUrl = swpref.getpref('docurl',true);
+if ~isempty(docUrl) && docUrl(end)~='/'
+    docUrl = [docUrl '/'];
 end
+
+link = [docUrl funName];
 
 % test if link exists
 try
@@ -58,7 +58,6 @@ try
     if nargout > 0
         varargout{1} = link;
     else
-        %web(link,'-notoolbar');
         web(link);
     end
 catch

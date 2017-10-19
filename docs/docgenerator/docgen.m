@@ -1,12 +1,13 @@
 %% setup help generator options
 
 swPath  = {'swfiles/@spinw' 'swfiles' 'swfiles/+swplot' 'swfiles/+swpref' 'swfiles/+swsym' 'swfiles/+swfunc'};
-done    = [true             true      true             true              true             true               true]*0;   
 swr     = sw_rootdir;
 swPath  = cellfun(@(C)[swr C],swPath,'UniformOutput',false);
 swver   = sw_version;
 outPath = '~/spinwdoc_git';
 docPath = '~/spinw_git/docs';
+upload  = false;
+recalc  = false;
 
 %% generate help
 
@@ -16,16 +17,17 @@ fun0 = cell(1,0);
 
 clc
 
-doctree = sw_genhelp('sourcepath',swPath,'outpath',outPath,'docpath',docPath,'fun',fun0,'verstr',swver,'recalc',true,'done',done);
+doctree = sw_genhelp('sourcepath',swPath,'outpath',outPath,'docpath',docPath,'fun',fun0,'verstr',swver,'recalc',recalc);
 
 % upload git
-pwd0 = pwd;
-cd(outPath)
-!git add .
-!git commit -m "Regenerated documentation"
-!git push
-cd(pwd0)
-
+if upload
+    pwd0 = pwd;
+    cd(outPath)
+    !git add .
+    !git commit -m "Regenerated documentation"
+    !git push
+    cd(pwd0)
+end
 %% get all help
 
 content = [doctree.content];

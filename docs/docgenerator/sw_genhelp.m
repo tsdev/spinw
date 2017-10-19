@@ -412,6 +412,9 @@ allhelp = regexprep(allhelp,regexp0,'{% include image.html file="$2" alt="$1" ca
 regexp0 = '\!\[([^\!\[\]]+?)\]\((\S+?)\)';
 allhelp = regexprep(allhelp,regexp0,'{% include image.html file="$2" alt="$1" %}');
 
+% convert section names + ancor
+allhelp = regexprep(allhelp,'\[section\.(\S+?)\#(\S+?)\]','\[\"$2\"]($1\#$2)');
+
 % convert section names
 allhelp = regexprep(allhelp,'\[section\.(\S+?)\]','\[$1\]($1)');
 

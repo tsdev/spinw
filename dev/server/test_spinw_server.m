@@ -3,11 +3,11 @@
 folder  = '~/Documents/temp/cache';
 nWorker = 0;
 portNum = 13001;
-jobID   = 'Wa4g3Gj32Z';
+jobID   = 'Wa4g3Gj32Z4';
 
 %% produce data
 
-argin   = {sw_model('triAF',1) {[0 0 0] [1 1 0] 501}};
+argin   = {sw_model('triAF',1) {[0 0 0] [1 1 0] 1e5} 'fid' 0 'tid' 0};
 fun     = 'spinwave';
 nargout = 1;
 
@@ -20,7 +20,7 @@ spinw_server(folder,nWorker,portNum);
 
 %% read result
 
-result = load([folder filesep 'out_' jobID '.mat']);
+result = load([folder filesep 'in_' jobID '.mat']);
 
 %% direct server
 

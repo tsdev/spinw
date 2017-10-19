@@ -19,15 +19,24 @@ if nargin~=3
     return
 end
 
-if ~ischar(varargin{1}) || ~isnumeric(varargin{2}) || numel(varargin{2})~=1 ||...
-        ~isnumeric(varargin{3}) || numel(varargin{3})~=1
+folder  = varargin{1};
+nWorker = varargin{2};
+nPort   = varargin{3};
+
+% list of functions that can be executed
+funList = {'spinwave' 'powspec' 'spinwavefast_spmd' 'powspec_spmd'};
+
+if isdeployed
+    % convert strings into double
+    nWorker = str2double(nWorker);
+    nPort = str2double(nPort);
+end
+
+if ~ischar(folder) || ~isnumeric(nWorker) || numel(nWorker)~=1 ||...
+        ~isnumeric(nPort) || numel(nPort)~=1 || isnan(nWorker) || isnan(nPort)
     error('spinw_server:WrongInput',['Wrong input arguments!\nCall "spinw_server'...
         ' path numWorker portNum", e.g. "spinw_server /home/user1/srv 4 4002"!']);
 end
-
-folder  = varargin{1};
-nWorker = varargin{2};
-portNum = varargin{3};
 
 % path to the log file
 logPath = [folder filesep 'spinw_server_log.txt'];
@@ -39,7 +48,7 @@ end
 
 fprintfd('TCP/IP connection initiated...\n');
 % start the TCP/IP server to listen on the given port
-t = tcpip('0.0.0.0',portNum,'NetworkRole','server');
+t = tcpip('0.0.0.0',nPort,'NetworkRole','server');
 fopen(t);
 fprintfd('TCP/IP channel open.\n');
 
@@ -114,6 +123,8 @@ while 1
                         % remove queued EXE commands that are stopped
                         if ismember(jobID,{buffer.jobID})
                             fprintfd('Stopped job "%s" before execution!\n',jobID);
+                        else
+                            fprintfd('Job "%s" is done before stop command sent!\n',jobID);
                         end
                         buffer = buffer(~ismember({buffer.jobID},jobID));
                 end
@@ -123,11 +134,13 @@ while 1
     
     % excute the first command if the buffer is not empty
     if ~isempty(buffer)
+        fileIn  = [folder filesep 'in_' buffer(1).jobID '.mat'];
+        fileOut = [folder filesep 'out_' buffer(1).jobID '.mat'];
         
-        if ~exist([folder filesep 'in_' jobID '.mat'],'file')
+        if ~exist(fileIn,'file')
             % wrong jobID move on
             fprintfd('Missing job "%s" source file!\n',buffer(1).jobID);
-        elseif exist([folder filesep 'out_' jobID '.mat'],'file')
+        elseif exist(fileOut,'file')
             fprintfd('Job "%s" output file already exists!\n',buffer(1).jobID);
         else
             % try to excute the command
@@ -136,7 +149,7 @@ while 1
                 diary(logPath);
                 diary('on');
                 % load the .mat file
-                input = load([folder filesep 'in_' buffer(1).jobID '.mat']);
+                input = load(fileIn);
                 % excute the command
                 if all(isfield(input,{'fun' 'argin' 'nargout'})) && ischar(input.fun) &&...
                         iscell(input.argin) && isnumeric(input.nargout) && numel(input.nargout)==1
@@ -155,15 +168,14 @@ while 1
                     end
                     
                     % run only the registered functions
-                    switch input.fun
-                        case 'spinwave'
-                            argout = cell(1,input.nargout);
-                            [argout{:}] = spinwave(input.argin{:}); %#ok<NASGU>
-                        case 'powspec'
-                            argout = cell(1,input.nargout);
-                            [argout{:}] = powspec(input.argin{:}); %#ok<NASGU>
-                        otherwise
-                            error('spinw_server:WrongFunction','The given function ''%s'' is not supported!',input.fun);
+                    funIdx = ismember(funList,input.fun);
+                    if any(funIdx)
+                        fun = str2func(funList{funIdx});
+                        % call the function
+                        argout      = cell(1,input.nargout);
+                        [argout{:}] = fun(input.argin{:}); %#ok<NASGU>
+                    else
+                        error('spinw_server:WrongFunction','The given function ''%s'' is not supported!',input.fun);
                     end
                 else
                     error('spinw_server:WrongMatFile','The variables saved in the given .mat file has wrong format!');
@@ -179,7 +191,7 @@ while 1
                 fprintfd('Job "%s" failed!\n',buffer(1).jobID);
             end
             
-            % try to read the diary
+            % try to read the diary and save it into the log
             try
                 log    = fileread(logPath); %#ok<NASGU>
             catch
@@ -190,10 +202,12 @@ while 1
             if exist(logPath,'file')
                 delete(logPath);
             end
-            % save the empty result with exception
-            save([folder filesep 'out_' buffer(1).jobID '.mat'],'argout','err','log')
+            % save the results, exception stack and log
+            save(fileOut,'argout','err','log')
             % remove variables from memory
             clear('input','argout','err','log');
+            % adding a '.done' at the end of the input file to signal its finished
+            movefile(fileIn,[fileIn '.done']);
         end
         % remove the entry in the buffer
         buffer = buffer(2:end);

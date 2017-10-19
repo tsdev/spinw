@@ -62,8 +62,8 @@ eval(mccCommand);
 rmdir(tPath,'s');
 
 % add new icon
-%copyfile([cRoot '/icon/spinw3.icns'],[cRoot '/MacOS/spinw_server.app/Contents/Resources/membrane.icns'],'f');
-%system(['touch ' cRoot '/MacOS/spinw_server.app']);
+copyfile([cRoot '/icon/spinw3.icns'],[cRoot '/MacOS/spinw_server.app/Contents/Resources/membrane.icns'],'f');
+system(['touch ' cRoot '/MacOS/spinw_server.app']);
 
 % remove unnecessary files
 toDel = {'mccExcludedFiles.log' 'readme.txt' 'requiredMCRProducts.txt' 'run_spinw_server.sh'};

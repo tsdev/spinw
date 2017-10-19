@@ -20,7 +20,6 @@ DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${MCRROOT}/bin/maci64 ;
 DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${MCRROOT}/sys/os/maci64;
 export DYLD_LIBRARY_PATH;
 
-shift 1
 args=
 while [ $# -gt 0 ]; do
     token=$1

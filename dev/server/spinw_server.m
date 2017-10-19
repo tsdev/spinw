@@ -63,9 +63,12 @@ end
 
 buffer = struct('command',{},'jobID',{},'maxTime',{});
 
+isWaiting = false;
+
 % start execution loop
 while 1
     if t.BytesAvailable>0
+        isWaiting = false;
         % read the buffer
         tic;
         cmdTemp = readTCPIP(t);
@@ -134,6 +137,8 @@ while 1
     
     % excute the first command if the buffer is not empty
     if ~isempty(buffer)
+        isWaiting = false;
+        
         fileIn  = [folder filesep 'in_' buffer(1).jobID '.mat'];
         fileOut = [folder filesep 'out_' buffer(1).jobID '.mat'];
         
@@ -211,8 +216,9 @@ while 1
         end
         % remove the entry in the buffer
         buffer = buffer(2:end);
-    else
+    elseif ~isWaiting
         fprintfd('Idle, waiting for new job!\n');
+        isWaiting = true;
     end
 end
 
@@ -226,7 +232,7 @@ fprintf([char(datetime) ' ' varargin{1}],varargin{2:end});
 end
 
 function str = readTCPIP(t)
-% read string and remove newline character
+% read string and remove newline characters
 
 str = char(fread(t, t.BytesAvailable)); %#ok<FREAD>
 str = str(str~=newline);

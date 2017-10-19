@@ -203,17 +203,17 @@ inpForm.fname  = {'nRand' 'Evect'    'T'   'formfact' 'formfactfun' 'tid' 'nInt'
 inpForm.defval = {100     zeros(1,0) T0    false      @sw_mff       tid0  1e3   };
 inpForm.size   = {[1 1]   [1 -1]     [1 1] [1 -2]     [1 1]         [1 1] [1 1] };
 
-inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun'     'imagChk'}];
-inpForm.defval = [inpForm.defval {true     false     title0  @spinwavefast true     }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]         [1 1]    }];
+inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' 'imagChk'}];
+inpForm.defval = [inpForm.defval {true     false     title0  @spinwavefast  true    }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]      [1 1]   }];
 
 inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType' 'component'}];
 inpForm.defval = [inpForm.defval {false    false  0        'ebin'    'Sperp'    }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]     [1 -5]    }];
 
-inpForm.fname  = [inpForm.fname  {'fid' 'toFile' 'tid'}];
-inpForm.defval = [inpForm.defval {-1    nan      -1   }];
-inpForm.size   = [inpForm.size   {[1 1] [1 -2]   [1 1]}];
+inpForm.fname  = [inpForm.fname  {'fid'    'toFile'}];
+inpForm.defval = [inpForm.defval {fid      nan}];
+inpForm.size   = [inpForm.size   {[1 1]    [1 -2]}];
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -223,15 +223,10 @@ else
     fid = param.fid;
 end
 
-if param.tid == -1
-    param.tid = swpref.getpref('tid',true);
-end
-
 % list of supported functions:
 %   0:  unknown
 %   1:  @spinwave
-%   2:  @spinwavefast
-%   3:  @scga
+%   2:  @scga
 funList = {@spinwave @spinwavefast @scga};
 funIdx  = [find(cellfun(@(C)isequal(C,param.specfun),funList)) 0];
 funIdx  = funIdx(1);
@@ -260,6 +255,8 @@ fprintf0(fid,[yesNo{param.formfact+1} ' magnetic form factor is'...
 % message for g-tensor calculation
 fprintf0(fid,[yesNo{param.gtensor+1} ' g-tensor is included in the '...
     'calculated structure factor.\n']);
+
+sw_timeit(0,1,param.tid,'Powder spectrum calculation');
 
 if param.fibo
     % apply the Fibonacci numerical integration on a sphere
@@ -307,14 +304,13 @@ switch funIdx
         specQ = spinwave(obj,hkl,struct('fitmode',true,'notwin',true,...
             'Hermit',param.hermit,'formfact',param.formfact,...
             'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-            'optmem',param.optmem,'tid',param.tid,'fid',fid),'noCheck');
-        specQ = sw_neutron(specQ);
+            'optmem',param.optmem,'tid',param.tid,'fid',0),'noCheck');
     case 2
         % @spinwavefast
-        specQ = spinwavefast(obj,hkl,struct('fitmode',true,...
+        specQ = spinwavefast(obj,hkl,struct('fitmode',2,...
             'Hermit',param.hermit,'formfact',param.formfact,...
             'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-            'optmem',param.optmem,'tid',param.tid,'fid',fid),'noCheck');
+            'optmem',param.optmem,'tid',param.tid,'fid',0),'noCheck');
     case 3
         % @scga
         specQ = scga(obj,hkl,struct('fitmode',true,'formfact',param.formfact,...
@@ -323,14 +319,18 @@ switch funIdx
             'plot',false),'noCheck');
 end
 
+% specQ = sw_neutron(specQ,'pol',false);
 specQ = split_spec(specQ,nQ);
-for ii = 1:numel(specQ)
+for ii = 1:length(specQ)
     specQ(ii).obj = obj;
     % use edge grid by default
-    tempStr = sw_egrid(specQ(ii),struct('Evect',param.Evect,'T',param.T,'binType',param.binType,...
-        'imagChk',param.imagChk,'component',param.component),'noCheck');
-    powSpec(:,ii) = sum(tempStr.swConv,2)/param.nRand;
+    specQ = sw_egrid(specQ,struct('Evect',param.Evect,'T',param.T,'binType',param.binType,...
+    'imagChk',param.imagChk,'component',param.component),'noCheck');
+    powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
+    sw_timeit(ii/nQ*100,0,param.tid);
 end
+
+sw_timeit(100,2,param.tid);
 
 fprintf0(fid,'Calculation finished.\n');
 
@@ -338,27 +338,27 @@ fprintf0(fid,'Calculation finished.\n');
 spectra.swConv    = powSpec;
 spectra.hklA      = hklA;
 spectra.component = param.component;
-spectra.nRand     = param.nRand;
-spectra.T         = param.T;
-spectra.obj       = copy(obj);
-spectra.norm      = false;
-spectra.formfact  = tempStr.formfact;
-spectra.gtensor   = tempStr.gtensor;
-spectra.date      = datestr(now);
-spectra.title     = param.title;
+spectra.nRand    = param.nRand;
+spectra.T        = param.T;
+spectra.obj      = copy(obj);
+spectra.norm     = false;
+spectra.formfact = temp.formfact;
+spectra.gtensor  = temp.gtensor;
+spectra.date     = datestr(now);
+spectra.title    = param.title;
 % save all input parameters of spinwave into spectra
-spectra.param     = tempStr.param;
+spectra.param    = temp.param;
 
 % some spectral function dependent parameters
 switch funIdx
     case 0
-        spectra.Evect    = tempStr.Evect;
+        spectra.Evect    = temp.Evect;
     case {1, 2}
-        spectra.Evect    = tempStr.Evect;
-        spectra.incomm   = tempStr.incomm;
-        spectra.helical  = tempStr.helical;
+        spectra.Evect    = temp.Evect;
+        spectra.incomm   = temp.incomm;
+        spectra.helical  = temp.helical;
     case 3
-        spectra.lambda   = tempStr.lambda;
+        spectra.lambda   = temp.lambda;
 end
 
 if ~isnan(param.toFile)
@@ -392,12 +392,12 @@ end
 
 function [s_out] = split_spec(inobj,n)
 % Splits a concatonated spinw object into smaller ones
-
 idx = [floor(((1:n)-1)/n*size(inobj.hkl,2))+1 size(inobj.hkl,2)+1];
     function sout = split(i1,i2)
         sout = inobj;
         id = i1:i2;
         sout.omega = inobj.omega(:,id);
+        %         sout.Sab = inobj.Sab(:,:,:,id);
         sout.hkl = inobj.hkl(:,id);
         sout.hklA = inobj.hklA(:,id);
         sout.Sperp = inobj.Sperp(:,id);

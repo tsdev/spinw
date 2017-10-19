@@ -279,7 +279,7 @@ end
 
 if param.fitmode
     param.sortMode = false;
-    if param.fitmode ~= 2
+    if param.tid == -1
         param.tid = 0;
     end
 end

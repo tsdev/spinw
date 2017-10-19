@@ -277,7 +277,8 @@ if nargin==1
     return
 end
 
-title0 = 'Numerical LSWT spectrum';
+title0  = 'Numerical LSWT spectrum';
+timeTxt = 'Calculating...';
 
 inpForm.fname  = {'fitmode' 'notwin' 'sortMode' 'optmem' 'tol' 'hermit'};
 inpForm.defval = {false     false    true       0        1e-4  true    };
@@ -292,8 +293,8 @@ inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
 inpForm.fname  = [inpForm.fname  {'cmplxBase' 'tid' 'fid' 'toFile'}];
-inpForm.defval = [inpForm.defval {false       -1    nan   nan}];
-inpForm.size   = [inpForm.size   {[1 1]       [1 1] [1 1] [1 -2]}];
+inpForm.defval = [inpForm.defval {false       -1    -1    nan     }];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1] [1 1] [1 -2]  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -304,11 +305,13 @@ end
 
 if param.fitmode
     param.sortMode = false;
-    param.tid = 0;
+    if param.tid == -1
+        param.tid = 0;
+    end
 end
 
 if param.tid == -1
-    param.tid = swpref.getpref('tid',[]);
+    param.tid = swpref.getpref('tid',true);
 end
 
 if param.fid == -1
@@ -669,7 +672,7 @@ if param.saveH
     Hsave = zeros(2*nMagExt,2*nMagExt,nHkl);
 end
 
-sw_timeit(0,1,param.tid,'Spin wave spectrum calculation');
+sw_timeit(0,1,param.tid,timeTxt);
 
 warn1 = false;
 
@@ -799,7 +802,7 @@ for jj = 1:nSlice
                     catch PD
                         if param.tid == 2
                             % close timer window
-                            sw_timeit(100,2,param.tid);
+                            sw_timeit(100,2,param.tid,timeTxt);
                         end
                         error('spinw:spinwave:NonPosDefHamiltonian',...
                             ['Hamiltonian matrix is not positive definite, probably'...
@@ -903,7 +906,7 @@ for jj = 1:nSlice
     % Normalizes the intensity to single unit cell.
     Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     
-    sw_timeit(jj/nSlice*100,0,param.tid);
+    sw_timeit(jj/nSlice*100,0,param.tid,timeTxt);
 end
 
 [~,singWarn] = lastwarn;
@@ -916,7 +919,7 @@ if obj.unit.nformula > 0
     Sab = Sab/double(obj.unit.nformula);
 end
 
-sw_timeit(100,2,param.tid);
+sw_timeit(100,2,param.tid,timeTxt);
 
 fprintf0(fid,'Calculation finished.\n');
 

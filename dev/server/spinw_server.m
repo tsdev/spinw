@@ -145,7 +145,7 @@ while 1
         else
             % try to excute the command
             try
-                fprintfd(['Executing job "%s" ...\n' repmat('-',1,80) '\n'],buffer(1).jobID);
+                fprintfd(['Executing job "%s"...\n' repmat('-',1,80) '\n'],buffer(1).jobID);
                 diary(logPath);
                 diary('on');
                 % load the .mat file
@@ -211,7 +211,8 @@ while 1
         end
         % remove the entry in the buffer
         buffer = buffer(2:end);
-
+    else
+        fprintfd('Idle, waiting for new job!\n');
     end
 end
 

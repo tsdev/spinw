@@ -27,7 +27,7 @@ function spectra = spinwavefast(obj, hkl, varargin)
 % details see the [sw_mex] and [swpref.setpref] functions.
 %
 % ### Examples
-%s
+%
 % To calculate and plot the spin wave dispersion of the
 % triangular lattice antiferromagnet ($S=1$, $J=1$) along the $(h,h,0)$
 % direction in reciprocal space we create the built in triangular lattice
@@ -170,7 +170,7 @@ function spectra = spinwavefast(obj, hkl, varargin)
 % : Determines if the elapsed and required time for the calculation is
 %   displayed. The default value is determined by the `tid` preference
 %   stored in [swpref]. The following values are allowed (for more details
-%   seee [% sw_status]):
+%   seee [% sw_timeit]):
 %   * `0` No timing is executed.
 %   * `1` Display the timing in the Command Window.
 %   * `2` Show the timing in a separat pup-up window.
@@ -252,7 +252,7 @@ end
 title0 = 'Numerical LSWT spectrum';
 
 inpForm.fname  = {'fitmode' 'sortMode' 'optmem' 'tol' 'hermit'};
-inpForm.defval = {0     true       0        1e-4  true    };
+inpForm.defval = {false     true       false    1e-4  true    };
 inpForm.size   = {[1 1]     [1 1]      [1 1]    [1 1] [1 1]   };
 
 inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
@@ -598,7 +598,7 @@ else
 end
 
 if ~runPar
-    sw_status(0,1,param.tid,'Spin wave spectrum calculation');
+    sw_timeit(0,1,param.tid,'Spin wave spectrum calculation');
 end
 
 warn1 = false;
@@ -780,7 +780,7 @@ spmd(runPar)
                             if param.tid == 2
                                 % close timer window
                                 if ~runPar
-                                    sw_status(100,2,param.tid);
+                                    sw_timeit(100,2,param.tid);
                                 end
                             end
                             error('spinw:spinwave:NonPosDefHamiltonian',...
@@ -987,7 +987,7 @@ spmd(runPar)
         % Sperp: nMode x nHkl.
         Sperp(:,hklIdxMEM) = permute(sumn(qPerp.*Sab,[1 2]),[3 4 1 2]);
         if ~runPar
-            sw_status(jj/nSlice*100,0,param.tid);
+            sw_timeit(jj/nSlice*100,0,param.tid);
         end
     end
 end
@@ -1016,7 +1016,7 @@ if obj.unit.nformula > 0
     Sperp = Sperp/double(obj.unit.nformula);
 end
 if ~runPar
-    sw_status(100,2,param.tid);
+    sw_timeit(100,2,param.tid);
 end
 
 fprintf0(fid,'Calculation finished.\n');

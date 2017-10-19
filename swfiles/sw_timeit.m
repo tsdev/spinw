@@ -30,6 +30,7 @@ function sw_timeit(percent,varargin)
 %   * `0` No timing is displayed.
 %   * `1` Display the timing in the Command Window.
 %   * `2` Show the timing in a separat pup-up window.
+%   * `3` Display a percentage bar in the Command Window.
 %
 % `title`
 % : The text to show in the pup up window.
@@ -47,12 +48,12 @@ if nargin == 0
 end
 
 if nargin > 2 && ~isempty(varargin{2}) && ~ischar(varargin{2})
-    fid = varargin{2};
+    tid = varargin{2};
 else
-    fid = swpref.getpref('tid',[]);
+    tid = swpref.getpref('tid',[]);
 end
 
-if fid == 0
+if tid == 0
     % do nothing
     return
 end
@@ -63,7 +64,7 @@ else
     title0 = 'sw_timeit';
 end
 
-if ~ismember(fid,[1 2])
+if ~ismember(tid,[1 2 3])
     return
 end
 
@@ -77,7 +78,7 @@ switch start
     case 1
         % start the time estimation
         sw_time = tic;
-        switch fid
+        switch tid
             case 1
                 fprintf([repmat(' ',[1 40]) '\n']);
             case 2
@@ -86,6 +87,8 @@ switch start
                 hBar.Tag = 'sw_timeit';
                 hBar.Name = title0;
                 drawnow;
+            case 3
+                horiz_counter(30,title0,0);
         end
     case 0
         % refresh the displayed time
@@ -98,7 +101,7 @@ switch start
         rtime = rtime-hou*60^2;
         min = floor(rtime/60);
         sec = floor(rtime - min*60);
-        switch fid
+        switch tid
             case 1
                 fprintf([repmat('\b',[1 41]) '%6.2f%%, remained: %03d:%02d:%02d (HH:MM:SS).\n'],...
                     percent,hou,min,sec);
@@ -108,6 +111,8 @@ switch start
                     waitbar(percent/100,hBar(1),sprintf('%6.2f%%, remained: %03d:%02d:%02d (HH:MM:SS)',percent,hou,min,sec))
                     drawnow;
                 end
+            case 3
+                horiz_counter(30,title0,percent);
         end
         
     case  2
@@ -120,7 +125,7 @@ switch start
         sec = floor(etime);
         %tho = floor((etime-sec)*1000);
         %fprintf('Finished in %02d:%02d:%02d.%03d (HH:MM:SS.FFF).\n',hou,min,sec,tho);
-        switch fid
+        switch tid
             case 1
                 fprintf(repmat('\b',1,40+1));
                 fprintf('Calculation is finished in %02d:%02d:%02d (hh:mm:ss).\n',hou,min,sec);
@@ -128,8 +133,30 @@ switch start
                 hBar = findobj('Tag','sw_timeit');
                 delete(hBar);
                 fprintf('Calculation is finished in %02d:%02d:%02d (hh:mm:ss).\n',hou,min,sec);
+            case 3
+                horiz_counter(30,title0,100);
         end
 end
+
+end
+
+function horiz_counter(nChar,text, percent)
+% shows horizontal counter with text and percent value
+%
+% e.g.
+%
+% nChar = 30;
+% text  = 'Downloading...';
+%
+
+N = round(percent/100*nChar);
+
+if percent == 0
+    nB = '';
+else
+    nB = repmat('\b',1,nChar+9+numel(text));
+end
+fprintf([nB text ' [' repmat('#',1,N) repmat(' ',1,nChar-N) '] ' sprintf('%3d%%%%',round(percent)) '\n']);
 
 end
 

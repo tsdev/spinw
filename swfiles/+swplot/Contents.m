@@ -1,18 +1,23 @@
 % package for 3D plotting
 %
-% The package contains functions that can create and control plot of 3D
-% objects. It contains low level function to plot specific shapes on any
-% figure (cylinder, line, arrow, ellipsoid, text) that are vectorized.
-% Moreover it provides the plot command to plot multiple objects with
-% specified color, transparency, label and legend on the swplot figure that
-% has rotation and translations built in that are better than the default
-% 3D rotation with mouse in Matlab. Moreover it has high level commands to
-% plot crystals from SpinW objects (plotatom, plotmag, plotion, plotbond,
-% plotbase, plotcell, plotchem).
+% The package contains functions that can create and control plotting of 3D
+% objects. It contains low level functions to plot specific shapes on any
+% figure (cylinder, line, arrow, ellipsoid, polyhedron, sphere, text) that
+% are vectorized for fast plotting of multiple objects using a single
+% [matlab:patch] command. Moreover it provides the [swplot.plot] command to
+% plot multiple objects with specific color, transparency, label and legend
+% on the swplot figure including tha ability for smooth rotation and
+% translations via the mouse (that are much better than the default 3D
+% rotation with mouse in Matlab). Moreover it has high level commands to
+% plot crystals from SpinW objects (`swplot.plot...` commands).
 %
 % ### Files
 %
 % #### Basic 3D objects
+%
+% Plots primitive geometrical shapes, able to plot multiple objects when
+% input is vectorized. Can give considerable speedup because a single patch
+% command is used to plot multiple shapes.
 %
 %   swplot.arrow     
 %   swplot.circle    
@@ -24,6 +29,13 @@
 %
 % #### Creating and modifying swplot figure
 %
+% These functions provide complete control over the transformations,
+% objects on an swplot figure. These are the alternatives to the Matlab
+% built in commands that control 3D plot axes. The advantage here is the
+% smooth mouse rotation/zoom functionality, nice legend and ability to
+% assign a tooltip text to any object that is triggered by a mouse click on
+% the object.
+%
 %   swplot.activefigure
 %   swplot.add         
 %   swplot.base        
@@ -34,7 +46,6 @@
 %   swplot.figure      
 %   swplot.findobj     
 %   swplot.getdata     
-%   swplot.ishg        
 %   swplot.legend      
 %   swplot.mouse       
 %   swplot.plot        
@@ -46,6 +57,10 @@
 %
 % #### Plotting SpinW object on swplot figure
 %
+% These high level plot commands are used to plot different types of data
+% that is stored in the [spinw] object. All inputs of these commands can be
+% controlled from the [spinw.plot] command.
+%
 %   swplot.plotatom
 %   swplot.plotbase
 %   swplot.plotbond
@@ -56,14 +71,11 @@
 %
 % #### Related functions
 %
+% Helper function that can be also used as standalone.
+%
 %   swplot.color          
 %   swplot.icomesh        
 %   swplot.logo           
-%   swplot.patchfacefcn   
-%   swplot.raytriangle    
-%   swplot.setrangegui    
 %   swplot.subfigure
 %   swplot.subplot
-%   swplot.tooltipcallback
-%   swplot.tooltipstring
 %

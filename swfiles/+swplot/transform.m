@@ -1,31 +1,52 @@
 function varargout = transform(varargin)
-% transform objects on swplot figure
+% transforms objects on swplot figure
+% 
+% ### Syntax
+% 
+% `swplot.transform(T)`
+% 
+% `swplot.transform(T, hFigure)`
 %
-% SWPLOT.TRANSFORM(M, {hFigure})
+% `T = swplot.transform'
 %
-% Transforms the objects on the active swplot figure using the
-% transformation matrix M.
+% ### Description
+% 
+% `swplot.transform(T)` transforms the objects on the active [swplot] figure
+% using the transformation matrix `T`.
+%  
+% `swplot.transform(T, hFigure)` transforms objects on the [swplot] figure
+% referenced by the `hFigure` handle.
 %
-% Input:
+% `T = swplot.transform' returns the transfomation matrix of the active
+% [swplot] figure.
 %
-% M         Transformation matrix with possible dimensions:
-%               4x4     This follows the Matlab standard for hgtransform.
-%               3x4     This is the SpinW format for space group 
-%                       transformations. 
-%               3x3     This defines the rotation matrix only.
-%           Setting M to 0 returns to the plot to the original orientation
-%           (equivalent to M=eye(4)).
-% hFigure   Handle of the swplot figure window, optional.
+% {{note If the figure is created without the `hgtransform` object, the
+%   transformation matrix moves the camera.}}
 %
+% ### Input Arguments
+% 
+% `M`
+% : Transformation matrix with the following dimensions:
+%   * $[4\times4]$      This follows the Matlab standard definition of coordinate transformations used by [matlab.hgtransform].
+%   * $[3\times 4]$     This is the SpinW format for space group 
+%                       transformations, see [swsym.str]. 
+%   * $[3\times 3]$     This defines a rotation matrix only.
+%     
+%   Setting `M` to 0 returns the plot to the original orientation
+%   (equivalent to `M=eye(4)`).
+% 
+% `hFigure`
+% : Handle of the swplot figure window, default value if the handle of the
+%   active figure.
+% 
+% ### Output Arguments
 %
-% M = SWPLOT.TRANSFORM({hFigure})
+% `T`
+% : Transformation matrix of the figure with dimensions of $[4\times 4]$.
+%   
+% ### See Also
 %
-% Returns the transformation matrix (4x4) of the active swplot figure.
-%
-% If the figure is created without the hgtransform object, the
-% transformation matrix moves the camera.
-%
-% See also SWPLOT.FIGURE, HGTRANSFORM.
+% [swplot.figure] \| [matlab.hgtransform]
 %
 
 M = [];

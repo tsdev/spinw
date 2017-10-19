@@ -1,13 +1,18 @@
-function out = export(obj, varargin)
+function varargout = export(obj, varargin)
 % export data into file
 % 
 % ### Syntax
 % 
-% `out = export(obj,Name,Value)`
+% `export(obj,Name,Value)`
 % 
+% `outStr = export(obj,Name,Value)`
+%
 % ### Description
 % 
-% `out = export(obj,Name,Value)` exports different types of spinw object data.
+% `export(obj,Name,Value)` exports different types of spinw object data.
+%
+% `outStr = export(obj,Name,Value)` returns a string instead of writing the
+% data into a file.
 %
 % ### Examples
 % 
@@ -39,10 +44,10 @@ function out = export(obj, varargin)
 % : Path to a file into which the data will be exported, `out` will
 %   be `true` if the file succesfully saved, otherwise `false`.
 %
-% `'fid'`
+% `'fileid'`
 % : File identifier that is already opened in Matlab using the
-%   `fid = fopen(...)` command. `out` will be the input `fid`. Don't
-%   forget to close the file afterwards.
+%   `fileid = fopen(...)` command. Don't forget to close the file
+%   afterwards.
 %  
 % #### File format dependent options:
 %  
@@ -56,30 +61,33 @@ function out = export(obj, varargin)
 %   * `'per'`   Periodic, interactions between extended unit cells are
 %     retained.
 %  
-% {{note If neither `path` nor `fid` is given, the `out` will be a cell containing
-% strings for each line of the text output.}}
+% {{note If neither `path` nor `fileid` is given, the `outStr` will be a
+% cell containing strings for each line of the text output.}}
 %  
 
-inpForm.fname  = {'format' 'path' 'fid' 'perm'  'boundary'          };
-inpForm.defval = {''       ''      []   [1 2 3] {'per' 'per' 'per'} };
-inpForm.size   = {[1 -1]   [1 -2] [1 1] [1 3]   [1 3]               };
-inpForm.soft   = {true     true    true false   false               };
+inpForm.fname  = {'format' 'path' 'fileid' 'perm'  'boundary'          };
+inpForm.defval = {''       ''      []      [1 2 3] {'per' 'per' 'per'} };
+inpForm.size   = {[1 -1]   [1 -2] [1 1]    [1 3]   [1 3]               };
+inpForm.soft   = {true     true    true    false   false               };
 
 warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});
 warning(warnState);
 
 % produce the requested output
-if isempty(param.path) && isempty(param.fid)
+if isempty(param.path) && isempty(param.fileid) && nargout == 0
     % dialog to get a filename
     [fName, fDir] = uiputfile({'*.pcr','FullProf file (*.pcr)';'*.spt','Jmol script (*.spt)';'*.*' 'All Files (*.*)'}, 'Select an output filename');
     param.path = [fDir fName];
+    if ~any(isempty(param.path))
+        warning('spinw:export:NoInput','No file is given, no output is produced!');
+        return
+    end
     if isempty(param.format)
         [~,~,fExt] = fileparts(param.path);
         param.format = fExt(2:end);
     end
 end
-
 
 switch param.format
     case 'pcr'
@@ -103,35 +111,33 @@ switch param.format
         
     case ''
         warning('spinw:export:NoInput','No ''format'' option was given, no output is produced!');
-        out = [];
-        return
+        if nargout > 0
+            varargout{1} = {};
+            return
+        end
     otherwise
         error('spinw:export:WrongInput','''format'' has to be one of the strings given in the help!');
 end
 
-% write into fid file
-if ~isempty(param.fid)
-    fprintf(param.fid,outStr);
-    out = param.fid;
-    return
+if nargout > 0
+    varargout{1} = outStr;
 end
 
-% save into path file
-if ~isempty(param.path)
+% write into fid file
+if ~isempty(param.fileid)
+    fprintf(param.fileid,outStr);
+
+elseif ~isempty(param.path)
     try
-        fid = fopen(param.path,'w');
-        fprintf(fid,outStr);
-        fclose(fid);
-        out = true;
+        fileid = fopen(param.path,'w');
+        fprintf(fileid,outStr);
+        fclose(fileid);
     catch
         % file couldn't be saved
-        out = false;
+        error('spinw:export:UnableToOpenFile','Cannot write into file ''%s''!',param.path)
     end
     return
 end
-
-% provide string output
-out = outStr;
 
 end
 

@@ -27,6 +27,8 @@ if nargin == 0
     return
 end
 
+fid = swpref.getpref('fid',true);
+
 if nargin < 2
     toPlot = false;
 end
@@ -198,7 +200,7 @@ switch fExt
         end
 end
 
-fprintf0(obj0.fileid,'Crystal structure is imported from %s.\n',fName);
+fprintf0(fid,'Crystal structure is imported from %s.\n',fName);
 
 if nargout > 0
     obj = obj0;

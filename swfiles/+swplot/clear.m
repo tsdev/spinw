@@ -1,13 +1,23 @@
 function clear(varargin)
-% clear swplot figure
+% clears swplot figure
+% 
+% ### Syntax
+% 
+% `swplot.clear`
 %
-% SWPLOT.CLEAR(hFigure)
+% `swplot.clear(hFigure)`
+% 
+% ### Description
+% 
+% `swplot.clear` clears the active swplot figure.
 %
-% clears swplot figure correspondign to hFigure handle
+% `swplot.clear(hFigure)` clears the swplot figure correspondign to
+% `hFigure` handle
+%  
+% ### See Also
+% 
+% [swplot.figure]
 %
-% SWPLOT.CLEAR
-%
-% clears the active swplot figure
 
 swplot.delete(varargin{:},0)
 

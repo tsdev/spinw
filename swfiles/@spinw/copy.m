@@ -56,7 +56,6 @@ objC = spinw(objS);
 objC.propl  = event.proplistener.empty;
 objC.sym    = obj.sym;
 objC.symb   = obj.symb;
-objC.fid    = obj.fid;
 objC.ver    = obj.ver;
 
 % add new listeners to the new object

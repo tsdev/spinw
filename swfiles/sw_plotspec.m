@@ -148,7 +148,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 % 
 % `'ddat'`
 % : Maximum distance between any $Q$ point in the simulated spectrum
-%   and an experimental data point in \\Angstrom$^{-1}$ unit. If an
+%   and an experimental data point in \\ang$^{-1}$ unit. If an
 %   experimental data point is further from any $Q$ point than the given 
 %   limit, it will be omitted. Default value is 0.01.
 % 
@@ -572,6 +572,9 @@ if param.mode == 1
     end
 end
 
+% current axis
+hAxis = gca;
+
 if param.mode == 3
     
     % filter out imaginary, inf and NaN values
@@ -816,11 +819,14 @@ if param.mode == 3
         sel = sel < param.ddat;
         idxD = idxD(sel);
         
+        % add new axis
+        hAxis(2) = axes('Position',hAxis.Position,'Color','none');
+        linkaxes(hAxis,'xy');
         hold on
         for jj = 1:nMode
             errorbar(xAxis(idxD),dat.E(jj,sel),dat.s(jj,sel),'or')
         end
-        
+        axes(hAxis(1));
     end
     
 end
@@ -895,6 +901,13 @@ elseif nargout == 2
     pHandle0 = hPlot;
 end
 
+if numel(hAxis)>1
+    legend off
+    axes(hAxis(2));
+    hAxis(2).Visible = 'off';
+    hAxis(2).Position = hAxis(1).Position;
+end
+
 end
 
 function titleStr = sw_titlestr(component)
@@ -928,7 +941,7 @@ function [xLabel, xAxis] = sw_label(hkl,hklA,lUnit)
 % : Momentum transfer values in r.l.u., dimensions are [3 nQ].
 % 
 % `hklA`
-% : Momentum transfer values in \\Angstrom$^{-1}$, dimensions are [3 nQ].
+% : Momentum transfer values in \\ang$^{-1}$, dimensions are [3 nQ].
 % 
 % `lUnit`
 % : Length unit, given in a string.

@@ -1,28 +1,59 @@
 function varargout = tooltip(text0,hFigure,win)
-% creates tooltip axis on swplot figure
+% creates tooltip
+% 
+% ### Syntax
+% 
+% `swplot.tooltip(switch)`
+% 
+% `swplot.tooltip(switch,hFigure)`
 %
-% SWPLOT.TOOLTIP({text}, {hFigure}, {window})
+% `swplot.tooltip(switch,hFigure,window)`
 %
-% status = SWPLOT.TOOLTIP
+% `status = swplot.tooltip`
 %
-% Input:
+% ### Description
+% 
+% `swplot.tooltip(switch)` creates/deletes the tooltip axis on the active
+% swplot figure.
+%  
+% `swplot.tooltip(switch,hFigure)` controls the tooltip on the swplot
+% figure referenced by `hFigure` handle.
+% 
+% `swplot.tooltip(switch,hFigure,window)` the `window` argument controls
+% whether the tooltip is shown in a separate window of not.
 %
-% text          String, if it is 'on'/'off' the tooltip will be switched
-%               on/off. Otherwise the text will be shown in the tooltip.
-%               Default is 'on'.
-% hFigure       Handle of the swplot figure. Default is the selected
-%               figure.
-% window        If true, the tooltips will be shown in a separate window.
-%               Default is false.
+% `status = swplot.tooltip` returns the tooltip status, one of the strings
+% `'on'`\|`'off'`.
 %
-% Output:
+% ### Examples
+% 
+% Add the tooltip to an [swplot] figure:
 %
-% status        String, can be 'on' or 'off'.
-%
-% Example:
-%   swplot.figure
-%   swplot.addcircle([0 0 0],[0 0 1],1)
-%   swplot.tooltip
+% ```
+% swplot.figure
+% swplot.addcircle([0 0 0],[0 0 1],1)
+% swplot.tooltip
+% ```
+% 
+% ### Input Arguments
+% 
+% `switch`
+% : String, with recognised values of `'on'`\|`'off'` which switches the
+%   tooltip on/off respectively. If it is any other string, the text will
+%   be shown in the tooltip. Default value is 'on'.
+% 
+% `hFigure`
+% : Handle of the [swplot] figure. Default value is the active figure.
+% 
+% `window`
+% : If `true`, the tooltips will be shown in a separate window.
+%   Default value is `false`.
+% 
+% ### Output Arguments
+% 
+% `status`
+% : String, one of the `'on'`\|`'off'` values depending on the status of
+%   the tooltip axis.
 %
 
 if nargin == 0

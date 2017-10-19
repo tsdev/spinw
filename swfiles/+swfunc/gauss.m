@@ -1,5 +1,5 @@
 function y = gauss(x,p)
-% normalized gaussian function
+% normalized Gaussian function
 % 
 % ### Syntax
 % 
@@ -17,27 +17,14 @@ function y = gauss(x,p)
 % 
 % `p`
 % : Parameter vector with the following elements `p=[I x0 \\sigma]` where:
-%
-%   * `I` Integrated intensity.
-%   * `x0` Center.
-%   * `\\sigma` Standard deviation.
+%   * `I` integrated intensity,
+%   * `x0` center,
+%   * `\\sigma` standard deviation.
 % 
 % ### See Also
 % 
-% [swfunc.voigt] \| [swfunc.gaussfwhm]
+% [swfunc.pvoigt] \| [swfunc.gaussfwhm]
 %
-
-% normalized gaussian function
-%
-% y = FUNC.GAUSS(x,p)
-%
-% The integral of the function is normalized assuming dx = 1.
-%
-% Input:
-% x         Coordinate vector where the function will be evaluated.
-% p         Parameter vector: [I Centre sigma].
-%
-% See also SWFUNC.VOIGT, SWFUNC.GAUSSFWHM.
 
 % standard deviation
 sigma = p(3);

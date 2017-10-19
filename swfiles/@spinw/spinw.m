@@ -150,7 +150,6 @@ classdef spinw < handle & matlab.mixin.SetGet
     %
     %   spinw.copy
     %   spinw.export
-    %   spinw.fileid
     %   spinw.table
     %   spinw.validate
     %   spinw.version
@@ -160,7 +159,7 @@ classdef spinw < handle & matlab.mixin.SetGet
     %
     % ### See also
     %
-    % [spinw.copy], [spinw.struct], [Comparing handle and value classes](https://www.google.ch/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0ahUKEwjCvbbctqTWAhVBblAKHQxnAnIQFggyMAI&url=https%3A%2F%2Fwww.mathworks.com%2Fhelp%2Fmatlab%2Fmatlab_oop%2Fcomparing-handle-and-value-classes.html&usg=AFQjCNFoN4qQdn6rPXKWkQ7aoog9G-nHgA)
+    % [spinw.copy], [spinw.struct], [Comparing handle and value classes](https://www.mathworks.com/help/matlab/matlab_oop/comparing-handle-and-value-classes.html)
     %
 
     properties (SetObservable)
@@ -170,7 +169,7 @@ classdef spinw < handle & matlab.mixin.SetGet
         %
         % `lat_const`
         % : Lattice constants in a $[1\times 3]$ vector in units defined in
-        %   [spinw.unit] (default value is \\Angstrom).
+        %   [spinw.unit] (default value is \\ang).
         %
         % `angle`
         % : `[\\alpha,\\beta,\\gamma]` angles in a $[1\times 3]$ vector in
@@ -234,7 +233,7 @@ classdef spinw < handle & matlab.mixin.SetGet
         %   distribution of isotopes stored in a row vector.
         %
         % `biso`
-        % : Isotropic displacement factors in units of \\Angstrom$^2$.
+        % : Isotropic displacement factors in units of \\ang$^2$.
         %   Definition is the same as in
         %   [FullProf](https://www.ill.eu/sites/fullprof/), defining the
         %   Debye-Waller factor as $W(d) = 1/8*b_{iso}/d^2$ which is
@@ -374,7 +373,7 @@ classdef spinw < handle & matlab.mixin.SetGet
         mag_str
         % stores the physical units for the Hamiltonian
         %
-        % Default values are meV, T, \\Angstrom and K for energy, magnetic
+        % Default values are meV, T, \\ang and K for energy, magnetic
         % field, length and temperature, respectively.
         %
         % ### Sub fields
@@ -386,7 +385,7 @@ classdef spinw < handle & matlab.mixin.SetGet
         % : Bohr magneton, default values is 0.0579 meV/T.
         %
         % `mu0`
-        % : Vacuum permeability, default value is 201.335431 T$^2$\\Angstrom$^3$/meV.
+        % : Vacuum permeability, default value is 201.335431 T$^2$\\ang$^3$/meV.
         %
         % `label`
         % : Labels for distance, energy, magnetic field and temperature
@@ -427,8 +426,6 @@ classdef spinw < handle & matlab.mixin.SetGet
         sym   = false;
         % stores whether the calculation are done symbolically
         symb  = false;
-        % stores the file ID of the text output, default is the Command Window (see swpref)
-        fid   = 1;
         % use the version property as contant, this will be executed only
         % once
         ver   = sw_version;
@@ -443,11 +440,37 @@ classdef spinw < handle & matlab.mixin.SetGet
         function obj = spinw(varargin)
             % spinw constructor
             %
-            % obj = SPINW(Value,Name)
+            % ### Syntax
             %
-            
-            % update fid value
-            obj.fid = swpref.getpref('fid',[]);
+            % `obj = spinw`
+            %
+            % `obj = spinw(struct)` 
+            %
+            % `obj = spinw(hFigure)`
+            %
+            % `obj = spinw(fName)`
+            %
+            % `obj = spinw(obj)`
+            %
+            % ### Description
+            %
+            % `obj = spinw` creates an empty SpinW object with default
+            % values.
+            %
+            % `obj = spinw(struct)` creates a SpinW object from a structure
+            % which has fields that are compatible with the SpinW property
+            % structure.
+            %
+            % `obj = spinw(hFigure)` clones SpinW object from an swplot
+            % figure or spectral plot figure.
+            %
+            % `obj = spinw(fName)` imports the file referenced by `fName`.
+            % SpinW is able to import .cif/.fts files for crystal or
+            % magnetic structure from a local file or a web address.
+            %
+            % `obj = spinw(obj)` checks the input SpinW object for
+            % consistency.
+            %
 
             if nargin==0
                 objS = initfield(struct);

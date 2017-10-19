@@ -40,7 +40,7 @@ function addtwin(obj,varargin)
 %   row vector. Dimensions are $[1\times n_{twin}]$.
 % 
 % `'phid'`
-% : Alternative to `phi` but the unit is \\degree.
+% : Alternative to `phi` but the unit is \\deg.
 % 
 % `'rotC'`
 % : Rotation matrices, that define crystallographic twins. This is an

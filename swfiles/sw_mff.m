@@ -15,7 +15,7 @@ function [formFactVal, coeff, S] = sw_mff(atomName, Q, nCoeff)
 % factor coefficients.
 %
 % `[formfactval, coeff, s] = sw_mff(atomname,Q)` also calculates the form
-% factor values at the given $Q$ points (in \\Angstrom$^{-1}$ units.
+% factor values at the given $Q$ points (in \\ang$^{-1}$ units.
 %
 % The source of the form factor data are:
 % 1. A.-J. Dianoux and G. Lander, Neutron Data Booklet (2003).
@@ -31,7 +31,7 @@ function [formFactVal, coeff, S] = sw_mff(atomName, Q, nCoeff)
 %   strings to calculate coefficients for multiple ions.
 % 
 % `Q`
-% : Momentum transfer in \\Angstrom$^{-1}$ units in a matrix with dimensions of
+% : Momentum transfer in \\ang$^{-1}$ units in a matrix with dimensions of
 %   $[1\times n_Q]$ or $[3\times n_Q]$.
 % 
 % ### Output Arguments

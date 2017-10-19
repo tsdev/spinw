@@ -92,7 +92,7 @@ function addatom(obj, varargin)
 % : X-ray scattering length.
 % 
 % `biso`
-% : Isotropic displacement factors in units of \\Angstrom$^2$.
+% : Isotropic displacement factors in units of \\ang$^2$.
 %   Definition is the same as in
 %   [FullProf](https://www.ill.eu/sites/fullprof/), defining the
 %   Debye-Waller factor as $W(d) = 1/8*b_{iso}/d^2$, which is included in

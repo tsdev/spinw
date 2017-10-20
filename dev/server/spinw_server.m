@@ -24,7 +24,7 @@ nWorker = varargin{2};
 nPort   = varargin{3};
 
 % list of functions that can be executed
-funList = {'spinwave' 'powspec' 'spinwavefast_spmd' 'powspec_spmd'};
+funList = {'spinwave' 'powspec' 'spinwavefast' 'spinwavefast'};
 
 if isdeployed
     % convert strings into double

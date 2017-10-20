@@ -39,7 +39,7 @@ end
 
 %% parameters
 
-folder  = '~/Documents/temp/cache';
+folder  = '~/temp/cache';
 nWorker = 0;
 portNum = 13001;
 jobID   = 'Wa4g3Gj32Z4';

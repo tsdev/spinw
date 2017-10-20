@@ -4,36 +4,61 @@ classdef spinwR < handle
     
     properties
         spinw_obj = [];
-        baseURL = swpref.get('remoteURL');
-        username = swpref.get('remoteusername')
+        baseURL = '';
+        username = swpref.getpref('remoteuser').val
     end
     properties(SetAccess = protected)
         status = 'Waiting'
         statusURL = ''
-        token = swpref.get('remotetoken')
+        token = swpref.getpref('remotetoken').val
         token_expire = datetime('now')
     end
-    properties(Hidden=true)
+    properties(Hidden=true,SetAccess = protected)
         isCalculating = false;
-        remove_version = ''
+        version = []
+        deployed = false;
     end
     
     methods
         function obj = spinwR(sw)
             %SPINWR Construct an instance of this class
             %   Detailed explanation goes here
+            obj.baseURL = swpref.getpref('remoteurl').val;
+            if isempty(obj.baseURL)
+                error('A valid server needs to  be specified.')
+            end
+            try
+                url = strcat(obj.baseURL,'/spinw/version');
+                obj.version = webread(url,weboptions('ContentType','json'));
+            catch ME
+                if strcmp(ME.identifier,'MATLAB:webservices:ExpectedProtocol')
+                    error('A valid server needs to  be specified.')
+                else
+                    rethrow(ME)
+                end
+            end
+            
             obj.spinw_obj = sw;
+            obj.login();
+        end
+        
+        
+        function login(obj,varargin)
             % No token, so login,
             if isempty(obj.token)
                 % Try make user. Catch existing user and get token.
-                [obj.username, password] = obj.GetAuthentication();
+                [obj.username, password] = obj.GetAuthentication(varargin{:});
                 try
+                    % Make a new user
                     obj.newUser(password)
                 catch ME
+                    % The user exists, get a token.
                     if strcmp(ME.identifier,'MATLAB:webservices:HTTP409StatusCodeError')
                         obj.status = 'User Exists';
                         obj.getToken(password)
                     else
+                        % Something has gone wrong.
+                        obj.token = '';
                         obj.status = ME.message;
                         return
                     end
@@ -42,20 +67,24 @@ classdef spinwR < handle
                 % A token exists but is it valid?
                 url = strcat(obj.baseURL,'/users/quota');
                 try
-                    % Simple test bypasses token time test
+                    % If it's valid we get a new token.
                     [~] = webread(url,weboptions('Username',obj.token,'ContentType','json'));
                     obj.getToken(obj.token) % Re-issue a token.
                 catch ME
-                    % Catch the Unauthorized error
+                    % Catch the Unauthorized error and login.
                     if strcmp(ME.identifier,'MATLAB:webservices:HTTP401StatusCodeError')
                         obj.getToken()
                     else
                         obj.status = ME.message;
+                        obj.token = '';
                         return
                     end
                 end
             end
+            swpref.setpref('remotetoken',obj.token)
+            swpref.setpref('remoteuser',obj.username)
         end
+        
         
         function newUser(obj,varargin)
             if isempty(varargin)
@@ -68,7 +97,7 @@ classdef spinwR < handle
             end
             if isempty(password)
                 [obj.username, password] = obj.GetAuthentication();
-                swpref.set('remoteusername',obj.username)
+                swpref.setpref('remoteuser',obj.username)
             end
             url = strcat(obj.baseURL,'/users');
             try
@@ -114,9 +143,21 @@ classdef spinwR < handle
                 [obj.username, password] = obj.GetAuthentication();
             end
             url = strcat(obj.baseURL,'/users/token');
-            temp = webread(url,weboptions('Username',obj.username,'Password',password,'ContentType','json'));
-            obj.token = temp.token;
-            obj.token_expire = datetime('now') + seconds(599);
+            try
+                temp = webread(url,weboptions('Username',obj.username,'Password',password,'ContentType','json'));
+                obj.token = temp.token;
+                obj.token_expire = datetime('now') + seconds(599);
+            catch ME
+                % Catch the Unauthorized error and create new user.
+                if strcmp(ME.identifier,'MATLAB:webservices:HTTP401StatusCodeError')
+                    obj.token = '';
+                    obj.newUser()
+                else
+                    obj.status = ME.message;
+                    obj.token = '';
+                    return
+                end
+            end
         end
         
         function upload(obj)
@@ -124,15 +165,16 @@ classdef spinwR < handle
                 error('You need to login')
             end
             if (obj.token_expire - datetime('now')) < 0
-                obj = obj.getToken();
+                obj.getToken();
             end
             url = strcat(obj.baseURL,'/spinw/upload');
             filename = strcat(tempname,'.mat');
-            sw_obj = obj.spinw_obj;
-            save(filename,'sw_obj')
-            f = fopen(filename);
-            d = char(fread(f)');
-            fclose(f);
+            %             sw_obj = obj.spinw_obj;
+            d = char(getByteStreamFromArray(obj.spinw_obj));
+            %             save(filename,'sw_obj')
+            %             f = fopen(filename);
+            %             d = char(fread(f)');
+            %             fclose(f);
             
             [~,remoteFName, remoteExt] = fileparts(filename);
             opt = weboptions('Username',obj.token,'Password','x',...
@@ -157,22 +199,31 @@ classdef spinwR < handle
             if (obj.token_expire - datetime('now')) < 0
                 obj = obj.getToken();
             end
+            
             url = strcat(obj.baseURL,'/spinw/spinwave');
-            sw_opt.Q = hkl;
-            if ~isempty(varargin)
-                if ~mod(length(varargin),2)
-                    for i = 1:2:length(varargin)
-                        sw_opt.(varargin{i}) = varargin{i+1};
+            filename = strcat(tempname,'.mat');
+            if (obj.version.Deployed)
+                sw_opt = struct();
+                sw_opt.fun = 'spinwave';
+                sw_opt.argin = {obj.spinw_obj,hkl,varargin{:}};
+                sw_opt.nargout = 1;
+            else
+                sw_opt.Q = hkl;
+                if ~isempty(varargin)
+                    if ~mod(length(varargin),2)
+                        for i = 1:2:length(varargin)
+                            sw_opt.(varargin{i}) = varargin{i+1};
+                        end
+                    else
+                        error('Uneven parameter/value pairs')
                     end
-                else
-                    error('Uneven parameter/value pairs')
                 end
             end
-            filename = strcat(tempname,'.mat');
-            save(filename,'sw_opt')
-            f = fopen(filename);
-            d = char(fread(f)');
-            fclose(f);
+            %             save(filename,'sw_opt')
+            %             f = fopen(filename);
+            %             d = char(fread(f)');
+            %             fclose(f);
+            d = char(getByteStreamFromArray(sw_opt));
             
             [~,remoteFName, remoteExt] = fileparts(filename);
             opt = weboptions('Username',obj.token,'Password','x',...
@@ -185,6 +236,9 @@ classdef spinwR < handle
                 tempOutput = webwrite(sprintf(strcat(url,'/%s%s'),remoteFName,remoteExt), d, opt);
             catch someException
                 throw(addCause(MException('uploadToSpinW:unableToUploadFile','Unable to upload file.'),someException));
+            end
+            if obj.version.Deployed
+                obj.statusURL = tempOutput.status;
             end
             if tempOutput.Calculating && ~tempOutput.Errors
                 iscomp = webread(obj.statusURL,weboptions('Username',obj.token,'ContentType','json','timeout',100));
@@ -214,10 +268,11 @@ classdef spinwR < handle
                 end
             end
             filename = strcat(tempname,'.mat');
-            save(filename,'sw_opt')
-            f = fopen(filename);
-            d = char(fread(f)');
-            fclose(f);
+            d = char(getByteStreamFromArray(sw_opt));
+            %             save(filename,'sw_opt')
+            %             f = fopen(filename);
+            %             d = char(fread(f)');
+            %             fclose(f);
             
             [~,remoteFName, remoteExt] = fileparts(filename);
             opt = weboptions('Username',obj.token,'Password','x',...
@@ -278,7 +333,16 @@ classdef spinwR < handle
             end
             filename = tempname;
             file = websave(filename,iscomp.url,weboptions('Username',obj.token));
-            load(file,'-mat','spectra')
+            if obj.version.Deployed
+                temp = load(file);
+                if ~isempty(temp.err)
+                    rethrow(temp.err)
+                end
+                spectra = temp.argout{:};
+                disp(temp.log)
+            else
+                load(file,'-mat','spectra')
+            end
         end
         
         function [username,password]=GetAuthentication(obj)
@@ -351,14 +415,14 @@ classdef spinwR < handle
                 end
                 set(hAuth.ePassword,'UserData',password)
                 set(hAuth.ePassword,'String',char('*'*sign(password)))
+            end
+            
+            function AbortAuthentication(hObject,event)
+                hAuth = getappdata(0,'hAuth');
+                set(hAuth.eUsername,'String','');
+                set(hAuth.ePassword,'UserData','');
+                uiresume;
                 
-                function AbortAuthentication(hObject,event)
-                    hAuth = getappdata(0,'hAuth');
-                    set(hAuth.eUsername,'String','');
-                    set(hAuth.ePassword,'UserData','');
-                    uiresume;
-                    
-                end
             end
         end
     end

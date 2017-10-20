@@ -297,7 +297,7 @@ if isempty(hPool)
     nwSlice = 1;
     runPar  = 0;
 else
-    nwSlice = pool.NumWorkers;
+    nwSlice = hPool.NumWorkers;
     runPar  = nwSlice;
 end
 

@@ -49,6 +49,13 @@ system(['rsync -avz ' localFolder filesep '*.mat ' server ':' remoteFolder files
 
 %% start remote server + port forwarding
 
+% number of remote threads
+[~,nCPU] = system('ssh isis ''./ncpu.sh''');
+nCore = str2double(nCPU)/2;
+
+% set number of workers to the number of cores
+nWorker = nCore;
+
 % change the number of workers
 go dev
 cd server

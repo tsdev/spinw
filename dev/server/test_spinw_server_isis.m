@@ -13,7 +13,7 @@ try
     rmdir(localFolder,'s')
 end
 mkdir(localFolder);
-jobIDv = {'J001' 'J002' 'J003'};
+jobIDv = {'J001' 'J002' 'J003' 'J004'};
 
 % JOB1
 % create jobs
@@ -37,9 +37,16 @@ nargout = 1;
 % save .mat file of model
 save([localFolder filesep 'in_' jobIDv{3} '.mat'],'argin','fun','nargout');
 
+% JOB4
+argin   = {sw_model('triAF',1) linspace(0,4,101) 'Evect' linspace(0,8,501) 'nRand' 1e5 'fid' 1 'tid' 0};
+fun     = 'powspec';
+nargout = 1;
+% save .mat file of model
+save([localFolder filesep 'in_' jobIDv{3} '.mat'],'argin','fun','nargout');
+
 % empty the remote cache
 remoteCmd = ['rm -rf ' remoteFolder filesep 'cache' filesep '*'];
-system(['ssh ' server ' ''' remoteCmd '''&']);
+system(['ssh ' server ' ''' remoteCmd ''''],'-echo');
 
 % copy the data to the server
 system(['rsync -avz ' localFolder filesep '*.mat ' server ':' remoteFolder filesep 'cache'],'-echo');
@@ -56,7 +63,7 @@ system(['ssh -L ' num2str(portNum) ':127.0.0.1:' num2str(portNum) ' ' server],'-
 
 %% start the client
 
-swServer = tcpip('0.0.0.0',portNum, 'NetworkRole', 'client');
+swServer = tcpip('localhost',portNum, 'NetworkRole', 'client');
 fopen(swServer);
 
 fprintf(swServer,['EXEC ' jobIDv{1} ' 1.23:'])
@@ -65,4 +72,10 @@ fprintf(swServer,['EXEC ' jobIDv{3} ' 1.23:'])
 pause(1)
 fprintf(swServer,['STOP ' jobIDv{3} ':'])
 
+% load data from server
+system(['rsync -avz ' server ':' remoteFolder filesep 'cache' filesep '*.mat ' localFolder filesep],'-echo');
 
+ii = {};
+for ii = [1 3]
+    res{ii} = load([localFolder filesep 'out_' jobIDv{ii} '.mat']);
+end

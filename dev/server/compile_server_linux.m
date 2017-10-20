@@ -68,7 +68,7 @@ for ii = 1:numel(toDel)
 end
 
 % add the script file to the app
-%copyfile([cRoot '/spinw_server_linux.sh'],[cRoot '/Linux/spinw_server.sh'])
+copyfile([cRoot '/spinw_server_linux.sh'],[cRoot '/Linux/spinw_server.sh'])
 
 disp('Done!')
 toc

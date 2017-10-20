@@ -18,7 +18,7 @@ LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/bin/glnxa64 ;
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/os/glnxa64;
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/opengl/lib/glnxa64;
 export LD_LIBRARY_PATH;
-shift 1
+
 args=
 while [ $# -gt 0 ]; do
     token=$1

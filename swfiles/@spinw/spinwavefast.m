@@ -1,4 +1,4 @@
-function spectra = spinwavefast(obj, hkl, varargin)
+function [spectra, profinfo] = spinwavefast(obj, hkl, varargin)
 % calculates spin correlation function using linear spin wave theory
 %
 % ### Syntax
@@ -253,23 +253,30 @@ end
 
 title0 = 'Numerical LSWT spectrum';
 
-inpForm.fname  = {'fitmode' 'sortMode' 'optmem' 'tol' 'hermit'};
-inpForm.defval = {false     true       false    1e-4  true    };
-inpForm.size   = {[1 1]     [1 1]      [1 1]    [1 1] [1 1]   };
+inpForm.fname  = {'fitmode' 'sortMode' 'optmem' 'tol' 'hermit' 'timerfun' 'prof'};
+inpForm.defval = {false     true       false    1e-4  true     @sw_timeit false };
+inpForm.size   = {[1 1]     [1 1]      [1 1]    [1 1] [1 1]    [1 1]      [1 1] };
 
 inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
 inpForm.fname  = [inpForm.fname  {'omega_tol' 'cmplxBase' 'tid' 'fid' 'toFile'}];
-inpForm.defval = [inpForm.defval {1e-5        false       -1    nan   nan}];
-inpForm.size   = [inpForm.size   {[1 1]       [1 1]       [1 1] [1 1] [1 -2]}];
+inpForm.defval = [inpForm.defval {1e-5        false       -1    -1    nan     }];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1]       [1 1] [1 1] [1 -2]  }];
 
 param = sw_readparam(inpForm, varargin{:});
 
-if isnan(param.fid)
-    % Print output into the following file
-    fid = obj.fileid;
+if param.prof
+    % empty profile information
+    profinfo = [];
+end
+
+% close timer GUI if code crashes
+cleanupObj = onCleanup(@(~)param.timerfun(100,2,param.tid));
+
+if param.fid == -1
+    fid = swpref.getpref('fid',[]);
 else
     fid = param.fid;
 end
@@ -278,6 +285,9 @@ if ~param.fitmode
     % save the time of the beginning of the calculation
     spectra.datestart = datestr(now);
 end
+
+% signal to cancel the calculation
+sigCancel = 2;
 
 if param.fitmode
     param.sortMode = false;
@@ -599,9 +609,11 @@ else
     end
 end
 
-if ~runPar
-    sw_timeit(0,1,param.tid,'Spin wave spectrum calculation');
+if sigCancel == param.timerfun(0,1,param.tid,'Spin wave spectrum calculation')
+    % stop execution
+    return
 end
+    
 
 warn1 = false;
 
@@ -633,7 +645,12 @@ if runPar
     end
     Sperp(2:end) = {[]};
     % To be transfered
-    spmd
+    spmd(runPar)
+        if param.prof
+            % profile each worker
+            mpiprofile('on');
+        end
+        
         hklA = labBroadcast(1, hklA);
         Sperp = labBroadcast(1, Sperp);
         omega = labBroadcast(1, omega);
@@ -779,12 +796,6 @@ spmd(runPar)
                             K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
                             warn1 = true;
                         catch PD
-                            if param.tid == 2
-                                % close timer window
-                                if ~runPar
-                                    sw_timeit(100,2,param.tid);
-                                end
-                            end
                             error('spinw:spinwave:NonPosDefHamiltonian',...
                                 ['Hamiltonian matrix is not positive definite, probably'...
                                 ' the magnetic structure is wrong! For approximate'...
@@ -989,10 +1000,23 @@ spmd(runPar)
         % Dynamical structure factor for neutron scattering
         % Sperp: nMode x nHkl.
         Sperp(:,hklIdxMEM) = permute(sumn(qPerp.*Sab,[1 2]),[3 4 1 2]);
-        if ~runPar
-            sw_timeit(jj/nSlice*100,0,param.tid);
+        % get signal
+        if sigCancel == param.timerfun(jj/nSlice*100,0,param.tid)
+            % TODO cancel the execution
+            % ...
         end
+        
+        
     end
+    if runPar && param.prof
+        % keep profile information
+        profinfo = mpiprofile('info');
+    end
+end
+
+% collect profile information
+if runPar && param.prof
+    profinfo = [profinfo{:}];
 end
 
 [~,singWarn] = lastwarn;
@@ -1018,13 +1042,14 @@ omega = sum(omega,3);
 if obj.unit.nformula > 0
     Sperp = Sperp/double(obj.unit.nformula);
 end
-if ~runPar
-    sw_timeit(100,2,param.tid);
-end
 
 fprintf0(fid,'Calculation finished.\n');
 
-if any([warn1{:}]) && ~param.fitmode
+if isa(warn1,'Composite')
+    warn1 = any(warn1{:});
+end
+
+if warn1 && ~param.fitmode
     warning('spinw:spinwave:NonPosDefHamiltonian',['To make the Hamiltonian '...
         'positive definite, a small omega_tol value was added to its diagonal!'])
 end

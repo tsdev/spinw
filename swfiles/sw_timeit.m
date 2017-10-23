@@ -1,10 +1,12 @@
-function sw_timeit(percent,varargin)
+function signal = sw_timeit(percent,varargin)
 % timer and remaining time estimator
 % 
 % ### Syntax
 % 
 % `sw_timeit(percent, {mode},{tid},{title})`
 % 
+% `signal = sw_timeit(percent, {mode},{tid},{title})`
+%
 % ### Description
 % 
 % `sw_timeit(percent, {mode},{fid},{title})` can display remaining time of
@@ -35,6 +37,14 @@ function sw_timeit(percent,varargin)
 % `title`
 % : The text to show in the pup up window.
 % 
+% ### Output Arguments
+%
+% `signal`
+% : Integer, with the following values:
+%   * `0`   Normal execution.
+%   * `2`   Cancellation is initiated (e.g. "Cancel" button is pressed on
+%           the GUI).
+%
 % ### See Also
 % 
 % [waitbar]
@@ -45,6 +55,10 @@ global sw_time
 if nargin == 0
     help sw_timeit
     return
+end
+
+if nargout > 0
+    signal = 0;
 end
 
 if nargin > 2 && ~isempty(varargin{2}) && ~ischar(varargin{2})

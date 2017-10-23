@@ -4,7 +4,7 @@ function spinw_server(varargin)
 % spinw_server path numWorkers portNum
 %
 
-jobqueue.log('SpinW Server started0');
+jobqueue.log('SpinW Server started');
 
 if nargin~=3
     fprintf('Input arguments:\n');

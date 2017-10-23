@@ -211,9 +211,9 @@ inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType' 'component'
 inpForm.defval = [inpForm.defval {false    false  0        'ebin'    'Sperp'    }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]     [1 -5]    }];
 
-inpForm.fname  = [inpForm.fname  {'fid' 'toFile' 'tid'}];
-inpForm.defval = [inpForm.defval {-1    nan      -1   }];
-inpForm.size   = [inpForm.size   {[1 1] [1 -2]   [1 1]}];
+inpForm.fname  = [inpForm.fname  {'fid' 'toFile'   'tid'}];
+inpForm.defval = [inpForm.defval {-1    zeros(1,0) -1   }];
+inpForm.size   = [inpForm.size   {[1 1] [1 -2]     [1 1]}];
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -361,7 +361,7 @@ switch funIdx
         spectra.lambda   = tempStr.lambda;
 end
 
-if ~isnan(param.toFile)
+if ~isempty(param.toFile)
     save(sprintf('%s.mat',param.toFile),'spectra')
     spectra = param.toFile;
 end

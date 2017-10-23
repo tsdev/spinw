@@ -14,12 +14,12 @@ function spectra = powspec(obj, hklA, varargin)
 % reciprocal space. This way the spin wave spectrum of polycrystalline
 % samples can be calculated. This method is not efficient for low
 % dimensional (2D, 1D) magnetic lattices. To speed up the calculation with
-% mex files use the `swpref.setpref('usemex',true)` option.
+% mex files use the `swpref.setpref('usemex',true)` option. 
 %
 % `spectra = powspec(___,Value,Name)` specifies additional parameters for
 % the calculation. For example the function can calculate powder average of
 % arbitrary spectral function, if it is specified using the `specfun`
-% option.
+% option. 
 %
 % ### Example
 %
@@ -115,7 +115,7 @@ function spectra = powspec(obj, hklA, varargin)
 %   F = formfactfun(atomLabel,Q)
 %   ```
 %   where the parameters are:
-%   * `F`           row vector containing the form factor for every input
+%   * `F`           row vector containing the form factor for every input 
 %                   $Q$ value
 %   * `atomLabel`   string, label of the selected magnetic atom
 %   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
@@ -130,7 +130,7 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % `'hermit'`
 % : Method for matrix diagonalization with the following logical values:
-%
+% 
 %   * `true`    using Colpa's method (for details see [J.H.P. Colpa, Physica 93A (1978) 327](http://www.sciencedirect.com/science/article/pii/0378437178901607)),
 %               the dynamical matrix is converted into another Hermitian
 %               matrix, that will give the real eigenvalues.
@@ -204,16 +204,16 @@ inpForm.defval = {100     zeros(1,0) T0    false      @sw_mff       tid0  1e3   
 inpForm.size   = {[1 1]   [1 -1]     [1 1] [1 -2]     [1 1]         [1 1] [1 1] };
 
 inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' 'imagChk'}];
-inpForm.defval = [inpForm.defval {true     false     title0  @spinwavefast  true    }];
+inpForm.defval = [inpForm.defval {true     false     title0  @spinwave  true    }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]      [1 1]   }];
 
 inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType' 'component'}];
 inpForm.defval = [inpForm.defval {false    false  0        'ebin'    'Sperp'    }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]     [1 -5]    }];
 
-inpForm.fname  = [inpForm.fname  {'fid'    'toFile'}];
-inpForm.defval = [inpForm.defval {fid      nan}];
-inpForm.size   = [inpForm.size   {[1 1]    [1 -2]}];
+inpForm.fname  = [inpForm.fname  {'fid'}];
+inpForm.defval = [inpForm.defval {-1   }];
+inpForm.size   = [inpForm.size   {[1 1]}];
 
 param  = sw_readparam(inpForm, varargin{:});
 
@@ -227,7 +227,7 @@ end
 %   0:  unknown
 %   1:  @spinwave
 %   2:  @scga
-funList = {@spinwave @spinwavefast @scga};
+funList = {@spinwave @scga};
 funIdx  = [find(cellfun(@(C)isequal(C,param.specfun),funList)) 0];
 funIdx  = funIdx(1);
 
@@ -282,47 +282,39 @@ end
 % lambda value for SCGA, empty will make integration in first loop
 specQ.lambda = [];
 
-
-if param.fibo
-    Q = bsxfun(@mtimes,reshape(QF,3,param.nRand,1),reshape(hklA,1,1,[]));
-else
-    rQ  = randn(3,param.nRand,nQ);
-    Q   = bsxfun(@mtimes,bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2))),reshape(hklA,1,1,[]));
-end
-Q = reshape(Q,3,[]);
-hkl = (Q'*obj.basisvector)'/2/pi;
-
-switch funIdx
-    case 0
-        % general function call allow arbitrary additional parameters to
-        % pass to the spectral calculation function
-        warnState = warning('off','sw_readparam:UnreadInput');
-        specQ = param.specfun(obj,hkl,varargin{:});
-        warning(warnState);
-    case 1
-        % @spinwave
-        specQ = spinwave(obj,hkl,struct('fitmode',true,'notwin',true,...
-            'Hermit',param.hermit,'formfact',param.formfact,...
-            'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-            'optmem',param.optmem,'tid',param.tid,'fid',0),'noCheck');
-    case 2
-        % @spinwavefast
-        specQ = spinwavefast(obj,hkl,struct('fitmode',2,...
-            'Hermit',param.hermit,'formfact',param.formfact,...
-            'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-            'optmem',param.optmem,'tid',param.tid,'fid',0),'noCheck');
-    case 3
-        % @scga
-        specQ = scga(obj,hkl,struct('fitmode',true,'formfact',param.formfact,...
-            'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-            'fid',0,'lambda',specQ.lambda,'nInt',param.nInt,'T',param.T,...
-            'plot',false),'noCheck');
-end
-
-% specQ = sw_neutron(specQ,'pol',false);
-specQ = split_spec(specQ,nQ);
-for ii = 1:length(specQ)
-    specQ(ii).obj = obj;
+for ii = 1:nQ
+    if param.fibo
+        Q = QF*hklA(ii);
+    else
+        rQ  = randn(3,param.nRand);
+        Q   = bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2)))*hklA(ii);
+    end
+    hkl = (Q'*obj.basisvector)'/2/pi;
+    
+    switch funIdx
+        case 0
+            % general function call allow arbitrary additional parameters to
+            % pass to the spectral calculation function
+            warnState = warning('off','sw_readparam:UnreadInput');
+            specQ = param.specfun(obj,hkl,varargin{:});
+            warning(warnState);
+        case 1
+            % @spinwave
+            specQ = spinwave(obj,hkl,struct('fitmode',true,'notwin',true,...
+                'Hermit',param.hermit,'formfact',param.formfact,...
+                'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
+                'optmem',param.optmem,'tid',0,'fid',0),'noCheck');
+            
+        case 2
+            % @scga
+            specQ = scga(obj,hkl,struct('fitmode',true,'formfact',param.formfact,...
+                'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
+                'fid',0,'lambda',specQ.lambda,'nInt',param.nInt,'T',param.T,...
+                'plot',false),'noCheck');
+    end
+    
+    specQ = sw_neutron(specQ,'pol',false);
+    specQ.obj = obj;
     % use edge grid by default
     specQ = sw_egrid(specQ,struct('Evect',param.Evect,'T',param.T,'binType',param.binType,...
     'imagChk',param.imagChk,'component',param.component),'noCheck');
@@ -342,28 +334,23 @@ spectra.nRand    = param.nRand;
 spectra.T        = param.T;
 spectra.obj      = copy(obj);
 spectra.norm     = false;
-spectra.formfact = temp.formfact;
-spectra.gtensor  = temp.gtensor;
+spectra.formfact = specQ.formfact;
+spectra.gtensor  = specQ.gtensor;
 spectra.date     = datestr(now);
 spectra.title    = param.title;
 % save all input parameters of spinwave into spectra
-spectra.param    = temp.param;
+spectra.param    = specQ.param;
 
 % some spectral function dependent parameters
 switch funIdx
     case 0
-        spectra.Evect    = temp.Evect;
-    case {1, 2}
-        spectra.Evect    = temp.Evect;
-        spectra.incomm   = temp.incomm;
-        spectra.helical  = temp.helical;
-    case 3
-        spectra.lambda   = temp.lambda;
-end
-
-if ~isnan(param.toFile)
-    save(sprintf('%s.mat',param.toFile),'spectra')
-    spectra = param.toFile;
+        spectra.Evect    = specQ.Evect;
+    case 1
+        spectra.Evect    = specQ.Evect;
+        spectra.incomm   = specQ.incomm;
+        spectra.helical  = specQ.helical;
+    case 2
+        spectra.lambda   = specQ.lambda;
 end
 
 end
@@ -388,19 +375,4 @@ else
     F = num(end-1);
     F1 = num(end-2);
 end
-end
-
-function [s_out] = split_spec(inobj,n)
-% Splits a concatonated spinw object into smaller ones
-idx = [floor(((1:n)-1)/n*size(inobj.hkl,2))+1 size(inobj.hkl,2)+1];
-    function sout = split(i1,i2)
-        sout = inobj;
-        id = i1:i2;
-        sout.omega = inobj.omega(:,id);
-        %         sout.Sab = inobj.Sab(:,:,:,id);
-        sout.hkl = inobj.hkl(:,id);
-        sout.hklA = inobj.hklA(:,id);
-        sout.Sperp = inobj.Sperp(:,id);
-    end
-s_out = arrayfun(@split,idx(1:end-1),idx(2:end)-1);
 end

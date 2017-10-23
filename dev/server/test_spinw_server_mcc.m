@@ -1,17 +1,17 @@
 %% parameters
 
-folder  = '~/Documents/temp/cache';
+localFolder  = '~/Documents/temp/cache';
+remoteFolder = '/home/l_mc01/mpi/toth/spinw_server/cache';
 nWorker = 0;
 portNum = 13001;
-jobID   = 'Wa4g3Gj32Z4';
 
 %% produce data
 
 % empty directory
 try
-    rmdir(folder,'s')
+    rmdir(localFolder,'s')
 end
-mkdir(folder);
+mkdir(localFolder);
 jobIDv = {'J001' 'J002' 'J003'};
 
 % JOB1
@@ -20,26 +20,32 @@ argin   = {sw_model('triAF',1) {[0 0 0] [1 1 0] 1e5} 'fid' 1 'tid' 0};
 fun     = 'spinwave';
 nargout = 1;
 % save .mat file of model
-save([folder filesep 'in_' jobIDv{1} '.mat'],'argin','fun','nargout');
+save([localFolder filesep 'in_' jobIDv{1} '.mat'],'argin','fun','nargout');
 
 % JOB2
 argin   = {sw_model('squareAF',1) {[0 0 0] [1 0 0] [1 1 0] [0 0 0] 1e5} 'fid' 1 'tid' 0};
 fun     = 'spinwave';
 nargout = 1;
 % save .mat file of model
-save([folder filesep 'in_' jobIDv{2} '.mat'],'argin','fun','nargout');
+save([localFolder filesep 'in_' jobIDv{2} '.mat'],'argin','fun','nargout');
 
 % JOB3
 argin   = {sw_model('triAF',1) linspace(0,4,101) 'Evect' linspace(0,8,501) 'nRand' 1e5 'fid' 1 'tid' 0};
 fun     = 'powspec';
 nargout = 1;
 % save .mat file of model
-save([folder filesep 'in_' jobIDv{3} '.mat'],'argin','fun','nargout');
+save([localFolder filesep 'in_' jobIDv{3} '.mat'],'argin','fun','nargout');
 
-% start the server
-go swserver
-clipboard('copy',['./spinw_server.app/spinw_server.sh ' folder ' 0 ' num2str(portNum)]);
-go(folder)
+% copy the data to the server
+for ii = 1:numel(jobIDv)
+    remoteFile = ['l_mc01@mcc.psi.ch:' remoteFolder filesep 'in_' jobIDv{ii} '.mat'];
+    localFile  = [localFolder filesep 'in_' jobIDv{ii} '.mat'];
+    system(['rsync -avz ' localFile ' ' remoteFile],'-echo');
+end
+
+% start the server remotely on MCC
+clipboard('copy',['./spinw_server_linux.sh ' remoteFolder ' 0 ' num2str(portNum)]);
+
 
 %% start the client
 

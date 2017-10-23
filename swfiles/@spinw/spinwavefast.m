@@ -128,10 +128,12 @@ function spectra = spinwavefast(obj, hkl, varargin)
 % `'hermit'`
 % : Method for matrix diagonalization with the following logical values:
 %
-%   * `true`    using Colpa's method (for details see [J.H.P. Colpa, Physica 93A (1978) 327](http://www.sciencedirect.com/science/article/pii/0378437178901607)),
+%   * `true`    using Colpa's method (for details see 
+%               [J.H.P. Colpa, Physica 93A (1978) 327](http://www.sciencedirect.com/science/article/pii/0378437178901607)),
 %               the dynamical matrix is converted into another Hermitian
 %               matrix, that will give the real eigenvalues.
-%   * `false`   using the standard method (for details see [R.M. White, PR 139 (1965) A450](https://journals.aps.org/pr/abstract/10.1103/PhysRev.139.A450))
+%   * `false`   using the standard method (for details see 
+%               [R.M. White, PR 139 (1965) A450](https://journals.aps.org/pr/abstract/10.1103/PhysRev.139.A450))
 %               the non-Hermitian $\mathcal{g}\times \mathcal{H}$ matrix
 %               will be diagonalised, which is computationally less
 %               efficient. Default value is `true`.
@@ -290,13 +292,13 @@ end
 
 
 % Can we run on a multiprocessor?
-p = gcp('nocreate'); % If no pool, do not create new one.
-if isempty(p)
+hPool = gcp('nocreate'); % If no pool, do not create new one.
+if isempty(hPool)
     nwSlice = 1;
-    runPar = 0;
+    runPar  = 0;
 else
-    nwSlice = pool.NumWorkers;
-    runPar = nwSlice;
+    nwSlice = hPool.NumWorkers;
+    runPar  = nwSlice;
 end
 
 % generate magnetic structure in the rotating noation
@@ -938,7 +940,8 @@ spmd(runPar)
             if helical
                 % integrating out the arbitrary initial phase of the helix
                 if useMex
-                    Sab = 1/2*Sab - 1/2*sw_mtimesx(sw_mtimesx(nx,Sab),nx) + 1/2*sw_mtimesx(sw_mtimesx(nxn-m1,Sab),nxn) + 1/2*sw_mtimesx(sw_mtimesx(nxn,Sab),2*nxn-m1);
+                    Sab = 1/2*Sab - 1/2*sw_mtimesx(sw_mtimesx(nx,Sab),nx) + 1/2*sw_mtimesx(sw_mtimesx(nxn-m1,Sab),nxn) +...
+                        1/2*sw_mtimesx(sw_mtimesx(nxn,Sab),2*nxn-m1);
                 else
                     Sab = 1/2*Sab - 1/2*mmat(mmat(nx,Sab),nx) + 1/2*mmat(mmat(nxn-m1,Sab),nxn) + 1/2*mmat(mmat(nxn,Sab),2*nxn-m1);
                 end

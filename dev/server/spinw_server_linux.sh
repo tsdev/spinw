@@ -1,13 +1,11 @@
 #!/bin/sh
-# Call this script from python to start pySpinW
+# Call this script to run SpinW Server
 #
 # Modify the MCRROOT variable below to point to the location of the Matlab
-# Runtime (R2017a) installed on your system.
+# Runtime (R2017b) installed on your system.
 #
-# To start pySpinW use the following Python commands:
-# from transplant import Matlab
-# m = Matlab(executable='full path to pyspinw.sh')
-# m.disp('Hello World!')
+# To start SpinW Server use the following command:
+# ./spinw_server.sh pathToMatFiles numWorkers portNumTCPIP
 #
 
 MCRROOT=/MATLAB/MATLAB_Runtime/v93
@@ -20,7 +18,7 @@ LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/bin/glnxa64 ;
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/os/glnxa64;
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/opengl/lib/glnxa64;
 export LD_LIBRARY_PATH;
-shift 1
+
 args=
 while [ $# -gt 0 ]; do
     token=$1

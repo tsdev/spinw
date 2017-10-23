@@ -12,3 +12,4 @@ docs/.sass-cache/
 _pdf
 
 *.sublime-workspace
+dev/server/Linux/spinw_server

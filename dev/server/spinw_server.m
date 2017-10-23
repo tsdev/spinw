@@ -154,7 +154,14 @@ while 1
                 diary(logPath);
                 diary('on');
                 % load the .mat file
-                input = load(fileIn);
+                try
+                    input = load(fileIn);
+                catch
+                    % OK, this is byte array, not a real mat file....
+                    f = fopen(fileIn);
+                    c = onCleanup(@() fclose(f));
+                    input = getArrayFromByteStream(fread(f,Inf,'uint8=>uint8'));
+                end
                 % excute the command
                 if all(isfield(input,{'fun' 'argin' 'nargout'})) && ischar(input.fun) &&...
                         iscell(input.argin) && isnumeric(input.nargout) && numel(input.nargout)==1

@@ -27,7 +27,7 @@ function spectra = spinwavefast(obj, hkl, varargin)
 % details see the [sw_mex] and [swpref.setpref] functions.
 %
 % ### Examples
-%
+%s
 % To calculate and plot the spin wave dispersion of the
 % triangular lattice antiferromagnet ($S=1$, $J=1$) along the $(h,h,0)$
 % direction in reciprocal space we create the built in triangular lattice

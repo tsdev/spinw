@@ -3,7 +3,7 @@
 localFolder  = '~/Documents/temp/cache';
 remoteFolder = '/home/lvi05884/spinw_server';
 server       = 'lvi05884@isiscompute.nd.rl.ac.uk';
-nWorker      = 32;
+%nWorker      = 32;
 portNum      = 13001;
 
 %% produce data
@@ -13,7 +13,7 @@ try
     rmdir(localFolder,'s')
 end
 mkdir(localFolder);
-jobIDv = {'J001' 'J002' 'J003'};
+jobIDv = {'J001' 'J002' 'J003' 'J004'};
 
 % JOB1
 % create jobs
@@ -37,6 +37,15 @@ nargout = 1;
 % save .mat file of model
 save([localFolder filesep 'in_' jobIDv{3} '.mat'],'argin','fun','nargout');
 
+% JOB4
+argin   = {yig {Q_N Q_G Q_H 1e4} 'fid' 1 'tid' 0};
+fun     = 'spinwavefast';
+nargout = 1;
+prof    = 1;
+% save .mat file of model
+save([localFolder filesep 'in_' jobIDv{4} '.mat'],'argin','fun','nargout','prof');
+
+%%
 % empty the remote cache
 remoteCmd = ['rm -rf ' remoteFolder filesep 'cache' filesep '*'];
 system(['ssh ' server ' ''' remoteCmd ''''],'-echo');
@@ -51,7 +60,8 @@ system(['rsync -avz ' localFolder filesep '*.mat ' server ':' remoteFolder files
 
 % number of remote threads
 [~,nCPU] = system('ssh isis ''./ncpu.sh''');
-nCore = str2double(nCPU)/2;
+[~,~,~,~,nCPU] = regexp(nCPU,'\n([0-9]+)\n');
+nCore = str2double(nCPU{1}{1})/2;
 
 % set number of workers to the number of cores
 nWorker = nCore;
@@ -75,6 +85,7 @@ fopen(swServer);
 fprintf(swServer,['EXEC ' jobIDv{1} ' 1.23:'])
 fprintf(swServer,['EXEC ' jobIDv{2} ' 1.23:'])
 fprintf(swServer,['EXEC ' jobIDv{3} ' 1.23:'])
+fprintf(swServer,['EXEC ' jobIDv{4} ' 1.23:'])
 pause(1)
 fprintf(swServer,['STOP ' jobIDv{3} ':'])
 

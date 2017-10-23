@@ -106,6 +106,7 @@ while ~shutDown
                                 error('spinw_server:WrongNargOut','The nargout variable has to be integer and larger than zero!');
                             end
                             
+                            prof = struct;
                             % get debug
                             if isfield(input,'prof') && isnumeric(input.prof) && ...
                                     numel(input.prof) == 1 && ismember(input.prof,[0 1 2])

@@ -1001,11 +1001,15 @@ spmd(runPar)
         % Sperp: nMode x nHkl.
         Sperp(:,hklIdxMEM) = permute(sumn(qPerp.*Sab,[1 2]),[3 4 1 2]);
         % get signal
-        if sigCancel == param.timerfun(jj/nSlice*100,0,param.tid)
+        if labindex == 1 && sigCancel == param.timerfun(jj/nSlice*100,0,param.tid)
             % TODO cancel the execution
             % ...
+            labSend(1,2:nwSlice,65501);
+            break
+        elseif labindex ~= 1 && labProbe(1,65501)
+            % receive
+            break
         end
-        
         
     end
     if runPar && param.prof

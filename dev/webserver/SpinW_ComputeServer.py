@@ -1,1 +1,0 @@
-/home/ward_s/PycharmProjects/SpinW_REST/SpinW_ComputeServer.py

@@ -13,3 +13,5 @@ _pdf
 
 *.sublime-workspace
 dev/server/Linux/spinw_server
+
+dev/SpinW_Server/\.idea/

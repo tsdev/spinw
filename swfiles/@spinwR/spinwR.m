@@ -5,25 +5,26 @@ classdef spinwR < handle
     properties
         spinw_obj = [];
         baseURL = '';
-        username = swpref.getpref('remoteuser').val
+        username = swpref.getpref('remoteuser',[]);
     end
     properties(SetAccess = protected)
         status = 'Waiting'
         statusURL = ''
-        token = swpref.getpref('remotetoken').val
+        token = swpref.getpref('remotetoken',[]);
         token_expire = datetime('now')
     end
     properties(Hidden=true,SetAccess = protected)
         isCalculating = false;
         version = []
         deployed = false;
+        isUploaded = false;
     end
     
     methods
         function obj = spinwR(sw)
             %SPINWR Construct an instance of this class
             %   Detailed explanation goes here
-            obj.baseURL = swpref.getpref('remoteurl').val;
+            obj.baseURL = swpref.getpref('remoteurl',[]);
             if isempty(obj.baseURL)
                 error('A valid server needs to  be specified.')
             end
@@ -99,7 +100,7 @@ classdef spinwR < handle
                 [obj.username, password] = obj.GetAuthentication();
                 swpref.setpref('remoteuser',obj.username)
             end
-            url = strcat(obj.baseURL,'/users');
+            url = strcat(obj.baseURL,'/users/add');
             try
                 response = webwrite(url,'username',obj.username,'password',password,weboptions('ContentType','json'));
             catch ME
@@ -169,12 +170,7 @@ classdef spinwR < handle
             end
             url = strcat(obj.baseURL,'/spinw/upload');
             filename = strcat(tempname,'.mat');
-            %             sw_obj = obj.spinw_obj;
             d = char(getByteStreamFromArray(obj.spinw_obj));
-            %             save(filename,'sw_obj')
-            %             f = fopen(filename);
-            %             d = char(fread(f)');
-            %             fclose(f);
             
             [~,remoteFName, remoteExt] = fileparts(filename);
             opt = weboptions('Username',obj.token,'Password','x',...
@@ -190,6 +186,7 @@ classdef spinwR < handle
             end
             obj.status = 'Uploaded File';
             obj.statusURL = upload_data.status;
+            obj.isUploaded = true;
         end
         
         function spinwave(obj,hkl,varargin)
@@ -197,7 +194,7 @@ classdef spinwR < handle
                 error('You need to login')
             end
             if (obj.token_expire - datetime('now')) < 0
-                obj = obj.getToken();
+                obj.getToken();
             end
             
             url = strcat(obj.baseURL,'/spinw/spinwave');
@@ -208,6 +205,9 @@ classdef spinwR < handle
                 sw_opt.argin = {obj.spinw_obj,hkl,varargin{:}};
                 sw_opt.nargout = 1;
             else
+                if ~obj.version.Deployed &&  ~obj.isUploaded
+                    obj.upload()
+                end
                 sw_opt.Q = hkl;
                 if ~isempty(varargin)
                     if ~mod(length(varargin),2)
@@ -219,10 +219,6 @@ classdef spinwR < handle
                     end
                 end
             end
-            %             save(filename,'sw_opt')
-            %             f = fopen(filename);
-            %             d = char(fread(f)');
-            %             fclose(f);
             d = char(getByteStreamFromArray(sw_opt));
             
             [~,remoteFName, remoteExt] = fileparts(filename);
@@ -263,6 +259,9 @@ classdef spinwR < handle
                 sw_opt.argin = {obj.spinw_obj,hkl,varargin{:}};
                 sw_opt.nargout = 1;
             else
+                if ~obj.version.Deployed &&  ~obj.isUploaded
+                    obj.upload()
+                end
                 sw_opt.Q = hkl;
                 if ~isempty(varargin)
                     if ~mod(length(varargin),2)
@@ -276,11 +275,7 @@ classdef spinwR < handle
             end
             filename = strcat(tempname,'.mat');
             d = char(getByteStreamFromArray(sw_opt));
-            %             save(filename,'sw_opt')
-            %             f = fopen(filename);
-            %             d = char(fread(f)');
-            %             fclose(f);
-            
+
             [~,remoteFName, remoteExt] = fileparts(filename);
             opt = weboptions('Username',obj.token,'Password','x',...
                 'characterEncoding','ISO-8859-1',...
@@ -301,7 +296,6 @@ classdef spinwR < handle
                 end
             end
         end
-        
         
         function spectra = getResult(obj,varargin)
             spectra = [];

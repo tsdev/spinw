@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Lists</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Job ID</th>
+            <th>Job hash</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Completed</th>
+        </tr>
+        <tbody>
+            {% for job in jobs %}
+                <tr>
+                    <td>{{ job.job_id }}</td>
+                    <td>{{ job.token }}</td>
+                    <td>{{ job.start_time }}</td>
+                    <td>{{ job.end_time }}</td>
+                    <td>{{ job.completed|tojson }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

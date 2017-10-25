@@ -1,0 +1,6 @@
+Flask_HTTPAuth==3.2.3
+passlib==1.7.1
+Flask==0.12
+itsdangerous==0.24
+pyldap==2.4.37
+matlab==0.1

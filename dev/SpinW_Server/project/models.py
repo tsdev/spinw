@@ -10,14 +10,16 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
 
 if config.get('USE_LDAP'):
     import ldap
+
     ldap.set_option(ldap.OPT_REFERRALS, 0)
     ldap.protocol_version = 3
     conn = ldap.initialize('ldap://%s' % config.get('LDAP_SERVER'))
 else:
     conn = []
 
+
 class AutoSerialize(object):
-    'Mixin for retrieving public fields of model in json-compatible format'
+    """Mixin for retrieving public fields of model in json-compatible format"""
     __public__ = None
 
     def get_public(self, exclude=(), extra=()):
@@ -36,7 +38,7 @@ class AutoSerialize(object):
         return data
 
     @classmethod
-    def _serialize(cls, value, follow_fk=False):
+    def _serialize(cls, value):
         if type(value) is datetime.datetime:
             ret = value.strftime("%Y-%m-%d %H:%M:%S")
         elif isinstance(value, str):
@@ -81,6 +83,7 @@ class User(db.Model, AutoSerialize):
         self.quota_total = float("inf")
         self.quota_used = 0
         self.jobs = []
+
     def hash_password(self, password):
         self.password_hash = pwd_context.encrypt(password)
 

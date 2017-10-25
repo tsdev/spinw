@@ -108,8 +108,6 @@ def upload(filename):
         with open(os.path.join(config['UPLOAD_FOLDER'], f_name), 'wb') as w:
             w.write(file)
         running[token] = eng.getArrayFromByteStream(file)
-        # except:
-        #     print(Exception.args)
         return (
             json.dumps({'username': user.username, 'status': url_for('spinw.get_status', token=token, _external=True)}), 201)
 

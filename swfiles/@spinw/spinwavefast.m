@@ -253,6 +253,15 @@ end
 
 title0 = 'Numerical LSWT spectrum';
 
+% Default number of workers
+hPool = gcp('nocreate'); 
+if isempty(hPool)
+    nWorker0 = 0;
+else
+    nWorker0 = hPool.NumWorkers;
+end
+
+
 inpForm.fname  = {'fitmode' 'sortMode' 'optmem' 'tol' 'hermit' 'timerfun' 'prof'};
 inpForm.defval = {false     true       false    1e-4  true     @sw_timeit false };
 inpForm.size   = {[1 1]     [1 1]      [1 1]    [1 1] [1 1]    [1 1]      [1 1] };
@@ -261,9 +270,9 @@ inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
 inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
-inpForm.fname  = [inpForm.fname  {'omega_tol' 'cmplxBase' 'tid' 'fid' 'toFile'}];
-inpForm.defval = [inpForm.defval {1e-5        false       -1    -1    nan     }];
-inpForm.size   = [inpForm.size   {[1 1]       [1 1]       [1 1] [1 1] [1 -2]  }];
+inpForm.fname  = [inpForm.fname  {'omega_tol' 'cmplxBase' 'tid' 'fid' 'toFile' 'nWorker'}];
+inpForm.defval = [inpForm.defval {1e-5        false       -1    -1    nan      nWorker0 }];
+inpForm.size   = [inpForm.size   {[1 1]       [1 1]       [1 1] [1 1] [1 -2]   [1 1]    }];
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -1001,15 +1010,15 @@ spmd(runPar)
         % Sperp: nMode x nHkl.
         Sperp(:,hklIdxMEM) = permute(sumn(qPerp.*Sab,[1 2]),[3 4 1 2]);
         % get signal
-        if labindex == 1 && sigCancel == param.timerfun(jj/nSlice*100,0,param.tid)
-            % TODO cancel the execution
-            % ...
-            labSend(1,2:nwSlice,65501);
-            break
-        elseif labindex ~= 1 && labProbe(1,65501)
-            % receive
-            break
-        end
+%         if labindex == 1 && sigCancel == param.timerfun(jj/nSlice*100,0,param.tid)
+%             % TODO cancel the execution
+%             % ...
+%             labSend(1,2:nwSlice,65501);
+%             break
+%         elseif labindex ~= 1 && labProbe(1,65501)
+%             % receive
+%             break
+%         end
         
     end
     if runPar && param.prof

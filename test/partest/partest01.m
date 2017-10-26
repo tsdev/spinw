@@ -18,6 +18,9 @@ nSlice  = 4;
 
 setenv('OMP_NUM_THREADS',num2str(nThread));
 
+% print header
+measfun;
+
 % runs without parallel pool
 evalc('delete(gcp(''nocreate''))');
 result        = measfun(@spinwavefast_duc,  {yig Q},false,nSlice,nRun);

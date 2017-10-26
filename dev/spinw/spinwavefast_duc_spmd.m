@@ -22,13 +22,13 @@ for ii = 1:numWorker
 end
 spmd
     swpref.setpref('fid',0,'tid',0);
-    spec = spinwavefast_duc(obj,Qc,varargin{:});
-    Sab  = spec.Sab;
-    om   = spec.omega;
+    spec  = spinwavefast_duc(obj,Qc,varargin{:});
+    Sperp = spec.Sperp;
+    om    = spec.omega;
 end
 
 specOut       = spec{1};
-specOut.Sab   = cat(4,Sab{:});
+specOut.Sperp = cat(4,Sperp{:});
 specOut.omega = cat(2,om{:});
 
 end

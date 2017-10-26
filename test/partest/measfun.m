@@ -4,7 +4,7 @@ function result = measfun(fun,argin,usemex,nMemSlice)
 % result = measfun(fun,argin,usemex,nMat)
 %
 
-[~,nThread] = system('echo $OMP_NUM_THREADS');
+nThread = getenv('OMP_NUM_THREADS');
 nThread = str2double(nThread);
 if isempty(nThread) || isnan(nThread)
     nThread = -1;

@@ -1,4 +1,6 @@
-function result = partest01(nMat,numWorker)
+function result = partest01(nMat,numWorker,nThread)
+% result = partest01(nMat,numWorker,nThread)
+%
 
 if nargin == 0
     nMat = 1e3;
@@ -13,7 +15,9 @@ yig = yig_create;
 Q = rand(3,nMat);
 
 nSlice  = 4;
-    
+
+setenv('OMP_NUM_THREADS',num2str(nThread));
+
 % runs without parallel pool
 evalc('delete(gcp(''nocreate''))');
 result        = measfun(@spinwavefast_duc,  {yig Q},false,nSlice);

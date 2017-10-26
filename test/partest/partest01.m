@@ -13,23 +13,21 @@ yig = yig_create;
 Q = rand(3,nMat);
 
 nSlice  = 4;
-nThread = 2;
-
-setenv('OMP_NUM_THREADS',num2str(nThread));
-
+    
 % runs without parallel pool
 evalc('delete(gcp(''nocreate''))');
-result        = measfun(@spinwavefast_duc,  {yig Q 'optmem' nSlice},false,nMat);
-result(end+1) = measfun(@spinwavefast_duc,  {yig Q 'optmem' nSlice},true, nMat);
-result(end+1) = measfun(@spinwavefast,      {yig Q 'optmem' nSlice},false,nMat);
-result(end+1) = measfun(@spinwavefast,      {yig Q 'optmem' nSlice},true, nMat);
-result(end+1) = measfun(@spinwave,          {yig Q 'optmem' nSlice},false,nMat);
-result(end+1) = measfun(@spinwave,          {yig Q 'optmem' nSlice},true, nMat);
+result        = measfun(@spinwavefast_duc,  {yig Q},false,nSlice);
+result(end+1) = measfun(@spinwavefast_duc,  {yig Q},true, nSlice);
+result(end+1) = measfun(@spinwavefast,      {yig Q},false,nSlice);
+result(end+1) = measfun(@spinwavefast,      {yig Q},true, nSlice);
+result(end+1) = measfun(@spinwave,          {yig Q},false,nSlice);
+result(end+1) = measfun(@spinwave,          {yig Q},true, nSlice);
 
 % run with parpool
 evalc(['parpool(' num2str(numWorker) ')']);
-result(end+1) = measfun(@spinwavefast,      {yig Q 'optmem' nSlice},false,nMat);
-result(end+1) = measfun(@spinwave_spmd,     {yig Q 'optmem' nSlice},false,nMat);
+result(end+1) = measfun(@spinwavefast,          {yig Q},false,nSlice);
+result(end+1) = measfun(@spinwave_spmd,         {yig Q},false,nSlice);
+result(end+1) = measfun(@spinwavefast_duc_spmd, {yig Q},false,nSlice);
 
 % stop pool
 evalc('delete(gcp(''nocreate''))');

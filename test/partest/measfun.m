@@ -1,4 +1,4 @@
-function result = measfun(fun,argin,usemex,nMemSlice)
+function result = measfun(fun,argin,usemex,nMemSlice,nTest)
 % measure function execution time
 %
 % result = measfun(fun,argin,usemex,nMat)
@@ -29,8 +29,12 @@ if iscell(argin{2})
 end
 nQ = size(argin{2},2);
     
-if nargin > 4
-    argin = [argin(:) {'optmem' nMemSlice}];
+if nargin > 3
+    argin = [argin(:)' {'optmem' nMemSlice}];
+end
+
+if nargin<5
+    nTest = 1;
 end
 
 % number of spin wave modes
@@ -43,12 +47,26 @@ end
 mexstr = {'nomex' 'mex'};
 swpref.setpref('usemex',usemex,'fid',0,'tid',0);
 fprintf('Calling %s()...\n',func2str(fun));
-tStart = tic;
-spec   = fun(argin{:});
-tMeas  = toc(tStart);
+
+for ii = 1:nTest
+    tStart    = tic;
+    spec      = fun(argin{:});
+    tMeas(ii) = toc(tStart);
+end
+
+pps   = nQ./tMeas;
+
+if nTest == 1
+    tMeas = round(tMeas*1e3)/1e3;
+    pps   = round(pps*1e3)/1e3;
+end
+
+tMeasStr = err2str(mean(tMeas),std(tMeas));
+ppsStr   = err2str(mean(pps),std(pps));
+
 nMemSlice = spec.param.nSlice;
-fprintf('... %6.1f px/sec, elapsed time %5.3f s, nQ=%d, nMode=%d, nWorker=%d, nThread=%s, nMemSlice=%d, %s.\n',...
-    nQ/tMeas,tMeas,nQ,nMode,nWorker,nThreadStr,nMemSlice,mexstr{usemex+1});
+fprintf('... %s px/sec, elapsed time %s s, nQ=%d, nMode=%d, nWorker=%d, nThread=%s, nMemSlice=%d, %s.\n',...
+    ppsStr,tMeasStr,nQ,nMode,nWorker,nThreadStr,nMemSlice,mexstr{usemex+1});
 
 result.time     = tMeas;
 result.fun      = fun;
@@ -59,6 +77,6 @@ result.nQ       = nQ;
 result.nWorker  = nWorker;
 result.nThread  = nThread;
 result.nSlice   = nMemSlice;
-result.pps      = nQ/tMeas;
+result.pps      = pps;
 
 end

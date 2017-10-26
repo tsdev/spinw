@@ -21,7 +21,7 @@ else
 end
 
 if numWorker0~=numWorker
-    delete(gc('nocreate'));
+    delete(gcp('nocreate'));
     evalc(['parpool(' num2str(numWorker) ')']);
 end
 

@@ -99,6 +99,7 @@ elseif nargin > 3
     else
         save(fName,'result');
     end
+    result = result(end);
 end
 
 for ii = 1:numel(result)

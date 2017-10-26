@@ -1,30 +1,30 @@
 function result = partest01(varargin)
-% result = partest01(nMat,numWorker,nThread,nRun)
+% result = partest01(nQ,numWorker,nThread,nRun)
 %
 
-inpForm.fname  = {'nMat' 'nWorker' 'nThread' 'nRun' };
-inpForm.defval = {1e2    2         -1        1      };
-inpForm.size   = {[1 1]  [1 1]     [1 1]     [1 1]  };
+inpForm.fname  = {'nQ'  'nWorker' 'nThread' 'nRun' };
+inpForm.defval = {1e2   2         -1        1      };
+inpForm.size   = {[1 1] [1 1]     [1 1]     [1 1]  };
 
 param = sw_readparam(inpForm, varargin{:});
 
-nMat    = param.nMat;
+nQ      = param.nMat;
 nWorker = param.nWorker;
 nThread = param.nThread;
 nRun    = param.nRun;
 
 
 if nargin == 0
-    nMat = 1e3;
+    nQ = 1e3;
 end
 
-nMat = round(nMat/nWorker)*nWorker;
+nQ = round(nQ/nWorker)*nWorker;
 
 % setup
 swpref.setpref('usemex',false,'tid',0,'fid',0);
 
 yig = yig_create;
-Q = rand(3,nMat);
+Q = rand(3,nQ);
 
 nSlice  = 4;
 

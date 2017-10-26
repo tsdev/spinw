@@ -1,12 +1,24 @@
-function result = partest01(nMat,numWorker,nThread,nRun)
-% result = partest01(nMat,numWorker,nThread)
+function result = partest01(varargin)
+% result = partest01(nMat,numWorker,nThread,nRun)
 %
+
+inpForm.fname  = {'nMat' 'nWorker' 'nThread' 'nRun' };
+inpForm.defval = {1e2    2         -1        1      };
+inpForm.size   = {[1 1]  [1 1]     [1 1]     [1 1]  };
+
+param = sw_readparam(inpForm, varargin{:});
+
+nMat    = param.nMat;
+nWorker = param.nWorker;
+nThread = param.nThread;
+nRun    = param.nRun;
+
 
 if nargin == 0
     nMat = 1e3;
 end
 
-nMat = round(nMat/numWorker)*numWorker;
+nMat = round(nMat/nWorker)*nWorker;
 
 % setup
 swpref.setpref('usemex',false,'tid',0,'fid',0);
@@ -16,8 +28,11 @@ Q = rand(3,nMat);
 
 nSlice  = 4;
 
-setenv('OMP_NUM_THREADS',num2str(nThread));
-
+if nThread > 0
+    setenv('OMP_NUM_THREADS',num2str(nThread));
+else
+    setenv('OMP_NUM_THREADS','');
+end
 % print header
 measfun;
 
@@ -31,7 +46,7 @@ result(end+1) = measfun(@spinwave,          {yig Q},false,nSlice,nRun);
 result(end+1) = measfun(@spinwave,          {yig Q},true, nSlice,nRun);
 
 % run with parpool
-evalc(['parpool(' num2str(numWorker) ')']);
+evalc(['parpool(' num2str(nWorker) ')']);
 result(end+1) = measfun(@spinwavefast,          {yig Q},false,nSlice,nRun);
 result(end+1) = measfun(@spinwave_spmd,         {yig Q},false,nSlice,nRun);
 result(end+1) = measfun(@spinwavefast_duc_spmd, {yig Q},false,nSlice,nRun);

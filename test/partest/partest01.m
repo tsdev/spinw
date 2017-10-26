@@ -80,7 +80,7 @@ fprintf('Calling %s(), nMat=%d, nWorker=%d, %s...\n',func2str(fun),nMat,numWorke
 tStart = tic;
 spec   = fun(argin{:});
 tMeas  = toc(tStart);
-fprintf('Elapsed %5.3 s.\n',tMeas);
+fprintf('Elapsed time %5.3f s.\n',tMeas);
 
 end
 

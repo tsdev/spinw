@@ -1,5 +1,5 @@
-function result = partest01(varargin)
-% result = partest01(nQ,numWorker,nThread,nRun)
+function partest01(varargin)
+% partest01(nQ,numWorker,nThread,nRun)
 %
 
 inpForm.fname  = {'nQ'  'nWorker' 'nThread' 'nRun' 'fName'   };
@@ -39,18 +39,18 @@ measfun;
 
 % runs without parallel pool
 evalc('delete(gcp(''nocreate''))');
-result        = measfun(@spinwavefast_duc,  {yig Q},false,nSlice,nRun,fName);
-result(end+1) = measfun(@spinwavefast_duc,  {yig Q},true, nSlice,nRun,fName);
-result(end+1) = measfun(@spinwavefast,      {yig Q},false,nSlice,nRun,fName);
-result(end+1) = measfun(@spinwavefast,      {yig Q},true, nSlice,nRun,fName);
-result(end+1) = measfun(@spinwave,          {yig Q},false,nSlice,nRun,fName);
-result(end+1) = measfun(@spinwave,          {yig Q},true, nSlice,nRun,fName);
+measfun(@spinwavefast_duc,  {yig Q},false,nSlice,nRun,fName);
+measfun(@spinwavefast_duc,  {yig Q},true, nSlice,nRun,fName);
+measfun(@spinwavefast,      {yig Q},false,nSlice,nRun,fName);
+measfun(@spinwavefast,      {yig Q},true, nSlice,nRun,fName);
+measfun(@spinwave,          {yig Q},false,nSlice,nRun,fName);
+measfun(@spinwave,          {yig Q},true, nSlice,nRun,fName);
 
 % run with parpool
 evalc(['parpool(' num2str(nWorker) ')']);
-result(end+1) = measfun(@spinwavefast,          {yig Q},false,nSlice,nRun,fName);
-result(end+1) = measfun(@spinwave_spmd,         {yig Q},false,nSlice,nRun,fName);
-result(end+1) = measfun(@spinwavefast_duc_spmd, {yig Q},false,nSlice,nRun,fName);
+measfun(@spinwavefast,          {yig Q},false,nSlice,nRun,fName);
+measfun(@spinwave_spmd,         {yig Q},false,nSlice,nRun,fName);
+measfun(@spinwavefast_duc_spmd, {yig Q},false,nSlice,nRun,fName);
 
 % stop pool
 evalc('delete(gcp(''nocreate''))');

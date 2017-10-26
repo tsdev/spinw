@@ -1,11 +1,12 @@
-function result = measfun(fun,argin,usemex,nMemSlice,nRun,fName)
+function measfun(fun,argin,usemex,nMemSlice,nRun,fName)
 % measure function execution time
 %
-% `result = measfun(fun,argin,usemex,nMeMSlice,nRun)` time the function
+% `measfun(fun,argin,usemex,nMeMSlice,nRun,fName)` time the function
 %
 % `measfun` draws the header
 %
-% `measfun(result)` plots the result
+% `measfun(fName)` shows the results stored in the file referenced by
+% `fName`.
 %
 
 result = [];

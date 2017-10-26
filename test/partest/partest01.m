@@ -8,7 +8,7 @@ inpForm.size   = {[1 1] [1 1]     [1 1]     [1 1]  };
 
 param = sw_readparam(inpForm, varargin{:});
 
-nQ      = param.nMat;
+nQ      = param.nQ;
 nWorker = param.nWorker;
 nThread = param.nThread;
 nRun    = param.nRun;

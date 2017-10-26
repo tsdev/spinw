@@ -15,7 +15,7 @@ Q = rand(3,nMat);
 parpool(numWorker)
 usemex = false;
 spec = {};
-spec{1} = measfun(@spinwavefast,{Q},usemex, nMat);
+spec{1} = measfun(@spinwavefast,{yig Q},usemex, nMat);
 
 
 fprintf('Calling spmd+spinwave N=%d, nomex...\n',nMat)
@@ -38,15 +38,15 @@ fprintf('Elapsed %5.3 s.\n',tMeas);
 
 delete(gcp)
 usemex = true;
-spec{end+1} = measfun(@spinwavefast,{Q},usemex, nMat);
+spec{end+1} = measfun(@spinwavefast,{yig Q},usemex, nMat);
 usemex = true;
-spec{end+1} = measfun(@spinwave,{Q},usemex, nMat);
+spec{end+1} = measfun(@spinwave,{yig Q},usemex, nMat);
 usemex = false;
-spec{end+1} = measfun(@spinwave,{Q},usemex, nMat);
+spec{end+1} = measfun(@spinwave,{yig Q},usemex, nMat);
 usemex = false;
-spec{end+1} = measfun(@spinwavefast_duc,{Q},usemex, nMat);
+spec{end+1} = measfun(@spinwavefast_duc,{yig Q},usemex, nMat);
 usemex = true;
-spec{end+1} = measfun(@spinwavefast_duc,{Q},usemex, nMat);
+spec{end+1} = measfun(@spinwavefast_duc,{yig Q},usemex, nMat);
 
 end
 

@@ -20,7 +20,9 @@ end
 if nargin == 1
     % read the data
     % just print the data
-    load(fun,'result');
+    temp = load(fun);
+    fn = fieldnames(temp);
+    result = temp.(fn{1});
     
 elseif nargin > 3
     % do the measurement

@@ -260,14 +260,14 @@ inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
 inpForm.fname  = [inpForm.fname  {'omega_tol' 'cmplxBase' 'tid' 'fid'}];
-inpForm.defval = [inpForm.defval {1e-5        false       -1    nan  }];
+inpForm.defval = [inpForm.defval {1e-5        false       -1    -1   }];
 inpForm.size   = [inpForm.size   {[1 1]       [1 1]       [1 1] [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
 
-if isnan(param.fid)
+if param.fid == -1
     % Print output into the following file
-    fid = obj.fileid;
+    fid = swpref.getpref('fid',[]);
 else
     fid = param.fid;
 end

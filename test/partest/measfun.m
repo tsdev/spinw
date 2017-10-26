@@ -91,7 +91,13 @@ elseif nargin > 3
     result.nRun     = nRun;
     result.nMode    = nMode;
     % save result
-    save(fName,'result');
+    if exist(fName,'file')
+        temp  = load(fName);
+        result = [temp.result(:)' result];
+        save(fName,'result');
+    else
+        save(fName,'result');
+    end
 end
 
 for ii = 1:numel(result)

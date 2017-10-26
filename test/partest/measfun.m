@@ -33,6 +33,13 @@ if nargin > 4
     argin = [argin(:) {'optmem' nMemSlice}];
 end
 
+% number of spin wave modes
+nMode = argin{1}.nmagext*2;
+% number of Q points triples for incommensurate structure
+if any(mod(argin{1}.mag_str.k(:,1),1))
+    nQ = nQ*3;
+end
+
 mexstr = {'nomex' 'mex'};
 swpref.setpref('usemex',usemex,'fid',0,'tid',0);
 fprintf('Calling %s()...\n',func2str(fun));
@@ -40,8 +47,8 @@ tStart = tic;
 spec   = fun(argin{:});
 tMeas  = toc(tStart);
 nMemSlice = spec.param.nSlice;
-fprintf('... elapsed time %5.3f s, nQ=%d, nWorker=%d, nThread=%s, nMemSlice=%d, %s.\n',...
-    tMeas,nQ,nWorker,nThreadStr,nMemSlice,mexstr{usemex+1});
+fprintf('... %6.1f px/sec, elapsed time %5.3f s, nQ=%d, nMode=%d, nWorker=%d, nThread=%s, nMemSlice=%d, %s.\n',...
+    nQ/tMeas,tMeas,nQ,nMode,nWorker,nThreadStr,nMemSlice,mexstr{usemex+1});
 
 result.time     = tMeas;
 result.fun      = fun;
@@ -52,5 +59,6 @@ result.nQ       = nQ;
 result.nWorker  = nWorker;
 result.nThread  = nThread;
 result.nSlice   = nMemSlice;
+result.pps      = nQ/tMeas;
 
 end

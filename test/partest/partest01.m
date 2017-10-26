@@ -12,7 +12,20 @@ swpref.setpref('usemex',false,'tid',0,'fid',0);
 yig = yig_create;
 Q = rand(3,nMat);
 
-parpool(numWorker)
+% check parallel pool
+pPool = gcp('nocreate');
+if isempty(pPool)
+    numWorker0 = 1;
+else
+    numWorker0 = pPool.NumWorkers;
+end
+
+if numWorker0~=numWorker
+    delete(gcp);
+    parpool(numWorker);
+end
+
+
 usemex = false;
 spec = {};
 spec{1} = measfun(@spinwavefast,{yig Q},usemex, nMat);

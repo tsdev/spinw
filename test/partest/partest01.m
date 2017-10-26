@@ -1,62 +1,76 @@
-function spec = partest01(N)
+function spec = partest01(nMat,numWorker)
 
 if nargin == 0
-    N = 1e3;
+    nMat = 1e3;
 end
 
-hPool = gcp('nocreate');
-if isempty(hPool)
-    nWorker = 1;
-else
-    nWorker = hPool.NumWorkers;
-end
-
-N = round(N/nWorker)*nWorker;
+nMat = round(nMat/numWorker)*numWorker;
 
 % setup
-addpath(genpath('/home/lvi05884/spinw'))
 swpref.setpref('usemex',false,'tid',0,'fid',0);
 
 yig = yig_create;
+Q = rand(3,nMat);
 
-Q = rand(3,N);
+parpool(numWorker)
+usemex = false;
+spec = {};
+spec{1} = measfun(@spinwavefast,{Q},usemex, nMat);
 
-fprintf('spinwave N=%d, nomex\n',N)
-tic
-spec1 = yig.spinwave(Q(:,1));
-toc
 
-fprintf('spinwavefast N=%d, nomex\n',N)
-tic
-spec2 = yig.spinwavefast(Q);
-toc
-
-fprintf('spinwavefast_duc N=%d, nomex\n',N)
-tic
-spec3 = spinwavefast_duc(yig,Q);
-toc
-
-fprintf('spinwave N=%d, nomex, spmd\n',N)
-tic
-
+fprintf('Calling spmd+spinwave N=%d, nomex...\n',nMat)
+tStart = tic;
 Qc = Composite();
-Ni = N/nWorker;
-for ii = 1:nWorker
+Ni = nMat/numWorker;
+for ii = 1:numWorker
     Qc{ii} = Q(:,(1:Ni)+(ii-1)*Ni);
 end
-
 spmd
     swpref.setpref('fid',0,'tid',0);
     specSpmd = yig.spinwave(Qc);
     Sab = specSpmd.Sab;
+    om  = specSpmd.omega;
+end
+spec{2}.Sab = cat(4,Sab{:});
+spec{2}.omega = cat(2,om{:});
+tMeas  = toc(tStart);
+fprintf('Elapsed %5.3 s.\n',tMeas);
+
+delete(gcp)
+usemex = true;
+spec{end+1} = measfun(@spinwavefast,{Q},usemex, nMat);
+usemex = true;
+spec{end+1} = measfun(@spinwave,{Q},usemex, nMat);
+usemex = false;
+spec{end+1} = measfun(@spinwave,{Q},usemex, nMat);
+usemex = false;
+spec{end+1} = measfun(@spinwavefast_duc,{Q},usemex, nMat);
+usemex = true;
+spec{end+1} = measfun(@spinwavefast_duc,{Q},usemex, nMat);
+
 end
 
-spec4.Sab = cat(4,Sab{:});
-toc
+function spec = measfun(fun,argin,usemex,nMat)
+% measure function execution time
 
-spec = {spec1 spec2 spec3};
+% check parallel pool
+pPool = gcp('nocreate');
+if isempty(pPool)
+    numWorkers = 1;
+else
+    numWorkers = pPool.NumWorkers;
+end
+
+mexstr = {'nomex' 'mex'};
+swpref.setpref('usemex',usemex,'fid',0,'tid',0);
+fprintf('Calling %s(), nMat=%d, nWorker=%d, %s...\n',func2str(fun),nMat,numWorkers,mexstr{usemex+1});
+tStart = tic;
+spec   = fun(argin{:});
+tMeas  = toc(tStart);
+fprintf('Elapsed %5.3 s.\n',tMeas);
 
 end
+
 
 function yig = yig_create
 

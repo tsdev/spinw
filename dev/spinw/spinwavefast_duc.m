@@ -1,4 +1,4 @@
-function spectra = spinwavefast(obj, hkl, varargin)
+function spectra = spinwavefast_duc(obj, hkl, varargin)
 % calculates spin correlation function using linear spin wave theory
 %
 % ### Syntax
@@ -170,7 +170,7 @@ function spectra = spinwavefast(obj, hkl, varargin)
 % : Determines if the elapsed and required time for the calculation is
 %   displayed. The default value is determined by the `tid` preference
 %   stored in [swpref]. The following values are allowed (for more details
-%   seee [sw_status]):
+%   seee [sw_timeit]):
 %   * `0` No timing is executed.
 %   * `1` Display the timing in the Command Window.
 %   * `2` Show the timing in a separat pup-up window.
@@ -564,7 +564,7 @@ else
     omega = zeros(nMagExt,0);
 end
 
-sw_status(0,1,param.tid,'Spin wave spectrum calculation');
+sw_timeit(0,1,param.tid,'Spin wave spectrum calculation');
 
 warn1 = false;
 
@@ -713,7 +713,7 @@ for jj = 1:nSlice
                     catch PD
                         if param.tid == 2
                             % close timer window
-                            sw_status(100,2,param.tid);
+                            sw_timeit(100,2,param.tid);
                         end
                         error('spinw:spinwave:NonPosDefHamiltonian',...
                             ['Hamiltonian matrix is not positive definite, probably'...
@@ -919,7 +919,7 @@ for jj = 1:nSlice
     % Sperp: nMode x nHkl.
     Sperp(:,hklIdxMEM) = permute(sumn(qPerp.*Sab,[1 2]),[3 4 1 2]);
     
-    sw_status(jj/nSlice*100,0,param.tid);
+    sw_timeit(jj/nSlice*100,0,param.tid);
 end
 
 [~,singWarn] = lastwarn;
@@ -932,7 +932,7 @@ if obj.unit.nformula > 0
     Sperp = Sperp/double(obj.unit.nformula);
 end
 
-sw_status(100,2,param.tid);
+sw_timeit(100,2,param.tid);
 
 fprintf0(fid,'Calculation finished.\n');
 

@@ -95,27 +95,15 @@ pBV = [1/2 1/2 -1/2;-1/2 1/2 1/2;1/2 -1/2 1/2];
 yig.gencoupling('maxDistance',6);
 % Create spin Hamiltonian
 % change from BCC to primitive cubic cell
-T = yig.newcell('bvect',{pBV(1,:) pBV(2,:) pBV(3,:)});
+yig.newcell('bvect',{pBV(1,:) pBV(2,:) pBV(3,:)});
 % exchange values from the paper
 Jad = sw_converter(9.60e-21,'J','THz','photon');
 Jdd = sw_converter(3.24e-21,'J','THz','photon');
 Jaa = sw_converter(0.92e-21,'J','THz','photon');
-
 % scale the interactions from classical moment size to quantum model
 Scl = sqrt(S0*(S0+1));
 yig.quickham([Jad Jdd Jaa]/Scl)
-
-% add external field and convert from the standard SpinW unit (meV) to THz
-yig.field([0 0 0.01]*sw_converter(1,'meV','THz','photon'))
-yig.optmagsteep('nRun',1e2)
-yig.genmagstr('mode','rotate','n',[0 0 1])
-
-if sum(yig.mag_str.F(3,:),2)<0
-    yig.mag_str.F = -yig.mag_str.F;
-end
-
-yig.mag_str.F = real(yig.mag_str.F);
-yig.mag_str.F(1:2,:) = 0;
-yig.mag_str.F = bsxfun(@rdivide,yig.mag_str.F,abs(yig.mag_str.F(3,:)));
+% magnetic structure along c
+yig.genmagstr('mode','direct','S',[zeros(2,20);[-1 -1 -1 -1 -1  1  1  1 -1  1  1  1 -1  1  1  1 -1  1  1  1]]);
 
 end

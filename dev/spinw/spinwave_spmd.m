@@ -3,14 +3,14 @@ function specOut = spinwave_spmd(obj,hkl,varargin)
 % check parallel pool
 pPool = gcp('nocreate');
 if isempty(pPool)
-    numWorkers = 1;
+    numWorker = 1;
 else
-    numWorkers = pPool.NumWorkers;
+    numWorker = pPool.NumWorkers;
 end
 
 Q      = sw_qscan(hkl);
 nPoint = size(Q,2);
-nPoint = round(nPoint/numWorkers)*numWorkers;
+nPoint = round(nPoint/numWorker)*numWorker;
 Q      = Q(:,1:nPoint);
 
 

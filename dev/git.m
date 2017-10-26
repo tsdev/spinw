@@ -1,25 +1,38 @@
 function git(varargin)
-% basic git commands for SpinW repository
+% basic git commands
 %
 % ### Syntax
 %
-% `git('commit',msg)`
+% `git commit Commit message`
 %
-% `git('pull')`
+% `git branch`
 %
-% `branch = git('branch')`
+% `git branch branchName`
 %
-% `git('branch',branch)`
+% `git command str1 str2 ...`
 %
 % ### Description
 %
-% `git('commit',msg)` add all changes and commit with the given message.
+% `git commit Commit message` adds all changes and commit with the given
+% message.
 %
-% `git('pull')` pull updates from origin.
+% `git pull` pull updates from origin.
 %
-% `branch = git('branch')` show the current branch name.
+% `git branch` show the current branch name.
 %
-% `git('branch',branch)` switch to `branch`.
+% `git branch branchName` switch to `branch`.
+%
+% `git command str1 str2 ...` execute any git command with arbitrary number
+% of strings to follow
+%
+% ### Examples
+%
+% Any git command can be used, for example:
+%
+% ```
+% git add .
+% git pull
+% ```
 %
 
 if nargin > 0
@@ -30,6 +43,8 @@ if nargin>1
     msg = cellfun(@(C)[C ' '],varargin(2:end),'uniformoutput',false);
     msg = [msg{:}];
     msg = msg(1:(end-1));
+else
+    msg = '';
 end
 
 dir0   = pwd;
@@ -49,10 +64,8 @@ switch cmd
             gitFun(['commit -m "' msg '"']);
             gitFun('push');
         end
-    case 'pull'
-        gitFun('pull');
     case 'branch'
-        if nargin<2
+        if isempty(msg)
             %[~,varargout{1}] = gitFun('rev-parse --abbrev-ref HEAD');
             gitFun('rev-parse --abbrev-ref HEAD');
         else
@@ -60,6 +73,9 @@ switch cmd
             gitFun('pull');
             gitFun(['checkout ' branch]);
         end
+    otherwise
+        % any git command
+        gitFun([cmd ' ' msg]);
 end
 
 end

@@ -22,7 +22,7 @@ if numWorker==0
     if param.hermit
         M = (M+permute(M,[2 1 3]))/2;
     end
-    spec = struc('V',{},'D',{});
+    spec = struct('V',{},'D',{});
     [spec.V,spec.D] = eigorth(M, tol, true, useMex);
     
 else

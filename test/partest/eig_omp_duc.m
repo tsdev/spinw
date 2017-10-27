@@ -20,7 +20,7 @@ M(3) = round(M(3)/numWorker)*numWorker;
 M = num2cell(M);
 M = rand(M{:});
 if param.hermit
-    M = (M+permute(M,[1 3 2]))/2;
+    M = (M+permute(M,[2 1 3]))/2;
 end
 
 % [spec.V,spec.D] = eigorth(M, tol, true, useMex);

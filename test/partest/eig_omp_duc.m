@@ -1,8 +1,8 @@
 function spec = eig_omp_duc(~,M,varargin)
 
-inpForm.fname  = {'hermit'};
-inpForm.defval = {true    };
-inpForm.size   = {[1 1]   };
+inpForm.fname  = {'hermit' 'optmem'};
+inpForm.defval = {true     false};
+inpForm.size   = {[1 1]   [1 1]};
 
 param = sw_readparam(inpForm, varargin{:});
 useMex = swpref.getpref('usemex',[]);

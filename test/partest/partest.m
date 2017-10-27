@@ -4,7 +4,7 @@ function partest(varargin)
 
 inpForm.fname  = {'nQ'  'nWorker' 'nThread' 'nRun' 'fName'    'nSlice'};
 inpForm.defval = {1e2   2         -1        1      'test.mat' 1       };
-inpForm.size   = {[1 1] [1 1]     [1 1]     [1 1]  [1 -1]     [1 1]   };
+inpForm.size   = {[1 1] [1 -2]    [1 1]     [1 1]  [1 -1]     [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 

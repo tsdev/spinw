@@ -47,6 +47,10 @@ elseif nargin > 3
     end
     
     nQ = size(argin{2},2);
+    if nQ == 3
+        nQ = argin{2}(3);
+    end
+    
     if nargin > 3
         argin = [argin(:)' {'optmem' nMemSlice}];
     end

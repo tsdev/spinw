@@ -8,11 +8,15 @@ param = sw_readparam(inpForm, varargin{:});
 useMex = swpref.getpref('usemex',[]);
 
 % check parallel pool
-pPool = gcp('nocreate');
-if isempty(pPool)
-    numWorker = 0;
-else
-    numWorker = pPool.NumWorkers;
+try
+    pPool = gcp('nocreate');
+    if isempty(pPool)
+        numWorker = 0;
+    else
+        numWorker = pPool.NumWorkers;
+    end
+    else
+        numWorker = 0;
 end
 
 if numWorker==0

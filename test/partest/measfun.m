@@ -81,8 +81,8 @@ elseif nargin > 3
     
     result.time     = tMeas;
     result.fun      = fun;
-    result.argin    = argin;
-    result.argout   = spec;
+    %result.argin    = argin;
+    %result.argout   = spec;
     result.usemex   = usemex;
     result.nQ       = nQ;
     result.nWorker  = nWorker;

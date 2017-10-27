@@ -11,8 +11,10 @@ useMex = swpref.getpref('usemex',[]);
 pPool = gcp('nocreate');
 if isempty(pPool)
     numWorker = 1;
+    nn = 0;
 else
     numWorker = pPool.NumWorkers;
+    nn = numWorker;
 end
 
 M(3) = round(M(3)/numWorker)*numWorker;
@@ -35,7 +37,7 @@ Mi = M(3)/numWorker;
 for ii = 1:numWorker
     Mc{ii} = M(:,:,(1:Mi)+(ii-1)*Mi);
 end
-spmd
+spmd(nn)
     [V,D] = eigorth(Mc, tol, true, useMex);
 end
 

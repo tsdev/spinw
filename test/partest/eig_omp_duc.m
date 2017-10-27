@@ -48,4 +48,8 @@ else
     spec.V = cat(3,V{:});
     spec.D = cat(2,D{:});
 end
+
+spec.param.nSlice = 1;
+spec.param.hermit = param.hermit;
+
 end

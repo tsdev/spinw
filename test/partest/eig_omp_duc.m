@@ -23,7 +23,7 @@ if numWorker==0
         M = (M+permute(M,[2 1 3]))/2;
     end
     spec = struct('V',{},'D',{});
-    [spec.V,spec.D] = eigorth(M, tol, true, useMex);
+    [spec.V,spec.D] = eigorth(M, 1e-5, true, useMex);
     
 else
     M(3) = round(M(3)/numWorker)*numWorker;

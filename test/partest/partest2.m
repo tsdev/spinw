@@ -19,6 +19,7 @@ hermit  = param.hermit;
 % setup
 swpref.setpref('usemex',false,'tid',0,'fid',0);
 Q = [40 40 nQ0];
+yig = yig_create;
 
 if nThread > 0
     setenv('OMP_NUM_THREADS',num2str(nThread));
@@ -30,8 +31,8 @@ measfun;
 
 % runs without parallel pool
 evalc('delete(gcp(''nocreate''))');
-measfun(@eig_omp_duc, {Q 'hermit', hermit},false,nSlice,nRun,fName);
-measfun(@eig_omp_duc, {Q 'hermit', hermit},true, nSlice,nRun,fName);
+measfun(@eig_omp_duc, {yig Q 'hermit', hermit},false,nSlice,nRun,fName);
+measfun(@eig_omp_duc, {yig Q 'hermit', hermit},true, nSlice,nRun,fName);
 
 for ii = 1:numel(nWorker)
     nQ = round(nQ0/nWorker(ii))*nWorker(ii);
@@ -39,7 +40,7 @@ for ii = 1:numel(nWorker)
 
     % run with parpool
     evalc(['parpool(' num2str(nWorker(ii)) ')']);
-    measfun(@eig_omp_duc, {Q 'hermit', hermit},false, nSlice,nRun,fName);
+    measfun(@eig_omp_duc, {yig Q 'hermit', hermit},false, nSlice,nRun,fName);
     
     % stop pool
     evalc('delete(gcp(''nocreate''))');

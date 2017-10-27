@@ -1,4 +1,4 @@
-function spec = eig_omp_duc(M,varargin)
+function spec = eig_omp_duc(~,M,varargin)
 
 inpForm.fname  = {'hermit'};
 inpForm.defval = {true    };

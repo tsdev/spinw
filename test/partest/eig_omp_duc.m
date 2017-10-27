@@ -30,13 +30,14 @@ end
 % spec.param.nSlice = 1;
 % spec.param.hermit = param.hermit;
 
-
 Mc = Composite();
 Mi = M(3)/numWorker;
 
 for ii = 1:numWorker
     Mc{ii} = M(:,:,(1:Mi)+(ii-1)*Mi);
 end
+nn
+Mc
 spmd(nn)
     [V,D] = eigorth(Mc, tol, true, useMex);
 end

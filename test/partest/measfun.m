@@ -13,18 +13,34 @@ result = [];
 header = sprintf('%-30s | %-15s | %-10s | %-7s | %-7s | %-7s | %-7s | %-7s | %-7s | %-7s | %-7s\n',...
     'Function name','Speed (px/sec)','Time (s)','nQ','nMode','nWorker','nThread','nSlice','nRun','useMex','hermit');
 
-if nargin < 2
+if nargin < 3
     % print header
     fprintf(header);
-end
-
-if nargin == 1
     % read the data
     % just print the data
-    temp = load(fun);
-    fn = fieldnames(temp);
-    result = temp.(fn{1});
-    
+    if nargin>0
+        if ischar(fun)
+            temp = load(fun);
+            fn = fieldnames(temp);
+            result = temp.(fn{1});
+        else
+            result = fun;
+        end
+    end
+    if nargin>1
+        % sort column
+        col      = argin;
+        sortmode = 'ascend';
+        if col(1)=='+'
+            col = col(2:end);
+        elseif col(1)=='-'
+            sortmode = 'descend';
+            col = col(2:end);
+        end
+        
+        [~,idx] = sort(cellfun(@(C)mean(C),{result.(col)}),sortmode);
+        result = result(idx);
+    end
 elseif nargin > 3
     % do the measurement
     

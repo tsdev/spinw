@@ -1,5 +1,4 @@
 Function name                  | Speed (px/sec)  | Time (s)   | nQ      | nMode   | nWorker | nThread | nSlice  | nRun    | useMex  | hermit 
--------------------------------+-----------------+------------+---------+---------+---------+---------+---------+---------+---------+--------
 spinwavefast_duc_spmd          | 9100(235)       | 11.0(3)    | 100000  | 40      | 32      | 4       | 4       | 5       |         | x      
 spinwavefast_duc_spmd          | 9000(362)       | 11.1(4)    | 100000  | 40      | 32      | 8       | 4       | 5       |         | x      
 spinwavefast_duc_spmd          | 8700(207)       | 11.4(3)    | 100000  | 40      | 32      | 8       | 1       | 5       |         | x      

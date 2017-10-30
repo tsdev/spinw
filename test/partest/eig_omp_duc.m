@@ -15,8 +15,6 @@ try
     else
         numWorker = pPool.NumWorkers;
     end
-    else
-        numWorker = 0;
 end
 
 if numWorker==0

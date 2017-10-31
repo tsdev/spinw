@@ -20,41 +20,30 @@ if nargin == 0
     nQ0 = 1e3;
 end
 
-% setup
-swpref.setpref('usemex',false,'tid',0,'fid',0);
-
 yig = yig_create;
 Q = rand(3,nQ0);
 
-if nThread > 0
-    setenv('OMP_NUM_THREADS',num2str(nThread));
-else
-    setenv('OMP_NUM_THREADS','');
-end
 % print header
 measfun;
 
 % runs without parallel pool
-evalc('delete(gcp(''nocreate''))');
-measfun(@spinwavefast_duc,  {yig Q 'hermit', hermit},false,nSlice,nRun,fName);
-measfun(@spinwavefast_duc,  {yig Q 'hermit', hermit},true, nSlice,nRun,fName);
-measfun(@spinwavefast,      {yig Q 'hermit', hermit},false,nSlice,nRun,fName);
-measfun(@spinwavefast,      {yig Q 'hermit', hermit},true, nSlice,nRun,fName);
-measfun(@spinwave,          {yig Q 'hermit', hermit},false,nSlice,nRun,fName);
-measfun(@spinwave,          {yig Q 'hermit', hermit},true, nSlice,nRun,fName);
+measfun(@spinwavefast_duc,  {yig Q 'hermit', hermit},false,nSlice,nRun,nThread,0,fName);
+measfun(@spinwavefast_duc,  {yig Q 'hermit', hermit},true, nSlice,nRun,nThread,0,fName);
+measfun(@spinwavefast,      {yig Q 'hermit', hermit},false,nSlice,nRun,nThread,0,fName);
+measfun(@spinwavefast,      {yig Q 'hermit', hermit},true, nSlice,nRun,nThread,0,fName);
+measfun(@spinwave,          {yig Q 'hermit', hermit},false,nSlice,nRun,nThread,0,fName);
+measfun(@spinwave,          {yig Q 'hermit', hermit},true, nSlice,nRun,nThread,0,fName);
 
 for ii = 1:numel(nWorker)
     nQ = round(nQ0/nWorker(ii))*nWorker(ii);
     Q  = rand(3,nQ);
 
     % run with parpool
-    evalc(['parpool(' num2str(nWorker(ii)) ')']);
-    measfun(@spinwavefast,          {yig Q 'hermit', hermit},false,nSlice,nRun,fName);
-    measfun(@spinwave_spmd,         {yig Q 'hermit', hermit},false,nSlice,nRun,fName);
-    measfun(@spinwavefast_duc_spmd, {yig Q 'hermit', hermit},false,nSlice,nRun,fName);
-    
-    % stop pool
-    evalc('delete(gcp(''nocreate''))');
+    measfun(@spinwavefast,          {yig Q 'hermit', hermit},false,nSlice,nRun,nThread,nWorker(ii),fName);
+    measfun(@spinwave_spmd,         {yig Q 'hermit', hermit},false,nSlice,nRun,nThread,nWorker(ii),fName);
+    measfun(@spinwavefast_duc_spmd, {yig Q 'hermit', hermit},false,nSlice,nRun,nThread,nWorker(ii),fName);
 end
+% stop pool
+evalc('delete(gcp(''nocreate''))');
 
 end

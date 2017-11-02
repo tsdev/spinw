@@ -961,6 +961,7 @@ spectra.param.tol       = param.tol;
 spectra.param.omega_tol = param.omega_tol;
 spectra.param.hermit    = param.hermit;
 spectra.param.nSlice    = nSlice;
+spectra.param.usemex    = useMex;
 spectra.title           = param.title;
 spectra.gtensor         = param.gtensor;
 

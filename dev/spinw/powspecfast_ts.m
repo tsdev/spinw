@@ -1,4 +1,4 @@
-function spectra = powspec(obj, hklA, varargin)
+function spectra = powspecfast_ts(obj, hklA, varargin)
 % calculates powder averaged spin wave spectra
 %
 % ### Syntax
@@ -14,12 +14,12 @@ function spectra = powspec(obj, hklA, varargin)
 % reciprocal space. This way the spin wave spectrum of polycrystalline
 % samples can be calculated. This method is not efficient for low
 % dimensional (2D, 1D) magnetic lattices. To speed up the calculation with
-% mex files use the `swpref.setpref('usemex',true)` option. 
+% mex files use the `swpref.setpref('usemex',true)` option.
 %
 % `spectra = powspec(___,Value,Name)` specifies additional parameters for
 % the calculation. For example the function can calculate powder average of
 % arbitrary spectral function, if it is specified using the `specfun`
-% option. 
+% option.
 %
 % ### Example
 %
@@ -115,7 +115,7 @@ function spectra = powspec(obj, hklA, varargin)
 %   F = formfactfun(atomLabel,Q)
 %   ```
 %   where the parameters are:
-%   * `F`           row vector containing the form factor for every input 
+%   * `F`           row vector containing the form factor for every input
 %                   $Q$ value
 %   * `atomLabel`   string, label of the selected magnetic atom
 %   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
@@ -130,7 +130,7 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % `'hermit'`
 % : Method for matrix diagonalization with the following logical values:
-% 
+%
 %   * `true`    using Colpa's method (for details see [J.H.P. Colpa, Physica 93A (1978) 327](http://www.sciencedirect.com/science/article/pii/0378437178901607)),
 %               the dynamical matrix is converted into another Hermitian
 %               matrix, that will give the real eigenvalues.
@@ -189,8 +189,22 @@ function spectra = powspec(obj, hklA, varargin)
 
 % help when executed without argument
 if nargin==1
-    help spinw.powspec
+    help spinw.powspecfast_ts
     return
+end
+
+% if no parallel toolbox or single worker fallbac to non-parallel calc
+try
+    hPool = gcp('nocreate');
+catch
+    hPool = [];
+end
+
+if isempty(hPool) || hPool.NumWorkers < 2
+    spectra = powspec(obj,hklA,varargin{:});
+    return
+else
+    nWorker = hPool.NumWorkers;
 end
 
 hklA = hklA(:)';
@@ -198,6 +212,8 @@ T0 = obj.single_ion.T;
 
 title0 = 'Powder LSWT spectrum';
 tid0   = swpref.getpref('tid',[]);
+fid0   = swpref.getpref('fid',[]);
+mex0   = swpref.getpref('usemex',[]);
 
 inpForm.fname  = {'nRand' 'Evect'    'T'   'formfact' 'formfactfun' 'tid' 'nInt'};
 inpForm.defval = {100     zeros(1,0) T0    false      @sw_mff       tid0  1e3   };
@@ -211,164 +227,176 @@ inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType' 'component'
 inpForm.defval = [inpForm.defval {false    false  0        'ebin'    'Sperp'    }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]     [1 -5]    }];
 
-inpForm.fname  = [inpForm.fname  {'fid'}];
-inpForm.defval = [inpForm.defval {-1   }];
-inpForm.size   = [inpForm.size   {[1 1]}];
+inpForm.fname  = [inpForm.fname  {'fid' 'usemex'}];
+inpForm.defval = [inpForm.defval {fid0  mex0    }];
+inpForm.size   = [inpForm.size   {[1 1] [1 1]   }];
 
-param  = sw_readparam(inpForm, varargin{:});
-
-if param.fid == -1
-    fid = swpref.getpref('fid',true);
-else
-    fid = param.fid;
-end
+param         = sw_readparam(inpForm, varargin{:});
+param.nWorker = nWorker;
 
 % list of supported functions:
 %   0:  unknown
 %   1:  @spinwave
-%   2:  @scga
-funList = {@spinwave @scga};
-funIdx  = [find(cellfun(@(C)isequal(C,param.specfun),funList)) 0];
-funIdx  = funIdx(1);
+funList = {@spinwave};
+param.funIdx  = [find(cellfun(@(C)isequal(C,param.specfun),funList)) 0];
+param.funIdx  = param.funIdx(1);
 
-if isempty(param.Evect) && funIdx == 1
+if isempty(param.Evect) && param.funIdx == 1
     error('spinw:powspec:WrongOption','Energy bin vector is missing, use ''Evect'' option!');
 end
 
-% number of bins along energy
-switch param.binType
-    case 'cbin'
-        nE      = numel(param.Evect);
-    case 'ebin'
-        nE      = numel(param.Evect) - 1;
-end
-
-nQ      = numel(hklA);
-powSpec = zeros(max(1,nE),nQ);
-
-fprintf0(fid,'Calculating powder spectra...\n');
+fprintf0(param.fid,'Calculating powder spectra on %d workers...\n',param.nWorker);
 
 % message for magnetic form factor calculation
 yesNo = {'No' 'The'};
-fprintf0(fid,[yesNo{param.formfact+1} ' magnetic form factor is'...
+fprintf0(param.fid,[yesNo{param.formfact+1} ' magnetic form factor is'...
     ' included in the calculated structure factor.\n']);
 % message for g-tensor calculation
-fprintf0(fid,[yesNo{param.gtensor+1} ' g-tensor is included in the '...
+fprintf0(param.fid,[yesNo{param.gtensor+1} ' g-tensor is included in the '...
     'calculated structure factor.\n']);
 
 sw_timeit(0,1,param.tid,'Powder spectrum calculation');
 
 if param.fibo
-    % apply the Fibonacci numerical integration on a sphere
-    % according to J. Phys. A: Math. Gen. 37 (2004) 11591
-    % create QF points on the unit sphere
-    
-    [F,F1] = fibonacci(param.nRand);
-    param.nRand = F;
-    
-    QF = zeros(3,F);
-    
-    j = 0:(F-1);
-    QF(3,:) = j*2/F-1;
-    
-    theta = asin(QF(3,:));
-    phi   = 2*pi*F1/F*j;
-    
-    QF(1,:) = cos(theta).*sin(phi);
-    QF(2,:) = cos(theta).*cos(phi);
-    
+    [F,F1] = fibo(param.nRand);
+    param.fibo = [F F1];
 end
 
-% lambda value for SCGA, empty will make integration in first loop
-specQ.lambda = [];
+% pack all data to transfer to the workers
+data    = Composite();
+for ii = 1:param.nWorker
+    data{ii} = {obj hklA param};
+end
 
-for ii = 1:nQ
-    if param.fibo
-        Q = QF*hklA(ii);
-    else
-        rQ  = randn(3,param.nRand);
-        Q   = bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2)))*hklA(ii);
-    end
-    hkl = (Q'*obj.basisvector)'/2/pi;
+spmd
+    % unpack transferred data on each worker
+    objW   = data{1};
+    hklAW  = data{2};
+    paramW = data{3};
     
-    switch funIdx
-        case 0
-            % general function call allow arbitrary additional parameters to
-            % pass to the spectral calculation function
-            warnState = warning('off','sw_readparam:UnreadInput');
-            specQ = param.specfun(obj,hkl,varargin{:});
-            warning(warnState);
-            specQ = sw_neutron(specQ,'pol',false);
-        case 1
-            % @spinwave
-            if strcmp(param.component,'Sperp')
-                specQ = spinwavefast_duc(obj,hkl,struct('fitmode',true,...
-                    'Hermit',param.hermit,'formfact',param.formfact,...
-                    'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-                    'optmem',param.optmem,'tid',0,'fid',0),'noCheck');
-            else
-                specQ = spinwave(obj,hkl,struct('fitmode',true,'notwin',true,...
-                    'Hermit',param.hermit,'formfact',param.formfact,...
-                    'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-                    'optmem',param.optmem,'tid',0,'fid',0),'noCheck');
-                specQ = sw_neutron(specQ,'pol',false);
-            end
-            
-        case 2
-            % @scga
-            specQ = scga(obj,hkl,struct('fitmode',true,'formfact',param.formfact,...
-                'formfactfun',param.formfactfun,'gtensor',param.gtensor,...
-                'fid',0,'lambda',specQ.lambda,'nInt',param.nInt,'T',param.T,...
-                'plot',false),'noCheck');
-            specQ = sw_neutron(specQ,'pol',false);
+    swpref.setpref('fid',0,'tid',0,'usemex',paramW.usemex);
+    % number of bins along energy
+    switch paramW.binType
+        case 'cbin'
+            nE      = numel(paramW.Evect);
+        case 'ebin'
+            nE      = numel(paramW.Evect) - 1;
     end
     
-    specQ.obj = obj;
-    % use edge grid by default
-    specQ = sw_egrid(specQ,struct('Evect',param.Evect,'T',param.T,'binType',param.binType,...
-    'imagChk',param.imagChk,'component',param.component),'noCheck');
-    powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
-    sw_timeit(ii/nQ*100,0,param.tid);
+    nQ      = numel(hklAW);
+    
+    if numel(paramW.fibo)>1
+        % apply the Fibonacci numerical integration on a sphere
+        % according to J. Phys. A: Math. Gen. 37 (2004) 11591
+        % create QF points on the unit sphere
+        F  = paramW.fibo(1);
+        F1 = paramW.fibo(2);
+        
+        paramW.nRand = F;
+        
+        QF = zeros(3,F);
+        
+        j = 0:(F-1);
+        QF(3,:) = j*2/F-1;
+        
+        theta = asin(QF(3,:));
+        phi   = 2*pi*F1/F*j;
+        
+        QF(1,:) = cos(theta).*sin(phi);
+        QF(2,:) = cos(theta).*cos(phi);
+        
+        paramW.fibo = true;
+    end
+    
+    % select Q points based on labindex
+    selQ = repmat(1:paramW.nWorker,ceil(nQ/paramW.nWorker),1);
+    selQ = find(selQ(1:nQ)==labindex);
+    idx  = 1;
+    
+    powSpec = zeros(max(1,nE),numel(selQ));
+    
+    for ii = selQ
+        if paramW.fibo
+            Q = QF*hklAW(ii);
+        else
+            rQ  = randn(3,paramW.nRand);
+            Q   = bsxfun(@rdivide,rQ,sqrt(sum(rQ.^2)))*hklAW(ii);
+        end
+        hkl = (Q'*objW.basisvector)'/2/pi;
+        
+        switch paramW.funIdx
+            case 0
+                % general function call allow arbitrary additional paramWeters to
+                % pass to the spectral calculation function
+                warnState = warning('off','sw_readparamW:UnreadInput');
+                specQ = paramW.specfun(objW,hkl,varargin{:});
+                warning(warnState);
+            case 1
+                % @spinwave
+                specQ = spinwavefast_duc(objW,hkl,struct('fitmode',true,...
+                    'Hermit',paramW.hermit,'formfact',paramW.formfact,...
+                    'formfactfun',paramW.formfactfun,'gtensor',paramW.gtensor,...
+                    'optmem',paramW.optmem),'noCheck');
+                
+        end
+        
+        specQ.obj = objW;
+        % use edge grid by default
+        specQ = sw_egrid(specQ,struct('Evect',paramW.Evect,'T',paramW.T,'binType',paramW.binType,...
+            'imagChk',paramW.imagChk,'component',paramW.component),'noCheck');
+        
+        
+        powSpec(:,idx) = sum(specQ.swConv,2)/paramW.nRand;
+        idx = idx+1;
+    end
+    if labindex == 1
+        % prepare structure for data pull on first worker
+        if paramW.funIdx == 1
+            specQ  = struct('formfact',specQ.formfact,'gtensor',specQ.gtensor,...
+                'Evect',specQ.Evect,'param',specQ.param,'incomm',specQ.incomm,'helical',specQ.helical);
+        else
+            specQ  = struct('formfact',specQ.formfact,'gtensor',specQ.gtensor,...
+                'Evect',specQ.Evect,'param',specQ.param);
+        end
+    end
 end
 
 sw_timeit(100,2,param.tid);
+fprintf0(param.fid,'Calculation finished.\n');
 
-fprintf0(fid,'Calculation finished.\n');
+% pull calculated spectrum
+spectra.swConv    = [powSpec{:}];
+specQ = specQ{1};
+spectra.formfact  = specQ.formfact;
+spectra.gtensor   = specQ.gtensor;
+spectra.Evect     = specQ.Evect;
+% save all input parameters of spinwave into spectra
+spectra.param     = specQ.param;
+spectra.date      = datestr(now);
 
-% save different field into spectra
-spectra.swConv    = powSpec;
+% save spectral parameters
 spectra.hklA      = hklA;
 spectra.component = param.component;
-spectra.nRand    = param.nRand;
-spectra.T        = param.T;
-spectra.obj      = copy(obj);
-spectra.norm     = false;
-spectra.formfact = specQ.formfact;
-spectra.gtensor  = specQ.gtensor;
-spectra.date     = datestr(now);
-spectra.title    = param.title;
-% save all input parameters of spinwave into spectra
-spectra.param    = specQ.param;
+spectra.nRand     = param.nRand;
+spectra.T         = param.T;
+spectra.obj       = copy(obj);
+spectra.norm      = false;
+spectra.title     = param.title;
 
 % some spectral function dependent parameters
-switch funIdx
-    case 0
-        spectra.Evect    = specQ.Evect;
+switch param.funIdx
     case 1
-        spectra.Evect    = specQ.Evect;
         spectra.incomm   = specQ.incomm;
         spectra.helical  = specQ.helical;
-    case 2
-        spectra.lambda   = specQ.lambda;
 end
 
 end
 
-function [F,F1] = fibonacci(Fmax)
+function [F,F1] = fibo(Fmax)
 % returns the last two Fibonacci number smaller or equal to the
 % given number
 %
-% [Flast Fprev] = fibonacci(Fmax)
+% [Flast Fprev] = fibo(Fmax)
 %
 
 num = [0 0 1];

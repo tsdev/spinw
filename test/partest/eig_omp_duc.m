@@ -24,8 +24,8 @@ if numWorker==0
     if param.hermit
         M = (M+permute(M,[2 1 3]))/2;
     end
-    spec = struct('V',{},'D',{});
-    [spec.V,spec.D] = eigorth(M, 1e-5, true, useMex);
+    spec = struct('V',[],'D',[]);
+    [spec.V,spec.D] = eigorth(M, 1e-5, false, useMex);
     
 else
     M(3) = round(M(3)/numWorker)*numWorker;
@@ -35,15 +35,16 @@ else
     if param.hermit
         M = (M+permute(M,[2 1 3]))/2;
     end
-    
     Mc = Composite();
     Mi = M(3)/numWorker;
     
     for ii = 1:numWorker
         Mc{ii} = M(:,:,(1:Mi)+(ii-1)*Mi);
     end
-    spmd(nn)
-        [V,D] = eigorth(Mc, tol, true, useMex);
+    spmd
+        [V,D] = eigorth(Mc, 1e-5, false, useMex);
+        size(V)
+        size(D)
     end
     
     spec   = struct;

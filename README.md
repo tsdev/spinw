@@ -10,4 +10,5 @@ Keep up to date on announcements and more by following [@spinw4](https://twitter
 # Documentation
 * experimental and under construction, the address can change in the future
 * documentation of the master branch
-* https://tsdev.github.io/spinwdoc/
+* use `swdoc`/`swhelp` instead of the Matlab built-in `doc`/`help` functions to get help on SpinW
+* can be also accessed from the browser: https://tsdev.github.io/spinwdoc/

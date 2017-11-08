@@ -5,7 +5,7 @@ sidebar: sw_sidebar
 permalink: crystal.html
 summary: Representation of magnetic structures and optimization
 folder: documentation
-mathjax: 'true'
+mathjax: true
 ---
 
 * magnetic lattice

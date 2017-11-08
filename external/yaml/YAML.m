@@ -102,6 +102,8 @@ classdef YAML
                 result = char(r);
             elseif isa(r, 'double')
                 result = double(r);
+            elseif isa(r,'logical')
+                result = logical(r);
             elseif isa(r, 'java.util.Date')
                 result = DateTime(r);
             elseif isa(r, 'java.util.List')
@@ -187,6 +189,8 @@ classdef YAML
                 result.add(YAML.dump_data(r{1}));
             elseif isa(r,'DateTime')
                 result = java.util.Date(datestr(r));
+            elseif isa(r,'logical')
+                result = java.lang.Boolean(r);
             else
                 error('YAML:load_data:typeError',...
                     ['Unsupported data type: ' class(r)]);

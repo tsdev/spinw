@@ -217,7 +217,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %               incommensurate or not.
 %   * `obj`     The copy (clone) of the input `obj`, see [spinw.copy].
 %
-% The number of magnetic modes (labelled by `nMode`) for commensurate
+% The number of magnetic modes (labeled by `nMode`) for commensurate
 % structures is double the number of magnetic atoms in the magnetic cell.
 % For incommensurate structures this number is tripled due to the
 % appearance of the $(Q\pm k_m)$ Fourier components in the correlation

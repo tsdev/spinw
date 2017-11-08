@@ -126,7 +126,6 @@ end
 % write into fid file
 if ~isempty(param.fileid)
     fprintf(param.fileid,outStr);
-
 elseif ~isempty(param.path)
     try
         fileid = fopen(param.path,'w');
@@ -167,14 +166,20 @@ uc = obj.unit_cell;
 % aname: name of atom (e.g. 'Cr')
 % alabel: label if given (eg' 'MCr3'), otherwise the same as the name of
 % the atom
-uc.aname = cell(1,nAtom);
+aDat = sw_atomdata(uc.Z);
+
+uc.aname  = {aDat.name};
 uc.alabel = cell(1,nAtom);
 
 for ii = 1:nAtom
     lTemp = strword(uc.label{ii},[1 2],true);
     uc.alabel{ii} = lTemp{1};
-    uc.aname{ii} = lTemp{2};
+    % generate the atom name + oxydation state
+    %uc.aname{ii} = lTemp{2};
+    
+    uc.aname{ii} = sprintf('%s%+1d',uc.aname{ii},uc.ox(ii));
 end
+
 
 % find unique labels for atoms
 for ii = 1:nAtom

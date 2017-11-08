@@ -4,7 +4,7 @@ keywords: homepage
 sidebar: sw_sidebar
 permalink: index.html
 summary:
-mathjax: 'true'
+mathjax: true
 ---
 
 This is the **official documentation** of SpinW. The documentation contains the general description of the code (under the "Documentation" menu) and the function reference for all SpinW classes, packages and function.

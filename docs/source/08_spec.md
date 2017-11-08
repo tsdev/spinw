@@ -5,7 +5,7 @@ sidebar: sw_sidebar
 permalink: crystal.html
 summary: Post processing the spin-spin correlation function
 folder: documentation
-mathjax: 'true'
+mathjax: true
 ---
 
 

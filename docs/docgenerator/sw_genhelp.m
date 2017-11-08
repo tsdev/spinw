@@ -4,9 +4,9 @@ function doctree = sw_genhelp(varargin)
 % SW_GENHELP('option1', value1, ...)
 %
 
-inpForm.fname  = {'sourcepath' 'outpath' 'sidebar'    'fun'      'verstr' 'recalc' 'done'     'docpath'};
-inpForm.defval = {{}           ''        'sw_sidebar' zeros(1,0) struct() true     zeros(1,0) ''       };
-inpForm.size   = {[1 -1]       [1 -5]    [1 -2]       [1 -3]     [1 1]    [1 1]    [1 -4]     [1 -6]   };
+inpForm.fname  = {'sourcepath' 'outpath' 'sidebar'    'fun'      'verstr' 'recalc' 'done'     'docpath' 'upload'};
+inpForm.defval = {{}           ''        'sw_sidebar' zeros(1,0) struct() true     zeros(1,0) ''        false   };
+inpForm.size   = {[1 -1]       [1 -5]    [1 -2]       [1 -3]     [1 1]    [1 1]    [1 -4]     [1 -6]    [1 1]   };
 
 param = sw_readparam(inpForm, varargin{:});
 
@@ -102,6 +102,12 @@ for ii = 1:nPath
         end
         % remove common leading spaces
         doctree(ii).content(jj).text = sw_rmspace(doctree(ii).content(jj).text);
+    end
+    % remove files that are non existing and add warning
+    iEmpty = cellfun(@(C)isempty(C),{doctree(ii).content.text});
+    if any(iEmpty)
+        warning('Help files are missing for references: %s',sprintf(' %s',doctree(ii).content(iEmpty).fun))
+        doctree(ii).content = doctree(ii).content(~iEmpty);
     end
     
     % find Contents.m file and put it to the first place
@@ -211,8 +217,9 @@ for ii = 1:nPath
         content.frontmatter.folder    = doctree(ii).name;
         % mathjax
         isMath    = ~isempty(regexp(content.text,'\$\$','once'));
-        falsetrue = {'false' 'true'};
-        content.frontmatter.mathjax   = falsetrue{isMath+1};
+        %falsetrue = {'false' 'true'};
+        %content.frontmatter.mathjax   = falsetrue{isMath+1};
+        content.frontmatter.mathjax   = isMath;
         doctree(ii).content(jj)       = content;
     end
 end
@@ -395,6 +402,11 @@ allhelp = regexprep(allhelp,'\\\\(\w+)','${symbol($1,true)}');
 % "[funname](https://www.mathworks.com/help/matlab/ref/funname.html)"
 allhelp = regexprep(allhelp,'\[matlab\.(\w+?)\]','[$1](https://www.mathworks.com/help/matlab/ref/$1.html)');
 
+% substitue [command.matlabcommand] links into
+% "[matlabcommand](matlab:matlabcommand)"
+%allhelp = regexprep(allhelp,'\[command\.(.+?)\]','[$1](matlab:$1)');
+
+
 allhelp = regexprep(allhelp,'{{(\w+?) ','{% include $1.html content=" ');
 allhelp = regexprep(allhelp,'}}','" %}');
 
@@ -403,6 +415,11 @@ allhelp = regexprep(allhelp,'}}','" %}');
 % image with caption and url
 regexp0 = '\[\!\[([^\!\[\]]+?)\]\((\S+?)\)\{(.+?)\}\]\((\S+?)\)';
 allhelp = regexprep(allhelp,regexp0,'{% include image.html file="$2" alt="$1" caption="$3" url="$4" %}');
+
+% link to open .dat files in editor
+allhelp = regexprep(allhelp,'\[(\w+?)\.dat\]','[$1.dat](matlab:edit([sw_rootdir,''dat_files'',filesep,''$1.dat'']))');
+
+
 
 % image with caption only
 regexp0 = '\!\[([^\!\[\]]+?)\]\((\S+?)\)\{(.+?)\}';
@@ -580,6 +597,11 @@ yamlStr1 = [yamlStr1{:}];
 fid = fopen([docroot filesep '_data' filesep 'sidebars' filesep 'sw_sidebar.yml'],'w');
 fprintf(fid,yamlStr1);
 fclose(fid);
+
+% upload git
+if param.upload
+    git spinwdoc commit New documentation generated from SpinW source
+end
 
 end
 

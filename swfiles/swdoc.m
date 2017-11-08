@@ -1,5 +1,5 @@
 function varargout = swdoc(funName0)
-% opens the SpinW help
+% opens the SpinW documentation
 %
 % ### Syntax
 %

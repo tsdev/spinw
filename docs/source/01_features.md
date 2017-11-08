@@ -5,10 +5,10 @@ sidebar: sw_sidebar
 permalink: index.html
 summary: Quick list of features
 folder: documentation
-mathjax: 'true'
+mathjax: true
 ---
 
-SpinW is a Matlab library that can define spin Hamiltonians including general quadratic exchange interactions, single ion anistropy and external magnetic field, applying space group symmetries and solve the resulting equation of motion.
+SpinW is a Matlab library that can define spin Hamiltonians including general quadratic exchange interactions, single ion anisotropy and external magnetic field, applying space group symmetries and solve the resulting equation of motion.
 
 ### Summary
 
@@ -26,7 +26,7 @@ where $\textbf{S}_i$ are spin vector operators, $J_{ij}$ are $[3\times 3]$ matri
 
 ### Magnetic structures
 
-* definition of magnetic structures using complex magnetisation vectors
+* definition of magnetic structures using complex magnetization vectors
 * representation of incommensurate structures using rotating frame coordinate system
 * generation of magnetic structures on a magnetic supercell
 * 3D visualization of magnetic structures
@@ -41,7 +41,7 @@ where $\textbf{S}_i$ are spin vector operators, $J_{ij}$ are $[3\times 3]$ matri
 
 ### Optimization of magnetic structures
 
-* minimiation of the classical energy assuming single-k magnetic structure for fast and simple solution for ground state magnetic structure
+* minimization of the classical energy assuming single-k magnetic structure for fast and simple solution for ground state magnetic structure
 * simulated annealing using the Metropolis algorithm on an arbitrary large magnetic supercell
 * calculating properties in thermodynamical equilibrium (heat capacity, magnetic susceptibility, etc.)
 * calculation of the magnetic structure factor

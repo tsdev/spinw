@@ -123,7 +123,7 @@ switch datType
     case 'Z'
         data = [atom.Z];
     case 'all'
-        data = rmfield(atom,'MODE');
+        data = rmfield(atom,'tag');
     otherwise
         error('sw_atomdata:WrongInput','datType has to be one of the string options, see help sw_atomdata!');
 end

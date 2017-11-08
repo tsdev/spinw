@@ -5,7 +5,7 @@ sidebar: sw_sidebar
 permalink: crystal.html
 summary: Representation of space groups and coordinate systems
 folder: documentation
-mathjax: 'true'
+mathjax: true
 ---
 
 * coordinate systems

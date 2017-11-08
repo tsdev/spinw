@@ -5,7 +5,7 @@ sidebar: sw_sidebar
 permalink: crystal.html
 summary: Quick introduction to SpinW
 folder: documentation
-mathjax: 'true'
+mathjax: true
 ---
 
 
@@ -87,9 +87,9 @@ The main advantages of handle class:
 
 ## Matrix dimensions
 
-Since Matlab is optimised for working with arrays efficiently, many of input and output arguments of the [spinw] methods take multidimensional arrays. Thus it is important to introduce some definitions. Throughout the documentation the word matrix will refer to multidimensional arrays where the dimensions are denoted in square brackets, e.g. $[3\times n_{atom}]$ means a matrix with 3 rows and variable number of columns, this is a 2D matrix but there are matrices with higher dimensions, e.g. the spin-spin correlation function can be represented by a matrix with dimensions of $[3\times 3 \times n_{mode}\times n_Q]$, which corresponds to $S^{\alpha\beta}(\omega,\textrm{Q})$, where $\alpha,\beta\in\{x,y,z\}$ and $\omega$ is indexed by the mode number of $\textbf{Q}$ is indexed on a predefined grid. Since the sequence of dimensions is not fixed by math, a representation of the spin-spin orrelation function with a matrix with dimensions of $[n_{mode}\times n_Q\times 3\times 3]$ is equally valid. To minimize the guessing, each matrix is SpinW is defined such that the variable size dimensions are the rightmost. For example a list of position vectors will be stored in a matrix with dimensions of $[3\times n]$, a list of $[3\times 3]$ matrices will be stored in a matrix with dimensions of $[3\times 3\times n]$.
+Since Matlab is optimized for working with arrays efficiently, many of input and output arguments of the [spinw] methods take multidimensional arrays. Thus it is important to introduce some definitions. Throughout the documentation the word matrix will refer to multidimensional arrays where the dimensions are denoted in square brackets, e.g. $[3\times n_{atom}]$ means a matrix with 3 rows and variable number of columns, this is a 2D matrix but there are matrices with higher dimensions, e.g. the spin-spin correlation function can be represented by a matrix with dimensions of $[3\times 3 \times n_{mode}\times n_Q]$, which corresponds to $S^{\alpha\beta}(\omega,\textrm{Q})$, where $\alpha,\beta\in\{x,y,z\}$ and $\omega$ is indexed by the mode number of $\textbf{Q}$ is indexed on a predefined grid. Since the sequence of dimensions is not fixed by math, a representation of the spin-spin correlation function with a matrix with dimensions of $[n_{mode}\times n_Q\times 3\times 3]$ is equally valid. To minimize the guessing, each matrix is SpinW is defined such that the variable size dimensions are the rightmost. For example a list of position vectors will be stored in a matrix with dimensions of $[3\times n]$, a list of $[3\times 3]$ matrices will be stored in a matrix with dimensions of $[3\times 3\times n]$.
 
-## SpinW Cheatsheet
+## SpinW Cheat Sheet
 
 The SpinW cheat sheet shows the most common commands and their list of input parameters with the required input matrix dimensions. Print it and keep it close to your desk!
 

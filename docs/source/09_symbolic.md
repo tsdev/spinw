@@ -5,7 +5,7 @@ sidebar: sw_sidebar
 permalink: crystal.html
 summary: Symbolic spin wave calculation mode
 folder: documentation
-mathjax: 'true'
+mathjax: true
 ---
 
 * defining a symbolic model

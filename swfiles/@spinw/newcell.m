@@ -3,11 +3,13 @@ function varargout = newcell(obj,varargin)
 % 
 % ### Syntax
 % 
-% `{t} = newcell(obj,Name,Value)`
+% `newcell(obj,Name,Value)`
+%
+% `T = newcell(obj,Name,Value)`
 % 
 % ### Description
 % 
-% `{t} = newcell(obj,Name,Value)` redefines the unit cell using new basis
+% `T = newcell(obj,Name,Value)` redefines the unit cell using new basis
 % vectors. The input three basis vectors are in lattice units of the
 % original cell and define a parallelepiped. The atoms from the original
 % unit cell will fill the new unit cell and if the two cells are compatible

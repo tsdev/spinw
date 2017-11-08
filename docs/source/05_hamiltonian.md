@@ -5,7 +5,7 @@ sidebar: sw_sidebar
 permalink: crystal.html
 summary: Definition of the complete spin Hamiltonian
 folder: documentation
-mathjax: 'true'
+mathjax: true
 ---
 
 * general spin Hamiltonian

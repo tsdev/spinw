@@ -5,7 +5,7 @@ sidebar: sw_sidebar
 permalink: crystal.html
 summary:
 folder: documentation
-mathjax: 'true'
+mathjax: true
 ---
 
 ## Help

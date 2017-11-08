@@ -46,7 +46,8 @@ idx = find(cellfun(@(C)~isempty(C)&&(C(1)==1),strfind(nList,sName)),1,'first');
 if ~isempty(idx)
     S = cList(idx);
 elseif isempty(idx) && nargin>1 && noError
-    S = [':::' sName ':::'];
+    %S = [':::' sName ':::'];
+    S = sName;
     fprintf(['The following symbol does not exists: ''' sName '''\n'])
 else
     error('symbol:WrongInput','Symbol ''%s'' with the given name doesn''t exists!',sName)

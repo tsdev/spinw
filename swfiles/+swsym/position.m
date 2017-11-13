@@ -22,7 +22,7 @@ function [r, aIdx, opInfo] = position(symOp, r0, fid, tol)
 % : Either the label of the space group or the index from
 %   the [International Tables of Crystallography](http://it.iucr.org/A/) or
 %   string containing the space group operators in the same format as used
-%   in the `symmetry.dat` file (for details see [swsym.str]).
+%   in the [symmetry.dat] file (for details see [swsym.str]).
 % 
 % `r0`
 % : Atomic position in lattice units in a matrix with dimensions of

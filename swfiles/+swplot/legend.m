@@ -90,6 +90,8 @@ if (~switchon && ~isempty(lDat.handle)) || refresh
     if ~refresh
         return
     end
+elseif switchon==false && ~refresh
+    return
 end
 
 if isempty(lDat.type)

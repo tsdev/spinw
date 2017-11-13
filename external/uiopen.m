@@ -1,5 +1,6 @@
 function uiopen(type,direct)
-%Overloaded UIOPEN to enable drag&drop for .cif files via SpinW.
+% Overloaded UIOPEN to enable drag&drop for .cif files via SpinW and to
+% show images in Matlab.
 %
 %You can drag&drop .cif files into the Matlab Command Window and
 %they will be plotted automatically. For any other input, the function
@@ -70,7 +71,14 @@ if numel(type)>3 && strcmpi(type(end+(-3:0)),'.cif') && direct
     % add the model to base workspace
     assignin('base', 'cifmodel', model);
     fprintf('The imported SpinW object is stored in the ''cifmodel'' variable.\n');
-    
+elseif numel(type)>3 && any(strcmpi(type(end+(-3:0)),{'.png' '.jpg'})) && direct
+    fName = regexp(type,[filesep '([\w\.]+?)$'],'tokens');
+    figure('ToolBar','none','MenuBar','none','Name',fName{1}{1});
+    warning('off','images:initSize:adjustingMag')
+    imshow(type);
+    warning('on','images:initSize:adjustingMag')
+    %assignin('base', 'img', imread(type));
+    %fprintf('The imported image is stored in the ''img'' variable.\n');
 else
     pwd0 = pwd;
     cd([matlabroot filesep 'toolbox' filesep 'matlab' filesep 'uitools'])

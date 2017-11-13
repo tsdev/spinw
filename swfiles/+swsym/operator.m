@@ -16,7 +16,7 @@ function [symOp, symInfo] = operator(sym, fid)
 % ### Input Arguments
 % 
 % `sym`
-% : Line index in the `symmetry.dat` file or string of the
+% : Line index in the [symmetry.dat] file or string of the
 %   symmetry operators or matrix of symmetry generators with dimensions of
 %   $[3\times 4\times n_{op}]$. For example: `sym = 'P n m a'`.
 % 
@@ -38,9 +38,9 @@ function [symOp, symInfo] = operator(sym, fid)
 %   group with the following fields:
 %   * `name`    Name of the space group, if the `swsym.generator`
 %               function is called with no input, name stores the name of
-%               all space groups from `symmetry.dat` file in a cell.
+%               all space groups from [symmetry.dat] file in a cell.
 %   * `str`     The string of the symmetry operations.
-%   * `num`     The line index in the `symmetry.dat` file.
+%   * `num`     The line index in the [symmetry.dat] file.
 % 
 % ### See Also
 % 

@@ -2,7 +2,7 @@
 %
 % This package deals with symmetry operators of crystallographic space
 % groups. It can read the standard space group definitions stored in
-% `symmetry.dat`, generate all symmmetry elements, determine all symmetry
+% [symmetry.dat], generate all symmmetry elements, determine all symmetry
 % equivalent positions, etc. 
 %
 % All symmetry operators `symOp` are defined by a matrix with dimensions of

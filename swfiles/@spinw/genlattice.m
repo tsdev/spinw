@@ -1,18 +1,38 @@
 function R = genlattice(obj, varargin)
 % generates crystal lattice
 % 
-% `{R} = genlattice(obj, 'option1', value1, ...)`
-% * * *
+% ### Syntax
 %
-% The function generates all necessary parameters to define a lattice with
-% symmetry and store it in `obj.lattice`.
+% `genlattice(obj,Name,Value)`
 %
-% Alternatively the lattice parameters can be given directly when the spinw
-% object is created using `spinw(inpStr)` command, where struct contains
-% the fields with initial parameters, e.g.:
+% `R = genlattice(___)`
+%
+% ### Description
+%
+% `genlattice(obj,Name,Value)` generates all necessary parameters to define
+% a lattice including space group symmetry and store the result it in the
+% [spinw.lattice] field.
+%
+% `R = genlattice(___)` also returns the rotation matrix that
+% rotates the inpub basis vectors to the internal coordinate system.
+%
+% Alternatively the lattice parameters can be given directly when the
+% [spinw] object is created using the `spinw(inpStr)` command, where struct
+% contains the fields with initial parameters, e.g.:
 % ```
 % inpStr.lattice.lat_const = [3 3 4];
 % ```
+%
+% ### Example
+%
+% ```
+% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','P 6')
+% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr',168)
+% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','-y,x-y,z; -x,-y,z','label','R -3 m')
+% ```
+%
+% The three lines are equivalent, both will create hexagonal lattice, with
+% $P6$ space group.
 %
 % ### Input
 %
@@ -35,14 +55,14 @@ function R = genlattice(obj, varargin)
 % : Defines the space group. Can have the following values:
 %
 %   * **space group label** string, name of the space group, can be any
-%     label defined in the `symmetry.dat` file.
-%   * **space group index** line number in the `symmetry.dat` file.
+%     label defined in the [symmetry.dat] file.
+%   * **space group index** line number in the [symmetry.dat] file.
 %   * **space group operators** matrix with dimensions 
 %     $[3\times 4\times n_{op}]$.
 %   
-%   The `symmetry.dat` file stores definition of the 230 space groups in
+%   The [symmetry.dat] file stores definition of the 230 space groups in
 %   standard settings as it is in the [International Tables of Crystallography](http://it.iucr.org/A/).
-%   Additional lines can be added to the `symmetry.dat` file using the
+%   Additional lines can be added to the [symmetry.dat] file using the
 %   [swsym.add] function which later can be used in the `spgr` option.
 % 
 %   If the `spgr` option is 0, no symmetry will be used. The
@@ -80,17 +100,6 @@ function R = genlattice(obj, varargin)
 % will be changed based on the input, the lattice parameters are stored
 % directly and the optional space group string is converted into space
 % group operator matrices.
-%
-% ### Example
-%
-% ```
-% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','P 6')
-% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr',168)
-% crystal.genlattice('lat_const',[3 3 4],'angled',[90 90 120],'spgr','-y,x-y,z; -x,-y,z','label','R -3 m')
-% ```
-%
-% The three lines are equivalent, both will create hexagonal lattice, with
-% $P6$ space group.
 %
 % ### See also
 %

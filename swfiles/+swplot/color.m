@@ -10,10 +10,10 @@ function [RGB, nameOut] = color(cName, index)
 % ### Description
 % 
 % `RGB = swplot.color(cName)` reads the color RGB values from the
-% `color.dat` file corresponding to the given color name `cName`. The
+% [color.dat] file corresponding to the given color name `cName`. The
 % color name can be either a single character (see [matlab.colorspec]) or
 % any [HTML color name](https://www.w3schools.com/colors/colors_names.asp)
-% that is stored in the `color.dat` file.
+% that is stored in the [color.dat] file.
 % 
 % `RGB = swplot.color(cName,index)` if `index` is true, RGB code
 % corresponding to the `cName` color index is read.
@@ -32,7 +32,7 @@ function [RGB, nameOut] = color(cName, index)
 % 
 % `index`
 % : If `true`, instead of the color name, `cName` means the index of the
-%   color in the `color.dat` file. index 1 corresponds to the 9th entry
+%   color in the [color.dat] file. index 1 corresponds to the 9th entry
 %   (the first 8 entry are standard Matlab color names), default value is
 %   `false`.
 % 

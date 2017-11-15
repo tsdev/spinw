@@ -29,8 +29,13 @@ else
     helpStr = regexprep(helpStr,'\[([^\n]+?)\]\((.+?)\)','$1');
 end
 
-helpStr = regexprep(helpStr,'>>','');
+% remove abbreviation list
+helpStr = regexprep(helpStr,'\n\s*?\*\[[.a-zA-Z0-9\s]+?\]:.+?\n','\n');
+% remove code formatting
 helpStr = regexprep(helpStr,'>>>','');
+helpStr = regexprep(helpStr,'>>','');
+% remove snapnow code
+helpStr = regexprep(helpStr,'\n\s*snapnow\n','\n');
 helpStr = regexprep(helpStr,'\\\\(\w+)','${symbol($1,2)}');
 
 regexp0 = '\[\!\[([^\!\[\]]+?)\]\((\S+?)\)\{(.+?)\}\]\((\S+?)\)';
@@ -58,8 +63,6 @@ else
     helpStr = regexprep(helpStr,'\[(\w+?)\]','$1');
 
 end
-
-
 
 % remove the note marking
 helpStr = regexprep(helpStr,'{{warning (.+?)}}',[newline repmat([symbol('skull') ' '],1,37) newline '$1' newline repmat([symbol('skull') ' '],1,37)]);

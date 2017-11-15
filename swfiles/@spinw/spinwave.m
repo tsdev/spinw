@@ -40,7 +40,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % >>snapnow
 % ```
 % 
-% ### Input arguments
+% ### Input Arguments
 %
 % `obj`
 % : [spinw] object.
@@ -229,7 +229,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % ### See also
 %
-% [spinw] \| [spinw.spinwavesym] \| [sw_mex] \| [spinw.powspec]
+% [spinw] \| [spinw.spinwavesym] \| [sw_mex] \| [spinw.powspec] \| [sortmode]
 %
 
 % for linear scans create the Q line(s)
@@ -794,7 +794,20 @@ for jj = 1:nSlice
                 [K, posDef]  = chol(ham(:,:,ii));
                 if posDef > 0
                     try
-                        K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
+                        % get tolerance from smallest negative eigenvalue
+                        tol0 = eig(ham(:,:,ii));
+                        tol0 = sort(real(tol0));
+                        tol0 = abs(tol0(1));
+                        % TODO determine the right tolerance value
+                        tol0 = tol0*sqrt(nMagExt*2)*4;
+                        if tol0>param.omega_tol
+                            error('spinw:spinwave:NonPosDefHamiltonian','Very baaaad!');
+                        end
+                        try
+                            K = chol(ham(:,:,ii)+eye(2*nMagExt)*tol0);
+                        catch
+                            K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
+                        end
                         warn1 = true;
                     catch PD
                         if param.tid == 2
@@ -811,22 +824,14 @@ for jj = 1:nSlice
                 K2 = K*gComm*K';
                 K2 = 1/2*(K2+K2');
                 % Hermitian K2 will give orthogonal eigenvectors
-                if param.sortMode
-                    [U, D] = eigenshuffle(K2);
-                else
-                    [U, D] = eig(K2);
-                    D = diag(D);
-                end
+                [U, D] = eig(K2);
+                D      = diag(D);
                 
-                % sort eigenvalues to decreasing order this contradicts with
-                % eigenshuffle
-                
-                % TODO
-                [D, idx] = sort(D,'descend');
+                % sort modes accordign to the real part of the energy
+                [~, idx] = sort(real(D),'descend');
                 U = U(:,idx);
-                
                 % omega dispersion
-                omega(:,end+1) = D; %#ok<AGROW>
+                omega(:,end+1) = D(idx); %#ok<AGROW>
                 
                 % the inverse of the para-unitary transformation V
                 V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*omega(:,end))); %#ok<MINV>
@@ -836,15 +841,9 @@ for jj = 1:nSlice
         % All the matrix calculations are according to White's paper
         % R.M. White, et al., Physical Review 139, A450?A454 (1965)
         
-        %gham = 0*ham;
-        %for ii = 1:nHklMEM
-        %    gham(:,:,ii) = gComm*ham(:,:,ii);
-        %end
-        
         gham = mmat(gComm,ham);
-        %gham = mtimesx(gComm,ham);
         
-        [V, D, orthWarn] = eigorth(gham,param.omega_tol, param.sortMode,useMex);
+        [V, D, orthWarn] = eigorth(gham,param.omega_tol,useMex);
         
         orthWarn0 = orthWarn || orthWarn0;
         
@@ -904,6 +903,12 @@ for jj = 1:nSlice
     Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     
     sw_timeit(jj/nSlice*100,0,param.tid);
+end
+
+if param.sortMode
+    % sort the spin wave modes
+    [omega, Sab] = sortmode(omega,reshape(Sab,9,size(Sab,3),[]));
+    Sab          = reshape(Sab,3,3,size(Sab,2),[]);
 end
 
 [~,singWarn] = lastwarn;

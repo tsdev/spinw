@@ -101,9 +101,6 @@ inpForm.size   = {[1 1] [1 1]   [1 1] [1 1]       [1 1]    [1 1]};
 
 param = sw_readparam(inpForm, varargin{:});
 
-% no modesorting
-param.sortMode = false;
-
 magstr = obj.magstr;
 
 % size of the extended magnetic unit cell
@@ -326,7 +323,7 @@ for jj = 1:nSlice
             gham(:,:,ii) = g*ham(:,:,ii);
         end
         
-        [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
+        [V, D] = eigorth(gham,param.omega_tol);
         
         for ii = 1:nHklMEM
             % multiplication with g removed to get negative and positive

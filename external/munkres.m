@@ -1,175 +1,3 @@
-function [Vseq,Dseq] = modeshuffle(Vseq,Dseq)
-% eigenshuffle: Consistent sorting for an eigenvalue/vector sequence
-% [Vseq,Dseq] = modeshuffle(Asequence, useMex, varargin)
-%
-% Includes munkres.m (by gracious permission from Yi Cao)
-% to choose the appropriate permutation. This greatly
-% enhances the speed of eigenshuffle over my previous
-% release.
-%
-% http://www.mathworks.com/matlabcentral/fileexchange/20652
-%
-% Arguments: (input)
-%  Asequence - an array of eigenvalue problems. If
-%      Asequence is a 3-d numeric array, then each
-%      plane of Asequence must contain a square
-%      matrix that will be used to call eig.
-%
-%      Eig will be called on each of these matrices
-%      to produce a series of eigenvalues/vectors,
-%      one such set for each eigenvalue problem.
-%
-% Arguments: (Output)
-%  Vseq - a 3-d array (pxpxn) of eigenvectors.
-%
-%  Dseq - pxn array of eigen values.
-%  Idx  - Permutation indices that sorts the eigenvalues and eigenvectors,
-%         dimensions are (pxn). The ordering chosen will be one that
-%         maximizes the energy of the consecutive eigensystems relative to
-%         each other. The proper order:
-%           Vseq(:,:,i) = Vseq(:,Idx(:,i),i);
-%           Dseq(:,i)   = Dseq(Idx(:,i),i);
-%
-% Example:
-%  Efun = @(t) [1 2*t+1 t^2 t^3;2*t+1 2-t t^2 1-t^3; ...
-%               t^2 t^2 3-2*t t^2;t^3 1-t^3 t^2 4-3*t];
-%
-%  Aseq = zeros(4,4,21);
-%  for i = 1:21
-%    Aseq(:,:,i) = Efun((i-11)/10);
-%  end
-%  [Vseq,Dseq] = eigenshuffle(Aseq);
-%
-% To see that eigenshuffle has done its work correctly,
-% look at the eigenvalues in sequence, after the shuffle.
-%
-% t = (-1:.1:1)';
-% [t,Dseq']
-% ans =
-%        -1     8.4535           5      2.3447     0.20181
-%      -0.9     7.8121      4.7687      2.3728     0.44644
-%      -0.8     7.2481        4.56      2.3413     0.65054
-%      -0.7     6.7524      4.3648      2.2709      0.8118
-%      -0.6     6.3156      4.1751      2.1857     0.92364
-%      -0.5     5.9283      3.9855      2.1118     0.97445
-%      -0.4     5.5816      3.7931      2.0727     0.95254
-%      -0.3     5.2676      3.5976      2.0768       0.858
-%      -0.2     4.9791      3.3995      2.1156     0.70581
-%      -0.1     4.7109         3.2      2.1742     0.51494
-%         0     4.4605           3      2.2391     0.30037
-%       0.1     4.2302         2.8      2.2971    0.072689
-%       0.2     4.0303      2.5997      2.3303    -0.16034
-%       0.3     3.8817      2.4047      2.3064    -0.39272
-%       0.4     3.8108      2.1464      2.2628    -0.62001
-%       0.5     3.8302      1.8986      2.1111    -0.83992
-%       0.6     3.9301      1.5937      1.9298     -1.0537
-%       0.7     4.0927      1.2308       1.745     -1.2685
-%       0.8     4.3042     0.82515      1.5729     -1.5023
-%       0.9     4.5572     0.40389      1.4272     -1.7883
-%         1     4.8482  -8.0012e-16     1.3273     -2.1755
-%
-% Here, the columns are the shuffled eigenvalues.
-% See that the second eigenvalue goes to zero, but
-% the third eigenvalue remains positive. We can plot
-% eigenvalues and see that they have crossed, near
-% t = 0.35 in Efun.
-%
-% plot(-1:.1:1,Dseq')
-%
-% For a better appreciation of what eigenshuffle did,
-% compare the result of eig directly on Efun(.3) and
-% Efun(.4). Thus:
-%
-% [V3,D3] = eig(Efun(.3))
-% V3 =
-%     -0.74139      0.53464     -0.23551       0.3302
-%      0.64781       0.4706     -0.16256      0.57659
-%    0.0086542     -0.44236     -0.89119      0.10006
-%     -0.17496     -0.54498      0.35197      0.74061
-%
-% D3 =
-%     -0.39272            0            0            0
-%            0       2.3064            0            0
-%            0            0       2.4047            0
-%            0            0            0       3.8817
-%
-% [V4,D4] = eig(Efun(.4))
-% V4 =
-%     -0.73026      0.19752      0.49743      0.42459
-%      0.66202      0.21373      0.35297      0.62567
-%     0.013412     -0.95225      0.25513      0.16717
-%     -0.16815    -0.092308     -0.75026      0.63271
-%
-% D4 =
-%     -0.62001            0            0            0
-%            0       2.1464            0            0
-%            0            0       2.2628            0
-%            0            0            0       3.8108
-%
-% With no sort or shuffle applied, look at V3(:,3). See
-% that it is really closest to V4(:,2), but with a sign
-% flip. Since the signs on the eigenvectors are arbitrary,
-% the sign is changed, and the most consistent sequence
-% will be chosen. By way of comparison, see how the
-% eigenvectors in Vseq have been shuffled, the signs
-% swapped appropriately.
-%
-% Vseq(:,:,14)
-% ans =
-%       0.3302      0.23551     -0.53464      0.74139
-%      0.57659      0.16256      -0.4706     -0.64781
-%      0.10006      0.89119      0.44236   -0.0086542
-%      0.74061     -0.35197      0.54498      0.17496
-%
-% Vseq(:,:,15)
-% ans =
-%      0.42459     -0.19752     -0.49743      0.73026
-%      0.62567     -0.21373     -0.35297     -0.66202
-%      0.16717      0.95225     -0.25513    -0.013412
-%      0.63271     0.092308      0.75026      0.16815
-%
-% See also: eig
-%
-% Author: John D'Errico
-% e-mail: woodchips@rochester.rr.com
-% Release: 3.0
-% Release date: 2/18/09
-%
-
-n = size(Dseq,2);
-% now, treat each eigenproblem in sequence (after
-% the first one.)
-for i = 2:n
-    % compute distance between systems
-    V1 = Vseq(:,:,i-1);
-    V2 = Vseq(:,:,i);
-    D1 = Dseq(:,i-1);
-    D2 = Dseq(:,i);
-    dist = (1-abs(V1'*V2)).*sqrt( ...
-        distancematrix(real(D1),real(D2)).^2+ ...
-        distancematrix(imag(D1),imag(D2)).^2);
-    
-    % Is there a best permutation? use munkres.
-    % much faster than my own mintrace, munkres
-    % is used by gracious permission from Yi Cao.
-    reorder = munkres(dist);
-    
-    Vseq(:,:,i) = Vseq(:,reorder,i);
-    Dseq(:,i)   = Dseq(reorder,i);
-    
-end
-
-% =================
-% end mainline
-% =================
-% begin subfunctions
-% =================
-
-function d = distancematrix(vec1,vec2)
-% simple interpoint distance matrix
-[vec1,vec2] = ndgrid(vec1,vec2);
-d = abs(vec1 - vec2);
-
 function [assignment,cost] = munkres(costMat)
 % MUNKRES   Munkres (Hungarian) Algorithm for Linear Assignment Problem.
 %
@@ -246,12 +74,21 @@ minC = min(bsxfun(@minus, dMat, minR));
 zP = dMat == bsxfun(@plus, minC, minR);
 
 starZ = zeros(n,1);
-while any(zP(:))
-    [r,c]=find(zP,1);
-    starZ(r)=c;
-    zP(r,:)=false;
-    zP(:,c)=false;
+
+% speed up by 30%
+[r,c] = find(zP);
+rc = [r c];
+while ~isempty(rc)
+    starZ(rc(1,1)) = rc(1,2);
+    rc(rc(:,1)==rc(1,1) | rc(:,2)==rc(1,2),:) = [];
 end
+
+% while any(zP(:))
+%     [r,c]=find(zP,1);
+%     starZ(r)=c;
+%     zP(r,:)=false;
+%     zP(:,c)=false;
+% end
 
 while 1
     %**************************************************************************
@@ -342,6 +179,8 @@ starZ = starZ(1:nRows);
 vIdx = starZ <= nCols;
 assignment(rowIdx(vIdx)) = colIdx(starZ(vIdx));
 cost = trace(costMat(assignment>0,assignment(assignment>0)));
+end
+
 
 function [minval,rIdx,cIdx]=outerplus(M,x,y)
 [nx,ny]=size(M);
@@ -356,3 +195,4 @@ for r=1:nx
     end
 end
 [rIdx,cIdx]=find(M==minval);
+end

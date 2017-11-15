@@ -1055,12 +1055,14 @@ if orthWarn0
     warning('spinw:spinwave:NoOrth','Eigenvectors of defective eigenvalues cannot be orthogonalised at some q-point!');
 end
 
-lineLink = ['<a href="matlab:opentoline([''' sw_rootdir 'swfiles' filesep '@spinw' filesep 'spinwave.m''' '],758,0)">line 758</a>'];
-
 if strcmp(singWarn,'MATLAB:nearlySingularMatrix')
+    lineLink = 'line 846';
+    if feature('HotLinks')
+        lineLink = ['<a href="matlab:opentoline([''' sw_rootdir 'swfiles' filesep '@spinw' filesep 'spinwave.m''' '],846,0)">' lineLink '</a>'];
+    end
     warning('spinw:spinwave:nearlySingularMatrix',['Matrix is close '...
         'to singular or badly scaled. Results may be inaccurate.\n> In spinw/spinwave (' lineLink ')']);
-    fprintf(repmat('\b',[1 30]));
+    %fprintf(repmat('\b',[1 30]));
 end
 
 end

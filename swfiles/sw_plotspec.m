@@ -186,9 +186,9 @@ inpForm.fname  = [inpForm.fname  {'dE'  'fontSize' 'colormap' 'axLim' 'ddat'}];
 inpForm.defval = [inpForm.defval {0     14         'auto'     'auto'  1e-2  }];
 inpForm.size   = [inpForm.size   {[1 1] [1 1]      [-1 -2]    [1 -3]  [1 1] }];
 
-inpForm.fname  = [inpForm.fname  {'legend' 'title' 'nCol' 'twin'     }];
-inpForm.defval = [inpForm.defval {true     true    500    zeros(1,0) }];
-inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 1]  [1 -4]     }];
+inpForm.fname  = [inpForm.fname  {'legend' 'title' 'nCol' 'twin'     'datFormat'}];
+inpForm.defval = [inpForm.defval {true     true    500    zeros(1,0) 'or'       }];
+inpForm.size   = [inpForm.size   {[1 1]    [1 1]   [1 1]  [1 -4]     [1 -10]    }];
 
 inpForm.fname  = [inpForm.fname  {'lineStyle'     'lineWidth' 'sortMode'}];
 inpForm.defval = [inpForm.defval {{'-' 'o-' '--'} 0.5         false     }];
@@ -287,7 +287,7 @@ if param.mode == 4
             'dashed',true,'colorbar',false,'axLim',param.axLim,...
             'lineStyle',param.lineStyle,'maxPatch',...
             param.maxPatch,'qLabel',param.qlabel,'dat',param.dat,...
-            'ddat',param.ddat);
+            'ddat',param.ddat,'datFormat',param.datFormat);
     end
     if ~powmode
         hold on
@@ -305,7 +305,7 @@ if param.mode == 4
             Emax = max(real(spectra.omega(:)));
         end
 
-        [fHandle, pHandle] = sw_plotspec(spectra,'mode',1,'colorbar',~pColor,...
+        [fHandle, pHandle] = sw_plotspec(spectra,'mode','disp','colorbar',~pColor,...
             'dashed',false,'title',~pColor,'legend',~pColor,'imag',~pColor,...
             'lineStyle',param.lineStyle,'colormap',cMap0,'axLim',[0 1.1*Emax],...
             'qLabel',param.qlabel);
@@ -823,8 +823,12 @@ if param.mode == 3
         hAxis(2) = axes('Position',hAxis.Position,'Color','none');
         linkaxes(hAxis,'xy');
         hold on
+        if ~iscell(param.datFormat)
+            param.datFormat = {param.datFormat};
+        end
+        
         for jj = 1:nMode
-            errorbar(xAxis(idxD),dat.E(jj,sel),dat.s(jj,sel),'or')
+            errorbar(xAxis(idxD),dat.E(jj,sel),dat.s(jj,sel),param.datFormat{:})
         end
         axes(hAxis(1));
     end

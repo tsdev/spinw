@@ -27,6 +27,9 @@ cList = char([295 197 169 174 176:179 215 449 10178 8747 8364 945:969 913:929 93
 nList = [nList      {'skull' 'sun' 'moon' 'ok'   'Angstrom' '^0' '^1' '^2' '^3' '^-' 'bra' 'ket'}];
 cList = [cList char([9760    9788  9789   10004  197        8304 185  178  179  8315 10216 10217])];
 
+nList = [nList      {'leq' 'geq' 'equiv' 'll' 'gg' 'propto'}];
+cList = [cList char([8818  8819  8801    8810 8811  8733  ])];
+
 nL = numel(nList);
 
 if nargin == 0

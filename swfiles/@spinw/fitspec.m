@@ -133,12 +133,13 @@ function fitsp = fitspec(obj, varargin)
 % * `redX2` Reduced $\chi^2_\eta$ value, goodness of the fit stored in a column 
 %           vector with $n_{run}$ number of elements, sorted in increasing 
 %           order. $\chi^2_\eta$ is defined as:
-%               $\begin{align}
+%
+%   $\begin{align}
 %                   \chi^2_\eta &= \frac{\chi^2}{\eta},\\
 %                   \eta        &= n-m+1,
-%               \end{align}$
-%           where \\eta is the degree of freedom, $n$ number of
-%           observations and $m$ is the number of fitted parameters.
+%   \end{align}$
+%   where \\eta is the degree of freedom, $n$ number of
+%   observations and $m$ is the number of fitted parameters.
 %
 % * `exitflag`  Exit flag of the `fminsearch` command.
 % * `output`    Output of the `fminsearch` command.
@@ -149,7 +150,7 @@ function fitsp = fitspec(obj, varargin)
 % data (or that the error variance has been underestimated). In principle,
 % a value of \\chi$^2_\eta$= 1 indicates that the extent of the match
 % between observations and estimates is in accord with the error variance.
-% A \\chi$^2_\eta$ < 1 indicates that the model is "over-fitting" the data:
+% A \\chi$^2_\eta$ < 1 indicates that the model is 'over-fitting' the data:
 % either the model is improperly fitting noise, or the error variance has
 % been overestimated.}}
 %

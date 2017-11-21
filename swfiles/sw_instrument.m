@@ -214,6 +214,7 @@ if size(Q,1) > 1
 end
 
 if param.dQ > 0
+    Qconv = [Q(1) Q(1)+cumsum(abs(diff(Q)))];
     
     % standard deviation of the Q resolution Gaussian
     stdG = param.dQ/2.35482;
@@ -221,9 +222,9 @@ if param.dQ > 0
     for jj = 1:nPlot
         swConv = spectra.swConv{jj};
         swConvTemp = swConv * 0;
-        for ii = 1:numel(Q)
+        for ii = 1:numel(Qconv)
             % Gaussian with intensity normalised to 1, centered on E(ii)
-            fG = exp(-((Q-Q(ii))/stdG).^2/2);
+            fG = exp(-((Qconv-Qconv(ii))/stdG).^2/2);
             fG = fG/sum(fG);
             swConvTemp = swConvTemp + swConv(:,ii) * fG;
             

@@ -6,12 +6,20 @@ function S = symbol(sName,noError)
 % Input:
 %
 % sName     String, name of the symbol. For example: 'alpha', 'Angstrom',
-%           etc. The input is case sensitive.
+%           etc. The input is case sensitive. Alternatively it can be a
+%           text that contains name of symbols with \\ before them, for
+%           example: "The length of the bond is 3.2 \\a.".
 %
 % Output:
 %
 % S         A char type variable containing the symbol.
 %
+
+if any(sName == '\')
+    % exchange symbols referenced by '\\symbolname'
+    S = regexprep(sName,'\\\\([\w\^-]+)','${symbol($1,true)}');
+    return
+end
 
 nList = {'hbar' 'angstrom' 'copy' 'reg' 'deg' 'pm' 'square' 'cube' 'cross' 'par'...
     'perp' 'int' 'Euro' 'alpha','beta','gamma' 'delta' 'epsilon' 'zeta' 'eta'...

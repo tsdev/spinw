@@ -110,11 +110,19 @@ if nargout > 0
 end
 
 if nargout == 0
-    fprintf('     <strong>Chemical formula:</strong>  %s\n',formula.chemform);
-    fprintf('     <strong>Formula mass:</strong>      %8.3f g/mol\n',formula.m);
-    fprintf('     <strong>Formula in cell:</strong>   %8d units\n',formula.N);
-    fprintf('     <strong>Cell volume:</strong>       %8.3f Angstrom^3\n',formula.V);
-    fprintf('     <strong>Density:</strong>           %8.3f g/cm^3\n',formula.rho);
+    if feature('HotLinks')
+        fprintf('     <strong>Chemical formula:</strong>  %s\n',formula.chemform);
+        fprintf('     <strong>Formula mass:</strong>      %8.3f g/mol\n',formula.m);
+        fprintf('     <strong>Formula in cell:</strong>   %8d units\n',formula.N);
+        fprintf(symbol('     <strong>Cell volume:</strong>       %8.3f \\a\\^3\n'),formula.V);
+        fprintf(symbol('     <strong>Density:</strong>           %8.3f g/cm\\^3\n'),formula.rho);
+    else
+        fprintf('     Chemical formula:  %s\n',formula.chemform);
+        fprintf('     Formula mass:      %8.3f g/mol\n',formula.m);
+        fprintf('     Formula in cell:   %8d units\n',formula.N);
+        fprintf(symbol('     Cell volume:       %8.3f \\a\\^3\n'),formula.V);
+        fprintf(symbol('     Density:           %8.3f g/cm\\^3\n'),formula.rho);
+    end
 end
 
 end

@@ -1,29 +1,46 @@
 function [RGB, nameOut] = color(cName, index)
-% generates RGB code from color name string
+% generates RGB code from color name
+% 
+% ### Syntax
+% 
+% `RGB = swplot.color(cName)`
 %
-% RGB = SWPLOT.COLOR(cName,{index})
+% `RGB = swplot.color(cName,index)`
+% 
+% ### Description
+% 
+% `RGB = swplot.color(cName)` reads the color RGB values from the
+% [color.dat] file corresponding to the given color name `cName`. The
+% color name can be either a single character (see [matlab.colorspec]) or
+% any [HTML color name](https://www.w3schools.com/colors/colors_names.asp)
+% that is stored in the [color.dat] file.
+% 
+% `RGB = swplot.color(cName,index)` if `index` is true, RGB code
+% corresponding to the `cName` color index is read.
 %
-% Input:
-%
-% cName     String that contains the name of the color, either a single
-%           character (see <a href="matlab: doc ColorSpec">ColorSpec</a>) or use any HTML color name,
-%           (see http://www.w3schools.com/html/html_colornames.asp).
-%           For multiple colors, use a cell containing the strings. The
-%           name of the colors are stored in the <a href="matlab: edit color.dat">color.dat</a> file.
-% index     If true, the index of the color in the color.dat file is read.
-%           Index 1 corresponds to the 9th entry (the first 8 entry has
-%           already names in Matlab). Default is false.
-%
-% Output:
-%
-% RGB       RGB color code, dimensions are [3 nColor], where
-%           every value is between 0 and 255.
-%
-% Example:
-%
-%   RGB = SWPLOT.COLOR('LightGray')
-%
-%   the output RGB will be [211; 211; 211].
+% ### Examples
+% 
+% Read the RGB code corresponding to light gray:
+% ```
+% >>RGB = swplot.color('LightGray')>>
+% ```
+% 
+% ### Input Arguments
+% 
+% `cName`
+% : String of a color name. For multiple colors, use a cell of strings.
+% 
+% `index`
+% : If `true`, instead of the color name, `cName` means the index of the
+%   color in the [color.dat] file. index 1 corresponds to the 9th entry
+%   (the first 8 entry are standard Matlab color names), default value is
+%   `false`.
+% 
+% ### Output Arguments
+% 
+% `RGB`
+% : RGB color codes in a matrix with dimensions of $[3\times n_{color}]$, where
+%   every value is an integer between 0 and 255.
 %
 
 if nargin == 0

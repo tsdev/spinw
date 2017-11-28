@@ -1,17 +1,26 @@
 function delete(varargin)
-% deletes objects and their data on swplot figure
+% deletes objects and corresponding data from swplot figure
+% 
+% ### Syntax
+% 
+% `swplot.delete(objID)`
 %
-% swplot.delete(hFigure,number)
+% `swplot.delete(hFigure,objID)`
+% 
+% ### Description
+% 
+% `swplot.delete(objID)` deletes objects and their data that corresponds to
+% the given unique `objID` (integer number) on the active swplot figure.
 %
-% Deletes objects and their data that corresponds to the given unique
-% numbers on hFigure swplot figure.
+% `swplot.delete(hFigure,objID)` deletes objects from the swplot figure
+% corresponding to `hFigure` handle.
+%  
+% If `objID` equals to 0, all objects will be deleted from the swplot
+% figure.
+%  
+% ### See Also
 %
-% swplot.delete(number)
-%
-% Deletes objects and their data that corresponds to the given unique
-% numbers on the active swplot figure.
-%
-% If number equals to 0, all objects will be deleted from the figure.
+% [swplot.figure] \| [swplot.add]
 %
 
 if nargin == 1

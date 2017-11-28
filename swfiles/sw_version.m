@@ -1,7 +1,21 @@
 function outStr = sw_version()
 % returns the installed version of SpinW
+% 
+% ### Syntax
+% 
+% `sw_version`
 %
-% SW_VERSION()
+% `ver = sw_version`
+% 
+% ### Description
+% 
+% `sw_version` returns the installed version of SpinW and the matlab
+% version. This version number is identical to the tag of the [GitHub SpinW
+% repository](https://github.com/tsdev/spinw).
+%
+% `ver = sw_version` returns the version information in a struct, that
+% contains the program name, version, author, contact, revision number,
+% release date and license.
 %
 
 % read file header from sw_version.m file

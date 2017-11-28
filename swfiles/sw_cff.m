@@ -20,7 +20,7 @@ function [formFactVal, coeff] = sw_cff(atomName, Q)
 %   whitespace, the first word will be used as input.
 % 
 % `Q`
-% : Momentum transfer in \\Angstrom$^{-1}$ units in a matrix with dimensions of
+% : Momentum transfer in \\ang$^{-1}$ units in a matrix with dimensions of
 %   $[1\times n_Q]$ or $[3\times n_Q]$, optional.
 % 
 % ### Output Arguments

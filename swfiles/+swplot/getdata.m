@@ -1,15 +1,48 @@
 function data = getdata(varargin)
 % gets the data stored in an swplot figure
+% 
+% ### Syntax
+% 
+% `data = swplot.getdata`
+% 
+% `data = swplot.getdata(hFigure)`
 %
-% data = SWPLOT.GETDATA({hFigure},{field}
+% `data = swplot.getdata(field)`
 %
-% Input:
+% ### Description
+% 
+% `data = swplot.getdata` gets all the object data stored in the active
+% swplot figure.
 %
-% hFigure       Handle of the swplot figure. Default is the active figure.
-% field         String, determined the stored field name. If omitted, all
-%               stored data are returned.
+% `data = swplot.getdata(hFigure)` get all object data stored in the swplot
+% figure identified by the `hFigure` handle.
 %
-% See also GETAPPDATA.
+% `data = swplot.getdata(field)` loads only the given field of the data
+% structure.
+% 
+% ### Examples
+%
+% This example shows how the data of all objects on a 3D SpinW plot can be
+% retrieved.
+%
+% ```
+% >>model = sw_model('triAF',1)
+% >>plot(model)
+% >>swplot.getdata>>
+% ```
+% 
+% ### Input Arguments
+% 
+% `hFigure`
+% : Handle of the swplot figure, default value is the active figure.
+% 
+% `field`
+% : String, determines the requested field name. If omitted, all
+%   stored fields are returned.
+% 
+% ### See Also
+% 
+% [matlab.getappdata]
 %
 
 if nargin == 0

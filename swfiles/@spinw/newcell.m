@@ -3,11 +3,13 @@ function varargout = newcell(obj,varargin)
 % 
 % ### Syntax
 % 
-% `{t} = newcell(obj,Name,Value)`
+% `newcell(obj,Name,Value)`
+%
+% `T = newcell(obj,Name,Value)`
 % 
 % ### Description
 % 
-% `{t} = newcell(obj,Name,Value)` redefines the unit cell using new basis
+% `T = newcell(obj,Name,Value)` redefines the unit cell using new basis
 % vectors. The input three basis vectors are in lattice units of the
 % original cell and define a parallelepiped. The atoms from the original
 % unit cell will fill the new unit cell and if the two cells are compatible
@@ -76,7 +78,7 @@ function varargout = newcell(obj,varargin)
 %   transformation matrix between the new and the old coordinate system in
 %   `spinw.unit.qmat` and applying it every time a reciprocal space
 %   definition is invoked, such as in [spinw.spinwave]. Default value is
-%   `true`.
+%   `false`.
 % 
 % ### Output Arguments
 % 
@@ -102,7 +104,7 @@ if nargin <= 1
 end
 
 inpForm.fname  = {'bvect' 'bshift' 'keepq'};
-inpForm.defval = {eye(3)  [0 0 0]  true   };
+inpForm.defval = {eye(3)  [0 0 0]  false  };
 inpForm.size   = {[-1 3]  [1 3]    [1 1]  };
 
 param = sw_readparam(inpForm, varargin{:});

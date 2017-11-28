@@ -40,7 +40,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % >>snapnow
 % ```
 % 
-% ### Input arguments
+% ### Input Arguments
 %
 % `obj`
 % : [spinw] object.
@@ -92,7 +92,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %                   $Q$ value
 %   * `atomLabel`   string, label of the selected magnetic atom
 %   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
-%                   column contains a $Q$ vector in $\\Angstrom^{-1}$ units.
+%                   column contains a $Q$ vector in $\\ang^{-1}$ units.
 %
 % `'gtensor'`
 % : If true, the g-tensor will be included in the spin-spin correlation
@@ -163,8 +163,8 @@ function spectra = spinwave(obj, hkl, varargin)
 % : Gives a title string to the simulation that is saved in the output.
 %
 % `'fid'`
-% : Defines whether to provide text output. Default value is defined in
-%   `obj.fid`. The possible values are: 
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
 %   * `0`   No text output is generated.
 %   * `1`   Text output in the MATLAB Command Window.
 %   * `fid` File ID provided by the `fopen` command, the output is written
@@ -174,7 +174,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % : Determines if the elapsed and required time for the calculation is
 %   displayed. The default value is determined by the `tid` preference
 %   stored in [swpref]. The following values are allowed (for more details
-%   seee [sw_status]):
+%   see [sw_timeit]):
 %   * `0` No timing is executed.
 %   * `1` Display the timing in the Command Window.
 %   * `2` Show the timing in a separat pup-up window.
@@ -211,13 +211,13 @@ function spectra = spinwave(obj, hkl, varargin)
 %               \end{align}$
 %
 %   * `hkl`     Contains the input $Q$ values, dimensions are $[3\times n_{Q}]$.
-%   * `hklA`    Same $Q$ values, but in $\\Angstrom^{-1}$ unit, in the
+%   * `hklA`    Same $Q$ values, but in $\\ang^{-1}$ unit, in the
 %               lab coordinate system, dimensins are $[3\times n_{Q}]$.
 %   * `incomm`  Logical value, tells whether the calculated spectra is
 %               incommensurate or not.
 %   * `obj`     The copy (clone) of the input `obj`, see [spinw.copy].
 %
-% The number of magnetic modes (labelled by `nMode`) for commensurate
+% The number of magnetic modes (labeled by `nMode`) for commensurate
 % structures is double the number of magnetic atoms in the magnetic cell.
 % For incommensurate structures this number is tripled due to the
 % appearance of the $(Q\pm k_m)$ Fourier components in the correlation
@@ -229,7 +229,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % ### See also
 %
-% [spinw] \| [spinw.spinwavesym] \| [sw_mex] \| [spinw.powspec]
+% [spinw] \| [spinw.spinwavesym] \| [sw_mex] \| [spinw.powspec] \| [sortmode]
 %
 
 % for linear scans create the Q line(s)
@@ -284,7 +284,7 @@ inpForm.defval = {false     false    true       0        1e-4  true    };
 inpForm.size   = {[1 1]     [1 1]    [1 1]      [1 1]    [1 1] [1 1]   };
 
 inpForm.fname  = [inpForm.fname  {'omega_tol' 'saveSabp' 'saveV' 'saveH'}];
-inpForm.defval = [inpForm.defval {1e-5        true       false   false  }];
+inpForm.defval = [inpForm.defval {1e-5        false      false   false  }];
 inpForm.size   = [inpForm.size   {[1 1]       [1 1]      [1 1]   [1 1]  }];
 
 inpForm.fname  = [inpForm.fname  {'formfact' 'formfactfun' 'title' 'gtensor'}];
@@ -292,17 +292,10 @@ inpForm.defval = [inpForm.defval {false       @sw_mff      title0  false    }];
 inpForm.size   = [inpForm.size   {[1 -1]      [1 1]        [1 -2]  [1 1]    }];
 
 inpForm.fname  = [inpForm.fname  {'cmplxBase' 'tid' 'fid' }];
-inpForm.defval = [inpForm.defval {false       -1    nan   }];
+inpForm.defval = [inpForm.defval {false       -1    -1    }];
 inpForm.size   = [inpForm.size   {[1 1]       [1 1] [1 1] }];
 
 param = sw_readparam(inpForm, varargin{:});
-
-if isnan(param.fid)
-    % Print output into the following file
-    fid = obj.fid;
-else
-    fid = param.fid;
-end
 
 if ~param.fitmode
     % save the time of the beginning of the calculation
@@ -317,6 +310,11 @@ end
 if param.tid == -1
     param.tid = swpref.getpref('tid',[]);
 end
+
+if param.fid == -1
+    param.fid = swpref.getpref('fid',[]);
+end
+fid = param.fid;
 
 % generate magnetic structure in the rotating noation
 magStr = obj.magstr;
@@ -366,7 +364,7 @@ end
 
 if incomm
     % TODO
-    if ~helical
+    if ~helical && ~param.fitmode
         warning('spinw:spinwave:Twokm',['The two times the magnetic ordering '...
             'wavevector 2*km = G, reciproc lattice vector, use magnetic supercell to calculate spectrum!']);
     end
@@ -670,7 +668,7 @@ if param.saveH
     Hsave = zeros(2*nMagExt,2*nMagExt,nHkl);
 end
 
-sw_status(0,1,param.tid,'Spin wave spectrum calculation');
+sw_timeit(0,1,param.tid,'Spin wave spectrum calculation');
 
 warn1 = false;
 
@@ -796,12 +794,25 @@ for jj = 1:nSlice
                 [K, posDef]  = chol(ham(:,:,ii));
                 if posDef > 0
                     try
-                        K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
+                        % get tolerance from smallest negative eigenvalue
+                        tol0 = eig(ham(:,:,ii));
+                        tol0 = sort(real(tol0));
+                        tol0 = abs(tol0(1));
+                        % TODO determine the right tolerance value
+                        tol0 = tol0*sqrt(nMagExt*2)*4;
+                        if tol0>param.omega_tol
+                            error('spinw:spinwave:NonPosDefHamiltonian','Very baaaad!');
+                        end
+                        try
+                            K = chol(ham(:,:,ii)+eye(2*nMagExt)*tol0);
+                        catch
+                            K = chol(ham(:,:,ii)+eye(2*nMagExt)*param.omega_tol);
+                        end
                         warn1 = true;
                     catch PD
                         if param.tid == 2
                             % close timer window
-                            sw_status(100,2,param.tid);
+                            sw_timeit(100,2,param.tid);
                         end
                         error('spinw:spinwave:NonPosDefHamiltonian',...
                             ['Hamiltonian matrix is not positive definite, probably'...
@@ -813,22 +824,14 @@ for jj = 1:nSlice
                 K2 = K*gComm*K';
                 K2 = 1/2*(K2+K2');
                 % Hermitian K2 will give orthogonal eigenvectors
-                if param.sortMode
-                    [U, D] = eigenshuffle(K2);
-                else
-                    [U, D] = eig(K2);
-                    D = diag(D);
-                end
+                [U, D] = eig(K2);
+                D      = diag(D);
                 
-                % sort eigenvalues to decreasing order this contradicts with
-                % eigenshuffle
-                
-                % TODO
-                [D, idx] = sort(D,'descend');
+                % sort modes accordign to the real part of the energy
+                [~, idx] = sort(real(D),'descend');
                 U = U(:,idx);
-                
                 % omega dispersion
-                omega(:,end+1) = D; %#ok<AGROW>
+                omega(:,end+1) = D(idx); %#ok<AGROW>
                 
                 % the inverse of the para-unitary transformation V
                 V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*omega(:,end))); %#ok<MINV>
@@ -838,15 +841,9 @@ for jj = 1:nSlice
         % All the matrix calculations are according to White's paper
         % R.M. White, et al., Physical Review 139, A450?A454 (1965)
         
-        %gham = 0*ham;
-        %for ii = 1:nHklMEM
-        %    gham(:,:,ii) = gComm*ham(:,:,ii);
-        %end
-        
         gham = mmat(gComm,ham);
-        %gham = mtimesx(gComm,ham);
         
-        [V, D, orthWarn] = eigorth(gham,param.omega_tol, param.sortMode,useMex);
+        [V, D, orthWarn] = eigorth(gham,param.omega_tol,useMex);
         
         orthWarn0 = orthWarn || orthWarn0;
         
@@ -905,7 +902,13 @@ for jj = 1:nSlice
     % Normalizes the intensity to single unit cell.
     Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
     
-    sw_status(jj/nSlice*100,0,param.tid);
+    sw_timeit(jj/nSlice*100,0,param.tid);
+end
+
+if param.sortMode
+    % sort the spin wave modes
+    [omega, Sab] = sortmode(omega,reshape(Sab,9,size(Sab,3),[]));
+    Sab          = reshape(Sab,3,3,size(Sab,2),[]);
 end
 
 [~,singWarn] = lastwarn;
@@ -918,7 +921,7 @@ if obj.unit.nformula > 0
     Sab = Sab/double(obj.unit.nformula);
 end
 
-sw_status(100,2,param.tid);
+sw_timeit(100,2,param.tid);
 
 fprintf0(fid,'Calculation finished.\n');
 
@@ -1052,12 +1055,14 @@ if orthWarn0
     warning('spinw:spinwave:NoOrth','Eigenvectors of defective eigenvalues cannot be orthogonalised at some q-point!');
 end
 
-lineLink = ['<a href="matlab:opentoline([''' sw_rootdir 'swfiles' filesep '@spinw' filesep 'spinwave.m''' '],758,0)">line 758</a>'];
-
 if strcmp(singWarn,'MATLAB:nearlySingularMatrix')
+    lineLink = 'line 846';
+    if feature('HotLinks')
+        lineLink = ['<a href="matlab:opentoline([''' sw_rootdir 'swfiles' filesep '@spinw' filesep 'spinwave.m''' '],846,0)">' lineLink '</a>'];
+    end
     warning('spinw:spinwave:nearlySingularMatrix',['Matrix is close '...
         'to singular or badly scaled. Results may be inaccurate.\n> In spinw/spinwave (' lineLink ')']);
-    fprintf(repmat('\b',[1 30]));
+    %fprintf(repmat('\b',[1 30]));
 end
 
 end

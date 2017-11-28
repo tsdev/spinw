@@ -7,5 +7,4 @@
 % ### Files
 %
 %   swpref.getpref
-%   swpref.pref   
 %   swpref.setpref

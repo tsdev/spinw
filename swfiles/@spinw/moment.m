@@ -69,6 +69,14 @@ function M = moment(obj, varargin)
 % `'omega_tol'`
 % : Tolerance on the energy difference of degenerate modes when
 %   diagonalising the quadratic form, default value is $10^{-5}$.
+%
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
 % 
 % ### Output Arguments
 % 
@@ -87,14 +95,11 @@ function M = moment(obj, varargin)
 
 T0 = obj.single_ion.T;
 
-inpForm.fname  = {'T'   'nRand' 'tol' 'omega_tol' 'hermit'};
-inpForm.defval = {T0    1000    1e-4  1e-5        true    };
-inpForm.size   = {[1 1] [1 1]   [1 1] [1 1]       [1 1]   };
+inpForm.fname  = {'T'   'nRand' 'tol' 'omega_tol' 'hermit' 'fid'};
+inpForm.defval = {T0    1000    1e-4  1e-5        true     -1   };
+inpForm.size   = {[1 1] [1 1]   [1 1] [1 1]       [1 1]    [1 1]};
 
 param = sw_readparam(inpForm, varargin{:});
-
-% no modesorting
-param.sortMode = false;
 
 magstr = obj.magstr;
 
@@ -105,8 +110,12 @@ km = magstr.k.*nExt;
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
 
+if param.fid == -1
+    fid = swpref.getpref('fid',true);
+else
+    fid = param.fid;
+end
 
-fid      = obj.fid;
 nRand    = param.nRand;
 
 % sum up the moment reduction
@@ -227,7 +236,7 @@ end
 hklIdx = [floor(((1:nSlice)-1)/nSlice*nRand)+1 nRand+1];
 
 if fid == 1
-    sw_status(0,1);
+    sw_timeit(0,1);
 end
 
 for jj = 1:nSlice
@@ -314,7 +323,7 @@ for jj = 1:nSlice
             gham(:,:,ii) = g*ham(:,:,ii);
         end
         
-        [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
+        [V, D] = eigorth(gham,param.omega_tol);
         
         for ii = 1:nHklMEM
             % multiplication with g removed to get negative and positive
@@ -337,14 +346,14 @@ for jj = 1:nSlice
     M.moment = M.moment + sum(sum(abs(V).^2.*repmat(permute(nBose,[3 1 2]),[nMagExt*2 1 1]),3),2);
     
     if fid == 1
-        sw_status(jj/nSlice*100);
+        sw_timeit(jj/nSlice*100);
     end
     
 end
 
 
 if fid == 1
-    sw_status(100,2);
+    sw_timeit(100,2);
 else
     if fid ~= 0
         fprintf0(fid,'Calculation finished.\n');

@@ -55,6 +55,14 @@ function qGrid = sw_qgrid(varargin)
 % ($1<=n<=3$), so if only `ubin` is given, $n=1$; if both `ubin` and `vbin`
 % are defined then $n=2$, etc.
 % 
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
+%
 % ### Output Arguments
 % 
 % `qGrid`
@@ -66,15 +74,13 @@ function qGrid = sw_qgrid(varargin)
 % [sw_qscan]
 %
 
-fid = swpref.getpref('fid',true);
-
 inpForm.fname  = {'u'     'v'     'w'     'uoffset' 'lab'                          };
 inpForm.defval = {[1 0 0] [0 1 0] [0 0 1] [0 0 0]   {'(h,0,0)' '(0,k,0)' '(0,0,l)'}};
 inpForm.size   = {[1 3]   [1 3]   [1 3]   [1 -1]    [1 -2]                         };
 inpForm.soft   = {false   false   false   false     false                          };
 
 inpForm.fname  = [inpForm.fname  {'ubin' 'vbin' 'wbin' 'nExt'  'mat'  'bin'  'fid'}];
-inpForm.defval = [inpForm.defval { []     []     []    [1 1 1] []     {}     fid  }];
+inpForm.defval = [inpForm.defval { []     []     []    [1 1 1] []     {}     -1   }];
 inpForm.size   = [inpForm.size   {[1 -3] [1 -4] [1 -5] [1 -6]  [-7 3] [1 -8] [1 1]}];
 inpForm.soft   = [inpForm.soft   {true   true   true   false   true   true   false}];
 
@@ -83,6 +89,10 @@ param = sw_readparam(inpForm, varargin{:});
 if nargin == 0
     help sw_qgrid
     return
+end
+
+if param.fid == -1
+    param.fid = swpref.getpref('fid',true);
 end
 
 % size of magnetic supercell

@@ -12,7 +12,8 @@ function varargout = sw_atomdata(atomSymb, datType)
 % `data = sw_atomdata(atomsymb)` returns information on chemical elements
 % (RGB color code, mass, long name) in a struct. The element is identified
 % by its short name, such as 'O' for oxygen. If the given atom name does
-% not exists, the function returns the data for `'Unobtanium'`.
+% not exists, the function returns the data for `'Unobtanium'`. The
+% database is stored in the [atom.dat] file.
 % 
 % `data = sw_atomdata(atomsymb,datatype)` returns only the requested type
 % of data.
@@ -123,7 +124,7 @@ switch datType
     case 'Z'
         data = [atom.Z];
     case 'all'
-        data = rmfield(atom,'MODE');
+        data = rmfield(atom,'tag');
     otherwise
         error('sw_atomdata:WrongInput','datType has to be one of the string options, see help sw_atomdata!');
 end

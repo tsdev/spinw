@@ -124,9 +124,12 @@ km = obj.mag_str.k.*nExt;
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
 
-fid = obj.fid;
+fid = swpref.getpref('fid',true);
 
 nHkl    = size(hkl,2);
+
+% use mex file by default?
+useMex = swpref.getpref('usemex',[]);
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.
@@ -317,19 +320,15 @@ for jj = 1:nSlice
             K2 = K*g*K';
             K2 = 1/2*(K2+K2');
             % Hermitian K2 will give orthogonal eigenvectors
-            if param.sortMode
-                [U, D] = eigenshuffle(K2);
-            else
-                [U, D] = eig(K2);
-                D = diag(D);
-            end
+            [U, D] = eig(K2);
+            D = diag(D);
             
             % sort eigenvalues to decreasing order
-            [D, idx] = sort(D,'descend');
+            [~, idx] = sort(real(D),'descend');
             U = U(:,idx);
             
             % omega dispersion
-            omega(:,end+1) = D; %#ok<AGROW>
+            omega(:,end+1) = D(idx); %#ok<AGROW>
             
             % the inverse of the para-unitary transformation V
             V(:,:,ii) = inv(K)*U*diag(sqrt(gd.*omega(:,end))); %#ok<MINV>
@@ -343,7 +342,7 @@ for jj = 1:nSlice
             gham(:,:,ii) = g*ham(:,:,ii);
         end
         
-        [V, D] = eigorth(gham,param.omega_tol, param.sortMode);
+        [V, D] = eigorth(gham,param.omega_tol,useMex);
         
         for ii = 1:nHklMEM
             % multiplication with g removed to get negative and positive

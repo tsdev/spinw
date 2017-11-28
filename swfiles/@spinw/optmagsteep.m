@@ -79,6 +79,14 @@ function optm = optmagsteep(obj, varargin)
 % `'pause'`
 % : Time in second to pause after every optimization loop to slow down plot
 %   movie. Default value is 0.
+%
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
 % 
 % ### Output Arguments
 % 
@@ -119,10 +127,10 @@ inpForm.defval = {100     1e-5      false   {'per' 'per' 'per'}  []      0      
 inpForm.size   = {[1 1]   [1 1]     [1 1]   [1 3]                [1 -1]  [1 1]  [1 1]  };
 inpForm.soft   = {0       0         0       0                    1       false  false  };
 
-inpForm.fname  = [inpForm.fname  {'nExt' 'fSub'   'TolX' 'title' 'saveAll' 'plot'}];
-inpForm.defval = [inpForm.defval {nExt   @sw_fsub 1e-10  title0  false     false }];
-inpForm.size   = [inpForm.size   {[1 3]  [1 1]    [1 1]  [1 -2]  [1 1]     [1 1] }];
-inpForm.soft   = [inpForm.soft   {0      0        0      0        0        false }];
+inpForm.fname  = [inpForm.fname  {'nExt' 'fSub'   'TolX' 'title' 'saveAll' 'plot' 'fid'}];
+inpForm.defval = [inpForm.defval {nExt   @sw_fsub 1e-10  title0  false     false  -1   }];
+inpForm.size   = [inpForm.size   {[1 3]  [1 1]    [1 1]  [1 -2]  [1 1]     [1 1]  [1 1]}];
+inpForm.soft   = [inpForm.soft   {0      0        0      0        0        false  false}];
 
 
 param = sw_readparam(inpForm,varargin{:});
@@ -132,7 +140,11 @@ if prod(param.nExt) == 0
 end
 
 % Text output file
-fid = obj.fid;
+if param.fid == -1
+    fid = swpref.getpref('fid',true);
+else
+    fid = param.fid;
+end
 
 fprintf0(fid,['Optimising the magnetic structure using local spin '...
     'updates\n(nRun = %d, boundary = (%s,%s,%s))...\n'],param.nRun,param.boundary{:});
@@ -321,7 +333,7 @@ for ii = 1:nSub
 end
 
 if fid == 1
-    sw_status(0,1,'Magnetic structure optimization');
+    sw_timeit(0,1,'Magnetic structure optimization');
 end
 
 if nargout == 1
@@ -423,13 +435,13 @@ while (rIdx < nRun) && (dM>param.TolX)
     end
     
     if fid == 1
-        sw_status(rIdx/param.nRun*100);
+        sw_timeit(rIdx/param.nRun*100);
     end
 
 end
 
 if fid == 1
-    sw_status(100,2);
+    sw_timeit(100,2);
 else
     if fid ~= 0
         fprintf0(fid,'Calculation finished.\n');

@@ -1,23 +1,26 @@
 function close(varargin)
-% close swplot figure
+% closes swplot figure
+% 
+% ### Syntax
+% 
+% `swplot.close`
+% 
+% `swplot.close('all')`
 %
-% SWPLOT.CLOSE()
-%
-% Closes the active swplot figure.
-%
-% SWPLOT.CLOSE('all')
-%
-% Closes all swplot figure.
-%
-% SWPLOT.CLOSE(hFigure)
-%
-% closes the swplot figure of the given handle (hFigure).
-%
-% Input:
-%
-% hFigure   Handle of the swplot figure window.
-%
-% See also SWPLOT.FIGURE.
+% `swplot.close(hFigure)`
+% 
+% ### Description
+% 
+% `swplot.close` closes the active swplot figure.
+%  
+% `swplot.close('all')` closes all swplot figure.
+%  
+% `swplot.close(hFigure)` closes the swplot figure corresponding to
+% `hFigure` handle.
+% 
+% ### See Also
+% 
+% [swplot.figure]
 %
 
 if nargin == 0

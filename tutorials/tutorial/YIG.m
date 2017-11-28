@@ -100,5 +100,22 @@ colorbar off
 set(gca,'XTickLabel',{'N' '\Gamma' 'H'})
 caxis([-0.05 0.05])
 
+%% powder spactrum
 
+Q = linspace(0,4,101);
+E = linspace(0,30,501);
+nRand = 1e2;
+swpref.setpref('tid',2);
+
+spec = yig.powspec(Q,'Evect',E,'nRand',nRand);
+
+%%
+tri  = sw_model('triAF',1);
+Q = linspace(0,4,101);
+E = linspace(0,30,501);
+nRand = 1e3;
+swpref.setpref('tid',0);
+profile on
+spec = tri.powspec(Q,'Evect',E,'nRand',nRand);
+profile off
 

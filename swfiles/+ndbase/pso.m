@@ -1,5 +1,5 @@
 function [pOpt,fVal,stat] = pso(dat,func,p0,varargin)
-% minimization via particle swarm optimisation
+% particle swarm optimisation
 %
 % [pOpt,fVal,stat] = NDBASE.PSO([],func,p0,'Option1','Value1',...)
 %
@@ -140,10 +140,10 @@ if any(UB<LB)
 end
 
 % number of free parameters
-Nf = sum(UB>LB);
+Nv = sum(UB>LB);
 
 if param.autoTune
-    param.PopulationSize = round(25 + 1.4*Nf);
+    param.PopulationSize = round(25 + 1.4*Nv);
 end
 
 % population size
@@ -199,15 +199,15 @@ if all(UB==LB)
         stat.redX2 = fVal;
     else
         % divide R2 with the statistical degrees of freedom
-        stat.redX2   = fVal/(numel(dat.x)-Np+1);
+        stat.redX2   = fVal/(numel(dat.x)-Nv+1);
     end
     
     stat.Rsq        = [];
     stat.sigY       = [];
     stat.corrP      = [];
     stat.cvgHst     = [];
-    stat.nIter      = 0;
-    stat.nFunEvals  = 1;
+    stat.iterations = 0;
+    stat.funcCount  = 1;
     stat.algorithm  = 'Particle Swarm Optimization';
     if isempty(dat)
         stat.func   = func;
@@ -264,7 +264,7 @@ end
 param.ConstrictionFactor = 2*param.k0/(abs(2-(swarmC1+swarmC2)-sqrt((swarmC1+swarmC2)^2-4*(swarmC1+swarmC2))));
 
 % setup timer function
-sw_status(0,1,param.tid,'Particle swarm optimization');
+sw_timeit(0,1,param.tid,'Particle swarm optimization');
 
 % for each iteration....
 for ii = 1:maxIter
@@ -356,12 +356,12 @@ for ii = 1:maxIter
     end
     
     % recalculate time
-    sw_status(ii/maxIter*100,0,param.tid);
+    sw_timeit(ii/maxIter*100,0,param.tid);
     
 end
 
 % finish timer
-sw_status(100,2,param.tid);
+sw_timeit(100,2,param.tid);
 
 if exitFlag == 0
     % no convergence,but maximum number of iterations has been reached
@@ -384,15 +384,15 @@ if isempty(dat)
     stat.redX2 = fVal;
 else
     % divide R2 with the statistical degrees of freedom
-    stat.redX2   = fVal/(numel(dat.x)-Np+1);
+    stat.redX2   = fVal/(numel(dat.x)-Nv+1);
 end
 
 stat.Rsq        = [];
 stat.sigY       = [];
 stat.corrP      = [];
 stat.cvgHst     = [];
-stat.nIter      = ii;
-stat.nFunEvals  = ii*popSize;
+stat.iterations = ii;
+stat.funcCount  = ii*popSize;
 stat.algorithm  = 'Particle Swarm Optimization';
 if isempty(dat)
     stat.func   = func;

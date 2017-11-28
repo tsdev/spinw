@@ -1,21 +1,27 @@
 function setpref(prefName, varargin)
 % sets SpinW global preferences
+% 
+% ### Syntax
+% 
+% `swpref.setpref(prefName, value)`
+% 
+% `swpref.setpref('default')`
 %
-% swpref.setpref(prefName, value)
-%
-% The preferences are reset after every restart of Matlab, unlike the
-% Matlab built-in preferences that are persistent between Matlab sessions.
-% If you want certain preferences to keep after closing matlab, define them
-% in the <a href="matlab:edit('startup.m')">startup.m</a> file.
-%
-% swpref.setpref() sets the value of the prefName in the SpinW global
+% ### Description
+% 
+% `swpref.setpref(prefName, value)` sets the value of `prefName`
 % preferences.
 %
-% swpref.setpref('default')
+% `swpref.setpref('default')` resets all preference values to the default one.
 %
-% Resets all preference values to the default one.
-%
-% See also SWPREF.SETPREF.
+% {{note The preferences are reset after every restart of Matlab, unlike the
+% Matlab built-in preferences that are persistent between Matlab sessions.
+% If you want certain preferences to keep after closing matlab, define them
+% in the `startup.m` file.}}
+% 
+% ### See Also
+% 
+% [swpref.getpref]
 %
 
 if nargin>0 && mod(nargin,2)==0

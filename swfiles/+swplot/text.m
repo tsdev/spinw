@@ -1,23 +1,41 @@
 function hText = text(varargin)
-% draws a text at a point in 3D
+% creates text at a 3D position
+% 
+% ### Syntax
+% 
+% `hText = swplot.text(r, string)`
+% 
+% `hText = swplot.text(r, string, fontSize)`
 %
-% hText = SWPLOT.TEXT(r, string, {fontSize})
+% `hText = swplot.text(handle, ...)`
 %
-% hText = SWPLOT.TEXT(handle,...)
-%
-% Handle of an axes object that selects an axis to plot.
-%
-% Input:
-%
-% handle    Handle of an axis object.
-% r         Coordinate of the center of the text for a single text or
-%           matrix with dimensions [3 nText] for multiple text.
-% string    String contains the text or cell of strings to plot multiple
-%           text.
-% fontSize  Font size in pt, default value is stored in
-%           swpref.getpref('fontsize')
-%
-% See also TEXT.
+% ### Description
+% 
+% `hText = swplot.text(r, string)` creates single or multiple text in 3D
+% space.
+%  
+% `hPatch = swplot.text(handle, ...)` adds the generated text object to a
+% given axis referenced by `handle`.
+%  
+% ### Input Arguments
+% 
+% `handle`
+% : Handle of an axis object, default value is [matlab.gca].
+% 
+% `r`
+% : Coordinate of the center of the text for a single text or
+%   matrix with dimensions $[3\times n_{obj}]$ for multiple text.
+% 
+% `string`
+% : String that contains the text or cell of strings when multiple
+%   text is drawn.
+% 
+% `fontSize`
+% : Font size in pt, default value is stored in `swpref.getpref('fontsize')`.
+% 
+% ### See Also
+% 
+% [matlab.text]
 %
 
 if nargin == 0

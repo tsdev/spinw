@@ -1,5 +1,6 @@
 
 *.mat
+!icons.mat
 
 .DS_Store
 

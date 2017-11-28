@@ -1,30 +1,66 @@
 function hPatch = circle(varargin)
-% creates a circle surface in 3 dimensions
+% creates a 3D circle surface patch
+% 
+% ### Syntax
+% 
+% `hPatch = swplot.circle(r0, n, R)`
+% 
+% `hPatch = swplot.circle(r0, n, R, nPatch)`
 %
-% hPatch = SWPLOIT.CIRCLE(r0, n, R, {N})
+% `hPatch = swplot.circle(handle, ...)`
 %
-% hPatch = SWPLOIT.CIRCLE(handle,...)
+% ### Description
+% 
+% `hPatch = swplot.circle(r0, n, R)` creates a triangulated patch of a
+% surface of a circle in 3D, defined by the center position, normal vector
+% and radius.
+%  
+% `hPatch = swplot.circle(handle, ...)` adds the patch object to a given axis
+% if `handle` is an axis handle or adds the arrow to an existing
+% [matlab.patch] object, if the given `handle` points to a patch object.
+%  
+% 
+% ### Examples
 %
-% Handle can be the handle of an axes object or a patch object. It either
-% selects an axis to plot or a patch object (triangulated) to add vertices
-% and faces.
+% Draw 100 random unit circle surfaces with center at $(0,0,0)$ and random
+% normal vector.
 %
-% Input:
+% ```
+% >>swplot.figure
+% >>N = 100
+% >>swplot.circle(zeros(3,N),2*rand(3,N)-1,1)
+% >>swplot.zoom(30)% 
+% >>snapnow
+% ```
 %
-% handle    Handle of an axis or patch object. In case of patch object, the
-%           constructed faces will be added to the existing object instead
-%           of creating a new one.
-% r0        Center of the circle, vector with three elements.
-% n         Vector normal to the circle surface, vector with three elements.
-% R         Radius of the circle.
-% N         Number of points on the curve, default value is stored in
-%           swpref.getpref('npatch').
-%
-% Example:
-%
-% swplot.circle(zeros(3),eye(3),1,100)
-%
-% See also SWPLOT.CYLINDER.
+% ### Input Arguments
+% 
+% `handle`
+% : Handle of an axis or triangulated patch object. In case of patch
+%   object, the constructed faces will be added to the existing object.
+% 
+% `r0`
+% : Center position of the circle in a column vector. Multiple circles can
+%   be defined using a matrix with dimensions of $[3\times n_{obj}]$ where
+%   each column defines a circle center.
+% 
+% `n`
+% : Column vector with 3 elements, normal to the circle surface. Multiple
+%   circles can be defined using a matrix with the same dimensions as `r0`
+%   parameter.
+% 
+% `R`
+% : Radius of the circle, scalar or row vector with $n_{obj}$ number of
+%   elements.
+% 
+% `nPatch`
+% : Number of points on the circle circumference, default value is stored in
+%   `swpref.getpref('npatch')`. The generated patch will contain
+%   $n_{patch}$ number of faces and vertices.
+% 
+% ### See Also
+% 
+% [swplot.cylinder]
 %
 
 if nargin == 0
@@ -68,10 +104,10 @@ if numel(r0) == 3
     n  = n(:);
 end
 
-nCircle = size(r0,2);
+nObject = size(r0,2);
 
 % normal vectors to the cylinder axis
-a = cross(n,repmat([0;0;1],[1 nCircle]));
+a = cross(n,repmat([0;0;1],[1 nObject]));
 
 % index of zero normal vectors
 zIdx = find(sum(abs(a),1)==0);
@@ -95,23 +131,28 @@ V = reshape(permute(bsxfun(@plus,cPoint,r0),[1 3 2]),3,[])';
 L = (2:(N-1))';
 F = [ones(N-2,1) L mod(L,N)+1];
 
-F = reshape(permute(bsxfun(@plus,F,permute((0:(nCircle-1))*N,[1 3 2])),[1 3 2]),[],3);
+F = reshape(permute(bsxfun(@plus,F,permute((0:(nObject-1))*N,[1 3 2])),[1 3 2]),[],3);
 
 % color data
 C = repmat([1 0 0],[size(F,1) 1]);
+% default transparency
+A = ones(size(F,1),1);
 
 if isempty(hPatch)
     % create patch
     hPatch = patch('Parent',hAxis,'Vertices',V,'Faces',F,'FaceLighting','flat',...
-        'EdgeColor','none','FaceColor','flat','Tag','circle','FaceVertexCData',C);
+        'EdgeColor','none','FaceColor','flat','Tag','circle','FaceVertexCData',C,...
+        'AlphaDataMapping','none','FaceAlpha','flat','FaceVertexAlphaData',A);
 else
     % add to existing patch
     V0 = get(hPatch,'Vertices');
     F0 = get(hPatch,'Faces');
     C0 = get(hPatch,'FaceVertexCData');
+    A0 = get(hPatch,'FaceVertexAlphaData');
     % number of existing faces
     nV0 = size(V0,1);
-    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C]);
+    set(hPatch,'Vertices',[V0;V],'Faces',[F0;F+nV0],'FaceVertexCData',[C0;C],...
+        'FaceVertexAlphaData',[A0;A]);
 end
 
 if strcmp(get(hAxis,'Tag'),'swaxis')

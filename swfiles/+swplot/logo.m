@@ -1,21 +1,38 @@
 function logo(varargin)
-% creates the logo of SpinW and saves to a .png file
+% creates the SpinW logo
+% 
+% ### Syntax
+% 
+% `swplot.logo`
+% 
+% `swplot.logo(fName)`
 %
-% SWPLOT.LOGO({fName})
+% ### Description
+% 
+% `swplot.logo` creates and displays the SpinW logo with credentials. The
+% logo is using an honest colormap [cm_inferno] and removed the tiles of
+% the sine wave to symbolize the increase of quality of code (measured as a
+% number of eliminated for loops) :D The logo is used for SpinW 3.0.
+% Colormap is expected to change for every major version jump.
+% 
+% ### Examples
 %
-% The logo is using an honest colormap (cm_inferno) and removed the tiles
-% of the sine wave to symbolize the increase of quality of code (measured
-% as a number of eliminated for loops). :D The logo will be used for SpinW
-% 3.0. Colormap is expected to change next time when version increases to
-% the next integer.
+% This is the logo:
 %
+% ```
+% >>swplot.logo
+% >>snapnow
+% ```
 %
-% Input:
-%
-% fName     File name to save the logo. Optional, if not given the logo
-%           the logo will be shown in a new figure.
-%
-% See also: SPINW.
+% ### Input Arguments
+% 
+% `fName`
+% : File name to save the logo. Optional, if not given the logo
+%   will be shown in a new figure.
+% 
+% ### See Also
+% 
+% [spinw]
 %
 
 % determine the version of SpinW
@@ -82,8 +99,8 @@ else
     end
     
     txt0 = sprintf([ver0 '\nWritten by:\n  S' char(225) 'ndor T' char(243) ...
-        'th\n  sandor.toth@psi.ch\n  Paul Scherrer Institut\n\nContributed:\n  Mechthild Enderle\n  Bj' char(246) 'rn F' ...
-        char(229) 'k\n  Duc Manh Lee\n  Simon Ward\n\n' ...
+        'th\n  sandor.toth@psi.ch\n  Paul Scherrer Institut\n\nContributed:\n  Simon Ward\n  Mechthild Enderle\n  Bj' char(246) 'rn F' ...
+        char(229) 'k\n  Duc Manh Lee\n\n' ...
         'Icluding contributions from many authors through\nMatlab File Exchange:\n'...
         '  fminsearchnd\n  eigenshuffle\n  fireprint\n\n'...
         'GNU General Public License\n'...

@@ -25,7 +25,7 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % Using only a few lines of code one can calculate the powder spectrum of
 % the triangular lattice antiferromagnet ($S=1$, $J=1$) between $Q=0$ and 3
-% \\Angstrom$^{-1}$ (the lattice parameter is 3 \\Angstrom).
+% \\ang$^{-1}$ (the lattice parameter is 3 \\ang).
 %
 % ```
 % >>tri = sw_model('triAF',1);
@@ -43,7 +43,7 @@ function spectra = powspec(obj, hklA, varargin)
 %
 % `QA`
 % : Vector containing the $Q$ values in units of the inverse of the length
-% unit (see [spinw.unit]) with default unit being \\Angstrom$^{-1}$. The
+% unit (see [spinw.unit]) with default unit being \\ang$^{-1}$. The
 % value are stored in a row vector with $n_Q$ elements.
 %
 % ### Name-Value Pair Arguments
@@ -119,7 +119,7 @@ function spectra = powspec(obj, hklA, varargin)
 %                   $Q$ value
 %   * `atomLabel`   string, label of the selected magnetic atom
 %   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
-%                   column contains a $Q$ vector in $\\Angstrom^{-1}$ units.
+%                   column contains a $Q$ vector in $\\ang^{-1}$ units.
 %
 % `'gtensor'`
 % : If true, the g-tensor will be included in the spin-spin correlation
@@ -144,11 +144,19 @@ function spectra = powspec(obj, hklA, varargin)
 %   case is wrong, however by examining the eigenvalues it can give a hint
 %   where the problem is.}}
 %
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
+%
 % `'tid'`
 % : Determines if the elapsed and required time for the calculation is
 %   displayed. The default value is determined by the `tid` preference
 %   stored in [swpref]. The following values are allowed (for more details
-%   seee [sw_status]):
+%   see [sw_timeit]):
 %   * `0` No timing is executed.
 %   * `1` Display the timing in the Command Window.
 %   * `2` Show the timing in a separat pup-up window.
@@ -185,8 +193,6 @@ if nargin==1
     return
 end
 
-fid = swpref.getpref('fid',true);
-
 hklA = hklA(:)';
 T0 = obj.single_ion.T;
 
@@ -206,12 +212,16 @@ inpForm.defval = [inpForm.defval {false    false  0        'ebin'    'Sperp'    
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]     [1 -5]    }];
 
 inpForm.fname  = [inpForm.fname  {'fid'}];
-inpForm.defval = [inpForm.defval {fid  }];
+inpForm.defval = [inpForm.defval {-1   }];
 inpForm.size   = [inpForm.size   {[1 1]}];
 
 param  = sw_readparam(inpForm, varargin{:});
 
-fid = param.fid;
+if param.fid == -1
+    fid = swpref.getpref('fid',true);
+else
+    fid = param.fid;
+end
 
 % list of supported functions:
 %   0:  unknown
@@ -246,7 +256,7 @@ fprintf0(fid,[yesNo{param.formfact+1} ' magnetic form factor is'...
 fprintf0(fid,[yesNo{param.gtensor+1} ' g-tensor is included in the '...
     'calculated structure factor.\n']);
 
-sw_status(0,1,param.tid,'Powder spectrum calculation');
+sw_timeit(0,1,param.tid,'Powder spectrum calculation');
 
 if param.fibo
     % apply the Fibonacci numerical integration on a sphere
@@ -309,10 +319,10 @@ for ii = 1:nQ
     specQ = sw_egrid(specQ,struct('Evect',param.Evect,'T',param.T,'binType',param.binType,...
     'imagChk',param.imagChk,'component',param.component),'noCheck');
     powSpec(:,ii) = sum(specQ.swConv,2)/param.nRand;
-    sw_status(ii/nQ*100,0,param.tid);
+    sw_timeit(ii/nQ*100,0,param.tid);
 end
 
-sw_status(100,2,param.tid);
+sw_timeit(100,2,param.tid);
 
 fprintf0(fid,'Calculation finished.\n');
 

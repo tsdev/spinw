@@ -9,7 +9,7 @@ function bc = sw_nb(atomName)
 % 
 % `bc = sw_nb(atomname)` returns the bound coherent neutron scattering
 % length of a given nucleus in fm units. The function reads the stored data
-% from the `isotope.dat` file.
+% from the [isotope.dat] file.
 % 
 % ### Input Arguments
 % 

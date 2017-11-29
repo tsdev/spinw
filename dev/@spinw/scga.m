@@ -61,8 +61,10 @@ if ~param.fitmode
     spectra.datestart = datestr(now);
 end
 
+pref = swpref;
+
 if param.fid == -1
-    fid  = swpref.getpref('fid',true);
+    fid  = pref.fid;
 else
     fid = param.fid;
 end

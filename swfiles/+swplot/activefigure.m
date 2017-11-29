@@ -54,7 +54,8 @@ switch nargin
 end
 
 % tag for active figure
-activeTag = swpref.getpref('tag',[]);
+pref = swpref;
+activeTag = pref.tag;
 
 % tag for inactive figures
 inactiveTag = ['inactive_' activeTag];

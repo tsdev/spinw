@@ -63,12 +63,13 @@ function varargout = disp(obj)
 %
 
 Datastruct = datastruct;
+pref = swpref;
 
 choiceStr = {'off' 'on'};
 symbStr = choiceStr{obj.symbolic+1};
 symmStr = choiceStr{obj.symmetry+1};
 
-fid = swpref.getpref('fid',true);
+fid = pref.fid;
 if fid == 0
     fidStr = 'none';
 else

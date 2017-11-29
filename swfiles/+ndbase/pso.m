@@ -126,9 +126,10 @@ inpForm.defval = [inpForm.defval {1.3       25               -1e5*oNp   1e5*oNp 
 inpForm.size   = [inpForm.size   {[1 1]     [1 1]            [1 Np]     [1 Np]  [1 1]     [1 1]}];
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 if param.tid == -1
-    param.tid = swpref.getpref('tid',[]);
+    param.tid = pref.tid;
 end
 
 % parameter boundaries

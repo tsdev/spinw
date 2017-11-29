@@ -151,9 +151,10 @@ function varargout = plot(varargin)
 % [swplot.color] \| [swplot.add]
 %
 
-P0 = swpref.getpref('npatch',[]);
-M0 = swpref.getpref('nmesh',[]);
-fontSize0 = swpref.getpref('fontsize',[]);
+pref = swpref;
+P0 = pref.npatch;
+M0 = pref.nmesh;
+fontSize0 = pref.fontsize;
 
 inpForm.fname  = {'type' 'name' 'text' 'position' 'label' 'legend' 'color' 'unit' 'figure' 'lineStyle'};
 inpForm.defval = {[]     []     ''     []         []      []       []      'lu'   []       '-'        };

@@ -222,8 +222,9 @@ function varargout = plotbond(varargin)
 
 % default values
 %fontSize0 = swpref.getpref('fontsize',[]);
-nMesh0    = swpref.getpref('nmesh',[]);
-nPatch0   = swpref.getpref('npatch',[]);
+pref = swpref;
+nMesh0    = pref.nmesh;
+nPatch0   = pref.npatch;
 
 inpForm.fname  = {'range' 'legend' 'label' 'zero' 'scale' 'radius0' 'mode2' 'linewidth'};
 inpForm.defval = {[]      true     true    true   1/3     0.05      []      'fix'      };

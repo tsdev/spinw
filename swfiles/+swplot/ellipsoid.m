@@ -53,6 +53,7 @@ function hPatch = ellipsoid(varargin)
 % 
 % [matlab.triangulation] \| [swplot.icomesh]
 %
+pref = swpref;
 
 if nargin == 0
     help swplot.ellipsoid
@@ -95,7 +96,7 @@ end
 
 if isnumeric(mesh)
     % limit the largest mesh to plot to avoid slowing down Matlab too much
-    mesh = min(mesh,swpref.getpref('maxmesh',[]));
+    mesh = min(mesh,pref.maxmesh);
     % generate mesh
     mesh = swplot.icomesh(mesh);
 end

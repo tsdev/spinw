@@ -59,8 +59,8 @@ function varargout = tooltip(text0,hFigure,win)
 if nargin == 0
     text0 = 'on';
 end
-
-fontSize = swpref.getpref('fontsize',[]);
+pref = swpref;
+fontSize = pref.fontsize;
 
 if nargin < 2 || isempty(hFigure)
     % find active figure

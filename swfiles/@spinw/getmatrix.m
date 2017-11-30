@@ -116,6 +116,7 @@ inpForm.size   = {[1 -1]     [1 -2]  [1 1]   [1 1] [1 -2] [1 -3]   [1 1]    [1 1
 inpForm.soft   = {false      false   false   false true   false    false    false};
 
 param0 = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 param  = param0;
 
 tol = param.tol;
@@ -126,7 +127,7 @@ if nargin == 1
 end
 
 if param.fid == -1
-    fid = swpref.getpref('fid',true);
+    fid = pref.fid;
 else
     fid = param.fid;
 end

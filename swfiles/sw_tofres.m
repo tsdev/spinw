@@ -84,17 +84,18 @@ inpForm.defval = {'grid'    dQ0    nQ0 -1    -1   };
 inpForm.size   = {[1 -1] [1 -2] [1 -3] [1 1] [1 1]};
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 obj   = spec.obj;
 
 if param.fid == -1
     % Print output into the following file
-    fid = swpref.getpref('fid',true);
+    fid = pref.fid;
 else
     fid = param.fid;
 end
 
 if param.tid == -1
-    param.tid = swpref.getpref('tid',[]);
+    param.tid = pref.tid;
 end
 
 hkl   = spec.hkl;

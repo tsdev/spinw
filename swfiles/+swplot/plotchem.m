@@ -148,8 +148,9 @@ function varargout = plotchem(varargin)
 %
 
 % default values
-nMesh0    = swpref.getpref('nmesh',[]);
-nPatch0   = swpref.getpref('npatch',[]);
+pref = swpref;
+nMesh0    = pref.nmesh;
+nPatch0   = pref.npatch;
 
 inpForm.fname  = {'range' 'legend' 'label' 'unit' 'mode' 'atom1' 'atom2' 'copy'};
 inpForm.defval = {[]      true     true    'lu'   'poly' 1       2       false };

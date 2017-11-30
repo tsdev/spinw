@@ -199,6 +199,7 @@ inpForm.defval = [inpForm.defval {false @sw_surf 1000       [0 1] cell(1,0)}];
 inpForm.size   = [inpForm.size   {[1 1] [1 1]    [1 1]      [1 2] [1 -7]   }];
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 % plotmode string
 if numel(param.mode)>1
@@ -602,7 +603,7 @@ if param.mode == 3
             if nPlot>1
                 param.colormap = hsv2rgb([(1:nPlot)'/nPlot ones(nPlot,2)])'*255;
             else
-                param.colormap = {swpref.getpref('colormap',[])};
+                param.colormap = {pref.colormap};
             end
         end
         if ~iscell(param.colormap)

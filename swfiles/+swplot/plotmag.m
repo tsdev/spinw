@@ -143,9 +143,10 @@ function varargout = plotmag(varargin)
 
 
 % default values
-fontSize0 = swpref.getpref('fontsize',[]);
-nMesh0    = swpref.getpref('nmesh',[]);
-nPatch0   = swpref.getpref('npatch',[]);
+pref = swpref;
+fontSize0 = pref.fontsize;
+nMesh0    = pref.nmesh;
+nPatch0   = pref.npatch;
 
 inpForm.fname  = {'range' 'legend' 'label' 'dtext' 'fontsize' 'radius0' };
 inpForm.defval = {[]      true     true    0.1     fontSize0  0.06      };

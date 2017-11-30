@@ -1,6 +1,6 @@
 %% setup help generator options
 
-swPath  = {'swfiles/@spinw' 'swfiles' 'swfiles/+swplot' 'swfiles/+swpref' 'swfiles/+swsym' 'swfiles/+swfunc' 'swfiles/+ndbase'};
+swPath  = {'swfiles/@spinw' 'swfiles' 'swfiles/+swplot' 'swfiles/@swpref' 'swfiles/+swsym' 'swfiles/+swfunc' 'swfiles/+ndbase'};
 swr     = sw_rootdir;
 swPath  = cellfun(@(C)[swr C],swPath,'UniformOutput',false);
 swver   = sw_version;

@@ -130,6 +130,7 @@ inpForm.defval = {1e-4   hkl0   true false  false   title0 -1   };
 inpForm.size   = {[1 1] [3 1]  [1 1] [1 1]  [1 1]  [1 -1]  [1 1]};
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 if param.norm
     param.vect = true;
@@ -149,9 +150,9 @@ incomm = any(~sw_always(abs(km-round(km)) <= param.tol));
 hkl = obj.unit.qmat*param.hkl;
 
 if param.fid == -1
-    fid = swpref.getpref('fid',true);
+    fid = pref.fid;
 else
-    fid = param..fid;
+    fid = param.fid;
 end
 
 % Create the interaction matrix and atomic positions in the extended

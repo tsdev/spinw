@@ -97,9 +97,10 @@ inpForm.size   = [inpForm.size   {[-3 -4] [1 1]  [1 1]     [1 1]}];
 inpForm.soft   = [inpForm.soft   {false   false  false     false}];
 
 param = sw_readparam(inpForm,varargin{:});
+pref = swpref;
 
 if param.tid == -1
-    param.tid = swpref.getpref('tid',[]);
+    param.tid = pref.tid;
 end
 
 % check output

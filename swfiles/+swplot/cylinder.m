@@ -65,6 +65,8 @@ function hPatch = cylinder(varargin)
 % [swplot.arrow]
 %
 
+pref = swpref;
+
 if nargin == 0
     help swplot.cylinder
     return
@@ -102,7 +104,7 @@ else
 end
 
 if isempty(nPatch)
-    nPatch = swpref.getpref('npatch',[]);
+    nPatch = pref.npatch;
 end
 
 if nArgExt > 1

@@ -26,8 +26,8 @@ if nargin == 0
     help sw_import
     return
 end
-
-fid = swpref.getpref('fid',true);
+pref = swpref;
+fid = pref.fid;
 
 if nargin < 2
     toPlot = false;

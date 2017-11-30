@@ -41,7 +41,9 @@ if numel(param.T)>1
     param.plot = false;
 end
 
-fid  = swpref.getpref('fid',true);
+pref = swpref;
+fid  = pref.fid;
+
 
 kBT  = param.T*obj.unit.kB;
 beta = 1./kBT;

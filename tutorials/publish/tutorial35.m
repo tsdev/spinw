@@ -77,8 +77,8 @@ luvo.table('matrix')
 % https://goo.gl/8guwPF
 % Please save it with the name LuVO3_fitted_modes.txt into a location that
 % is visible to Matlab.
-
-swpref.setpref('tid',0)
+perf = swpref;
+pref.tid = 0;
 
 par_fit          = struct;
 par_fit.datapath = 'LuVO3_fitted_modes.txt';

@@ -14,7 +14,18 @@ classdef swpref < dynamicprops
     end
     
     methods
-        function obj = swpref()
+        function obj = swpref(opt)
+            
+            if nargin > 0
+                if ischar(opt) && strcmpi(opt,'default')
+                    opt = 0;
+                else
+                    opt = 1;
+                end
+            else
+                opt = 1;
+            end
+            
             data = datastruct;
             sPref = obj.get_set_static();
             
@@ -23,7 +34,7 @@ classdef swpref < dynamicprops
             obj.Value = data.Value;
             obj.Label = data.Label;
             
-            if ~isempty(sPref)
+            if opt && ~isempty(sPref)
                 f = fieldnames(sPref);
                 for i = 1:length(f)
                     ind = strcmp(f{i},obj.Name);
@@ -49,10 +60,6 @@ classdef swpref < dynamicprops
                     obj.(obj.Name{i}) = obj.Value{i};
                 end
             end
-        end
-        
-        function out = getpref(obj,name,varargin)
-           out = obj.get(name); 
         end
         
         function varargout = get(obj,names)
@@ -96,6 +103,34 @@ classdef swpref < dynamicprops
                 end
             end
         end
+        
+        function disp(obj)
+            if verLessThan('MATLAB','8.2')
+                isTable = false;
+            else
+                isTable = true;
+            end
+            
+            this_Name  = obj.Name';
+            this_Label = obj.Label';
+            this_Value = cell(size(this_Label));
+            for i = 1:length(this_Name)
+               this_Value{i} = obj.(this_Name{i});
+            end
+                
+            varName = {'Name', 'Value', 'Label'};
+            var = {this_Name, this_Value, this_Label};
+            
+            fprintf('Spref object, swpref class:\n')
+            if isTable
+                disp(table(var{:},'VariableNames',varName))
+            else
+                for i = 1:length(this_Name)
+                    fprintf('%s:\t%s\n',this_Name{i},this_Value{i});
+                end
+            end
+        end
+        
     end
     
     methods (Hidden=true, Access = private)
@@ -139,6 +174,40 @@ classdef swpref < dynamicprops
             else
                 sPref.(name) = value;
             end
+        end
+        
+        runtests(varargin)
+        
+    end
+    
+    methods (Static)
+        function out = getpref(name,varargin)
+            obj = swpref;
+            if nargin == 0
+                out = obj;
+                return
+            end
+            if ~obj.check_names(name)
+                error('spref:GetError','There is no field %s in spref',name);
+            end
+            if nargin > 1
+                out = obj.get(name);
+            else
+                out.name = name;
+                out.label = obj.Label{strcmp(name,obj.Name)};
+                out.val = obj.get(name);
+            end
+        end
+        
+        function setpref(name,val)
+            if nargin < 2
+                error('spref:SetInputError','There needs to be a valid name, value pair.');
+            end
+            obj = swpref;
+            if ~obj.check_names(name)
+                error('spref:SetError','There is no field %s in spref',name);
+            end
+            obj.(name) = val;
         end
     end
 end

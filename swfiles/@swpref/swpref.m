@@ -104,7 +104,7 @@ classdef swpref < dynamicprops
             else
                 opt = 1;
             end
-            
+
             data = datastruct;
             sPref = obj.get_set_static();
             
@@ -273,7 +273,6 @@ classdef swpref < dynamicprops
                 end
             end
         end
-        
     end
     
     methods (Hidden=true, Access = private)

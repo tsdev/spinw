@@ -93,10 +93,12 @@ else
     argExt  = {varargin{4:end}};
 end
 
+pref = swpref;
+
 if nArgExt > 0
     N = argExt{1};
 else
-    N = swpref.getpref('npatch',[]);
+    N = pref.npatch;
 end
 
 if numel(r0) == 3

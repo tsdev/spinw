@@ -134,6 +134,7 @@ inpForm.soft   = [inpForm.soft   {0      0        0      0        0        false
 
 
 param = sw_readparam(inpForm,varargin{:});
+pref = swpref;
 
 if prod(param.nExt) == 0
     error('spinw:optmagsteep:WrongInput','''nExt'' has to be larger than 0!');
@@ -141,7 +142,7 @@ end
 
 % Text output file
 if param.fid == -1
-    fid = swpref.getpref('fid',true);
+    fid = pref.fid;
 else
     fid = param.fid;
 end

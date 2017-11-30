@@ -174,6 +174,7 @@ inpForm.soft   = [inpForm.soft   {0      0        0             0      0        
 % creat initial magnetic structure
 warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 obj.genmagstr(param);
 
@@ -189,7 +190,7 @@ nExt    = double(magStr.N_ext);
 nMagExt = length(S);
 
 if param.tid == -1
-    param.tid = swpref.getpref('tid',[]);
+    param.tid = pref.tid;
 end
 
 

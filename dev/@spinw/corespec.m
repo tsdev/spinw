@@ -124,12 +124,13 @@ km = obj.mag_str.k.*nExt;
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
 
-fid = swpref.getpref('fid',true);
+pref = swpref;
+fid = pref.fid;
 
 nHkl    = size(hkl,2);
 
 % use mex file by default?
-useMex = swpref.getpref('usemex',[]);
+useMex = pref.usemex;
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.

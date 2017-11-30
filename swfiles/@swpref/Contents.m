@@ -6,5 +6,5 @@
 %
 % ### Files
 %
-%   swpref.getpref
-%   swpref.setpref
+%   import
+%   export

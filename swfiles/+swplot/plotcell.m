@@ -119,8 +119,9 @@ function varargout = plotcell(varargin)
 %
 
 % default values
-nMesh0    = swpref.getpref('nmesh',[]);
-nPatch0   = swpref.getpref('npatch',[]);
+pref = swpref;
+nMesh0    = pref.nmesh;
+nPatch0   = pref.npatch;
 
 inpForm.fname  = {'range' 'mode'   'figure' 'color' 'linestyle' 'linewidth'};
 inpForm.defval = {[]      'single' []       'auto'  '--'         1         };

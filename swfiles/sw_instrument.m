@@ -136,10 +136,11 @@ inpForm.size   = [inpForm.size   { [1 -2]    [1 1] [1 1]   [1 1]   [1 1]  [1 1]}
 inpForm.soft   = [inpForm.soft   {false      false false   false   false  false}];
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 % Print output
 if param.fid == -1
-    fid = swpref.getpref('fid',[]);
+    fid = pref.fid;
 else
     fid = param.fid;
 end

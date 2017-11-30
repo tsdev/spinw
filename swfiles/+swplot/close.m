@@ -23,9 +23,12 @@ function close(varargin)
 % [swplot.figure]
 %
 
+pref = swpref;
+
+
 if nargin == 0
     % check if there is any swplot figure
-    activeTag = swpref.getpref('tag',[]);
+    activeTag = pref.tag;
     inactiveTag = ['inactive_' activeTag];
     if isempty([findobj('tag',activeTag) findobj('tag',inactiveTag)])
         % nothing to close
@@ -45,7 +48,7 @@ if ~isempty(hFigure)
     close(hFigure);
 else
     % close all swplot figure
-    activeTag = swpref.getpref('tag',[]);
+    activeTag = pref.tag;
     % tag for inactive figures
     inactiveTag = ['inactive_' activeTag];
     

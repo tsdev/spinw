@@ -20,6 +20,8 @@ function varargout = swdoc(funName0)
 % documentation.
 %
 
+pref = swpref;
+
 if nargin == 0
     funName0 = '';
 end
@@ -45,7 +47,7 @@ funName(funName=='@') = [];
 funName(funName=='.') = '_';
 
 % open documentation using stored url + function name
-docUrl = swpref.getpref('docurl',true);
+docUrl = pref.docurl;
 if ~isempty(docUrl) && docUrl(end)~='/'
     docUrl = [docUrl '/'];
 end

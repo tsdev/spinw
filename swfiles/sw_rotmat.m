@@ -43,7 +43,7 @@ function rotM = sw_rotmat(rotAxis, rotAngle)
 %
 
 if nargin==0
-    help sw_rotmat
+    swhelp sw_rotmat
     return
 end
 

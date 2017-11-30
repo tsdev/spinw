@@ -32,7 +32,7 @@ function input = sw_readparam(format, varargin)
 %
 
 if nargin == 0
-    help sw_readparam
+    swhelp sw_readparam
     return
 end
 

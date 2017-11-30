@@ -25,8 +25,8 @@ function [omega, swConv] = sw_idata(spectrum, varargin)
 %
 
 if nargin == 0
-    help sw_idata
-    return;
+    swhelp sw_idata
+    return
 end
 
 inpForm.fname  = {'fwhmE' 'fwhmQ' 'nInterp'};

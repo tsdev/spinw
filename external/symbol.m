@@ -17,7 +17,7 @@ function S = symbol(sName,noError)
 
 if any(sName == '\')
     % exchange symbols referenced by '\\symbolname'
-    S = regexprep(sName,'\\\\([\w\^-]+)','${symbol($1,true)}');
+    S = regexprep(sName,'\\\\([\w\^-]+)','${symbol($1,2)}');
     return
 end
 
@@ -29,16 +29,23 @@ nList = {'hbar' 'angstrom' 'copy' 'reg' 'deg' 'pm' 'square' 'cube' 'cross' 'par'
 nList = [nList cellfun(@(C)[upper(C(1)) C(2:end)],nList([14:28 30:end]),'UniformOutput',false)];
 
 
-cList = char([295 197 169 174 176:179 215 449 10178 8747 8364 945:969 913:929 931:937]);
+cList = [295 197 169 174 176:179 215 449 10178 8747 8364 945:969 913:929 931:937];
 
 % add other symbols
-nList = [nList      {'skull' 'sun' 'moon' 'ok'   'Angstrom' '^0' '^1' '^2' '^3' '^-' 'bra' 'ket'}];
-cList = [cList char([9760    9788  9789   10004  197        8304 185  178  179  8315 10216 10217])];
+nList = [nList {'skull' 'sun' 'moon' 'ok'   'Angstrom' '^-' '_-' 'bra' 'ket'}];
+cList = [cList  9760    9788  9789   10004  197        8315 8331 10216 10217 ];
 
-nList = [nList      {'leq' 'geq' 'equiv' 'll' 'gg' 'propto'}];
-cList = [cList char([8818  8819  8801    8810 8811  8733  ])];
+nList = [nList {'leq' 'geq' 'equiv' 'll' 'gg' 'propto'}];
+cList = [cList  8818  8819  8801    8810 8811  8733    ];
 
-nL = numel(nList);
+
+
+nList = [nList arrayfun(@(E)['^' E],num2str((0:9)'),'UniformOutput',false)' arrayfun(@(E)['_' E],num2str((0:9)'),'UniformOutput',false)'];
+cList = [cList 8304 185 178:179 8308:8313 8320:8329];
+
+% convert to characters
+cList = char(cList);
+nL    = numel(nList);
 
 if nargin == 0
     help symbol

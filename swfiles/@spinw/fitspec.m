@@ -473,11 +473,6 @@ function points = sw_circle(r0, n, R, N)
 %   in columns.
 %
 
-if nargin == 0
-    help sw_circle
-    return
-end
-
 if any(cross(n,[0; 0; 1]))
     a = cross(n,[0; 0; 1]);
 else

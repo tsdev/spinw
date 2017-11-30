@@ -23,7 +23,7 @@ function obj = sw_import(fName, toPlot, obj0)
 %
 
 if nargin == 0
-    help sw_import
+    swhelp sw_import
     return
 end
 pref = swpref;

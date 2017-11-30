@@ -113,7 +113,7 @@ function addatom(obj, varargin)
 %
 
 if nargin < 2
-    help spinw.addatom
+    swhelp spinw.addatom
     return
 end
 

@@ -68,7 +68,7 @@ function [r, aIdx, opInfo] = position(symOp, r0, fid, tol)
 %
 
 if nargin == 0
-    help swsym.position
+    swhelp swsym.position
     return
 end
 

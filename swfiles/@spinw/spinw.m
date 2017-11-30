@@ -119,7 +119,6 @@ classdef spinw < handle & matlab.mixin.SetGet
     %   spinw.quickham
     %   spinw.gencoupling
     %   spinw.addcoupling
-    %   spinw.couplingtable
     %   spinw.addaniso
     %   spinw.addg
     %   spinw.field
@@ -136,7 +135,6 @@ classdef spinw < handle & matlab.mixin.SetGet
     %   spinw.moment
     %   spinw.spinwavesym
     %   spinw.symbolic
-    %   spinw.meanfield
     %   spinw.fourier
     %   spinw.fouriersym
     %

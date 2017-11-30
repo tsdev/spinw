@@ -14,14 +14,11 @@ function sw_release(verNum, tempDir)
 %
 
 if nargin == 0
-    help sw_release
+    swhelp sw_release
     return
 end
 
-% create search database for the help
-%builddocsearchdb([sw_rootdir 'help' filesep 'html']);
-%builddocsearchdb([sw_rootdir 'html']);
-
+% get version information for the release
 swVer = sw_version;
 
 if ~isempty(swVer.Version)
@@ -29,46 +26,20 @@ if ~isempty(swVer.Version)
     return
 end
 
-% get latest revision number
-aDir = pwd;
-cd(sw_rootdir);
-
-%[statSys, revNum] = system('svn info |grep Revision: |cut -c11-');
-
-% svn revision number
-%[statSys, revNum] = system('svn up --trust-server-cert --non-interactive');
-% Git "revision" number
-[statSys, revNum] = system('git rev-list --count HEAD');
-
-revNum = strtrim(revNum);
-
-%strIdx = strfind(revNum,' ');
-%revNum = revNum(strIdx(end):(end-1));
-
-if ~statSys
-    
-    revNum = str2double(revNum);
-else
-    revNum = 1;
-end
-
-% add 1000 to the revision number due to the switch to git from svn
-% and keep the monotonity of revision numbers
-revNum = revNum + 1000;
-
-cd(aDir);
-
 if isnumeric(verNum)
     verNum = num2str(verNum);
 end
 
 % includes the following comments to every .m file
-newLine = sprintf('\n');
-revText{1} = ['% $Name: SpinW$ ($Version: ' verNum '$)' newLine];
-revText{2} = ['% $Author: S. Toth$ ($Contact: sandor.toth@psi.ch$)' newLine];
-revText{3} = ['% $Revision: ' num2str(revNum) ' $ ($Date: ' date ' $)' newLine];
-revText{4} = ['% $License: GNU GENERAL PUBLIC LICENSE$' newLine];
+newLine    = char(10); %#ok<CHARTEN>
+revText{1} = ['% $Name: ' swVer.Name '$ ($Version: ' verNum '$)' newLine];
+revText{2} = ['% $Author: ' swVer.Author '$ ($Contact: ' swVer.Contact '$)' newLine];
+revText{3} = ['% $Revision: ' swVer.Release '$ ($Date: ' date '$)' newLine];
+revText{4} = ['% $License: ' swVer.License '$' newLine];
 revText{5} = newLine;
+
+% current directory
+aDir = pwd;
 
 % use current directory where the temp directory is created in case no
 % tempDir defined
@@ -94,7 +65,7 @@ end
 verNum2 = verNum;
 verNum2(verNum2=='.') = '-';
 
-swDirName = ['spinw' verNum2(1) '_R' num2str(revNum)];
+swDirName = ['spinw' verNum2(1) '_R' num2str(swVer.Release)];
 
 mkdir([tempDirName filesep swDirName]);
 tempDirName0 = tempDirName;
@@ -128,7 +99,7 @@ for ii = 1:numel(swFiles)
         end
     end
     
-    % add revision number
+    % add release number
     mLines(end+(1:numel(revText))) = revText;
     
     % add remaining lines
@@ -148,7 +119,7 @@ end
 
 % change the Contents file
 cId = fopen([tempDirName filesep 'Contents.m'],'w');
-fprintf(cId,['%% SpinW\n%% Version ' verNum ' (R' num2str(revNum) ') ' swVer.Date '\n%%']);
+fprintf(cId,['%% SpinW\n%% Version ' verNum ' (R' num2str(swVer.Release) ') ' swVer.Date '\n%%']);
 fclose(cId);
 
 cd(tempDirName0);

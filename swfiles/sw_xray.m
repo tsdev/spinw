@@ -63,7 +63,7 @@ function spectra = sw_xray(spectra, varargin)
 %
 
 if nargin == 0
-    help sw_xray
+    swhelp sw_xray
     return
 end
 

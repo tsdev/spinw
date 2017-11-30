@@ -91,7 +91,7 @@ function [Ysum, Nsum, Cbin] = histn(X, Y, varargin)
 % REMOVED
 
 if nargin == 0
-    help ndbase.histn
+    swhelp ndbase.histn
     return
 end
 

@@ -39,7 +39,7 @@ function hText = text(varargin)
 %
 
 if nargin == 0
-    help swplot.text
+    swhelp swplot.text
     return
 end
 

@@ -121,7 +121,7 @@ function parsed = sw_parstr(strIn)
 %
 
 if nargin == 0
-    help sw_parstr
+    swhelp sw_parstr
     return
 end
 

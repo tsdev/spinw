@@ -121,7 +121,7 @@ lm_iteration  = 0;
 lm_func_calls = 0;
 
 if nargin == 0
-    help ndbase.lm
+    swhelp ndbase.lm
     return
 end
 

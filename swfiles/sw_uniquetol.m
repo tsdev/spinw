@@ -39,7 +39,7 @@ function [unique, firstIdx] = sw_uniquetol(M,tol)
 %
 
 if nargin == 0
-    help sw_uniquetol
+    swhelp sw_uniquetol
     return
 end
 

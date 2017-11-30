@@ -68,7 +68,7 @@ function hPatch = cylinder(varargin)
 pref = swpref;
 
 if nargin == 0
-    help swplot.cylinder
+    swhelp swplot.cylinder
     return
 end
 

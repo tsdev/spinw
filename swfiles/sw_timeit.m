@@ -43,7 +43,7 @@ global sw_time
 pref = swpref;
 
 if nargin == 0
-    help sw_timeit
+    swhelp sw_timeit
     return
 end
 

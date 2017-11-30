@@ -45,7 +45,7 @@ function add(hAdd, hFigure, showtooltip)
 %
 
 if nargin == 0
-    help swplot.add
+    swhelp swplot.add
     return
 end
 

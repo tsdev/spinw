@@ -1,5 +1,3 @@
 % SpinW
-% Version 3.0 6-Feb-2017
+% Version 4.0 (unreleased) 29-Nov-2017
 % 
-
-% TODO fix this file

@@ -17,7 +17,7 @@ function [M, k, n, name, pname, limit] = gm_planard(M0, x)
 %
 
 if nargin == 0
-    help gm_planard
+    swhelp gm_planard
     return
 end
 

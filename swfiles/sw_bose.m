@@ -31,7 +31,7 @@ function C = sw_bose(oldT,newT,E)
 %
 
 if nargin == 0
-    help sw_bose
+    swhelp sw_bose
     return
 end
 

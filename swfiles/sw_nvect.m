@@ -47,7 +47,7 @@ function [n, collinear] = sw_nvect(S, epsilon)
 %  
 
 if nargin == 0
-    help sw_nvect
+    swhelp sw_nvect
     return
 end
 

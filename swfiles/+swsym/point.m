@@ -39,7 +39,7 @@ function pOp = point(symOp, r)
 %
 
 if nargin == 0
-    help swsym.point
+    swhelp swsym.point
     return
 end
 

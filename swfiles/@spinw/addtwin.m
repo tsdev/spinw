@@ -65,8 +65,8 @@ function addtwin(obj,varargin)
 %
 
 if nargin == 1
-    help spinw.addtwin;
-    return;
+    swhelp spinw.addtwin
+    return
 end
 
 inpForm.fname  = {'axis'  'phi'  'rotC'   'vol'  'phid' 'overwrite'};

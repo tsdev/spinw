@@ -933,7 +933,7 @@ function hFigure = sw_annealplot(T, E, rate, param,fid, varargin)
 %
 
 if nargin == 0
-    help sw_annealplot
+    swhelp sw_annealplot
     return
 end
 

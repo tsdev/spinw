@@ -65,7 +65,7 @@ function [polyRes, yout] = sw_res(fid,polDeg,toplot,varargin)
 %
 
 if nargin == 0
-    help sw_res
+    swhelp sw_res
     return
 end
 

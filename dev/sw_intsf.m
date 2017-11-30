@@ -32,7 +32,7 @@ function sFact = sw_intsf(sFact, varargin)
 %
 
 if nargin == 0
-    help sw_intsf
+    swhelp sw_intsf
     return
 end
 

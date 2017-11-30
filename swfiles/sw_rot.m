@@ -55,7 +55,7 @@ function [V, rotM] = sw_rot(rotAxis, rotAngle, V)
 %
 
 if nargin==0
-    help sw_rot
+    swhelp sw_rot
     return
 end
 

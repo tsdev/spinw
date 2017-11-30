@@ -18,7 +18,7 @@ function [M, k, n, name, pname, limit] = gm_spherical3dd(M0, x)
 
 
 if nargin == 0
-    help gm_spherical3dd
+    swhelp gm_spherical3dd
     return
 end
 

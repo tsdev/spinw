@@ -42,7 +42,7 @@ function [formFactVal, coeff] = sw_cff(atomName, Q)
 %
 
 if nargin == 0
-    help sw_cff
+    swhelp sw_cff
     return
 end
 

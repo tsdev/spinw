@@ -39,9 +39,9 @@ function logo(varargin)
 ver = sw_version;
 
 if ~isempty(ver.Version)
-    verStr = [' ' ver.Version ' ' 'R' ver.Revision];
+    verStr = [' ' ver.Version ' ' 'R' ver.Release];
 else
-    verStr = [' ' 'R' ver.Revision];
+    verStr = [' ' 'R' ver.Release];
 end
 
 hFigure = figure('menubar','none','toolbar','none','name',...

@@ -99,7 +99,7 @@ function varargout = newcell(obj,varargin)
 %
 
 if nargin <= 1
-    help spinw.newcell
+    swhelp spinw.newcell
     return
 end
 

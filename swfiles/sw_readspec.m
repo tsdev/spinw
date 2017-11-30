@@ -70,7 +70,7 @@ function data = sw_readspec(path)
 %
 
 if nargin == 0
-    help sw_readspec
+    swhelp sw_readspec
     return
 end
 

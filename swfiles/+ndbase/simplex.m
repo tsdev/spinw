@@ -137,7 +137,7 @@ function [pOpt,fVal,stat] = simplex(dat,func,p0,varargin)
 % Release date: 7/23/06
 
 if nargin == 0
-    help ndbase.simplex
+    swhelp ndbase.simplex
     return
 end
 

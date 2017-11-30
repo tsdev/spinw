@@ -119,7 +119,7 @@ function spectra = sw_instrument(spectra, varargin)
 %
 
 if nargin == 0
-    help sw_instrument
+    swhelp sw_instrument
     return
 end
 

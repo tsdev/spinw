@@ -72,7 +72,7 @@ function spec = sw_tofres(spec, varargin)
 
 % help when executed without argument
 if nargin==0
-    help sw_tofres
+    swhelp sw_tofres
     return
 end
 

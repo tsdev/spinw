@@ -24,7 +24,7 @@ function bc = sw_nb(atomName)
 %
 
 if nargin == 0
-    help sw_nb
+    swhelp sw_nb
     return
 end
 

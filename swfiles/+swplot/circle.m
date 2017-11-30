@@ -64,7 +64,7 @@ function hPatch = circle(varargin)
 %
 
 if nargin == 0
-    help swplot.circle
+    swhelp swplot.circle
     return
 end
 

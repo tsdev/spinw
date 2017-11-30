@@ -88,7 +88,7 @@ param = sw_readparam(inpForm, varargin{:});
 pref = swpref;
 
 if nargin == 0
-    help sw_qgrid
+    swhelp sw_qgrid
     return
 end
 

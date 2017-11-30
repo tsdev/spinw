@@ -227,7 +227,7 @@ function spectra = spinwave(obj, hkl, varargin)
 % If several twins exist in the sample, `omega` and `Sab` are packaged into
 % a cell, that contains $n_{twin}$ number of matrices.
 %
-% ### See also
+% ### See Also
 %
 % [spinw] \| [spinw.spinwavesym] \| [sw_mex] \| [spinw.powspec] \| [sortmode]
 %
@@ -274,7 +274,7 @@ end
 
 % help when executed without argument
 if nargin==1
-    help spinw.spinwave
+    swhelp spinw.spinwave
     spectra = [];
     return
 end

@@ -77,8 +77,8 @@ function spectra = sw_magdomain(spectra, varargin)
 %
 
 if nargin == 0
-    help sw_magdomain
-    return;
+    swhelp sw_magdomain
+    return
 end
 
 inpForm.fname  = {'axis'  'angle' 'rotC'   'vol'  'angled'};

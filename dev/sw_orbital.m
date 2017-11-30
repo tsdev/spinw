@@ -23,8 +23,8 @@ function hSurf = sw_orbital(qNum, varargin)
 %
 
 if nargin == 0
-    help sw_orbital;
-    return;
+    swhelp sw_orbital;
+    return
 end
 
 inpForm.fname  = {'surfRes' 'rLim' 'P'   'rBohr' 'norm'};

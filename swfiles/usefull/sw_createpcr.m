@@ -9,8 +9,8 @@ function sw_createpcr(path, pcrFile, perm)
 %
 
 if nargin == 0
-    help sw_createpcr;
-    return;
+    swhelp sw_createpcr
+    return
 end
 
 if nargin < 3

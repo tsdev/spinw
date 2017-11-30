@@ -1,4 +1,26 @@
 function d = datastruct()
+% Function called to create a default preference object.
+%
+%  {{warning Internal function for the Spin preferences.}}
+%
+% ### Syntax
+%
+% 'prefs = datastruct()'
+%
+% ### Description
+%
+% 'prefs = datastruct()' creates a structure with the following fields:
+%
+% 'Name' a cell array giving the name of each dynamic property.
+%
+% 'Validation' a cell array with functions to evaluate when a
+% property is set.
+%
+% 'Value' a cell array giving the default value of a dynamic property
+%
+% 'Label' a cell array giving a short description on the dynamic
+% property.
+%
 
 d.Name = {
     'fid',...
@@ -17,11 +39,11 @@ d.Name = {
 Size = {
     [1, 1],...
     [1, 1],...
-    [    ],...         
-    [1, 1],...     
+    [    ],...
     [1, 1],...
     [1, 1],...
-    [1, 1],...     
+    [1, 1],...
+    [1, 1],...
     [1, 1],...
     [1, 1],...
     [1, 1],...
@@ -71,6 +93,21 @@ d.Label =  {
     };
 
     function out = check_size(obj,S)
+        % checks to see if an object is the wrong size.
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        % ### Syntax
+        % 
+        % 'logical = check_size(toBeChecked,size)'
+        %
+        % ### Description
+        %
+        % 'logical = check_size(toBeChecked,size)' checks to see if an 
+        % object 'obj 'is the expected size given by 'size'. An error is
+        % thrown if there is a difference.
+        %
+        
         sz = size(obj);
         if ~all(sz == S)
             error('spref:WrongSize','Value to be asigned is the wrong size [%i, %i] not [%i, %i]',sz(1), sz(2), S(1), S(2))
@@ -80,6 +117,21 @@ d.Label =  {
     end
 
     function out = check_mex(~)
+        % checks to see if mex files are available.
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        % ### Syntax
+        % 
+        % 'logical = check_mex(obj)'
+        %
+        % ### Description
+        %
+        % 'logical = check_mex(obj)' checks to see if files 'chol_omp' and 
+        % 'eig_omp' are present in the MATLAB path.An error is thrown if 
+        % they do not exist.
+        %
+        
         if ~(exist('chol_omp','file')==3 && exist('eig_omp','file')==3)
             error('spref:MissingMex','Necessary mex files are missing, compile them!')
         else

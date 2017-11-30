@@ -16,7 +16,7 @@ function varargout = sw_plotsf(sFact, varargin)
 %
 
 if nargin == 0
-    help sw_plotsf
+    swhelp sw_plotsf
     return
 end
 

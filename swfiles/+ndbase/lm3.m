@@ -128,7 +128,7 @@ function [pOpt,yCalc,stat] = lm3(dat,func0,p0,varargin)
 % Modified by Ray Muzic 14-Jul-1992
 
 if nargin == 0
-    help ndbase.lm
+    swhelp ndbase.lm
     return
 end
 

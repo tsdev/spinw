@@ -168,7 +168,7 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %
 
 if nargin==0
-    help sw_plotspec
+    swhelp sw_plotspec
     return
 end
 

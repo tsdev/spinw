@@ -34,7 +34,7 @@ function hPatch = polyhedron(varargin)
 %
 
 if nargin == 0
-    help swplot.polyhedron
+    swhelp swplot.polyhedron
     return
 end
 

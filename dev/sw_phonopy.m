@@ -25,7 +25,7 @@ function [spectra, R] = sw_phonopy(fName)
 %
 
 if nargin == 0
-    help sw_phonopy
+    swhelp sw_phonopy
     return
 end
 

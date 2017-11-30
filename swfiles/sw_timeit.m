@@ -42,7 +42,7 @@ function sw_timeit(percent,varargin)
 global sw_time
 
 if nargin == 0
-    help sw_timeit
+    swhelp sw_timeit
     return
 end
 

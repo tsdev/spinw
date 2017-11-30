@@ -107,7 +107,7 @@ function [pOpt,fVal,stat] = pso(dat,func,p0,varargin)
 % USA.
 
 if nargin == 0
-    help ndbase.pso
+    swhelp ndbase.pso
     return
 end
 

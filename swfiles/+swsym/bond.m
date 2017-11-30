@@ -63,7 +63,7 @@ function [genCp, ugenCp] = bond(r, bv, bond, symOp, tol)
 tolDist = 1e-5;
 
 if nargin == 0
-    help swsym.bond
+    swhelp swsym.bond
     return
 end
 

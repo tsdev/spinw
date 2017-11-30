@@ -87,7 +87,7 @@ inpForm.soft   = [inpForm.soft   {true   true   true   false   true   true   fal
 param = sw_readparam(inpForm, varargin{:});
 
 if nargin == 0
-    help sw_qgrid
+    swhelp sw_qgrid
     return
 end
 

@@ -34,7 +34,7 @@ function [symOpG, isGen] = genreduce(symOp)
 %
 
 if nargin == 0
-    help swsym.genreduce
+    swhelp swsym.genreduce
     return
 end
 

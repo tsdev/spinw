@@ -55,7 +55,7 @@ function hPatch = ellipsoid(varargin)
 %
 
 if nargin == 0
-    help swplot.ellipsoid
+    swhelp swplot.ellipsoid
     return
 end
 

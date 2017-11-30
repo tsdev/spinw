@@ -37,7 +37,7 @@ function type = sw_mattype(mat, epsilon)
 %
 
 if nargin==0
-    help sw_mattype
+    swhelp sw_mattype
     return
 end
 

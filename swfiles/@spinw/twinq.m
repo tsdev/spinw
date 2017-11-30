@@ -45,7 +45,7 @@ function [Qtwin, rotQout] = twinq(obj, Q0)
 %
 
 if nargin == 1
-    help spinw.twinq
+    swhelp spinw.twinq
     return
 end
 

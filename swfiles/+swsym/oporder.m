@@ -37,7 +37,7 @@ function N = oporder(symOp)
 %
 
 if nargin == 0
-    help swsym.oporder
+    swhelp swsym.oporder
     return
 end
 

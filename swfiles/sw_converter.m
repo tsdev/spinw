@@ -40,10 +40,12 @@ function out = sw_converter(value, unitIn, unitOut, particleName,invert)
 % `unitIn`
 % : Units of the input value, one of the following string:
 %   * `'A-1'`        momentum in \\ang$^{-1}$,
+%   * `'A^-1'`       momentum in \\ang$^{-1}$,
 %   * `'k'`          momentum in \\ang$^{-1}$,
 %   * `'Angstrom'`   wavelength in \\ang,
 %   * `'lambda'`     wavelength in \\ang,
 %   * `'A'`          wavelength in \\ang,
+%   * `'\\ang'`          wavelength in \\ang,
 %   * `'K'`          temperature in Kelvin,
 %   * `'m/s'`        speed in m/s,
 %   * `'J'`          energy in Joule,
@@ -67,7 +69,7 @@ function out = sw_converter(value, unitIn, unitOut, particleName,invert)
 %
 
 if nargin == 0
-    help sw_converter
+    swhelp sw_converter
     return
 end
 
@@ -137,11 +139,11 @@ end
 % Conversions
 switch unitIn
     % convert everything into momentum in Angstrom^-1
-    case {'Angstrom' 'A' 'lambda' 'angstrom'}
+    case {'Angstrom' 'A' 'lambda' 'angstrom' symbol('a')}
         k = 2*pi./value;
     case 'nm'
         k = 2*pi./(value*10);
-    case 'um'
+    case {'um' [symbol('\\m') 'm']}
         k = 2*pi./(value*1e4);
     case {'Kelvin' 'K'}
         if m~=0
@@ -149,7 +151,7 @@ switch unitIn
         else
             k = value*EK2J/clight/1e10/hBar;
         end
-    case {'k' 'A-1' 'Angstrom-1' 'angstrom-1'}
+    case {'k' 'A-1' 'Angstrom-1' 'angstrom-1' 'A^-1' symbol('\\a\\^-\\^1')}
         k = value;
     case 'mps'
         if m~=0
@@ -188,7 +190,7 @@ switch unitIn
         else
             k = value*1e12*2*pi/clight/1e10;
         end
-    case 'cm-1'
+    case {'cm-1' symbol('cm\\^-\\^1') 'cm^-1'}
         k = 1e-8*value*2*pi;
     case 'fs'
         k = 1/(value*1e-15)*2*pi/clight/1e10;
@@ -198,11 +200,11 @@ end
 
 switch unitOut
     % convert from momentum in Angstrom^-1 to output units
-    case {'Angstrom' 'A' 'angstrom' 'lambda'}
+    case {'Angstrom' 'A' 'angstrom' 'lambda' symbol('a')}
         out = 2*pi./k;
     case 'nm'
         out = 2*pi./k*0.1;
-    case 'um'
+    case {'um' [symbol('\\m') 'm']}
         out = 2*pi./k*1e-4;
     case {'Kelvin' 'K'}
         if m~=0
@@ -210,7 +212,7 @@ switch unitOut
         else
             out = k/EK2J*clight*1e10*hBar;
         end
-    case {'k' 'A-1' 'Angstrom-1' 'angstrom-1'}
+    case {'k' 'A-1' 'Angstrom-1' 'angstrom-1' 'A^-1' symbol('\\a\\^-\\^1')}
         out = k;
     case {'mps' 'm/s'}
         if m~=0
@@ -242,7 +244,7 @@ switch unitOut
         else
             out = k*clight/2/pi/1e12*1e10;
         end
-    case 'cm-1'
+    case {'cm-1' symbol('cm\\^-\\^1') 'cm^-1'}
         out = 1e8*k/2/pi;
     case 'fs'
         out = 2*pi/clight/k/1e10*1e15;

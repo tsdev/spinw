@@ -121,7 +121,7 @@ param  = param0;
 tol = param.tol;
 
 if nargin == 1
-    help spinw.getmatrix
+    swhelp spinw.getmatrix
     return
 end
 

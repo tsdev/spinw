@@ -48,7 +48,7 @@ if nargout == 0
             disp('SpinW update process cancelled!');
             return
         end
-        swVer.Revision = 0;
+        swVer.Release = 0;
     end
     
     if nargin == 0
@@ -67,7 +67,7 @@ end
 % download the link to the newest version & comments!
 % the file format:
 %   link to new download
-%   revision number
+%   release number
 %   message in the next few lines
 try
     newInfo = urlread(baseUrl);
@@ -84,7 +84,7 @@ newLink = newInfo{1};
 newRev  = str2double(newInfo{2});
 
 if nargout == 1
-    % Give the revision number and exit.
+    % Give the release number and exit.
     onlineRev = newRev;
     return
 end
@@ -95,21 +95,21 @@ else
     newMsg = {};
 end
 
-% check whether the online version is newer (compare revision numbers)
-if ischar(swVer.Revision)
-    swVer.Revision = str2double(swVer.Revision);
+% check whether the online version is newer (compare release numbers)
+if ischar(swVer.Release)
+    swVer.Release = str2double(swVer.Release);
 end
 
-if swVer.Revision ==  newRev
+if swVer.Release ==  newRev
     disp('Your SpinW installation is up to date!');
     return
-elseif swVer.Revision >  newRev
+elseif swVer.Release >  newRev
     disp('Your SpinW installation is newer than the one in the repository! Lucky you! :)');
     return
 end
 
-fprintf('Current version has a revision number: %d\n',swVer.Revision);
-fprintf('New version has a revision number:     %d\n',newRev);
+fprintf('Current version has a release number: %d\n',swVer.Release);
+fprintf('New version has a release number:     %d\n',newRev);
 
 answer = getinput('Do you want to continue? (y/n)','yn');
 

@@ -41,7 +41,7 @@ function Qm = sw_econtract(Q,varargin)
 %
 
 if nargin == 0
-    help sw_econtract
+    swhelp sw_econtract
     return
 end
 

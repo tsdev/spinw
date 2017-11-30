@@ -56,7 +56,7 @@ function [S, k, n, name, pname, limit] = gm_planar(absS, x)
 %
 
 if nargin == 0
-    help gm_planar;
+    swhelp gm_planar;
     return
 end
 

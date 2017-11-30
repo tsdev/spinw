@@ -55,7 +55,7 @@ function [formFactVal, coeff, S] = sw_mff(atomName, Q, nCoeff)
 nCoeff0 = 9;
 
 if nargin == 0
-    help sw_mff
+    swhelp sw_mff
     return
 end
 

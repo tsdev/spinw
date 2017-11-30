@@ -95,7 +95,7 @@ function setmatrix(obj, varargin)
 %
 
 if nargin == 1
-    help spinw.setmatrix
+    swhelp spinw.setmatrix
     return
 end
 

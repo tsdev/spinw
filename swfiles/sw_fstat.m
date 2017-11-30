@@ -72,7 +72,7 @@ function parOut = sw_fstat(state, parIn, T, E, M, ~)
 %
 
 if nargin == 0
-    help sw_fstat;
+    swhelp sw_fstat;
     return
 end
 

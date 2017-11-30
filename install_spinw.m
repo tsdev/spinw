@@ -9,15 +9,15 @@ function install_spinw()
 %
 
 % if nargin == 0
-%     help sw_install
+%     swhelp sw_install
 %     return
 % end
 
-newline = char(10);
+newline = char(10); %#ok<CHARTEN>
 
 % remove old SpinW installation from path
 fprintf('\nRemoving path to old SpinW installation if exists!\n')
-try %#ok<TRYNC>
+try
     rmpath(genpath(sw_rootdir));
 end
 

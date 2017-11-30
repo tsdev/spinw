@@ -44,7 +44,7 @@ function [RGB, nameOut] = color(cName, index)
 %
 
 if nargin == 0
-    help swplot.color
+    swhelp swplot.color
     return
 end
 

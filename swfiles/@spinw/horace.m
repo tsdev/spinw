@@ -118,7 +118,7 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %
 
 if nargin <= 1
-    help spinw.horace
+    swhelp spinw.horace
     return
 end
 

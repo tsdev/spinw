@@ -38,7 +38,7 @@ function obj = sw_model(model, param, fid)
 %
 
 if nargin == 0
-    help sw_model
+    swhelp sw_model
     return
 end
 

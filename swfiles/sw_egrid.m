@@ -173,7 +173,7 @@ function spectra = sw_egrid(spectra, varargin)
 %
 
 if nargin == 0
-    help sw_egrid
+    swhelp sw_egrid
     return
 end
 

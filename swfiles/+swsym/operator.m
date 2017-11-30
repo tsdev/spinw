@@ -48,7 +48,7 @@ function [symOp, symInfo] = operator(sym, fid)
 %
 
 if nargin == 0
-    help swsym.operator
+    swhelp swsym.operator
     return
 end
 

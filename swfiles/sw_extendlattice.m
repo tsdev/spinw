@@ -53,7 +53,7 @@ function [aList, SSext] = sw_extendlattice(nExt, aList, SS)
 %
 
 if nargin == 0
-    help sw_extendlattice
+    swhelp sw_extendlattice
     return
 end
 

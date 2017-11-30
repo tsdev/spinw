@@ -46,7 +46,7 @@ function [M, asym] = sw_basismat(symOp, r, tol)
 %
 
 if nargin == 0
-    help sw_basismat
+    swhelp sw_basismat
     return
 elseif nargin == 2
     tol = 1e-5;

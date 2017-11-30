@@ -31,7 +31,7 @@ function [vyOut, vzOut, vxOut] = sw_cartesian(n)
 %
 
 if nargin == 0
-    help sw_cartesian
+    swhelp sw_cartesian
     return
 end
 

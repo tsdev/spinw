@@ -49,7 +49,7 @@ function [V, mirM] = sw_mirror(n, V)
 %
 
 if nargin==0
-    help sw_mirror
+    swhelp sw_mirror
     return
 end
 

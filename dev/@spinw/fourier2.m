@@ -65,7 +65,7 @@ end
 
 % help when executed without argument
 if nargin==1
-    help sw.fourier
+    swhelp sw.fourier
     res = [];
     return
 end

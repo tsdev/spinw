@@ -64,7 +64,7 @@ function hPatch = line(varargin)
 
 
 if nargin == 0
-    help swplot.line
+    swhelp swplot.line
     return
 end
 

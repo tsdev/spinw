@@ -22,7 +22,7 @@ function ellM = sw_quadell(M, toplot)
 %
 
 if nargin == 0
-    help sw_quadell;
+    swhelp sw_quadell;
     return
 end
 
@@ -157,7 +157,7 @@ function points = sw_circle(r0, n, R, N)
 %
 
 if nargin == 0
-    help sw_circle
+    swhelp sw_circle
     return
 end
 

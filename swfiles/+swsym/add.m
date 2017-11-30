@@ -33,7 +33,7 @@ function sym = add(symStr, symName)
 %
 
 if nargin == 0
-    help swsym.add
+    swhelp swsym.add
     return
 end
 

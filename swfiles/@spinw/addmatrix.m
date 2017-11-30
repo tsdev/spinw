@@ -1,5 +1,5 @@
 function addmatrix(obj, varargin)
-% adds new [3x3] matrix
+% adds new 3x3 matrix
 % 
 % ### Syntax
 % 
@@ -68,7 +68,7 @@ function addmatrix(obj, varargin)
 %
 
 if nargin < 2
-    help spinw.addmatrix
+    swhelp spinw.addmatrix
     return
 end
 

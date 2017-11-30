@@ -189,7 +189,7 @@ function spectra = powspec(obj, hklA, varargin)
 
 % help when executed without argument
 if nargin==1
-    help spinw.powspec
+    swhelp spinw.powspec
     return
 end
 

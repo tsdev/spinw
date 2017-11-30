@@ -52,7 +52,7 @@ if nargin == 1
 end
 
 if nargin == 0
-    help sw_atomdata
+    swhelp sw_atomdata
     return
 end
 

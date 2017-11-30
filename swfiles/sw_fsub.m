@@ -30,7 +30,7 @@ function cGraph = sw_fsub(conn, ~)
 %
 
 if nargin == 0
-    help sw_fsub
+    swhelp sw_fsub
     return
 end
 

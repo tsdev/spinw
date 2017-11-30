@@ -31,7 +31,7 @@ function symStr = str(symOp)
 %
 
 if nargin == 0
-    help swsym.str
+    swhelp swsym.str
     return
 end
 

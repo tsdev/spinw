@@ -27,8 +27,8 @@ function [rSym, symName] = sw_genatpos2(sym, r, fid, tol)
 %
 
 if nargin == 0
-    help sw_genatpos;
-    return;
+    swhelp sw_genatpos;
+    return
 end
 
 if nargin == 2

@@ -69,7 +69,7 @@ function hPatch = arrow(varargin)
 %
 
 if nargin == 0
-    help swplot.arrow
+    swhelp swplot.arrow
     return
 end
 

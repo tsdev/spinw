@@ -19,7 +19,7 @@ function result = isop(symOp)
 %
 
 if nargin == 0
-    help swsym.isop
+    swhelp swsym.isop
     return
 end
 

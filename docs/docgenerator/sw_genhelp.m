@@ -466,9 +466,9 @@ for ii = 1:nPath
 end
 
 % generate sidebar YAML file
-if  all(isfield(param.verstr,{'Version' 'Revision'}))
+if  all(isfield(param.verstr,{'Version' 'Release'}))
     if isempty(param.verstr.Version)
-        verStr = ['R' param.verstr.Revision];
+        verStr = ['R' param.verstr.Release];
     else
         verStr = param.verstr.Version;
     end

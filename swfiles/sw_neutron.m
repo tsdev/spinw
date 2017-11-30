@@ -91,7 +91,7 @@ function spectra = sw_neutron(spectra, varargin)
 %
 
 if nargin == 0
-    help sw_neutron
+    swhelp sw_neutron
     return
 end
 

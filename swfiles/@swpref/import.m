@@ -1,9 +1,37 @@
 function import(obj,location)
-%EXPORT Summary of this function goes here
-%   Detailed explanation goes here
+% Function called when a swpref object is imported.
+%
+% ### Syntax
+%
+% 'obj = import(obj,location)'
+%
+% 'success = export(obj)'
+%
+% ### Description
+%
+% 'obj = import(obj,location)' loads the preferences given in by the file 
+% specified by 'location', sets the preferences and returns a new
+% preference object.
+%
+% 'obj = import(obj)' loads the preferences given in by the file 'prefs.json'
+% in the users home folder. It sets the preferences and returns a new
+% preference object.
+%
+% ### See Also
+%
+% [swpref.export]
+%
 
 if nargin == 1
-    location = [sw_rootdir filesep 'prefs.json'];
+    if ispc
+        userDir = winqueryreg('HKEY_CURRENT_USER',...
+            ['Software\Microsoft\Windows\CurrentVersion\' ...
+            'Explorer\Shell Folders'],'Personal');
+    else
+        userDir = char(java.lang.System.getProperty('user.home'));
+    end
+    
+    location = [userDir filesep 'prefs.json'];
 end
 
 if ~exist(location,'file')

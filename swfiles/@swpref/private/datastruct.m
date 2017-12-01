@@ -116,7 +116,7 @@ d.Label =  {
         end
     end
 
-    function out = check_mex(~)
+  function out = check_mex(~)
         % checks to see if mex files are available.
         %
         %  {{warning Internal function for the Spin preferences.}}

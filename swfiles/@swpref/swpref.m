@@ -1,5 +1,5 @@
 classdef swpref < dynamicprops
-    % Class to store and retrieve properties.
+    % class to store and retrieve persistent settings
     %
     % ### Syntax
     %
@@ -7,24 +7,43 @@ classdef swpref < dynamicprops
     %
     % `pref = swpref('default')`
     %
-    %
     % ### Description
     %
     % `pref = swpref` retrieves and creates a preference object.
     %
     % `pref = swpref('default')` resets all preferences to default values.
     %
+    % The settings sotred in the `swpref` class for spinw objects will
+    % persist during a single Matlab session. It is different from the
+    % Matlab built-in preferences, as swpref resets all settings to factory
+    % default after every restart of Matlab.
+    %
+    % ### Examples
+    %
+    % We change the fontsize value and show that it is retained even when a
+    % new instance of the object is created:
+    %
+    % ```
+    % >>pref = swpref
+    % >>pref.fontsize>>
+    % >>pref.fontsize = 18
+    % >>pref2 = swpref
+    % >>pref.fontsize>>
+    % >>pref2.fontsize>>
+    % ```
+    %
     % ### Properties
     %
-    % The properties are defined in the 'datastruct.m' file and can be
-    % updates as need be.
+    % Properties can be changed by directly assigning a new value to them.
+    % Once a new value to a given property is assigned, it will be retained
+    % until the end of a MATLAB session, even if a new class instance is
+    % created.
     %
     % ### Methods
-    % 
-    % Methods are the different commands that require a `swpref` object as a
-    % first input, thus they can be called as `method1(obj,...)`,
-    % alternatively the equivalent command is `obj.method1(...)`. The list
-    % of public methods is below.
+    %
+    % Methods are the different commands that require an `swpref` object as
+    % a first input, thus they can be called as `method1(obj,...)`,
+    % alternatively the equivalent command is `obj.method1(...)`.
     %
     % swpref.get
     % swpref.set
@@ -32,7 +51,7 @@ classdef swpref < dynamicprops
     % swpref.import
     %
     % ### Commands
-    % 
+    %
     % Commands are methods which can be called without first creating a
     % preference object 'swpref.command(....)'.
     %
@@ -41,19 +60,19 @@ classdef swpref < dynamicprops
     %
     
     properties(Hidden = true, Access=private)
-        % stores the details to create and check dynamic properties. 
+        % stores the details to create and check dynamic properties.
         %
-        % 'Name' a cell array giving the name of each dynamic property.
+        % `Name` a cell array giving the name of each dynamic property.
         %
-        % 'Validation' a cell array with functions to evaluate when a
+        % `Validation` a cell array with functions to evaluate when a
         % property is set.
         %
-        % 'Value' a cell array giving the default value of a dynamic property
+        % `Value` a cell array giving the default value of a dynamic property
         %
-        % 'Label' a cell array giving a short description on the dynamic
+        % `Label` a cell array giving a short description on the dynamic
         % property.
         %
-        % These details are retrieved from the private file 'datastruct.m'
+        % These details are retrieved from the private file `datastruct.m`.
         %
         Name
         Validation
@@ -142,19 +161,19 @@ classdef swpref < dynamicprops
         end
         
         function varargout = get(obj,names)
-            % Function called when a vairable is retrieved.
+            % retrieves a preference value
             %
             % ### Syntax
             %
-            % 'value = get(obj, name)'
+            % `value = get(obj, name)`
             %
-            % 'value = obj.get(name)'
+            % `value = obj.get(name)`
             %
             % ### Description
             %
-            % 'value = get(obj, name)' gets the preference 'name'
+            % `value = get(obj, name)` gets the preference `name`.
             %
-            % 'value = obj.get(name)' gets the preference 'name'
+            % `value = obj.get(name)` gets the preference `name`.
             %
             % ### See Also
             %
@@ -162,7 +181,7 @@ classdef swpref < dynamicprops
             %
             
             if nargin == 1
-                error('spref:GetError','You need to supply a parameter to get!');
+                error('swpref:GetError','You need to supply a parameter to get!');
             end
             
             if iscell(names)
@@ -172,35 +191,35 @@ classdef swpref < dynamicprops
                         varargout{j} = obj.(names{i}); %#ok<AGROW>
                         j = j+1;
                     else
-                        error('spref:GetError','There is no field %s in spref',names{i});
+                        error('swpref:GetError','There is no field %s in swpref',names{i});
                     end
                 end
             else
                 if obj.check_names(names)
                     varargout{1} = obj.(names);
                 else
-                    error('spref:GetError','There is no field %s in spref',names);
+                    error('swpref:GetError','There is no field %s in swpref',names);
                 end
             end
         end
         
         
         function set(obj,names,values)
-            % Function called when a vairable is set.
+            % sets a preference value
             %
             % ### Syntax
             %
-            % 'set(obj, name, value)'
+            % `set(obj, name, value)`
             %
-            % 'obj.set(name, value)'
+            % `obj.set(name, value)`
             %
             % ### Description
             %
-            % 'set(obj, name, value)' sets the preference 'name' to the
-            % value given by 'value'
+            % `set(obj, name, value)` sets the preference `name` to the
+            % value given by `value`
             %
-            % 'obj.set(name, value)' sets the preference 'name' to the
-            % value given by 'value'
+            % `obj.set(name, value)` sets the preference `name` to the
+            % value given by `value`
             %
             % ### See Also
             %
@@ -208,44 +227,43 @@ classdef swpref < dynamicprops
             %
             
             if nargin < 2
-                error('spref:SetError','You need to supply a parameter,value pair to set!');
+                error('swpref:SetError','You need to supply a parameter,value pair to set!');
             end
             
             if iscell(names) && iscell(values)
                 if length(names) ~= length(values)
-                    error('spref:SetInputError','Names and Values must have the same length')
+                    error('swpref:SetInputError','Names and Values must have the same length')
                 end
                 for i = 1:length(names)
                     if obj.check_names(names{i})
                         obj.(names{i}) = values{i};
                     else
-                        error('spref:SetError','There is no field %s in spref',names{i});
+                        error('swpref:SetError','There is no field %s in swpref',names{i});
                     end
                 end
             else
                 if obj.check_names(names)
                     obj.(names) = values;
                 else
-                    error('spref:SetError','There is no field %s in spref',names);
+                    error('swpref:SetError','There is no field %s in swpref',names);
                 end
             end
         end
         
         function disp(obj)
-            % Function called when a preference is displayed.
-            %
+            % function called when a preference is displayed.
             %
             % ### Syntax
             %
-            % 'disp(obj)'
+            % `disp(obj)`
             %
-            % 'obj.disp'
+            % `obj.disp`
             %
             % ### Description
             %
-            % 'disp(obj)' shows a table of all dynamic properties including
+            % `disp(obj)` shows a table of all dynamic properties including
             % name, value and description. If a table is not supported only
-            % 'name: value' is displayed for all properties.
+            % `name: value` is displayed for all properties.
             %
             
             if verLessThan('MATLAB','8.2')
@@ -264,16 +282,15 @@ classdef swpref < dynamicprops
             varName = {'Name', 'Value', 'Label'};
             var = {this_Name, this_Value, this_Label};
             
-            fprintf('Spref object, swpref class:\n')
+            fprintf(sw_markdown(sprintf(...
+                ['     `Swpref` object, [swpref] class:\n' ...
+                '     `Stored preferences:`\n'])))
             if isTable
                 disp(table(var{:},'VariableNames',varName))
             else
-                for i = 1:length(this_Name)
-                    fprintf('%s:\t%s\n',this_Name{i},this_Value{i});
-                end
+                disp(swpref.getpref);
             end
         end
-        
     end
     
     methods (Hidden=true, Access = private)
@@ -298,7 +315,7 @@ classdef swpref < dynamicprops
             %
             
             if ~obj.check_names(name)
-                error('spref:SetError','There is no field %s in spref',name);
+                error('swpref:SetError','There is no field %s in swpref',name);
             end
             
             idx = strcmp(name,obj.Name);
@@ -333,7 +350,7 @@ classdef swpref < dynamicprops
             if obj.check_names(name)
                 val = obj.get_set_static(name);
             else
-                error('spref:GetError','There is no field %s in spref',name);
+                error('swpref:GetError','There is no field %s in swpref',name);
             end
         end
         
@@ -400,34 +417,49 @@ classdef swpref < dynamicprops
     
     methods (Static)
         function out = getpref(name,varargin)
-            % Retrieves Spin preferences without creating a preference
-            % objext
+            % returns SpinW global preferences
             %
             % ### Syntax
             %
-            % `swpref.setpref(prefName, value)`
+            % `allPref = swpref.getpref`
             %
+            % `selPref = swpref.getpref(prefName)`
+            %
+            % `val = swpref.getpref(prefName,[])`
             %
             % ### Description
             %
-            % `swpref.setpref(prefName, value)` sets the value of `prefName`
-            % preferences.
+            % `allPref = swpref.getpref` returns all preference in a struct where each
+            % field-value pair corresponds to a prefernce name-value pair.
             %
-            % {{note This is a legacy function. It is better to use 'pref = swpref' and then
-            % use regular 'pref.prefName = value' or 'set(pref, prefName, value)' syntax.}}
+            % `selPref = swpref.getpref(prefName)` returns a struct that contains the
+            % value, name and label of the selected preference.
+            %
+            % `val = swpref.getpref(prefName,[])` just returns the stored value
+            % corresponding to `prefName` preference.
+            %
+            % {{note The preferences are reset after every restart of Matlab, unlike the
+            % Matlab built-in preferences that are persistent between Matlab sessions.
+            % If you want certain preferences to keep after closing matlab, define them
+            % in the `startup.m` file.}}
+            %
+            % {{warning This is a legacy function. It is better to use `pref = swpref` and then
+            % use regular `pref.prefName = value` or `set(pref, prefName, value)` syntax.}}
             %
             % ### See Also
             %
-            % [swpref.getpref]
+            % [swpref.setpref]
             %
             
             obj = swpref;
             if nargin == 0
-                out = obj;
+                val = cellfun(@(C)obj.(C),obj.Name,'UniformOutput',false);
+                out = [obj.Name; val];
+                out = struct(out{:});
                 return
             end
             if ~obj.check_names(name)
-                error('spref:GetError','There is no field %s in spref',name);
+                error('swpref:GetError','There is no field %s in swpref',name);
             end
             if nargin > 1
                 out = obj.get(name);
@@ -439,42 +471,38 @@ classdef swpref < dynamicprops
         end
         
         function setpref(name,val)
-            % Sets Spin preferences without creating a preference
-            % objext
+            % sets SpinW global preferences
             %
             % ### Syntax
             %
-            % `prefDetails = swpref.getpref(prefName)`
-            %
-            % `value = swpref.getpref(prefName,[])`
+            % `swpref.setpref(prefName, value)`
             %
             % ### Description
             %
-            % `prefDetails = swpref.getpref(prefName)` retrieves a structure detailing
-            % preference given by 'prefName', containing the value 'val', name 'name'
-            % and description 'label'.
+            % `swpref.setpref(prefName, value)` sets the value of `prefName`
+            % preferences.
             %
-            % `value = swpref.getpref(prefName,[])` retrieves the preferences of 'prefName'
-            % without creating a preference object.
+            % {{note The preferences are reset after every restart of Matlab, unlike the
+            % Matlab built-in preferences that are persistent between Matlab sessions.
+            % If you want certain preferences to keep after closing matlab, define them
+            % in the `startup.m` file.}}
             %
-            %
-            % {{note This is a legacy function. It is better to use 'pref = swpref' and then
+            % {{warning This is a legacy function. It is better to use 'pref = swpref' and then
             % use regular 'value = pref.prefName' or 'get(pref, prefName)' syntax.}}
             %
             % ### See Also
             %
-            % [swpref.setpref]
+            % [swpref.getpref]
             %
             
             if nargin < 2
-                error('spref:SetInputError','There needs to be a valid name, value pair.');
+                error('swpref:SetInputError','There needs to be a valid name, value pair.');
             end
             obj = swpref;
             if ~obj.check_names(name)
-                error('spref:SetError','There is no field %s in spref',name);
+                error('swpref:SetError','There is no field %s in swpref',name);
             end
             obj.(name) = val;
         end
     end
 end
-

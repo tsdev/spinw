@@ -1,20 +1,20 @@
 function success = export(obj,location)
-% Function called when a swpref object is exported.
+% saves swpref object into a file
 %
 % ### Syntax
 %
-% 'success = export(obj,location)'
+% `success = export(obj,location)`
 %
-% 'success = export(obj)'
+% `success = export(obj)`
 %
 % ### Description
 %
-% 'success = export(obj,location)' writes the preferences given in 'obj' to
-% a file location given by 'location'. The file is in a basic '.json'
+% `success = export(obj,location)` writes the preferences given in `obj` to
+% a file location given by `location`. The file is in a basic `.json`
 % format.
 %
-% 'success = export(obj)' writes the preferences given in 'obj' to
-% the users home folder as 'prefs.json'. The file is in a basic '.json'
+% `success = export(obj)` writes the preferences given in `obj` to
+% the users home folder as `prefs.json`. The file is in a basic `.json`
 % format.
 %
 % ### See Also
@@ -25,19 +25,15 @@ function success = export(obj,location)
 props = obj.props;
 
 if nargin == 1
-    if ispc
-        userDir = winqueryreg('HKEY_CURRENT_USER',...
-            ['Software\Microsoft\Windows\CurrentVersion\' ...
-            'Explorer\Shell Folders'],'Personal');
-    else
-        userDir = char(java.lang.System.getProperty('user.home'));
-    end
-    
-    location = [userDir filesep 'prefs.json'];
+    location = [userpath filesep 'swprefs.json'];
 end
 
 
 f = fopen(location,'w');
+if f < 0
+    % error
+    error('swpref:export:FileBlocked','Cannot write to file %s.',location);
+end
 fprintf(f, '{\n');
 for i = 1:length(props)
     name = props(i).Name;
@@ -67,4 +63,5 @@ for i = 1:length(props)
 end
 fprintf(f, '}\n');
 success = fclose(f);
+
 end

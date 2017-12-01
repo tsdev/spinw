@@ -77,11 +77,8 @@ funName(funName=='@') = [];
 funName(funName=='.') = '_';
 
 % open documentation using stored url + function name
-<<<<<<< Updated upstream
 docUrl = pref.docurl;
-=======
-docUrl = swpref.getpref('docurl',[]);
->>>>>>> Stashed changes
+
 if ~isempty(docUrl) && docUrl(end)~='/'
     docUrl = [docUrl '/'];
 end

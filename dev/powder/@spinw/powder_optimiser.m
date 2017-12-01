@@ -122,10 +122,14 @@ for i = 1:length(Q_slices)
     n_q = length(u_q);
     if n_q == 0
         warning('spinw:powder_optimiser:InvalidQRange','The Q range has no q points.')
+        % We skip this itteration. i*ones doesn't matter as we une unique
+        % indexing later....
         continue
     elseif n_q > Q_slice(3)
-        warning('spinw:powder_optimiser:InvalidQRange','The Q range has too many q points.')
+        % We will be doing binning.
+        warning('spinw:powder_optimiser:InvalidQRange','The Q range has too many q points. Using %f points',Q_slice(3))
     else
+        % We will be doing binning, but we shouldnt be doing binning....
         Q_slice(3) = n_Q;
     end
     

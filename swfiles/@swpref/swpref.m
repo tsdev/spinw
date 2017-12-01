@@ -50,10 +50,8 @@ classdef swpref < dynamicprops
     % swpref.export
     % swpref.import
     %
-    % ### Commands
-    %
     % Commands are methods which can be called without first creating a
-    % preference object 'swpref.command(....)'.
+    % preference object `swpref.command(....)`.
     %
     % swpref.getpref
     % swpref.setpref
@@ -383,20 +381,20 @@ classdef swpref < dynamicprops
             %
             % 'values = get_set_static()'
             %
-            % 'value' = get_set_static(prefName)'
+            % 'value' = get_set_static(name)'
             %
-            % 'get_set_static(prefName, value)'
+            % 'get_set_static(name, value)'
             %
             % ### Description
             %
             % 'values = get_set_static()' retrieves all the preferences in
             % the storage.
             %
-            % 'value' = get_set_static(prefName)' returns the value of
-            % preference given by 'prefName'.
+            % 'value' = get_set_static(name)' returns the value of
+            % preference given by 'name'.
             %
-            % 'get_set_static(prefName, value)' sets the preference given
-            % by 'prefName' to value 'value'
+            % 'get_set_static(name, value)' sets the preference given
+            % by 'name' to value 'value'
             %
             % ### See Also
             %
@@ -417,26 +415,26 @@ classdef swpref < dynamicprops
     
     methods (Static)
         function out = getpref(name,varargin)
-            % returns SpinW global preferences
+            % retrieves a preference value
             %
             % ### Syntax
             %
             % `allPref = swpref.getpref`
             %
-            % `selPref = swpref.getpref(prefName)`
+            % `selPref = swpref.getpref(name)`
             %
-            % `val = swpref.getpref(prefName,[])`
+            % `val = swpref.getpref(name,[])`
             %
             % ### Description
             %
             % `allPref = swpref.getpref` returns all preference in a struct where each
             % field-value pair corresponds to a prefernce name-value pair.
             %
-            % `selPref = swpref.getpref(prefName)` returns a struct that contains the
+            % `selPref = swpref.getpref(name)` returns a struct that contains the
             % value, name and label of the selected preference.
             %
-            % `val = swpref.getpref(prefName,[])` just returns the stored value
-            % corresponding to `prefName` preference.
+            % `val = swpref.getpref(name,[])` just returns the stored value
+            % corresponding to `name` preference.
             %
             % {{note The preferences are reset after every restart of Matlab, unlike the
             % Matlab built-in preferences that are persistent between Matlab sessions.
@@ -444,7 +442,7 @@ classdef swpref < dynamicprops
             % in the `startup.m` file.}}
             %
             % {{warning This is a legacy function. It is better to use `pref = swpref` and then
-            % use regular `pref.prefName = value` or `set(pref, prefName, value)` syntax.}}
+            % use regular `pref.name = value` or `set(pref, name, value)` syntax.}}
             %
             % ### See Also
             %
@@ -470,16 +468,16 @@ classdef swpref < dynamicprops
             end
         end
         
-        function setpref(name,val)
-            % sets SpinW global preferences
+        function setpref(varargin)
+            % sets a preference value
             %
             % ### Syntax
             %
-            % `swpref.setpref(prefName, value)`
+            % `swpref.setpref(name, value)`
             %
             % ### Description
             %
-            % `swpref.setpref(prefName, value)` sets the value of `prefName`
+            % `swpref.setpref(name, value)` sets the value of `name`
             % preferences.
             %
             % {{note The preferences are reset after every restart of Matlab, unlike the
@@ -488,21 +486,26 @@ classdef swpref < dynamicprops
             % in the `startup.m` file.}}
             %
             % {{warning This is a legacy function. It is better to use 'pref = swpref' and then
-            % use regular 'value = pref.prefName' or 'get(pref, prefName)' syntax.}}
+            % use regular 'value = pref.name' or 'get(pref, name)' syntax.}}
             %
             % ### See Also
             %
             % [swpref.getpref]
             %
             
-            if nargin < 2
-                error('swpref:SetInputError','There needs to be a valid name, value pair.');
+            if nargin < 2 || mod(nargin,2)
+                error('swpref:SetInputError','There needs to be valid name value pairs.');
             end
             obj = swpref;
-            if ~obj.check_names(name)
-                error('swpref:SetError','There is no field %s in swpref',name);
+            
+            for ii = 1:numel(varargin)/2
+                name = varargin{ii*2-1};
+                val  = varargin{ii*2};
+                if ~obj.check_names(name)
+                    error('swpref:SetError','There is no field %s in swpref',name);
+                end
+                obj.(name) = val;
             end
-            obj.(name) = val;
         end
         
         function export_prefs(varargin)

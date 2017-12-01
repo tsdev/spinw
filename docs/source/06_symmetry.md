@@ -9,6 +9,6 @@ mathjax: true
 ---
 
 
-## Transformations
-## Lattice transformations
-* space groups and symmetry
+## Symmetry operators
+## Space groups
+

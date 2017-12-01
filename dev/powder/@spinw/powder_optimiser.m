@@ -103,7 +103,7 @@ data_I = data.z;
 data_V = date.e;
 
 % This is used for the simulaiton.
-data_S = struct('Q',[],'E',[],'I',[],'V',[],'ind',[]);
+data_S = struct('Q',[],'E',[],'I',[],'V',[],'ind',[],'Q_edge',[],'Q_edge_ind',[]);
 
 for i = 1:length(Q_slices)
     
@@ -135,6 +135,8 @@ for i = 1:length(Q_slices)
     this_Q = accumarray(BIN(:),this_Q(:),[],@mean);
     
     data_S.Q = [data_S.Q; this_Q(:)];
+    data_S.Q_edge = [data_S.Q_edge; Q_EDGES(:)];
+    data_S.Q_edge_ind = [data_S.Q_edge_ind; i*ones(length(Q_EDGES),1)];
     data_S.E = [data_S.E; this_E(:)];
     data_S.I = [data_S.I; this_I(:)];
     data_S.V = [data_S.V; this_V(:)];
@@ -174,7 +176,8 @@ end
         y_data = [];
         for j = 1:runs
             param_local = rmfield(param_PS,{'dE', 'exch_lab'});
-            this_spectra = obj_local.powspec(data_S.Q(data_S.ind == j),'Evect',data_S.Q(data_S.ind == j),param_local);
+            this_spectra = obj_local.powspec(data_S.Q_edge(data_S.Q_edge_ind == j),...
+                'Evect',data_S.Q_edge(data_S.Q_edge_ind == j),param_local);
             % We need to do an instrumental convolution at this points....
             this_spectra = sw_instrument(this_spectra,'dE', dE);
             y_data = [y_data(:); this_spectra.swConv];

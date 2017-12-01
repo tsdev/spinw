@@ -2,7 +2,7 @@
 title: Features of SpinW
 keywords: homepage
 sidebar: sw_sidebar
-permalink: index.html
+permalink: features.html
 summary: Quick list of features
 folder: documentation
 mathjax: true

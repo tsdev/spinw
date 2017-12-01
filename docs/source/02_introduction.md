@@ -2,7 +2,7 @@
 title: Introduction
 keywords: docs
 sidebar: sw_sidebar
-permalink: crystal.html
+permalink: introduction.html
 summary: Quick introduction to SpinW
 folder: documentation
 mathjax: true
@@ -56,6 +56,11 @@ The following documentation will show how to prepare more complicated spin Hamil
 The fastest way to get help is to access this documentation via the [swdoc] command. To jump directly to the help of a specific function use:
 ```
 swdoc funName
+```
+Alternatively the [swhelp] command will show the help text in the MATLAB Command Window that works the same way as the MATLAB built-in [matlab:help] command:
+
+```
+swhelp funName
 ```
 If you didn't find the answer, you can ask questions on the [SpinW Forum](https://groups.google.com/forum/#!categories/spinwforum) as well.
 

@@ -1,14 +1,14 @@
 ---
-title: Symmetry and coordinate systems
+title: Symmetry and tensors
 keywords: docs
 sidebar: sw_sidebar
-permalink: crystal.html
+permalink: symmetry.html
 summary: Representation of space groups and coordinate systems
 folder: documentation
 mathjax: true
 ---
 
-* coordinate systems
-* transformations
-* lattice transformations
+
+## Transformations
+## Lattice transformations
 * space groups and symmetry

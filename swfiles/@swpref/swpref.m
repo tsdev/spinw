@@ -505,61 +505,62 @@ classdef swpref < dynamicprops
             obj.(name) = val;
         end
         
-        function export(varargin)
+        function export_prefs(varargin)
             % saves swpref object into a file
             %
             % ### Syntax
             %
-            % `success = swpref.export(location)`
+            % `success = swpref.export_prefs(location)`
             %
-            % `success = swpref.export`
+            % `success = swpref.export_prefs`
             %
             % ### Description
             %
-            % `success = swpref.export(location)` writes the preferences given by swpref to
+            % `success = swpref.export_prefs(location)` writes the preferences given by swpref to
             % a file location given by `location`. The file is in a basic `.json`
             % format.
             %
-            % `success = swpref.export` writes the preferences given in `obj` to
+            % `success = swpref.export_prefs` writes the preferences given in `obj` to
             % the users home folder as `swprefs.json`. The file is in a basic `.json`
             % format.
             %
             % ### See Also
             %
-            % [swpref.import]
+            % [swpref.import_prefs]
             %
+            
             obj = swpref;
             obj.export(varargin{:})
         end
         
         
-        function obj = import(varargin)
+        function obj = import_prefs(varargin)
             % imports swpref object from file
             %
             % ### Syntax
             %
             %
-            % `obj = swpref.import`
+            % `obj = swpref.import_prefs`
             %
-            % `obj = swpref.import(location)`
+            % `obj = swpref.import_prefs(location)`
             %
             % ### Description
             %
-            % `obj = swpref.import` loads the preferences given in by the file
+            % `obj = swpref.import_prefs` loads the preferences given in by the file
             % `swprefs.json` in the users home folder. It sets the preferences and
             % returns a new preference object.
             %
-            % `obj = swpref.import(location)` loads the preferences given in by the file
+            % `obj = swpref.import_prefs(location)` loads the preferences given in by the file
             % specified by `location`, sets the preferences and returns a new
             % preference object.
             %
             % ### See Also
             %
-            % [swpref.export]
+            % [swpref.export_prefs]
             %
             
             obj = swpref;
-            obj = obj.import(varargin{:});
+            obj.import(varargin{:});
         end
         
     end

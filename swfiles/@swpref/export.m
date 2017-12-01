@@ -14,7 +14,7 @@ function success = export(obj,location)
 % format.
 %
 % `success = export(obj)` writes the preferences given in `obj` to
-% the users home folder as `prefs.json`. The file is in a basic `.json`
+% the users home folder as `swprefs.json`. The file is in a basic `.json`
 % format.
 %
 % ### See Also

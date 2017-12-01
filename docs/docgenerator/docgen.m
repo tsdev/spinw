@@ -18,6 +18,7 @@ fun0 = cell(1,0);
 clc
 doctree = sw_genhelp('sourcepath',swPath,'outpath',outPath,'docpath',docPath,'fun',fun0,'verstr',swver,'recalc',recalc,'upload',upload);
 
+
 %% get all help
 
 content = [doctree.content];

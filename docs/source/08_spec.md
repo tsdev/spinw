@@ -2,7 +2,7 @@
 title: Correlation function post processing and fitting
 keywords: docs
 sidebar: sw_sidebar
-permalink: crystal.html
+permalink: spec.html
 summary: Post processing the spin-spin correlation function
 folder: documentation
 mathjax: true

@@ -2,7 +2,7 @@
 title: How to contribute and discuss
 keywords: docs
 sidebar: sw_sidebar
-permalink: crystal.html
+permalink: contribute.html
 summary:
 folder: documentation
 mathjax: true

@@ -27,8 +27,8 @@ model.setmatrix('mat','J1','pref',[J1 J3 J2 -J4]);
 % nmnesh=3 will make all sphere to have 1280 faces. npatch determines the
 % number of subdivision of the circle that is used to generate cylinders an
 % arrows (swplot.arrow and swplot.cylinder).
-
-swpref.setpref('nmesh',3,'npatch',50)
+pref = swpref;
+pref.set({'nmesh', 'npatch'}, {3, 50})
 
 % The high level spinw.plot command calls lower level commands
 % (swplot.plotatom, swplot.plotion, swplot.plotbond, etc). For details

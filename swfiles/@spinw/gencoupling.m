@@ -91,6 +91,8 @@ inpForm.soft   = {false        false          false false    false  true    fals
 
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
+
 tol   = param.tol;
 tolD  = param.tolDist;
 
@@ -103,7 +105,7 @@ if isempty(param.maxSym)
 end
 
 if param.fid == -1
-    fid = swpref.getpref('fid',true);
+    fid = pref.fid;
 else
     fid = param.fid;
 end

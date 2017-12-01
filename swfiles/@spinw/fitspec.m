@@ -160,8 +160,8 @@ function fitsp = fitspec(obj, varargin)
 % 
 % [spinw.spinwave] \| [spinw.matparser] \| [sw_egrid] \| [sw_neutron] \| [sw_readspec]
 %
-
-tid0 = swpref.getpref('tid',[]);
+pref = swpref;
+tid0 = pref.tid;
 
 inpForm.fname  = {'epsilon' 'datapath' 'xmin'   'xmax'  'x0'    'func' 'plot'};
 inpForm.defval = {1e-5      ' '        []       []      []      []     true  };

@@ -129,6 +129,7 @@ inpForm.soft   = {false       false  false false          true    true   false};
 
 warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 if ~isempty(param.param)
     % change matrix values for Horace data fitting
@@ -147,7 +148,7 @@ if param.norm && param.dE == 0
 end
 
 if param.fid == -1
-    fid = swpref.getpref('fid',[]);
+    fid = pref.fid;
 else
     fid = param.fid;
 end

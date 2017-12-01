@@ -29,9 +29,10 @@ inpForm.defval = {-1    1e-5  };
 inpForm.size   = {[1 1] [1 1] };
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 if param.fid == -1
-    param.fid = swpref.getpref('fid',true);
+    param.fid = pref.fid;
 else
     fid = param.fid;
 end

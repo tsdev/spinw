@@ -102,8 +102,8 @@ function varargout = plot(obj, varargin)
 % [swplot.plotatom] \| [swplot.plotmag] \| [swplot.plotion] \| 
 % [swplot.plotbond] \| [swplot.plotbase] \| [swplot.plotcell]
 %
-
-fid = swpref.getpref('fid',true);
+pref = swpref;
+fid = pref.fid;
 
 % preparation
 fprintf0(fid,'Creating 3D plot... \n');

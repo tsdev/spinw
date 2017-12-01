@@ -98,7 +98,8 @@ Dab = bsxfun(@plus,-permute(sum(bsxfun(@times,phiab,dRQ),3),[1 2 4 3]),sum(phiab
 
 % solve the eigenvalue problem
 %[ea,om2] = eigenshuffle(Dab);
-[ea,om2] = eigorth(Dab, param.omega_tol, swpref.getpref('usemex',[]));
+pref = swpref;
+[ea,om2] = eigorth(Dab, param.omega_tol, pref.usemex);
 
 om = sqrt(real(om2));
 

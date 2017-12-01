@@ -30,6 +30,9 @@ function varargout = powder_optimiser(obj, data, Q_slices, p0, varargin)
 %%% Return.
 % The optimised object will be returned with an R value.
 
+%%
+% NOTE p0 is [vals for matparser; IntensityFactor];
+%
 
 %% Input parameters.
 
@@ -64,7 +67,7 @@ inpForm.defval = [inpForm.defval {true     false     title0  @spinwave  true    
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]      [1 1]   }];
 
 inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType' 'component'}];
-inpForm.defval = [inpForm.defval {false    false  0        'ebin'    'Sperp'    }];
+inpForm.defval = [inpForm.defval {false    true   0        'ebin'    'Sperp'    }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]     [1 -5]    }];
 
 inpForm.fname  = [inpForm.fname  {'fid'}];
@@ -147,40 +150,44 @@ end
 dat = struct('x',zeros(size(data_S)),'y',data_S.I,'e',data_S.V);
 
 p0 = [p0(:); param_PS.dE];
-[pOpt, fVal, stat] = ndbase.pso(dat,@do_simulation_loop,p0,param_PSO);
+[pOpt, fVal, stat] = ndbase.pso(dat,@do_simulation_loop,p0,param_PSO); %#ok<ASGLU>
 
 obj_final = obj.copy;
-obj_final.matparser(exch_lab,pOpt);
+obj_final.matparser(exch_lab,pOpt(1:end-2));
 
 varargout{1} = obj_final;
-if nargout > 1
+varargout{2} = pOpt;
+
+if nargout > 2
     this_param = rmfield(param_PS,{'dE', 'exch_lab'});
     final_spectra = obj_final.powspec(data_Q, 'Evect', data_E, this_param);
     final_spectra = sw_instrument(final_spectra,'dE', param_PS.dE);
-    varargout{2} =  sum(((data_I(:) - final_spectra.swConv(:))./data_V(:)).^2)/(length(data_I(:)) - Np);
+    varargout{3} =  sum(((data_I(:) - final_spectra.swConv(:))./data_V(:)).^2)/(length(data_I(:)) - Np);
 end
-if nargout == 3
-    varargout{2} = stat;
+if nargout == 4
+    varargout{4} = stat;
 end
 
 
-    function y_data = do_simulation_loop(~, p)
+    function y_data = do_simulation_loop(dummy, p) %#ok<INUSL>
         
         dE = p(end);
-        p = p(1:end-1);
+        I = p(end-1);
+        p  = p(1:end-2);
         
         obj_local = obj.copy;
-        obj_local.matparser(exch_lab,p);
+        obj_local.matparser(exch_lab, p);
         
         runs = unique(data_S.ind);
         y_data = [];
         for j = 1:runs
-            param_local = rmfield(param_PS,{'dE', 'exch_lab'});
+            param_local = rmfield(param_PS, {'dE', 'exch_lab'});
             this_spectra = obj_local.powspec(data_S.Q_edge(data_S.Q_edge_ind == j),...
-                'Evect',data_S.Q_edge(data_S.Q_edge_ind == j),param_local);
+                'Evect', data_S.Q_edge(data_S.Q_edge_ind == j), param_local);
             % We need to do an instrumental convolution at this points....
-            this_spectra = sw_instrument(this_spectra,'dE', dE);
+            this_spectra = sw_instrument(this_spectra, 'dE', dE);
             y_data = [y_data(:); this_spectra.swConv];
         end
+        y_data = y_data*I;
     end
 end

@@ -55,11 +55,11 @@ function varargout = powder_optimiser(obj, data, Q_slices, p0, varargin)
 pref = swpref;
 
 title0 = 'Powder LSWT spectrum';
-tid0   = pref.tid;
+T0 = 0;
 
 % These are the powspec options.
 inpForm.fname  = {'nRand' 'T'   'formfact' 'formfactfun' 'tid' 'nInt'  'dE'    'exch_lab'};
-inpForm.defval = {100     T0    false      @sw_mff       tid0  1e3     2       obj.matrix.label};
+inpForm.defval = {100     T0    false      @sw_mff       0  1e3     2       obj.matrix.label};
 inpForm.size   = {[1 1]   [1 1] [1 -2]     [1 1]         [1 1] [1 1]   [1, 1]  [1, -6]};
 
 inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' 'imagChk'}];
@@ -67,11 +67,11 @@ inpForm.defval = [inpForm.defval {true     false     title0  @spinwave  true    
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]     [1 -3]  [1 1]      [1 1]   }];
 
 inpForm.fname  = [inpForm.fname  {'extrap' 'fibo' 'optmem' 'binType' 'component'}];
-inpForm.defval = [inpForm.defval {false    true   0        'ebin'    'Sperp'    }];
+inpForm.defval = [inpForm.defval {false    true   0        'cbin'    'Sperp'    }];
 inpForm.size   = [inpForm.size   {[1 1]    [1 1]  [1 1]    [1 -4]     [1 -5]    }];
 
 inpForm.fname  = [inpForm.fname  {'fid'}];
-inpForm.defval = [inpForm.defval {-1   }];
+inpForm.defval = [inpForm.defval {0   }];
 inpForm.size   = [inpForm.size   {[1 1]}];
 
 warning('off','sw_readparam:UnreadInput')
@@ -103,22 +103,28 @@ warning('on','sw_readparam:UnreadInput')
 data_Q = data.x;
 data_E = data.y;
 data_I = data.z;
-data_V = date.e;
-
+if isempty(data.e)
+    data_V = 1./data.z;
+else
+    data_V = date.e;
+end
 % This is used for the simulaiton.
-data_S = struct('Q',[],'E',[],'I',[],'V',[],'ind',[],'Q_edge',[],'Q_edge_ind',[]);
+data_S = struct('Q',[],'E',[],'I',[],'V',[]);
 
+k = 1;
 for i = 1:length(Q_slices)
     
     % Split up the data.
     Q_slice = Q_slices{i};
-    this_Q = data_Q((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)) & ~isnan(data_I));
-    this_E = data_E((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)) & ~isnan(data_I));
-    this_I = data_I((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)) & ~isnan(data_I));
-    this_V = data_V((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)) & ~isnan(data_I));
+    q_ind = (data_Q(1,:) >= Q_slice(1)) & (data_Q(1,:) <= Q_slice(2));
+    this_Q = data_Q(:,q_ind);
+    
+    this_E = data_E(:,q_ind);
+    this_I = data_I(:,q_ind);
+    this_V = data_V(:,q_ind);
     
     % Do interpolation.
-    n_q = length(this_Q);
+    n_q = sum(q_ind);
     if n_q == 0
         warning('spinw:powder_optimiser:InvalidQRange','The Q range has no q points.')
         % We skip this itteration. i*ones doesn't matter as we une unique
@@ -129,67 +135,79 @@ for i = 1:length(Q_slices)
         warning('spinw:powder_optimiser:InvalidQRange','The Q range has too many q points. Binning to %f points.',Q_slice(3))
     else
         % We will be doing binning, but we shouldnt be doing binning....
-        Q_slice(3) = n_Q;
+        Q_slice(3) = n_q;
     end
     
     [N, Q_EDGES, BIN] = histcounts(this_Q, Q_slice(3)); %#ok<ASGLU>
-    this_E = accumarray(BIN(:),this_E(:),[],@mean);
-    this_I = accumarray(BIN(:),this_I(:),[],@mean);
+    this_E = accumarray([BIN(:) reshape(repmat((1:size(BIN,1))',1,size(BIN,2)),[],1)],this_E(:),[],@mean)';
+    this_I = accumarray([BIN(:) reshape(repmat((1:size(BIN,1))',1,size(BIN,2)),[],1)],this_I(:),[],@mean)';
     
-    N = accumarray(BIN(:),ones(size(this_Q)),[],@sum,NaN);
-    this_V = accumarray(BIN(:),this_V(:),[],@norm)./N(:);
-    this_Q = accumarray(BIN(:),this_Q(:),[],@mean);
+    N = accumarray(BIN(:),reshape(ones(size(this_Q)),1,[]),[],@sum,NaN);
+    this_V = bsxfun(@rdivide,accumarray([BIN(:) reshape(repmat((1:size(BIN,1))',1,size(BIN,2)),[],1)],this_V(:),[],@norm)',N');
+%     this_Q = accumarray([BIN(:) reshape(repmat((1:size(BIN,1))',1,size(BIN,2)),[],1)],this_Q(:),[],@mean)';
     
-    data_S.Q = [data_S.Q; this_Q(:)];
-    data_S.Q_edge = [data_S.Q_edge; Q_EDGES(:)];
-    data_S.Q_edge_ind = [data_S.Q_edge_ind; i*ones(length(Q_EDGES),1)];
-    data_S.E = [data_S.E; this_E(:)];
-    data_S.I = [data_S.I; this_I(:)];
-    data_S.V = [data_S.V; this_V(:)];
-    data_S.ind = [data_S.ind; i*ones(length(this_Q),1)];
+    data_S(k).Q = Q_EDGES(1:end-1) + diff(Q_EDGES);
+    data_S(k).E = this_E;
+    data_S(k).I = this_I;
+    data_S(k).V = this_V;
     Q_slices{i} = Q_slice;
+    k = k+1;
 end
 
-dat = struct('x',zeros(size(data_S)),'y',data_S.I,'e',data_S.V);
+dat = struct('x',zeros(numel([data_S.I]),1),'y',reshape([data_S.I],[],1),'e',reshape([data_S.V],[],1));
+dat.x = dat.x(~isinf(dat.e));
+dat.y = dat.y(~isinf(dat.e));
+dat.e = dat.e(~isinf(dat.e));
 
 p0 = [p0(:); param_PS.dE];
+param_PSO.lb = [param_PSO.lb 0 0];
+param_PSO.ub = [param_PSO.ub p0(3:4)'*100];
+
 [pOpt, fVal, stat] = ndbase.pso(dat,@do_simulation_loop,p0,param_PSO); %#ok<ASGLU>
+[pOpt, fVal, stat] = ndbase.lm3(dat,@do_simulation_loop,pOpt,'ub',param_PSO.ub,'lb',param_PSO.lb); %#ok<ASGLU>
 
 obj_final = obj.copy;
-obj_final.matparser(exch_lab,pOpt(1:end-2));
+obj_final.matparser('param',pOpt(1:end-2),'mat',exch_lab);
 
 varargout{1} = obj_final;
 varargout{2} = pOpt;
 
-if nargout > 2
-    this_param = rmfield(param_PS,{'dE', 'exch_lab'});
-    final_spectra = obj_final.powspec(data_Q, 'Evect', data_E, this_param);
-    final_spectra = sw_instrument(final_spectra,'dE', param_PS.dE);
-    varargout{3} =  sum(((data_I(:) - final_spectra.swConv(:))./data_V(:)).^2)/(length(data_I(:)) - Np);
-end
-if nargout == 4
-    varargout{4} = stat;
+% if nargout > 1
+%     this_param = rmfield(param_PS,{'dE', 'exch_lab'});
+%     this_param.Evect = data.E(:);
+%     final_spectra = obj_final.powspec(data_Q(:), this_param);
+%     final_spectra = sw_instrument(final_spectra,'dE', pOpt(end));
+%     final_spectra.swConv = final_spectra.swConv * pOpt(end-1);
+% end
+if nargout == 3
+    varargout{3} = stat;
 end
 
 
     function y_data = do_simulation_loop(dummy, p) %#ok<INUSL>
         
         dE = p(end);
-        I = p(end-1);
+        I  = p(end-1);
         p  = p(1:end-2);
         
         obj_local = obj.copy;
-        obj_local.matparser(exch_lab, p);
+        obj_local.matparser('param',p,'mat',exch_lab);
         
-        runs = unique(data_S.ind);
+        runs = length(data_S);
         y_data = [];
-        for j = runs
-            param_local = rmfield(param_PS, {'dE', 'exch_lab'});
-            this_spectra = obj_local.powspec(data_S.Q_edge(data_S.Q_edge_ind == j),...
-                'Evect', data_S.Q_edge(data_S.Q_edge_ind == j), param_local);
-            % We need to do an instrumental convolution at this points....
-            this_spectra = sw_instrument(this_spectra, 'dE', dE);
-            y_data = [y_data(:); this_spectra.swConv];
+        param_local = rmfield(param_PS, {'dE', 'exch_lab'});
+
+        for j = 1:runs
+            for l = 1:(length(data_S(j).Q))
+                % Set the Evector
+                param_local.Evect = data_S(j).E(:,l)';
+                % Calculate the spectra
+                this_spectra = obj_local.powspec(data_S(j).Q(l), param_local);
+                % Convolve
+                this_spectra = sw_instrument(this_spectra, 'dE', dE,'fid',param_local.fid);
+                % Add the data to the result.
+                y_data = [y_data(:); this_spectra.swConv(~isinf(data_S(j).V(:,l)))];
+            end
         end
         y_data = y_data*I;
     end

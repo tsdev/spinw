@@ -34,9 +34,9 @@ function spectra = spinwave(obj, hkl, varargin)
 % model using `sw_model`.
 %
 % ```
-% >>tri = sw_model('triAF',1);
-% >>spec = tri.spinwave({[0 0 0] [1 1 0]});
-% >>sw_plotspec(spec);
+% >>tri = sw_model('triAF',1)
+% >>spec = tri.spinwave({[0 0 0] [1 1 0]})
+% >>sw_plotspec(spec)
 % >>snapnow
 % ```
 % 
@@ -232,6 +232,8 @@ function spectra = spinwave(obj, hkl, varargin)
 % [spinw] \| [spinw.spinwavesym] \| [sw_mex] \| [spinw.powspec] \| [sortmode]
 %
 
+pref = swpref;
+
 % for linear scans create the Q line(s)
 if nargin > 1
     hkl = sw_qscan(hkl);
@@ -246,7 +248,7 @@ orthWarn0 = false;
 singWarn0 = warning('off','MATLAB:nearlySingularMatrix');
 
 % use mex file by default?
-useMex = swpref.getpref('usemex',[]);
+useMex = pref.usemex;
 
 % calculate symbolic spectrum if obj is in symbolic mode
 if obj.symbolic
@@ -308,11 +310,11 @@ if param.fitmode
 end
 
 if param.tid == -1
-    param.tid = swpref.getpref('tid',[]);
+    param.tid = pref.tid;
 end
 
 if param.fid == -1
-    param.fid = swpref.getpref('fid',[]);
+    param.fid = pref.fid;
 end
 fid = param.fid;
 

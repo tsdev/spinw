@@ -100,6 +100,7 @@ inpForm.size   = {[1 1]    [1 1] [1 -1]    [1 -2]  };
 inpForm.soft   = {false    false false     true    };
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 switch param.isomode
     case 'auto'
@@ -112,7 +113,7 @@ end
 
 if param.fid == -1
     % Print output into the following file
-    fid = swpref.getpref('fid',true);
+    fid = pref.fid;
 else
     fid = param.fid;
 end

@@ -193,11 +193,13 @@ if nargin==1
     return
 end
 
+pref = swpref;
+
 hklA = hklA(:)';
 T0 = obj.single_ion.T;
 
 title0 = 'Powder LSWT spectrum';
-tid0   = swpref.getpref('tid',[]);
+tid0   = pref.tid;
 
 inpForm.fname  = {'nRand' 'Evect'    'T'   'formfact' 'formfactfun' 'tid' 'nInt'};
 inpForm.defval = {100     zeros(1,0) T0    false      @sw_mff       tid0  1e3   };
@@ -218,7 +220,7 @@ inpForm.size   = [inpForm.size   {[1 1]}];
 param  = sw_readparam(inpForm, varargin{:});
 
 if param.fid == -1
-    fid = swpref.getpref('fid',true);
+    fid = pref.fid;
 else
     fid = param.fid;
 end

@@ -44,6 +44,7 @@ if nargin == 0
 end
 
 fontSize = [];
+pref = swpref;
 
 if numel(varargin{1}) == 1
     % first input figure handle
@@ -73,7 +74,7 @@ if ~iscell(string)
 end
 
 if isempty(fontSize)
-    fontSize = swpref.getpref('fontsize',[]);
+    fontSize = pref.fontsize;
 end
 
 hText = gobjects(1,nText);

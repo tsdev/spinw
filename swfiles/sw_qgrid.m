@@ -85,6 +85,7 @@ inpForm.size   = [inpForm.size   {[1 -3] [1 -4] [1 -5] [1 -6]  [-7 3] [1 -8] [1 
 inpForm.soft   = [inpForm.soft   {true   true   true   false   true   true   false}];
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 if nargin == 0
     swhelp sw_qgrid
@@ -92,7 +93,7 @@ if nargin == 0
 end
 
 if param.fid == -1
-    param.fid = swpref.getpref('fid',true);
+    param.fid = pref.fid;
 end
 
 % size of magnetic supercell

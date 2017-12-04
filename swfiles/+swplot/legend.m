@@ -45,6 +45,7 @@ function varargout = legend(switch0,hFigure)
 % : Handle of the swplot figure, default value is the handle of the active
 %   figure.
 %
+pref = swpref;
 
 if nargin == 0
     switch0 = 'on';
@@ -123,7 +124,7 @@ lText  = lDat.text;
 lColor = lDat.color;
 
 % get the stored fontsize
-fontSize = swpref.getpref('fontsize',[]);
+fontSize = pref.fontsize;
 
 for ii = 1:numel(lType)
     switch lType(ii)

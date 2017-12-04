@@ -28,7 +28,8 @@ if ~isempty(mIdx1)
     mIdx2 = mIdx2(find(mIdx2>mIdx1,1));
     
     % replace links
-    helpStr = [helpStr(1:mIdx1-1) regexprep(helpStr(mIdx1:mIdx2),['(' funName0 '\.\w+?)(\s+)'],'\[$1\] ${strtrim(iindex(strsplit(help($1),char(10)),''{}'',1))}$2') helpStr(mIdx2+1:end)];
+    %helpStr = [helpStr(1:mIdx1-1) regexprep(helpStr(mIdx1:mIdx2),['(' funName0 '\.\w+?)(\s+)'],'\[$1\] ${strtrim(iindex(strsplit(help($1),char(10)),''{}'',1))}$2') helpStr(mIdx2+1:end)];
+    helpStr = [helpStr(1:mIdx1-1) regexprep(helpStr(mIdx1:mIdx2),['[ ]+(' funName0 '\.\w+?)\n'],'  \* \[$1\] ${strtrim(iindex(strsplit(help($1),char(10)),''{}'',1))}\n') helpStr(mIdx2+1:end)];
 end
 
 % remove reference page thingy

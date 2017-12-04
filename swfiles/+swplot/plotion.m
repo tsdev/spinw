@@ -128,8 +128,9 @@ function varargout = plotion(varargin)
 
 % default values
 %fontSize0 = swpref.getpref('fontsize',[]);
-nMesh0    = swpref.getpref('nmesh',[]);
-nPatch0   = swpref.getpref('npatch',[]);
+pref = swpref;
+nMesh0    = pref.nmesh;
+nPatch0   = pref.npatch;
 
 inpForm.fname  = {'range' 'legend' 'label' 'scale' 'linewidth' 'alpha'};
 inpForm.defval = {[]      true     true    1/3     0.5         0.3    };

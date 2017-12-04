@@ -2,7 +2,7 @@
 title: Solvers
 keywords: docs
 sidebar: sw_sidebar
-permalink: crystal.html
+permalink: spinwave.html
 summary: Solvers to calculate spin-spin correlation function
 folder: documentation
 mathjax: true

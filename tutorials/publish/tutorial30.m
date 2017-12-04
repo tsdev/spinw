@@ -23,7 +23,7 @@ edit symmetry.dat
 % the default values, it can be defined in the startup.m file. To get all
 % current value use
 
-swpref.getpref
+swpref
 
 %% Generate lattice
 % We create a triangular lattice of magnetic atoms.

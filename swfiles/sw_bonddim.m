@@ -10,6 +10,15 @@ function L = sw_bonddim(C, nAtom)
 % `l = sw_bonddim(c, {natom})` splits the given periodic bond network into
 % disjunct subsystems and determines the dimensionality of each subsystem.
 % 
+% ### Examples
+%
+% Check the bond dimensionality of the triangular lattice:
+%
+% ```
+% >>tri = sw_model('triAF')>>
+% >>sw_bonddim(tri.intmatrix.all)>>
+% ```
+%
 % ### Input Arguments
 % 
 % `C`

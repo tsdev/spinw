@@ -1,4 +1,4 @@
-function varargout = swdoc(funName0)
+function varargout = swdoc(funName0,varargin)
 % opens the SpinW documentation
 %
 % ### Syntax
@@ -20,8 +20,40 @@ function varargout = swdoc(funName0)
 % documentation.
 %
 
+pref = swpref;
+
 if nargin == 0
     funName0 = '';
+end
+
+if strcmp(funName0,'server') && ~isempty(varargin)
+    % start/stop Jekyll server
+    % stop server if there were any running
+    system('pkill jekyll');
+    
+    switch varargin{1}
+        case 'start'
+            % start server only works on macOS
+            path0 = pwd;
+            % TODO change location of documentation files
+            if numel(varargin)>1
+                cd(varargin{2})
+            else
+                cd('~/spinwdoc_git')
+            end
+            system('source ~/.bash_profile; bundle exec jekyll serve --watch&','-echo');
+            cd(path0)
+            % use the local documentation
+            swpref.setpref('docurl','http://localhost:4002')
+        case 'stop'
+            % already stopped
+            % use the online documentation
+            swpref.setpref('docurl','https://tsdev.github.io/spinwdoc')
+        otherwise
+            error('swdoc:WrongParameter','The second input parameter has to be ''start''/''stop'' to start/stop the Jekyll server!')
+    end
+    varargout = {};
+    return
 end
 
 funName = funName0;
@@ -45,7 +77,8 @@ funName(funName=='@') = [];
 funName(funName=='.') = '_';
 
 % open documentation using stored url + function name
-docUrl = swpref.getpref('docurl',true);
+docUrl = pref.docurl;
+
 if ~isempty(docUrl) && docUrl(end)~='/'
     docUrl = [docUrl '/'];
 end
@@ -61,7 +94,11 @@ try
         web(link);
     end
 catch
-    disp([funName0 ' not found.']);
+    if isempty(funName0)
+        fprintf('Documentation is not found on the given address (%s).\n',swpref.getpref('docurl',[]))
+    else
+        disp([funName0 ' not found.']);
+    end
 end
 
 end

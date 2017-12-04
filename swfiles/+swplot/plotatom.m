@@ -133,10 +133,12 @@ function varargout = plotatom(varargin)
 % sObject = swplot.findobj(hFigure,'name','atom')`.
 %
 
+pref = swpref;
+
 % default values
-fontSize0 = swpref.getpref('fontsize',[]);
-nMesh0    = swpref.getpref('nmesh',[]);
-nPatch0   = swpref.getpref('npatch',[]);
+fontSize0 = pref.fontsize;
+nMesh0    = pref.nmesh;
+nPatch0   = pref.npatch;
 
 inpForm.fname  = {'range' 'legend' 'label' 'dtext' 'fontsize' 'radius0'};
 inpForm.defval = {[]      true     false    0.1     fontSize0  0.3     };

@@ -112,14 +112,13 @@ for i = 1:length(Q_slices)
     
     % Split up the data.
     Q_slice = Q_slices{i};
-    this_Q = data_Q((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)));
-    this_E = data_E((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)));
-    this_I = data_I((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)));
-    this_V = data_V((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)));
+    this_Q = data_Q((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)) & ~isnan(data_I));
+    this_E = data_E((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)) & ~isnan(data_I));
+    this_I = data_I((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)) & ~isnan(data_I));
+    this_V = data_V((data_Q >= Q_slice(1)) & (data_Q <= Q_slice(2)) & ~isnan(data_I));
     
     % Do interpolation.
-    u_q = this_Q;
-    n_q = length(u_q);
+    n_q = length(this_Q);
     if n_q == 0
         warning('spinw:powder_optimiser:InvalidQRange','The Q range has no q points.')
         % We skip this itteration. i*ones doesn't matter as we une unique
@@ -127,7 +126,7 @@ for i = 1:length(Q_slices)
         continue
     elseif n_q > Q_slice(3)
         % We will be doing binning.
-        warning('spinw:powder_optimiser:InvalidQRange','The Q range has too many q points. Using %f points',Q_slice(3))
+        warning('spinw:powder_optimiser:InvalidQRange','The Q range has too many q points. Binning to %f points.',Q_slice(3))
     else
         % We will be doing binning, but we shouldnt be doing binning....
         Q_slice(3) = n_Q;
@@ -184,7 +183,7 @@ end
         
         runs = unique(data_S.ind);
         y_data = [];
-        for j = 1:runs
+        for j = runs
             param_local = rmfield(param_PS, {'dE', 'exch_lab'});
             this_spectra = obj_local.powspec(data_S.Q_edge(data_S.Q_edge_ind == j),...
                 'Evect', data_S.Q_edge(data_S.Q_edge_ind == j), param_local);

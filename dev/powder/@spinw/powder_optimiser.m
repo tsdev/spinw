@@ -163,11 +163,13 @@ p0 = [p0(:); param_PS.dE];
 param_PSO.lb = [param_PSO.lb 0 0];
 param_PSO.ub = [param_PSO.ub p0(3:4)'*100];
 
-[pOpt, fVal, stat] = ndbase.pso(dat,@do_simulation_loop,p0,param_PSO); %#ok<ASGLU>
-[pOpt, fVal, stat] = ndbase.lm3(dat,@do_simulation_loop,pOpt,'ub',param_PSO.ub,'lb',param_PSO.lb); %#ok<ASGLU>
-
 obj_final = obj.copy;
-obj_final.matparser('param',pOpt(1:end-2),'mat',exch_lab);
+
+[pOpt, fVal, stat] = ndbase.pso(dat,@do_simulation_loop,p0,param_PSO); %#ok<ASGLU>
+display(pOpt)
+[pOpt, fVal, stat] = ndbase.lm3(dat,@do_simulation_loop,pOpt,'ub',param_PSO.ub,'lb',param_PSO.lb); %#ok<ASGLU>
+display(pOpt)
+obj_final.matparser('param',real(pOpt(1:end-2)),'mat',exch_lab)
 
 varargout{1} = obj_final;
 varargout{2} = pOpt;
@@ -190,8 +192,7 @@ end
         I  = p(end-1);
         p  = p(1:end-2);
         
-        obj_local = obj.copy;
-        obj_local.matparser('param',p,'mat',exch_lab);
+        obj_final.matparser('param',real(p),'mat',exch_lab);
         
         runs = length(data_S);
         y_data = [];
@@ -202,7 +203,7 @@ end
                 % Set the Evector
                 param_local.Evect = data_S(j).E(:,l)';
                 % Calculate the spectra
-                this_spectra = obj_local.powspec(data_S(j).Q(l), param_local);
+                this_spectra = obj_final.powspec(data_S(j).Q(l), param_local);
                 % Convolve
                 this_spectra = sw_instrument(this_spectra, 'dE', dE,'fid',param_local.fid);
                 % Add the data to the result.

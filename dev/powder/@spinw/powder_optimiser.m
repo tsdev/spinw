@@ -55,11 +55,11 @@ function varargout = powder_optimiser(obj, data, Q_slices, p0, varargin)
 pref = swpref;
 
 title0 = 'Powder LSWT spectrum';
-T0 = 0;
+T0 = obj.single_ion.T;
 
 % These are the powspec options.
 inpForm.fname  = {'nRand' 'T'   'formfact' 'formfactfun' 'tid' 'nInt'  'dE'    'exch_lab'};
-inpForm.defval = {100     T0    false      @sw_mff       0  1e3     2       obj.matrix.label};
+inpForm.defval = {100     T0    false      @sw_mff       0     1e3     2       obj.matrix.label};
 inpForm.size   = {[1 1]   [1 1] [1 -2]     [1 1]         [1 1] [1 1]   [1, 1]  [1, -6]};
 
 inpForm.fname  = [inpForm.fname  {'hermit' 'gtensor' 'title' 'specfun' 'imagChk'}];
@@ -79,7 +79,6 @@ param_PS  = sw_readparam(inpForm, varargin{:});
 warning('on','sw_readparam:UnreadInput')
 
 
-%TODO: define these vars properly...
 exch_lab = param_PS.exch_lab;
 Np = length(exch_lab);
 oNp = ones(1,Np);
@@ -161,13 +160,13 @@ dat.e = dat.e(~isinf(dat.e));
 
 p0 = [p0(:); param_PS.dE];
 param_PSO.lb = [param_PSO.lb 0 0];
-param_PSO.ub = [param_PSO.ub p0(3:4)'*100];
+param_PSO.ub = [param_PSO.ub p0(3:4)'*5];
 
 obj_final = obj.copy;
 
 [pOpt, fVal, stat] = ndbase.pso(dat,@do_simulation_loop,p0,param_PSO); %#ok<ASGLU>
 display(pOpt)
-[pOpt, fVal, stat] = ndbase.lm3(dat,@do_simulation_loop,pOpt,'ub',param_PSO.ub,'lb',param_PSO.lb); %#ok<ASGLU>
+[pOpt, fVal, stat] = ndbase.lm2(dat,@do_simulation_loop,pOpt,'ub',param_PSO.ub,'lb',param_PSO.lb); %#ok<ASGLU>
 display(pOpt)
 obj_final.matparser('param',real(pOpt(1:end-2)),'mat',exch_lab)
 

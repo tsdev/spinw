@@ -63,6 +63,9 @@ idx = find(cellfun(@(C)~isempty(C)&&(C(1)==1),strfind(nList,sName)),1,'first');
 
 if ~isempty(idx)
     S = cList(idx);
+    if nargin>1 && any(strcmp(noError,{'copy' 'c'}))
+        clipboard('copy',S);
+    end
 elseif isempty(idx) && nargin>1 && noError==2
     S = sName;
 elseif isempty(idx) && nargin>1 && noError

@@ -582,7 +582,7 @@ switch param.mode
         switch param.linestyle
             case 'auto'
                 lineStyle0 = (cellfun(@(C)C(end),lLabel)=='-')+1;
-            case {'--' '-'}
+            case {'--' '-' ':' '-.'}
                 lineStyle0 = param.linestyle;
             otherwise
                 error('plotbond:WrongInput','The given lineStyle string is illegal!')

@@ -78,7 +78,7 @@ licro.table('bond',1)
 % Check spinw.formula() to see how much the new cell is smaller
 
 licroR = copy(licro);
-T = licroR.newcell({[-1 1 1]/3 [2 1 1]/3 [-1 -2 1]/3})
+T = licroR.newcell('bvect',{[-1 1 1]/3 [2 1 1]/3 [-1 -2 1]/3})
 plot(licroR,'cellMode','outside')
 swplot.zoom(1.5)
 

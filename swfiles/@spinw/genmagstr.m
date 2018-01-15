@@ -341,7 +341,7 @@ switch param.mode
         % Create random spin directions and use a single k-vector
         S  = randn(nMagExt,3);
         S  = bsxfun(@rdivide,S,sqrt(sum(S.^2,2)));
-        S  = bsxfun(@times,S,mAtom.Sext')';
+        S  = bsxfunsym(@times,S,mAtom.Sext')';
         if noK
             k  = [0 0 0];
         end
@@ -387,11 +387,11 @@ switch param.mode
         if addPhase
             % additional phase for each spin in the magnetic supercell
             %phi = sum(bsxfun(@times,2*pi*kExt',r),1);
-            phi = sum(bsxfun(@times,2*pi*permute(kExt,[2 3 1]),r),1);
+            phi = sum(bsxfunsym(@times,2*pi*permute(kExt,[2 3 1]),r),1);
             
             % add the extra phase for each spin in the unit cell
             % TODO check
-            S = bsxfun(@times,S0(:,mod(0:(nMagExt-1),nSpin)+1,:),exp(-1i*phi));
+            S = bsxfunsym(@times,S0(:,mod(0:(nMagExt-1),nSpin)+1,:),exp(-1i*phi));
         else
             S = S0;
         end

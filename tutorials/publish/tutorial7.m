@@ -47,7 +47,7 @@ sw_plotspec(afkSpec,'mode',1,'axLim',[0 3],'colorbar',false,'colormap',[0 0 0],'
 %% Powder spectrum
 
 afkPow = AFkagome.powspec(linspace(0,2.5,150),'Evect',linspace(0,3,250),...
-    'nRand',1e3,'hermit',false);
+    'nRand',1e3,'hermit',false,'imagChk',false);
 
 figure
 sw_plotspec(afkPow,'axLim',[0 0.2])

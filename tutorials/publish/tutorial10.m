@@ -77,6 +77,10 @@ colorbar
 % ranges in momentum and energy. Second we call Horace to fill up the empty
 % d3d object with the simulated spin wave data and finally we plot a
 % constant energy cut.
+if ~exist('sqw','file')
+    fprintf('Horace is not installed. Exiting....\n');
+    return
+end
 
 Ebin   = [0,0.01,5];
 fwhm0  = 0.1; 

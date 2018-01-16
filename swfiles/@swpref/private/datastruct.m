@@ -98,12 +98,12 @@ d.Label =  {
         %  {{warning Internal function for the Spin preferences.}}
         %
         % ### Syntax
-        % 
+        %
         % 'logical = check_size(toBeChecked,size)'
         %
         % ### Description
         %
-        % 'logical = check_size(toBeChecked,size)' checks to see if an 
+        % 'logical = check_size(toBeChecked,size)' checks to see if an
         % object 'obj 'is the expected size given by 'size'. An error is
         % thrown if there is a difference.
         %
@@ -116,19 +116,19 @@ d.Label =  {
         end
     end
 
-  function out = check_mex(~)
+    function out = check_mex(~)
         % checks to see if mex files are available.
         %
         %  {{warning Internal function for the Spin preferences.}}
         %
         % ### Syntax
-        % 
+        %
         % 'logical = check_mex(obj)'
         %
         % ### Description
         %
-        % 'logical = check_mex(obj)' checks to see if files 'chol_omp' and 
-        % 'eig_omp' are present in the MATLAB path.An error is thrown if 
+        % 'logical = check_mex(obj)' checks to see if files 'chol_omp' and
+        % 'eig_omp' are present in the MATLAB path.An error is thrown if
         % they do not exist.
         %
         
@@ -136,6 +136,109 @@ d.Label =  {
             error('spref:MissingMex','Necessary mex files are missing, compile them!')
         else
             out = 1;
+        end
+    end
+
+    function mustBeInteger(A)
+        % Validate that value is integer or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBEINTEGER(A) issues an error if A contains non integer values.
+        %   A value is integer if it is real, finite, and equal to the result
+        %   of taking the floor of the value.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        ME = MException('MATLAB:validators:mustBeNumericOrLogical','Value must be integer.');
+        if ~all(isnumeric(A) || islogical(A))
+            throwAsCaller(ME)
+        end
+        
+        if ~isreal(A)
+            throwAsCaller(ME)
+        end
+        
+        if ~all(isfinite(A(:))) || ~all(A(:) == floor(A(:)))
+            throwAsCaller(ME)
+        end
+    end
+
+    function mustBeNonnegative(A)
+        % Validate that value is nonnegative or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBENONNEGATIVE(A) issues an error if A contains negaitive values.
+        %   A value is nonnegative if it is greater than or equal to zero.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        if ~all(A(:) >= 0)
+            ME = MException('MATLAB:validators:mustBeNonnegative','Value/s must be positive.');
+            throwAsCaller(ME)
+        end
+    end
+    function mustBeGreaterThan(A, B)
+        % Validate that value is greater than a specified value or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBEGREATERTHAN(A,B) issues an error if A is not greater than B.
+        %   MATLAB calls gt to determine if A is greater than B.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        if ~all(A(:) > B)
+            ME = MException('MATLAB:validators:mustBeGreaterThan','All values must be greater than %f.',B);
+            throwAsCaller(ME)
+        end
+    end
+    function mustBeLessThan(A, B)
+        % Validate that value is less than a specified value or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBELESSTHAN(A,B) issues an error if A is not less than B.
+        %   MATLAB calls gt to determine if A is less than B.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        if ~all(A(:) < B)
+            ME = MException('MATLAB:validators:mustBeLessThan','All values must be less than %f.',B);
+            throwAsCaller(ME)
+        end
+    end
+
+    function mustBeGreaterThanOrEqual(A, B)
+        % Validate that value is greater than or equal to a specified value or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBEGREATERTHANOREQUAL(A,B) issues an error if A is not greater than or equal to B.
+        %   MATLAB calls gt to determine if A is greater than or equal to B.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        if ~all(A(:) >= B)
+            ME = MException('MATLAB:validators:mustBeGreaterThanOrEqual','All values must be greater than or equal to %f.',B);
+            throwAsCaller(ME)
+        end
+    end
+
+    function mustBeLessThanOrEqual(A, B)
+        % Validate that value is less than or equal to a specified value or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBELESSTHANOREQUAL(A,B) issues an error if A is not less or equal than B.
+        %   MATLAB calls gt to determine if A is less than oir equal B.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        if ~all(A(:) <= B)
+            ME = MException('MATLAB:validators:mustBeLessThanOrEqual','All values must be less than or equal to %f.',B);
+            throwAsCaller(ME)
         end
     end
 end

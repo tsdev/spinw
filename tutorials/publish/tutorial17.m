@@ -44,7 +44,7 @@ plot(FMchain,'range',[3 0.5 0.5])
 % also created using symbolic input variables, for example incommensurate
 % k-vector, etc.
 
-FMchain.genmagstr('mode','helical','S',[0 1 0])
+FMchain.genmagstr('mode','helical','S',[0; 1; 0])
 FMchain.magtable.M
 plot(FMchain,'range',[3 0.5 0.5],'zoom',1)
 

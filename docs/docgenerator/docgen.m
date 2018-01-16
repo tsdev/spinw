@@ -6,8 +6,8 @@ swPath  = cellfun(@(C)[swr C],swPath,'UniformOutput',false);
 swver   = sw_version;
 outPath = '~/spinwdoc_git';
 docPath = '~/spinw_git/docs';
-upload  = false;
-recalc  = false;
+upload  = true;
+recalc  = true;
 
 %% generate help
 

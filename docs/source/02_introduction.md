@@ -21,7 +21,7 @@ The symbolic calculation mode also needs the [Symbolic Math Toolbox](https://www
 
 ### Installation
 
-The latest version of SpinW can be downloaded from [https://github.com/tsdev/spinw/releases](https://github.com/tsdev/spinw/releases. Steps to install:
+The latest version of SpinW can be downloaded from [https://github.com/tsdev/spinw/releases](https://github.com/tsdev/spinw/releases). Steps to install:
 * extract the `.zip` file into any local folder
 * add the folder to the Matlab search path using `addpath(genpath(MYSPINWFOLDER))`
 * recommended to copy the above command into the `startup.m` file

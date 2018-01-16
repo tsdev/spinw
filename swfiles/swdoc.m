@@ -78,6 +78,7 @@ funName(funName=='.') = '_';
 
 % open documentation using stored url + function name
 docUrl = pref.docurl;
+
 if ~isempty(docUrl) && docUrl(end)~='/'
     docUrl = [docUrl '/'];
 end

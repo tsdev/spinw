@@ -27,8 +27,8 @@ function export(varargin)
 % `'filename'`
 % : String, name of the image file. Image type will be determined
 %   based on the extension. Supported graphics formats:
-%   * `.png`    Raster image.
-%   * `.eps`    Vector image.
+%   * `png`    Raster image.
+%   * `eps`    Vector image.
 %
 %   If no filename provided, the function returns without printing.
 % 

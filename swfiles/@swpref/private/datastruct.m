@@ -59,8 +59,8 @@ d.Validation = {
     {@isnumeric, @mustBeInteger, @mustBeNonnegative, @(x) check_size(x,Size{6}), @(x) mustBeGreaterThan(x,1), @(x) mustBeLessThan(x,256)},...
     {@isnumeric, @mustBeInteger, @mustBeNonnegative, @(x) check_size(x,Size{7}), @(x) mustBeGreaterThan(x,4), @(x) mustBeLessThan(x,256)},...
     {@isnumeric, @mustBeInteger, @mustBeNonnegative, @(x) check_size(x,Size{8}), @(x) mustBeLessThan(x,256)},...
-    {@(x) check_size(x,Size{9}), @check_mex, @(x) isa(x,'function_handle')},...
-    {@(x) check_size(x,Size{10}), @islogical},...
+    {@(x) check_size(x,Size{9}), @(x) isa(x,'function_handle')},...
+    {@(x) check_size(x,Size{10}), @(x) check_mex(x), @islogical},...
     {@ischar, @(x) strfind(x,'http')}
     };
 
@@ -116,7 +116,7 @@ d.Label =  {
         end
     end
 
-    function out = check_mex(~)
+    function out = check_mex(val)
         % checks to see if mex files are available.
         %
         %  {{warning Internal function for the Spin preferences.}}
@@ -131,6 +131,12 @@ d.Label =  {
         % 'eig_omp' are present in the MATLAB path.An error is thrown if
         % they do not exist.
         %
+        
+        % Do the checks only if we are trying to set usemex = true
+        if val == 0
+            out = 0;
+            return
+        end
         
         if ~(exist('chol_omp','file')==3 && exist('eig_omp','file')==3)
             % There is a path error for < R2017a

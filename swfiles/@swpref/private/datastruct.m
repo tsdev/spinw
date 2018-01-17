@@ -134,7 +134,7 @@ d.Label =  {
         
         if ~(exist('chol_omp','file')==3 && exist('eig_omp','file')==3)
             % There is a path error for < R2017a
-            if ~(exist('chol_omp','file')==2 && exist('eig_omp','file')==2)
+            if (exist('chol_omp','file')==2 && exist('eig_omp','file')==2)
                 p = which('chol_omp');
                 if ~(exist('chol_omp','file')==3 && exist('eig_omp','file')==3)
                     error('spref:MissingMex','Necessary mex files are missing, compile them!')

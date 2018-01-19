@@ -42,8 +42,10 @@ if nargin == 0
     return
 end
 
+pref = swpref;
+
 if nargin < 3
-    fid = swpref.getpref('fid',true);
+    fid = pref.fid;
 end
 
 fprintf0(fid,'Preparing ''%s'' model ...\n',model);

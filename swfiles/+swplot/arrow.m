@@ -108,8 +108,10 @@ else
     
 end
 
+pref = swpref;
+
 if isempty(nPatch)
-    nPatch = swpref.getpref('npatch',[]);
+    nPatch = pref.npatch;
 end
 
 if numel(rStart)==3

@@ -144,9 +144,10 @@ inpF.size   = [inpF.size   {[1 1]    [1 -2]   [1 1]  [1 1]    [1 1]   [1 1]}];
 inpF.soft   = [inpF.soft   {true     false    true   false    false   false}];
   
 param = sw_readparam(inpF, varargin{:});
+pref = swpref;
 
 if param.fid == -1
-    fid = swpref.getpref('fid',[]);
+    fid = pref.fid;
 else
     fid = param.fid;
 end

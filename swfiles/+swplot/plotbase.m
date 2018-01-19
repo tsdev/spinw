@@ -97,10 +97,11 @@ function varargout = plotbase(varargin)
 %
 
 % default values
+pref = swpref;
 col0    = swplot.color({'red' 'green' 'blue'});
 d0      = ones(1,3);
-nMesh0  = swpref.getpref('nmesh',[]);
-nPatch0 = swpref.getpref('npatch',[]);
+nMesh0  = pref.nmesh;
+nPatch0 = pref.npatch;
 
 inpForm.fname  = {'range' 'mode'    'figure' 'color' 'R'   'alpha' 'lhead' 'shift'};
 inpForm.defval = {[]      'abc'     []       col0    0.06  30      0.5     [0;0;0]};

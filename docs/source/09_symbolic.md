@@ -2,7 +2,7 @@
 title: Symbolic calculation
 keywords: docs
 sidebar: sw_sidebar
-permalink: crystal.html
+permalink: symbolic.html
 summary: Symbolic spin wave calculation mode
 folder: documentation
 mathjax: true

@@ -100,6 +100,7 @@ inpForm.defval = {T0    1000    1e-4  1e-5        true     -1   };
 inpForm.size   = {[1 1] [1 1]   [1 1] [1 1]       [1 1]    [1 1]};
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 magstr = obj.magstr;
 
@@ -111,7 +112,7 @@ km = magstr.k.*nExt;
 incomm = any(abs(km-round(km)) > param.tol);
 
 if param.fid == -1
-    fid = swpref.getpref('fid',true);
+    fid = pref.fid;
 else
     fid = param.fid;
 end

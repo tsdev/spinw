@@ -248,7 +248,8 @@ if param.nStat > param.nMC
 end
 
 % Text output file
-fid = swpref.getpref('fid',true);
+pref = swpref;
+fid = pref.fid;
 
 % Creates random spin directions if param.random is true.
 mag_param = struct;

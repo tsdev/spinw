@@ -62,7 +62,7 @@ if numel(type)>3 && strcmpi(type(end+(-3:0)),'.cif') && direct
     if ~isempty(model.matom.S)
         model.quickham([1 1 1]);
         a0 = symbol('a');
-        d = [model.couplingtable(1).bondv(end,1) model.couplingtable(2).bondv(end,1) model.couplingtable(3).bondv(end,1)];
+        d = [couplingtable(model,1).bondv(end,1) couplingtable(model,2).bondv(end,1) couplingtable(model,3).bondv(end,1)];
         fprintf(['The length of the first 3 inequivalent magnetic bonds are: %5.3f ' a0 ', %5.3f ' a0 ', %5.3f ' a0 '.\n'],d);
     else
         fprintf('No magnetic atom is found in the structure.\n')

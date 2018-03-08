@@ -14,15 +14,14 @@ Keep up to date on announcements and more by following [@spinw4](https://twitter
 * can be also accessed from the browser: https://spinw.github.io/spinwdoc/
 
 # Build Status
-We test our builds!
 ## SpinW
-Linux - CentOS 7.3 [![Build Status](https://jenkins.esss.dk/spinw/job/SpinW-CentOS/badge/icon)](https://jenkins.esss.dk/spinw/job/SpinW-CentOS)
-OSX [![Build Status](https://jenkins.esss.dk/spinw/job/SpinW-OSX/badge/icon)](https://jenkins.esss.dk/spinw/job/SpinW-OSX)
+* Linux - CentOS 7.3 [![Build Status](https://jenkins.esss.dk/spinw/job/SpinW-CentOS/badge/icon)](https://jenkins.esss.dk/spinw/job/SpinW-CentOS)
+* OSX [![Build Status](https://jenkins.esss.dk/spinw/job/SpinW-OSX/badge/icon)](https://jenkins.esss.dk/spinw/job/SpinW-OSX)
 
 ## pySpinW
 ### Comilation
-Linux - CentOS 7.3 [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Compile)
-OSX [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile)
+* Linux - CentOS 7.3 [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Compile)
+* OSX [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile)
 ### Functionality
-Linux - CentOS 7.3 [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Test/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Test)
-OSX [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Test/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Test)
+* Linux - CentOS 7.3 [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Test/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Test)
+* OSX [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Test/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Test)

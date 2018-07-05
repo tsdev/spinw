@@ -19,7 +19,7 @@ Keep up to date on announcements and more by following [@spinw4](https://twitter
 * OSX [![Build Status](https://jenkins.esss.dk/spinw/job/SpinW-OSX/badge/icon)](https://jenkins.esss.dk/spinw/job/SpinW-OSX)
 
 ## pySpinW
-### Comilation
+### Compilation
 * Linux - CentOS 7.3 [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Compile)
 * OSX [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile)
 ### Functionality

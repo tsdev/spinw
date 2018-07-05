@@ -31,7 +31,7 @@ plot(AF33kagome,'range',[2 2 1/2],'cellMode','inside')
 
 S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr('mode','helical','k',[-1/3 -1/3 0],...
-    'n',[0 0 1],'unitS','lu','S',S0,'nExt',[3 3 1]);
+    'n',[0 0 1],'unit','lu','S',S0,'nExt',[3 3 1]);
 disp('Magnetic structure:')
 AF33kagome.table('mag')
 AF33kagome.energy
@@ -64,7 +64,7 @@ legend off
 
 S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr('mode','helical','k',[-1/3 -1/3 0],...
-    'n',[0 0 1],'unitS','lu','S',S0,'nExt',[1 1 1]);
+    'n',[0 0 1],'unit','lu','S',S0,'nExt',[1 1 1]);
 disp('Magnetic structure:')
 AF33kagome.table('mag')
 AF33kagome.energy
@@ -82,7 +82,7 @@ plot(AF33kagome,'range',[3 3 1/2])
 % only be calculated using the magnetic supercell.
 
 kag33Spec = AF33kagome.spinwave({[-1/2 0 0] [0 0 0] [1/2 1/2 0] 250},'hermit',false);
-kag33Spec = sw_egrid(kag33Spec,'component','Sxx+Syy+Szz','imagChk',false);
+kag33Spec = sw_egrid(kag33Spec,'component','Sxx+Syy+Szz');
 figure
 subplot(2,1,1)
 sw_plotspec(kag33Spec,'mode',1,'axLim',[0 2.5],'colorbar',false',...

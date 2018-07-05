@@ -76,13 +76,10 @@ if nField == 0
 end
 
 % Matlab version & Symbolic Toolbox
-v0 = ver;
-nSym = strcmp('Symbolic Math Toolbox', {v0.Name});
-nSym = find(nSym,1);
-if isempty(nSym)
+if ~license('checkout','Symbolic_Toolbox')
     strSym = 'no Symbolic Math Toolbox installed';
 else
-    strSym = [v0(nSym).Name ' installed'];
+    strSym = 'Symbolic Math Toolbox installed';
 end
 
 

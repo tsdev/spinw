@@ -31,7 +31,7 @@ plot(AFkagome,'range',[3 3 1])
 % (abc).
 
 S0 = [1 -2 1; 2 -1 -1; 0 0 0];
-AFkagome.genmagstr('mode','direct','k',[0 0 0],'n',[0 0 1],'unitS','lu','S',S0); 
+AFkagome.genmagstr('mode','direct','k',[0 0 0],'n',[0 0 1],'unit','lu','S',S0); 
 disp('Magnetic structure:')
 AFkagome.table('mag')
 AFkagome.energy

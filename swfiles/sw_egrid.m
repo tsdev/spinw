@@ -318,10 +318,14 @@ if iscell(spectra.Sab)
     end
     
     Sab   = spectra.Sab;
-    intP  = {intP};
-    Pab   = {Pab};
-    Mab   = {Mab};
-    Sperp = {Sperp};
+%     intP  = {intP};
+    if ~iscell(intP); intP = {intP}; end
+    if ~iscell(Pab); Pab = {Pab}; end
+    if ~iscell(Mab); Mab = {Mab}; end
+    if ~iscell(Sperp); Sperp = {Sperp}; end
+%     Pab   = {Pab};
+%     Mab   = {Mab};
+%     Sperp = {Sperp};
 else
     nTwin = 1;
     if ~isfield(spectra,'omega')
@@ -337,7 +341,11 @@ else
 end
 
 % number of modes and Q points
-nMode = size(spectra.Sab,3);
+if iscell(spectra.Sab)
+    nMode = size(spectra.Sab{1},3);
+else
+    nMode = size(spectra.Sab,3);
+end
 nHkl  = numel(spectra.hkl)/3;
 sHkl  = [size(spectra.hkl) 1];
 

@@ -18,7 +18,7 @@ classdef spinwFunctionTests < matlab.unittest.TestCase
 %             dir(fullfile(sw_rootdir, 'tutorials', 'publish', 'tutorial*.m')),...
 %             'UniformOutput', false);
 %         Incase we need to debug one tutorial.
-        testFun = {fullfile(sw_rootdir, 'tutorials', 'publish', 'tutorial38.m')};
+        testFun = {fullfile(sw_rootdir, 'tutorials', 'publish', 'tutorial21.m')};
         
     end
     
@@ -59,14 +59,11 @@ classdef spinwFunctionTests < matlab.unittest.TestCase
             outStat = 1;
             
             str= fileread(which(testFun));  %read in text file to memory
-            urls = regexp(str, 'http(\S+)(\s*)$', 'match', 'lineAnchors');    %find urls
+            urls = regexp(str, 'http(\S+)goo(\s*)$', 'match', 'lineAnchors');    %find urls
             
             if ~isempty(urls)
                 for i = 1:length(urls)
                     url = strtok(urls{i},''')');
-                    if ~contains(url,'goo.gl')
-                        break
-                    end
                     try
                         dat = webread(strtok(url,''')'));
                     catch ME

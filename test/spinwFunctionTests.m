@@ -18,12 +18,13 @@ classdef spinwFunctionTests < matlab.unittest.TestCase
             dir(fullfile(sw_rootdir, 'tutorials', 'publish', 'tutorial*.m')),...
             'UniformOutput', false);
 %         Incase we need to debug one tutorial.
-%         testFun = {fullfile(sw_rootdir, 'tutorials', 'publish', 'tutorial38.m')};
+%         testFun = {fullfile(sw_rootdir, 'tutorials', 'publish', 'tutorial9.m')};
         
     end
     
     methods (TestMethodSetup)
         function prepareForRun(testCase)
+            
            close all
            clc
            
@@ -68,11 +69,24 @@ classdef spinwFunctionTests < matlab.unittest.TestCase
                         break
                     end
                     try
-                        dat = webread(strtok(url,''')'));
+                        [~] = webread(strtok(url,''')'));
                     catch ME
-                        warning('WARNING! Remote content not found for tutorial %s', testFun);
+                        ident = '';
+                        switch ME.identifier
+                            case 'MATLAB:webservices:HTTP404StatusCodeError'
+                                warning('WARNING! Remote content not found for tutorial %s', testFun);
+                                ident = 'MATLAB:webservices:HTTP404StatusCodeError';
+                            case 'MATLAB:webservices:UnknownHost'
+                                warning('WARNING! Can not find remote content. DNS problem?')
+                                ident = 'MATLAB:webservices:UnknownHost';
+                            case 'MATLAB:webservices:Timeout'
+                                warning('WARNING! Can not connect to the internet.')
+                                ident = 'MATLAB:webservices:Timeout';
+                            otherwise
+                                rethrow(ME)
+                        end
                         import matlab.unittest.constraints.Matches
-%                         testCase.verifyMatches(ME.identifier, 'MATLAB:webservices:HTTP404StatusCodeError');
+                        testCase.verifyMatches(ME.identifier, ident);
                         return
                     end
                 end

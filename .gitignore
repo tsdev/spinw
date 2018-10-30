@@ -12,3 +12,5 @@ _pdf
 
 *.sublime-workspace
 *.tap
+
+*.asv

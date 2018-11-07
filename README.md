@@ -14,19 +14,22 @@ Keep up to date on announcements and more by following [@spinw4](https://twitter
 * can be also accessed from the browser: https://spinw.github.io/spinwdoc/
 
 # Build Status
-We are currently testing on Centos 7.3 and macOS using MATLAB R2018b. It should be noted that MATLAB symbolic calculation changed at R2018a and as such results may be different.
+We are currently testing on Centos 7.3, macOS and Windows using MATLAB R2018b. It should be noted that MATLAB symbolic calculation changed at R2018a and as such results may be different.
 
 Testing can be pulled from the [testing](https://www.github.com/spinw/testing) repository and run with the `runspinwFunctionalityTests` command.
-
+### MacOS
 ## SpinW
 ### Linux - CentOS 7.3 
 [![Build Status](https://jenkins.esss.dk/spinw/job/SpinW-CentOS/badge/icon)](https://jenkins.esss.dk/spinw/job/SpinW-CentOS)
 ### MacOS 
 [![Build Status](https://jenkins.esss.dk/spinw/job/SpinW-OSX/badge/icon)](https://jenkins.esss.dk/spinw/job/SpinW-OSX)
+### Windows 10
+[![Build Status](https://jenkins.esss.dk/spinw/job/SpinW-Windows/badge/icon)](https://jenkins.esss.dk/spinw/job/SpinW-Windows/)
 
 ## pySpinW
-
 ### Linux - CentOS 7.3 
 [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-CentOS-Compile)
 ### MacOS 
 [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile)
+### Windows 10
+[![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-Windows-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-Windows-Compile/)

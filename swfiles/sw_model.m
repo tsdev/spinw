@@ -124,13 +124,13 @@ switch model
         % Search for files which are models
         relFiles = cellfun(@(x) x(1:end-2) ,allFiles(strncmp(allFiles, modelSearch, 3)),'UniformOutput',false);
         if ~any(strcmp(model, relFiles))
-            error('sw_model:WrongINput','Model does not exists!')
+            error('sw_model:WrongInput','Model does not exists!')
         end
         % Evaluate the model
         try
             obj = feval(model, param);        
         catch ME
-            error('sw_model:WrongINput','This model has an error!')
+            error('sw_model:ModelError','This model has an error!')
         end
 end
 

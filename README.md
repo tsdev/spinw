@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/33274418.svg)](https://zenodo.org/badge/latestdoi/33274418) [![Twitter Follow](https://img.shields.io/twitter/follow/spinw4.svg?style=social&label=Follow)](https://twitter.com/intent/user?screen_name=spinw4) [![Github All Releases](https://img.shields.io/github/downloads/tsdev/spinw/total.svg)](https://github.com/tsdev/spinw/releases)
+[![DOI](https://zenodo.org/badge/117668242.svg)](https://zenodo.org/badge/latestdoi/117668242) [![Twitter Follow](https://img.shields.io/twitter/follow/spinw4.svg?style=social&label=Follow)](https://twitter.com/intent/user?screen_name=spinw4) [![Github All Releases](https://img.shields.io/github/downloads/tsdev/spinw/total.svg)](https://github.com/tsdev/spinw/releases)
 
 
 <img src="spinw3_logo.png" width="150">

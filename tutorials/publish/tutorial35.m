@@ -60,7 +60,7 @@ swplot.plotmag
 % can check the resulting matrices using the spinw.table method.
 
 x1 = [4.24 5.95 -0.46 -0.48];
-luvo.matparser('param',x1,'mat',{'Jab' 'Jc' 'K(2,2)' 'K(3,3)'},'init',truehttps://goo.gl/8guwPF)
+luvo.matparser('param',x1,'mat',{'Jab' 'Jc' 'K(2,2)' 'K(3,3)'},'init',true)
 
 luvo.table('matrix')
 

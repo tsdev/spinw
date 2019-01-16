@@ -114,7 +114,7 @@ else
     ver0.Release  = '';
     ver0.Date     = datestr(now,'dd-mmm-yyyy');
     ver0.Author   = 'S. Tóth and S. Ward';
-    ver0.Contact  = 'spinw4@gmail.com, @spinw4 on Twitter';
+    ver0.Contact  = 'admin@spinw.org, @spinw4 on Twitter';
     ver0.License  = 'GNU GENERAL PUBLIC LICENSE';
 
     if nField == 0

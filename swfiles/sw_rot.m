@@ -1,39 +1,61 @@
 function [V, rotM] = sw_rot(rotAxis, rotAngle, V)
-% rotates vectors around arbitrary axis in 3D
+% rotates vectorsin 3D
+% 
+% ### Syntax
+% 
+% `[~, R] = sw_rot(rotAxis,rotAngle)`
+% 
+% `[VR, R] = sw_rot(rotAxis,rotAngle,V)`
 %
-% [V, rotM] = SW_ROT(rotAxis, rotAngle, {V})
+% ### Description
+% 
+% `[~, R] = sw_rot(rotAxis,rotAngle)` produces the `R` rotation matrix that
+% rotates any vector around the given `rotAxis` rotation axis by `rotAngle`
+% angle in radian. Positive rotation is the right-hand direction around the
+% rotation axis and using the following rotation formula:
+% ```
+% VR = R*V
+% ```
 %
-% It rotates vectors in V around rotAxis by rotAngle radian (positive angle
-% is the right-hand direction).
+% To rotate tensors ($3\times 3$ matrices) use the following formula:
+% ```
+% Mp = R * M * R';
+% ```
 %
-% Input:
+% `[VR, R] = sw_rot(rotAxis,rotAngle,V)` also rotates the given `V`
+% vectors where `VR` are the transformed vectors.
+% 
+% ### Input Arguments
+% 
+% `rotAxis`
+% : Axis of rotation, stored in a row vector with 3 elements.
+% 
+% `rotAngle`
+% : Angle of rotation in radian, can be also a row vector with $n_{ang}$
+%   number of elements.
+% 
+% `V`
+% : Matrix with 3 rows, where each column is a vector in 3D space.
+% 
+% ### Output Arguments
+% 
+% `VR`
+% : Rotated vectors, stored in a matrix with dimensions of $[3\times N
+%   n_{ang}]$.
 %
-% rotAxis   Axis of rotation, dimensions are [1 3].
-% rotAngle  Angle of rotation in radian (can be vector with dimensions of
-%           [1 nAng]).
-% V         Matrix of 3D vectors, dimensions are [3 N], optional.
+% `R`
+% : Rotation matrix with dimensions of $[3\times 3]$ if a single rotation
+%   angle is given. If `rotAngle` is a vector, `R` will contain a
+%   rotation matrix for each angle, it's dimensions are $[3\times 3\times
+%   n_{ang}]$.
 %
-% Output:
-%
-% V         Rotated vectors, dimensions are [3 N nAng].
-% rotM      Rotation matrix, dimensions are [3 3]. If rotAngle is a vector,
-%           rotM contains rotation matrices for every angle, it's
-%           dimensions are [3 3 nAng].
-%
-% The rotation matrix defines rotations in a right-handed coordinate
-% system, the positive direction is counter-clockwise, when looking from
-% where the rotation axis points. To rotate any column vector use the
-% following:
-%   vp = rotM * v;
-%
-% To rotate tensors (3x3 matrices) use the following command:
-%   Ap = rotM * A * rotM';
-%
-% See also SPINW.GENMAGSTR, SW_ROTMAT, SW_MIRROR.
+% ### See Also
+% 
+% [sw_rotmat] \| [sw_mirror]
 %
 
 if nargin==0
-    help sw_rot
+    swhelp sw_rot
     return
 end
 

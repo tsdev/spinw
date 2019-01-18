@@ -64,7 +64,7 @@ function sFact = structfact(obj, kGrid, varargin)
 %                   $Q$ value
 %   * `atomLabel`   string, label of the selected magnetic atom
 %   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
-%                   column contains a $Q$ vector in $\\Angstrom^{-1}$ units.
+%                   column contains a $Q$ vector in $\\ang^{-1}$ units.
 %
 % `'gtensor'`
 % : If true, the g-tensor will be included in the structure factor
@@ -96,6 +96,14 @@ function sFact = structfact(obj, kGrid, varargin)
 % : Speed up the calculation for fitting mode (omitting
 %   cloning the [spinw] object into the output). Default is `false`.
 % 
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
+%
 % ### Output Arguments
 % 
 % `sFact`
@@ -107,7 +115,7 @@ function sFact = structfact(obj, kGrid, varargin)
 %               $[n_{ext}(1)\cdot f_{ext}(1)\times n_{ext}(2)\cdot f_{ext}(2)\times n_{ext}(3)\cdot f_{ext}(3)]$,
 %               where $n_{ext}$ is the size of the extended unit cell.
 %    * `hkl`    Contains the input $Q$ values in a matrix with dimensins of $[3\times n_{hkl}]$.
-%    * `hklA`   Same as `hkl`, but in \\Angstrom$^{-1}$ units in the
+%    * `hklA`   Same as `hkl`, but in \\ang$^{-1}$ units in the
 %               $xyz$ Cartesian coordinate system.
 %    * `incomm` Whether the spectra calculated is incommensurate or not.
 %    * `formfact` Cell containing the labels of the magnetic ions if form
@@ -130,17 +138,18 @@ inpF.defval = {'mag'  false   false     false       @sw_mff      false    };
 inpF.size   = {[1 -1] [1 1]   [1 1]     [1 1]       [1 1]        [1 1]    };
 inpF.soft   = {false  false   false     false       false        false    };
 
-inpF.fname  = [inpF.fname  {'lambda' 'output' 'dmin' 'rmzero' 'delta'}];
-inpF.defval = [inpF.defval {[]       'struct' []     false    1e-10  }];
-inpF.size   = [inpF.size   {[1 1]    [1 -2]   [1 1]  [1 1]    [1 1]  }];
-inpF.soft   = [inpF.soft   {true     false    true   false    false  }];
+inpF.fname  = [inpF.fname  {'lambda' 'output' 'dmin' 'rmzero' 'delta' 'fid'}];
+inpF.defval = [inpF.defval {[]       'struct' []     false    1e-10   -1   }];
+inpF.size   = [inpF.size   {[1 1]    [1 -2]   [1 1]  [1 1]    [1 1]   [1 1]}];
+inpF.soft   = [inpF.soft   {true     false    true   false    false   false}];
   
 param = sw_readparam(inpF, varargin{:});
+pref = swpref;
 
-if param.fitmode
-    fid = 0;
+if param.fid == -1
+    fid = pref.fid;
 else
-    fid = obj.fileid;
+    fid = param.fid;
 end
 
 % make a list of k-vectors from a grid and remember original dimensions

@@ -121,7 +121,7 @@ lm_iteration  = 0;
 lm_func_calls = 0;
 
 if nargin == 0
-    help ndbase.lm
+    swhelp ndbase.lm
     return
 end
 
@@ -201,9 +201,9 @@ else
 end
 
 % previous set of parameters
-pOld  = zeros(1,Np);
+pOld  = p0(:)';
 % previous model values: yOld = func(x,pOld)
-yOld  = zeros(Nx,1);
+yOld  = func(dat.x,pOld);
 % empty Jacobian matrix
 J     = zeros(Nx,Np);
 % empty output

@@ -1,24 +1,34 @@
 function varargout = activefigure(varargin)
 % returns the handle of the active swplot figure
+% 
+% ### Syntax
+% 
+% `hFigure = swplot.activefigure`
 %
-% {hFigure} = SWPLOT.ACTIVEFIGURE
-%
-% It gives the handle of the active swplot figure and make it selected. If
-% no swplot figure exists, throws an error.
-%
-% SWPLOT.ACTIVEFIGURE(hFigure)
-%
-% It makes hFigure the active figure.
-%
-% Input:
-%
-% hFigure       Figure handle or figure number.
-%
-% Output:
-%
-% hFigure       Figure handle.
-%
-% See also SWPLOT.FIGURE.
+% `swplot.activefigure(hFigure)`
+% 
+% ### Description
+% 
+% `hfigure = swplot.activefigure` returns the handle of the active swplot
+% figure and makes it selected. If no swplot figure exists, the function
+% throws an error.
+%  
+% `swplot.activefigure(hFigure)` makes the figure of `hFigure` handle the
+% active figure.
+% 
+% ### Input Arguments
+% 
+% `hFigure`
+% : Figure handle or figure number.
+% 
+% ### Output Arguments
+% 
+% `hFigure`
+% : Handle of the active swplot figure.
+% 
+% ### See Also
+% 
+% [swplot.figure]
 %
 
 hFigure  = [];
@@ -44,7 +54,8 @@ switch nargin
 end
 
 % tag for active figure
-activeTag = swpref.getpref('tag',[]);
+pref = swpref;
+activeTag = pref.tag;
 
 % tag for inactive figures
 inactiveTag = ['inactive_' activeTag];

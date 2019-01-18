@@ -1,27 +1,27 @@
 function  Eout = energy(obj, varargin)
 % calculates the ground state energy
-% 
+%
 % ### Syntax
-% 
+%
 % `E = energy(obj,Name,Value)`
-% 
+%
 % ### Description
-% 
+%
 % `E = energy(obj,Name,Value)` calculates the classical ground state energy
 % per spin. The calculation correctly takes into account the magnetic
 % supercell. The function gives correct results on single-k magnetic
 % structures even defined on magnetic supercells. For multi-k magnetic
 % structures first a definition of a larger supercell is necessary where an
 % effective $k=0$ representation is possible.
-% 
+%
 % ### Examples
-% 
+%
 % After optimising the magnetic structure (by minimizing the ground state
 % energy), the energy per spin is calculated. This can be compared to
 % different ground state structures to decide which is the right classical
 % ground state of the magnetic model in cryst. Here we use the triangular
 % lattice antiferromagnet where we define the magnetic structure on a
-% $[3\times 3]$ magnetic supercell where the optimal structure (120\\degree
+% $[3\times 3]$ magnetic supercell where the optimal structure (120\\deg
 % angle between neighboring spins) has a 0 propagation vector. In this case
 % the exact energy is $3\cdot 1^2\cdot \cos(120^\circ) = -1.5$.
 %
@@ -31,20 +31,20 @@ function  Eout = energy(obj, varargin)
 % >>cryst.optmagsteep('nRun',10)
 % >>cryst.energy>>
 % ```
-% 
+%
 % ### Input Arguments
-% 
+%
 % `obj`
 % : [spinw] object.
-% 
+%
 % ### Name-Value Pair Arguments
-% 
+%
 % `'epsilon'`
-% : The smallest value of incommensurability that is tolerated 
+% : The smallest value of incommensurability that is tolerated
 %   without warning. Default is $10^{-5}$.
-% 
+%
 % ### Output Arguments
-% 
+%
 % `E`
 % : Energy per moment (anisotropy + exchange + Zeeman energy).
 %
@@ -59,9 +59,9 @@ function  Eout = energy(obj, varargin)
 % ion anisotropy one has to be carefull! In the triangular case one has to
 % extend the unit cell to `nExt = [3 3 1]` (in the hexagonal setting), in
 % this case the energy will be correct.}}
-% 
+%
 % ### See Also
-% 
+%
 % [spinw] \| [spinw.anneal] \| [spinw.newcell]
 %
 
@@ -103,7 +103,7 @@ if  incomm && (isAniso || any(SI.field) || isGoff) && ~isreal(obj.mag_str.F) && 
 end
 
 if nMagExt>0
-
+    
     dR    = [SS.all(1:3,:) zeros(3,nMagExt)];
     atom1 = [SS.all(4,:)   1:nMagExt];
     atom2 = [SS.all(5,:)   1:nMagExt];
@@ -127,8 +127,19 @@ if nMagExt>0
     
     Ml = repmat(permute(M1,[1 3 2]),[1 3 1]);
     Mr = repmat(permute(M2,[3 1 2]),[3 1 1]);
-    
-    exchE   =  sum(sum(sum(Ml.*JJ.*Mr,3),2),1);
+
+    Q = Ml.*JJ.*Mr;
+    if isa(Ml,'sym') || isa(Ml,'sym') || isa(Ml,'sym')
+        [n1, n2, n3] = size(Q);
+        sum_3 = 0;
+        for k = 1:n3
+            sum_3 = sum_3 + Q(:,:,k);
+        end
+    else
+        sum_3 = sum(Q,3);
+    end
+    exchE   =  sum(sum(sum_3,2),1);
+
     % TODO
     % correct energy for twins
     ZeemanE = -sum(SI.field*permute(mmat(SI.g,permute(M0,[1 3 2])),[1 3 2]),2)*obj.unit.muB;

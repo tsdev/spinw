@@ -1,64 +1,75 @@
 function spectra = sw_xray(spectra, varargin)
-% calculates X-ray scattering intensity for phonon spectrum
+% calculates x-ray scattering cross section
+% 
+% ### Syntax
+% 
+% `spectra = sw_xray(spectra,Name,Value)`
+% 
+% ### Description
+% 
+% `spectra = sw_xray(spectra,Name,Value)` calculates x-ray scattering
+% intensity for non-resonant inelastic x-ray scattering on phonons.
+%  
+% 
+% ### Input Arguments
+% 
+% `spectra`
+% : Input structure that contains the displacement-displacement
+%   correlation function.
+% 
+% ### Name-Value Pair Arguments
 %
-% spectra = SW_XRAY(spectra, 'Option1', Value1' ...)
+% `'formfact'`
+% : If true, the magnetic form factor is included in the spin-spin
+%   correlation function calculation. The form factor coefficients are
+%   stored in `obj.unit_cell.ff(1,:,atomIndex)`. Default value is `false`.
 %
-% It calculates X-ray scattering intensity for inelastic X-ray scattering
-% on phonons.
+% `'formfactfun'`
+% : Function that calculates the magnetic form factor for given $Q$ value.
+%   value. Default value is `@sw_mff`, that uses a tabulated coefficients
+%   for the form factor calculation. For anisotropic form factors a user
+%   defined function can be written that has the following header:
+%   ```
+%   F = formfactfun(atomLabel,Q)
+%   ```
+%   where the parameters are:
+%   * `F`           row vector containing the form factor for every input 
+%                   $Q$ value
+%   * `atomLabel`   string, label of the selected magnetic atom
+%   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
+%                   column contains a $Q$ vector in $\\ang^{-1}$ units.
 %
-% Input:
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
 %
-% spectra   Input structure that contains the displacement-displacement
-%           correlation function.
-%
-% Output:
-%
-% the spectra output has the following additional fields:
-% param     Input parameters.
-%
-% Sperp     Sperp(mode,Q) X-ray scattering cross section, dimensions are
-%           [nMode nHkl].
-% formfact      Setting, that determines whether the magnetic form factor
-%               is included in the spin-spin correlation function
-%               calculation. Possible values:
-%                   false   No magnetic form factor is applied (default).
-%                   true    Magnetic form factors are applied, based on the
-%                           label string of the magnetic ions, see sw_mff()
-%                           function help.
-%                   cell    Cell type that contains mixed labels and
-%                           numbers for every symmetry inequivalent atom in
-%                           the unit cell, the numbers are taken as
-%                           constants.
-%               For example: formfact = {0 'MCr3'}, this won't include
-%               correlations on the first atom and using the form factor of
-%               Cr3+ ion for the second atom.
-% formfactfun   Function that calculates the magnetic form factor for given
-%               Q value. Default value is @sw_mff(), that uses a tabulated
-%               coefficients for the form factor calculation. For
-%               anisotropic form factors a user defined function can be
-%               written that has the following header:
-%                   F = @formfactfun(atomLabel,Q)
-%               where the parameters are:
-%                   F   row vector containing the form factor for every
-%                       input Q value
-%                   atomLabel string, label of the selected magnetic atom
-%                   Q   matrix with dimensions of [3 nQ], where each column
-%                       contains a Q vector in Angstrom^-1 units.
-%
-% If several domains exist in the sample, Sperp is packaged into a cell,
-% that contains nTwin number of matrices.
-%
-% See also SPINW, SPINW.SPINWAVE, SW_NEUTRON.
+% ### Output Arguments
+% 
+% `spectra`
+% : Structure that is same as the input with the following additional
+%   fields:
+%   * `param`   Input parameters.
+%   * `Sperp`   $S_\perp(i_{mode},\mathbf{Q})$ x-ray scattering cross
+%               section, stored in a matrix with dimensions of
+%               $[n_{mode n_{hkl}]$.
+% 
+% ### See Also
+% 
+% [spinw] \| [spinw.spinwave] \| [sw_neutron]
 %
 
 if nargin == 0
-    help sw_xray
+    swhelp sw_xray
     return
 end
 
-inpForm.fname  = {'formfact' 'formfactfun'};
-inpForm.defval = {true        @sw_cff     };
-inpForm.size   = {[1 -1]      [1 1]       };
+inpForm.fname  = {'formfact' 'formfactfun' 'fid'};
+inpForm.defval = {true        @sw_cff      -1   };
+inpForm.size   = {[1 -1]      [1 1]        [1 1]};
 
 param = sw_readparam(inpForm,varargin{:});
 

@@ -57,8 +57,9 @@ inpForm.defval = {[]     };
 inpForm.size   = {[3 -1] };
 inpForm.soft   = {true   };
 
+warning('off','sw_readparam:UnreadInput')
 param = sw_readparam(inpForm, varargin{:});
-
+warning('on','sw_readparam:UnreadInput')
 
 
 % calculate symbolic Fourier transformation if obj is in symbolic mode
@@ -123,9 +124,11 @@ end
 
 kones = ones(1,D);
 
+warning('off','sw_readparam:UnreadInput')
 % optimise the energy using particle swarm
 [pOpt0, ~, ~] = ndbase.pso([],@optfun,1/4*kones,'lb',0*kones,'ub',kones,varargin{:},...
     'TolFun',1e-5,'TolX',1e-5,'MaxIter',1e3);
+warning('on','sw_readparam:UnreadInput')
 
 % generate an R-value
 optfun2 = @(p)(1e-2+optfun(p)-optfun(pOpt0))^2;

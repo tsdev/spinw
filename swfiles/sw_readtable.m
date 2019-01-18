@@ -75,7 +75,7 @@ function dat = sw_readtable(dataSource,delimiter,nHeader)
 %
 
 if nargin == 0
-    help sw_readtable
+    swhelp sw_readtable
     return
 end
 

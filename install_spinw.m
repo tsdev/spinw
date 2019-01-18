@@ -1,4 +1,4 @@
-function install_spinw()
+function install_spinw(varargin)
 % installs SpinW
 %
 % INSTALL_SPINW()
@@ -9,15 +9,24 @@ function install_spinw()
 %
 
 % if nargin == 0
-%     help sw_install
+%     swhelp sw_install
 %     return
 % end
 
-newline = char(10);
+silent = false;
+if nargin == 2
+    if strcmpi(varargin{1},'silent')
+        if isa(varargin{2},'logical')
+            silent = varargin{2};
+        end
+    end
+end
+    
+newline = char(10); %#ok<CHARTEN>
 
 % remove old SpinW installation from path
 fprintf('\nRemoving path to old SpinW installation if exists!\n')
-try %#ok<TRYNC>
+try
     rmpath(genpath(sw_rootdir));
 end
 
@@ -91,8 +100,12 @@ uPath = [uPath(~ismember(uPath,';')) filesep 'startup.m'];
 
 % create new startup.m file
 if isempty(sfLoc)
+    if ~silent
     answer = getinput(sprintf(['You don''t have a Matlab startup.m file,\n'...
         'do you want it to be created at %s? (y/n)'],esc(uPath)),'yn');
+    else
+        answer = 'n';
+    end
     if answer == 'y'
         fclose(fopen(uPath,'w'));
         sfLoc = uPath;
@@ -100,11 +113,13 @@ if isempty(sfLoc)
 end
 
 if ~isempty(sfLoc)
-    
+    if ~silent
     answer = getinput(['Would you like to add the following line:' newline...
         'addpath(genpath('''  esc(folName) '''));' newline 'to the end of '...
         'your Matlab startup file (' esc(sfLoc) ')? (y/n)'],'yn');
-    
+    else
+        answer = 'n';
+    end
     if answer == 'y'
         fid = fopen(sfLoc,'a');
         fprintf(fid,['\n%%###SW_UPDATE\n%% Path to the SpinW installation\n'...
@@ -113,6 +128,7 @@ if ~isempty(sfLoc)
     end
 end
 
+if ~silent
 answer = getinput(...
     ['\nIn order to refresh the internal class definitions of Matlab (to\n'...
     'access the new SpinW version), issuing the "clear classes" command\n'...
@@ -120,7 +136,9 @@ answer = getinput(...
     'in the Matlab internal memory. Would you like the updater to issue\n'...
     'the command now, otherwise you can do it manually later.\n'...
     'Do you want to issue the command "clear classes" now? (y/n)'],'yn');
-
+else
+    answer = 'n';
+end
 if answer == 'y'
     clear('classes'); %#ok<CLCLS>
     disp('Matlab class memory is refreshed!')

@@ -1,36 +1,51 @@
 function add(hAdd, hFigure, showtooltip)
-% adds a graphical object to the hgtransform of an swplot figure
+% adds a graphical object to an swplot figure
+% 
+% ### Syntax
+% 
+% `swplot.add(hAdd)`
 %
-% SWPLOT.ADD(hAdd, {hFigure})
-%
-% It adds a graphical object to the hgtransform object of the figure to
-% enable continuous rotation with the mouse.
-%
-% Input:
-%
-% hAdd      Either vector of the handles of the graphical objects, or
-%           struct with dimensions of [1 nObject] with a handle field each
-%           contains a graphical object handle. The struct can contain any
-%           number of the following fields as well:
-%               'name'      Default value is 'general' if not given. The
-%                           name identifies groups of objects.
-%               'text'      Text that is shown in the tooltip when clicking
-%                           on the object.
-%               'position'  Position of the object, see swplot.plot for
-%                           details.
-%               'label'     Label that is shown in the legend.
-%               'legend'    Type of legend, see swplot.plot for details.
-%               'type'      Type of graphical object, see swplot.plot.
-%               'data'      Arbitrary data assigned to the object.
-% hFigure   The handle of the figure (number in the figure title bar). The
-%           default is the active swplot figure if the argument is not
-%           provided by the user or it is empty matrix.
-%
-% See also SWPLOT, SWPLOT.FIGURE, HGTRANSFORM, SWPLOT.PLOT.
+% `swplot.add(hAdd,hFigure)`
+% 
+% ### Description
+% 
+% `swplot.add(hAdd)` adds a graphical object to the active swplot figure to
+% enable continuous rotation with the mouse. The function adds the
+% graphical objects to as a children to the [matlab.hgtransform].
+%  
+% `swplot.add(hAdd,hFigure)` adds the graphical objects to the figure of
+% the figure handle `hFigure`.
+% 
+% ### Input Arguments
+% 
+% `hAdd`
+% : Either vector of the handles of the graphical objects, or
+%   struct with $n_{obj}$ number of elements with a `handle` field each
+%   containing a graphical object handle. The struct can contain any subset
+%   of the following fields as well:
+%   * `name`      Default value is `'general'` if not given. The
+%                 name identifies groups of objects.
+%   * `text`      Text that is shown in the tooltip when clicking
+%                 on the object.
+%   * `position`  Position of the object, see [swplot.plot] for
+%                 details.
+%    * `label`    Label that is shown in the legend.
+%    * `legend`   Type of legend, see [swplot.legend] for details.
+%    * `type`     Type of graphical object, see [swplot.plot].
+%    * `data`     Arbitrary data assigned to the object.
+% 
+% `hFigure`
+% : The handle of the figure or number in the figure title. The
+%   default value is the active swplot figure if `hFigure` is not given or
+%   empty matrix.
+% 
+% ### See Also
+% 
+% [swplot] \| [swplot.figure] \| [matlab.hgtransform] \| [swplot.delete]
 %
 
 if nargin == 0
-    help swplot.add
+    swhelp swplot.add
     return
 end
 

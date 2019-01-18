@@ -18,7 +18,7 @@ function out = sw_sub1(inp, varargin)
 %
 
 if nargin == 0
-    help sw_sub1
+    swhelp sw_sub1
     return
 end
 

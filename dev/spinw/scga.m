@@ -26,6 +26,7 @@ function spectra = scga(obj, hkl, varargin)
 % fitmode       Speedup (for fitting mode only), default is false.
 % sublat    List of sublattices.
 % isomode   ...
+% fid       ...
 %
 % Output:
 %
@@ -37,11 +38,10 @@ function spectra = scga(obj, hkl, varargin)
 
 % TODO documentation
 
-fid  = swpref.getpref('fid',true);
 T0   = obj.single_ion.T;
 
 inpForm.fname  = {'T'    'plot' 'nInt' 'lambda' 'sublat' 'isomode' 'fitmode' 'fid'};
-inpForm.defval = {T0     true   1e3    []       []       'auto'    false     fid  };
+inpForm.defval = {T0     true   1e3    []       []       'auto'    false     -1   };
 inpForm.size   = {[1 -1] [1 1]  [1 1]  [1 1]    [1 -2]   [1 -3]    [1 1]     [1 1]};
 inpForm.soft   = {false  false  false  true     true     false     false     false};
 
@@ -61,7 +61,14 @@ if ~param.fitmode
     spectra.datestart = datestr(now);
 end
 
-fid = param.fid;
+pref = swpref;
+
+if param.fid == -1
+    fid  = pref.fid;
+else
+    fid = param.fid;
+end
+
 
 if numel(param.T)>1
     param.plot = false;

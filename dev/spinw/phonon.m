@@ -59,6 +59,11 @@ if obj.symbolic
     return
 end
 
+inpForm.fname  = {'omega_tol'};
+inpForm.defval = {1e-5       };
+inpForm.size   = {[1 1]      };
+param = sw_readparam(inpForm, varargin{:});
+
 
 SS = obj.intmatrix('fitmode',2,'conjugate',true);
 
@@ -92,7 +97,10 @@ dRQ = exp(-1i*2*pi*sum(bsxfun(@times,permute(dR,[4 5 2 3 1]),permute(hkl,[4 5 3 
 Dab = bsxfun(@plus,-permute(sum(bsxfun(@times,phiab,dRQ),3),[1 2 4 3]),sum(phiab,3));
 
 % solve the eigenvalue problem
-[ea,om2] = eigenshuffle(Dab);
+%[ea,om2] = eigenshuffle(Dab);
+pref = swpref;
+[ea,om2] = eigorth(Dab, param.omega_tol, pref.usemex);
+
 om = sqrt(real(om2));
 
 % % X-ray cross section

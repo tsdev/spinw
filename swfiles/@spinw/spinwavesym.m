@@ -88,6 +88,14 @@ function spectra = spinwavesym(obj, varargin)
 %   impossible for large matrices, in that case set it to
 %   `false`. Default is `true`.
 % 
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
+%
 % `'title'`
 % : Gives a title string to the simulation that is saved in the
 %   output.
@@ -117,11 +125,12 @@ hkl0 = [sym('h','real'); sym('k','real'); sym('l','real')];
 
 title0 = 'Symbolic LSWT spectrum';
 
-inpForm.fname  = {'tol' 'hkl'  'eig' 'vect' 'norm' 'title'};
-inpForm.defval = {1e-4   hkl0   true false  false   title0 };
-inpForm.size   = {[1 1] [3 1]  [1 1] [1 1]  [1 1]  [1 -1] };
+inpForm.fname  = {'tol' 'hkl'  'eig' 'vect' 'norm' 'title' 'fid'};
+inpForm.defval = {1e-4   hkl0   true false  false   title0 -1   };
+inpForm.size   = {[1 1] [3 1]  [1 1] [1 1]  [1 1]  [1 -1]  [1 1]};
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 if param.norm
     param.vect = true;
@@ -140,7 +149,11 @@ incomm = any(~sw_always(abs(km-round(km)) <= param.tol));
 % symbolic wavevectors, convert to the model rlu
 hkl = obj.unit.qmat*param.hkl;
 
-fid = obj.fid;
+if param.fid == -1
+    fid = pref.fid;
+else
+    fid = param.fid;
+end
 
 % Create the interaction matrix and atomic positions in the extended
 % magnetic unit cell.

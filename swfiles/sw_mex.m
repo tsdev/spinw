@@ -262,14 +262,13 @@ if param.swtest
     AFsq.genmagstr('mode','helical','k',[1/2 1/2 0],'n',[0 0 1], 'S',[1; 0; 0],'nExt',[2 2 1]);
     AFsq.optmagsteep
     %plot(AFsq,'range',[2 2 0.5],'zoom',-1)
-    AFsq.fileid(0);
     % Runs test
     hkl = {[1/4 3/4 0] [1/2 1/2 0] [1/2 0 0] [3/4 1/4 0] [1 0 0] [3/2 0 0] 50000};
     nm = 15;   % Ensure same number of slices for all tests
-    tic; linespec_herm_mex      = AFsq.spinwave(hkl,'hermit',true,'useMex',true,'optmem',nm);  t1=toc;
-    tic; linespec_herm_nomex    = AFsq.spinwave(hkl,'hermit',true,'useMex',false,'optmem',nm); t2=toc;
-    tic; linespec_nonherm_mex   = AFsq.spinwave(hkl,'hermit',false,'useMex',true,'optmem',nm); t3=toc;
-    tic; linespec_nonherm_nomex = AFsq.spinwave(hkl,'hermit',false,'useMex',false,'optmem',nm);t4=toc;
+    tic; linespec_herm_mex      = AFsq.spinwave(hkl,'hermit',true,'useMex',true,'optmem',nm,'fid',0);  t1=toc;
+    tic; linespec_herm_nomex    = AFsq.spinwave(hkl,'hermit',true,'useMex',false,'optmem',nm,'fid',0); t2=toc;
+    tic; linespec_nonherm_mex   = AFsq.spinwave(hkl,'hermit',false,'useMex',true,'optmem',nm,'fid',0); t3=toc;
+    tic; linespec_nonherm_nomex = AFsq.spinwave(hkl,'hermit',false,'useMex',false,'optmem',nm,'fid',0);t4=toc;
     
     fprintf('             %16s  %16s  %16s  %16s\n','Hermitian Mex','Hermitian NoMex','NonHermitian Mex','NonHermitian NoMex');
     fprintf('Run Time(s)  % 16.6f  % 16.6f  % 16.6f    % 16.6f\n',t1*5,t2*5,t3*5,t4*5);

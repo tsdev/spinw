@@ -41,7 +41,7 @@ function qOut = sw_qscan(qLim)
 %
 
 if nargin == 0
-    help sw_qscan
+    swhelp sw_qscan
     return
 end
 

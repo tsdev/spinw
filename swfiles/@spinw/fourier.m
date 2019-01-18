@@ -64,12 +64,12 @@ function res = fourier(obj,hkl,varargin)
 %               matrices to reduce memory consumption.
 % 
 % `'fid'`
-% : Defines whether to provide text output. Default is defined
-%   by the `swpref.getpref('fid')` command. The possible values:
-%   * `0`       No text output is generated.
-%   * `1`       Text output in the MATLAB Command Window.
-%   * `fid`     File ID provided by the [fopen](https://www.mathworks.com/help/matlab/ref/fopen.html) command, the
-%               output is written into the opened file stream.
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
 % 
 % ### Output Arguments
 % 
@@ -95,11 +95,12 @@ function res = fourier(obj,hkl,varargin)
 % TODO: test for magnetic supercell
 
 inpForm.fname  = {'extend' 'fid' 'isomode' 'sublat'};
-inpForm.defval = {true     nan   'off'     []      };
+inpForm.defval = {true     -1    'off'     []      };
 inpForm.size   = {[1 1]    [1 1] [1 -1]    [1 -2]  };
 inpForm.soft   = {false    false false     true    };
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 switch param.isomode
     case 'auto'
@@ -110,9 +111,9 @@ switch param.isomode
         error('spinw:WrongInput','The given isomode option is invalid!')
 end
 
-if isnan(param.fid)
+if param.fid == -1
     % Print output into the following file
-    fid = swpref.getpref('fid',true);
+    fid = pref.fid;
 else
     fid = param.fid;
 end
@@ -141,7 +142,7 @@ if obj.symbolic
         param0 = sw_readparam(inpForm, varargin{:});
         
         if ~param0.fitmode
-            fprintf0(obj.fileid,['No symbolic hkl value was given, Fourier'...
+            fprintf0(fid,['No symbolic hkl value was given, Fourier'...
                 ' transformation for general Q (h,k,l) will be calculated!\n']);
         end
         res = obj.fouriersym(varargin{:});

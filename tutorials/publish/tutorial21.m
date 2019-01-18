@@ -16,8 +16,7 @@
 % We get the crystal structure of YIG from a .cif file stored online. SpinW
 % is able to download the file from a given link and create the crystal
 % structure.
-
-yig = spinw('https://goo.gl/kQO0FJ');
+yig = spinw('https://raw.githubusercontent.com/SpinW/Models/master/cif/YIG_10K.cif');
 
 % The imported .cif file contains all symmetry operators of its space
 % group. SpinW will determine the generators of the space group and stores
@@ -68,7 +67,7 @@ yig.getmatrix('bond',4);
 
 %% Create spin Hamiltonian
 % change from BCC to primitive cubic cell
-T = yig.newcell({pBV(1,:) pBV(2,:) pBV(3,:)});
+T = yig.newcell('bvect',{pBV(1,:) pBV(2,:) pBV(3,:)});
 
 % exchange values from the paper
 Jad = sw_converter(9.60e-21,'J','THz','photon');

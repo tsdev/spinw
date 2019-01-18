@@ -74,7 +74,7 @@ function stat = anneal(obj, varargin)
 % `'nORel'`
 % : Number of over-relaxation steps after every Monte-Carlo
 %   steps. It rotates the spins around the direction of the local field by
-%   180\\degree. It is reversible and microcanonical if the single ion
+%   180\\deg. It is reversible and microcanonical if the single ion
 %   anisotropy is 0. Default value is 0, to omit over-relaxation.
 %
 % `'nStat'`
@@ -248,7 +248,8 @@ if param.nStat > param.nMC
 end
 
 % Text output file
-fid = obj.fid;
+pref = swpref;
+fid = pref.fid;
 
 % Creates random spin directions if param.random is true.
 mag_param = struct;
@@ -932,7 +933,7 @@ function hFigure = sw_annealplot(T, E, rate, param,fid, varargin)
 %
 
 if nargin == 0
-    help sw_annealplot
+    swhelp sw_annealplot
     return
 end
 

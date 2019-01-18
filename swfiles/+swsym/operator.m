@@ -1,39 +1,54 @@
 function [symOp, symInfo] = operator(sym, fid)
-% calculates all symmetry operators or general positions for a space group
+% generates all symmetry elements from given space group
+% 
+% ### Syntax
+% 
+% `[symOp, symInfo] = swsym.operator(sym)`
+% 
+% `[symOp, symInfo] = swsym.operator(sym,fid)`
 %
-% [symOp, symInfo] = SWSYM.OPERATOR(sym, fid)
+% ### Description
+% 
+% `[symOp, symInfo] = swsym.operator(sym)` generates *all* symmetry
+% elements from a given set of generators. It also accepts space group
+% labels or space group index or string of symmetry operators.
+% 
+% ### Input Arguments
+% 
+% `sym`
+% : Line index in the [symmetry.dat] file or string of the
+%   symmetry operators or matrix of symmetry generators with dimensions of
+%   $[3\times 4\times n_{op}]$. For example: `sym = 'P n m a'`.
+% 
+% `fid`
+% : If non-zero, the symmetry operators will be printed to the file
+%   identified by `fid`, the following values are valid:
+%   * `0`   no printed output (default),
+%   * `1`   standard output (Command Line),
+%   * `fid` text file opened before using `fid = fopen(path)`.
+% 
+% ### Output Arguments
+% 
+% `symOp`
+% : All the symmetry elements in a matrix with dimensions of $[3\times
+%   4\times n_{op}]$.
 %
-% Input:
-%
-% sym           Line index in the symmetry.dat file or string of the
-%               symmetry operators or matrix of symmetry generators with
-%               dimensions of [3 4 nOp].
-%               For example:
-%                   sym = 'P b n m';
-% fid           For printing the symmetry operators:
-%                   0   no printed output (Default)
-%                   1   standard output (Command Line)
-%                   fid text file opened before with the fid = fopen(path)
-%
-% Output:
-%
-% symOp         The rotational part of the symmetry operators, dimensions
-%               are [3 3 nSym].
-% symInfo       Structure containing additional information about the space
-%               group with the following fields:
-%   name            Name of the space group in string. If function called
-%                   with no input, name stores the name of all spase groups
-%                   from symmetry.dat in a cell.
-%   str             The string of the symmetry operations.
-%   num             The index of the symmetry in the symmetry.dat file.
-%
-%
-% See also SPINW, SWSYM.POSITION, SPINW.ATOM, SPINW.MATOM, SWSYM.GENERATOR,
-% SWSYM.POINT.
+% `symInfo`
+% : Structure that contains additional information about the space 
+%   group with the following fields:
+%   * `name`    Name of the space group, if the `swsym.generator`
+%               function is called with no input, name stores the name of
+%               all space groups from [symmetry.dat] file in a cell.
+%   * `str`     The string of the symmetry operations.
+%   * `num`     The line index in the [symmetry.dat] file.
+% 
+% ### See Also
+% 
+% [swsym.generator]
 %
 
 if nargin == 0
-    help swsym.operator
+    swhelp swsym.operator
     return
 end
 
@@ -73,7 +88,7 @@ for ii = 1:nGen
             
             idxR = permute(sumn(abs(bsxfun(@minus,symOp(:,1:3,:),RS)),[1 2]),[3 1 2]);
             idxT = permute(any(bsxfun(@minus,symOp(:,4,:),TS),1),[3 1 2]);
-            
+                        
             % adds new operator to the list if it differs from all
             if all(idxR | idxT)
                 symOp = cat(3,symOp,[RS TS]);

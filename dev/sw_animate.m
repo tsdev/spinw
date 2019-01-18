@@ -41,8 +41,8 @@ function sw_animate(spectra, varargin)
 %
 
 if nargin == 0
-    help sw_animate;
-    return;
+    swhelp sw_animate;
+    return
 end
 
 % sw object of the model

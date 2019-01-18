@@ -45,7 +45,7 @@ function gencoupling(obj, varargin)
 %
 % `'maxDistance'`
 % : Maximum bond length that will be stored in the
-%   [spinw.coupling] property in units of \\Angstrom. Default value is 8.
+%   [spinw.coupling] property in units of \\ang. Default value is 8.
 %
 % `'maxSym'`
 % : Maximum bond length until the symmetry equivalent bonds are
@@ -55,12 +55,20 @@ function gencoupling(obj, varargin)
 %
 % `'tolDist'`
 % : Tolerance of distance, within two bonds are considered
-%   equivalent, default value is $10^{-3}$\\Angstrom. Only used, when no
+%   equivalent, default value is $10^{-3}$\\ang. Only used, when no
 %   space group is defined.
 %
 % `'dMin'`
 % : Minimum bond length, below which an error is triggered.
-%   Default value is 0.5 \\Angstrom.
+%   Default value is 0.5 \\ang.
+%
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
 %
 % ### Output Arguments
 %
@@ -76,13 +84,15 @@ function gencoupling(obj, varargin)
 % is there any symmetry operator?
 isSym = size(obj.lattice.sym,3) > 0;
 
-inpForm.fname  = {'forceNoSym' 'maxDistance' 'tol' 'tolDist' 'dMin' 'maxSym'};
-inpForm.defval = {false         8             1e-5  1e-3      0.5   []      };
-inpForm.size   = {[1 1]        [1 1]         [1 1] [1 1]     [1 1]  [1 1]   };
-inpForm.soft   = {false        false          false false    false  true    };
+inpForm.fname  = {'forceNoSym' 'maxDistance' 'tol' 'tolDist' 'dMin' 'maxSym' 'fid'};
+inpForm.defval = {false         8             1e-5  1e-3      0.5   []       -1   };
+inpForm.size   = {[1 1]        [1 1]         [1 1] [1 1]     [1 1]  [1 1]   [1 1] };
+inpForm.soft   = {false        false          false false    false  true    false };
 
 
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
+
 tol   = param.tol;
 tolD  = param.tolDist;
 
@@ -94,7 +104,11 @@ if isempty(param.maxSym)
     param.maxSym = param.maxDistance;
 end
 
-fid = obj.fileid;
+if param.fid == -1
+    fid = pref.fid;
+else
+    fid = param.fid;
+end
 
 % calculate the height of the paralellepiped of a unit cell
 hMax1 = 1./sqrt(sum(inv(obj.basisvector').^2,2));

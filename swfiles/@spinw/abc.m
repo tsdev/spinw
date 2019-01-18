@@ -18,8 +18,8 @@ function abc = abc(obj,ind)
 % ### Output Arguments
 % 
 % `latVect`
-% : Vetor with elements `[a, b, c, \\alpha, \\beta, \\gamma]`,
-%   contains the lattice parameters and angles by default in \\Angstrom and
+% : Vector with elements `[a, b, c, \\alpha, \\beta, \\gamma]`,
+%   contains the lattice parameters and angles by default in \\ang and
 %   degree units respectively (see [spinw.unit] for details).
 % 
 % ### See Also

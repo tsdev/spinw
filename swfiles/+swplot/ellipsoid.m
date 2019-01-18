@@ -1,38 +1,62 @@
 function hPatch = ellipsoid(varargin)
-% draw ellipsoid
+% creates a 3D ellipsoid patch
+% 
+% ### Syntax
+% 
+% `hPatch = swplot.ellipsoid(R0, T)`
 %
-% hPatch = SWPLOT.ELLIPSOID(R0,T,mesh)
+% `hPatch = swplot.ellipsoid(R0, T, nMesh)`
+% 
+% `hPatch = swplot.ellipsoid(handle, ...)`
 %
-% The function can draw multiple ellipsoids with a single patch command.
-% Significant speedup can be achieved by a single patch compared to ellipse
-% per patch.
+% ### Description
+% 
+% `hPatch = swplot.ellipsoid(R0,T)` creates multiple ellipsoids with a
+% single [matlab.patch] command. The ellipsoids are defined by the position
+% of the center and a $[3\times 3]$ matrix, a qudratic form.
 %
-% hPatch = SWPLOT.ELLIPSOID(handle,...
+% Significant speedup can be achieved using a single patch command to
+% generate many ellipsoids compared to drawing single ellipse per patch.
+%  
+% `hPatch = swplot.ellipsoid(R0, T, nMesh)` defines the size of the mesh
+% that defines the surface.
 %
-% Handle can be the handle of an axes object or a patch object. It either
-% selects an axis to plot or a patch object (triangulated) to add vertices
-% and faces.
+% `hPatch = swplot.ellipsoid(handle, ...)` adds the generated patch object
+% to a given axis if `handle` is an axis handle or adds the ellipsoids to
+% an existing [matlab.patch] object, if the given `handle` points to a
+% patch object.
+% 
+% ### Input Arguments
+% 
+% `handle`
+% : Handle of an axis or triangulated patch object. In case of patch
+%   object, the constructed faces will be added to the existing object.
+% 
+% `R0`
+% : Center of the ellipsoids stored in a column vector with 3 elements or a
+%   matrix with dimensions of $[3\times n_{obj}]$ when multiple ellipsoids
+%   are defined at once.
+% 
+% `T`
+% : Transformation matrix that transforms a unit sphere to the desired
+%   ellipsoid by applying: `R' = T(:,:,i)*R`. In case of multiple
+%   ellipsoids the parameter is stored in a matrix with dimensions of
+%   $[3\times 3\times n_{obj}]$.
+% 
+% `nMesh`
+% : Mesh of the ellipse surface, a triangulation class object or an
+%   integer that used to generate an icosahedron mesh with $n_{mesh}$
+%   number of additional subdivision into triangles. Default value is stored in
+%   `swpref.getpref('nmesh')`, see also [swplot.icomesh].
+% 
+% ### See Also
+% 
+% [matlab.triangulation] \| [swplot.icomesh]
 %
-% Input:
-%
-% handle    Handle of an axis or patch object. In case of patch object, the
-%           constructed faces will be added to the existing object instead
-%           of creating a new one.
-% R0        Center of the ellipsoid stored in a matrix with dimensions of
-%           [3 nEllipse].
-% T         Transformation matrix that transforms a unit sphere to the
-%           ellipse via: R' = T(:,:,i)*R
-%           Dimensions are [3 3 nEllipse].
-% mesh      Mesh of the ellipse surface, a triangulation class object or an
-%           integer that used to generate an icosahedron mesh with #mesh
-%           number of additional triangulation. Default value is stored in
-%           swpref.getpref('nmesh')
-%
-% See also TRIANGULATION, SWPLOT.ICOMESH.
-%
+pref = swpref;
 
 if nargin == 0
-    help swplot.ellipsoid
+    swhelp swplot.ellipsoid
     return
 end
 
@@ -72,7 +96,7 @@ end
 
 if isnumeric(mesh)
     % limit the largest mesh to plot to avoid slowing down Matlab too much
-    mesh = min(mesh,swpref.getpref('maxmesh',[]));
+    mesh = min(mesh,pref.maxmesh);
     % generate mesh
     mesh = swplot.icomesh(mesh);
 end

@@ -1,5 +1,5 @@
 
-*.mat
+!icons.mat
 
 .DS_Store
 
@@ -11,3 +11,10 @@ docs/.sass-cache/
 _pdf
 
 *.sublime-workspace
+*.tap
+
+*.asv
+
+dev/standalone/Linux/Source/
+dev/standalone/Win/Source/
+dev/standalone/MacOS/Source/

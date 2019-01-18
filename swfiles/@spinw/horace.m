@@ -92,6 +92,14 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %   fun(obj)
 %   ```
 % 
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
+%
 % ### Output Arguments
 % 
 % `w`
@@ -110,17 +118,18 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %
 
 if nargin <= 1
-    help spinw.horace
+    swhelp spinw.horace
     return
 end
 
-inpForm.fname  = {'component' 'norm' 'dE'  'parfunc'      'param' 'func'};
-inpForm.defval = {'Sperp'     false  0     @obj.matparser []      []    };
-inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1] };
-inpForm.soft   = {false       false  false false          true    true  };
+inpForm.fname  = {'component' 'norm' 'dE'  'parfunc'      'param' 'func' 'fid'};
+inpForm.defval = {'Sperp'     false  0     @obj.matparser []      []     -1   };
+inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1]  [1 1]};
+inpForm.soft   = {false       false  false false          true    true   false};
 
 warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 
 if ~isempty(param.param)
     % change matrix values for Horace data fitting
@@ -136,6 +145,12 @@ end
 if param.norm && param.dE == 0
     error('spinw:horace:WrongInput',['To convert spin wave intensity to mbarn/meV/cell/sr'...
         ' units, give the energy bin step.'])
+end
+
+if param.fid == -1
+    fid = pref.fid;
+else
+    fid = param.fid;
 end
 
 % call user defined function on the spinw object
@@ -252,9 +267,9 @@ if param.norm
     
     fprintf0(obj.fileid,'Intensity is converted to mbarn/meV units.\n');
     if spectra.gtensor
-        fprintf0(obj.fileid,'g-tensor was already included in the spin wave calculation.\n');
+        fprintf0(fid,'g-tensor was already included in the spin wave calculation.\n');
     else
-        fprintf0(obj.fileid,'Isotropic g-tensor of 2 assumed here.\n');
+        fprintf0(fid,'Isotropic g-tensor of 2 assumed here.\n');
     end
 end
 

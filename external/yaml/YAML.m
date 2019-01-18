@@ -46,10 +46,15 @@ classdef YAML
         
         function [ X ] = load( S )
             %LOAD load matlab object from yaml string
-            javaaddpath(YAML.JARFILE);
+            
             
             % Load yaml into java obj
-            yaml = org.yaml.snakeyaml.Yaml;
+            try
+                yaml = org.yaml.snakeyaml.Yaml;
+            catch
+                javaaddpath(YAML.JARFILE);
+                yaml = org.yaml.snakeyaml.Yaml;
+            end
             java_obj = yaml.load(S);
             
             % Convert to matlab object
@@ -58,10 +63,15 @@ classdef YAML
         
         function [ S ] = dump( X )
             %DUMP serialize matlab object into yaml string
-            javaaddpath(YAML.JARFILE);
+            
             
             % Convert matlab obj to java obj
-            yaml = org.yaml.snakeyaml.Yaml();
+            try
+                yaml = org.yaml.snakeyaml.Yaml();
+            catch
+                javaaddpath(YAML.JARFILE);
+                yaml = org.yaml.snakeyaml.Yaml();
+            end
             java_obj = YAML.dump_data(X);
             
             % Dump into yaml string
@@ -92,6 +102,8 @@ classdef YAML
                 result = char(r);
             elseif isa(r, 'double')
                 result = double(r);
+            elseif isa(r,'logical')
+                result = logical(r);
             elseif isa(r, 'java.util.Date')
                 result = DateTime(r);
             elseif isa(r, 'java.util.List')
@@ -177,6 +189,8 @@ classdef YAML
                 result.add(YAML.dump_data(r{1}));
             elseif isa(r,'DateTime')
                 result = java.util.Date(datestr(r));
+            elseif isa(r,'logical')
+                result = java.lang.Boolean(r);
             else
                 error('YAML:load_data:typeError',...
                     ['Unsupported data type: ' class(r)]);

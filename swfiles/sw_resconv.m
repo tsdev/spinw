@@ -62,7 +62,7 @@ function M = sw_resconv(M,x,dx,func0)
 %
 
 if nargin == 0
-    help sw_resconv
+    swhelp sw_resconv
     return
 end
 

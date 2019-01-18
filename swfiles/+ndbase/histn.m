@@ -1,7 +1,7 @@
-function [Ysum, Nsum] = histn(X, Y, varargin)
+function [Ysum, Nsum, Cbin] = histn(X, Y, varargin)
 % calculates histogram of arbitrary dimensional data
 %
-% function [Ysum, Nsum] = NDBASE.HISTN(X,Y,bin1,bin2,...,'option1',value1)
+% function [Ysum, Nsum, Cbin] = NDBASE.HISTN(X,Y,bin1,bin2,...,'option1',value1)
 %
 % Any data point with NaN X or Y value is omitted from the binning. Works
 % for non-uniform bins and also optimised for uniform bins with significant
@@ -47,6 +47,9 @@ function [Ysum, Nsum] = histn(X, Y, varargin)
 %           average value of each pixel, set the default value to 1, then
 %           devide Ysum with Nsum element vise:
 %               Yavg = bsxfun(@rdivide,Ysum,Nsum);
+% Cbin      Center bin positions, if nDim=1 the values are stored in a row
+%           vector. If nDim>1 the center bin vectors are packed into a
+%           cell.
 %
 % Example:
 %
@@ -88,7 +91,7 @@ function [Ysum, Nsum] = histn(X, Y, varargin)
 % REMOVED
 
 if nargin == 0
-    help ndbase.histn
+    swhelp ndbase.histn
     return
 end
 
@@ -215,6 +218,15 @@ if nargout>1
     nPoint = size(Y,1);
     Nsum = accumarray(X,ones(nPoint,1),nBin+1,[],emptyval(2));
     Nsum = Nsum(selDim{:});
+end
+
+% calculate the center bin positions
+if nargout>2
+    if N == 1
+        Cbin = (bin{1}(1:(end-1))+bin{1}(2:end))/2;
+    else
+        Cbin = cellfun(@(C)(C(1:(end-1))+C(2:end))/2,bin,'UniformOutput',false);
+    end
 end
 
 end

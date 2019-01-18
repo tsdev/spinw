@@ -21,12 +21,13 @@ function publish_PSI(fName, dirName)
 
 % switch off text outputs from code and change to high resolution rendering
 % and start horace
-fid0    = swpref.getpref('fid',[]);
-tid0    = swpref.getpref('tid',[]);
-nmesh0  = swpref.getpref('nmesh',[]);
-npatch0 = swpref.getpref('npatch',[]);
+pref = swpref;
+fid0    = pref.fid;
+tid0    = pref.tid;
+nmesh0  = pref.nmesh;
+npatch0 = pref.npatch;
 hor0    = horace;
-swpref.setpref('fid',0,'tid',0,'nmesh',3,'npatch',50);
+pref.set({'fid', 'tid', 'nmesh', 'npatch'},{0, 0, 3, 50});
 % start horace
 horace('on')
 
@@ -137,7 +138,7 @@ for ii = 1:numel(pubfiles)
 end
 
 % restore SpinW and Horace state
-swpref.setpref('fid',fid0,'tid',tid0,'nmesh',nmesh0,'npatch',npatch0);
+pref.set({'fid', 'tid', 'nmesh', 'npatch'},{fid0, tid0, nmesh0, npatch0});
 horace(hor0);
 
 end

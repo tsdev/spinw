@@ -88,6 +88,14 @@ function [aMatOut, paramOut, pOpOut] = getmatrix(obj, varargin)
 %   atoms! For single-ion anisotropy and g-tensor antisymmetric matrices
 %   are forbidden in any symmetry.}}
 % 
+% `'fid'`
+% : Defines whether to provide text output. The default value is determined
+%   by the `fid` preference stored in [swpref]. The possible values are:
+%   * `0`   No text output is generated.
+%   * `1`   Text output in the MATLAB Command Window.
+%   * `fid` File ID provided by the `fopen` command, the output is written
+%           into the opened file stream.
+%
 % ### Output Arguments
 % 
 % `aMat`
@@ -102,19 +110,26 @@ function [aMatOut, paramOut, pOpOut] = getmatrix(obj, varargin)
 % [spinw.setmatrix]
 %
 
-inpForm.fname  = {'mat'      'aniso' 'bond' 'tol' 'pref' 'gtensor' 'subIdx' };
-inpForm.defval = {zeros(1,0) 0       0       1e-5  []     0        1        };
-inpForm.size   = {[1 -1]     [1 -2]  [1 1]   [1 1] [1 -2] [1 -3]   [1 1]    };
-inpForm.soft   = {false      false   false   false true   false    false    };
+inpForm.fname  = {'mat'      'aniso' 'bond' 'tol' 'pref' 'gtensor' 'subIdx' 'fid'};
+inpForm.defval = {zeros(1,0) 0       0       1e-5  []     0        1        -1   };
+inpForm.size   = {[1 -1]     [1 -2]  [1 1]   [1 1] [1 -2] [1 -3]   [1 1]    [1 1]};
+inpForm.soft   = {false      false   false   false true   false    false    false};
 
 param0 = sw_readparam(inpForm, varargin{:});
+pref = swpref;
 param  = param0;
 
 tol = param.tol;
 
 if nargin == 1
-    help spinw.getmatrix
+    swhelp spinw.getmatrix
     return
+end
+
+if param.fid == -1
+    fid = pref.fid;
+else
+    fid = param.fid;
 end
 
 if ~obj.symmetry
@@ -300,10 +315,8 @@ if param.subIdx > 1 && anisoIdx == 0 && gIdx == 0 && ~isempty(matIdx)
     % TODO use cache.symop
     param0.subIdx = 1;
     param0.pref   = [];
-    f0 = obj.fileid;
-    obj.fileid(0);
+    param0.fid    = 0;
     aMat0 = obj.getmatrix(param0);
-    obj.fileid(f0);
     
     % save the original matrix of the object
     mat0 = obj.matrix.mat(:,:,matIdx);
@@ -412,7 +425,7 @@ if nargout == 0
         for jj = 1:3
             smatStr = [smatStr eStr{ii,jj} '|'];
         end
-        smatStr = [smatStr sprintf('\n')];
+        smatStr = [smatStr sprintf('\n')]; %#ok<SPRINTFN>
     end
     
     % strings for each element in the asymmetric matrix
@@ -467,30 +480,30 @@ if nargout == 0
     
     % print the answer
     if bondIdx
-        fprintf('\nThe symmetry analysis of the coupling between atom %d and atom %d:\n',atom1(1),atom2(1));
-        fprintf(' lattice translation vector: [%d,%d,%d]\n',dl(:,1));
-        fprintf(' distance: %5.3f Angstrom\n',norm(obj.basisvector*dr(:,1)));
-        fprintf(' center of bond (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
+        fprintf0(fid,'\nThe symmetry analysis of the coupling between atom %d and atom %d:\n',atom1(1),atom2(1));
+        fprintf0(fid,' lattice translation vector: [%d,%d,%d]\n',dl(:,1));
+        fprintf0(fid,' distance: %5.3f Angstrom\n',norm(obj.basisvector*dr(:,1)));
+        fprintf0(fid,' center of bond (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
     elseif anisoIdx
-        fprintf('\nThe symmetry analysis of the anisotropy matrix of atom %d (''%s''):\n',anisoIdx,obj.unit_cell.label{anisoIdx});
-        fprintf(' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
+        fprintf0(fid,'\nThe symmetry analysis of the anisotropy matrix of atom %d (''%s''):\n',anisoIdx,obj.unit_cell.label{anisoIdx});
+        fprintf0(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));
     else
-        fprintf('\nThe symmetry analysis of the g-tensor of atom %d (''%s''):\n',gIdx,obj.unit_cell.label{gIdx});
-        fprintf(' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));        
+        fprintf0(fid,'\nThe symmetry analysis of the g-tensor of atom %d (''%s''):\n',gIdx,obj.unit_cell.label{gIdx});
+        fprintf0(fid,' position (in lattice units): [%5.3f,%5.3f,%5.3f]\n', center(:,1));        
     end
     if ~isempty(param.mat)
-        fprintf(' label of the assigned matrix: ''%s''\n',param.mat);
+        fprintf0(fid,' label of the assigned matrix: ''%s''\n',param.mat);
     end
     
-    fprintf(' allowed elements in the symmetric matrix:\n');
-    fprintf('  S = %s\n',smatStr);
+    fprintf0(fid,' allowed elements in the symmetric matrix:\n');
+    fprintf0(fid,'  S = %s\n',smatStr);
     if bondIdx
-        fprintf(' allowed components of the Dzyaloshinskii-Moriya vector:\n');
-        fprintf('  D = %s\n\n',amatStr);
+        fprintf0(fid,' allowed components of the Dzyaloshinskii-Moriya vector:\n');
+        fprintf0(fid,'  D = %s\n\n',amatStr);
     end
     
     if mod_mat
-        fprintf('Be carefull, the output matrices are corresponding to subIdx = 1!\n');
+        fprintf0(fid,'Be carefull, the output matrices are corresponding to subIdx = 1!\n');
     end
 end
 

@@ -1,77 +1,60 @@
 function varargout = disp(obj)
 % prints information
-% 
+%
 % ### Syntax
-% 
+%
 % `{swdescr} = disp(obj)`
-% 
+%
 % ### Description
-% 
+%
 % `{swdescr} = disp(obj)` generates text summary of a [spinw] object.
 % Calling it with output argument, it will generate a text version of the
 % internal data structure giving also the dimensions of the different
 % matrices.
-% 
+%
 % ### Examples
-% 
+%
 % Here the internal data structure is generated:
 %
 % ```
 % >>crystal = spinw
 % >>swFields = disp(crystal)>>
 % ```
-% 
+%
 % ### Input Arguments
-% 
+%
 % `obj`
 % : [spinw] object.
-% 
+%
 % ### Output Arguments
-% 
+%
 % `swdescr`
 % : If output variable is given, the description of the `obj` object
 %   will be output into the `swdescr` variable, instead of being
 %   written onto the Command Window/file. Optional.
-% 
+%
 % ### See Also
-% 
+%
 % [spinw]
 %
 
-
-
-% prints the spinw data structure in readable format onto the Command Window
-%
-% {swDescr} = DISPLAY(obj)
-%
-% Input:
-%
-% obj       spinw class object.
-%
-% Output:
-%
-% swdescr   If output variable is given, the description of the obj object
-%           will be output into the swdescr variable, instead of being
-%           written onto the Command Window/file. Optional.
-%
-% Example:
-%
-% crystal = spinw;
-% swFields = display(crystal);
-%
-% See also SPINW.
-%
-
 Datastruct = datastruct;
+pref = swpref;
 
 choiceStr = {'off' 'on'};
 symbStr = choiceStr{obj.symbolic+1};
 symmStr = choiceStr{obj.symmetry+1};
 
+fid = pref.fid;
+if fid == 0
+    fidStr = 'none';
+else
+    fidStr = fopen(fid);
+end
 
 if nargout == 1
-    swDescr = sprintf('spinw object (symbolic: %s, symmetry: %s, textoutput: %s)\n',symbStr,symmStr,fopen(obj.fileid));
     
+    swDescr = sprintf('spinw object (symbolic: %s, symmetry: %s, textoutput: %s)\n',symbStr,symmStr,fidStr);
     
     for ii = 1:length(Datastruct.mainfield)
         swDescr = [swDescr sprintf('%s\n', Datastruct.mainfield{ii})]; %#ok<*AGROW>
@@ -132,18 +115,21 @@ else
     chem.chemform(chem.chemform == '_') = [];
     abc  = obj.abc;
     aa   = obj.unit.label{1};
+    ss   = repmat(' ',1,numel(aa));
     
-    swDescr = ['     <strong>SpinW</strong> object, <a href="matlab:doc @spinw">spinw</a> class:\n'...
-        sprintf('     <strong>Chemical formula</strong>: %s\n',chem.chemform) ...
-        sprintf('     <strong>Space group</strong>:      %s\n',obj.lattice.label)...
-        sprintf(['     <strong>Lattice</strong>:\n       a=%7.4f ' aa ', b=%7.4f ' aa ', c=%7.4f ' aa '\n'],abc(1),abc(2),abc(3))...
-        sprintf(['       ' char(945) '=%6.2f' char(176) ',   ' char(946) '=%6.2f' char(176) ',   ' char(947) '=%6.2f' char(176) '\n'],abc(4),abc(5),abc(6))...
-        sprintf('     <strong>Magnetic atoms in the unit cell</strong>: %d\n',numel(obj.matom.S))...
-        sprintf('     <strong>Mode</strong>:\n       symbolic: %s, symmetry: %s, textoutput: %s\n',symbStr,symmStr,fopen(obj.fileid))...
+    % hotlinks are supported in the output
+    swDescr = [...
+        sprintf('     `SpinW` object, [spinw] class:\n')...
+        sprintf('     `Chemical formula`: %s\n',chem.chemform) ...
+        sprintf('     `Space group`:      %s\n',obj.lattice.label)...
+        sprintf(['     `Lattice`:\n       a=%7.4f ' aa ', b=%7.4f ' aa ', c=%7.4f ' aa '\n'],abc(1),abc(2),abc(3))...
+        sprintf(['       \\alpha=%6.2f\\deg, ' ss ' \\beta=%6.2f\\deg, ' ss ' \\gamma=%6.2f\\deg\n'],abc(4),abc(5),abc(6))...
+        sprintf('     `Magnetic atoms in the unit cell`: %d\n',numel(obj.matom.S))...
+        sprintf('     `Mode`:\n       symbolic: %s, symmetry: %s, textoutput: %s\n',symbStr,symmStr,fidStr)...
         ];
-    
+
     % print the text
-    fprintf(swDescr);
+    fprintf(sw_markdown(swDescr));
 end
 
 end

@@ -1,15 +1,30 @@
 function y = gaussfwhm(x,p)
-% normalized gaussian function defined by the FWHM
+% normalized Gaussian function
+% 
+% ### Syntax
+% 
+% `y = func.gaussfwhm(x,p)`
+% 
+% ### Description
+% 
+% `y = func.gaussfwhm(x,p)` calculates the $y$ values for a Gaussian
+% function evaluated at $x$ and with parameters defined in `p`.
+% 
+% ### Input Arguments
+% 
+% `x`
+% : Coordinate vector where the function will be evaluated.
+% 
+% `p`
+% : Parameter vector with the following elements `p=[I x0 FWHM]` where:
+%   * `I`       integrated intensity,
+%   * `x0`      center,
+%   * `FWHM`    Full Width at Half Maximum value.
+% 
+% ### See Also
+% 
+% [swfunc.pvoigt] \| [swfunc.gauss]
 %
-% y = FUNC.GAUSSFWHM(x,p)
-%
-% The integral of the function is normalized assuming dx = 1.
-%
-% Input:
-% x         Coordinate vector where the function will be evaluated.
-% p         Parameter vector: [I Centre FWHM].
-%
-% See also SWFUNC.VOIGT, SWFUNC.GAUSS.
 
 % standard deviation
 sigma = p(3)/sqrt(8*log(2));

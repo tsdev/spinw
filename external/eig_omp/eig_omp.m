@@ -14,7 +14,7 @@
 %       for non-Hermitian matrices (for Hermitian matrices the eigenvectors
 %       are always orthogonal).
 % sort  Sort the eigenvalues in increasing order (and sort the
-% corresponding eigenvectors as well).
+%       corresponding eigenvectors as well).
 %
 % Output:
 %

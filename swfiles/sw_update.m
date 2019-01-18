@@ -1,25 +1,35 @@
 function onlineRev = sw_update(installDir)
 % updates the SpinW installation from the internet
+% 
+% ### Syntax
+% 
+% `sw_update`
+% 
+% `onlineRev = sw_update(installDir)`
 %
-% SW_UPDATE()
+% ### Description
+% 
+% `sw_update` creates a new folder with the latest release beside the
+% current SpinW installation, downloads the newses SpinW version and adds
+% the new version to the Matlab search path and also removes the old
+% version from the search path. If the search path is defined in the
+% `startup.m` file, it has to be changed manually.
+%  
+% Each step of the update process can be controlled by the user via
+% the interactive Command Line provided by the function.
 %
-% {onlineRev} = SW_UPDATE(installDir)
-%
-% sw_update creates a new folder with the latest release beside the current
-% SpinW installation and add the new version to the working path (and
-% removing the old one).
-%
-% Input:
-%
-% installDir    Folder name, where the new version is installed. Default is
-%               the parent folder of the current version of SpinW. If
-%               installDir == '.' update will be installed to current
-%               folder.
-%
-% Output:
-%
-% onlineVer     If output is expected, the revision number of the online
-%               SpinW is given. Optional.
+% ### Input Arguments
+% 
+% `installDir`
+% : Folder name, where the new version is installed. Default is
+%   the parent folder of the current version of SpinW. If
+%   `installDir` is `'.'`, the update will be installed to current
+%   folder.
+% 
+% ### Output Arguments
+% 
+% `onlineVer`  If output is defined, the revision number of the online
+%               SpinW is given, optional.
 %
 
 % check current version
@@ -38,7 +48,7 @@ if nargout == 0
             disp('SpinW update process cancelled!');
             return
         end
-        swVer.Revision = 0;
+        swVer.Release = 0;
     end
     
     if nargin == 0
@@ -57,7 +67,7 @@ end
 % download the link to the newest version & comments!
 % the file format:
 %   link to new download
-%   revision number
+%   release number
 %   message in the next few lines
 try
     newInfo = urlread(baseUrl);
@@ -65,15 +75,16 @@ catch
     error('sw_update:NoNetwork','It looks like there is a problem with your network connection!');
 end
 
+newLine = sprintf('\n'); %#ok<SPRINTFN>
 % separate lines of text
-newInfo = textscan(newInfo, '%s', 'delimiter', sprintf('\n'));
+newInfo = textscan(newInfo, '%s', 'delimiter',newLine);
 newInfo = newInfo{1};
 
 newLink = newInfo{1};
 newRev  = str2double(newInfo{2});
 
 if nargout == 1
-    % Give the revision number and exit.
+    % Give the release number and exit.
     onlineRev = newRev;
     return
 end
@@ -84,21 +95,21 @@ else
     newMsg = {};
 end
 
-% check whether the online version is newer (compare revision numbers)
-if ischar(swVer.Revision)
-    swVer.Revision = str2double(swVer.Revision);
+% check whether the online version is newer (compare release numbers)
+if ischar(swVer.Release)
+    swVer.Release = str2double(swVer.Release);
 end
 
-if swVer.Revision ==  newRev
+if swVer.Release ==  newRev
     disp('Your SpinW installation is up to date!');
     return
-elseif swVer.Revision >  newRev
+elseif swVer.Release >  newRev
     disp('Your SpinW installation is newer than the one in the repository! Lucky you! :)');
     return
 end
 
-fprintf('Current version has a revision number: %d\n',swVer.Revision);
-fprintf('New version has a revision number:     %d\n',newRev);
+fprintf('Current version has a release number: %d\n',swVer.Release);
+fprintf('New version has a release number:     %d\n',newRev);
 
 answer = getinput('Do you want to continue? (y/n)','yn');
 

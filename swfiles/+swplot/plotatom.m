@@ -1,83 +1,144 @@
 function varargout = plotatom(varargin)
 % plots crystal structure
+% 
+% ### Syntax
+% 
+% `swplot.plotatom(Name,Value)`
+% 
+% `hFigure = swplot.plotatom(Name,Value)`
 %
-% SWPLOT.PLOTATOM('option1', value1, ...)
-%
-% hFigure = SWPLOT.PLOTATOM(...)
-%
-% The function plots the crystal structure of a SpinW object onto an swplot
+% ### Description
+% 
+% `swplot.plotatom(Name,Value)` plots the crystal structure of a SpinW
+% object onto an swplot figure where each atom is shown as a sphere. It can
+% display text labels, control the radius and color of the spheres.
+%  
+% `hFigure = swplot.plotatom(Name,Value)` returns the handle of the swplot
 % figure.
 %
-% Input:
+% ### Name-Value Pair Arguments
+% 
+% `'mode'`
+% : String that defines the types of atoms to plot:
+%   * `'all'`       plot all atoms (default),
+%   * `'mag'`       plot magnetic atoms only,
+%   * `'nonmag'`    plot non-magnetic atoms only.
+% 
+% `'label'`
+% : Whether to plot the labels of the atoms, default value is `false`.
+% 
+% `'dText'`
+% : Distance between the atom and its text label, default value is 0.1
+%   \\ang.
+% 
+% `'fontSize'`
+% : Font size of the atom labels in pt, default value is read using
+%   `swpref.getpref('fontsize')`.
+% 
+% `'radius'`
+% : Defines the atom radius, one of the following strings:
+%   * `'fix'`       Sets the radius of all atoms to the value
+%                   of the `radius0` parameter,
+%   * `'auto'`      determine the atom radius based on the atom
+%                   label (e.g. the radius of Cr atom is
+%                   `sw_atomdata('Cr','radius')`) and multiply the value by
+%                   the `radius0` parameter.
 %
-% Options:
+% `'radius0'`
+% : Constant atom radius, default value is 0.3 \\ang.
+% 
+% `'color'`
+% : Color of the atoms, one of the following values:
+%   * `'auto'`      all atom gets the color stored in [spinw.unit_cell],
+%   * `'colorname'` all atoms will have the same color defined by the
+%                   string, e.g. `'red'`,
+%   * `[R G B]`     all atoms will have the same color defined by the RGB
+%                   code.
 %
-% obj       SpinW object.
-% range     Plotting range of the lattice parameters in lattice units,
-%           dimensions are [3 2]. For example to plot the first unit cell,
-%           use: [0 1;0 1;0 1]. Also the number unit cells can be given
-%           along the a, b and c directions: [2 1 2], that is equivalent to
-%           [0 2;0 1;0 2]. Default is the single unit cell.
-% unit      Unit in which the range is defined. It can be the following
-%           string:
-%               'lu'        Lattice units (default).
-%               'xyz'       Cartesian coordinate system in Angstrom units.
-% mode      String, defines the types of atoms to plot:
-%               'all'       Plot all atoms (default).
-%               'mag'       Plot magnetic atoms only.
-%               'nonmag'    Plot non-magnetic atoms only.
-% figure    Handle of the swplot figure. Default is the selected figure.
-% legend    Whether to add the plot to the legend, default is true.
-% label     Whether to plot labels for atoms, default is false.
-% dText     Distance between item and its text label, default is 0.1
-%           Angstrom.
-% fontSize  Font size of the atom labels in pt, default is stored in
-%           swpref.getpref('fontsize').
-% radius0   Constant atom radius, default value is 0.3 Angstrom.
-% radius    Defines the atom radius:
-%               'fix'       Sets the radius of all atoms to the value
-%                           stored in radius0.
-%               'auto'      use radius data from database based on the atom
-%                           label multiplied by radius0 value.
-% color     Color of the atoms:
-%               'auto'      All atom gets the color stored in obj.unit_cell.
-%               'colorname' All atoms will have the same color.
-%               [R G B]     RGB code of the color that fix the color of all
-%                           atoms.
-% nMesh     Resolution of the ellipse surface mesh. Integer number that is
-%           used to generate an icosahedron mesh with #mesh number of
-%           additional triangulation, default value is stored in
-%           swpref.getpref('nmesh')
-% tooltip   If true, the tooltips will be shown when clicking on atoms.
-%           Default is true.
-% shift     Column vector with 3 elements, all atomic positions will be
-%           shifted by the given value in Angstrom units. Default value is
-%           [0;0;0].
-% replace   Replace previous atom plot if true. Default is true.
-% translate If true, all plot objects will be translated to the figure
-%           center. Default is false.
-% zoom      If true, figure will be automatically zoomed to the ideal size.
-%           Default is false.
-% copy      If true, a hardcopy of the spinw object will be sved in the
-%           figure data, otherwise just the handle of the spinw object, 
-%           thus the figure can be updated when the spin object changed.
-%           Default value is false. 
+% #### General paraters
 %
-% Output:
+% These parameters have the same effect on any of the `swplot.plot...`
+% functions.
 %
-% hFigure           Handle of the swplot figure.
+% `'obj'`
+% : [spinw] object.
+% 
+% `'unit'`
+% : Unit in which the plotting range is defined. It can be one of the
+%   following strings:
+%   * `'lu'`        plot range is defined in lattice units (default),
+%   * `'xyz'`       plot range is defined in the $xyz$ Cartesian coordinate
+%                   system in \\ang units.
 %
-% The name of the objects that are created called 'atom' and 'atom_label'.
-% To find the handles and the stored data on these objects, use e.g.
+% `'range'`
+% : Defines the plotting range. Depending on the `unit` parameter, the
+%   given range can be in lattice units or in units of the $xyz$ Cartesian
+%   coordinate system. It is either a matrix with dimensions of $[3\times
+%   2]$ where the first and second columns define the lower and upper plot
+%   limits respectively. It can be alternatively a vector with three
+%   elements `[a,b,c]` which is equivalent to `[0 a;0 b;0 c]`. Default
+%   value is `[0 1;0 1;0 1]` to show a single cell.
+% 
+% `'figure'`
+% : Handle of the swplot figure. Default value is the active figure handle.
+% 
+% `'legend'`
+% : Whether to show the plot on the legend, default value is `true`.
 %
-%   sObject = swplot.findobj(hFigure,'name','atom')
+% `'tooltip'`
+% : If `true`, the tooltips will be shown when clicking on the plot
+%   objects. Default value is `true`.
+% 
+% `'shift'`
+% : Column vector with 3 elements, all object positions will be
+%   shifted by the given value in \\ang units. Default value is
+%   `[0;0;0]`.
+% 
+% `'replace'`
+% : If `true` the plot will replace the previous plot of the same type.
+%   Default value is `true`.
+% 
+% `'translate'`
+% : If `true`, the plot will be centered, independent of the range. Default
+%   value is `false`.
+% 
+% `'zoom'`
+% : If `true`, the swplot figure will be zoomed to make the plot objects
+%   cover the full figure. Default is `true`.
+% 
+% `'copy'`
+% : If `true`, a clone of the [spinw] object will be saved in the
+%   swplot figure data which can be retwrived using
+%   `swplot.getdata('obj')`. If `false`, the handle of the original [spinw]
+%   object is saved which is linked to the input `obj` and so it changes
+%   when `obj` is changed. Default value is `false`.
+% 
+% `nMesh`
+% : Mesh of the ellipse surface, a triangulation class object or an
+%   integer that used to generate an icosahedron mesh with $n_{mesh}$
+%   number of additional subdivision into triangles. Default value is
+%   stored in `swpref.getpref('nmesh')`, see also [swplot.icomesh].
+% 
+% `nPatch`
+% : Number of vertices on any patch object that is not the icosahedron,
+%   default value is stored in `swpref.getpref('npatch')`.
+%
+% ### Output Arguments
+% 
+% `hFigure`
+% : Handle of the swplot figure.
+%
+% The name of the objects that are created are `'atom'` and `'atom_label'`.
+% To find the handles and the corresponding data on these objects, use e.g.
+% sObject = swplot.findobj(hFigure,'name','atom')`.
 %
 
+pref = swpref;
 
 % default values
-fontSize0 = swpref.getpref('fontsize',[]);
-nMesh0    = swpref.getpref('nmesh',[]);
-nPatch0   = swpref.getpref('npatch',[]);
+fontSize0 = pref.fontsize;
+nMesh0    = pref.nmesh;
+nPatch0   = pref.npatch;
 
 inpForm.fname  = {'range' 'legend' 'label' 'dtext' 'fontsize' 'radius0'};
 inpForm.defval = {[]      true     false    0.1     fontSize0  0.3     };

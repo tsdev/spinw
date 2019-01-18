@@ -1,25 +1,33 @@
 classdef cif
     % class handling cif data
     %
-    % obj = CIF(source)
+    % ### Syntax
     %
-    % Any field returns a value belonging to that field name. Use
-    % cif.('field-name') for field names that are not valid matlab field
-    % names. Cif files containing multiple crystal structure, the first one
-    % will be retrieved.
+    % `obj = cif(source)`
     %
-    % Input:
+    % ### Description
     %
-    % source        Source of the .cif file, can be a filename, internet
-    %               link or a string containing the content of a .cif file.
+    % `obj = cif(source)` generates a cif class object. The object returns
+    % any field value corresponding to an existing field value in the
+    % imported .cif file. Use `cif.('field-name')` for field names that are
+    % not valid Matlab variable names. If a cif files contains multiple
+    % crystal structure, only the first one will be imported.
     %
-    % Example:
+    % ### Examples
     %
     % To test loading a .cif file from the internet use:
     %
-    % cryst = cif('https://drive.google.com/uc?export=download&id=0BzFs7CQXhehScVFfbkhrZHo1Z1k');
+    % cryst = cif('https://goo.gl/Bncwcn');
     %
-    % See also cif.fieldnames.
+    % ### Input Arguments
+    %
+    % `source`
+    % : Location of the .cif file. It can be a filename, internet
+    %   link or a string containing the content of a .cif file.
+    %
+    % ### See Also
+    %
+    % [cif.fieldnames]
     %
     
     properties (Access = private)
@@ -68,17 +76,23 @@ classdef cif
         function disp(obj)
             if ~isempty(obj.source)
                 if obj.isfile
-                    fprintf(['  <a href="matlab:help @cif">cif</a> object with %d fields,\n'...
-                        '  stores all data imported from the Crystallographic Information File,\n'...
-                        '  source: <a href="matlab:cd %s">%s</a>.\n\n'],numel(obj.cifdat),fileparts(obj.source),obj.source);
+                    fprintf(sw_markdown(sprintf(...
+                        ['     `cif` object, [cif] class:\n'...
+                         '     `Number of fields:` %d\n'...
+                         '     `Source:`           [%s]\n'...
+                         ],numel(obj.cifdat),obj.source)));
                 else
-                    fprintf(['  <a href="matlab:help @cif">cif</a> object with %d fields,\n'...
-                        '  stores all data imported from the Crystallographic Information File,\n'...
-                        '  source: %s.\n\n'],numel(obj.cifdat),obj.source);
+                    fprintf(sw_markdown(sprintf(...
+                        ['     `cif` object, [cif] class:\n'...
+                         '     `Number of fields:` %d\n'...
+                         '     `Source:`           [%s](%s)\n'...
+                         ],numel(obj.cifdat),obj.source,obj.source)));
                 end
             else
-                fprintf(['  <a href="matlab:help @cif">cif</a> object with %d fields,\n'...
-                    '  stores all data imported from the Crystallographic Information File.\n\n'],numel(obj.cifdat));
+                    fprintf(sw_markdown(sprintf(...
+                        ['     `cif` object, [cif] class:\n'...
+                         '     `Number of fields:` %d\n'...
+                         ],numel(obj.cifdat))));
             end
             
         end

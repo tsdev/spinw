@@ -17,11 +17,14 @@ function obj = sw_model(model, param, fid)
 % `model`
 % : String, name of the model, one of the following:
 %   * `'triAF'`     Triangular lattice Heisenberg antiferromagnet
-%                   in the $ab$ plane ($a=b=3$ \\Angstrom), with \\gamma =
+%                   in the $ab$ plane ($a=b=3$ \\ang), with \\gamma =
 %                   120\\deg angle and optimised magnetic structure.
 %   * `'squareAF'`  Square lattice antiferromagnet.
 %   * `'chain'`     Chain with further neighbor interactions.
-% 
+%   * `swm_*`       Custom models which are in the matlab path can be 
+%                 evaluated. Checkout: 
+%                 https://www.github.com/spinw/Models for pre-made models.
+%
 % `param`
 % : Input parameters of the model, row vector which gives the values of the
 %   Heisenberg exchange for first, second, thirs etc. neighbor bonds stored
@@ -38,18 +41,20 @@ function obj = sw_model(model, param, fid)
 %
 
 if nargin == 0
-    help sw_model
+    swhelp sw_model
     return
 end
 
+pref = swpref;
+
 if nargin < 3
-    fid = swpref.getpref('fid',true);
+    fid = pref.fid;
 end
 
 fprintf0(fid,'Preparing ''%s'' model ...\n',model);
+modelSearch = 'swm_';
 
 obj = spinw;
-fileid(obj,fid)
 
 switch model
     case 'triAF'
@@ -107,7 +112,26 @@ switch model
             end
         end
     otherwise
-        error('sw_model:WrongINput','Model does not exists!')
+        % All paths
+        allPaths =  strsplit(path,':');
+        % Remove the builtin functions
+        allPaths =  allPaths(~strncmp(allPaths,fullfile(matlabroot, 'toolbox'), length(fullfile(matlabroot, 'toolbox'))));
+        relPaths = allPaths(~strncmp(allPaths,fullfile(matlabroot, 'example'), length(fullfile(matlabroot, 'example'))));
+        % Get all files
+        allFiles = cellfun(@(x) dir(x), relPaths, 'UniformOutput', false);
+        allFiles = cellfun(@(x) {x.name}, allFiles, 'UniformOutput', false);
+        allFiles = [allFiles{:}];
+        % Search for files which are models
+        relFiles = cellfun(@(x) x(1:end-2) ,allFiles(strncmp(allFiles, modelSearch, 3)),'UniformOutput',false);
+        if ~any(strcmp(model, relFiles))
+            error('sw_model:WrongInput','Model does not exists!')
+        end
+        % Evaluate the model
+        try
+            obj = feval(model, param);        
+        catch ME
+            error('sw_model:ModelError','This model has an error!')
+        end
 end
 
 fprintf0(fid,'... ready!\n');

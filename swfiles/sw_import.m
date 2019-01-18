@@ -23,9 +23,11 @@ function obj = sw_import(fName, toPlot, obj0)
 %
 
 if nargin == 0
-    help sw_import
+    swhelp sw_import
     return
 end
+pref = swpref;
+fid = pref.fid;
 
 if nargin < 2
     toPlot = false;
@@ -198,7 +200,7 @@ switch fExt
         end
 end
 
-fprintf0(obj0.fileid,'Crystal structure is imported from %s.\n',fName);
+fprintf0(fid,'Crystal structure is imported from %s.\n',fName);
 
 if nargout > 0
     obj = obj0;

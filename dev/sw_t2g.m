@@ -31,8 +31,8 @@ function hOrbital = sw_t2g(idx, varargin)
 %
 
 if nargin == 0
-    help sw_t2g;
-    return;
+    swhelp sw_t2g;
+    return
 end
 
 inpForm.fname  = {'r0'    'v1'    'v2'    'scale' 'plotv'};

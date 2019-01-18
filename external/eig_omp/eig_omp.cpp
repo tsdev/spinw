@@ -104,6 +104,9 @@ void quicksort(int *id, double *val, mwSignedIndex elements)
                 while (val[id[L]]<=piv && L<R) L++; if (L<R) id[R--]=id[L];
             }
             id[L]=C; beg[i+1]=L+1; end[i+1]=end[i]; end[i++]=L;
+            if (i > 300) {
+                mexErrMsgIdAndTxt("eig_omp:qsortoverflow", "Quicksort ran out of memory");
+            }
             if (end[i]-beg[i]>end[i-1]-beg[i-1])
             {
                 swap=beg[i]; beg[i]=beg[i-1]; beg[i-1]=swap;
@@ -145,8 +148,8 @@ void sort(mwSignedIndex m, double *Dr, double *Di, double *V, double *work, int 
     msz = m*sizeof(double);
     pD = work+m; memcpy(pD, Dr, msz);
     pDi = work+2*m; memcpy(pDi, Di, msz);
-    if(V!=0)
-        pV = work+3*m; memcpy(pV, V, m*m*sizeof(double));
+    if(V != NULL) {
+        pV = work+3*m; memcpy(pV, V, m*m*sizeof(double)); }
     for(ii=0; ii<(int)m; ii++) {
         // Take care to preserve the order of the eigenvectors (real parts first)
         if((ii+1)<(int)m)
@@ -157,13 +160,13 @@ void sort(mwSignedIndex m, double *Dr, double *Di, double *V, double *work, int 
             }
         pD[ii] = Dr[id[ii]];
         pDi[ii] = Di[id[ii]];
-        if(V!=0)
-            memcpy(&pV[ii*m], &V[id[ii]*m], msz);
+        if(V != NULL) {
+            memcpy(&pV[ii*m], &V[id[ii]*m], msz); }
     }
     memcpy(Dr, pD, msz);
     memcpy(Di, pDi, msz);
-    if(V!=0)
-        memcpy(V, pV, m*m*sizeof(double));
+    if(V != NULL) {
+        memcpy(V, pV, m*m*sizeof(double)); }
 }
 
 // This is called for complex general matrices - both eigenvalues and eigenvectors are actually complex
@@ -195,17 +198,17 @@ void sort(mwSignedIndex m, double *D, double *V, double *work, int sort_type)
     // Now permute the eigenvalues and eigenvectors - in future look at using Fich et al. 1995
     msz = 2*m*sizeof(double);
     pD = work+m; memcpy(pD, D, msz);
-    if(V!=0)
-        pV = work+3*m; memcpy(pV, V, 2*m*m*sizeof(double));
+    if(V != NULL) {
+        pV = work+3*m; memcpy(pV, V, 2*m*m*sizeof(double)); }
     for(ii=0; ii<(int)m; ii++) {
         pD[ii*2] = D[id[ii]*2];
         pD[ii*2+1] = D[id[ii]*2+1];
-        if(V!=0)
-            memcpy(&pV[ii*2*m], &V[id[ii]*2*m], msz);
+        if(V != NULL) {
+            memcpy(&pV[ii*2*m], &V[id[ii]*2*m], msz); }
     }
     memcpy(D, pD, msz);
-    if(V!=0)
-        memcpy(V, pV, 2*m*m*sizeof(double));
+    if(V != NULL) {
+        memcpy(V, pV, 2*m*m*sizeof(double)); }
 }
 
 // This is called for real general matrices - complex conjugate eigenvectors stored in consecutive columns
@@ -363,9 +366,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 //  mexPrintf("Number of threads = %d\n",nthread);
 
     // Checks inputs
-//  if(nrhs!=1) {
-//      mexErrMsgIdAndTxt("eig_omp:nargin","Number of input argument must be 1.");
-//  }
+    if(nrhs<1) {
+        mexErrMsgIdAndTxt("eig_omp:nargin","Number of input argument must be at least 1.");
+    }
     if(!mxIsNumeric(prhs[0])) {
         mexErrMsgIdAndTxt("eig_omp:notnumeric","Input matrix must be a numeric array.");
     }
@@ -449,7 +452,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             }
         }
     }
-//  mexPrintf("do_orth = %d; do_sort = %d\n",do_orth,do_sort);
+    //mexPrintf("do_orth = %d; do_sort = %d\n",do_orth,do_sort);
 
     // More efficient to group blocks together to run in a single thread than to spawn one thread per matrix.
     if(nblock<nthread) {
@@ -565,6 +568,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
         }
     }
+    //mexPrintf("IsComplex=%d, anynonsym=%d, nlhs=%d\n", mxIsComplex(prhs[0]), anynonsym, nlhs);
+    //mexEvalString("drawnow;");
 
 #pragma omp parallel default(none) shared(plhs,prhs,err_code) \
     firstprivate(nthread, m, nlhs, nd, ib, blkid, jobz, anynonsym, issym, do_orth, do_sort)
@@ -573,7 +578,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         for(int nt=0; nt<nthread; nt++) {
             // These variables must be declared within the loop to make them local (and private)
             //   or we get memory errors.
-            double *M, *E, *V=0, *D, *Di, *ptr_M, *ptr_Mi, *ptr_V, *ptr_Vi;
+            double *M, *E, *V=NULL, *D, *Di, *ptr_M, *ptr_Mi, *ptr_V, *ptr_Vi;
             mwSignedIndex m2, m22;
             size_t msz;
             char uplo = 'U';
@@ -645,7 +650,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                             if(nlhs>1)
                                 sort(m, D, V, work, do_sort);
                             else 
-                                sort(m, D, 0, work, do_sort);
+                                sort(m, D, NULL, work, do_sort);
                         if(do_orth)
                             if(orth(m, D, V, work, 0)==1) {
                                 #pragma omp critical
@@ -696,7 +701,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                             if(nlhs>1)
                                 sort(m, D, Di, V, work, do_sort);
                             else
-                                sort(m, D, Di, 0, work, do_sort);
+                                sort(m, D, Di, NULL, work, do_sort);
                         if(nlhs>1 && do_orth)
                             if(orth(m, D, Di, V, mxGetPi(plhs[0])+ib*m2, work, 1)==1) {
                                 #pragma omp critical

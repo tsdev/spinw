@@ -165,10 +165,10 @@ if nargin > 5
         varargin{1}.fitmode = 2;
         spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{1});
     else
-        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:});
+        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true);
     end
 else
-    spectra = obj.spinwave([qh(:) qk(:) ql(:)]');
+    spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',true);
 end
 warning(warnState);
 

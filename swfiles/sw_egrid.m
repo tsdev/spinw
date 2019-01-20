@@ -1,12 +1,12 @@
 function spectra = sw_egrid(spectra, varargin)
-% calculates energy bins of a spectrum
-%
+% calculates energy bins of a spectrum 
+% 
 % ### Syntax
-%
+% 
 % `spectra = sw_egrid(spectra,Name,Value)`
-%
+% 
 % ### Description
-%
+% 
 % `spectra = sw_egrid(spectra,Name,Value)` takes a calculated spectrum that
 % contains $S^{\alpha\beta}(Q,\omega)$ and converts it into an intensity
 % map `I(i,j)` via binning the energy values and selecting a given
@@ -15,10 +15,10 @@ function spectra = sw_egrid(spectra, varargin)
 % neutron scattering cross section via calculating the following quantity:
 %
 %   $S_\perp(Q,\omega)=\sum_{\alpha\beta}(1-\hat{q}^\alpha\hat{q}^\beta)\cdot S^{\alpha\beta}(Q,\omega)$
-%
-%
+%  
+% 
 % ### Examples
-%
+% 
 % The line will create an energy bin, with steps of 0.1 and bins the
 % spin-spin correlation function. Two different matrices will be
 % calculated, first using the sum of the $S^{xx}$ and $S^{yy}$ components, second
@@ -35,14 +35,14 @@ function spectra = sw_egrid(spectra, varargin)
 % ```
 %
 % ### Input Arguments
-%
+% 
 % `spectra`
 % : Input structure, contains spin-spin correlation functions. Supported
 %   inputs are produced by [spinw.spinwave], [spinw.powspec] and
 %   [spinw.scga].
-%
+% 
 % ### Name-Value Pair Arguments
-%
+% 
 % `'component'`
 % : A string that Selects a correlation function component that will be
 %   binned. The possible values are:
@@ -83,39 +83,39 @@ function spectra = sw_egrid(spectra, varargin)
 %   each containing any linear combination of cross sections as
 %   above, the cell array needs to have size $[1\times n_{cell}]$, for
 %   example `{'Sxx' 'Syy' 'Szz'}`.
-%
+% 
 % `'Evect'`
 % : Row vector that defines the center/edge of the energy bins of the
 %   calculated output, number of elements is $n_E$. The energy units
 %   are defined by the [spinw.unit] property. Default
 %   value is an edge bin: `linspace(0,1.1*maxOmega,501)`.
-%
+% 
 % `'binType'`
 % : String, determines the type of bin give, possible options:
 %   * `'cbin'`      Center bin, the center of each energy bin is given.
 %   * `'ebin'`      Edge bin, the edges of each bin is given.
 %   Default value is `'ebin'`.
-%
+% 
 % `'T'`
 % : Temperature, used to calculate the Bose factor in units
 %   depending on the Boltzmann constant stored in [spinw.unit]. Default
 %   temperature is taken from `obj.single_ion.T`. The Bose factor is
 %   included in `swConv` field of the output.
-%
+% 
 % `'sumtwin'`
 % : If true, the spectra of the different twins will be summed
 %   together weighted with the normalized volume fractions, see
 %   [spinw.twin]. Default value is true.
-%
+% 
 % `'modeIdx'`
 % : Select certain spin wave modes from the $2*n_{magatom}$ number of
 %   modes to include in the output. Default value is `1:2*nMagAtom` to
 %   include all modes.
-%
+% 
 % `'epsilon'`
 % : Error limit, used to determine whether a given energy bin is
 %   uniform or not. Default value is $10^{-5}$.
-%
+% 
 % `'autoEmin'`
 % : Due to the finite numerical precision, the spin wave energies
 %   can contain small imaginary values. These can ruin the
@@ -125,40 +125,40 @@ function spectra = sw_egrid(spectra, varargin)
 %   calculates the bottom of the first energy bin automatically and
 %   overwrites the given value. Only works if the input energy bin
 %   starts with zero. Default value is `false`.
-%
+% 
 % `'imagChk'`
 % : Checks whether the imaginary part of the spin wave dispersion is
 %   smaller than the energy bin size. Default value is true.
-%
+% 
 % {{note The Blume-Maleev coordinate system is a cartesian coordinate
 % system with $x_{BM}$, $y_{BM}$ and $z_{BM}$ basis vectors defined as:
 % <br> $x_{BM}$    parallel to the momentum transfer $Q$,
 % <br> $y_{BM}$    perpendicular to $x_{BM}$ in the scattering plane,
 % <br> $z_{BM}$    perpendicular to the scattering plane.
 % }}
-%
+% 
 % ### Output Arguments
-%
+% 
 % `spectra` same as the input `spectra` plus additions fields:
-%
+% 
 % `swConv`
 % : Stores the selected cross section binned in energy in a matrix with
 %   dimensions of $[n_E\times n_{hkl}]$. Includes the Bose factor.
-%
+% 
 % `swInt`
 % : Stores the selected cross sections for every mode in a matrix with
 %   dimensions of $[n_{mode}\times n_{hkl}]$.
-%
+% 
 % `T`
 % : Input temperature.
-%
+% 
 % `component`
 % : Cell that contains the input component selector strings.
-%
+% 
 % `Evect`
 % : Input energy bin vector, defines the energy bin **edge** positions
 %   (converted from the given bin centers if necessary).
-%
+% 
 % `param`
 % : All the input parameters.
 %
@@ -166,9 +166,9 @@ function spectra = sw_egrid(spectra, varargin)
 % twins are convoluted separately, swConv and swInt will be a cell that
 % packages the matrices corresponding to each component/twin. The
 % dimensions of the cell are $[n_{conv}\times n_{twin}]$.
-%
+% 
 % ### See Also
-%
+% 
 % [spinw.spinwave] \| [sw_neutron]
 %
 
@@ -326,7 +326,7 @@ if isfield(spectra,'Sab') && iscell(spectra.Sab)
 %     Pab   = {Pab};
 %     Mab   = {Mab};
 %     Sperp = {Sperp};
-    
+
 elseif isfield(spectra,'Sperp') && iscell(spectra.Sperp)
     nTwin = numel(spectra.Sperp);
     if ~isfield(spectra,'omega')
@@ -440,7 +440,7 @@ if isfield(spectra,'omega')
     epsilon = 1e-8;
     
     if eBin
-        Evect  = (Evect(2:end)+Evect(1:(end-1)))/2;
+        Evect  = (Evect(2:end)+Evect(1:(end-1)))/2; 
     end
     % energy bin parameters
     nE       = numel(Evect);
@@ -487,7 +487,7 @@ if isfield(spectra,'omega')
     % for non-zero temperature.
     idxE = cell(1,nTwin);
     
-    
+
     for tt = 1:nTwin
         % put the modes that are not in the modeIdx parameter above the
         % energy bin vector
@@ -540,7 +540,7 @@ end
 % sum up twin spectra if requested
 if param.sumtwin
     % normalised volume fractions of the twins
-    if isfield(spectra,'obj') && nTwin>1
+    if isfield(spectra,'obj')
         vol = spectra.obj.twin.vol/sum(spectra.obj.twin.vol);
     else
         vol = 1;

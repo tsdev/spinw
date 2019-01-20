@@ -789,6 +789,7 @@ for jj = 1:nSlice
             for ii = 1:nHklMEM
                 V(:,:,ii) = V(:,:,ii)*diag(sqrt(gCommd.*omega(:,hklIdxMEM(ii))));
             end
+            % V = bsxfun(@times,invK,V);
             V = sw_mtimesx(invK,V);
         else
             for ii = 1:nHklMEM

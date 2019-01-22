@@ -196,7 +196,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
 
     if(is_single) {
-        float stol = std::max((float)tol, sqrt(FLT_EPSILON));
+        float stol = std::max((float)tol, (float)sqrt(FLT_EPSILON));
         err_code = do_loop(plhs, prhs, nthread, m, nlhs, blkid, uplo, stol, do_Colpa);
     } else {
         err_code = do_loop(plhs, prhs, nthread, m, nlhs, blkid, uplo, tol, do_Colpa);

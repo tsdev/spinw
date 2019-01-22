@@ -132,7 +132,7 @@ else
     end
 end
 
-weight = disp2sqw(qh, qk, ql, en, @obj.horace_disp, {model_pars varargin{:}}, fwhm);
+weight = disp2sqw(qh, qk, ql, en, @obj.horace, {model_pars varargin{:}}, fwhm);
 
 if scale_factor ~= 1
     weight = weight * scale_factor;

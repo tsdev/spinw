@@ -492,7 +492,7 @@ void check_sym(bool *issym, const mxArray *mat, T tolsymm, mwSignedIndex m, int 
 
 template <typename T>
 int do_loop(T *mat, T *mat_i, mxArray *plhs[], int nthread, mwSignedIndex m, int nlhs, mwSignedIndex nd,
-    const int *blkid, char jobz, bool anynonsym, bool *issym, bool do_orth, int do_sort, bool is_complex);
+    const int *blkid, char jobz, bool anynonsym, const bool *issym, bool do_orth, int do_sort, bool is_complex);
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -678,12 +678,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 template <typename T>
 int do_loop(T *mat, T *mat_i, mxArray *plhs[], int nthread, mwSignedIndex m, int nlhs, mwSignedIndex nd,
-    const int *blkid, char jobz, bool anynonsym, bool *issym, bool do_orth, int do_sort, bool is_complex)
+    const int *blkid, char jobz, bool anynonsym, const bool *issym, bool do_orth, int do_sort, bool is_complex)
 {
     int err_code = 0;
 
-#pragma omp parallel default(none) shared(plhs, mat, err_code) \
-    firstprivate(nthread, m, nlhs, nd, blkid, jobz, anynonsym, issym, do_orth, do_sort, is_complex)
+#pragma omp parallel default(none) shared(plhs, mat, mat_i, err_code, blkid, issym) \
+    firstprivate(nthread, m, nlhs, nd, jobz, anynonsym, do_orth, do_sort, is_complex)
     {
 #pragma omp for
         for(int nt=0; nt<nthread; nt++) {
@@ -896,8 +896,14 @@ int do_loop(T *mat, T *mat_i, mxArray *plhs[], int nthread, mwSignedIndex m, int
                 if(nlhs>1)
                     delete[]V;
             }
-            if(nlhs>1 && nd==2)
+            if(is_complex && anynonsym) {
                 delete[]D;
+            }
+            else if(nlhs>1 && nd==2) {
+                delete[]D;
+                if(anynonsym)
+                    delete[]Di;
+            }
             #ifndef _OPENMP
                 if(err_code!=0)
                     break;

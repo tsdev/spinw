@@ -32,6 +32,7 @@
 #include <cfloat>
 #include <cstring>
 #include <cmath>
+#include <algorithm>
 #include "mex.h"
 #include "matrix.h"
 #include "blas.h"
@@ -46,12 +47,72 @@ void omp_set_num_threads(int nThreads) {};
 #include <omp.h>
 #endif
 
+// Define templated gateways to single / double LAPACK functions
+template <typename T> 
+void potrf(const char *uplo, const ptrdiff_t *n, T *a, const ptrdiff_t *lda, ptrdiff_t *info, bool is_complex) {
+    mexErrMsgIdAndTxt("chol_omp:wrongtype","This function is only defined for single and double floats.");
+}
+template <> void potrf(const char *uplo, const ptrdiff_t *n, float *a, const ptrdiff_t *lda, ptrdiff_t *info, bool is_complex) {
+    if(is_complex) 
+        return cpotrf(uplo, n, a, lda, info);
+    else
+        return spotrf(uplo, n, a, lda, info);
+}
+template <> void potrf(const char *uplo, const ptrdiff_t *n, double *a, const ptrdiff_t *lda, ptrdiff_t *info, bool is_complex) {
+    if(is_complex) 
+        return zpotrf(uplo, n, a, lda, info);
+    else
+        return dpotrf(uplo, n, a, lda, info);
+}
+
+template <typename T> 
+void trtri(const char *uplo, const char *diag, const ptrdiff_t *n, T *a, const ptrdiff_t *lda, ptrdiff_t *info, bool is_complex) {
+    mexErrMsgIdAndTxt("chol_omp:wrongtype","This function is only defined for single and double floats.");
+}
+template <> void trtri(const char *uplo, const char *diag, const ptrdiff_t *n, float *a, const ptrdiff_t *lda, ptrdiff_t *info, bool is_complex) {
+    if(is_complex) 
+        return ctrtri(uplo, diag, n, a, lda, info);
+    else
+        return strtri(uplo, diag, n, a, lda, info);
+}
+template <> void trtri(const char *uplo, const char *diag, const ptrdiff_t *n, double *a, const ptrdiff_t *lda, ptrdiff_t *info, bool is_complex) {
+    if(is_complex) 
+        return ztrtri(uplo, diag, n, a, lda, info);
+    else
+        return dtrtri(uplo, diag, n, a, lda, info);
+}
+
+template <typename T>
+void trmm(const char *side, const char *uplo, const char *transa, const char *diag, const ptrdiff_t *m, const ptrdiff_t *n,
+    const T *alpha, const T *a, const ptrdiff_t *lda, T *b, const ptrdiff_t *ldb, bool is_complex) {
+    mexErrMsgIdAndTxt("chol_omp:wrongtype","This function is only defined for single and double floats.");
+}
+template <> void trmm(const char *side, const char *uplo, const char *transa, const char *diag, const ptrdiff_t *m, const ptrdiff_t *n,
+    const float *alpha, const float *a, const ptrdiff_t *lda, float *b, const ptrdiff_t *ldb, bool is_complex) {
+    if(is_complex) 
+        return ctrmm(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb);
+    else
+        return strmm(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb);
+}
+template <> void trmm(const char *side, const char *uplo, const char *transa, const char *diag, const ptrdiff_t *m, const ptrdiff_t *n,
+    const double *alpha, const double *a, const ptrdiff_t *lda, double *b, const ptrdiff_t *ldb, bool is_complex) {
+    if(is_complex) 
+        return ztrmm(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb);
+    else
+        return dtrmm(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb);
+}
+
+template <typename T>
+int do_loop(mxArray *plhs[], const mxArray *prhs[], int nthread, mwSignedIndex m, int nlhs,
+            int *blkid, char uplo, T tol, bool do_Colpa);
+
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     mwSignedIndex m, n, nd;
     const size_t *dims;
     int ib, nblock, nb, err_code=0;
     bool do_Colpa = false;
+    bool is_single = false;
     int *blkid;
     char uplo = 'U', *parstr;
     int nthread = omp_get_max_threads();
@@ -59,8 +120,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 //  mexPrintf("Number of threads = %d\n",nthread);
 
     // Checks inputs
-    if(!mxIsNumeric(prhs[0])) {
-        mexErrMsgIdAndTxt("chol_omp:notnumeric","Input matrix must be a numeric array.");
+    if(mxIsDouble(prhs[0])) {
+        is_single = false;
+    } else if(mxIsSingle(prhs[0])) {
+        is_single = true;
+    } else {
+        mexErrMsgIdAndTxt("chol_omp:notfloat","Input matrix must be a float array.");
     }
     nd = mxGetNumberOfDimensions(prhs[0]);
     if(nd<2 || nd>3) {
@@ -109,72 +174,71 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
 
     // Creates outputs
-    if(mxIsComplex(prhs[0])) {
-        if(nd==2)
-            plhs[0] = mxCreateDoubleMatrix(m, m, mxCOMPLEX);
-        else
-            plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxCOMPLEX);
-        if(nlhs>1) {
-            if(do_Colpa) {
-                if(nd==2)
-                    plhs[1] = mxCreateDoubleMatrix(m, m, mxCOMPLEX);
-                else
-                    plhs[1] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxCOMPLEX);
-            }
-            else {
-                if(nd==2)
-                    plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
-                else
-                    plhs[1] = mxCreateDoubleMatrix(1, nblock, mxREAL);
-            }
+    mxComplexity complexflag = mxIsComplex(prhs[0]) ? mxCOMPLEX : mxREAL;
+    mxClassID classid = is_single ? mxSINGLE_CLASS : mxDOUBLE_CLASS;
+    if(nd==2)
+        plhs[0] = mxCreateNumericMatrix(m, m, classid, complexflag);
+    else
+        plhs[0] = mxCreateNumericArray(3, dims, classid, complexflag);
+    if(nlhs>1) {
+        if(do_Colpa) {
+            if(nd==2)
+                plhs[1] = mxCreateNumericMatrix(m, m, classid, complexflag);
+            else
+                plhs[1] = mxCreateNumericArray(3, dims, classid, complexflag);
         }
-    }
-    else {
-        if(nd==2)
-            plhs[0] = mxCreateDoubleMatrix(m, m, mxREAL);
-        else
-            plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
-        if(nlhs>1) {
-            if(do_Colpa) {
-                if(nd==2)
-                    plhs[1] = mxCreateDoubleMatrix(m, m, mxREAL);
-                else
-                    plhs[1] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
-            }
-            else {
-                if(nd==2)
-                    plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
-                else
-                    plhs[1] = mxCreateDoubleMatrix(1, nblock, mxREAL);
-            }
+        else {
+            if(nd==2)
+                plhs[1] = mxCreateNumericMatrix(1, 1, classid, mxREAL);
+            else
+                plhs[1] = mxCreateNumericMatrix(1, nblock, classid, mxREAL);
         }
     }
 
+    if(is_single) {
+        float stol = std::max((float)tol, (float)sqrt(FLT_EPSILON));
+        err_code = do_loop(plhs, prhs, nthread, m, nlhs, blkid, uplo, stol, do_Colpa);
+    } else {
+        err_code = do_loop(plhs, prhs, nthread, m, nlhs, blkid, uplo, tol, do_Colpa);
+    }
+
+    delete[]blkid;
+    if(err_code==1) 
+        mexErrMsgIdAndTxt("chol_omp:notposdef","The input matrix is not positive definite.");
+    else if(err_code==2) 
+        mexErrMsgIdAndTxt("chol_omp:singular","The input matrix is singular.");
+}
+
+template <typename T>
+int do_loop(mxArray *plhs[], const mxArray *prhs[], int nthread, mwSignedIndex m, int nlhs,
+            int *blkid, char uplo, T tol, bool do_Colpa)
+{
+    int err_code = 0, ib=0;
 #pragma omp parallel default(none) shared(plhs,prhs,err_code) \
-    firstprivate(nthread, m, nlhs, nd, ib, blkid, uplo, tol, do_Colpa)
+    firstprivate(nthread, m, nlhs, ib, blkid, uplo, tol, do_Colpa)
     {
 #pragma omp for
         for(int nt=0; nt<nthread; nt++) {
             // These variables must be declared within the loop to make them local (and private)
             //   or we get memory errors.
-            double *M, *Mp, *ptr_M, *ptr_Mi, *ptr_I, *gComm;
+            T *M, *Mp, *ptr_M, *ptr_Mi, *ptr_I;
             mwSignedIndex lda = m, m2 = m*m, info, ii, jj, kk;
             mwSignedIndex f = mxIsComplex(prhs[0]) ? 2 : 1;
             char diag = 'N';
             char trans = 'C';
             char side = 'R';
-            double *alpha;
+            T *alpha;
 
             if(mxIsComplex(prhs[0]))
-                M = new double[2*m*m];
+                M = new T[2*m*m];
             if(do_Colpa) {
                 if(mxIsComplex(prhs[0])) {
-                    Mp = new double[2*m*m];
-                    alpha = new double[2];
+                    Mp = new T[2*m*m];
+                    alpha = new T[2];
                 }
                 else {
-                    Mp = new double[m*m];
-                    alpha = new double[1];
+                    Mp = new T[m*m];
+                    alpha = new T[1];
                 }
                 alpha[0] = 1.;
             }
@@ -185,9 +249,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 for(kk=0; kk<(tol>0?2:1); kk++) {
                     // Populate the matrix input array (which will be overwritten by the Lapack function)
                     if(mxIsComplex(prhs[0])) {
-                        memset(M, 0, 2*m*m*sizeof(double));
-                        ptr_M = mxGetPr(prhs[0]) + ib*m2;
-                        ptr_Mi = mxGetPi(prhs[0]) + ib*m2;
+                        memset(M, 0, 2*m*m*sizeof(T));
+                        ptr_M = (T*)mxGetData(prhs[0]) + ib*m2;
+                        ptr_Mi = (T*)mxGetImagData(prhs[0]) + ib*m2;
                         // Interleaves complex matrices - Matlab stores complex matrix as an array of real
                         //   values followed by an array of imaginary values; Fortran (and C++ std::complex)
                         //   and hence Lapack stores it as arrays of pairs of values (real,imaginary).
@@ -200,14 +264,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                     }
                     else {
                         // *potrf overwrites the input array - copy only upper or lower triangle of input.
-                        M = mxGetPr(plhs[0]) + ib*m2;
-                        ptr_M = mxGetPr(prhs[0]) + ib*m2;
+                        M = (T*)mxGetData(plhs[0]) + ib*m2;
+                        ptr_M = (T*)mxGetData(prhs[0]) + ib*m2;
                         if(uplo=='U')
                             for(ii=0; ii<m; ii++) 
-                                memcpy(M+ii*m, ptr_M+ii*m, (ii+1)*sizeof(double));
+                                memcpy(M+ii*m, ptr_M+ii*m, (ii+1)*sizeof(T));
                         else
                             for(ii=0; ii<m; ii++) 
-                                memcpy(M+ii*m+ii, ptr_M+ii*m+ii, (m-ii)*sizeof(double));
+                                memcpy(M+ii*m+ii, ptr_M+ii*m+ii, (m-ii)*sizeof(T));
                     }
                     // Matrix not positive definite - try adding a small number to the diagonal.
                     if(kk==1)
@@ -215,9 +279,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                             M[ii*m*f+ii*f] += tol; 
                     // Calls the actual Lapack algorithm for real or complex input.
                     if(mxIsComplex(prhs[0]))
-                        zpotrf(&uplo, &m, M, &lda, &info);
+                        potrf(&uplo, &m, M, &lda, &info, true);
                     else
-                        dpotrf(&uplo, &m, M, &lda, &info);
+                        potrf(&uplo, &m, M, &lda, &info, false);
                     // Matrix is positive definite, break out of loop.
                     if(info==0)
                         break;
@@ -231,8 +295,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                         break;
                     }
                     else {
-                        ptr_I = mxGetPr(plhs[1]) + ib;
-                        *ptr_I = (double)info;
+                        ptr_I = (T*)mxGetData(plhs[1]) + ib;
+                        *ptr_I = (T)info;
                         // Zeros the non positive parts of the factor.
                       //kk = (mwSignedIndex)info-1;
                       //if(uplo=='U')
@@ -245,7 +309,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 }
                 if(do_Colpa) {
                     // Computes the Hermitian K^2 matrix = R*gComm*R';
-                    memcpy(Mp, M, mxIsComplex(prhs[0]) ? m*m*2*sizeof(double) : m*m*sizeof(double));
+                    memcpy(Mp, M, mxIsComplex(prhs[0]) ? m*m*2*sizeof(T) : m*m*sizeof(T));
                     // Applies the commutator [1..1,-1..-1] to the cholesky factor transposed
                     for(ii=m/2; ii<m; ii++)
                         for(jj=0; jj<m; jj++)
@@ -255,24 +319,24 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                             for(jj=0; jj<m; jj++)
                                 Mp[ii*f*m+jj*f+1] = -Mp[ii*f*m+jj*f+1];
                     if(mxIsComplex(prhs[0]))
-                        ztrmm(&side, &uplo, &trans, &diag, &m, &m, alpha, M, &lda, Mp, &lda);
+                        trmm(&side, &uplo, &trans, &diag, &m, &m, alpha, M, &lda, Mp, &lda, true);
                     else
-                        dtrmm(&side, &uplo, &trans, &diag, &m, &m, alpha, M, &lda, Mp, &lda);
+                        trmm(&side, &uplo, &trans, &diag, &m, &m, alpha, M, &lda, Mp, &lda, false);
                     // Computes the inverse of the triangular factors (still stored in M)
                     if(nlhs>1) {
                         if(mxIsComplex(prhs[0])) {
-                            ztrtri(&uplo, &diag, &m, M, &lda, &info);
+                            trtri(&uplo, &diag, &m, M, &lda, &info, true);
                         }
                         else {
-                            M = mxGetPr(plhs[1]) + ib*m2;
-                            ptr_M = mxGetPr(plhs[0]) + ib*m2;
+                            M = (T*)mxGetData(plhs[1]) + ib*m2;
+                            ptr_M = (T*)mxGetData(plhs[0]) + ib*m2;
                             if(uplo=='U')
                                 for(ii=0; ii<m; ii++) 
-                                    memcpy(M+ii*m, ptr_M+ii*m, (ii+1)*sizeof(double));
+                                    memcpy(M+ii*m, ptr_M+ii*m, (ii+1)*sizeof(T));
                             else
                                 for(ii=0; ii<m; ii++) 
-                                    memcpy(M+ii*m+ii, ptr_M+ii*m+ii, (m-ii)*sizeof(double));
-                            dtrtri(&uplo, &diag, &m, M, &lda, &info);
+                                    memcpy(M+ii*m+ii, ptr_M+ii*m+ii, (m-ii)*sizeof(T));
+                            trtri(&uplo, &diag, &m, M, &lda, &info, false);
                         }
                         if(info>0) {
                             #pragma omp critical 
@@ -282,8 +346,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                             break;
                         }
                         if(mxIsComplex(prhs[0])) {
-                            ptr_M = mxGetPr(plhs[1]) + ib*m2;
-                            ptr_Mi = mxGetPi(plhs[1]) + ib*m2;
+                            ptr_M = (T*)mxGetData(plhs[1]) + ib*m2;
+                            ptr_Mi = (T*)mxGetImagData(plhs[1]) + ib*m2;
                             for(ii=0; ii<m; ii++) {
                                 for(jj=(uplo=='U'?0:ii); jj<(uplo=='U'?ii+1:m); jj++) {
                                     ptr_M[ii*m+jj] = M[ii*2*m+jj*2];
@@ -295,8 +359,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                     // Finally copies the output of the K^2=K*g*K' calculation to Matlab left-hand-side
                     //   (We had to keep it memory to compute the inverse)
                     if(mxIsComplex(prhs[0])) {
-                        ptr_M = mxGetPr(plhs[0]) + ib*m2;
-                        ptr_Mi = mxGetPi(plhs[0]) + ib*m2;
+                        ptr_M = (T*)mxGetData(plhs[0]) + ib*m2;
+                        ptr_Mi = (T*)mxGetImagData(plhs[0]) + ib*m2;
                         for(ii=0; ii<m; ii++) {
                             for(jj=0; jj<m; jj++) {
                                 *ptr_M++ = Mp[ii*2*m+jj*2];
@@ -305,13 +369,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                         }
                     }
                     else {
-                        memcpy(mxGetPr(plhs[0])+ib*m2, Mp, m*m*sizeof(double));
+                        memcpy((T*)mxGetData(plhs[0])+ib*m2, Mp, m*m*sizeof(T));
                     }
                 }
                 else if(mxIsComplex(prhs[0])) {
                     // Copy lapack output to matlab with interleaving
-                    ptr_M = mxGetPr(plhs[0]) + ib*m2;
-                    ptr_Mi = mxGetPi(plhs[0]) + ib*m2;
+                    ptr_M = (T*)mxGetData(plhs[0]) + ib*m2;
+                    ptr_Mi = (T*)mxGetImagData(plhs[0]) + ib*m2;
                     for(ii=0; ii<m; ii++) {
                       //for(jj=(uplo=='U'?ii:0); jj<(uplo=='U'?m:ii+1); jj++) { }
                         for(jj=0; jj<m; jj++) {
@@ -335,9 +399,5 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             #endif
         }
     }
-    delete[]blkid;
-    if(err_code==1) 
-        mexErrMsgIdAndTxt("chol_omp:notposdef","The input matrix is not positive definite.");
-    else if(err_code==2) 
-        mexErrMsgIdAndTxt("chol_omp:singular","The input matrix is singular.");
+    return err_code;
 }

@@ -309,7 +309,7 @@ end
 
 % pack all cross section into a cell for easier looping
 
-if iscell(spectra.Sab)
+if isfield(spectra,'Sab') && iscell(spectra.Sab)
     nTwin = numel(spectra.Sab);
     if ~isfield(spectra,'omega')
         omega = {};
@@ -326,6 +326,31 @@ if iscell(spectra.Sab)
 %     Pab   = {Pab};
 %     Mab   = {Mab};
 %     Sperp = {Sperp};
+
+elseif isfield(spectra,'Sperp') && iscell(spectra.Sperp)
+    nTwin = numel(spectra.Sperp);
+    if ~isfield(spectra,'omega')
+        omega = {};
+    else
+        omega = spectra.omega;
+    end
+    Sab   = repmat({[]},1,nTwin);
+    intP  = {intP};
+    Pab   = {Pab};
+    Mab   = {Mab};
+    Sperp = spectra.Sperp;
+elseif ~isfield(spectra,'Sab')
+    nTwin = 1;
+    if ~isfield(spectra,'omega')
+        omega = {[]};
+    else
+        omega = {spectra.omega};
+    end
+    Sab   = {[]};
+    intP  = {intP};
+    Pab   = {Pab};
+    Mab   = {Mab};
+    Sperp = {spectra.Sperp};
 else
     nTwin = 1;
     if ~isfield(spectra,'omega')

@@ -41,6 +41,9 @@ function weight = horace_sqw(obj, qh, qk, ql, en, pars, varargin)
 %                    and the transformed input parameter vector passed to
 %                    spinW and the convolution function.
 %                    [default: @(y)y  % identity operation]
+%               - 'coordtrans' - a matrix to transform the input coordinates
+%                    (qh,qk,ql,en) before being sent to SpinW. 
+%                    [default: eye(4) % identity]
 %
 %               In addition, the following parameters are used by this function                         
 %                    and will also be passed on to spinw.matparser which will
@@ -84,10 +87,10 @@ elseif numel(qh) ~= numel(qk) || numel(qh) ~= numel(ql) || numel(qh) ~= numel(en
     error('horace_sqw:BadInput', 'Inputs for qh, qk, ql and en must be same size.');
 end
 
-inpForm.fname  = {'resfun' 'partrans' 'mat'};
-inpForm.defval = {'gauss'  @(y)y      []};
-inpForm.size   = {[1 -2]   [1 1]      [1 -1]};
-inpForm.soft   = {false    false      false};
+inpForm.fname  = {'resfun' 'partrans' 'coordtrans' 'mat'};
+inpForm.defval = {'gauss'  @(y)y      eye(4)       []};
+inpForm.size   = {[1 -2]   [1 1]      [4 4]        [1 -1]};
+inpForm.soft   = {false    false      false        false};
 
 warnState = warning('off','sw_readparam:UnreadInput');
 param = sw_readparam(inpForm, varargin{:});
@@ -103,6 +106,16 @@ scale_factor = 1;
 
 % Transforms the input parameters
 pars = param.partrans(pars);
+
+% Transforms input coordinates if needed
+if sum(sum(abs(param.coordtrans - eye(4)))) > 0
+    qc = [qh(:) qk(:) ql(:) en(:)];
+    qh = sum(bsxfun(@times, param.coordtrans(1,:), qc),2);
+    qk = sum(bsxfun(@times, param.coordtrans(2,:), qc),2);
+    ql = sum(bsxfun(@times, param.coordtrans(3,:), qc),2);
+    en = sum(bsxfun(@times, param.coordtrans(4,:), qc),2);
+    clear qc;
+end
 
 % Determine which resolution function to use.
 if ischar(param.resfun)
@@ -121,6 +134,12 @@ if ischar(param.resfun)
         if numel(res_pars) > 2
             scale_factor = res_pars(3);
         end
+    elseif strncmp(lower(param.resfun), 'sho', 3)
+        resfun_id = find(cellfun(@(x) ~isempty(strfind(x, 'resfun')), varargin) ...
+                .* cellfun(@(x) ~iscell(x), varargin));
+        args = varargin([1:(resfun_id-1) (resfun_id+2):numel(varargin)]);
+        weight = sho_internal(qh, qk, ql, en, obj, res_pars, model_pars, args{:});
+        return
     else
         error('horace_sqw:UnknowResFun', ...
             sprintf('Unknown resolution function %s', param.resfun));
@@ -156,4 +175,39 @@ function out = voigt_internal(Emat, center, fwhm)
     Ediff2 = bsxfun(@minus, center, Emat).^2;
     out = (abs(fwhm/pi) ./ (Ediff2 + fwhm^2)) .* lorfrac + ...
           (exp(-Ediff2 ./ (2*sig^2)) ./ (sig*sqrt(2*pi))) .* (1 - lorfrac);
+end
+
+function weight = sho_internal(qh, qk, ql, en, obj, res_pars, varargin)
+% Calculates weight from SHO model
+    [e, sf] = obj.horace(qh, qk, ql, varargin{:});
+
+    gam = 0.1;
+    if numel(res_pars) > 1
+        gam = res_pars(1);
+    end
+
+    temp = 0;
+    if numel(res_pars) > 1
+        temp = res_pars(2);
+    end
+
+    amp = 1;
+    if numel(res_pars) > 1
+        amp = res_pars(3);
+    end
+
+    if abs(temp)<sqrt(eps) 
+        Bose = ones(numel(qh),1);
+    else
+        Bose = en./ (1-exp(-11.602.*en./temp));
+    end
+
+    % Use damped SHO model to give intensity:
+    weight = zeros(numel(qh),1);
+    for ii=1:numel(e)
+        ip = find((e{ii} > 0) .* (~isnan(sf{ii})));
+        weight(ip) = weight(ip) + (4.*gam.*e{ii}(ip).*sf{ii}(ip)) ./ ...
+            (pi.*((en(ip).^2-e{ii}(ip).^2).^2 + 4.*(gam.*en(ip)).^2));
+    end
+    weight = amp .* Bose .* weight;
 end

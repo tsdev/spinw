@@ -396,11 +396,11 @@ int orth(mwSignedIndex m, T *D, T *V, T *work, bool isreal)
     char jobu = 'O';
     char jobvt = 'N';
     mwSignedIndex lwork = 3*m;
-    T *zwork = work + (2*m*(m+7)) - 2*3*m;
-    T *rwork = zwork - 5*m;
+    T *zwork = work + (2*m*(m+10)) - 2*3*m;
+    T *rwork = zwork - 2*5*m;
     size_t msz = 2*m*sizeof(T);
 
-    // Assume workspace is size [m*(m+7)]*sizeof(complex)
+    // Assume workspace is size [m*(m+10)]*sizeof(complex)
     id = (int*)work;
     Dr = work + m;
     for(ii=0; ii<(int)m; ii++) {
@@ -424,7 +424,7 @@ int orth(mwSignedIndex m, T *D, T *V, T *work, bool isreal)
                 for(jj=ii; jj<kk; jj++)
                     memcpy(&pVz[(n++)*2*m], &V[id[jj]*2*m], msz);
                 // Does the singular value decomposition to get the orthogonal basis and singular values
-                pS = work + 2*(n+1)*m;
+                pS = work + 2*m + 2*(n+1)*m;
                 gesvd(&jobu, &jobvt, &m, &n, pVz, &m, pS, pVz, &m, pVz, &m, zwork, &lwork, rwork, &info);
                 // Checks that number of singular values == n
                 for(nn=0; nn<n; nn++)
@@ -710,7 +710,7 @@ int do_loop(T *mat, T *mat_i, mxArray *plhs[], int nthread, mwSignedIndex m, int
             m2 = m*m;
             m22 = 2*m2;
             msz = m2*sizeof(T);
-            lwork = do_orth ? ( (26*m>(2*m*(m+7))) ? 26*m : (2*m*(m+7)) )  
+            lwork = do_orth ? ( (26*m>(2*m*(m+10))) ? 26*m : (2*m*(m+10)) )  
                             : ( (26*m>(2*m*(m+3))) ? 26*m : (2*m*(m+3)) );
             liwork = 10*m;
             isuppz = new mwSignedIndex[2*m];
@@ -763,7 +763,7 @@ int do_loop(T *mat, T *mat_i, mxArray *plhs[], int nthread, mwSignedIndex m, int
                                 sort(m, D, V, work, do_sort);
                             else 
                                 sort(m, D, (T*)NULL, work, do_sort);
-                        if(do_orth)
+                        if(nlhs>1 && do_orth)
                             if(orth(m, D, V, work, 0)==1) {
                                 #pragma omp critical
                                 {
@@ -876,7 +876,7 @@ int do_loop(T *mat, T *mat_i, mxArray *plhs[], int nthread, mwSignedIndex m, int
                     if(nlhs<=1)
                         E = (T*)mxGetData(plhs[0]) + ib*m;
                     else if(nd==3)
-                        E = (T*)mxGetImagData(plhs[1]) + ib*m;
+                        E = (T*)mxGetData(plhs[1]) + ib*m;
                     for(ii=0; ii<m; ii++) 
                         *(E+ii) = *(D+2*ii);
                     if(nlhs<=1)

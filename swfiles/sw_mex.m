@@ -158,7 +158,7 @@ if param.test
         %  V1(:,:,ii)=vv(:,isr); E1(:,ii) = D(isr);
         %end;
         tic; [V1,E1]=eigorth(B,eps); t1(tp)=toc;
-        tic; [V2,E2]=eig_omp(B,'orth','sort\n'); t2(tp)=toc;
+        tic; [V2,E2]=eig_omp(B,'orth','sort'); t2(tp)=toc;
         for ii=1:nb; [~,isr]=sort(real(E1(:,ii))); V1(:,:,ii)=V1(:,isr,ii); E1(:,ii) = E1(isr,ii); end
         orthres(:,tp) = [sum(sum(sum(abs(V1)-abs(V2)))) sum(sum(abs(E1-E2)))];
     end

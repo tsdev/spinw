@@ -56,7 +56,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %   For example to define a scan along $(h,0,0)$ from $h=0$ to $h=1$ using
 %   200 $Q$ points the following input should be used:
 %   ```
-%   Q = {[0 0 0] [1 0 0]  50}
+%   Q = {[0 0 0] [1 0 0]  200}
 %   ```
 %
 %   For symbolic calculation at a general reciprocal space point use `sym`

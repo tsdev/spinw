@@ -296,7 +296,7 @@ if isnan(param.n(1))
     % default value
     param.n = repmat([0 0 1],[nK 1]);
 end
-n = bsxfun(@rdivide,param.n,sqrt(sum(param.n.^2,2)));
+n = bsxfunsym(@rdivide,param.n,sqrt(sum(param.n.^2,2)));
 
 if size(param.n,1) ~= nK
     error('spinw:genmagstr:WrongInput',['The number of normal vectors has'...

@@ -250,6 +250,7 @@ if param.test
 end
 
 if param.swtest
+    pref = swpref;
     
     % Antiferromagnetic square lattice (tutorial 4, Cu+1 S=1) - small system [3 spins, n=6]
     AFsq = spinw;
@@ -265,10 +266,14 @@ if param.swtest
     % Runs test
     hkl = {[1/4 3/4 0] [1/2 1/2 0] [1/2 0 0] [3/4 1/4 0] [1 0 0] [3/2 0 0] 50000};
     nm = 15;   % Ensure same number of slices for all tests
-    tic; linespec_herm_mex      = AFsq.spinwave(hkl,'hermit',true,'useMex',true,'optmem',nm,'fid',0);  t1=toc;
-    tic; linespec_herm_nomex    = AFsq.spinwave(hkl,'hermit',true,'useMex',false,'optmem',nm,'fid',0); t2=toc;
-    tic; linespec_nonherm_mex   = AFsq.spinwave(hkl,'hermit',false,'useMex',true,'optmem',nm,'fid',0); t3=toc;
-    tic; linespec_nonherm_nomex = AFsq.spinwave(hkl,'hermit',false,'useMex',false,'optmem',nm,'fid',0);t4=toc;
+    pref.usemex = true;
+    tic; linespec_herm_mex      = AFsq.spinwave(hkl,'hermit',true,'optmem',nm,'fid',0);  t1=toc;
+    pref.usemex = false;
+    tic; linespec_herm_nomex    = AFsq.spinwave(hkl,'hermit',true,'optmem',nm,'fid',0); t2=toc;
+    pref.usemex = true;
+    tic; linespec_nonherm_mex   = AFsq.spinwave(hkl,'hermit',false,'optmem',nm,'fid',0); t3=toc;
+    pref.usemex = false;
+    tic; linespec_nonherm_nomex = AFsq.spinwave(hkl,'hermit',false,'optmem',nm,'fid',0);t4=toc;
     
     fprintf('             %16s  %16s  %16s  %16s\n','Hermitian Mex','Hermitian NoMex','NonHermitian Mex','NonHermitian NoMex');
     fprintf('Run Time(s)  % 16.6f  % 16.6f  % 16.6f    % 16.6f\n',t1*5,t2*5,t3*5,t4*5);
@@ -277,6 +282,7 @@ if param.swtest
     %   ndlt811:         43.7453   72.0950  406.1366  611.1799
     %   eryenyo:         24.1470   85.5668  382.7930  563.6103
     %   ndl01wkc26243:   36.2106  107.8983  527.3301  796.2985
+    %   simon_i9_32Gb:  113.8068  149.5165  159.9780  260.2178
     
     % KCu3As2O7(OD)3 kagome (Nilsen PRB 89 140412) - Tutorial 18, medium sized [18 spins, n=36]
     J   = -2; Jp  = -1; Jab = 0.75; Ja  = -J/.66 - Jab; Jip = 0.01;
@@ -296,17 +302,21 @@ if param.swtest
     optpar.xmin = [    zeros(1,6), 0.5 0 0.0, 0 0];
     optpar.xmax = [2*pi*ones(1,6), 1.0 0 0.5, 0 0];
     magoptOut = hK.optmagstr(optpar);
-    kOpt = hK.mag_str.k;
+    kOpt = hK.mag_str.k(:)';
     hK.genmagstr('mode','helical','n',[0 0 1],'S',[1 0 0]','k',kOpt,'next',[1 1 1]);
     %plot(hK,'range',[2 2 0.3],'sSpin',2)
     
     % Runs test
     hkl = {[0 0 0] [1 0 0] 50000};
     nm = 10;  % Ensure same number of slices for all tests
-    tic; linespec_herm_mex = hK.spinwave(hkl,'hermit',true,'useMex',true,'optmem',nm); t1=toc;
-    tic; linespec_herm_nomex = hK.spinwave(hkl,'hermit',true,'useMex',false,'optmem',nm); t2=toc;
-    tic; linespec_nonherm_mex = hK.spinwave(hkl,'hermit',false,'useMex',true,'optmem',nm); t3=toc;
-    tic; linespec_nonherm_nomex = hK.spinwave(hkl,'hermit',false,'useMex',false,'optmem',nm); t4=toc;
+    pref.usemex = true;
+    tic; linespec_herm_mex = hK.spinwave(hkl,'hermit',true,'optmem',nm); t1=toc;
+    pref.usemex = false;
+    tic; linespec_herm_nomex = hK.spinwave(hkl,'hermit',true,'optmem',nm); t2=toc;
+    pref.usemex = true;
+    tic; linespec_nonherm_mex = hK.spinwave(hkl,'hermit',false,'optmem',nm); t3=toc;
+    pref.usemex = false;
+    tic; linespec_nonherm_nomex = hK.spinwave(hkl,'hermit',false,'optmem',nm); t4=toc;
     fprintf('             %16s  %16s  %16s  %16s\n','Hermitian Mex','Hermitian NoMex','NonHermitian Mex','NonHermitian NoMex');
     fprintf('Run Time(s)  % 16.6f  % 16.6f  % 16.6f    % 16.6f\n',t1,t2,t3,t4);
     
@@ -329,6 +339,7 @@ disp(sprintf('Supercell    % 16.6f  % 16.6f  % 16.6f    % 16.6f',t5,t6,t7,t8));
     %   ndlt811:         26.4661   40.5760   60.6112   63.3341
     %   eryenyo:          7.6710   36.0402   56.3213   73.5568
     %   ndl01wkc26243:   17.2135   42.8147   74.9062  106.8541
+    %   simon_i9_32Gb:   49.5562   55.9125   54.1221   65.5144
     
     % Bi4Fe5O13F - large(ish) system [80 spins, n=160]
     ff=11.6*2.5; Jc1 = 34/ff; Jc2 = 20/ff; Jab1 = 45/ff; Jab2 = 74/ff; Jd = 191/ff;
@@ -357,10 +368,14 @@ disp(sprintf('Supercell    % 16.6f  % 16.6f  % 16.6f    % 16.6f',t5,t6,t7,t8));
     nm = 60;  % For laptops with 16GB memory, to have the same number of slices
     %nm = 6;   % For the workstation with 50GB.
     hkl={[0 0 0] [1 1 0] [1 1 1] [0 0 1] 2000};
-    tic; linespec_herm_mex      = bfof.spinwave(hkl,'hermit',true,'useMex',true,'optmem',nm); t1=toc;
-    tic; linespec_herm_nomex    = bfof.spinwave(hkl,'hermit',true,'useMex',false,'optmem',nm); t2=toc;
-    tic; linespec_nonherm_mex   = bfof.spinwave(hkl,'hermit',false,'useMex',true,'optmem',nm); t3=toc;
-    tic; linespec_nonherm_nomex = bfof.spinwave(hkl,'hermit',false,'useMex',false,'optmem',nm); t4=toc;
+    pref.usemex = true;
+    tic; linespec_herm_mex      = bfof.spinwave(hkl,'hermit',true,'optmem',nm); t1=toc;
+    pref.usemex = false;
+    tic; linespec_herm_nomex    = bfof.spinwave(hkl,'hermit',true,'optmem',nm); t2=toc;
+    pref.usemex = true;
+    tic; linespec_nonherm_mex   = bfof.spinwave(hkl,'hermit',false,'optmem',nm); t3=toc;
+    pref.usemex = false;
+    tic; linespec_nonherm_nomex = bfof.spinwave(hkl,'hermit',false,'optmem',nm); t4=toc;
     
     fprintf('             %16s  %16s  %16s  %16s\n','Hermitian Mex','Hermitian NoMex','NonHermitian Mex','NonHermitian NoMex');
     fprintf('Run Time(s)  % 16.6f  % 16.6f  % 16.6f    % 16.6f\n',t1,t2,t3,t4);
@@ -368,6 +383,7 @@ disp(sprintf('Supercell    % 16.6f  % 16.6f  % 16.6f    % 16.6f',t5,t6,t7,t8));
     %   ndlt811:        123.6812  139.6476  197.1951  363.2818
     %   eryenyo:        127.4535  135.8621  220.9112  389.4686
     %   ndl01wkc26243:   67.8451  117.7316  146.2180  474.1894
+    %   simon_i9_32Gb:  74.31700  84.75116  253.0013  342.0254
     
 end
 end

@@ -14,6 +14,10 @@ function sw_mex(varargin)
 % switch on using mex files in [spinw.spinwave].
 % 
 % ### Name-Value Pair Arguments
+%
+% `'compile'`
+% : If `false`, mex files will not be compiled. Default is
+%   `true`.
 % 
 % `'test'`
 % : If `true`, the compiled .mex files will be tested. Default is
@@ -87,17 +91,17 @@ if param.test
     
     % Functionality tests - should not give any errors, just want to check that correct number of outputs given.
     % {
-    [V,E]=eig_omp(zhe);
-    D=eig_omp(zhe);
+    [V, E]=eig_omp(zhe);
+    D = eig_omp(zhe);
     eig_omp(zhe);
-    [V,E]=eig_omp(dsy);
-    D=eig_omp(dsy);
+    [V, E]=eig_omp(dsy);
+    D = eig_omp(dsy);
     eig_omp(dsy);
-    [V,E]=eig_omp(zge);
-    D=eig_omp(zge);
+    [V, E]=eig_omp(zge);
+    D = eig_omp(zge);
     eig_omp(zge);
-    [V,E]=eig_omp(dge);
-    D=eig_omp(dge);
+    [V, E]=eig_omp(dge);
+    D = eig_omp(dge);
     eig_omp(dge);
     %}
     
@@ -116,10 +120,10 @@ if param.test
     [V1,E1]=eig_omp(zge); [V2,E2]=eig(zge); fprintf('Complex general  \t% 10.5g\t\t% 10.5g\n',abs(sum(diag(E1)-diag(E2))),sum(sum(abs(V1)-abs(V2))));
     fprintf('\nConsistency tests:\tV*E*inv(V)-A\tV*E*V''-A\tV*V''-I\t\tV''*V-I\n');
     fprintf('------------------------------------------------------------------------------\n');
-    [V,E]=eig_omp(dsy); fprintf('Real symmetric   \t% 10.4g\t% 10.4g\t% 10.4g\t% 10.4g\n',sum(sum(V*E*inv(V)-dsy)),sum(sum(V*E*V'-dsy)),sum(sum(V*V'-eye(n))),sum(sum(V'*V-eye(n))));
-    [V,E]=eig_omp(zhe); fprintf('Complex hermitian\t% 10.4g\t% 10.4g\t% 10.4g\t% 10.4g\n',sum(sum(V*E*inv(V)-zhe)),sum(sum(V*E*V'-zhe)),sum(sum(V*V'-eye(n))),sum(sum(V'*V-eye(n))));
-    [V,E]=eig_omp(dge); fprintf('Real general     \t% 10.4g\t% 10.4g\t% 10.4g\t% 10.4g\n',sum(sum(V*E*inv(V)-dge)),sum(sum(V*E*V'-dge)),sum(sum(V*V'-eye(n))),sum(sum(V'*V-eye(n))));
-    [V,E]=eig_omp(zge); fprintf('Complex general  \t% 10.4g\t% 10.4g\t% 10.4g\t% 10.4g\n',sum(sum(V*E*inv(V)-zge)),sum(sum(V*E*V'-zge)),sum(sum(V*V'-eye(n))),sum(sum(V'*V-eye(n))));
+    [V,E]=eig_omp(dsy); fprintf('Real symmetric   \t% 10.4g\t% 10.4g\t% 10.4g\t% 10.4g\n',sum(sum(V*E/V-dsy)),sum(sum(V*E*V'-dsy)),sum(sum(V*V'-eye(n))),sum(sum(V'*V-eye(n))));
+    [V,E]=eig_omp(zhe); fprintf('Complex hermitian\t% 10.4g\t% 10.4g\t% 10.4g\t% 10.4g\n',sum(sum(V*E/V-zhe)),sum(sum(V*E*V'-zhe)),sum(sum(V*V'-eye(n))),sum(sum(V'*V-eye(n))));
+    [V,E]=eig_omp(dge); fprintf('Real general     \t% 10.4g\t% 10.4g\t% 10.4g\t% 10.4g\n',sum(sum(V*E/V-dge)),sum(sum(V*E*V'-dge)),sum(sum(V*V'-eye(n))),sum(sum(V'*V-eye(n))));
+    [V,E]=eig_omp(zge); fprintf('Complex general  \t% 10.4g\t% 10.4g\t% 10.4g\t% 10.4g\n',sum(sum(V*E/V-zge)),sum(sum(V*E*V'-zge)),sum(sum(V*V'-eye(n))),sum(sum(V'*V-eye(n))));
     %}
     
     matfn{1} = @(a,b) triu(a)+triu(a,1)';
@@ -133,10 +137,10 @@ if param.test
     nt = 10; if(nt>nb); nt=nb; end
     for tp=1:4
         for ii=1:nt; B(:,:,ii) = matfn{tp}(rand(n),rand(n)); end
-        for ii=1:nt;
+        for ii=1:nt
             [vv,D]=eig(B(:,:,ii)); [~,isr]=sort(real(diag(D)),'descend');
             V1(:,:,ii)=vv(:,isr); E1(:,ii)=diag(D); E1(:,ii)=E1(isr,ii);
-        end;
+        end
         [V2,E2]=eig_omp(B,'sort',-1);
         sortres(:,tp) = [sum(sum(sum(abs(V1)-abs(V2)))) sum(sum(abs(E1-E2)))];
     end
@@ -176,11 +180,11 @@ if param.test
     for tp=1:4
         for ii=1:nb; B(:,:,ii) = matfn{tp}(rand(n),rand(n)); end
         tic; [V,E]=eig_omp(B); t1(tp)=toc;
-        for ii=1:nb;
+        for ii=1:nb
             ch(ii)=sum(sum(V(:,:,ii)*diag(E(:,ii))*V(:,:,ii)'-B(:,:,ii))); ch2(ii)=sum(sum(V(:,:,ii)'*V(:,:,ii)-eye(size(V(:,:,ii)))));
         end; check1(tp,:)=[sum(ch) sum(ch2)];
         tic; for ii=1:size(E,2); [V(:,:,ii),ee]=eig(B(:,:,ii)); E2(:,ii)=diag(ee); end; t2(tp)=toc;
-        for ii=1:nb;
+        for ii=1:nb
             ch(ii)=sum(sum(V(:,:,ii)*diag(E(:,ii))*V(:,:,ii)'-B(:,:,ii))); ch2(ii)=sum(sum(V(:,:,ii)'*V(:,:,ii)-eye(size(V(:,:,ii)))));
         end; check2(tp,:)=[sum(ch) sum(ch2)];
         check3(tp)=sum(sum(E-E2));
@@ -226,14 +230,14 @@ if param.test
     fprintf('Complex upper    \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\n',t2(3)+t2(7),t1(3)+t1(7),(t1(3)+t1(7))/(t2(3)+t2(7)),ch(3),ch(7));
     fprintf('Complex lower    \t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\t% 12.5g\n',t2(4)+t2(8),t1(4)+t1(8),(t1(4)+t1(8))/(t2(4)+t2(8)),ch(4),ch(8));
     
-    if(mod(n,2)==1); n=n+1; end;
+    if(mod(n,2)==1); n=n+1; end
     clear mm; clear K1; clear inv1;
     g=diag([ones(1,n/2) -ones(1,n/2)]);
     for tp=1:4
         % These matrices should be positive definite (with large diagonal elements)
         for ii=1:nb; mm(:,:,ii) = chlfn{tp}(rand(n),rand(n)); end
-        tic; for ii=1:nb;
-            if(tp>2); K = chol(mm(:,:,ii),'lower'); else; K = chol(mm(:,:,ii)); end;
+        tic; for ii=1:nb
+            if(tp>2); K = chol(mm(:,:,ii),'lower'); else; K = chol(mm(:,:,ii)); end
             inv1(:,:,ii)=inv(K); K1(:,:,ii)=K*g*K';
         end; t1(tp)=toc;
         tic; if(tp>2); [K2,inv2] = chol_omp(mm,'Colpa','lower'); else; [K2,inv2] = chol_omp(mm,'Colpa'); end; t2(tp)=toc;
@@ -283,6 +287,7 @@ if param.swtest
     %   eryenyo:         24.1470   85.5668  382.7930  563.6103
     %   ndl01wkc26243:   36.2106  107.8983  527.3301  796.2985
     %   simon_i9_32Gb:  113.8068  149.5165  159.9780  260.2178
+    %   simonWork:      173.9701  231.1420  216.0472  455.3942
     
     % KCu3As2O7(OD)3 kagome (Nilsen PRB 89 140412) - Tutorial 18, medium sized [18 spins, n=36]
     J   = -2; Jp  = -1; Jab = 0.75; Ja  = -J/.66 - Jab; Jip = 0.01;
@@ -340,6 +345,7 @@ disp(sprintf('Supercell    % 16.6f  % 16.6f  % 16.6f    % 16.6f',t5,t6,t7,t8));
     %   eryenyo:          7.6710   36.0402   56.3213   73.5568
     %   ndl01wkc26243:   17.2135   42.8147   74.9062  106.8541
     %   simon_i9_32Gb:   49.5562   55.9125   54.1221   65.5144
+    %   simonWork:       68.3912   84.6127   75.3424  100.9470
     
     % Bi4Fe5O13F - large(ish) system [80 spins, n=160]
     ff=11.6*2.5; Jc1 = 34/ff; Jc2 = 20/ff; Jab1 = 45/ff; Jab2 = 74/ff; Jd = 191/ff;
@@ -383,7 +389,8 @@ disp(sprintf('Supercell    % 16.6f  % 16.6f  % 16.6f    % 16.6f',t5,t6,t7,t8));
     %   ndlt811:        123.6812  139.6476  197.1951  363.2818
     %   eryenyo:        127.4535  135.8621  220.9112  389.4686
     %   ndl01wkc26243:   67.8451  117.7316  146.2180  474.1894
-    %   simon_i9_32Gb:  74.31700  84.75116  253.0013  342.0254
-    
+    %   simon_i9_32Gb:  74.31700   84.7511  253.0013  342.0254
+    %   simonWork:      75.40301  107.8941  216.4226  467.2630
+
 end
 end

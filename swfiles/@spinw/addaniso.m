@@ -105,7 +105,7 @@ if nargin > 2
     atomTypeIdx = varargin{1};
     
     if length(obj.single_ion.aniso) ~= nMagAtom
-        addField.aniso = zeros(nMagAtom,1);
+        addField.aniso = zeros(1,nMagAtom);
     end
     
     % select atoms by label

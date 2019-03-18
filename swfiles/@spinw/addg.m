@@ -142,7 +142,7 @@ if nargin > 2
     atomTypeIdx = varargin{1};
     
     if length(obj.single_ion.g) ~= nMagAtom
-        addField.g = zeros(nMagAtom,1);
+        addField.g = zeros(1, nMagAtom, 'int32');
     end
     
     % select atoms by label
@@ -170,10 +170,9 @@ if nargin > 2
     end
     
 else
-    addField.g = zeros(1,nMagAtom) + matrixIdx;
+    addField.g = zeros(1, nMagAtom, 'int32') + matrixIdx;
 end
 
-addField.g = int32(addField.g);
 obj.single_ion = addField;
 
 end

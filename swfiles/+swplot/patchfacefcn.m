@@ -141,6 +141,9 @@ end
 T = M(1:3,4)';
 R = M(1:3,1:3);
 P = (P-T)*R;
+if ~verLessThan('matlab','9.4')
+    P = (P-T)*R;
+end
 
 % shift the origin to the first vertex of every triangle
 E1 = V(obj.Faces(:,2),:)-V(obj.Faces(:,1),:);

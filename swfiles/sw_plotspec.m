@@ -288,7 +288,8 @@ if param.mode == 4
             'dashed',true,'colorbar',false,'axLim',param.axLim,...
             'lineStyle',param.lineStyle,'maxPatch',...
             param.maxPatch,'qLabel',param.qlabel,'dat',param.dat,...
-            'ddat',param.ddat,'datFormat',param.datFormat);
+            'ddat',param.ddat,'datFormat',param.datFormat,...
+            'legend',param.legend);
     end
     if ~powmode
         hold on
@@ -472,7 +473,7 @@ if powmode && (param.mode~=3)
     param.mode = 3;
 end
 
-hPlot = [];
+hPlot = gobjects(0);
 hold on
 
 switch param.mode
@@ -725,7 +726,7 @@ if param.mode == 3
         if iscell(xLabel)
             xCut  = xLabel{end};
             nCut  = numel(xCut);
-            hPlot = zeros(1,nCut);
+            hPlot = gobjects(1,nCut);
             for ii = 2:nCut
                 selIdx = xAxis>=xCut(ii-1) & xAxis<=xCut(ii);
                 hPlot(ii-1) = image(xAxis(selIdx),yAxis,cMat(:,selIdx,:));

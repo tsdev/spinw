@@ -111,7 +111,8 @@ function spectra = spinwave(obj, hkl, varargin)
 % `false`.
 %
 % `'sortMode'`
-% : If `true`, the spin wave modes will be sorted. Default is `true`.
+% : If `true`, the spin wave modes will be sorted by continuity. Default is 
+%   `true`.
 %
 % `'optmem'`
 % : Parameter to optimise memory usage. The list of Q values will be cut

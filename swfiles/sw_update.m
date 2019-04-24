@@ -1,4 +1,4 @@
-function onlineRev = sw_update(installDir)
+function onlineRev = sw_update(installDir,varargin)
 % updates the SpinW installation from the internet
 % 
 % ### Syntax
@@ -26,17 +26,30 @@ function onlineRev = sw_update(installDir)
 %   `installDir` is `'.'`, the update will be installed to current
 %   folder.
 % 
+% `'beta'`
+% : Retrieve the latest pre-release if it is newer than the latest release.
+%   If it is older, download the latest release.
+%
 % ### Output Arguments
 % 
 % `onlineVer`  If output is defined, the revision number of the online
 %               SpinW is given, optional.
 %
 
+
+inpForm.fname  = {'beta'};
+inpForm.defval = {false};
+inpForm.size   = {[1 -1]};
+inpForm.soft   = {false};
+
+param = sw_readparam(inpForm, varargin{:});
+
+
 % check current version
 swVer = sw_version;
 
 % base url, where the sw_download_info file stored
-baseUrl = 'https://docs.google.com/uc?export=download&id=0BzFs7CQXhehSRXpjT0dndDNxNUE';
+baseUrl = 'https://api.github.com/repos/SpinW/spinw/releases';
 
 if nargout == 0
     if ~isempty(swVer.Version)
@@ -70,18 +83,25 @@ end
 %   release number
 %   message in the next few lines
 try
-    newInfo = urlread(baseUrl);
+    newInfo = webread(baseUrl);
+    % Remove pySpinW releases
+    idx = cellfun(@(x)~any(strfind(x,'py')),{newInfo.tag_name});
+    newInfo = newInfo(idx);
+    % Remove any beta releases
+    if ~param.beta
+        warning('sw_update:UseBeta','You are about to install beta software.\nReport any errors to: %s', strtok(swVer.Contact, ','))
+        idx = ~[newInfo.prerelease];
+        newInfo = newInfo(idx);
+    end
+    % The latest release is the first
+    newInfo = newInfo(1);
 catch
     error('sw_update:NoNetwork','It looks like there is a problem with your network connection!');
 end
 
-newLine = sprintf('\n'); %#ok<SPRINTFN>
-% separate lines of text
-newInfo = textscan(newInfo, '%s', 'delimiter',newLine);
-newInfo = newInfo{1};
-
-newLink = newInfo{1};
-newRev  = str2double(newInfo{2});
+newLink = newInfo.assets.browser_download_url;
+newRev  = strsplit(newInfo.assets.browser_download_url, '_');
+newRev = str2double(newRev{2}(2:end-4));
 
 if nargout == 1
     % Give the release number and exit.
@@ -89,11 +109,7 @@ if nargout == 1
     return
 end
 
-if numel(newInfo)>2
-    newMsg  = newInfo(3:end);
-else
-    newMsg = {};
-end
+newMsg = newInfo.body;
 
 % check whether the online version is newer (compare release numbers)
 if ischar(swVer.Release)

@@ -144,7 +144,7 @@ for ii = 1:numel(fList)
             && (~any(strfind(fList(ii).name,[filesep 'test' filesep]))) ...
             && (~any(strfind(fList(ii).name,[filesep 'tutorials' filesep]))) ...
             && (~any(strfind(fList(ii).folder,'git')))
-        fListZip{end+1} = [replace(fList(ii).folder, dirname, '') sp fList(ii).name];
+        fListZip{end+1} = fList(ii).name;
     end
 end
 

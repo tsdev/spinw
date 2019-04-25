@@ -17,6 +17,7 @@ Keep up to date on announcements and more by following [@spinw4](https://twitter
 We are currently testing on Centos 7.3, macOS and Windows using MATLAB R2018b. It should be noted that MATLAB symbolic calculation changed post R2018a and as such symbolic results may be differ with a relative tolerance of < 0.03 %.
 
 Testing can be pulled from the [testing](https://www.github.com/spinw/testing) repository and run with the `runspinwFunctionalityTests` command from the `Testing` directory.
+<!---
 ### MacOS
 ## SpinW
 ### Linux - CentOS 7.3 
@@ -33,3 +34,4 @@ Testing can be pulled from the [testing](https://www.github.com/spinw/testing) r
 [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile)
 ### Windows 10
 [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-Windows-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-Windows-Compile/)
+-->

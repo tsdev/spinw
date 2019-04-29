@@ -1,37 +1,37 @@
 function onlineRev = sw_update(installDir,varargin)
 % updates the SpinW installation from the internet
-% 
+%
 % ### Syntax
-% 
+%
 % `sw_update`
-% 
+%
 % `onlineRev = sw_update(installDir)`
 %
 % ### Description
-% 
+%
 % `sw_update` creates a new folder with the latest release beside the
 % current SpinW installation, downloads the newses SpinW version and adds
 % the new version to the Matlab search path and also removes the old
 % version from the search path. If the search path is defined in the
 % `startup.m` file, it has to be changed manually.
-%  
+%
 % Each step of the update process can be controlled by the user via
 % the interactive Command Line provided by the function.
 %
 % ### Input Arguments
-% 
+%
 % `installDir`
 % : Folder name, where the new version is installed. Default is
 %   the parent folder of the current version of SpinW. If
 %   `installDir` is `'.'`, the update will be installed to current
 %   folder.
-% 
+%
 % `'beta'`
 % : Retrieve the latest pre-release if it is newer than the latest release.
 %   If it is older, download the latest release.
 %
 % ### Output Arguments
-% 
+%
 % `onlineVer`  If output is defined, the revision number of the online
 %               SpinW is given, optional.
 %
@@ -85,18 +85,27 @@ end
 try
     newInfo = webread(baseUrl);
     % Remove pySpinW releases
-    idx = cellfun(@(x)~any(strfind(x,'py')),{newInfo.tag_name});
+    idx = cellfun(@(x) ~any(strfind(x, 'py')), {newInfo.tag_name});
     newInfo = newInfo(idx);
     % Remove any beta releases
+    idx = ~[newInfo.prerelease];
     if ~param.beta
-        warning('sw_update:UseBeta','You are about to install beta software.\nReport any errors to: %s', strtok(swVer.Contact, ','))
-        idx = ~[newInfo.prerelease];
         newInfo = newInfo(idx);
+    else
+        [~, idx] = max(...
+            arrayfun(...
+            @(x) datenum(strrep(strrep(x.created_at, 'T', ' '), 'Z', ' '),'dd-mm-yyyy HH:MM:SS'),...
+            newInfo));
+        newInfo = newInfo(idx);
+        if newInfo.prerelease
+            warning('sw_update:UseBeta',...
+                'You are about to install beta software.\nReport any errors to: %s', strtok(swVer.Contact, ','))
+        end
     end
     % The latest release is the first
     newInfo = newInfo(1);
 catch
-    error('sw_update:NoNetwork','It looks like there is a problem with your network connection!');
+    error('sw_update:NoNetwork', 'It looks like there is a problem with your network connection!');
 end
 
 newLink = newInfo.assets.browser_download_url;
@@ -114,6 +123,15 @@ newMsg = newInfo.body;
 % check whether the online version is newer (compare release numbers)
 if ischar(swVer.Release)
     swVer.Release = str2double(swVer.Release);
+    if isnan(swVer.Release)
+        % User has installed by the MATLAB add-ons
+        answer = getinput('This SpinW was installed by MATLAB addons.\nYou can remove and install it from the menu.\nDo you want to retrieve the latest version from Github? (y/n)','yn');
+        if answer == 'y'
+            swVer.Release = -1;
+        else
+            error('sw_update:userCanceled','Operation terminated by user.')
+        end
+    end
 end
 
 if swVer.Release ==  newRev
@@ -124,48 +142,46 @@ elseif swVer.Release >  newRev
     return
 end
 
-fprintf('Current version has a release number: %d\n',swVer.Release);
-fprintf('New version has a release number:     %d\n',newRev);
+fprintf('Current version has a release number: %d\n', swVer.Release);
+fprintf('New version has a release number:     %d\n', newRev);
 
-answer = getinput('Do you want to continue? (y/n)','yn');
+answer = getinput('Do you want to continue? (y/n)', 'yn');
 
 if answer == 'n'
-    disp('SpinW update process cancelled!');
-    return
+    error('sw_update:userCanceled', 'Operation terminated by user.')
 end
 
-fprintf('New version will be installed to: %s\n',installDir);
-answer = getinput('Do you want to continue? (y/n)','yn');
+fprintf('New version will be installed to: %s\n', installDir);
+answer = getinput('Do you want to continue? (y/n)', 'yn');
 
 if answer(1) == 'n'
-    disp('SpinW update process cancelled!');
-    return
+    error('sw_update:userCanceled', 'Operation terminated by user.')
 end
 
 % save new update as a zip file
 updateName = 'spinw_update_files.zip';
-fprintf('Downloading update from %s... ',newLink);
+fprintf('Downloading update from %s... ', newLink);
 urlwrite(newLink,[installDir updateName]);
 fprintf('ready!\n');
 
 % decompress zip file
-zipList = unzip([installDir updateName],installDir);
+zipList = unzip([installDir updateName], installDir);
 
 % get folder name
-folName = [installDir strtok(zipList{1}(numel(installDir)+1:end),filesep)];
+folName = [installDir strtok(zipList{1}(numel(installDir)+1:end), filesep)];
 
 % remove old SpinW installation from path
 fprintf('\nRemoving path to old SpinW installation!\n')
 rmpath(genpath(sw_rootdir));
 
 % adding new path
-fprintf('Adding path to new SpinW installation: %s!\n',folName);
+fprintf('Adding path to new SpinW installation: %s!\n', folName);
 ww = warning;
 warning('off');
 addpath(genpath(folName));
 warning(ww);
 
-answer = getinput('Do you want to save the new path (savepath)? (y/n)','yn');
+answer = getinput('Do you want to save the new path (savepath)? (y/n)', 'yn');
 
 if answer == 'y'
     savepath
@@ -191,7 +207,7 @@ delete([installDir updateName]);
 %     end
 %     % gobjects
 %     fList = dir([folName filesep 'external' filesep 'gobjects*']);
-%     for ii = 1:numel(fList)
+%     for ii = 1:numel
 %         delete([folName filesep 'external' filesep fList(ii).name]);
 %     end
 % else
@@ -212,7 +228,7 @@ delete([installDir updateName]);
 %             [folName filesep 'external' filesep 'gobjects.m']);
 %     end
 % end
-% 
+%
 % % functions introduced in R2015a
 % % if ~verLessThan('matlab', '8.5')
 % %     % uniquetol()
@@ -221,17 +237,17 @@ delete([installDir updateName]);
 % %         delete([folName filesep 'external' filesep fList(ii).name]);
 % %     end
 % % end
-% 
+%
 % fprintf(['In order to reach SpinW after restarting Matlab, the following\n'...
 %     'line has to be added to your startup.m file:\n']);
 % fprintf('  addpath(genpath(''%s''));\n',folName);
-% 
+%
 % % location of Matlab startup file
 % sfLoc = which('startup');
 % uPath = userpath;
 % % remove ':' and ';' characters from the userpath
 % uPath = [uPath(~ismember(uPath,':;')) filesep 'startup.m'];
-% 
+%
 % % create new startup.m file
 % if isempty(sfLoc)
 %     answer = getinput(sprintf(['You don''t have a Matlab startup.m file,\n'...
@@ -241,13 +257,13 @@ delete([installDir updateName]);
 %         sfLoc = uPath;
 %     end
 % end
-% 
+%
 % if ~isempty(sfLoc)
-%     
+%
 %     answer = getinput(sprintf(['Would you like to add the following line:\n'...
 %         sprintf('addpath(genpath(''%s''));',folName) '\nto the end of '...
 %         'your Matlab startup file (%s)? (y/n)'],sfLoc),'yn');
-%     
+%
 %     if answer == 'y'
 %         fid = fopen(sfLoc,'a');
 %         fprintf(fid,['\n%%###SW_UPDATE\n%% Path to the SpinW (rev. %d) '...
@@ -262,7 +278,7 @@ if numel(newMsg)>0
         disp('Release information:')
         disp(repmat('-',[1 60]))
         for ii = 1:numel(newMsg)
-            fprintf('\t%s\n',newMsg{ii});
+            fprintf('%s', newMsg);
         end
         disp(repmat('-',[1 60]))
     end
@@ -275,7 +291,7 @@ end
 %     'in the Matlab internal memory. Would you like the updater to issue\n'...
 %     'the command now, otherwise you can do it manually later.\n'...
 %     'Do you want to issue the command "clear classes" now? (y/n)'],'yn');
-% 
+%
 % if answer == 'y'
 %     clear('classes'); %#ok<CLCLS>
 %     disp('Matlab class memory is refreshed!')
@@ -283,7 +299,7 @@ end
 
 disp('Update was successful!')
 
-answer = getinput('Do you want to run the install_spinw command from the update? (y/n)','yn');
+answer = getinput('Do you want to run the install_spinw command from the update? (y/n)', 'yn');
 
 switch answer
     case 'n'
@@ -298,12 +314,11 @@ function answer = getinput(message,good)
 % get the necessary letter input
 
 answer = ' ';
-while ~ismember(answer(1),good)
-    answer = input(message,'s');
+while ~ismember(answer(1), good)
+    answer = input(message, 's');
     if isempty(answer)
         answer = 0;
     end
 end
 answer = answer(1);
-
 end

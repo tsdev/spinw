@@ -74,12 +74,12 @@ hK.energy
 % S(Q,omega) and plot S^perp that gives the neutron scattering cross
 % section.
 
-hkSpec = hK.spinwave({[0 0 0] [1 0 0] 500},'hermit',false);
+hkSpec = hK.spinwave({[0 0 0] [1 0 0] 500},'hermit',false,'sortMode',false);
 hkSpec = sw_neutron(hkSpec);
 hkSpec = sw_egrid(hkSpec,'Evect',linspace(0,5,500),'imagChk',false);
 
 figure
-sw_plotspec(hkSpec,'mode','pretty','linestyle','-');
+sw_plotspec(hkSpec,'mode','pretty','linestyle','-','sortMode',true);
 caxis([0 20])
 
 %% Test dispersion on commensurate cell

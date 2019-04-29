@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/117668242.svg)](https://zenodo.org/badge/latestdoi/117668242) [![Twitter Follow](https://img.shields.io/twitter/follow/spinw4.svg?style=social&label=Follow)](https://twitter.com/intent/user?screen_name=spinw4) [![Github All Releases](https://img.shields.io/github/downloads/tsdev/spinw/total.svg)](https://github.com/tsdev/spinw/releases)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2651100.svg)](https://doi.org/10.5281/zenodo.2651100)[![Twitter Follow](https://img.shields.io/twitter/follow/spinw4.svg?style=social&label=Follow)](https://twitter.com/intent/user?screen_name=spinw4) [![Old Github All Releases](https://img.shields.io/github/downloads/tsdev/spinw/total.svg)](https://github.com/tsdev/spinw/releases)[![Github All Releases](https://img.shields.io/github/downloads/spinw/spinw/total.svg)](https://github.com/spinw/spinw/releases)
 
 
 <img src="spinw3_logo.png" width="150">
@@ -17,6 +17,7 @@ Keep up to date on announcements and more by following [@spinw4](https://twitter
 We are currently testing on Centos 7.3, macOS and Windows using MATLAB R2018b. It should be noted that MATLAB symbolic calculation changed post R2018a and as such symbolic results may be differ with a relative tolerance of < 0.03 %.
 
 Testing can be pulled from the [testing](https://www.github.com/spinw/testing) repository and run with the `runspinwFunctionalityTests` command from the `Testing` directory.
+<!---
 ### MacOS
 ## SpinW
 ### Linux - CentOS 7.3 
@@ -33,3 +34,4 @@ Testing can be pulled from the [testing](https://www.github.com/spinw/testing) r
 [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-OSX-Compile)
 ### Windows 10
 [![Build Status](https://jenkins.esss.dk/spinw/job/pySpinW-Windows-Compile/badge/icon)](https://jenkins.esss.dk/spinw/job/pySpinW-Windows-Compile/)
+-->

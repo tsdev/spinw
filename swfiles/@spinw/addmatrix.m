@@ -46,7 +46,8 @@ function addmatrix(obj, varargin)
 % 
 % `'label'`
 % : Label string for plotting default value is `'matI'`, where $I$ is the index
-%   of the matrix.
+%   of the matrix. Add '-' to the end of the label to plot bond as dashed
+%   line/cylinder.
 % 
 % `'color'`
 % : Color for plotting, either row vector

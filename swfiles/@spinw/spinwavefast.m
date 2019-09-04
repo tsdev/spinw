@@ -614,10 +614,12 @@ for jj = 1:nSlice
         % nExt (we devide here to cancel the multiplication later)
         kme = km./nExt;
         hklExtMEM  = [bsxfun(@minus,hklMEM,kme') hklMEM bsxfun(@plus,hklMEM,kme')];
+        nIncomm = 3;
         
     else
         hklExt0MEM = hklMEM;
         hklExtMEM  = hklMEM;
+        nIncomm = 1;
     end
 
     % Converts wavevector list into the extended unit cell
@@ -851,8 +853,8 @@ for jj = 1:nSlice
     
         if iscell(param.formfact) || param.formfact
             % include the form factor in the z^alpha, z^beta matrices
-            zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 nMagExt 2 1]);
-            zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 nMagExt 1]);
+            zeda = zeda.*repmat(permute(FF(:,hklIdxMEM),[3 4 5 1 2]),[3 3 nMagExt 2 nIncomm]);
+            zedb = zedb.*repmat(permute(FF(:,hklIdxMEM),[3 4 1 5 2]),[3 3 2 nMagExt nIncomm]);
         end
     
         if param.gtensor
@@ -898,7 +900,7 @@ for jj = 1:nSlice
         end
     
         % dispersion
-        omega(:,hklIdxMEM) = [DD(:,kmIdx==1); DD(:,kmIdx==2); DD(:,kmIdx==3)];
+        omega(:,hklIdxMEM) = [DD(1,kmIdx==1); DD(1,kmIdx==2); DD(1,kmIdx==3)];
         % exchange matrices
         if useMex
             Sab   = cat(3,sw_mtimesx(Sab(:,:,:,kmIdx==1),K1), sw_mtimesx(Sab(:,:,:,kmIdx==2),K2), sw_mtimesx(Sab(:,:,:,kmIdx==3),conj(K1)));

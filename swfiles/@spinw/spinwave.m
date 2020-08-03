@@ -1022,7 +1022,11 @@ spectra.nformula = double(obj.unit.nformula);
 
 % Save different intermediate results.
 if param.saveV
-    spectra.V = Vsave;
+    if param.notwin
+        spectra.V = Vsave;
+    else
+        spectra.V = mat2cell(Vsave, size(Vsave, 1), size(Vsave, 1), repmat(nHkl0, [1 nTwin]));
+    end
 end
 if param.saveH
     spectra.H = Hsave;

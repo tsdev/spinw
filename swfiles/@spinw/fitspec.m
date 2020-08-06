@@ -89,7 +89,11 @@ function fitsp = fitspec(obj, varargin)
 % 
 % `'imagChk'`
 % : Checks that the imaginary part of the spin wave dispersion is
-%   smaller than the energy bin size. Default is `true`.
+%   smaller than the energy bin size. 
+%   If false, will not check
+%   If 'penalize' will apply a penalty to iterations that yield imaginary modes
+%   If true, will stop the fit if an iteration gives imaginary modes
+%   Default is `penalize`.
 % 
 % Parameters for visualizing the fit results:
 % 
@@ -179,8 +183,8 @@ inpForm.size   = [inpForm.size   {[1 1]  [1 1]    [1 1]    [1 1]   [1 -7]     }]
 inpForm.soft   = [inpForm.soft   {false  false    false    false   false      }];
 
 inpForm.fname  = [inpForm.fname  {'maxiter' 'sw'  'optmem' 'tid' 'imagChk'}];
-inpForm.defval = [inpForm.defval {20        1     0        tid0   true    }];
-inpForm.size   = [inpForm.size   {[1 1]  	[1 1] [1 1]    [1 1]  [1 1]   }];
+inpForm.defval = [inpForm.defval {20        1     0        tid0  'penalize'}];
+inpForm.size   = [inpForm.size   {[1 1]  	[1 1] [1 1]    [1 1]  [1 -8]  }];
 inpForm.soft   = [inpForm.soft   {false  	false false    false  false   }];
 
 param = sw_readparam(inpForm, varargin{:});
@@ -211,6 +215,15 @@ end
 param0      = param;
 param0.plot = false;
 param0.tid  = 0;
+
+% Parses the imagChk parameter - we need to set it to true/false for spinw.spinwave()
+if strncmp(param.imagChk, 'penalize', 1)
+    param0.imagChk = true;
+    param0.penalize_imag = true;
+else
+    param0.imagChk = logical(param.imagChk(1));
+    param0.penalize_imag = false;
+end
 
 x     = zeros(nRun,nPar);
 redX2 = zeros(nRun,1);
@@ -330,7 +343,6 @@ function [yCalc, pHandleOut] = spec_fitfun(obj, dataCell, parfunc, x, param)
 
 param.nPoints = 50;
 
-
 parfunc(obj,x);
 
 % Number of different correlation functions measured.
@@ -351,7 +363,19 @@ for ii = 1:nConv
     % calculate neutron scattering cross section
     spec = sw_neutron(spec,'n',data.n,'pol',data.corr.type{1}(1) > 1);
     % bin the data along energy
-    spec = sw_egrid(spec,'component',data.corr,'Evect',param.Evect,'imagChk',param.imagChk);
+    try
+        spec = sw_egrid(spec,'component',data.corr,'Evect',param.Evect,'imagChk',param.imagChk);
+    catch ex
+        % If we get imaginary modes, set all bins to zero to get high Rw
+        if strcmp(ex.identifier, 'egrid:BadSolution') && param.penalize_imag
+            spec.Evect = param.Evect;
+            spec.swConv = zeros(numel(spec.Evect)-1, size(spec.Sperp, 2));
+            spec.swInt = spec.Sperp;
+            spec.component = 'Sperp';
+        else
+            rethrow(ex);
+        end
+    end
     % generate center bin
     spec.Evect = (spec.Evect(1:(end-1))+spec.Evect(2:end))/2;
     

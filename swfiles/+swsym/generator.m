@@ -191,7 +191,7 @@ while(ii<=length(symStr))
         nSign = -1;
     elseif symStr(ii)=='+'
         nSign = 1;
-    elseif (symStr(ii)=='1')||(symStr(ii)=='2')||(symStr(ii)=='3')
+    elseif ~isnan(str2double(symStr(ii)))
         symOp(nNew,4,nOp) = (symStr(ii)-'0')/(symStr(ii+2)-'0');
         ii = ii+2;
     end

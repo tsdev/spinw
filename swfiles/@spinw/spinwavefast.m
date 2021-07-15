@@ -900,7 +900,7 @@ for jj = 1:nSlice
         end
     
         % dispersion
-        omega(:,hklIdxMEM) = [DD(1,kmIdx==1); DD(1,kmIdx==2); DD(1,kmIdx==3)];
+        omega(:,hklIdxMEM) = [DD(:,kmIdx==1); DD(:,kmIdx==2); DD(:,kmIdx==3)];
         % exchange matrices
         if useMex
             Sab   = cat(3,sw_mtimesx(Sab(:,:,:,kmIdx==1),K1), sw_mtimesx(Sab(:,:,:,kmIdx==2),K2), sw_mtimesx(Sab(:,:,:,kmIdx==3),conj(K1)));

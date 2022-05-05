@@ -6,7 +6,7 @@
 **SpinW** (*spin-double-u*) is a Matlab library that can optimize magnetic structures using mean field theory and calculate spin wave dispersion and spin-spin correlation function for complex crystal and magnetic structures. For details check http://www.spinw.org
 
 # Current Status
-We are currently in a period of change. **SpinW will be moving to python/C++ (with a Matlab interface)**. I'm sure you can appreciate that this will be a lot of work as all of the code will be completely re-written and updated. In this period the Matlab version will be updated with bug fixes and reviewed external pull requests. More details of the new version will follow. [**For Q&A we are testing GitHub Discussions.**](https://github.com/SpinW/spinw/discussions) Come and say hello! You can check on our progress at https://github.com/SpinW/spinw4
+We are currently in a period of change. **SpinW will be moving to python/C++ (with a Matlab interface)**. I'm sure you can appreciate that this will be a lot of work as all of the code will be completely re-written and updated. In this period the Matlab version will be stabalized at v3.1.1 with bug fixes and reviewed external pull requests. More details of the new version will follow. [**For Q&A we are testing GitHub Discussions.**](https://github.com/SpinW/spinw/discussions)
 
 # Documentation
 * experimental and under construction, the address can change in the future

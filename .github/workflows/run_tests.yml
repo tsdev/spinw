@@ -1,0 +1,36 @@
+name: SpinW Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master, development ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        matlab_version: [latest]
+        include:
+          - os: ubuntu-latest
+            matlab_version: R2020a
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out SpinW
+        uses: actions/checkout@v2
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1 # v1.1.0 required for Windows/MacOS support
+        with:
+          release: ${{ matrix.matlab_version }}
+      - name: Run tests
+        uses: matlab-actions/run-command@v1
+        with:
+          command: "run run_tests.m"
+      - uses: codecov/codecov-action@v2
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.matlab_version == 'latest' }}
+        with:
+            files: coverage*.xml
+            token: ${{ secrets.CODECOV_TOKEN }}

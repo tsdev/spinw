@@ -22,9 +22,16 @@ function result = run_tests(out_dir)
     import matlab.unittest.TestRunner
     import matlab.unittest.plugins.CodeCoveragePlugin
     import matlab.unittest.plugins.codecoverage.CoberturaFormat
+    import matlab.unittest.selectors.HasTag
     import matlab.unittest.plugins.XMLPlugin
 
+
     suite = TestSuite.fromPackage('sw_tests', 'IncludingSubpackages', true);
+    if ispc || ismac
+        % only run symbolic tests on ubuntu (winodws and mac don't have
+        % toolkit)
+        suite = suite.selectIf(~HasTag('Symbolic'));
+    end
     runner = TestRunner.withTextOutput;
 
     % Add coverage output

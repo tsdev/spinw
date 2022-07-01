@@ -26,3 +26,8 @@ Bug Fixes
 - Fix bug in addcoupling that did not allow user to supply 'atom' with
   numeric array of atom indices (previously only worked for string or
   cell of strings corresponding to atom labels).
+- Renamed undocumented ``gencoupling`` parameter ``tol`` to ``tolMaxDist``
+  (see doc string of ``gencoupling`` for more details).
+- Added validation to ``gencoupling`` to ensure ``maxDistance > dMin``.
+- Fixed uncaught error in ``gencoupling`` by checking if any bonds have
+  length < ``maxSym``

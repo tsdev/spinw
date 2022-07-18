@@ -94,6 +94,21 @@ function spectra = spinwave(obj, hkl, varargin)
 %   * `Q`           matrix with dimensions of $[3\times n_Q]$, where each
 %                   column contains a $Q$ vector in $\\ang^{-1}$ units.
 %
+% `'cmplxBase'`
+% : If `true`, we use a local coordinate system fixed by the
+%   complex magnetisation vectors:
+%   $\begin{align}  e_1 &= \Im(\hat{M})\\
+%                   e_3 &= Re(\hat{M})\\
+%                   e_2 &= e_3\times e_1
+%    \end{align}$
+%   If `false`, we use a coordinate system fixed to the moments:
+%   $\begin{align}  e_3 \parallel S_i\\
+%                   e_2 &= \S_i \times [1, 0, 0]\\
+%                   e_1 &= e_2 \times e_3
+%   \end{align}$
+%   Except if $S_i \parallel [1, 0, 0], e_2 = [0, 0, 1]$. The default is
+%  `false`.
+%
 % `'gtensor'`
 % : If true, the g-tensor will be included in the spin-spin correlation
 %   function. Including anisotropic g-tensor or different
@@ -108,7 +123,7 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % `'notwin'`
 % : If `true`, the spectra of the twins won't be calculated. Default is
-% `false`.
+%   `false`.
 %
 % `'sortMode'`
 % : If `true`, the spin wave modes will be sorted by continuity. Default is 
@@ -158,7 +173,8 @@ function spectra = spinwave(obj, hkl, varargin)
 %
 % `'saveSabp'`
 % : If true, the dynamical structure factor in the rotating frame
-%   $S'(k,\omega)$ is saved. Default value is `false`.
+%   $S'(k,\omega)$ is saved. For incommensurate structures only. Default
+%   value is `false`.
 %
 % `'title'`
 % : Gives a title string to the simulation that is saved in the output.
@@ -202,21 +218,32 @@ function spectra = spinwave(obj, hkl, varargin)
 %               dimensions are $[3\times 3\times n_{mode}\times n_{Q}]$,
 %               but the number of modes are equal to twice the number of
 %               magnetic atoms.
-%   * `formfact`  Cell containing the labels of the magnetic ions if form
-%               factor in included in the spin-spin correlation function.
-%   * `cmplxBase` The local coordinate system on each magnetic moment is
-%               defined by the complex magnetic moments:
-%               $\begin{align}  e_1 &= \Im(\hat{M})\\
-%                               e_3 &= Re(\hat{M})\\
-%                               e_2 &= e_3\times e_1
-%               \end{align}$
-%
 %   * `hkl`     Contains the input $Q$ values, dimensions are $[3\times n_{Q}]$.
 %   * `hklA`    Same $Q$ values, but in $\\ang^{-1}$ unit, in the
 %               lab coordinate system, dimensins are $[3\times n_{Q}]$.
+%   * `formfact`Logical value, whether the form factor has been included in
+%               the spin-spin correlation function.
 %   * `incomm`  Logical value, tells whether the calculated spectra is
 %               incommensurate or not.
+%   * `helical` Logical value, whether the magnetic structure is a helix
+%               i.e. whether 2*k is non-integer.
+%   * `norm`    Logical value, is always false.
+%   * `nformula`Number of formula units in the unit cell that have been
+%               used to scale Sab, as given in spinw.unit.nformula.
+%   * `param`   Struct containing input parameters, each corresponds to the
+%               input parameter of the same name:
+%               * `notwin`
+%               * `sortMode`
+%               * `tol`
+%               * `omega_tol`
+%               * `hermit`
+%   * `title`   Character array, the title for the output spinwave, default
+%               is 'Numerical LSWT spectrum'
+%   * `gtensor` Logical value, whether a g-tensor has been included in the
+%               calculation.
 %   * `obj`     The copy (clone) of the input `obj`, see [spinw.copy].
+%   * `datestart`Character array, start date and time of the calculation
+%   * `dateend` Character array, end date and time of the calculation
 %
 % The number of magnetic modes (labeled by `nMode`) for commensurate
 % structures is double the number of magnetic atoms in the magnetic cell.
@@ -329,6 +356,12 @@ km = magStr.k.*nExt;
 
 % whether the structure is incommensurate
 incomm = any(abs(km-round(km)) > param.tol);
+
+if ~incomm && param.saveSabp
+    warning('spinw:spinwave:CommensurateSabp', ['The dynamical structure '...
+            'factor in the rotating frame has been requested, but the ', ...
+            'structure is commensurate so this will have no effect.']);
+end
 
 % Transform the momentum values to the new lattice coordinate system
 hkl = obj.unit.qmat*hkl;
@@ -451,40 +484,25 @@ else
         '(nMagExt = %d, nHkl = %d, nTwin = %d)...\n'],nMagExt, nHkl0, nTwin);
 end
 
-% Local (e1,e2,e3) coordinate system fixed to the moments,
+% If cmplxBase is false, we use a local (e1,e2,e3) coordinate system fixed
+% to the moments:
 % e3||Si,ata
 % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
 % e1 = e2 x e3
-% Local (e1,e2,e3) coordinate system fixed to the moments.
-% TODO add the possibility that the coordinate system is fixed by the
-% comples magnetisation vectors: e1 = imag(M), e3 = real(M), e2 =
-% cross(e3,e1)
+% If cmplxBase is true, we use a coordinate system fixed by the
+% complex magnetisation vectors:
+% e1 = imag(M)
+% e3 = real(M)
+% e2 = e3 x e1
 if ~param.cmplxBase
-    if obj.symbolic
-        e3 = simplify(M0./[S0; S0; S0]);
-        % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
-        e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
-        % select zero vector and make them parallel to [0,0,1]
-        selidx = abs(e2)>0;
-        if isa(selidx,'sym')
-            e2(3,~any(~sw_always(abs(e2)==0))) = 1;
-        else
-            e2(3,~any(abs(e2)>0)) = 1;
-        end
-        E0 = sqrt(sum(e2.^2,1));
-        e2  = simplify(e2./[E0; E0; E0]);
-        % e1 = e2 x e3
-        e1  = simplify(cross(e2,e3));
-    else
-        % e3 || Si
-        e3 = bsxfun(@rdivide,M0,S0);
-        % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
-        e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
-        e2(3,~any(abs(e2)>1e-10)) = 1;
-        e2  = bsxfun(@rdivide,e2,sqrt(sum(e2.^2,1)));
-        % e1 = e2 x e3
-        e1  = cross(e2,e3);
-    end
+    % e3 || Si
+    e3 = bsxfun(@rdivide,M0,S0);
+    % e2 = Si x [1,0,0], if Si || [1,0,0] --> e2 = [0,0,1]
+    e2  = [zeros(1,nMagExt); e3(3,:); -e3(2,:)];
+    e2(3,~any(abs(e2)>1e-10)) = 1;
+    e2  = bsxfun(@rdivide,e2,sqrt(sum(e2.^2,1)));
+    % e1 = e2 x e3
+    e1  = cross(e2,e3);
 else
     F0  = obj.mag_str.F;
     RF0 = sqrt(sum(real(F0).^2,1));
@@ -497,13 +515,6 @@ else
     e1  = e1./repmat(sqrt(sum(e1.^2,1)),[3 1]);
     % e2 = cross(e3,e1)
     e2  = cross(e3,e1);
-    
-    if obj.symbolic
-        e1 = simplify(e1);
-        e2 = simplify(e2);
-        e3 = simplify(e3);
-    end
-    
 end
 % assign complex vectors that define the rotating coordinate system on
 % every magnetic atom
@@ -1023,7 +1034,7 @@ spectra.hklA     = hklA;
 spectra.incomm   = incomm;
 spectra.helical  = helical;
 spectra.norm     = false;
-spectra.nformula = double(obj.unit.nformula);
+spectra.nformula = int32(obj.unit.nformula);
 
 % Save different intermediate results.
 if param.saveV
@@ -1068,13 +1079,8 @@ if orthWarn0
 end
 
 if strcmp(singWarn,'MATLAB:nearlySingularMatrix')
-    lineLink = 'line 846';
-    if feature('HotLinks')
-        lineLink = ['<a href="matlab:opentoline([''' sw_rootdir 'swfiles' filesep '@spinw' filesep 'spinwave.m''' '],846,0)">' lineLink '</a>'];
-    end
     warning('spinw:spinwave:nearlySingularMatrix',['Matrix is close '...
-        'to singular or badly scaled. Results may be inaccurate.\n> In spinw/spinwave (' lineLink ')']);
-    %fprintf(repmat('\b',[1 30]));
+            'to singular or badly scaled. Results may be inaccurate.']);
 end
 
 end

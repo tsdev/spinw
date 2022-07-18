@@ -2,9 +2,10 @@ name: SpinW Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master, development ]
+    branches: [master, development]
+    types: [opened, reopened, synchronize]
   workflow_dispatch:
 
 jobs:

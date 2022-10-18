@@ -41,7 +41,6 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
             testCase.swobj.addaniso('A');
             testCase.swobj.addg('g1')
             testCase.swobj.field([0 0 0.5])
-            testCase.swobj.plot('range', [2,1,1])
         end
     end
 
@@ -51,6 +50,17 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
 %             testCase.verifyError(@() testCase.swobj.addg(), ...
 %                 'MATLAB:minrhs') % better if sw_readparam:MissingParameter
 %         end
+
+        function test_intmatrix_no_couplings_defined(testCase)
+            [SS, SI, RR] = spinw().intmatrix('fitmode',1);
+            expected_SS = struct('all', zeros(15,0), 'dip', zeros(15,0));
+            expected_SI = struct('aniso', zeros(3,3,0), 'g', zeros(3,3,0), ...
+                                 'field', zeros(1,3));
+            expected_RR = zeros(3,0);
+            testCase.verify_val(expected_SS, SS)
+            testCase.verify_val(expected_SI, SI)
+            testCase.verify_val(expected_RR, RR)
+        end
         
         function test_intmatrix_fitmode_true(testCase)
             [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1);

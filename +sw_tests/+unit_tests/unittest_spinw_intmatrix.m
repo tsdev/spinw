@@ -35,6 +35,7 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
                                      'value', diag([0 0 -0.1])) % c easy
             testCase.swobj.addmatrix('label', 'J1', 'value', 1)
             testCase.swobj.addmatrix('label', 'J2', 'value', -2)
+            testCase.swobj.addmatrix('label','D','value',[0 -1 0])
             testCase.swobj.gencoupling();
             testCase.swobj.addcoupling('mat', 'J1', 'bond', 1); % bond // a
             testCase.swobj.addcoupling('mat', 'J2', 'bond', 2, 'type', 'biquadratic'); % bond // b
@@ -46,10 +47,12 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
 
     methods (Test)
             
-%         function test_addg_requires_matrix(testCase)
-%             testCase.verifyError(@() testCase.swobj.addg(), ...
-%                 'MATLAB:minrhs') % better if sw_readparam:MissingParameter
-%         end
+        function test_error_anisotropic_biquad_exchange(testCase)
+            testCase.swobj.addcoupling('mat', 'D', 'bond', 3, 'subIdx', 1, ...
+                'type', 'biquadratic');
+            testCase.verifyError(@() testCase.swobj.intmatrix('fitmode',0), ...
+                'spinw:intmatrix:DataError') % better if sw_readparam:MissingParameter
+        end
 
         function test_intmatrix_no_couplings_defined(testCase)
             [SS, SI, RR] = spinw().intmatrix('fitmode',1);
@@ -70,7 +73,6 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
         end
         
         function test_intmatrix_fitmode_true_DM_interaction(testCase)
-            testCase.swobj.addmatrix('label','D','value',[0 -1 0])
             testCase.swobj.addcoupling('mat', 'D', 'bond', 3, 'subIdx', 1);
             
             [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1);

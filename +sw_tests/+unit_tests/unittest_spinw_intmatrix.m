@@ -36,6 +36,8 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
             testCase.swobj.addmatrix('label', 'J1', 'value', 1)
             testCase.swobj.addmatrix('label', 'J2', 'value', -2)
             testCase.swobj.addmatrix('label','D','value',[0 -1 0])
+            testCase.swobj.addmatrix('label','mat','value', ...
+                                     reshape(2:2:18, [3, 3]))
             testCase.swobj.gencoupling();
             testCase.swobj.addcoupling('mat', 'J1', 'bond', 1); % bond // a
             testCase.swobj.addcoupling('mat', 'J2', 'bond', 2, 'type', 'biquadratic'); % bond // b
@@ -93,6 +95,26 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
             
             expected_SS = testCase.default_SS;
             expected_SS.all = expected_SS.all(:,3:end);
+            testCase.verify_val(expected_SS, SS)
+            testCase.verify_val(testCase.default_SI, SI)
+            testCase.verify_val(testCase.default_RR, RR)
+        end
+        
+        function test_intmatrix_conjugate(testCase)
+            % add coupling between two different atoms
+            testCase.swobj.addcoupling('mat', 'mat', 'bond', 3, 'subIdx', 1);
+            % zero other couplings for brevity (will be omitted by zeroC)
+            testCase.swobj.addmatrix('label', 'J1', 'value', 0)
+            testCase.swobj.addmatrix('label', 'J2', 'value', 0)
+            
+            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1, ...
+                'conjugate', true);
+     
+            expected_SS = testCase.default_SS;
+            % two bonds 2->1 and 1->2 with half interaction
+            bond1 = [1, 0, 0, 2, 1, 1:9, 0]';
+            bond2 = [-1, 0, 0, 1, 2, 1, 4, 7, 2, 5, 8, 3, 6, 9, 0]';
+            expected_SS.all = [bond1, bond2];
             testCase.verify_val(expected_SS, SS)
             testCase.verify_val(testCase.default_SI, SI)
             testCase.verify_val(testCase.default_RR, RR)

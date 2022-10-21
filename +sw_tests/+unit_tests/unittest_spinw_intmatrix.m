@@ -85,6 +85,18 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
             testCase.verify_val(testCase.default_RR, RR)
         end
         
+        function test_intmatrix_zeroC_false_removes_zero_matrices(testCase)
+            testCase.swobj.addmatrix('label', 'J1', 'value', 0)
+            
+            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1, ...
+                'zeroC', false);
+            
+            expected_SS = testCase.default_SS;
+            expected_SS.all = expected_SS.all(:,3:end);
+            testCase.verify_val(expected_SS, SS)
+            testCase.verify_val(testCase.default_SI, SI)
+            testCase.verify_val(testCase.default_RR, RR)
+        end
         
      end
 

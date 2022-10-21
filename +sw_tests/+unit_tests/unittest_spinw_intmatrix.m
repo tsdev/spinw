@@ -119,7 +119,45 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
             testCase.verify_val(testCase.default_SI, SI)
             testCase.verify_val(testCase.default_RR, RR)
         end
+               
+        function test_extend_false_with_supercell(testCase)
+           % make a supercell
+           testCase.swobj.genmagstr('mode', 'random', 'nExt', [2 1 1]);
+           
+           [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1, ...
+                'extend', false);
+            
+            testCase.verify_val(testCase.default_SS, SS)
+            testCase.verify_val(testCase.default_SI, SI)
+            testCase.verify_val(testCase.default_RR, RR)
+        end
         
+        function test_extend_true_with_supercell(testCase)
+           % make a supercell
+           testCase.swobj.genmagstr('mode', 'random', 'nExt', [2 1 1]);
+           
+           [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1, ...
+                'extend', true);
+            
+            % SS
+            expected_SS = testCase.default_SS;
+            expected_SS.all = repmat(expected_SS.all, 1, 2);
+            expected_SS.all(1,1:2) = 0;
+            expected_SS.all(5,1:2) = [3, 4];
+            expected_SS.all(4,5:8) = repmat([3, 4], 1, 2);
+            expected_SS.all(5,7:8) = [3, 4];
+            testCase.verify_val(expected_SS, SS)
+            % SI
+            expected_SI = testCase.default_SI;
+            expected_SI.aniso = repmat(expected_SI.aniso, 1,1,2);
+            expected_SI.g = repmat(expected_SI.g, 1,1,2);
+            testCase.verify_val(expected_SI, SI)
+            % RR
+            expected_RR = [0 0.25 0.5 0.75;
+                           0 0.5  0   0.5;
+                           0 0.5  0   0.5];
+            testCase.verify_val(expected_RR, RR)
+        end
      end
 
 end

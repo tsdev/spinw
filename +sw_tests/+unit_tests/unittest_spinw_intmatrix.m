@@ -89,6 +89,21 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
             testCase.verify_val(testCase.default_RR, RR)
         end
         
+                
+        function test_intmatrix_fitmode_true_plotmode_true(testCase)
+            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode', true, ...
+                                                    'plotmode', true);
+            expected_SS = testCase.default_SS;
+            expected_SS.all = [expected_SS.all; zeros(3, 4)];
+            expected_SS.all(15:end,:) = [3 3 4 4;
+                                         1 1 2 2;
+                                         0 0 1 1;
+                                         1 2 3 4];
+            testCase.verify_val(expected_SS, SS, 'abs_tol', 1e-4)
+            testCase.verify_val(testCase.default_SI, SI)
+            testCase.verify_val(testCase.default_RR, RR)
+        end
+        
         function test_intmatrix_fitmode_true_DM_interaction(testCase)
             testCase.swobj.addcoupling('mat', 'D', 'bond', 3, 'subIdx', 1);
             

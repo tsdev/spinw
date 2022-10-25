@@ -18,21 +18,21 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
                                     0 0 0 0; % J32
                                     1 1 -2 -2; % J33
                                     0 0 1 1], ... % 0=quad, 1=biquad
-                                    'dip', [1       1;
-                                            0       0;
-                                            0       0;
-                                            1       2;
-                                            1       2;
-                                           -0.0537 -0.0537;
-                                            0       0;
-                                            0       0;
-                                            0       0;
-                                            0.0067  0.0067;
-                                            0       0;
-                                            0       0;
-                                            0       0;
-                                            0.0067  0.0067;
-                                            0      0]);
+                            'dip', [1       1;
+                                    0       0;
+                                    0       0;
+                                    1       2;
+                                    1       2;
+                                   -0.0537 -0.0537;
+                                    0       0;
+                                    0       0;
+                                    0       0;
+                                    0.0067  0.0067;
+                                    0       0;
+                                    0       0;
+                                    0       0;
+                                    0.0067  0.0067;
+                                    0      0]);
         default_SI = struct('aniso', repmat([0 0 0; 0 0 0; 0 0 -0.1],1,1,2), ...
                             'g', repmat([2 0 0; 0 1 0; 0 0 1],1,1,2), ...
                             'field', [0 0 0.5]);
@@ -50,7 +50,7 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
             testCase.swobj.addmatrix('label', 'J1', 'value', 1)
             testCase.swobj.addmatrix('label', 'J2', 'value', -2)
             testCase.swobj.addmatrix('label','D','value',[0 -1 0])
-            testCase.swobj.addmatrix('label','mat','value', ...
+            testCase.swobj.addmatrix('label','gen','value', ...
                                      reshape(2:2:18, [3, 3]))
             testCase.swobj.gencoupling();
             testCase.swobj.addcoupling('mat', 'J1', 'bond', 1); % bond // a
@@ -72,7 +72,7 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
         end
 
         function test_intmatrix_no_couplings_defined(testCase)
-            [SS, SI, RR] = spinw().intmatrix('fitmode',1);
+            [SS, SI, RR] = spinw().intmatrix('fitmode', true);
             expected_SS = struct('all', zeros(15,0), 'dip', zeros(15,0));
             expected_SI = struct('aniso', zeros(3,3,0), 'g', zeros(3,3,0), ...
                                  'field', zeros(1,3));
@@ -83,7 +83,7 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
         end
         
         function test_intmatrix_fitmode_true(testCase)
-            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1);
+            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode', true);
             testCase.verify_val(testCase.default_SS, SS, 'abs_tol', 1e-4)
             testCase.verify_val(testCase.default_SI, SI)
             testCase.verify_val(testCase.default_RR, RR)
@@ -92,7 +92,7 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
         function test_intmatrix_fitmode_true_DM_interaction(testCase)
             testCase.swobj.addcoupling('mat', 'D', 'bond', 3, 'subIdx', 1);
             
-            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1);
+            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode', true);
             
             dm_elems = [1; 0; 0; 2; 1; 0; 0; -1; 0; 0; 0; 1; 0; 0; 0];
             expected_SS = testCase.default_SS;
@@ -102,10 +102,36 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
             testCase.verify_val(testCase.default_RR, RR)
         end
         
+        function test_intmatrix_fitmode_false(testCase)
+            % add all different types of interaction
+            testCase.swobj.addmatrix('label','Janiso','value', ...
+                                     diag([1,2,3]))
+            for mat_name = {'D', 'gen', 'Janiso'}
+                testCase.swobj.addcoupling('mat', mat_name, 'bond', 3, 'subIdx', 1);
+            end
+             
+            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode', false);
+            
+            expected_SS = testCase.default_SS;
+            expected_SS.iso = expected_SS.all(1:6,1:2);
+            expected_SS.bq = expected_SS.all(1:6,3:4);
+            expected_SS.ani = [1; 0; 0; 2; 1; 1; 2; 3];
+            expected_SS.dm = [1; 0; 0; 2; 1; 0; -1; 0];
+            expected_SS.gen = [1; 0; 0; 2; 1; 2; 4; 6; 8; 10; 12; 14; 16; 18];
+            expected_SS.all = [expected_SS.all, zeros(15, 3)];
+            expected_SS.all(1:5, 5:end) = repmat(expected_SS.ani(1:5), 1, 3);
+            expected_SS.all(1:end-1, 6) = expected_SS.gen;
+            expected_SS.all([8, 12], 5) = [-1 1]; % DM
+            expected_SS.all([6, 10, 14], 7) = [1, 2, 3]; % aniso
+            testCase.verify_val(expected_SS, SS, 'abs_tol', 1e-4)
+            testCase.verify_val(testCase.default_SI, SI)
+            testCase.verify_val(testCase.default_RR, RR)
+        end
+        
         function test_intmatrix_zeroC_false_removes_zero_matrices(testCase)
             testCase.swobj.addmatrix('label', 'J1', 'value', 0)
             
-            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1, ...
+            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode', true, ...
                 'zeroC', false);
             
             expected_SS = testCase.default_SS;
@@ -117,12 +143,12 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
         
         function test_intmatrix_conjugate(testCase)
             % add coupling between two different atoms
-            testCase.swobj.addcoupling('mat', 'mat', 'bond', 3, 'subIdx', 1);
+            testCase.swobj.addcoupling('mat', 'gen', 'bond', 3, 'subIdx', 1);
             % zero other couplings for brevity (will be omitted by zeroC)
             testCase.swobj.addmatrix('label', 'J1', 'value', 0)
             testCase.swobj.addmatrix('label', 'J2', 'value', 0)
             
-            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1, ...
+            [SS, SI, RR] = testCase.swobj.intmatrix('fitmode', true, ...
                 'conjugate', true);
      
             expected_SS = testCase.default_SS;
@@ -142,7 +168,7 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
            % make a supercell
            testCase.swobj.genmagstr('mode', 'random', 'nExt', [2 1 1]);
            
-           [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1, ...
+           [SS, SI, RR] = testCase.swobj.intmatrix('fitmode', true, ...
                 'extend', false);
             
             testCase.verify_val(testCase.default_SS, SS, 'abs_tol', 1e-4)
@@ -154,7 +180,7 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
            % make a supercell
            testCase.swobj.genmagstr('mode', 'random', 'nExt', [2 1 1]);
            
-           [SS, SI, RR] = testCase.swobj.intmatrix('fitmode',1, ...
+           [SS, SI, RR] = testCase.swobj.intmatrix('fitmode', true, ...
                 'extend', true);
             
             % SS

@@ -219,6 +219,25 @@ classdef unittest_spinw_intmatrix < sw_tests.unit_tests.unittest_super
                            0 0.5  0   0.5];
             testCase.verify_val(expected_RR, RR)
         end
+        
+        function test_sortDM_reorders_bonds(testCase)
+            testCase.swobj.addmatrix('label', 'J2', 'value', 0);
+            % make face-centred to have bond order depend on  sortDM
+            testCase.swobj.genlattice('sym', 'F m m m');
+            testCase.swobj.gencoupling();
+            testCase.swobj.addcoupling('mat', 'J1', 'bond', 1, 'subIdx',4:6);
+            
+            [SS_sort, ~, ~] = testCase.swobj.intmatrix('fitmode', true, ...
+                                                       'sortDM', true);
+            [SS_unsort, ~, ~] = testCase.swobj.intmatrix('fitmode', true, ...
+                                                         'sortDM', false);
+            % first bond same
+            testCase.verify_val(SS_sort.all(:,1), SS_unsort.all(:,1));
+            % just check the atom indices of the subsequent bonds
+            testCase.verify_val([2 1; 1 2], SS_unsort.all(4:5,2:end));
+            testCase.verify_val([1 2; 2 1], SS_sort.all(4:5,2:end));
+            
+        end
      end
 
 end

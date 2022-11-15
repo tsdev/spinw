@@ -67,3 +67,8 @@ Bug Fixes
   Previously this would've caused a crash.
 - Fix error when plotting progress of ``optmagsteep`` without existing figure
 - Correctly report magnetic moments in each iteration of ``optmagsteep``.
+- Raise error if invalid shape ``kbase`` is provided to ``optmagk``,
+  previously it would be silently set to empty
+- Ensure varargin is correctly passed through to ``ndbase.pso`` from
+  ``optmagk``. Previously user provided ``TolFun``, ``TolX`` and
+  ``MaxIter`` would be overwritten by the defaults.

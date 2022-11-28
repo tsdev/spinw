@@ -67,6 +67,10 @@ Bug Fixes
   Previously this would've caused a crash.
 - Fix error when plotting progress of ``optmagsteep`` without existing figure
 - Correctly report magnetic moments in each iteration of ``optmagsteep``.
+- Fix errors when calling ``intmatrix`` with dipolar bonds and symbolic 
+  spinw object with fitmode true and false
+- Ensure biquadratic exchange interactions are isotropic in ``addcoupling``
+  (previously checked in ``intmatrix``)
 - Raise error if invalid shape ``kbase`` is provided to ``optmagk``,
   previously it would be silently set to empty
 - Ensure varargin is correctly passed through to ``ndbase.pso`` from

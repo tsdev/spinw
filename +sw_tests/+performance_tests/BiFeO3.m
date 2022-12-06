@@ -1,4 +1,4 @@
-function BiFeO3l()
+function BiFeO3()
     % setup
     swpref.setpref('usemex', true)
     bfo = spinw;
@@ -13,26 +13,38 @@ function BiFeO3l()
     bfo.addmatrix('label', 'D', 'value', [1 -1 0]*0.185)
     bfo.addcoupling('mat', 'D', 'bond', 2)
     bfo.optmagk('kbase', [1; 1; 0], 'seed', 1);
+    bfo.optmagsteep('random',false,'TolX', 1e-12);
     
     % test parameters
-    spinwave_args = {{[-1/2 0 0], [0 0 0], [1/2 1/2 0], 30}, ...
-                     'sortMode', false, 'hermit', 1};
-    egrid_args = {'component','Sperp','Evect',0:0.1:5};
+    % add omega tol for imag eigenvalues (ignored if hermit=0)
+    spinwave_args_common = {{[-1/2 0 0], [0 0 0], [1/2 1/2 0], 30}, ...
+                             'sortMode', false, 'omega_tol', 0.08};
+    egrid_args = {'component','Sperp','Evect',0:0.1:5, 'imagChk', 0};
     inst_args = {'dE',0.1};
     
     % do a spin wave calculation for incommensurate case ([nExt=[1,1,1]) 
     % and commensurate nExt=0.01 - which corresponds to a supercell of 
     % [11 11 1]
-    for nExt = {[1, 1, 1], 0.01}
-        bfo.genmagstr('nExt', nExt{1})
+    for do_supercell = [1] % 0:1
+        if do_supercell
+            nExt = 0.01;
+            bfo.genmagstr('nExt', nExt)
+        else
+            nExt = [1,1,1];
+        end
         for hermit = 0:1
-            spinwave_args{end} = hermit;
-            test_name = ['bifeo3_nExt_', regexprep(num2str(nExt{1}), ...
-                                                   ' +', '_'), ...
-                         '_hermit_', num2str(hermit)];
-            sw_tests.utilities.profile_spinwave(test_name, bfo, ...
-                                                spinwave_args, egrid_args, ...
-                                                inst_args);
+            for optmem = 0:5:10
+                spinwave_args = [spinwave_args_common, ...
+                             'hermit', hermit, 'optmem', optmem];
+                test_name = [mfilename(), '_nExt_', ...
+                             regexprep(num2str(nExt), ' +', '_'), ...
+                             '_hermit_', num2str(hermit), ...
+                             '_optmem_', num2str(optmem)];
+                sw_tests.utilities.profile_spinwave(test_name, bfo, ...
+                                                    spinwave_args,...
+                                                    egrid_args, ...
+                                                    inst_args);
+            end
         end
     end
     

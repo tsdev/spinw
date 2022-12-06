@@ -16,7 +16,10 @@ function profile_spinwave(test_name, sw_obj, spinwave_args, egrid_args, ...
    
     % save profile results
     p = profile('info');
-    host_info = [computer(), '_', version('-release')];
+    
+    ver = sw_version();
+    host_info = [computer(), '_', version('-release'), '_', ...
+        ver.Name, ver.Release];
     save_dir = fullfile(pwd, "profile_results", host_info, test_name);
     profsave(p, save_dir);  % will mkdir if not exist
     sw_tests.utilities.save_profile_results_to_txt(p, save_dir)

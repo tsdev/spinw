@@ -31,7 +31,7 @@ function save_profile_results_to_txt(results, save_dir, fname_suffix)
     dataStr = dataStr(24:end);
 
     % make filename using function and mfilename of test
-    filepath = fullfile(save_dir, [save_dir, '.txt']);
+    filepath = fullfile(save_dir, 'summary.txt');
     % write profile results to file
     fh = fopen(filepath, 'w');
     fwrite(fh, dataStr);

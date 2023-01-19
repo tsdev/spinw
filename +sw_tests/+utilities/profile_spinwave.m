@@ -26,11 +26,19 @@ function profile_spinwave(test_name, sw_obj, spinwave_args, egrid_args, ...
     if do_profile
         % save profile results
         p = profile('info');
-        
-        ver = sw_version();
-        host_info = [computer(), '_', version('-release'), '_', ...
-            ver.Name, ver.Release];
-        save_dir = fullfile(pwd, "profile_results", host_info, test_name);
+
+        % generate file directory name for results
+        try
+            % get current commit is possible
+            commit = evalc("!git rev-parse --short HEAD");
+            commit = commit(1:end-1); % remove newline
+        catch
+            ver = sw_version();
+            commit = [ver.Name ver.Release];
+        end
+        host_info = [computer(), '_', version('-release')];
+        save_dir = fullfile(pwd, "profile_results", commit, ...
+            host_info, test_name);
         profsave(p, save_dir);  % will mkdir if not exist
         sw_tests.utilities.save_profile_results_to_txt(p, save_dir)
         profile('off');

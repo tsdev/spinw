@@ -14,9 +14,10 @@ function profile_spinwave(test_name, sw_obj, spinwave_args, egrid_args, ...
     save_dir = fullfile(pwd, "profile_results", commit, ...
         host_info, test_name);
     mkdir(save_dir)
-    
+
     % open file for tic/toc timings
-    fid = fopen(fullfile(save_dir, 'tictoc_times.txt'), 'w');
+    fid = fopen(fullfile(save_dir, ...
+                sprintf('tictoc_times_profile_%i.txt', do_profile)), 'w');
     c = onCleanup(@()fclose(fid));  % in case of exception file will close
     fprintf(fid, "Function\tDuration (s)\n");
 

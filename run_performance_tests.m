@@ -1,4 +1,7 @@
-function run_performance_tests()
+function run_performance_tests(nruns)
+    if nargin == 0
+        nruns = 1;
+    end
     disp(version);
     if ~exist('spinw', 'class')
         if exist('swfiles', 'dir') && exist('external', 'dir') && exist('dat_files', 'dir')
@@ -16,7 +19,9 @@ function run_performance_tests()
     fpath_parts = {'+sw_tests', '+performance_tests'};
     files  = dir(fullfile(fpath_parts{:}, '*.m'));
     for fname = {files.name}
-        run(erase(strjoin([fpath_parts, fname{1}], '.'), '+'));
+        for nrun = 1:nruns
+            run(erase(strjoin([fpath_parts, fname{1}], '.'), '+'));
+        end
     end
 
 end

@@ -29,17 +29,19 @@ function BiFeO3()
         if do_supercell
             nExt = 0.01;
             bfo.genmagstr('nExt', nExt)
-            % supercell slightly different structure that doesn't give 
-            % positive-definite Hamiltonian so cannot solve with hermit=1
-            hermits = 0;
             mexs = 1;  % requires ~100GB RAM with no mex
         else
             nExt = [1,1,1];
-            hermits = 0:1;
             mexs = 0:1;
         end
         for mex = mexs
             swpref.setpref('usemex', logical(mex))
+            if mex && ~do_supercell
+                hermits = 0:1;
+            else
+                % chol throws error as matrix is not positive-definite
+                hermits = 0; 
+            end
             for hermit = hermits
                 for optmem = 0:5:10
                     spinwave_args = [spinwave_args_common, ...

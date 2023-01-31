@@ -11,7 +11,12 @@ function FMchain()
 
     
     % test parameters
-    spinwave_args_common = {{[0 0 0], [1 0 0], 1e4}, ...
+    if isunix
+        nqpt = 1e5;  % for some reason 1e7 takes > 12 hrs on IDAaaS
+    else
+        nqpt = 1e7;
+    end
+    spinwave_args_common = {{[0 0 0], [1 0 0], nqpt}, ...
                             'sortMode', false};
     egrid_args = {'component','Sperp','Evect',0:0.1:5};
     inst_args = {'dE',0.1};

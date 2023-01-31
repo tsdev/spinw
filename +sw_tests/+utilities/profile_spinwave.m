@@ -37,6 +37,8 @@ function profile_spinwave(test_name, sw_obj, spinwave_args, egrid_args, ...
             % start profiling
             profile('clear');
             profile('on', '-memory');
+        else
+             profile('off'); % can be left on if user aborts prematurely
         end
         % use supercell k=0 structure
         start_time = tic;

@@ -12,11 +12,11 @@ function FMchain()
     
     % test parameters
     if isunix
-        nqpt = 1e5;  % for some reason 1e7 takes > 12 hrs on IDAaaS
+        do_profiles = 0; % for some reason profile takes > 12 hrs on IDAaaS
     else
-        nqpt = 1e7;
+        do_profiles = 0:1;
     end
-    spinwave_args_common = {{[0 0 0], [1 0 0], nqpt}, ...
+    spinwave_args_common = {{[0 0 0], [1 0 0], 1e7}, ...
                             'sortMode', false};
     egrid_args = {'component','Sperp','Evect',0:0.1:5};
     inst_args = {'dE',0.1};
@@ -35,7 +35,7 @@ function FMchain()
                                                     spinwave_args, ...
                                                     egrid_args, ...
                                                     inst_args, ...
-                                                    0:1);
+                                                    do_profiles);
             end
         end
     end

@@ -30,15 +30,16 @@ function average_profile_timings(save_dir)
     for itest = 1:numel(test_names)
         % get directory names that contain test name (e.g. FMChain)
         tests = dir(fullfile(save_dir, ...
-                             sprintf('\\*%s*', test_names{itest})));
+                             sprintf('*%s*', test_names{itest})));
+        tests = tests([tests.isdir]);
         for do_profile = 0:1
             lines = {};
             for idir = 1:numel(tests)
                 % search subdirectories for tictoc files
                 files = dir(fullfile(tests(idir).folder, ...
                                      tests(idir).name, ...
-                                     sprintf('**\\tictoc*%.0f.txt', ...
-                                             do_profile)));
+                                     "*", sprintf('tictoc*%.0f.txt', ...
+                                                  do_profile)));
                 if  ~isempty(files)
                     times = [];
                     for ifile = 1:numel(files)
@@ -51,7 +52,7 @@ function average_profile_timings(save_dir)
                     time_str = sprintf('%.4e(%.4e)\t', ...
                                        [mean(times,2) std(times,0,2)]');
                     % add test dir name to beginning of each line
-                    line = sprintf('%s\t%s', tests(idir).name, time_str);
+                    line = sprintf('%s\t\t%s', tests(idir).name, time_str);
                     lines = [lines line];
                 end
             end

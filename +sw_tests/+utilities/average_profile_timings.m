@@ -52,7 +52,7 @@ function average_profile_timings(save_dir)
                     time_str = sprintf('%.4e(%.4e)\t', ...
                                        [mean(times,2) std(times,0,2)]');
                     % add test dir name to beginning of each line
-                    line = sprintf('%s\t%s', tests(idir).name, time_str);
+                    line = sprintf('%-36s\t%s', tests(idir).name, time_str);
                     lines = [lines line];
                 end
             end

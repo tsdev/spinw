@@ -11,7 +11,7 @@ function FMchain()
 
     
     % test parameters
-    if isunix
+    if sw_tests.utilities.is_daaas()
         do_profiles = 0; % for some reason profile takes > 12 hrs on IDAaaS
     else
         do_profiles = 0:1;

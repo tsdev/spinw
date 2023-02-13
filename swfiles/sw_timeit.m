@@ -40,7 +40,6 @@ function sw_timeit(percent,varargin)
 %
 
 global sw_time
-pref = swpref;
 
 if nargin == 0
     swhelp sw_timeit
@@ -50,6 +49,7 @@ end
 if nargin > 2 && ~isempty(varargin{2}) && ~ischar(varargin{2})
     fid = varargin{2};
 else
+    pref = swpref;
     fid = pref.tid;
 end
 

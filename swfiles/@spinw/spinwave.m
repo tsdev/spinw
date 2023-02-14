@@ -858,8 +858,11 @@ for jj = 1:nSlice
     else
         % All the matrix calculations are according to White's paper
         % R.M. White, et al., Physical Review 139, A450?A454 (1965)
-        
-        gham = mmat(gComm,ham);
+        if useMex
+            gham = sw_mtimesx(gComm, ham);
+        else
+            gham = mmat(gComm,ham);
+        end
         
         [V, D, orthWarn] = eigorth(gham,param.omega_tol,useMex);
         

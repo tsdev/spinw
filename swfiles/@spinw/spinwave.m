@@ -674,7 +674,7 @@ hklIdx = [floor(((1:nSlice)-1)/nSlice*nHkl)+1 nHkl+1];
 omega = zeros(2*nMagExt, nHkl);
 
 % empty Sab
-Sab = zeros(3,3,2*nMagExt,0);
+Sab = zeros(3,3,2*nMagExt,nHkl);
 
 % Empty matrices to save different intermediate results for further
 % analysis: Hamiltonian, eigenvectors, dynamical structure factor in the
@@ -921,7 +921,7 @@ for jj = 1:nSlice
     % Dynamical structure factor from S^alpha^beta(k) correlation function.
     % Sab(alpha,beta,iMode,iHkl), size: 3 x 3 x 2*nMagExt x nHkl.
     % Normalizes the intensity to single unit cell.
-    Sab = cat(4,Sab,squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt));
+    Sab(:,:,:,hklIdxMEM) = squeeze(sum(zeda.*ExpFL.*VExtL,4)).*squeeze(sum(zedb.*ExpFR.*VExtR,3))/prod(nExt);
     
     sw_timeit(jj/nSlice*100,0,param.tid);
 end

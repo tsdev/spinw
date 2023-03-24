@@ -60,7 +60,8 @@ end
 nA = [size(A),ones(1,nD-nDA)]; nA = nA(dim); 
 nB = [size(B),ones(1,nD-nDB)]; nB = nB(dim);
 
-neededMem = (numel(A)*nB(2) + numel(B)*nA(1)) * 16;
+% Array is double float which is 8 bytes per element
+neededMem = (numel(A)*nB(2) + numel(B)*nA(1)) * 8;
 if sw_freemem < neededMem && isdefaultdim
     % Not enough memory to expand matrix to use bsxfun; use slow loop instead
     szA = size(A); if numel(szA) > 3, A = reshape(A, [szA(1:2) prod(szA(3:end))]); end
@@ -77,13 +78,14 @@ if sw_freemem < neededMem && isdefaultdim
         for ii = 1:size(A,3)
             C(:,:,ii) = A(:,:,ii) * B;
         end
-    else
+    elseif size(A, 3) == size(B, 3)
         output_shape = [szA(1) szB(2:end)];
-        if size(A, 3) ~= size(B, 3), error('Extra dimensions do not agree'); end
         C = zeros([szA(1) szB(2) size(A,3)]);
         for ii = 1:size(A,3)
             C(:,:,ii) = A(:,:,ii) * B(:,:,ii);
         end
+    else
+        error('Extra dimensions do not agree');
     end
     szC = size(C);
     if numel(szC) ~= numel(output_shape) || ~all(szC == output_shape)

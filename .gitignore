@@ -18,3 +18,7 @@ _pdf
 dev/standalone/Linux/Source/
 dev/standalone/Win/Source/
 dev/standalone/MacOS/Source/
+
+python/ctf
+.idea/
+**/*.pyc

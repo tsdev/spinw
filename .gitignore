@@ -28,3 +28,6 @@ dev/standalone/MacOS/Source/
 python/ctf
 .idea/
 **/*.pyc
+python/ctf
+.idea/
+**/*.pyc

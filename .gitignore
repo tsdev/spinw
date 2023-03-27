@@ -25,3 +25,6 @@ dev/standalone/MacOS/Source/
 *.rej
 
 **profile_results
+python/ctf
+.idea/
+**/*.pyc

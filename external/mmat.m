@@ -60,8 +60,9 @@ end
 nA = [size(A),ones(1,nD-nDA)]; nA = nA(dim); 
 nB = [size(B),ones(1,nD-nDB)]; nB = nB(dim);
 
-% Array is double float which is 8 bytes per element
-neededMem = (numel(A)*nB(2) + numel(B)*nA(1)) * 8;
+% Array is double float which is 8 bytes per element, but this needs to be doubled
+% (16 bytes/element) as sum / bsxfun do not operate in-place and need a temp matrix
+neededMem = (numel(A)*nB(2) + numel(B)*nA(1)) * 16;
 if sw_freemem < neededMem && isdefaultdim
     % Not enough memory to expand matrix to use bsxfun; use slow loop instead
     szA = size(A); if numel(szA) > 3, A = reshape(A, [szA(1:2) prod(szA(3:end))]); end

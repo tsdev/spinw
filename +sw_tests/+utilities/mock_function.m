@@ -12,13 +12,16 @@ classdef mock_function < handle
                 return_value = '{[]}';
             else
                 global mock_ret_val;
+                if isempty(mock_ret_val)
+                    mock_ret_val = struct();
+                end
                 if iscell(return_value)
-                    mock_ret_val = return_value;
+                    mock_ret_val.(function_name) = return_value;
                 else
-                    mock_ret_val = {return_value};
+                    mock_ret_val.(function_name) = {return_value};
                 end
                 rv_str = 'global mock_ret_val;';
-                return_value = 'mock_ret_val';
+                return_value = ['mock_ret_val.' function_name];
             end
             fnstr = [...
                      'function varargout = %s(varargin)\n' ...
@@ -53,6 +56,10 @@ classdef mock_function < handle
         end
         function delete(mockobj)
             delete(mockobj.filename);
+            global mock_ret_val;
+            if isfield(mock_ret_val, mockobj.func)
+                mock_ret_val = rmfield(mock_ret_val, mockobj.func);
+            end
         end
         function n_call = get.n_calls(mockobj)
             [n_call, ~] = feval(mockobj.func, 'check_calls');

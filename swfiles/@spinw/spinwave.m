@@ -838,19 +838,19 @@ for jj = 1:nSlice
                             ' diagonalization try the param.hermit=false option']);
                     end
                 end
-                
+
                 K2 = K*gComm*K';
                 K2 = 1/2*(K2+K2');
                 % Hermitian K2 will give orthogonal eigenvectors
                 [U, D] = eig(K2);
                 D      = diag(D);
-                
+
                 % sort modes accordign to the real part of the energy
                 [~, idx] = sort(real(D),'descend');
                 U = U(:,idx);
                 % omega dispersion
                 omega(:, hklIdxMEM(ii)) = D(idx);
-                
+
                 % the inverse of the para-unitary transformation V
                 V(:,:,ii) = inv(K)*U*diag(sqrt(gCommd.*omega(:, hklIdxMEM(ii)))); %#ok<MINV>
             end
@@ -883,7 +883,7 @@ for jj = 1:nSlice
     if param.saveH
         Hsave(:,:,hklIdxMEM) = ham;
     end
-    
+
     % Calculates correlation functions.
     % V right
     VExtR = repmat(permute(V  ,[4 5 1 2 3]),[3 3 1 1 1]);

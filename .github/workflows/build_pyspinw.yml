@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         matlab_version: [R2020a, R2020b, R2021a, R2021b, R2022a, R2022b, R2023a]
-    runs-on: macos-MATLAB
+    runs-on: self-hosted
     steps:
       - name: Check out SpinW
         uses: actions/checkout@v3

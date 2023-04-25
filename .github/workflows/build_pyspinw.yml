@@ -18,7 +18,7 @@ jobs:
         run: |
           ls
           cd python
-          /Applications/MATLAB_${{ matrix.matlab_version }}.app/bin/matlab -nodisplay -r "build_ctf.m; exit"
+          /Applications/MATLAB_${{ matrix.matlab_version }}.app/bin/matlab -nodisplay -r "build_ctf; exit"
       - name: Upload test results
         uses: actions/upload-artifact@v3
         with:

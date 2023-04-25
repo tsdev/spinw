@@ -23,4 +23,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: CTF ${{ matrix.matlab_version }}
-          path: ctf/*
+          path: ${{ github.workspace }}/python/ctf/*.ctf

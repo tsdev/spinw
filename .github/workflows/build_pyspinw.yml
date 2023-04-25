@@ -42,14 +42,12 @@ jobs:
             python-version: 3.8
       - name: Move and build
         run: |
-          ls
           cd python
-          ls ctf
+          mkdir pyspinw/ctfs
           mv ctf/*.ctf pyspinw/ctfs
           python -m pip wheel --no-deps --wheel-dir build .
-          ls
       - name: Upload wheel
         uses: actions/upload-artifact@v3
         with:
-          name: Wheels
+          name: pySpinW Wheel
           path: ${{ github.workspace }}/python/build/*.whl        

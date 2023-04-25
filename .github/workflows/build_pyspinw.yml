@@ -37,7 +37,7 @@ jobs:
           name: CTF
           path: python/ctf
       - name: Set up Python environment
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
             python-version: 3.8
       - name: Move and build

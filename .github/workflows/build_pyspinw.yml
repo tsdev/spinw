@@ -1,0 +1,26 @@
+name: SpinW Tests
+
+on:
+  push:
+    branches: [pyspinw]
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        matlab_version: [R2020a, R2020b, R2021a, R2021b, R2022a, R2022b, R2023a]
+    runs-on: macos-MATLAB
+    steps:
+      - name: Check out SpinW
+        uses: actions/checkout@v3
+      - name: Build ctf
+        run: |
+          ls
+          cd python
+          /Applications/MATLAB_${{ matrix.matlab_version }}.app/bin/matlab -nodisplay -r "build_ctf.m; exit"
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: CTF ${{ matrix.matlab_version }}
+          path: ctf/*

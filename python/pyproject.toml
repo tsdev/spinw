@@ -29,9 +29,9 @@ readme = "../README.md"
 homepage = "https://spinw.org"
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",  # Define that your audience are developers
+    "Intended Audience :: Developers",
     "Topic :: Scientific/Engineering :: Physics",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",  # Again, pick a license
+    "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3 :: Only",
 ]
 packages = [ { include = "pyspinw" } ]
@@ -40,9 +40,6 @@ packages = [ { include = "pyspinw" } ]
 python = ">=3.8,<=3.12"
 libpymcr = "^0.1.0"
 numpy = "^1.21.4"
-
-#[tool.poetry.extras]
-#graphics = ['matplotlib', 'crysvue']
 
 [tool.tox]
 legacy_tox_ini = """

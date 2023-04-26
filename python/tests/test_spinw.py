@@ -1,7 +1,33 @@
-__author__ = "github.com/wardsimon"
-__version__ = "0.1.0"
+from __future__ import annotations
 
+__author__ = 'github.com/wardsimon'
+__version__ = '0.0.1'
+
+import numpy as np
 from pyspinw import Matlab
+try:
+    from matplotlib import pyplot as plt
+except ImportError:
+    plt = None
 
 m = Matlab()
-print(m.spinw())
+s = m.sw_model('triAF', 1)
+print(s)
+
+q_start = [0, 0, 0]
+q_end = [1, 1, 0]
+pts = 501
+
+spec = m.sw_egrid(m.spinwave(s, [q_start, q_end, 501]))
+spec2 = m.sw_instrument(spec, dE=0.3)
+
+if plt is not None:
+    ax = plt.imshow(np.flipud(spec2['swConv']),
+                    aspect='auto',
+                    extent=[q_start[-1], q_end[0], spec2["Evect"][0][0], spec2["Evect"][0][-1]])
+    ax.set_clim(0, 0.15)
+    plt.xlabel('Q [q, q, 0] (r.l.u)')
+    plt.ylabel('Energy (meV)')
+    plt.title('Spectra of a triangular antiferromagnet')
+    plt.savefig('pyspinw.png')
+    plt.show()

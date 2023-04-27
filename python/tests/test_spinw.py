@@ -23,7 +23,7 @@ q_end = [1, 1, 0]
 pts = 501
 
 # Calculate the spin wave spectrum, apply an energy grid and convolute with a Gaussian
-spec = m.sw_egrid(m.spinwave(s, [q_start, q_end, 501]))
+spec = m.sw_egrid(m.spinwave(s, [q_start, q_end, pts]))
 spec2 = m.sw_instrument(spec, dE=0.3)
 
 # Plot the result if matplotlib is available

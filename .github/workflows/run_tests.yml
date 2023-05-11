@@ -43,6 +43,8 @@ jobs:
         with:
           name: Unit test results ${{ matrix.os }}
           path: junit_report*.xml
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
 
   publish-test-results:
     needs: test

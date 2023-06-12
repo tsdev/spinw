@@ -43,7 +43,6 @@ jobs:
         with:
           name: Unit test results ${{ matrix.os }}
           path: junit_report*.xml
-
   publish-test-results:
     needs: test
     runs-on: ubuntu-latest

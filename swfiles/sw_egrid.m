@@ -113,8 +113,9 @@ function spectra = sw_egrid(spectra, varargin)
 %   include all modes.
 % 
 % `'epsilon'`
-% : Error limit, used to determine whether a given energy bin is
-%   uniform or not. Default value is $10^{-5}$.
+% : DEPRECATED (previously the error limit, used to determine whether a 
+%   given energy bin is uniform or not. Default value is $10^{-5}$). This
+%   parameter is no longer relevant and is ignored.
 % 
 % `'autoEmin'`
 % : Due to the finite numerical precision, the spin wave energies
@@ -158,6 +159,10 @@ function spectra = sw_egrid(spectra, varargin)
 % `Evect`
 % : Input energy bin vector, defines the energy bin **edge** positions
 %   (converted from the given bin centers if necessary).
+%
+% `zeroEnergyTol`
+% : Eigenvalues with magnitude of the real component less than zeroEnergyTol
+%   will be not be included in the structure factor binning
 % 
 % `param`
 % : All the input parameters.
@@ -195,16 +200,27 @@ else
 end
 
 inpForm.fname  = {'Evect' 'T'   'component' 'sumtwin' 'modeIdx'  'epsilon'};
-inpForm.defval = {E0      T0    'Sperp'     true      zeros(1,0) 1e-5     };
+inpForm.defval = {E0      T0    'Sperp'     true      zeros(1,0) NaN     };
 inpForm.size   = {[1 -1]  [1 1] [1 -2]      [1 1]     [1 -4]     [1 1]    };
 inpForm.soft   = {true    false false       false     false      false    };
 
-inpForm.fname  = [inpForm.fname  {'autoEmin' 'imagChk' 'binType'}];
-inpForm.defval = [inpForm.defval {false       true       'ebin'  }];
-inpForm.size   = [inpForm.size   {[1 1]      [1 1]      [1 -5]  }];
-inpForm.soft   = [inpForm.soft   {false      false      false   }];
+inpForm.fname  = [inpForm.fname  {'autoEmin' 'imagChk' 'binType' 'zeroEnergyTol'}];
+inpForm.defval = [inpForm.defval {false       true       'ebin'  5e-4}];
+inpForm.size   = [inpForm.size   {[1 1]      [1 1]      [1 -5]   [1 1]}];
+inpForm.soft   = [inpForm.soft   {false      false      false    false}];
+
+inpForm.fname  = [inpForm.fname  {'maxDSF'}];
+inpForm.defval = [inpForm.defval {1e6}];
+inpForm.size   = [inpForm.size   {[1 1]}];
+inpForm.soft   = [inpForm.soft   {false}];
 
 param = sw_readparam(inpForm, varargin{:});
+
+if ~isnan(param.epsilon)
+    % non default value of epsilon
+    warning('sw_egrid:DeprecationWarning', ...
+            'epsilon is deprecated - it is not relevant and will be ignored.');
+end
 
 switch param.binType
     case 'ebin'
@@ -385,7 +401,7 @@ for ii = 1:nTwin
     end
     
     if ~isempty(intP{1})
-        intP{ii}   = reshape(intP{ii},3,3,nMode,[]);
+        intP{ii}   = reshape(intP{ii},3,nMode,[]);
     end
     if ~isempty(Pab{1})
         Pab{ii}   = reshape(Pab{ii},3,3,nMode,[]);
@@ -430,86 +446,40 @@ for tt = 1:nTwin
 end
 
 % save the edge bins
-Evect   = sort(param.Evect);
+param.Evect = sort(param.Evect);
 if eBin
-    eEvect = Evect;
+    ebin_edges = param.Evect;
+    ebin_cens = (ebin_edges(2:end)+ebin_edges(1:(end-1)))/2;
+    dE = diff(ebin_cens);
 else
-    dE = diff(Evect);
-    eEvect = [Evect-[dE(1) dE]/2 Evect(end)+dE(end)/2];
+    ebin_cens = param.Evect;
+    dE = diff(ebin_cens);
+    ebin_edges = [ebin_cens-0.5*[dE(1) dE], ebin_cens(end) + dE(end)/2];
 end
+nE = numel(ebin_cens);
 
-if isfield(spectra,'omega')
-    % Create vector for energy values, and put extra value below minimum and
-    % above maximum for easy indexing swConv.
-    epsilon = 1e-8;
-    
-    if eBin
-        Evect  = (Evect(2:end)+Evect(1:(end-1)))/2; 
-    end
-    % energy bin parameters
-    nE       = numel(Evect);
-    dE       = diff(Evect);
-    
+if isfield(spectra,'omega')   
     if param.imagChk
         % find the maximum of the imaginary part of the spin wave energies
         % checks only the first twin!
         ioMax = max(abs(imag(omega{1}(:))));
-        
         if ioMax > max(abs(dE(:)))
             error('egrid:BadSolution',['The imaginary part of the spin '...
                 'wave energes is larger than the bin size! Improve '...
                 'your calculation or disable imagChk option!']);
+        elseif param.autoEmin
+            if abs(ebin_edges(1)) < ioMax
+                ebin_edges(1) = ebin_edges(1)+ioMax;
+                ebin_cens(1) = ebin_cens(1)+ioMax/2;
+            end
         end
-    end
+    end    
     
-    if param.autoEmin && abs(Evect(1)-dE(1)/2)<epsilon
-        if ~exist('ioMax','var')
-            ioMax = max(abs(imag(omega{1}(:))));
-        end
-        Evect(1) = Evect(1)+ioMax+2*epsilon;
-        eEvect(1)= eEvect(1)+ioMax+2*epsilon;
-        dE(1)    = dE(1)-(ioMax+2*epsilon);
-    end
-    
-    
-    % if the energy bin is equally spaced a faster intexing of the
-    % modes can be used
-    isequalE = sum(abs(dE-dE(1))<param.epsilon) == (nE-1);
-    E0 = Evect(1);
-    
-    if ~isempty(Evect)
-        Evect = [Evect(1)-dE(1)-epsilon; Evect(:); Evect(end)+dE(end)+epsilon];
+    % Calculate Bose temperature factor for magnons
+    if param.T==0
+        nBose = double(ebin_cens>=0);
     else
-        Evect = [-epsilon; epsilon];
-    end
-    
-    dE = dE(1);
-    
-    % Create indices in the matrix by searching for the closest value, size
-    % nMode x nHkl. Put all the modes to the positive side for magnon creation.
-    % The negative side will be the same, however with different Bose factor
-    % for non-zero temperature.
-    idxE = cell(1,nTwin);
-    
-
-    for tt = 1:nTwin
-        % put the modes that are not in the modeIdx parameter above the
-        % energy bin vector
-        omega{tt}(~ismember(1:nMode,param.modeIdx),:) = Evect(end);
-        
-        % faster binning
-        if isequalE
-            idxE{tt} = floor((real(omega{tt})-E0)/dE)+2;
-            idxE{tt}(idxE{tt}<2) = 1;
-            idxE{tt}(idxE{tt}>nE+2) = nE+2;
-        else
-            % memory intensive binnin, bad for large numel(omega)
-            [~, idxE{tt}] = min(abs(repmat(real(omega{tt}),[1 1 nE+2])-repmat(permute(Evect,[2 3 1]),[nMode nHkl 1])),[],3);
-        end
-        
-        % Creates indices in the swConv matrix.
-        idxE{tt} = idxE{tt} + repmat((0:nHkl-1).*(nE+2),[nMode 1]);
-        idxE{tt} = idxE{tt}(:);
+        nBose = 1./(exp(abs(ebin_cens)./(spectra.obj.unit.kB*param.T))-1)+double(ebin_cens>=0);
     end
     
     % Sums up the intensities in DSF into swConv.
@@ -517,22 +487,31 @@ if isfield(spectra,'omega')
     
     for tt = 1:nTwin
         for ii = 1:nConv
-            swConv{ii,tt} = reshape(accumarray(idxE{tt},DSF{ii,tt}(:),[(nE+2)*nHkl 1]),[(nE+2) nHkl]);
-        end
-    end
-    
-    % Calculate Bose temperature factor for magnons
-    if param.T==0
-        nBose = double(Evect(2:(end-1))>=0);
-    else
-        nBose = 1./(exp(abs(Evect(2:(end-1)))./(spectra.obj.unit.kB*param.T))-1)+double(Evect(2:(end-1))>=0);
-    end
-    
-    % Multiply the intensities with the Bose factor.
-    for tt = 1:nTwin
-        for ii = 1:nConv
-            swConv{ii,tt} = bsxfun(@times,swConv{ii,tt}(2:(end-1),:),nBose);
-            swConv{ii,tt}(isnan(swConv{ii,tt})) = 0;
+            real_eigvals = real(omega{tt}(param.modeIdx, :));
+            % find energy bin (cen) index coinciding with evals in omega
+            ien = discretize(real_eigvals, ebin_edges);
+            % set eigvals < zeroEnergyTol to naN (will be ignored)
+            izero_eigval = abs(real_eigvals(:)) < param.zeroEnergyTol;
+            ien(izero_eigval) = NaN;
+             % NaN in ien implies eigvals not in extent of Evect
+            ien_valid =  ~isnan(ien(:)); 
+            % get hkl index of each ien bin (column index in real_eigvals)
+            [~, ihkl] = ind2sub(size(ien), 1:numel(ien));
+            % get index of bins in final sxConv field
+            % normally ien(ien_valid) is a colulmn vector but not in case
+            % of one modeIDx specified so need to reshape
+            sw_conv_idx = [reshape(ien(ien_valid), [], 1), ihkl(ien_valid)'];
+            if ~isempty(sw_conv_idx)
+                % sum intensities and pad energies above max eigval with 0
+                DSF_valid = DSF{ii,tt}(param.modeIdx, :);
+                DSF_valid(DSF_valid > param.maxDSF) = 0;
+                swConv{ii,tt} = accumarray(sw_conv_idx, DSF_valid(ien_valid), [nE, nHkl]);
+                % Multiply the intensities with the Bose factor.
+                swConv{ii,tt} = bsxfun(@times,swConv{ii,tt},nBose');
+                swConv{ii,tt}(isnan(swConv{ii,tt})) = 0;
+            else
+                swConv{ii,tt} = zeros(numel(ebin_cens), nHkl);
+            end
         end
     end
     
@@ -565,7 +544,7 @@ end
 
 
 spectra.T     = param.T;
-spectra.Evect = eEvect;
+spectra.Evect = ebin_edges;
 
 if isfield(spectra,'swRaw')
     spectra = rmfield(spectra,'swRaw');

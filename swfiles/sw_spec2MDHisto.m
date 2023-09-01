@@ -15,7 +15,8 @@ function sw_spec2MDHisto(spectra,proj, dproj, filename)
 % proj: a 3x3 matrix where each column is a vector defining the orientation
 % of the view one of the vectors must be along a q axis
 % dproj: is a 3 vector that is the bin size in each direction
-% filename: is the name of the nexus file.
+% filename: is the name of the nexus file.  It will overwrite the existing
+%           file if one already exists
 
 % ### Output Arguments
 % 
@@ -30,6 +31,10 @@ if nargin==0
     return
 end
 [unit_cell,Bmat,proj_out,D,dat,name] = read_struct(spectra,proj,dproj);
+%check if hdf file exists and delete if it does.
+if exist(filename,'file')
+    delete(filename)
+end
 
 h5createnwrite(filename,'/MDHistoWorkspace/coordinate_system',3); %  None = 0, QLab = 1, QSample = 2, HKL = 3 
 h5createnwrite(filename,'/MDHistoWorkspace/visual_normalization',0);

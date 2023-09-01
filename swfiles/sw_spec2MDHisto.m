@@ -11,20 +11,35 @@ function sw_spec2MDHisto(spectra,proj, dproj, filename)
 % spectrum that is calculated by sw_egrid
 %  
 % ### Input Arguments
-% spectra: a structure calculated by sw_egrid
-% proj: a 3x3 matrix where each column is a vector defining the orientation
-% of the view one of the vectors must be along a q axis
-% dproj: is a 3 vector that is the bin size in each direction
+% spectra: a structure calculated by sw_egrid 
+% 
+% proj: a 3x3 matrix defining an orthogonal coordinate system 
+%       where each column is a vector defining the orientation 
+%       of the view. One of the vectors must be along a q axis 
+%       defined by the direction of the calculation.  
+% 
+% dproj: is a 3 vector that is the bin size in each of the 
+%        directions defined in proj. For the direction of the 
+%        calculation, this should be the step size.  
+%       
 % filename: is the name of the nexus file.  It will overwrite the existing
 %           file if one already exists
-
-% ### Output Arguments
-% 
-
-% 
-% ### See Also
-% 
 %
+% Example:
+% q0 = [0 0 0];
+% qdir = [1 0 0];
+% nsteps = 100;
+% spec = sw_egrid(spinwave(sw_model('triAF', 1), {q0 q0+qdir nsteps}))
+% proj = [qdir(:) [0 1 0]' [0 0 1]'];
+% dproj = [(qdir(1)-q0(1)/steps, 1e-6, 1e-6];
+% sw_spec2MDHisto(spec, proj, dproj, 'testmdh.nxs');
+% Note that: 
+% (1) In the call to `spinwave`, only one q-direction may be specified
+%    e.g. the HKL specifier must be of the form {q0 q0+qdir nsteps} However
+%    to be a valid MDH file, all three must be specified.
+% (2) one column in the `proj` matrix must be the q-direction used in 
+%    `spinwave` (e.g. `qdir`).
+
 
 if nargin==0
     swhelp sw_spec2MDHisto

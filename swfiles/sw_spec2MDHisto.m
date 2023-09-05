@@ -78,7 +78,7 @@ for idx=1:length(D)
     end
 end
 %write signal
-signal = reshape(dat,Dszs);
+signal = reshape(dat,Dszs); % change signal array dimensions to match the number of changing dimensions
 h5createnwrite(filename,strcat(rtpth,'/signal'),signal);
 h5createnwrite(filename,strcat(rtpth,'/errors_squared'),zeros(size(signal)));
 h5createnwrite(filename,strcat(rtpth,'/num_events'),zeros(size(signal)));
@@ -233,27 +233,25 @@ function [latt_parms,Bmat,proj_out,D,signal,name] = read_struct(dstruct,proj,dpr
     proj_out = proj(:);
     hkls = dstruct.hkl;
     hkls_sz = size(hkls);
-    dir_vec=hkls(:,hkls_sz(2))-hkls(:,1);
+    dir_vec = hkls(:,hkls_sz(2))-hkls(:,1);
+    %qout = hkls'/dir_vec';
     D={};
     for idx=1:3
         procjv = proj(idx,:)/norm(proj(idx,:));
-       
+          
        if abs(sum(cross(dir_vec,procjv)))< 1e-6
-           D{idx} = zeros([1,hkls_sz(2)+1]);
-           for idx2=1:hkls_sz(2)
-               D{idx}(idx2) = dot(hkls(:,idx2),procjv);
-           end
-           %move to bin boundaries
-           D{idx}(2:hkls_sz(2)) = (D{idx}(1:(hkls_sz(2)-1))+D{idx}(2:(hkls_sz(2))))/2;
-           % add a bin boundary on the end
-           D{idx}(hkls_sz(2)+1)=2*D{idx}(hkls_sz(2))-D{idx}(hkls_sz(2)-1);
-           % add a bin boundary to the beginning
-           D{idx}(1) = 2*D{idx}(2)-D{idx}(3);
+           dtmp = dot(hkls(:,2),procjv);
+           D{idx} = dtmp+dproj(idx)/2.*[-1 1]; 
        else
-           hkl_proj = dot(hkls(:,1),procjv);
-           D{idx} = [hkl_proj-dproj(idx)/2, hkl_proj+dproj(idx)/2];
+           hkl_proj = hkls'/dir_vec';
+           dhkl = hkl_proj(2)-hkl_proj(1); % get the spacing along the q axis
+           %hkl_proj = dot(hkls(:,1),procjv);
+           D{idx} = zeros([1,length(hkl_proj)+1]);
+           D{idx}(1:length(hkl_proj)) = hkl_proj-dhkl/2;
+           D{idx}(length(D{idx})) = hkl_proj(length(hkl_proj))+dhkl/2;% change to bin boundaries
        end  
     end
     D{4}=dstruct.Evect;
+    
     signal = dstruct.swConv;
 end

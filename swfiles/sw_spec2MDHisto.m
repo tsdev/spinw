@@ -219,10 +219,21 @@ h5writeatt(filename,pth,'units',units)
 
 end
 function [latt_parms,Bmat,proj_out,D,signal,name] = read_struct(dstruct,proj,dproj)
-%dstruct is the spinw structure
-%proj is the viewing projection matrix
-%drproj is the size of the bin in each direction (ignored for the direction
-%of the cut.
+
+% ### Input Arguments
+% struct: is the spinw structure
+% proj: is the viewing projection matrix
+% drproj: is the size of the bin in each direction (ignored for the direction
+% of the cut.
+% 
+% ### Output Arguments
+% latt_parms: the lattice parameters from the spinw structure
+% Bmat: a matrix for converting from inverse angstroms to rlu
+% proj_out: 
+% D: a cell array of the number of steps in each direction
+% signal: the signal array from the spinw spec strcuture
+% name : the chemical formula from the spinW file
+
     fnames=fieldnames(dstruct);
     objnum = find(strcmp(fnames,'obj'));
     swobj = dstruct.(subsref(fnames,substruct('{}',{objnum})));
@@ -239,7 +250,7 @@ function [latt_parms,Bmat,proj_out,D,signal,name] = read_struct(dstruct,proj,dpr
     for idx=1:3
         procjv = proj(idx,:)/norm(proj(idx,:));
           
-       if abs(sum(cross(dir_vec,procjv)))< 1e-6
+       if abs(norm(cross(dir_vec,procjv)))> 1e-6
            dtmp = dot(hkls(:,2),procjv);
            D{idx} = dtmp+dproj(idx)/2.*[-1 1]; 
        else

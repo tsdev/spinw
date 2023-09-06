@@ -35,8 +35,7 @@ function sw_spec2MDHisto(spectra,proj, dproj, filename)
 % sw_spec2MDHisto(spec, proj, dproj, 'testmdh.nxs');
 % Note that: 
 % (1) In the call to `spinwave`, only one q-direction may be specified
-%    e.g. the HKL specifier must be of the form {q0 q0+qdir nsteps} However
-%    to be a valid MDH file, all three must be specified.
+%    e.g. the HKL specifier must be of the form {q0 q0+qdir nsteps} 
 % (2) one column in the `proj` matrix must be the q-direction used in 
 %    `spinwave` (e.g. `qdir`).
 

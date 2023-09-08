@@ -15,12 +15,13 @@ function sw_spec2MDHisto(spectra,proj, dproj, filename)
 % 
 % proj: a 3x3 matrix defining an orthogonal coordinate system 
 %       where each column is a vector defining the orientation 
-%       of the view. One of the vectors must be along a q axis 
+%       of the view. One of the vectors must be identical to the Q axis 
 %       defined by the direction of the calculation.  
 % 
 % dproj: is a 3 vector that is the bin size in each of the 
 %        directions defined in proj. For the direction of the 
-%        calculation, this should be the step size.  
+%        calculation, the value used is internally calcualted from the spectrum.
+%        It is wise to enter the step size for clarity.  
 %       
 % filename: is the name of the nexus file.  It will overwrite the existing
 %           file if one already exists
@@ -44,7 +45,7 @@ if nargin==0
     swhelp sw_spec2MDHisto
     return
 end
-[unit_cell,Bmat,proj_out,D,dat,name] = read_struct(spectra,proj,dproj);
+[unit_cell,Bmat,proj_out,D,dat,proj,name] = read_struct(spectra,proj,dproj);
 %check if hdf file exists and delete if it does.
 if exist(filename,'file')
     delete(filename)
@@ -217,13 +218,15 @@ h5createnwritevec(filename,pth,'value',value)
 h5writeatt(filename,pth,'units',units)
 
 end
-function [latt_parms,Bmat,proj_out,D,signal,name] = read_struct(dstruct,proj,dproj)
+function [latt_parms,Bmat,proj_out,D,signal,proj,name] = read_struct(dstruct,proj,dproj)
 
 % ### Input Arguments
-% struct: is the spinw structure
-% proj: is the viewing projection matrix
+% dstruct: is the spinw structure
+% proj: is the viewing projection matrix each column is a different axis.
+%       One axis must be parallel to the drection of propogation in the
+%       dstruct
 % drproj: is the size of the bin in each direction (ignored for the direction
-% of the cut.
+%         of the cut).
 % 
 % ### Output Arguments
 % latt_parms: the lattice parameters from the spinw structure
@@ -232,7 +235,7 @@ function [latt_parms,Bmat,proj_out,D,signal,name] = read_struct(dstruct,proj,dpr
 % D: a cell array of the number of steps in each direction
 % signal: the signal array from the spinw spec strcuture
 % name : the chemical formula from the spinW file
-
+    check_ortho(proj)
     fnames=fieldnames(dstruct);
     objnum = find(strcmp(fnames,'obj'));
     swobj = dstruct.(subsref(fnames,substruct('{}',{objnum})));
@@ -240,14 +243,14 @@ function [latt_parms,Bmat,proj_out,D,signal,name] = read_struct(dstruct,proj,dpr
     M = basisvector(swobj);
     Bmat = inv(M);
     name =formula(swobj).chemform;
-    proj_out = proj(:);
+    %proj_out = proj(:);
     hkls = dstruct.hkl;
     hkls_sz = size(hkls);
     dir_vec = hkls(:,hkls_sz(2))-hkls(:,1);
     %qout = hkls'/dir_vec';
     D={};
     for idx=1:3
-        procjv = proj(idx,:)/norm(proj(idx,:));
+        procjv = proj(:,idx)/norm(proj(:,idx));
           
        if abs(norm(cross(dir_vec,procjv)))> 1e-6
            dtmp = dot(hkls(:,2),procjv);
@@ -259,9 +262,25 @@ function [latt_parms,Bmat,proj_out,D,signal,name] = read_struct(dstruct,proj,dpr
            D{idx} = zeros([1,length(hkl_proj)+1]);
            D{idx}(1:length(hkl_proj)) = hkl_proj-dhkl/2;
            D{idx}(length(D{idx})) = hkl_proj(length(hkl_proj))+dhkl/2;% change to bin boundaries
+           proj(:,idx) = dir_vec; %set varying projection vector to spectra object 
        end  
     end
     D{4}=dstruct.Evect;
     
     signal = dstruct.swConv;
+    proj_out = proj(:);
+end
+
+function check_ortho(mat)
+% check if the three column vectors in proj are orthogonal to each other
+sm = size(mat);
+    for idx = 1:sm(2)
+        for idx2 = 1:sm(2)
+            if idx~=idx2
+                if norm(dot(mat(:,idx),mat(:,idx2))) >1e-6
+                    error("read_struct:nonorthogonal","the 3 vectors in proj must form an orthogonal basis set")
+                end
+            end
+        end
+    end
 end

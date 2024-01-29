@@ -55,6 +55,7 @@ plot(FMchain,'range',[3 0.9 0.9],'baseMode','none','cellMode','none')
 % value is dinamically calculated at every call.
 
 FMchain.energy
+assert(FMchain.energy == -1)
 
 %% Calculate spin wave dispersion and spin-spin correlation function
 % We calculate spin wave dispersion and correlation function along the

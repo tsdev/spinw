@@ -130,13 +130,20 @@ zipName = [swDirName '.zip'];
 % files with '~' and 'sw_release.m' file
 fList = rdir('**/*');
 fListZip = {};
+if ispc
+    sp = '\';
+else
+    sp = '/';
+end
+dirname = [pwd sp];
 
 for ii = 1:numel(fList)
     if (~any(strfind(fList(ii).name,[filesep '.']))) && (~any(strfind(fList(ii).name,'~'))) ...
             && (~any(strfind(fList(ii).name,[filesep 'dev' filesep]))) ...
             && (~any(strfind(fList(ii).name,[filesep 'docs' filesep]))) ...
             && (~any(strfind(fList(ii).name,[filesep 'test' filesep]))) ...
-            && (~any(strfind(fList(ii).name,[filesep 'tutorials' filesep])))
+            && (~any(strfind(fList(ii).name,[filesep 'tutorials' filesep]))) ...
+            && (~any(strfind(fList(ii).folder,'git')))
         fListZip{end+1} = fList(ii).name;
     end
 end

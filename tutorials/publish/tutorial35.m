@@ -4,7 +4,7 @@
 
 luvo = spinw;
 luvo.genlattice('lat_const',[5.2821 5.6144 7.5283],...
-    'spgr','x+1/2,-y+1/2,-z; -x,-y,z+1/2; -x,-y,-z','label','P n m a')
+    'sym','x+1/2,-y+1/2,-z; -x,-y,z+1/2; -x,-y,-z','label','P n m a')
 
 % Lu atom
 luvo.addatom('r',[0.003 0.031 1/4],'label','Lu1 Lu3+','color',[0 171 36])
@@ -74,7 +74,7 @@ luvo.table('matrix')
 % input of spinw.matparser, fitting K(1,1) and K(2,2) and restricting them
 % to positive values. This ensures that the magnetic structure (parallel to
 % c-axis) is always the right ground state. The data file is stored here:
-% https://goo.gl/8guwPF
+% https://raw.githubusercontent.com/SpinW/spinw/master/tutorials/publish/LuVO3_fitted_modes.txt
 % Please save it with the name LuVO3_fitted_modes.txt into a location that
 % is visible to Matlab.
 perf = swpref;

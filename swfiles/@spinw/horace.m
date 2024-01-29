@@ -100,6 +100,14 @@ function [w, s] = horace(obj, qh, qk, ql, varargin)
 %   * `fid` File ID provided by the `fopen` command, the output is written
 %           into the opened file stream.
 %
+% `'useFast'`
+% : whether to use the spinw.spinwavefast method or not. This method 
+%           is similar to spinw.spinwave but calculates only the unpolarised
+%           neutron cross-section and ignores all negative energy branches
+%           as well as using other shortcuts. In general it should produce
+%           the same spectra as spinw.spinwave, with some rounding errors,
+%           but can be 2-3 times faster and uses less memory.
+%
 % ### Output Arguments
 % 
 % `w`
@@ -122,13 +130,25 @@ if nargin <= 1
     return
 end
 
-inpForm.fname  = {'component' 'norm' 'dE'  'parfunc'      'param' 'func' 'fid'};
-inpForm.defval = {'Sperp'     false  0     @obj.matparser []      []     -1   };
-inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1]  [1 1]};
-inpForm.soft   = {false       false  false false          true    true   false};
+inpForm.fname  = {'component' 'norm' 'dE'  'parfunc'      'param' 'func' 'fid' 'useFast'};
+inpForm.defval = {'Sperp'     false  0     @obj.matparser []      []     -1    1};
+inpForm.size   = {[1 -1]      [1 1]  [1 1] [1 1]          [1 -2]  [1 1]  [1 1] [1 1]};
+inpForm.soft   = {false       false  false false          true    true   false false};
 
 warnState = warning('off','sw_readparam:UnreadInput');
-param = sw_readparam(inpForm, varargin{:});
+% To handle matlab fitting syntax, which may set the first argument to the 
+% fittable parameter (without keyword). 
+if ~ischar(varargin{1})
+    param = sw_readparam(inpForm, varargin{2:end});
+    if isempty(param.param)
+        varargin = [varargin {'param'} varargin(1)];
+    end
+    % always override keyword specified parameters
+    param.param = varargin{1};
+    varargin(1) = []; 
+else
+    param = sw_readparam(inpForm, varargin{:}); 
+end
 pref = swpref;
 
 if ~isempty(param.param)
@@ -158,24 +178,6 @@ if ~isempty(param.func)
     param.func(obj);
 end
 
-% calculate spin wave spectrum
-if nargin > 5
-    % include the fitmode option to speed up calculation
-    if numel(varargin) == 1
-        varargin{1}.fitmode = 2;
-        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{1});
-    else
-        spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true);
-    end
-else
-    spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',true);
-end
-warning(warnState);
-
-% calculate Sperp
-spectra = sw_neutron(spectra,'pol',false);
-
-
 % parse the component string
 if iscell(param.component)
     nConv = numel(param.component);
@@ -193,17 +195,63 @@ else
     param.component = {param.component};
 end
 
+needSab = false;
+for ii = 1:numel(parsed)
+    par0 = parsed{ii};
+    for jj = 1:length(par0.type)
+        if par0.type{jj}(1) ~= 1
+            needSab = true;
+            break;
+        end
+    end
+end
+
+% calculate spin wave spectrum
+if nargin > 5
+    % include the fitmode option to speed up calculation
+    if numel(varargin) == 1
+        varargin{1}.fitmode = 2;
+        if needSab || ~param.useFast
+            spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{1});
+        else
+            spectra = obj.spinwavefast([qh(:) qk(:) ql(:)]',varargin{1});
+        end
+    else
+        if needSab || ~param.useFast
+            spectra = obj.spinwave([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true);
+        else
+            spectra = obj.spinwavefast([qh(:) qk(:) ql(:)]',varargin{:},'fitmode',true);
+        end
+    end
+else
+    if needSab || ~param.useFast
+        spectra = obj.spinwave([qh(:) qk(:) ql(:)]','fitmode',true);
+    else
+        spectra = obj.spinwavefast([qh(:) qk(:) ql(:)]','fitmode',true);
+    end
+end
+warning(warnState);
+
+% calculate Sperp
+if needSab || ~param.useFast
+    spectra = sw_neutron(spectra,'pol',false);
+end
+
 % pack all cross section into a cell for easier looping
 if iscell(spectra.omega)
     nTwin = numel(spectra.omega);
     omega = spectra.omega;
-    Sab   = spectra.Sab;
+    if needSab
+        Sab   = spectra.Sab;
+    end
     Sperp = spectra.Sperp;
     
 else
     nTwin = 1;
     omega = {spectra.omega};
-    Sab   = {spectra.Sab};
+    if needSab
+        Sab   = {spectra.Sab};
+    end
     Sperp = {spectra.Sperp};
 end
 

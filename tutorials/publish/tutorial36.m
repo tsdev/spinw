@@ -39,7 +39,7 @@ afmch.genmagstr('mode','helical','S',[0 0 1]','k',[1/2 0 0],'n',[1 0 0])
 
 %% spin-spin correlation function
 
-spec = afmch.spinwave({[0 0 0] [1 0 0] 501});
+spec = afmch.spinwave({[0 0 0] [1 0 0] 501},'sortMode',false);
 spec = sw_egrid(spec,'component',{'Sxx' 'Syy' 'Szz'});
 
 clf

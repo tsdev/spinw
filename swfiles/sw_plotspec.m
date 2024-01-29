@@ -72,8 +72,8 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 %   `'auto'`.
 % 
 % `'sortMode'`
-% : Sorting the modes before plotting. Default is `false`. Can improve the
-%   quality of the dispersion line plots if modes are crossing.
+% : Sorting the modes by energy before plotting. Default is `false`. Can 
+%   improve the quality of the dispersion line plots if modes are crossing.
 % 
 % `'axLim'`
 % : Upper limit for energy axis (for `mode` 1,2) or color axis (for `mode`
@@ -170,6 +170,10 @@ function [fHandle0, pHandle0] = sw_plotspec(spectra, varargin)
 if nargin==0
     swhelp sw_plotspec
     return
+end
+
+if sw_issymspec(spectra)
+    error('sw_plotspec:SymbolicInput', 'This function does not handle symbolic spectra');
 end
 
 if isfield(spectra,'norm')
@@ -288,7 +292,8 @@ if param.mode == 4
             'dashed',true,'colorbar',false,'axLim',param.axLim,...
             'lineStyle',param.lineStyle,'maxPatch',...
             param.maxPatch,'qLabel',param.qlabel,'dat',param.dat,...
-            'ddat',param.ddat,'datFormat',param.datFormat);
+            'ddat',param.ddat,'datFormat',param.datFormat,...
+            'legend',param.legend);
     end
     if ~powmode
         hold on
@@ -472,7 +477,7 @@ if powmode && (param.mode~=3)
     param.mode = 3;
 end
 
-hPlot = [];
+hPlot = gobjects(0);
 hold on
 
 switch param.mode
@@ -725,7 +730,7 @@ if param.mode == 3
         if iscell(xLabel)
             xCut  = xLabel{end};
             nCut  = numel(xCut);
-            hPlot = zeros(1,nCut);
+            hPlot = gobjects(1,nCut);
             for ii = 2:nCut
                 selIdx = xAxis>=xCut(ii-1) & xAxis<=xCut(ii);
                 hPlot(ii-1) = image(xAxis(selIdx),yAxis,cMat(:,selIdx,:));

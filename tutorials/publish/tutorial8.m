@@ -3,7 +3,7 @@
 % bonds are symmetry equivalent and add a magnetic Cr+ with S=1 spin.
 
 AF33kagome = spinw;
-AF33kagome.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'spgr','P -3')
+AF33kagome.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3')
 AF33kagome.addatom('r',[1/2 0 0],'S', 1,'label','MCu1','color','r')
 plot(AF33kagome,'range',[2 2 1/2],'cellMode','inside')
 
@@ -31,7 +31,7 @@ plot(AF33kagome,'range',[2 2 1/2],'cellMode','inside')
 
 S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr('mode','helical','k',[-1/3 -1/3 0],...
-    'n',[0 0 1],'unitS','lu','S',S0,'nExt',[3 3 1]);
+    'n',[0 0 1],'unit','lu','S',S0,'nExt',[3 3 1]);
 disp('Magnetic structure:')
 AF33kagome.table('mag')
 AF33kagome.energy
@@ -44,8 +44,8 @@ plot(AF33kagome,'range',[3 3 1/2],'cellMode','inside')
 % magnetic ground state. After calculating the diagonal of the correlation
 % function we can see that only a few modes have non-zero intensity.
 
-kag33Spec = AF33kagome.spinwave({[-1/2 0 0] [0 0 0] [1/2 1/2 0] 250});
-kag33Spec = sw_egrid(kag33Spec,'component','Sxx+Syy+Szz');
+kag33Spec = AF33kagome.spinwave({[-1/2 0 0] [0 0 0] [1/2 1/2 0] 250},'hermit',false);
+kag33Spec = sw_egrid(kag33Spec,'component','Sxx+Syy+Szz','imagChk',false);
 figure
 subplot(2,1,1)
 sw_plotspec(kag33Spec,'mode',1,'axLim',[0 2.5],'colorbar',false',...
@@ -64,7 +64,7 @@ legend off
 
 S0 = [0 0 -1; 1 1 -1; 0 0 0];
 AF33kagome.genmagstr('mode','helical','k',[-1/3 -1/3 0],...
-    'n',[0 0 1],'unitS','lu','S',S0,'nExt',[1 1 1]);
+    'n',[0 0 1],'unit','lu','S',S0,'nExt',[1 1 1]);
 disp('Magnetic structure:')
 AF33kagome.table('mag')
 AF33kagome.energy
@@ -82,7 +82,7 @@ plot(AF33kagome,'range',[3 3 1/2])
 % only be calculated using the magnetic supercell.
 
 kag33Spec = AF33kagome.spinwave({[-1/2 0 0] [0 0 0] [1/2 1/2 0] 250},'hermit',false);
-kag33Spec = sw_egrid(kag33Spec,'component','Sxx+Syy+Szz','imagChk',false);
+kag33Spec = sw_egrid(kag33Spec,'component','Sxx+Syy+Szz');
 figure
 subplot(2,1,1)
 sw_plotspec(kag33Spec,'mode',1,'axLim',[0 2.5],'colorbar',false',...

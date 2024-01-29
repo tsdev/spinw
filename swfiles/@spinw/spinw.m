@@ -483,25 +483,22 @@ classdef spinw < handle & matlab.mixin.SetGet
             
             if ishandle(firstArg)
                 % get spinw object from graphics handle
-                switch get(firstArg,'Tag')
-                    case 'sw_crystal'
-                        figDat = getappdata(firstArg);
-                        obj = copy(figDat.obj);
-                    case 'sw_spectra'
-                        figDat = getappdata(firstArg);
-                        obj    = copy(figDat.spectra.obj);
+                figDat = getappdata(firstArg);
+                if isfield(figDat, 'spectra')
+                    figDat = figDat.spectra;
                 end
-                return
-
-            end
-            
-            if isa(firstArg, 'spinw')
+                if isfield(figDat, 'obj') && isa(figDat.obj, 'spinw')
+                    obj = copy(figDat.obj);
+                    return
+                else
+                    error('spinw:spinw:WrongInput', ...
+                          'No spinw object could be found in the input figure');
+                end
+            elseif isa(firstArg, 'spinw')
                 %  it is used when objects are passed as arguments.
                 obj = copy(firstArg);
                 return
-            end
-            
-            if isstruct(firstArg)
+            elseif isstruct(firstArg)
                 objS = initfield(firstArg);
                 
                 % change lattice object
@@ -518,8 +515,7 @@ classdef spinw < handle & matlab.mixin.SetGet
                     obj.(fNames{ii}) = objS.(fNames{ii});
                 end
                 return;
-            end
-            if ischar(firstArg)
+            elseif ischar(firstArg)
                 % import data from file (cif/fst are supported)
                 
                 objS = initfield(struct);
@@ -529,7 +525,10 @@ classdef spinw < handle & matlab.mixin.SetGet
                 end
                 
                 obj = sw_import(firstArg,false,obj);
-                
+            else
+                error('spinw:spinw:WrongInput', ...
+                      ['Cannot create spinw object from input of type ' ...
+                       class(firstArg)])
             end
             
         end % .spinw

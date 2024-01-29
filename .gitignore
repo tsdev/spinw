@@ -1,5 +1,4 @@
 
-*.mat
 !icons.mat
 
 .DS_Store
@@ -12,3 +11,27 @@ docs/.sass-cache/
 _pdf
 
 *.sublime-workspace
+*.tap
+
+*.asv
+
+dev/standalone/Linux/Source/
+dev/standalone/Win/Source/
+dev/standalone/MacOS/Source/
+
+*.swp
+*.swo
+*.xml
+*.rej
+
+**profile_results
+python/ctf
+.idea/
+**/*.pyc
+python/build/
+python/pyspinw/ctfs/
+
+includedSupportPackages.txt
+mccExcludedFiles.log
+requiredMCRProducts.txt
+unresolvedSymbols.txt

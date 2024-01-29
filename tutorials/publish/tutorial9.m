@@ -3,7 +3,7 @@
 % spin.
 
 DMkag = spinw;
-DMkag.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'spgr','P -3')
+DMkag.genlattice('lat_const',[6 6 40],'angled',[90 90 120],'sym','P -3')
 DMkag.addatom('r', [1/2 0 0],'S',1,'label', 'Cu1', 'color','r')
 plot(DMkag,'range',[2 2 1])
 swplot.zoom(4)
@@ -38,7 +38,7 @@ DMkag.table('mat')
 % previously given spin quantum number in the spinw.addatom method.
 
 S0 = [1 -2 1; 2 -1 -1; 0 0 0];
-DMkag.genmagstr('mode','direct','k',[0 0 0],'n',[0 0 1],'unitS','lu', 'S',S0); 
+DMkag.genmagstr('mode','direct','k',[0 0 0],'n',[0 0 1],'unit','lu', 'S',S0); 
 DMkag.energy
 
 plot(DMkag,'range',[3 3 1/2])

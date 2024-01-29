@@ -18,6 +18,12 @@ function outStr = sw_version()
 % release date and license.
 %
 
+% Take into account deployed installs
+if isdeployed
+    outStr = struct;
+    return
+end
+
 % read file header from sw_version.m file
 fid = fopen('sw_version.m');
 
@@ -48,7 +54,6 @@ for ii = 1:numel(verLine)
         [~, verSel] = strtok(verSel,'$'); %#ok<*STTOK>
         [partStr{end+1}, verSel] = strtok(verSel,'$');
     end
-    
 end
 
 nField = numel(partStr);
@@ -76,13 +81,10 @@ if nField == 0
 end
 
 % Matlab version & Symbolic Toolbox
-v0 = ver;
-nSym = strcmp('Symbolic Math Toolbox', {v0.Name});
-nSym = find(nSym,1);
-if isempty(nSym)
+if ~license('checkout','Symbolic_Toolbox')
     strSym = 'no Symbolic Math Toolbox installed';
 else
-    strSym = [v0(nSym).Name ' installed'];
+    strSym = 'Symbolic Math Toolbox installed';
 end
 
 
@@ -112,7 +114,7 @@ else
     ver0.Release  = '';
     ver0.Date     = datestr(now,'dd-mmm-yyyy');
     ver0.Author   = 'S. Tóth and S. Ward';
-    ver0.Contact  = 'spinw4@gmail.com, @spinw4 on Twitter';
+    ver0.Contact  = 'admin@spinw.org, @spinw4 on Twitter';
     ver0.License  = 'GNU GENERAL PUBLIC LICENSE';
 
     if nField == 0

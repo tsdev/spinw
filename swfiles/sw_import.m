@@ -98,7 +98,7 @@ switch fExt
         end
         
         % create the SpinW model
-        obj0.genlattice('lat_const',dat.cell(1:3),'angled',dat.cell(4:6),'spgr',dat.spgr);
+        obj0.genlattice('lat_const',dat.cell(1:3),'angled',dat.cell(4:6),'sym',dat.spgr);
         if ~isempty(dat.atom)
             obj0.addatom('r',[dat.atom(:).r],'label',{dat.atom(:).label});
         elseif ~isempty(dat.matom)
@@ -156,7 +156,6 @@ switch fExt
         end
         
         xyz0 = sprintf('%s; ',xyz0{:}); xyz0 = xyz0(1:end-2);
-        %name0 = cif0.atom_site_type_symbol';
         cell0 = [cif0.atom_site_label cif0.atom_site_type_symbol];
         name0 = cellfun(@(x,y)strjoin({x y}),cell0(:,1),cell0(:,2),'UniformOutput',false)';
         r0    = mod([cif0.atom_site_fract_x cif0.atom_site_fract_y cif0.atom_site_fract_z]',1);

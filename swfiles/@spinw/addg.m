@@ -21,7 +21,7 @@ function addg(obj, matrixIdx, varargin)
 % 
 % ```
 % >>cryst = spinw
-% >>cryst.genlattice('lat_const',[4 4 3],'spgr','P 4')
+% >>cryst.genlattice('lat_const',[4 4 3],'sym','P 4')
 % >>cryst.addatom('r',[1/4 1/4 1/2],'S',1)
 % >>cryst.addmatrix('label','g_1','value',diag([2 1 1]))
 % >>cryst.gencoupling
@@ -128,9 +128,19 @@ if matrixIdx == -1
     error('spinw:addg:WrongCouplingTypeIdx','Input matrix does not exists!');
 end
 
+% check matrix has the correct properties for a valid g-tensor
+% see Eq. 15.38 in Abragam and Bleaney (1970) EPR of Transition Ions
+gtensor = obj.matrix.mat(:, :, matrixIdx);
+G = gtensor' * gtensor;
+eigvals = eig(G);
+if ~issymmetric(G) || ~all(eigvals > 10*eps)
+    error('spinw:addg:InvalidgTensor',  ...
+        'Check input matrix - g*.g must be symmeteric positive-definite');
+end
+
 if nargin > 3
     atomIdx = varargin{2};
-    if obj.lattice.sym > 1
+    if size(obj.lattice.sym, 3) > 1
         error('spinw:addg:SymmetryProblem','atomIdx is not allowed when crystal symmetry is not P1!');
     end
 
@@ -142,7 +152,7 @@ if nargin > 2
     atomTypeIdx = varargin{1};
     
     if length(obj.single_ion.g) ~= nMagAtom
-        addField.g = zeros(nMagAtom,1);
+        addField.g = zeros(1, nMagAtom, 'int32');
     end
     
     % select atoms by label
@@ -170,10 +180,9 @@ if nargin > 2
     end
     
 else
-    addField.g = zeros(1,nMagAtom) + matrixIdx;
+    addField.g = zeros(1, nMagAtom, 'int32') + matrixIdx;
 end
 
-addField.g = int32(addField.g);
 obj.single_ion = addField;
 
 end

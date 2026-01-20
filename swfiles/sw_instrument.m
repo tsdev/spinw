@@ -57,6 +57,10 @@ function spectra = sw_instrument(spectra, varargin)
 % : Minimum scattering angle in \\deg, default value is 0. Can be only
 %   applied if one of the `ki`, `Ei`, `kf` or `Ef` parameters is defined.
 % 
+% `'thetaMax'`
+% : Maximum scattering angle in \\deg, default value is 135. Can be only
+%   applied if one of the `ki`, `Ei`, `kf` or `Ef` parameters is defined.
+%
 % `'plot'`
 % : If the resolution is read from file and plot option is
 %   true, the energy dependent resolution values together with the
@@ -123,12 +127,16 @@ if nargin == 0
     return
 end
 
+if sw_issymspec(spectra)
+    error('sw_instrument:SymbolicInput', 'This function does not handle symbolic spectra');
+end
+
 func0 = @swfunc.gaussfwhm;
 
-inpForm.fname  = {'dE'    'ki'  'Ei'  'kf'  'Ef'  'plot' 'polDeg' 'thetaMin'};
-inpForm.defval = {[]      0     0     0     0     false   5        0        };
-inpForm.size   = {[-1 -2] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]     };
-inpForm.soft   = {true    false false false false false  false    false     };
+inpForm.fname  = {'dE'    'ki'  'Ei'  'kf'  'Ef'  'plot' 'polDeg' 'thetaMin' 'thetaMax'};
+inpForm.defval = {[]      0     0     0     0     false   5        5        135};
+inpForm.size   = {[-1 -2] [1 1] [1 1] [1 1] [1 1] [1 1]  [1 1]    [1 1]     [1 1]};
+inpForm.soft   = {true    false false false false false  false    false     false};
 
 inpForm.fname  = [inpForm.fname  {'formFact' 'dQ'  'norm' 'useRaw' 'func' 'fid'}];
 inpForm.defval = [inpForm.defval { 'auto'    0     false   true    func0  -1   }];
@@ -221,16 +229,19 @@ if param.dQ > 0
     stdG = param.dQ/2.35482;
     
     for jj = 1:nPlot
-        swConv = spectra.swConv{jj};
-        swConvTemp = swConv * 0;
-        for ii = 1:numel(Qconv)
-            % Gaussian with intensity normalised to 1, centered on E(ii)
-            fG = exp(-((Qconv-Qconv(ii))/stdG).^2/2);
-            fG = fG/sum(fG);
-            swConvTemp = swConvTemp + swConv(:,ii) * fG;
-            
+        if pref.usemex
+            spectra.swConv{jj} = sw_qconv(spectra.swConv{jj}, Qconv, stdG, pref.nthread);
+        else
+            swConv = spectra.swConv{jj};
+            swConvTemp = swConv * 0;
+            for ii = 1:numel(Qconv)
+                % Gaussian with intensity normalised to 1, centered on E(ii)
+                fG = exp(-((Qconv-Qconv(ii))/stdG).^2/2);
+                fG = fG/sum(fG);
+                swConvTemp = swConvTemp + swConv(:,ii) * fG;
+            end
+            spectra.swConv{jj} = swConvTemp;
         end
-        spectra.swConv{jj} = swConvTemp;
     end
     
     fprintf0(fid,'Finite instrumental momentum resolution of %5.3f A-1 is applied.\n',param.dQ);
@@ -269,28 +280,34 @@ switch FX
 end
 
 if FX > 0
-    k0 = param.k;
-    cosT = cosd(param.thetaMin);
-    sinT = sind(param.thetaMin);
-    
+    kfix = param.k;
+    cosTMin = cosd(param.thetaMin);
+    sinTMin = sind(param.thetaMin);
+    cosTMax = cosd(param.thetaMax);
+    sinTMax = sind(param.thetaMax);
     
     for jj = 1:nPlot
         switch FX
             case 1
                 % fix ki
-                Emax = (k0^2-(k0*cosT-sqrt(Q.^2-k0^2*sinT^2)).^2) * sw_converter(1,'k','meV');
-                Emin = (k0^2-(k0*cosT+sqrt(Q.^2-k0^2*sinT^2)).^2) * sw_converter(1,'k','meV');
+                % Ross Stewart, 9/2/23 - get proper trajectories based on thetamin *and* thetamax
+                Emax = Q*0;
+                Emin = Q*0;
+                ii = find(Q < kfix);
+                Emax(ii) = (kfix^2-(kfix*cosTMin-sqrt(Q(ii).^2-kfix^2*sinTMin^2)).^2) * sw_converter(1,'k','meV');
+                Emin(ii) = (kfix^2-(kfix*cosTMin+sqrt(Q(ii).^2-kfix^2*sinTMin^2)).^2) * sw_converter(1,'k','meV');
+                ii = find(Q > kfix);
+                Emax(ii) = (kfix^2-(kfix*cosTMax+sqrt(Q(ii).^2-kfix^2*sinTMax^2)).^2) * sw_converter(1,'k','meV');
+                Emin(ii) = (kfix^2-(kfix*cosTMax-sqrt(Q(ii).^2-kfix^2*sinTMax^2)).^2) * sw_converter(1,'k','meV');
             case 2
                 % fix kf
-                Emax = -(k0^2-(k0*cosT+sqrt(Q.^2-k0^2*sinT^2)).^2) * sw_converter(1,'k','meV');
-                Emin = -(k0^2-(k0*cosT-sqrt(Q.^2-k0^2*sinT^2)).^2) * sw_converter(1,'k','meV');
+                Emax = -(kfix^2-(kfix*cosT+sqrt(Q.^2-kfix^2*sinT^2)).^2) * sw_converter(1,'k','meV');
+                Emin = -(kfix^2-(kfix*cosT-sqrt(Q.^2-kfix^2*sinT^2)).^2) * sw_converter(1,'k','meV');
         end
-        %Emax = (ki^2-(ki*cosT-sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter(1,'k','meV');
-        %Emin = (ki^2-(ki*cosT+sqrt(Q.^2-ki^2*sinT^2)).^2) * sw_converter(1,'k','meV');
-        
+
         Emax(abs(imag(Emax))>0) = 0;
         Emin(abs(imag(Emin))>0) = 0;
-        
+
         Elist = repmat(cEvect',[1 size(spectra.swConv{jj},2)]);
         Emin  = repmat(Emin,[size(spectra.swConv{jj},1) 1]);
         Emax  = repmat(Emax,[size(spectra.swConv{jj},1) 1]);
@@ -301,7 +318,7 @@ if FX > 0
         swConv(idx) = NaN;
         spectra.swConv{jj} = swConv;
     end
-    fprintf0(fid,'Energy transfer is limited to instrument, using %s=%5.3f A-1.\n',kstr,k0);
+    fprintf0(fid,'Energy transfer is limited to instrument, using %s=%5.3f A-1.\n',kstr,kfix);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

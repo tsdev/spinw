@@ -88,7 +88,7 @@ for ii = 1:nGen
             
             idxR = permute(sumn(abs(bsxfun(@minus,symOp(:,1:3,:),RS)),[1 2]),[3 1 2]);
             idxT = permute(any(bsxfun(@minus,symOp(:,4,:),TS),1),[3 1 2]);
-            
+                        
             % adds new operator to the list if it differs from all
             if all(idxR | idxT)
                 symOp = cat(3,symOp,[RS TS]);

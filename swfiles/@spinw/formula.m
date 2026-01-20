@@ -13,11 +13,11 @@ function varargout = formula(obj)
 % ### Examples
 %
 % The formula of the crystal stored in the
-% [https://goo.gl/do6oTh](https://goo.gl/do6oTh) linked file will be
+% [https://raw.githubusercontent.com/SpinW/Models/master/cif/Ca2RuO4.cif](https://raw.githubusercontent.com/SpinW/Models/master/cif/Ca2RuO4.cif) linked file will be
 % printed onto the Command Window.
 %
 % ```
-% >>cryst = spinw('https://goo.gl/do6oTh')
+% >>cryst = spinw('https://raw.githubusercontent.com/SpinW/Models/master/cif/Ca2RuO4.cif')
 % >>cryst.formula>>
 % ```
 %

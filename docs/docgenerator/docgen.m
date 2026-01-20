@@ -1,12 +1,12 @@
 %% setup help generator options
 
 swPath  = {'swfiles/@spinw' 'swfiles' 'swfiles/+swplot' 'swfiles/@swpref' 'swfiles/+swsym' 'swfiles/+swfunc' 'swfiles/+ndbase'};
-swr     = sw_rootdir;
+swr     = sw_rootdir();
 swPath  = cellfun(@(C)[swr C],swPath,'UniformOutput',false);
 swver   = sw_version;
-outPath = '~/spinwdoc_git';
-docPath = '~/spinw_git/docs';
-upload  = true;
+outPath = fullfile(userpath,'Release','docgen');
+docPath = [outPath filesep 'docs'];
+upload  = false;
 recalc  = true;
 
 %% generate help

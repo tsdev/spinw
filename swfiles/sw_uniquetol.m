@@ -58,7 +58,6 @@ if nargout < 2
         M(:,idxSame) = [];
         idx = idx + 1;
     end
-    
 else
     idx  = 1;
     % storing the indices in M

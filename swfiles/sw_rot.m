@@ -1,5 +1,5 @@
 function [V, rotM] = sw_rot(rotAxis, rotAngle, V)
-% rotates vectorsin 3D
+% rotates vectors in 3D
 % 
 % ### Syntax
 % 

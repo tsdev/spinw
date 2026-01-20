@@ -127,7 +127,11 @@ else
             end
             fclose(fid);
             if symIdx == 0
-                error('generator:WrongInput','Symmetry name does not exists (case insensitive)!');
+                error('generator:WrongInput', ...
+                      ['The symmetry name ' symName 'is not recognised by ' ...
+                       'SpinW. Available symmetry symbols can be found in ' ...
+                       strrep(symPath, '\', '\\')]);
+                % Windows paths don't print correctly with single \
             end
             symNum = symIdx;
             symStr = textLine(20:end);
@@ -191,7 +195,7 @@ while(ii<=length(symStr))
         nSign = -1;
     elseif symStr(ii)=='+'
         nSign = 1;
-    elseif (symStr(ii)=='1')||(symStr(ii)=='2')||(symStr(ii)=='3')
+    elseif ~isnan(str2double(symStr(ii)))
         symOp(nNew,4,nOp) = (symStr(ii)-'0')/(symStr(ii+2)-'0');
         ii = ii+2;
     end

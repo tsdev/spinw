@@ -1,0 +1,24 @@
+name: Release SpinW
+
+on:
+  pull_request:
+    branches: [master]
+    types: [closed]
+
+jobs:
+  create_release:
+    name: Creates a SpinW release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
+      - name: Create Release
+        if: |
+          contains(github.event.pull_request.title, 'RELEASE') &&
+          github.event.pull_request.merged
+        shell: bash -l {0}
+        run: |
+          python -m pip install requests
+          python release.py --notest --github --create_tag --token=${{ secrets.GH_TOKEN }}

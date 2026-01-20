@@ -208,6 +208,13 @@ else
     setappdata(hFigure,'base',obj.basisvector);
 end
 
+if obj.symbolic
+   warning('plotmag:symbolic','A symbolic magnetic structure can not be plotted.')
+   varargout = cell(1:nargout);
+   return
+end
+
+
 % the basis vectors in columns.
 BV = obj.basisvector;
 
@@ -325,8 +332,14 @@ if ~strcmp(param.mode,'none')
     end
     
     % normalize the longest moment vector to scale*(shortest bond length)
-    M = M/sqrt(max(sum(M.^2,1)))*param.scale*lBond;
-    
+    if isa(M,'sym')
+        warning('sw_plotmag:symcalc','This is a symbolic calculaiton, normalisation can''t be achieved.')
+        temp = cellfun(@(x) M./sqrt(sum(x,1).^2),mat2cell(M,3,[1 1 1 1]),'UniformOutput',false);
+        [m, ind] = min(cellfun(@(x) sum(x(:)),temp));
+        M = temp{ind}*param.scale*lBond;
+    else
+        M = M/sqrt(max(sum(M.^2,1)))*param.scale*lBond;
+    end
     if param.centered
         % double the length for centered moments
         M = 2*M;
@@ -350,7 +363,7 @@ if ~strcmp(param.mode,'none')
     end
     
     % shift positions
-    vpos = bsxfun(@plus,vpos,BV\param.shift);
+    vpos = bsxfunsym(@plus,vpos,BV\param.shift);
     
     % prepare legend labels
     mAtom.name = obj.unit_cell.label(mAtom.idx);

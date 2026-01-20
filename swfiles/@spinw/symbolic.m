@@ -37,8 +37,7 @@ end
 
 switch symb
     case true
-        v = ver;
-        if ~any(strcmp('Symbolic Math Toolbox', {v.Name}))
+        if ~license('checkout','Symbolic_Toolbox')
             error('spinw:symbolic:NoToolBox','You need Symbolic Math Toolbox installed to run symbolic calculations!');
         end
         

@@ -22,7 +22,7 @@ function addaniso(obj, matrixIdx, varargin)
 %
 % ```
 % >>cryst = spinw
-% >>cryst.genlattice('lat_const',[4 4 3],'spgr','P 4')
+% >>cryst.genlattice('lat_const',[4 4 3],'sym','P 4')
 % >>cryst.addatom('r',[1/4 1/4 1/2],'S',1)
 % >>cryst.addmatrix('label','A1','value',diag([-0.1 0 0]))
 % >>cryst.gencoupling
@@ -93,7 +93,7 @@ end
 
 if nargin > 3
     atomIdx = varargin{2};
-    if obj.lattice.sym > 1
+    if size(obj.lattice.sym, 3) > 1
         error('spinw:addaniso:SymmetryProblem','atomIdx is not allowed when crystal symmetry is higher than P1!');
     end
 
@@ -105,7 +105,7 @@ if nargin > 2
     atomTypeIdx = varargin{1};
     
     if length(obj.single_ion.aniso) ~= nMagAtom
-        addField.aniso = zeros(nMagAtom,1);
+        addField.aniso = zeros(1,nMagAtom);
     end
     
     % select atoms by label
@@ -131,7 +131,7 @@ if nargin > 2
         end
         atomTypeIdx = find(isSelectedAtom);
     end
-
+    
     for ii = 1:length(atomTypeIdx)
         aTemp = addField.aniso(mAtom.idx == atomTypeIdx(ii));
         if nargin > 3

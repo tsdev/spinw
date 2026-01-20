@@ -133,8 +133,9 @@ while ~feof(fid)
         
         % sort intensity, put zero intensities to the end
         [data{polIdx}.I,idx] = sort(data{polIdx}.I,1,'descend');
-        data{polIdx}.E       = data{polIdx}.E(sub2ind(size(data{polIdx}.E),idx,repmat(1:size(data{polIdx}.E,2),[2 1])));
-        data{polIdx}.sigma   = data{polIdx}.sigma(sub2ind(size(data{polIdx}.E),idx,repmat(1:size(data{polIdx}.E,2),[2 1])));
+        nModes = size(data{polIdx}.I, 1);
+        data{polIdx}.E       = data{polIdx}.E(sub2ind(size(data{polIdx}.E), idx, repmat(1:size(data{polIdx}.E,2), [nModes 1])));
+        data{polIdx}.sigma   = data{polIdx}.sigma(sub2ind(size(data{polIdx}.E), idx, repmat(1:size(data{polIdx}.E,2), [nModes 1])));
         
         data{polIdx}.nMode = sum(data{polIdx}.I~=0,1);
         data{polIdx}.corr  = sw_parstr(modeStr{polIdx});

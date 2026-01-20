@@ -77,6 +77,7 @@ E1 = yvo3.energy;
 yvo3.optmagsteep('nRun',1e4);
 E2 = yvo3.energy;
 dE = E2-E1
+nE = 1e3;
 
 % The unconstrained local optimization reached lower energy. Showing that
 % it is always good to recheck the results.

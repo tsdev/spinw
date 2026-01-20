@@ -58,6 +58,11 @@ function gencoupling(obj, varargin)
 %   equivalent, default value is $10^{-3}$\\ang. Only used, when no
 %   space group is defined.
 %
+% `'tolMaxDist'`
+% : Tolerance added to maxDistance to ensure bonds between same atom in
+%   neighbouring unit cells are included when maxDistance is equal to a
+%   lattice parameter.
+%
 % `'dMin'`
 % : Minimum bond length, below which an error is triggered.
 %   Default value is 0.5 \\ang.
@@ -84,7 +89,7 @@ function gencoupling(obj, varargin)
 % is there any symmetry operator?
 isSym = size(obj.lattice.sym,3) > 0;
 
-inpForm.fname  = {'forceNoSym' 'maxDistance' 'tol' 'tolDist' 'dMin' 'maxSym' 'fid'};
+inpForm.fname  = {'forceNoSym' 'maxDistance' 'tolMaxDist' 'tolDist' 'dMin' 'maxSym' 'fid'};
 inpForm.defval = {false         8             1e-5  1e-3      0.5   []       -1   };
 inpForm.size   = {[1 1]        [1 1]         [1 1] [1 1]     [1 1]  [1 1]   [1 1] };
 inpForm.soft   = {false        false          false false    false  true    false };
@@ -93,12 +98,32 @@ inpForm.soft   = {false        false          false false    false  true    fals
 param = sw_readparam(inpForm, varargin{:});
 pref = swpref;
 
-tol   = param.tol;
+if any([param.maxDistance, param.tolMaxDist, param.tolDist, param.dMin, param.maxSym] < 0)
+    error('spinw:gencoupling:NegativeDistances','All distances should be positive.');
+end
+
+tolMaxDist   = param.tolMaxDist;
 tolD  = param.tolDist;
+
+if tolD > param.maxDistance
+    error('spinw:gencoupling:TolDist', ...
+          ['Tolerance on symmetrically equivalent bond lengths ' ...
+           'larger than max distance.']);
+end
 
 % to avoid some problem with symmetry if maxDistance equal to a lattice
 % constant
-param.maxDistance = param.maxDistance + tol;
+if tolMaxDist > param.maxDistance
+    error('spinw:gencoupling:TolMaxDist', ...
+        'Tolerance on max distance larger than max distance.');
+end
+param.maxDistance = param.maxDistance + tolMaxDist;
+
+if param.maxDistance < param.dMin
+    error('spinw:gencoupling:MaxDLessThanMinD', ...
+        'maxDistance is smaller then dMin parameter');
+end
+
 
 if isempty(param.maxSym)
     param.maxSym = param.maxDistance;
@@ -130,7 +155,7 @@ end
 
 if fid ~= 0
     fprintf0(fid,['Creating the bond list (maxDistance = %g ' obj.unit.label{1}...
-        ', nCell = %dx%dx%d)...\n'],param.maxDistance-tol,nC);
+        ', nCell = %dx%dx%d)...\n'],param.maxDistance-tolMaxDist,nC);
 end
 
 % save the sym/nosym method into obj
@@ -193,16 +218,18 @@ cMat = cMat(:,~isnan(cMat(1,:)));
 % cMat = sortrows(cMat',6)'; too slow
 [~,cIdx] = sort(cMat(6,:));
 cMat     = cMat(:,cIdx);
-% cutoff at maximum distance
-cMat = cMat(:,cMat(6,:)<=param.maxDistance);
-% index the bonds
-cMat(7,:) = cumsum([1 diff(cMat(6,:))>tolD]);
-
-% check whether some atoms are too close
+% check cutoff for bond lengths
 if cMat(6,1) < param.dMin
     error('spinw:gencoupling:AtomPos',['Some atoms are too close (Dmin=' ...
         num2str(cMat(6,1)) '<' num2str(param.dMin) '), check your crystal structure!']);
+elseif cMat(6,1) > param.maxDistance
+    error('spinw:gencoupling:maxDistance', ...
+        'There are no bonds with distance < maxDistance');
 end
+
+cMat = cMat(:,cMat(6,:)<=param.maxDistance);
+% index the bonds
+cMat(7,:) = cumsum([1 diff(cMat(6,:))>tolD]);
 
 dRA  = cMat(6,:);
 % keep the bond length
@@ -210,48 +237,54 @@ cMat = cMat([1:5 7],:);
 % cMat rows: [la, lb, lc, atom1, atom2, idx]
 
 % symmetry equivalent couplings
+nSym = int32(0);
 if isSym
-    % store the final sorted couplings in nMat
-    nMat = zeros(6,0);
-    ii  = 1;
-    idx = 1;
-    % maximum bond index for symmetry operations
-    maxidxSym = max(cMat(6,dRA<=param.maxSym));
-    
-    while ii <= maxidxSym
-        % select columns from sorM with a certain idx value
-        sortMs = cMat(:,cMat(6,:) == ii);
-        while size(sortMs,2)>0
-            [genC, unC] = swsym.bond(mAtom.r, obj.basisvector, sortMs(:,1), obj.lattice.sym, tol);
-            genCAll = [genC [-genC(1:3,:);genC([5 4],:)]];
-            % remove from sortMs the identical couplings
-            iNew = isnew(genCAll(1:5,:),sortMs(1:5,:),tol);
-            sortMs(:,~iNew) = [];
-            % remove identical couplings from the symmetry generated
-            % list
-            genC(:,~unC) = [];
-            if sum(~iNew) ~= sum(unC)
-                error('spinw:gencoupling:SymProblem','Symmetry error! ii=%d, idx=%d. Try to change ''tol'' parameter.',ii,idx);
+    idxSym = dRA<=param.maxSym;
+    if ~any(idxSym)
+        warning('spinw:gencoupling:maxSym',['No bonds with distances < '...
+            'maxSym = ', num2str(param.maxSym), ' - all bonds will be ' ...
+            'reduced to P0 symmetry.']);
+    else
+        % store the final sorted couplings in nMat
+        nMat = zeros(6,0);
+        ii  = 1;
+        idx = 1;
+        % maximum bond index for symmetry operations
+        maxidxSym = max(cMat(6,idxSym));
+
+        while ii <= maxidxSym
+            % select columns from sorM with a certain idx value
+            sortMs = cMat(:,cMat(6,:) == ii);
+            while size(sortMs,2)>0
+                [genC, unC] = swsym.bond(mAtom.r, obj.basisvector, sortMs(:,1), obj.lattice.sym, tolD);
+                genCAll = [genC [-genC(1:3,:);genC([5 4],:)]];
+                % remove from sortMs the identical couplings
+                iNew = isnew(genCAll(1:5,:),sortMs(1:5,:), tolD);
+                sortMs(:,~iNew) = [];
+                % remove identical couplings from the symmetry generated
+                % list
+                genC(:,~unC) = [];
+                if sum(~iNew) ~= sum(unC)
+                    error('spinw:gencoupling:SymProblem', ...
+                        ['Symmetry error! ii=%d, idx=%d. Try to '...
+                        'change ''tol'' parameter.'], ii, idx)
+                end
+                % move the non-unique (not new) couplings (symmetry equivalent ones)
+                nMat = [nMat [genC;ones(1,size(genC,2))*idx]]; %#ok<AGROW>
+                idx  = idx + 1;
             end
-            % move the non-unique (not new) couplings (symmetry equivalent ones)
-            nMat = [nMat [genC;ones(1,size(genC,2))*idx]]; %#ok<AGROW>
-            idx  = idx + 1;
+            ii = ii + 1;
         end
-        ii = ii + 1;
+
+        % include the increase of bond index in case bonds are splitted due to
+        % symmetry inequivalency
+        cMat = cMat(:,cMat(6,:)>maxidxSym);
+        cMat(6,:) = cMat(6,:) + nMat(6,end)-maxidxSym;
+        cMat = [nMat cMat];
+
+        % save the value of maximum bond index that is generated by symmetry
+        nSym = int32(nMat(6,end));
     end
-    
-    % include the increase of bond index in case bonds are splitted due to
-    % symmetry inequivalency
-    cMat = cMat(:,cMat(6,:)>maxidxSym);
-    cMat(6,:) = cMat(6,:) + nMat(6,end)-maxidxSym;
-    cMat = [nMat cMat];
-    
-    % save the value of maximum bond index that is generated by symmetry
-    nSym = int32(nMat(6,end));
-    
-else
-    nSym = int32(0);
-    
 end
 
 % default anisotropy and g-tensor values

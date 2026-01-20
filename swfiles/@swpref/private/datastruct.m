@@ -33,7 +33,9 @@ d.Name = {
     'tid',...
     'colormap',...
     'usemex',...
-    'docurl'
+    'docurl',...
+    'nthread',...
+    'nspinlarge'
     };
 
 Size = {
@@ -46,8 +48,10 @@ Size = {
     [1, 1],...
     [1, 1],...
     [1, 1],...
+    [    ],...
+    [    ],...
     [1, 1],...
-    [    ]
+    [1, 1]
     };
 
 d.Validation = {
@@ -59,9 +63,11 @@ d.Validation = {
     {@isnumeric, @mustBeInteger, @mustBeNonnegative, @(x) check_size(x,Size{6}), @(x) mustBeGreaterThan(x,1), @(x) mustBeLessThan(x,256)},...
     {@isnumeric, @mustBeInteger, @mustBeNonnegative, @(x) check_size(x,Size{7}), @(x) mustBeGreaterThan(x,4), @(x) mustBeLessThan(x,256)},...
     {@isnumeric, @mustBeInteger, @mustBeNonnegative, @(x) check_size(x,Size{8}), @(x) mustBeLessThan(x,256)},...
-    {@(x) check_size(x,Size{9}), @check_mex, @(x) isa(x,'function_handle')},...
-    {@(x) check_size(x,Size{10}), @islogical},...
-    {@ischar, @(x) strfind(x,'http')}
+    {@(x) check_size(x,Size{9}), @(x) isa(x,'function_handle')},...
+    {@(x) check_mex(x)},...
+    {@ischar, @(x) strfind(x,'http')},...
+    {@isnumeric, @(x) check_size(x,Size{12})},...
+    {@isnumeric, @(x) check_size(x,Size{12}), @mustBeNonnegative}
     };
 
 d.Value = {
@@ -73,9 +79,11 @@ d.Value = {
     20,...
     12,...
     1,...
-    @cm_inferno,...
+    @(x)flipud(cm_inferno(x)),...
     false,...
-    'https://tsdev.github.io/spinwdoc'
+    'https://spinw.github.io/spinwdoc',...
+    -1,...
+    120
     };
 
 d.Label =  {
@@ -90,6 +98,8 @@ d.Label =  {
     'default colormap'...
     'if true, mex files are used in the spin wave calculation'...
     'url to the documentation server'...
+    'number of threads when running parallel mex computations (-1 to automatically define from number of cores)'...
+    'number of spins in a unit cell to be considered a "large" system (mex calcs use different algorithsm for large and small systems)'
     };
 
     function out = check_size(obj,S)
@@ -98,12 +108,12 @@ d.Label =  {
         %  {{warning Internal function for the Spin preferences.}}
         %
         % ### Syntax
-        % 
+        %
         % 'logical = check_size(toBeChecked,size)'
         %
         % ### Description
         %
-        % 'logical = check_size(toBeChecked,size)' checks to see if an 
+        % 'logical = check_size(toBeChecked,size)' checks to see if an
         % object 'obj 'is the expected size given by 'size'. An error is
         % thrown if there is a difference.
         %
@@ -116,26 +126,143 @@ d.Label =  {
         end
     end
 
-  function out = check_mex(~)
+    function out = check_mex(val)
         % checks to see if mex files are available.
         %
         %  {{warning Internal function for the Spin preferences.}}
         %
         % ### Syntax
-        % 
+        %
         % 'logical = check_mex(obj)'
         %
         % ### Description
         %
-        % 'logical = check_mex(obj)' checks to see if files 'chol_omp' and 
-        % 'eig_omp' are present in the MATLAB path.An error is thrown if 
+        % 'logical = check_mex(obj)' checks to see if files 'chol_omp' and
+        % 'eig_omp' are present in the MATLAB path.An error is thrown if
         % they do not exist.
         %
         
+        % Do the checks only if we are trying to set usemex = true
+        if val == 0
+            out = 0;
+            return
+        end
+        
         if ~(exist('chol_omp','file')==3 && exist('eig_omp','file')==3)
-            error('spref:MissingMex','Necessary mex files are missing, compile them!')
+            % There is a path error for < R2017a
+            if (exist('chol_omp','file')==2 && exist('eig_omp','file')==2)
+                p = which('chol_omp');
+                if ~(exist('chol_omp','file')==3 && exist('eig_omp','file')==3)
+                    error('spref:MissingMex','Necessary mex files are missing, compile them!')
+                end
+            else
+                error('spref:MissingMex','Necessary mex files are missing, compile them!')
+            end
         else
             out = 1;
+        end
+    end
+
+    function mustBeInteger(A)
+        % Validate that value is integer or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBEINTEGER(A) issues an error if A contains non integer values.
+        %   A value is integer if it is real, finite, and equal to the result
+        %   of taking the floor of the value.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        ME = MException('MATLAB:validators:mustBeNumericOrLogical','Value must be integer.');
+        if ~all(isnumeric(A) || islogical(A))
+            throwAsCaller(ME)
+        end
+        
+        if ~isreal(A)
+            throwAsCaller(ME)
+        end
+        
+        if ~all(isfinite(A(:))) || ~all(A(:) == floor(A(:)))
+            throwAsCaller(ME)
+        end
+    end
+
+    function mustBeNonnegative(A)
+        % Validate that value is nonnegative or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBENONNEGATIVE(A) issues an error if A contains negaitive values.
+        %   A value is nonnegative if it is greater than or equal to zero.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        if ~all(A(:) >= 0)
+            ME = MException('MATLAB:validators:mustBeNonnegative','Value/s must be positive.');
+            throwAsCaller(ME)
+        end
+    end
+    function mustBeGreaterThan(A, B)
+        % Validate that value is greater than a specified value or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBEGREATERTHAN(A,B) issues an error if A is not greater than B.
+        %   MATLAB calls gt to determine if A is greater than B.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        if ~all(A(:) > B)
+            ME = MException('MATLAB:validators:mustBeGreaterThan','All values must be greater than %f.',B);
+            throwAsCaller(ME)
+        end
+    end
+    function mustBeLessThan(A, B)
+        % Validate that value is less than a specified value or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBELESSTHAN(A,B) issues an error if A is not less than B.
+        %   MATLAB calls gt to determine if A is less than B.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        if ~all(A(:) < B)
+            ME = MException('MATLAB:validators:mustBeLessThan','All values must be less than %f.',B);
+            throwAsCaller(ME)
+        end
+    end
+
+    function mustBeGreaterThanOrEqual(A, B)
+        % Validate that value is greater than or equal to a specified value or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBEGREATERTHANOREQUAL(A,B) issues an error if A is not greater than or equal to B.
+        %   MATLAB calls gt to determine if A is greater than or equal to B.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        if ~all(A(:) >= B)
+            ME = MException('MATLAB:validators:mustBeGreaterThanOrEqual','All values must be greater than or equal to %f.',B);
+            throwAsCaller(ME)
+        end
+    end
+
+    function mustBeLessThanOrEqual(A, B)
+        % Validate that value is less than or equal to a specified value or issue error
+        %
+        %  {{warning Internal function for the Spin preferences.}}
+        %
+        %   MUSTBELESSTHANOREQUAL(A,B) issues an error if A is not less or equal than B.
+        %   MATLAB calls gt to determine if A is less than oir equal B.
+        %
+        %   Modified from mathworks verion for < R2017a
+        
+        if ~all(A(:) <= B)
+            ME = MException('MATLAB:validators:mustBeLessThanOrEqual','All values must be less than or equal to %f.',B);
+            throwAsCaller(ME)
         end
     end
 end
